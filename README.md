@@ -34,7 +34,7 @@ npm run dev # or npm run watch
 npm run production
 ```
 
-```
+
 Open http://localhost:8000 (laravel container port declared in `docker-compose.yml`) 
 
 ## Running the tests
