@@ -5,7 +5,7 @@ ENV_FILE=".env"
 DB_HOST=$(cat $ENV_FILE | grep "DB_HOST" | cut -d"=" -f2)
 DB_PORT=$(cat $ENV_FILE | grep "DB_PORT" | cut -d"=" -f2)
 
-composer install
+# composer install
 
 echo "Wait for Database to be ready"
 while true;
@@ -22,7 +22,7 @@ then
 fi
 
 echo "NPM Install"
-npm install -g cross-env && npm install && npm run production
+# npm install -g cross-env && npm install && npm run production
 
 echo "Serve"
 php artisan serve --host 0.0.0.0

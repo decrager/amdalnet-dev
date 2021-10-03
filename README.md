@@ -59,6 +59,10 @@ npm run production
 #### Docker
 ```sh
 docker-compose up -d
+
+docker-compose exec laravel bash
+$ composer install
+$ npm install -g cross-env && npm install && npm run production
 ```
 Build static files within Laravel container with npm
 ```sh
@@ -118,4 +122,27 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) f
 If you find this project useful, you can [buy me a coffee](https://www.buymeacoffee.com/tuandm)
 
 
+
+## Workflow Test
+
+```
+# list command
+php artisan list
+
+# create graphviz for workflow 
+php artisan workflow:dump straight --class App\\Entity\\BlogPost
+
+# create blogpost model
+php artisan make:model 'Entity\BlogPost' --migration
+php artisan make:factory BlogPostFactory --model='Entity\BlogPost'
+php artisan migrate --seed
+php artisan db:wipe
+php artisan db:seed --class=BlogPostTableSeeder
+
+# test workflow
+php artisan workflow:test
+
+# create listener
+php artisan make:listener BlogPostWorkflowSubscriber
+```
 
