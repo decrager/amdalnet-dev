@@ -103,7 +103,6 @@ class BlogPostWorkflowSubscriber
      */
     public function subscribe($events)
     {
-        var_dump('subscribe:evt');
         // can use any of the three formats:
         // workflow.guard
         // workflow.[workflow name].guard
