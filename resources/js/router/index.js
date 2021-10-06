@@ -227,6 +227,28 @@ export const asyncRoutes = [
       },
     ],
   },
+  {
+    path: '/project',
+    component: Layout,
+    redirect: '/project',
+    alwaysShow: true,
+    meta: { title: 'project', icon: 'zip' },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/project'),
+        name: 'project',
+        meta: { title: 'listProject', icon: 'documentation' },
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/project/create'),
+        name: 'createProject',
+        hidden: true,
+        meta: { title: 'addProject', icon: 'documentation', noCache: true },
+      },
+    ],
+  },
   { path: '*', redirect: '/404', hidden: true },
 ];
 
