@@ -28,7 +28,7 @@ class CreateProjectsTable extends Migration
             $table->string('address');
             $table->string('field');
             $table->string('location_desc');
-            $table->string('document_type');
+            $table->string('risk_level');
             $table->integer('project_year');
             $table->string('map');
             $table->integer('map_scale');
