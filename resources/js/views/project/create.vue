@@ -212,48 +212,8 @@
       <el-row :gutter="4">
         <el-col :span="12">
           <el-row :gutter="4">
-            <el-col :span="8">
-              <el-form-item label="Skala/Besaran Peta" prop="mapScale">
-                <el-col
-                  :span="12"
-                ><el-input
-                  v-model="currentProject.map_scale"
-                /></el-col>
-                <el-col
-                  :span="12"
-                ><el-select
-                  v-model="currentProject.map_scale_unit"
-                  placeholder="Select"
-                  style="width: 100%"
-                >
-                  <el-option
-                    v-for="item in mapScaleOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  /> </el-select></el-col>
-              </el-form-item>
-            </el-col>
-            <el-col :span="16">
-              <el-form-item label="Berita Pengumuman" prop="announcementLetter">
-                <el-col :span="24">
-                  <div
-                    style="
-                      border: 1px solid #ccc;
-                      border-radius: 4px;
-                      height: 36px;
-                    "
-                  >
-                    <el-button
-                      icon="el-icon-document-copy"
-                      type="primary"
-                      size="mini"
-                      style="margin-left: 15px"
-                      @click="'#';"
-                    >Upload</el-button>
-                    <span>{{ fileName }}</span>
-                  </div></el-col>
-              </el-form-item>
+            <el-col :span="24">
+              <support-table />
             </el-col>
           </el-row>
           <el-row :gutter="4" />
@@ -301,13 +261,14 @@
 <script>
 import Tinymce from '@/components/Tinymce';
 import Resource from '@/api/resource';
+import SupportTable from './components/SupportTable.vue';
 const projectFieldResource = new Resource('project-fields');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 
 export default {
   name: 'CreateProject',
-  components: { Tinymce },
+  components: { Tinymce, SupportTable },
   data() {
     return {
       currentProject: {},
