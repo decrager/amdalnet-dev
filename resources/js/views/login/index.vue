@@ -146,7 +146,7 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss">
 $bg:#2d3a4b;
-$light_gray:#eee;
+$light_gray:#5F6368;
 
 /* reset element-ui css */
 .login-container {
