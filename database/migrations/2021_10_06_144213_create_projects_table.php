@@ -21,6 +21,7 @@ class CreateProjectsTable extends Migration
             $table->string('scale_unit');
             $table->string('authority');
             $table->string('project_type');
+            $table->string('sector');
             $table->string('description');
             $table->string('id_applicant');
             $table->integer('id_prov');
@@ -28,7 +29,7 @@ class CreateProjectsTable extends Migration
             $table->string('address');
             $table->string('field');
             $table->string('location_desc');
-            $table->string('document_type');
+            $table->string('risk_level');
             $table->integer('project_year');
             $table->string('map');
             $table->integer('map_scale');
