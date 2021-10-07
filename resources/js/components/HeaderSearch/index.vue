@@ -169,10 +169,10 @@ export default {
     vertical-align: middle;
 
     /deep/ .el-input__inner {
-      border-radius: 0;
+      border-radius: 10px;
       border: 0;
-      padding-left: 0;
-      padding-right: 0;
+      padding-left: 10px;
+      padding-right: 10px;
       box-shadow: none !important;
       border-bottom: 1px solid #d9d9d9;
       vertical-align: middle;

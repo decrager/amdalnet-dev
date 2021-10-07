@@ -1,10 +1,10 @@
 {
-    "name": "tuandm/laravue",
+    "name": "klh/amdalnet",
     "type": "project",
-    "description": "A beautiful dashboard for Laravel built by VueJS",
+    "description": "pemrosesan dokumen amdal",
     "keywords": [
         "laravel",
-        "laravue",
+        "amdalnet",
         "vue",
         "admin",
         "dashboard"
@@ -12,9 +12,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Tuan Duong",
-            "email": "bacduong@gmail.com",
-            "homepage": "https://laravue.dev",
+            "name": "M Zhuhriansyah R",
+            "email": "izhur2001@gmail.com",
             "role": "Developer"
         }
     ],

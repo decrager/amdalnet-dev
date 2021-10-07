@@ -12,8 +12,7 @@
           OOPS!
         </div>
         <div class="bullshit__info">
-          Copyright by
-          <a class="link-type" href="https://github.com/tuandm/laravue" target="_blank">Laravue</a>
+          by Amdalnet
         </div>
         <div class="bullshit__headline">
           {{ message }}

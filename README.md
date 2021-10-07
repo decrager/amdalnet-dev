@@ -35,14 +35,28 @@ npm run production
 ```
 
 
-Open http://localhost:8000 (laravel container port declared in `docker-compose.yml`) 
+docker-compose exec laravel bash
+$ composer install
+$ npm install -g cross-env && npm install && npm run production
+```
+Build static files within Laravel container with npm
+```sh
+# Get laravel docker container ID from containers list
+docker ps
+
+docker exec -it <container ID> npm run dev # or npm run watch
+docker exec -it amdalnet_laravel_1 npm run watch
+# Where <container ID> is the "laravel" container name, ex: src_laravel_1
+```
+Open http://localhost:8000 (laravel container port declared in `docker-compose.yml`) to access Amdalnet
 
 ## Running the tests
 * Tests system is under development
 
 ## Deployment and/or CI/CD
-This project uses [Envoy](https://laravel.com/docs/5.8/envoy) for deployment, and [GitLab CI/CD](https://about.gitlab.com/product/continuous-integration/). Please check `Envoy.blade.php` and `.gitlab-ci.yml` for more detail.
-
+check:
+- Envoy.blade.php [Envoy](https://laravel.com/docs/5.8/envoy)
+- .gitlab-ci.yml [GitLab CI/CD](https://about.gitlab.com/product/continuous-integration/)
 ## Built with
 * [Laravel](https://laravel.com/) - The PHP Framework For Web Artisans
 * [Laravel Sanctum](https://github.com/laravel/sanctum/) - Laravel Sanctum provides a featherweight authentication system for SPAs and simple APIs.
@@ -82,3 +96,7 @@ php artisan workflow:test
 php artisan make:listener BlogPostWorkflowSubscriber
 ```
 
+.el-menu-item
+.el-submenu__title
+.el-menu-item, .el-submenu__title
+.el-submenu .el-menu-item
