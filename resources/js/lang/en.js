@@ -70,6 +70,9 @@ export default {
     administrator: 'Administrator',
     users: 'Users',
     userProfile: 'User Profile',
+    project: 'Project',
+    listProject: 'List Project',
+    addProject: 'Tambah Kegiatan',
   },
   navbar: {
     logOut: 'Log Out',

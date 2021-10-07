@@ -1,0 +1,8 @@
+GET http://localhost:8000/api/project-field
+###
+GET http://localhost:8000/api/province
+###
+GET http://localhost:8000/api/districts/province/12
+###
+GET http://localhost:8000/api/districts?idProv=12
+###

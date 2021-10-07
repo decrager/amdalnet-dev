@@ -147,3 +147,7 @@ Route::get('articles/{id}/pageviews', function ($id) {
 
     return response()->json(new JsonResponse(['pvData' => $data]));
 });
+
+Route::apiResource('project-fields', 'ProjectFieldController');
+Route::apiResource('provinces', 'ProvinceController');
+Route::apiResource('districts', 'DistrictController');

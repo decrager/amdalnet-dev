@@ -170,6 +170,29 @@ export const asyncRoutes = [
   // },
   errorRoutes,
   // excelRoutes,
+  {
+    path: '/project',
+    component: Layout,
+    redirect: '/project',
+    alwaysShow: true,
+    meta: { title: 'project', icon: 'zip' },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/project'),
+        name: 'project',
+        meta: { title: 'listProject', icon: 'documentation' },
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/project/create'),
+        name: 'createProject',
+        hidden: true,
+        meta: { title: 'addProject', icon: 'documentation', noCache: true },
+      },
+    ],
+  },
+  // excelRoutes,
   // {
   //   path: '/zip',
   //   component: Layout,

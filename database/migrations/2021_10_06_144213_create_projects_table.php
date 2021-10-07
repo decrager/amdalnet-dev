@@ -21,6 +21,7 @@ class CreateProjectsTable extends Migration
             $table->string('scale_unit');
             $table->string('authority');
             $table->string('project_type');
+            $table->string('sector');
             $table->string('description');
             $table->string('id_applicant');
             $table->integer('id_prov');
