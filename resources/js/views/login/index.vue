@@ -237,7 +237,9 @@ $textColor:#eee;
     //     h4, span { margin: 0; }
     //   }
     // }
-
+    .el-button{
+      background-color: #FFA84C;
+    }
     .login-form {
       min-width: 480px;
       max-width: 560px;
