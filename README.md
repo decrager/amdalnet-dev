@@ -1,19 +1,26 @@
+<p align="center">
+  <img width="320" src="http://153.92.4.138/amdal_info/img/logo.png">
+</p>
+<p align="center">
+  <a href="https://laravel.com">
+    <img src="https://img.shields.io/badge/laravel-7.3-brightgreen.svg" alt="vue">
+  </a>
+  <a href="https://github.com/vuejs/vue">
+    <img src="https://img.shields.io/badge/vue-2.6.10-brightgreen.svg" alt="vue">
+  </a>
+  <a href="https://github.com/ElemeFE/element">
+    <img src="https://img.shields.io/badge/element--ui-2.13.0-brightgreen.svg" alt="element-ui">
+  </a>
+</p>
+
+
 ## Getting started
 
-### Prerequisites
-
- * Laravel
- * Php 
- * Node JS
 
 ### Installing
 #### Manual
 
 ```bash
-# Clone the project and run composer
-composer create-project tuandm/laravue
-cd laravue
-
 # Migration and DB seeder (after changing your DB settings in .env)
 php artisan migrate --seed
 
@@ -27,9 +34,6 @@ npm run dev # or npm run watch
 npm run production
 ```
 
-#### Docker
-```sh
-docker-compose up -d
 
 docker-compose exec laravel bash
 $ composer install
@@ -61,6 +65,14 @@ check:
 * [Element](https://element.eleme.io/) - A  Vue 2.0 based component library for developers, designers and product managers
 * [Vue Admin Template](https://github.com/PanJiaChen/vue-admin-template) - A minimal vue admin template with Element UI
 
+
+## Acknowledgements
+
+* [vue-element-admin](https://panjiachen.github.io/vue-element-admin/#/) 
+* [tui.editor](https://github.com/nhnent/tui.editor) - Markdown WYSIWYG Editor.
+* [Echarts](http://echarts.apache.org/) - A powerful, interactive charting and visualization library for browser.
+
+
 ## Workflow Test
 
 ```
@@ -83,16 +95,3 @@ php artisan workflow:test
 # create listener
 php artisan make:listener BlogPostWorkflowSubscriber
 ```
-
-- master
-  - lpjp
-  - tenaga ahli
-    - type: penyusun, lepas
-    - lpjp, non lpjp (mandiri)
-    - registration_number
-    - certificate_number
-    - ktpa - ketua
-    - atpa
-  - 
-- tim penyusun
-- kegiatan
