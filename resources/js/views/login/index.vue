@@ -6,7 +6,7 @@
           <div class="title-wrap">
             <img
               class="logo"
-              alt="Laravue"
+              alt="Amdalnet"
               :src="logo"
             >
             <!-- h3 class="title">
