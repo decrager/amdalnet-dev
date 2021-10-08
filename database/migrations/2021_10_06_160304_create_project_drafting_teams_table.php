@@ -15,12 +15,13 @@ class CreateProjectDraftingTeamsTable extends Migration
     {
         Schema::create('project_drafting_teams', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('status');
-            $table->string('id_applicant');
-            $table->timestamp('date_input');
-            $table->string('evidence_letter');
-            $table->string('id_drafter');
+            $table->string('id_team');
+            $table->string('name')->nullable();
+            $table->integer('status')->nullable();
+            $table->string('id_applicant')->nullable();
+            $table->timestamp('date_input')->nullable();
+            $table->string('evidence_letter')->nullable();
+            $table->string('id_drafter')->nullable();
 
             $table->timestamps();
         });
