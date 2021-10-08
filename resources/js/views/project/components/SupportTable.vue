@@ -1,34 +1,46 @@
 <template>
-  <div class="app-container">
-    <el-table
-      v-loading="loading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-    >
-      <el-table-column align="center" label="No." width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
+  <el-table
+    v-loading="loading"
+    :header-cell-style="{ background: '#099C4B', color: 'white' }"
+    :data="list"
+    border
+    fit
+    highlight-current-row
+  >
+    <el-table-column align="center" label="No." width="80">
+      <template slot-scope="scope">
+        <span>{{ scope.$index + 1 }}</span>
+      </template>
+    </el-table-column>
 
-      <el-table-column width="180px" align="center" label="Tipe Dokumen">
-        <template slot-scope="scope">
-          <span>{{
-            scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}')
-          }}</span>
-        </template>
-      </el-table-column>
+    <el-table-column align="center" label="Tipe Dokumen">
+      <template slot-scope="scope">
+        <el-input
+          v-model="scope.row.document_type"
+          class="edit-input"
+          size="small"
+        />
+      </template>
+    </el-table-column>
 
-      <el-table-column width="120px" align="center" label="Author">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
+    <el-table-column align="left" label="File">
+      <template slot-scope="scope">
+        <el-button
+          icon="el-icon-document-copy"
+          type="primary"
+          size="mini"
+          @click="checkDocFile('docfile' + scope.$index)"
+        >Upload</el-button>
+        <span>{{ scope.row.file || 'No File Selected..' }} </span>
+        <input
+          :id="'docfile' + scope.$index"
+          type="file"
+          style="display: none"
+          @change="checkDocFileSure('docfile' + scope.$index, scope.$index)"
+        >
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 
 <script>
@@ -43,6 +55,15 @@ export default {
   },
   data() {
     return {};
+  },
+  methods: {
+    checkDocFile(idx) {
+      const id = '#' + idx;
+      document.querySelector(id).click();
+    },
+    checkDocFileSure(id, x) {
+      this.list[x].file = document.querySelector('#' + id).files[0].name;
+    },
   },
 };
 </script>
