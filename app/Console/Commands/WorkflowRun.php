@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class WorkflowRun extends Command
 {
@@ -37,7 +38,7 @@ class WorkflowRun extends Command
      */
     public function handle()
     {
-        echo "Workflow run\n";
+        LOG::info("Workflow run, do workflow process scedhule");
         return 0;
     }
 }

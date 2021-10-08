@@ -8,16 +8,16 @@
         <tags-view v-if="needTagsView" />
       </div>
       <app-main />
-      <right-panel v-if="showSettings">
+      <!-- right-panel v-if="showSettings">
         <settings />
-      </right-panel>
+      </right-panel -->
     </div>
   </div>
 </template>
 
 <script>
-import RightPanel from '@/components/RightPanel';
-import { Navbar, Sidebar, AppMain, TagsView, Settings } from './components';
+// import RightPanel from '@/components/RightPanel';
+import { Navbar, Sidebar, AppMain, TagsView } from './components'; //, Settings
 import ResizeMixin from './mixin/resize-handler.js';
 import { mapState } from 'vuex';
 
@@ -26,8 +26,8 @@ export default {
   components: {
     AppMain,
     Navbar,
-    RightPanel,
-    Settings,
+    // RightPanel,
+    // Settings,
     Sidebar,
     TagsView,
   },

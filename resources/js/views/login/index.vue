@@ -1,24 +1,18 @@
 <template>
   <div class="login">
     <div class="login-container">
-      <div class="login-image">
-        <div class="photo-credit">
-          <h4>Danang - Vietnam</h4>
-          <span>Photo by Kiril Dobrev on Unsplash</span>
-        </div>
-      </div>
       <div class="login-content">
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
           <div class="title-wrap">
             <img
               class="logo"
-              alt="Laravue"
+              alt="Amdalnet"
               :src="logo"
             >
-            <h3 class="title">
+            <!-- h3 class="title">
               {{ $t('login.title') }}
               <lang-select class="set-language" />
-            </h3>
+            </h3 -->
           </div>
           <el-form-item prop="email">
             <span class="svg-container">
@@ -58,15 +52,15 @@
 </template>
 
 <script>
-import LangSelect from '@/components/LangSelect';
+// import LangSelect from '@/components/LangSelect';
 import { validEmail } from '@/utils/validate';
 import { csrf } from '@/api/auth';
 
-const logo = require('@/assets/login/logo.png').default;
+const logo = require('@/assets/login/logo-amdal.png').default;
 
 export default {
   name: 'Login',
-  components: { LangSelect },
+  // components: { LangSelect },
   data() {
     const validateEmail = (rule, value, callback) => {
       if (!validEmail(value)) {
@@ -152,7 +146,7 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss">
 $bg:#2d3a4b;
-$light_gray:#eee;
+$light_gray:#5F6368;
 
 /* reset element-ui css */
 .login-container {
@@ -188,7 +182,7 @@ $light_gray:#eee;
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
 $light_gray:rgb(7, 6, 6);
-$bgColor: #054b5d;
+$bgColor: #143A16;
 $brown: #B27C66;
 $textColor:#eee;
 
@@ -199,51 +193,59 @@ $textColor:#eee;
   justify-content: center;
   padding: 20px;
   background-color: $bgColor;
+  background-image: url('../../assets/login/cover.png');
   transition: background-color .3s ease-in-out;
   overflow: auto;
+  background-size: cover;
+  background-position: center;
 
   .login-container {
-    background: $bg;
-    width: 1120px;
-    min-height: 590px;
-    display: grid;
+    // background: $bg;
+    // width: 1120px;
+    // min-height: 590px;
+    // display: grid;
+    margin: auto;
     grid-template-columns: auto 480px;
     transition: all .3s ease-in-out;
     transform: scale(1);
 
     .logo {
       display: block;
-      width: 80px;
-      height: 80px;
       margin-bottom: 20px;
+      width: 200px;
     }
 
-    .login-image {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      overflow: hidden;
-      background-color: #303c4b;
-      background-image: url('../../assets/login/login_background.jpg');
-      background-position: 50%;
-      background-size: cover;
-      opacity: 1;
-      transition: opacity .3s ease-in-out,padding .2s ease-in-out;
+    // .login-image {
+    //   display: flex;
+    //   flex-direction: row;
+    //   justify-content: flex-end;
+    //   overflow: hidden;
+    //   background-color: #303c4b;
+    //   background-image: url('../../assets/login/cover.png');
+    //   background-position: 50%;
+    //   background-size: cover;
+    //   opacity: 1;
+    //   transition: opacity .3s ease-in-out,padding .2s ease-in-out;
 
-      .photo-credit {
-        justify-content: flex-end;
-        align-self: flex-end;
-        background-color: rgba(255,255,255,0.8);
-        margin: 10px;
-        padding: 5px 8px;
+    //   .photo-credit {
+    //     justify-content: flex-end;
+    //     align-self: flex-end;
+    //     background-color: rgba(255,255,255,0.8);
+    //     margin: 10px;
+    //     padding: 5px 8px;
 
-        h4, span { margin: 0; }
-      }
+    //     h4, span { margin: 0; }
+    //   }
+    // }
+    .el-button{
+      background-color: #FFA84C;
     }
-
     .login-form {
-      min-width: 320px;
-      padding: 130px 60px;
+      min-width: 480px;
+      max-width: 560px;
+      margin: auto;
+      background: #fff;
+      padding: 60px 60px;
       position: relative;
       opacity: 1;
       transition: opacity .3s ease-in-out,padding .2s ease-in-out;

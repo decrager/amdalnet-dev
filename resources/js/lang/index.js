@@ -3,12 +3,14 @@ import VueI18n from 'vue-i18n';
 import Cookies from 'js-cookie';
 import elementEnLocale from 'element-ui/lib/locale/lang/en'; // element-ui lang
 import elementRuLocale from 'element-ui/lib/locale/lang/ru-RU'; // element-ui lang
-import elementZhLocale from 'element-ui/lib/locale/lang/zh-CN';// element-ui lang
-import elementViLocale from 'element-ui/lib/locale/lang/vi';// element-ui lang
+// import elementZhLocale from 'element-ui/lib/locale/lang/zh-CN';// element-ui lang
+// import elementViLocale from 'element-ui/lib/locale/lang/vi';// element-ui lang
+import elementIdLocale from 'element-ui/lib/locale/lang/id';
 import enLocale from './en';
 import ruLocale from './ru';
-import zhLocale from './zh';
-import viLocale from './vi';
+// import zhLocale from './zh';
+// import viLocale from './vi';
+import idLocale from './id';
 
 Vue.use(VueI18n);
 
@@ -17,18 +19,22 @@ const messages = {
     ...enLocale,
     ...elementEnLocale,
   },
+  id: {
+    ...idLocale,
+    ...elementIdLocale,
+  },
   ru: {
     ...ruLocale,
     ...elementRuLocale,
   },
-  zh: {
-    ...zhLocale,
-    ...elementZhLocale,
-  },
-  vi: {
-    ...viLocale,
-    ...elementViLocale,
-  },
+  // zh: {
+  //   ...zhLocale,
+  //   ...elementZhLocale,
+  // },
+  // vi: {
+  //   ...viLocale,
+  //   ...elementViLocale,
+  // },
 };
 
 export function getLanguage() {

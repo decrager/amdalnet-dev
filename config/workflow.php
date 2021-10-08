@@ -12,7 +12,7 @@ return [
         ],
         // optional top-level metadata
         'metadata' => [
-            // any data
+            // any data 
         ],
         'supports' => ['App\Entity\BlogPost'], // objects this workflow supports
         // Specifies events to dispatch (only in 'workflow', not 'state_machine')
