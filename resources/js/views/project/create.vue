@@ -284,6 +284,7 @@ const projectFieldResource = new Resource('project-fields');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const kbliResource = new Resource('kblis');
+const kbliEnvParamResource = new Resource('kbli-env-params');
 
 export default {
   name: 'CreateProject',
@@ -296,6 +297,7 @@ export default {
       loadingSupportTable: false,
       isUpload: 'Upload',
       fileName: 'No File Selected.',
+      fileMap: null,
       projectOptions: [
         {
           value: 'Pabrik Pupuk',
@@ -339,16 +341,7 @@ export default {
           label: '2022',
         },
       ],
-      unitOptions: [
-        {
-          value: 'cm',
-          label: 'cm',
-        },
-        {
-          value: 'ha',
-          label: 'ha',
-        },
-      ],
+      unitOptions: [],
       mapScaleOptions: [
         {
           value: 'm2',
@@ -381,6 +374,7 @@ export default {
     },
     checkMapFileSure() {
       this.fileName = document.querySelector('#mapFile').files[0].name;
+      this.fileMap = document.querySelector('#mapFile').files[0];
     },
     async getAllData() {
       this.getProjectFields();
@@ -404,6 +398,8 @@ export default {
       this.$router.push('/project');
     },
     handleSubmit() {
+      this.currentProject.fileMap = this.fileMap;
+      this.currentProject.listSupportDoc = this.listSupportTable;
       console.log(this.currentProject);
     },
     async changeProvince(value) {
@@ -428,6 +424,12 @@ export default {
         return { value: i.value, label: i.value };
       });
     },
+    async getUnitByKbli(nameKbli) {
+      const { data } = await kbliEnvParamResource.list({ kbli: nameKbli.value });
+      this.unitOptions = data.map((i) => {
+        return { value: i.unit, label: i.unit };
+      });
+    },
     async getKblis() {
       const { data } = await kbliResource.list({ kblis: true });
       this.listKbli = data.map((i) => {
@@ -439,6 +441,7 @@ export default {
     },
     handleKbliSelect(item) {
       this.getSectorsByKbli(item);
+      this.getUnitByKbli(item);
     },
   },
 };

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Entity\Kbli;
-use App\Http\Resources\KbliResource;
+use App\Entity\KbliEnvParam;
+use App\Http\Resources\KbliEnvParamResource;
 use Illuminate\Http\Request;
 use DB;
 
-class kbliController extends Controller
+class KbliEnvParamController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,23 +16,17 @@ class kbliController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->sectors){
-            return KbliResource::collection(Kbli::distinct()->where('description', 'sector')->get(['value']));
-          } else if ($request->sectorsByKbli) {
-            $kbliName = $request->sectorsByKbli;
+        if($request->kbli) {
+            $kbliName = $request->kbli;
 
             $kbli = DB::table('kblis')->where('value', $kbliName)->first();
 
             if($kbli != null){
-                return KbliResource::collection(Kbli::distinct()->where('description', 'sector')->where('parent_id', $kbli->id)->get(['value']));
+                return KbliEnvParamResource::collection(KbliEnvParam::distinct()->where('kbli_id', $kbli->id)->get(['unit']));
             } else {
-                return response()->json(['error' => 'kbli '+ $request->sectorsByKbli +' not found'], 404);
+                return response()->json(['error' => 'kbli '+ $request->kbli +' not found'], 404);
             }
-          } else if ($request->kblis) {
-            return KbliResource::collection(Kbli::distinct()->where('description', 'kbli_code')->get(['value']));
-          } else {
-            return KbliResource::collection(Kbli::all());
-          }
+        }
     }
 
     /**
@@ -59,10 +53,10 @@ class kbliController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity\kbli  $kBLI
+     * @param  \App\Entity\KbliEnvParam  $kbliEnvParam
      * @return \Illuminate\Http\Response
      */
-    public function show(kbli $kBLI)
+    public function show(KbliEnvParam $kbliEnvParam)
     {
         //
     }
@@ -70,10 +64,10 @@ class kbliController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity\kbli  $kBLI
+     * @param  \App\Entity\KbliEnvParam  $kbliEnvParam
      * @return \Illuminate\Http\Response
      */
-    public function edit(kbli $kBLI)
+    public function edit(KbliEnvParam $kbliEnvParam)
     {
         //
     }
@@ -82,10 +76,10 @@ class kbliController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Entity\kbli  $kBLI
+     * @param  \App\Entity\KbliEnvParam  $kbliEnvParam
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, kbli $kBLI)
+    public function update(Request $request, KbliEnvParam $kbliEnvParam)
     {
         //
     }
@@ -93,10 +87,10 @@ class kbliController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity\kbli  $kBLI
+     * @param  \App\Entity\KbliEnvParam  $kbliEnvParam
      * @return \Illuminate\Http\Response
      */
-    public function destroy(kbli $kBLI)
+    public function destroy(KbliEnvParam $kbliEnvParam)
     {
         //
     }
