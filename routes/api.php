@@ -151,3 +151,4 @@ Route::get('articles/{id}/pageviews', function ($id) {
 Route::apiResource('project-fields', 'ProjectFieldController');
 Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
+Route::apiResource('kblis', 'KBLIController');

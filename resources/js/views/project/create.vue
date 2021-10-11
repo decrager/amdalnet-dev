@@ -86,7 +86,15 @@
         <el-col :span="12">
           <el-col :span="8">
             <el-form-item label="KBLI" prop="kbli">
-              <el-input v-model="currentProject.kbli" />
+              <!-- <el-input v-model="currentProject.kbli" /> -->
+              <el-autocomplete
+                v-model="currentProject.kbli"
+                class="inline-input"
+                :fetch-suggestions="kbliSearch"
+                placeholder="Please Input"
+                :trigger-on-focus="false"
+                @select="handleKbliSelect"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -96,7 +104,14 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="Tahun Kegiatan" prop="projectYear">
-              <el-select
+              <el-date-picker
+                v-model="currentProject.project_year"
+                type="year"
+                placeholder="Pick a year"
+                style="width: 100%"
+                value-format="yyyy"
+              />
+              <!-- <el-select
                 v-model="currentProject.project_year"
                 placeholder="Select"
                 style="width: 100%"
@@ -107,9 +122,8 @@
                   :label="item.label"
                   :value="item.value"
                 />
-              </el-select>
+              </el-select> -->
             </el-form-item>
-
           </el-col>
         </el-col>
         <el-col :span="12">
@@ -121,22 +135,24 @@
         </el-col>
       </el-row>
       <el-row :gutter="4">
-        <el-col :span="12"><el-col :span="8">
-                             <el-form-item label="Sector" prop="project">
-                               <el-select
-                                 v-model="currentProject.sector"
-                                 placeholder="Select"
-                                 style="width: 100%"
-                               >
-                                 <el-option
-                                   v-for="item in sectorOptions"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value"
-                                 />
-                               </el-select>
-                             </el-form-item>
-                           </el-col>
+        <el-col
+          :span="12"
+        ><el-col :span="8">
+           <el-form-item label="Sector" prop="project">
+             <el-select
+               v-model="currentProject.sector"
+               placeholder="Select"
+               style="width: 100%"
+             >
+               <el-option
+                 v-for="item in sectorOptions"
+                 :key="item.value"
+                 :label="item.label"
+                 :value="item.value"
+               />
+             </el-select>
+           </el-form-item>
+         </el-col>
           <el-col :span="8">
             <el-form-item label="Bidang Kegiatan" prop="project">
               <el-select
@@ -173,14 +189,11 @@
                   :label="item.label"
                   :value="item.value"
                 /> </el-select></el-col>
-            </el-form-item>
-          </el-col></el-col>
+            </el-form-item> </el-col></el-col>
         <el-col :span="12">
           <el-col :span="24">
             <el-form-item label="Peta Tapak Proyek" prop="projectMap">
-              <el-col
-                :span="8"
-              >
+              <el-col :span="8">
                 <el-radio-group v-model="isUpload">
                   <el-radio-button label="Upload" />
                   <el-radio-button label="WebGIS" />
@@ -189,10 +202,10 @@
               <el-col :span="16">
                 <div
                   style="
-                      border: 1px solid #ccc;
-                      border-radius: 4px;
-                      height: 36px;
-                    "
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    height: 36px;
+                  "
                 >
                   <el-button
                     icon="el-icon-document-copy"
@@ -202,7 +215,12 @@
                     @click="checkMapFile"
                   >Upload</el-button>
                   <span>{{ fileName }}</span>
-                  <input id="mapFile" type="file" style="display: none;" @change="checkMapFileSure">
+                  <input
+                    id="mapFile"
+                    type="file"
+                    style="display: none"
+                    @change="checkMapFileSure"
+                  >
                 </div>
               </el-col>
             </el-form-item>
@@ -211,12 +229,12 @@
       </el-row>
       <el-row :gutter="4">
         <el-col :span="12">
-          <el-row :gutter="4">
-            <el-col :span="24">
-              <support-table />
-            </el-col>
-          </el-row>
-          <el-row :gutter="4" />
+          <el-form-item
+            prop="dokumenPendukung"
+            label="Dokumen Pendukung"
+          ><support-table :list="listSupportTable" :loading="loadingSupportTable" />
+            <el-button type="primary" @click="handleAddSupportTable">+</el-button>
+          </el-form-item>
         </el-col>
         <el-col :span="12" style="text-align: center">
           <h1>Map will be here!!</h1>
@@ -265,6 +283,7 @@ import SupportTable from './components/SupportTable.vue';
 const projectFieldResource = new Resource('project-fields');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
+const kbliResource = new Resource('kblis');
 
 export default {
   name: 'CreateProject',
@@ -272,6 +291,9 @@ export default {
   data() {
     return {
       currentProject: {},
+      listSupportTable: [],
+      listKbli: [],
+      loadingSupportTable: false,
       isUpload: 'Upload',
       fileName: 'No File Selected.',
       projectOptions: [
@@ -343,16 +365,28 @@ export default {
     this.getAllData();
   },
   methods: {
-    checkMapFile(){
+    kbliSearch(queryString, cb) {
+      var links = this.listKbli;
+      var results = queryString ? links.filter(this.createKbliFilter(queryString)) : links;
+      // call callback function to return suggestions
+      cb(results);
+    },
+    createKbliFilter(queryString) {
+      return (link) => {
+        return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+      };
+    },
+    checkMapFile() {
       document.querySelector('#mapFile').click();
     },
-    checkMapFileSure(){
-      console.log(document.querySelector('#mapFile').files[0]);
+    checkMapFileSure() {
       this.fileName = document.querySelector('#mapFile').files[0].name;
     },
     async getAllData() {
       this.getProjectFields();
       this.getProvinces();
+      this.getSectors();
+      this.getKblis();
     },
     async getProjectFields() {
       const { data } = await projectFieldResource.list({});
@@ -372,15 +406,39 @@ export default {
     handleSubmit() {
       console.log(this.currentProject);
     },
-    async changeProvince(value){
+    async changeProvince(value) {
       // change all district by province
       this.getDistricts(value);
     },
-    async getDistricts(idProv){
+    async getDistricts(idProv) {
       const { data } = await districtResource.list({ idProv });
       this.cityOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
+    },
+    async getSectors() {
+      const { data } = await kbliResource.list({ sectors: true });
+      this.sectorOptions = data.map((i) => {
+        return { value: i.value, label: i.value };
+      });
+    },
+    async getSectorsByKbli(nameKbli) {
+      const { data } = await kbliResource.list({ sectorsByKbli: nameKbli.value });
+      this.sectorOptions = data.map((i) => {
+        return { value: i.value, label: i.value };
+      });
+    },
+    async getKblis() {
+      const { data } = await kbliResource.list({ kblis: true });
+      this.listKbli = data.map((i) => {
+        return { value: i.value, label: i.value };
+      });
+    },
+    handleAddSupportTable(){
+      this.listSupportTable.push({ document_type: '', file: '' });
+    },
+    handleKbliSelect(item) {
+      this.getSectorsByKbli(item);
     },
   },
 };

@@ -6,3 +6,9 @@ GET http://localhost:8000/api/districts/province/12
 ###
 GET http://localhost:8000/api/districts?idProv=12
 ###
+GET http://localhost:8000/api/kblis?sectors=true
+###
+GET http://localhost:8000/api/kblis?kblis=true
+###
+GET http://localhost:8000/api/kblis?sectorsByKbli=41011
+###
