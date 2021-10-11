@@ -96,7 +96,5 @@ php artisan workflow:test
 php artisan make:listener BlogPostWorkflowSubscriber
 ```
 
-.el-menu-item
-.el-submenu__title
-.el-menu-item, .el-submenu__title
-.el-submenu .el-menu-item
+Kegiatan
+- 
