@@ -204,15 +204,16 @@ $textColor:#eee;
     // width: 1120px;
     // min-height: 590px;
     // display: grid;
+    text-align: center;
     margin: auto;
     grid-template-columns: auto 480px;
     transition: all .3s ease-in-out;
     transform: scale(1);
 
     .logo {
-      display: block;
+      display: inline-block;
       margin-bottom: 20px;
-      width: 200px;
+      width: 250px;
     }
 
     // .login-image {
@@ -241,7 +242,8 @@ $textColor:#eee;
       background-color: #FFA84C;
     }
     .login-form {
-      min-width: 480px;
+      width: 50vw;
+      min-width: 360px;
       max-width: 560px;
       margin: auto;
       background: #fff;
