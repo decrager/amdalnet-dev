@@ -46,6 +46,7 @@ docker ps
 
 docker exec -it <container ID> npm run dev # or npm run watch
 docker exec -it amdalnet_laravel_1 npm run watch
+
 # Where <container ID> is the "laravel" container name, ex: src_laravel_1
 ```
 Open http://localhost:8000 (laravel container port declared in `docker-compose.yml`) to access Amdalnet

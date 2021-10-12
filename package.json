@@ -1,8 +1,9 @@
 {
   "name": "amdalnet",
   "version": "0.13.1",
-  "description": "A beautiful dashboard for Laravel built by VueJS",
+  "description": "Aplikasi analisis dampak linkungan",
   "author": "Tuan Duong <bacduong@gmail.com>",
+  "updater": "mzr <izhur2001@gmail.com>",
   "license": "MIT",
   "private": true,
   "scripts": {

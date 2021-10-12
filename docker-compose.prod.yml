@@ -34,9 +34,9 @@ services:
     ports:
       - "6666:5432"
     environment:
-      - "POSTGRES_PASSWORD=laravue"
-      - "POSTGRES_USER=laravue"
-      - "POSTGRES_DB=laravue"
+      - "POSTGRES_PASSWORD=amdalnet"
+      - "POSTGRES_USER=amdalnet"
+      - "POSTGRES_DB=amdalnet"
 
 
 

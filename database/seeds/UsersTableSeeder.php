@@ -76,8 +76,8 @@ class UsersTableSeeder extends Seeder
             ]);
             $user = \App\Laravue\Models\User::create([
                 'name' => $fullName,
-                'email' => strtolower($name) . '@laravue.dev',
-                'password' => \Illuminate\Support\Facades\Hash::make('laravue'),
+                'email' => strtolower($name) . '@amdalnet.dev',
+                'password' => \Illuminate\Support\Facades\Hash::make('amdalnet'),
             ]);
 
             $role = Role::findByName($roleName);
