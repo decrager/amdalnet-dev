@@ -36,7 +36,7 @@ class CreateProjectsTable extends Migration
             $table->string('map_scale_unit')->nullable();
             $table->string('id_formulator_team')->nullable();
             $table->string('announcement_letter')->nullable();
-            $table->string('result_risk');
+            $table->string('result_risk')->nullable();
             $table->string('kbli')->nullable();
             $table->boolean('published')->default(0);
             $table->string('required_doc')->nullable();
