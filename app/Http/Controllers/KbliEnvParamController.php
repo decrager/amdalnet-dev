@@ -16,15 +16,26 @@ class KbliEnvParamController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->kbli) {
+        if ($request->kbli) {
             $kbliName = $request->kbli;
 
             $kbli = DB::table('kblis')->where('value', $kbliName)->first();
 
-            if($kbli != null){
-                return KbliEnvParamResource::collection(KbliEnvParam::distinct()->where('kbli_id', $kbli->id)->get(['unit']));
+            if ($kbli != null) {
+
+                if ($request->businessType) {
+                    if ($request->unit) {
+                        if ($request->unit == 'true') {
+                            return KbliEnvParamResource::collection(KbliEnvParam::distinct()->where('kbli_id', $kbli->id)->where('param', $request->businessType)->get(['unit']));
+                        }
+                        
+                        //get kbli env param by kbli_id, business_type and scale
+                        return KbliEnvParamResource::collection(KbliEnvParam::where('kbli_id', $kbli->id)->where('param',$request->businessType)->where('unit',$request->unit)->get());
+                    }
+                    return KbliEnvParamResource::collection(KbliEnvParam::distinct()->where('kbli_id', $kbli->id)->get(['param']));
+                }
             } else {
-                return response()->json(['error' => 'kbli '+ $request->kbli +' not found'], 404);
+                return response()->json(['error' => 'kbli ' + $request->kbli + ' not found'], 404);
             }
         }
     }

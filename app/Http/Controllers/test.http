@@ -14,3 +14,9 @@ GET http://localhost:8000/api/kblis?sectorsByKbli=41011
 ###
 GET http://localhost:8000/api/kbli-env-params?kbli=41011
 ###
+GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=true
+###
+GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=Luas&unit=true
+###
+GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=Luas&unit=ha
+###

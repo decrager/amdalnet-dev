@@ -8,8 +8,8 @@
       style="max-width: 100%"
     >
       <el-row :gutter="4">
-        <el-col :span="12">
-          <el-col :span="16">
+        <el-col :span="12" :xs="24">
+          <el-col :span="16" :xs="24">
             <el-form-item
               label="Pilih Kegiatan Yang Sudah Diproses di OSS"
               prop="titleProject"
@@ -28,7 +28,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8" :xs="24">
             <el-form-item label="Jenis Kegiatan" prop="jenisKegiatan">
               <el-select
                 v-model="currentProject.project_type"
@@ -45,7 +45,7 @@
             </el-form-item>
           </el-col>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="12" :xs="24">
           <el-col :span="12">
             <el-form-item label="Provinsi" prop="provinsi">
               <el-select
@@ -83,7 +83,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="4">
-        <el-col :span="12">
+        <el-col :span="12" :xs="24">
           <el-col :span="8">
             <el-form-item label="KBLI" prop="kbli">
               <!-- <el-input v-model="currentProject.kbli" /> -->
@@ -102,7 +102,7 @@
               <el-input v-model="currentProject.risk_level" />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8" :xs="24">
             <el-form-item label="Tahun Kegiatan" prop="projectYear">
               <el-date-picker
                 v-model="currentProject.project_year"
@@ -127,7 +127,23 @@
           </el-col>
         </el-col>
         <el-col :span="12">
-          <el-col :span="24">
+          <el-col :span="12">
+            <el-form-item label="Bidang Kegiatan" prop="fieldProject">
+              <el-select
+                v-model="currentProject.field"
+                placeholder="Select"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in projectFieldOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="Alamat" prop="address">
               <el-input v-model="currentProject.location" />
             </el-form-item>
@@ -137,6 +153,7 @@
       <el-row :gutter="4">
         <el-col
           :span="12"
+          :xs="24"
         ><el-col :span="8">
            <el-form-item label="Sector" prop="project">
              <el-select
@@ -154,14 +171,15 @@
            </el-form-item>
          </el-col>
           <el-col :span="8">
-            <el-form-item label="Bidang Kegiatan" prop="project">
+            <el-form-item label="Jenis Usaha" prop="businessType">
               <el-select
-                v-model="currentProject.field"
+                v-model="currentProject.business_type"
                 placeholder="Select"
                 style="width: 100%"
+                @change="handleBusinessTypeSelect($event)"
               >
                 <el-option
-                  v-for="item in projectFieldOptions"
+                  v-for="item in businessTypeOptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -190,7 +208,7 @@
                   :value="item.value"
                 /> </el-select></el-col>
             </el-form-item> </el-col></el-col>
-        <el-col :span="12">
+        <el-col :span="12" :xs="24">
           <el-col :span="24">
             <el-form-item label="Peta Tapak Proyek" prop="projectMap">
               <el-col :span="8">
@@ -228,7 +246,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="4">
-        <el-col :span="12">
+        <el-col :span="12" :xs="24">
           <el-form-item
             prop="dokumenPendukung"
             label="Dokumen Pendukung"
@@ -236,12 +254,12 @@
             <el-button type="primary" @click="handleAddSupportTable">+</el-button>
           </el-form-item>
         </el-col>
-        <el-col :span="12" style="text-align: center">
+        <el-col :span="12" :xs="24" style="text-align: center">
           <h1>Map will be here!!</h1>
         </el-col>
       </el-row>
       <el-row :gutter="16">
-        <el-col :span="12">
+        <el-col :span="12" :md="24" :xs="24">
           <el-form-item
             prop="locationDesc"
             style="margin-bottom: 30px"
@@ -254,7 +272,7 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="12" :md="24" :xs="24">
           <el-form-item
             prop="ProjectDesc"
             style="margin-bottom: 30px"
@@ -321,6 +339,7 @@ export default {
       sectorOptions: [],
       provinceOptions: [],
       cityOptions: [],
+      businessTypeOptions: [],
       projectTypeOptions: [
         {
           value: 'Baru',
@@ -401,6 +420,12 @@ export default {
       this.currentProject.fileMap = this.fileMap;
       this.currentProject.listSupportDoc = this.listSupportTable;
       console.log(this.currentProject);
+
+      // send to pubishProjectRoute
+      this.$router.push({
+        name: 'publishProject',
+        params: { project: this.currentProject },
+      });
     },
     async changeProvince(value) {
       // change all district by province
@@ -424,10 +449,16 @@ export default {
         return { value: i.value, label: i.value };
       });
     },
-    async getUnitByKbli(nameKbli) {
-      const { data } = await kbliEnvParamResource.list({ kbli: nameKbli.value });
+    async getUnitByKbli(nameKbli, businessType) {
+      const { data } = await kbliEnvParamResource.list({ kbli: nameKbli, businessType, unit: true });
       this.unitOptions = data.map((i) => {
         return { value: i.unit, label: i.unit };
+      });
+    },
+    async getBusinessByKbli(nameKbli) {
+      const { data } = await kbliEnvParamResource.list({ kbli: nameKbli.value, businessType: true });
+      this.businessTypeOptions = data.map((i) => {
+        return { value: i.param, label: i.param };
       });
     },
     async getKblis() {
@@ -441,7 +472,10 @@ export default {
     },
     handleKbliSelect(item) {
       this.getSectorsByKbli(item);
-      this.getUnitByKbli(item);
+      this.getBusinessByKbli(item);
+    },
+    handleBusinessTypeSelect(item) {
+      this.getUnitByKbli(this.currentProject.kbli, item);
     },
   },
 };
