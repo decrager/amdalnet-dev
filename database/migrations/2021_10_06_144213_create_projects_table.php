@@ -40,6 +40,7 @@ class CreateProjectsTable extends Migration
             $table->string('kbli')->nullable();
             $table->boolean('published')->nullable();
             $table->string('required_doc')->nullable();
+            $table->string('biz_type')->nullable();
 
 
 
