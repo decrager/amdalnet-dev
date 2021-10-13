@@ -152,3 +152,5 @@ Route::apiResource('project-fields', 'ProjectFieldController');
 Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
 Route::apiResource('kblis', 'KBLIController');
+Route::apiResource('responder_types', 'ResponderTypeController');
+Route::apiResource('feedbacks', 'FeedbackController');
