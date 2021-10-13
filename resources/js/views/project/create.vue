@@ -15,13 +15,14 @@
               prop="titleProject"
             >
               <el-select
-                v-model="currentProject.project_title"
+                v-model="currentProject.ossProject"
                 placeholder="Select"
                 style="width: 100%"
+                @change="changeProject($event)"
               >
                 <el-option
                   v-for="item in projectOptions"
-                  :key="item.value"
+                  :key="item.value.id"
                   :label="item.label"
                   :value="item.value"
                 />
@@ -173,7 +174,7 @@
           <el-col :span="8">
             <el-form-item label="Jenis Usaha" prop="businessType">
               <el-select
-                v-model="currentProject.business_type"
+                v-model="currentProject.biz_type"
                 placeholder="Select"
                 style="width: 100%"
                 @change="handleBusinessTypeSelect($event)"
@@ -232,7 +233,7 @@
                     style="margin-left: 15px"
                     @click="checkMapFile"
                   >Upload</el-button>
-                  <span>{{ fileName }}</span>
+                  <span>{{ fileName || currentProject.map }}</span>
                   <input
                     id="mapFile"
                     type="file"
@@ -250,8 +251,14 @@
           <el-form-item
             prop="dokumenPendukung"
             label="Dokumen Pendukung"
-          ><support-table :list="listSupportTable" :loading="loadingSupportTable" />
-            <el-button type="primary" @click="handleAddSupportTable">+</el-button>
+          ><support-table
+             :list="listSupportTable"
+             :loading="loadingSupportTable"
+           />
+            <el-button
+              type="primary"
+              @click="handleAddSupportTable"
+            >+</el-button>
           </el-form-item>
         </el-col>
         <el-col :span="12" :xs="24" style="text-align: center">
@@ -259,7 +266,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="16">
-        <el-col :span="12" :md="24" :xs="24">
+        <el-col :span="12" :xs="24">
           <el-form-item
             prop="locationDesc"
             style="margin-bottom: 30px"
@@ -272,7 +279,7 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="12" :md="24" :xs="24">
+        <el-col :span="12" :xs="24">
           <el-form-item
             prop="ProjectDesc"
             style="margin-bottom: 30px"
@@ -303,6 +310,7 @@ const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const kbliResource = new Resource('kblis');
 const kbliEnvParamResource = new Resource('kbli-env-params');
+const ossProjectResource = new Resource('oss-projects');
 
 export default {
   name: 'CreateProject',
@@ -374,18 +382,25 @@ export default {
     };
   },
   mounted() {
+    if (this.$route.params.project) {
+      this.currentProject = this.$route.params.project;
+    }
     this.getAllData();
   },
   methods: {
     kbliSearch(queryString, cb) {
       var links = this.listKbli;
-      var results = queryString ? links.filter(this.createKbliFilter(queryString)) : links;
+      var results = queryString
+        ? links.filter(this.createKbliFilter(queryString))
+        : links;
       // call callback function to return suggestions
       cb(results);
     },
     createKbliFilter(queryString) {
       return (link) => {
-        return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        return (
+          link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
       };
     },
     checkMapFile() {
@@ -400,6 +415,13 @@ export default {
       this.getProvinces();
       this.getSectors();
       this.getKblis();
+      this.getProjectsFromOss();
+    },
+    async getProjectsFromOss() {
+      const { data } = await ossProjectResource.list({});
+      this.projectOptions = data.map((i) => {
+        return { value: i.json_content, label: i.json_content.nama_kegiatan };
+      });
     },
     async getProjectFields() {
       const { data } = await projectFieldResource.list({});
@@ -431,6 +453,17 @@ export default {
       // change all district by province
       this.getDistricts(value);
     },
+    async changeProject(value) {
+      this.currentProject.project_title = value.nama_kegiatan;
+      this.currentProject.id_project = value.id_proyek;
+      this.currentProject.location = value.alamat_usaha;
+      this.currentProject.description = value.deskripsi_kegiatan;
+      this.currentProject.kbli = value.kbli;
+      this.currentProject.risk_level = value.skala_resiko;
+      this.getSectorsByKbli(this.currentProject.kbli);
+      this.getBusinessByKbli(this.currentProject.kbli);
+      console.log(value);
+    },
     async getDistricts(idProv) {
       const { data } = await districtResource.list({ idProv });
       this.cityOptions = data.map((i) => {
@@ -444,19 +477,28 @@ export default {
       });
     },
     async getSectorsByKbli(nameKbli) {
-      const { data } = await kbliResource.list({ sectorsByKbli: nameKbli.value });
+      const { data } = await kbliResource.list({
+        sectorsByKbli: nameKbli,
+      });
       this.sectorOptions = data.map((i) => {
         return { value: i.value, label: i.value };
       });
     },
     async getUnitByKbli(nameKbli, businessType) {
-      const { data } = await kbliEnvParamResource.list({ kbli: nameKbli, businessType, unit: true });
+      const { data } = await kbliEnvParamResource.list({
+        kbli: nameKbli,
+        businessType,
+        unit: true,
+      });
       this.unitOptions = data.map((i) => {
         return { value: i.unit, label: i.unit };
       });
     },
     async getBusinessByKbli(nameKbli) {
-      const { data } = await kbliEnvParamResource.list({ kbli: nameKbli.value, businessType: true });
+      const { data } = await kbliEnvParamResource.list({
+        kbli: nameKbli,
+        businessType: true,
+      });
       this.businessTypeOptions = data.map((i) => {
         return { value: i.param, label: i.param };
       });
@@ -467,12 +509,12 @@ export default {
         return { value: i.value, label: i.value };
       });
     },
-    handleAddSupportTable(){
+    handleAddSupportTable() {
       this.listSupportTable.push({ document_type: '', file: '' });
     },
     handleKbliSelect(item) {
-      this.getSectorsByKbli(item);
-      this.getBusinessByKbli(item);
+      this.getSectorsByKbli(item.value);
+      this.getBusinessByKbli(item.value);
     },
     handleBusinessTypeSelect(item) {
       this.getUnitByKbli(this.currentProject.kbli, item);

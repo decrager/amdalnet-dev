@@ -1,19 +1,72 @@
 <template>
   <div class="form-container" style="padding: 24px">
     <el-row>
-      <el-col :span="12">Informasi rencana Kegiatan</el-col>
+      <el-col
+        :span="12"
+      ><h2>Informasi rencana Usaha/Kegiatan</h2>
+        <el-table
+          :data="list"
+          style="width: 100%"
+          :stripe="true"
+          :show-header="false"
+        >
+          <el-table-column prop="param" />
+          <el-table-column prop="value" />
+        </el-table>
+      </el-col>
       <el-col :span="12">
         <h1>Peta Will Be Here Soon</h1>
       </el-col>
     </el-row>
-    <el-row> deskripsi kegiatan / deskripsi lokasi </el-row>
-    <el-row>hasil penapisan</el-row>
+    <el-row style="padding-top: 32px">
+      <el-col :span="12">
+        <div><h3>Deskripsi Kegiatan</h3></div>
+        <div v-html="project.description" />
+      </el-col>
+      <el-col :span="12">
+        <div><h3>Deskripsi Lokasi</h3></div>
+        <div v-html="project.location_desc" />
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12">
+        <h2>Hasil Penapisan</h2>
+        <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
+          <el-col :span="12">123456789</el-col></el-row>
+        <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
+          <el-col :span="12">{{ project.required_doc + ' ' + project.result_risk }}</el-col></el-row>
+        <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
+          <el-col :span="12">Pusat</el-col></el-row>
+        <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
+          <el-col :span="12">
+            <el-select
+              v-model="project.id_drafting_team"
+              placeholder="Select"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in teamOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+                style="width: 200px"
+              />
+            </el-select> </el-col></el-row>
+      </el-col>
+    </el-row>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="handleCancel()"> Cancel </el-button>
+      <el-button type="primary" @click="handleSubmit()"> Confirm </el-button>
+    </div>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
 const kbliEnvParamResource = new Resource('kbli-env-params');
+const districtResource = new Resource('districts');
+const formulatorTeamResource = new Resource('formulator-teams');
+const projectResource = new Resource('projects');
 
 export default {
   name: 'Publish',
@@ -28,13 +81,31 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
+      teamOptions: null,
+      list: [
+        { param: 'a', value: 'hihihi' },
+        { param: 'a', value: 'hahahaha' },
+      ],
     };
   },
   mounted() {
     console.log(this.project);
     this.getKbliEnvParams();
+    this.updateList();
+    this.getTeamOptions();
   },
   methods: {
+    async getTeamOptions() {
+      const { data } = await formulatorTeamResource.list({});
+      this.teamOptions = data.map((i) => {
+        return { value: i.id, label: i.name };
+      });
+    },
+    async getKabKotName(id) {
+      const data = await districtResource.get(id);
+      console.log(data);
+      return data.name;
+    },
     calculatedProjectDoc() {
       this.kbliEnvParams.forEach((item) => {
         let tempStatus = true;
@@ -46,8 +117,8 @@ export default {
           }
         });
         if (tempStatus) {
-          this.doc_req = item.doc_req;
-          this.risk_level = item.risk_level;
+          this.project.required_doc = item.doc_req;
+          this.project.result_risk = item.risk_level;
         }
       });
     },
@@ -71,7 +142,7 @@ export default {
     async getKbliEnvParams() {
       const { data } = await kbliEnvParamResource.list({
         kbli: this.project.kbli,
-        businessType: this.project.business_type,
+        businessType: this.project.biz_type,
         unit: this.project.scale_unit,
       });
       this.kbliEnvParams = data.map((item) => {
@@ -81,6 +152,90 @@ export default {
       });
 
       this.calculatedProjectDoc();
+    },
+    handleCancel() {
+      this.$router.push({
+        name: 'createProject',
+        params: { project: this.project },
+      });
+    },
+    handleSubmit() {
+      this.project.id_applicant = 1;
+      console.log(this.project);
+
+      // make form data because we got file
+      const formData = new FormData();
+
+      // eslint-disable-next-line no-undef
+      _.each(this.project, (value, key) => {
+        formData.append(key, value);
+      });
+
+      if (this.project.id !== undefined) {
+        // update
+      } else {
+        projectResource
+          .store(formData)
+          .then((response) => {
+            this.$message({
+              message:
+                'New Project ' +
+                this.project.project_title +
+                ' has been created successfully.',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            // this.currentPenyusun = {};
+            // this.$router.push('/project');
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+    updateList() {
+      this.list = [
+        {
+          param: 'Nama Kegiatan',
+          value: this.project.project_title,
+        },
+        {
+          param: 'Bidang Usaha/Kegiatan',
+          value: this.project.field,
+        },
+        {
+          param: 'Skala/Besaran',
+          value: this.project.scale + ' ' + this.project.scale_unit,
+        },
+        {
+          param: 'Alamat',
+          value: this.project.location,
+        },
+        {
+          param: 'Pemrakarsa',
+          value: 'Dummy Pemrakarsa',
+        },
+        {
+          param: 'Penanggung Jawab',
+          value: 'Dummy Penanggung Jawab',
+        },
+        {
+          param: 'Alamat Pemrakarsa',
+          value: 'Dummy Alamat Pemrakarsa',
+        },
+        {
+          param: 'No. Telp Pemrakarsa',
+          value: '0812121212',
+        },
+        {
+          param: 'Email Pemrakarsa',
+          value: 'Pemrakarsa@Pemrakarsa.com',
+        },
+        {
+          param: 'Provinsi/Kota',
+          value: this.getKabKotName(this.project.id_district),
+        },
+      ];
     },
   },
 };

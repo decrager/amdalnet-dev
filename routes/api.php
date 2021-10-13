@@ -153,3 +153,6 @@ Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
 Route::apiResource('kblis', 'KbliController');
 Route::apiResource('kbli-env-params', 'KbliEnvParamController');
+Route::apiResource('projects', 'ProjectController');
+Route::apiResource('formulator-teams', 'FormulatorTeamController');
+Route::apiResource('oss-projects', 'OssProjectController');
