@@ -16,9 +16,19 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return ProjectResource::Collection(Project::where(function ($query) use ($request) {
+            return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
+        })->where(
+            function ($query) use ($request) {
+                return $request->id_prov ? $query->where('id_prov', $request->id_prov) : '';
+            }
+        )->where(
+            function ($query) use ($request) {
+                return $request->id_district ? $query->where('id_district', $request->id_district) : '';
+            }
+        )->get());
     }
 
     /**
@@ -44,25 +54,25 @@ class ProjectController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'biz_type'=> 'required',
-                'project_title'=> 'required',
-                'scale'=> 'required',
-                'scale_unit'=> 'required',
-                'project_type'=> 'required',
-                'sector'=> 'required',
-                'description'=> 'required',
-                'id_applicant'=> 'required',
-                'id_prov'=> 'required',
-                'id_district'=> 'required',
-                'location'=> 'required',
-                'field'=> 'required',
-                'location_desc'=> 'required',
-                'risk_level'=> 'required',
-                'project_year'=> 'required',
-                'id_drafting_team'=> 'required',
-                'kbli'=> 'required',
-                'result_risk'=> 'required',
-                'required_doc'=> 'required',
+                'biz_type' => 'required',
+                'project_title' => 'required',
+                'scale' => 'required',
+                'scale_unit' => 'required',
+                'project_type' => 'required',
+                'sector' => 'required',
+                'description' => 'required',
+                'id_applicant' => 'required',
+                'id_prov' => 'required',
+                'id_district' => 'required',
+                'location' => 'required',
+                'field' => 'required',
+                'location_desc' => 'required',
+                'risk_level' => 'required',
+                'project_year' => 'required',
+                'id_drafting_team' => 'required',
+                'kbli' => 'required',
+                'result_risk' => 'required',
+                'required_doc' => 'required',
             ]
         );
 
@@ -78,25 +88,25 @@ class ProjectController extends Controller
 
             //create lpjp
             $project = Project::create([
-                'biz_type'=> $params['biz_type'],
-                'project_title'=> $params['project_title'],
-                'scale'=> $params['scale'],
-                'scale_unit'=> $params['scale_unit'],
-                'project_type'=> $params['project_type'],
-                'sector'=> $params['sector'],
-                'description'=> $params['description'],
-                'id_applicant'=> $params['id_applicant'],
-                'id_prov'=> $params['id_prov'],
-                'id_district'=> $params['id_district'],
-                'address'=> $params['location'],
-                'field'=> $params['field'],
-                'location_desc'=> $params['location_desc'],
-                'risk_level'=> $params['risk_level'],
-                'project_year'=> $params['project_year'],
-                'id_formulator_team'=> $params['id_drafting_team'],
-                'kbli'=> $params['kbli'],
-                'result_risk'=> $params['result_risk'],
-                'required_doc'=> $params['required_doc'],
+                'biz_type' => $params['biz_type'],
+                'project_title' => $params['project_title'],
+                'scale' => $params['scale'],
+                'scale_unit' => $params['scale_unit'],
+                'project_type' => $params['project_type'],
+                'sector' => $params['sector'],
+                'description' => $params['description'],
+                'id_applicant' => $params['id_applicant'],
+                'id_prov' => $params['id_prov'],
+                'id_district' => $params['id_district'],
+                'address' => $params['location'],
+                'field' => $params['field'],
+                'location_desc' => $params['location_desc'],
+                'risk_level' => $params['risk_level'],
+                'project_year' => $params['project_year'],
+                'id_formulator_team' => $params['id_drafting_team'],
+                'kbli' => $params['kbli'],
+                'result_risk' => $params['result_risk'],
+                'required_doc' => $params['required_doc'],
                 'map' => Storage::url($name),
             ]);
 
@@ -106,7 +116,7 @@ class ProjectController extends Controller
             //         'name' => $sup['']
             //     ]);
             // }
-            
+
             return new ProjectResource($project);
         }
     }

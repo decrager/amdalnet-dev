@@ -1,3 +1,7 @@
+GET http://localhost:8000/api/projects
+###
+GET http://localhost:8000/api/projects?document_type=Menengah Rendah&id_prov=1&id_district=2
+###
 GET http://localhost:8000/api/project-field
 ###
 GET http://localhost:8000/api/province

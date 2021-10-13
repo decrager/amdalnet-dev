@@ -1,8 +1,56 @@
 <template>
   <div style="padding: 24px" class="app-container">
     <div class="filter-container">
+      <el-select
+        v-model="listQuery.document_type"
+        :placeholder="'Jenis Document'"
+        clearable
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in documentTypeOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-select
+        v-model="listQuery.id_prov"
+        placeholder="Province"
+        clearable
+        class="filter-item"
+        @change="changeProvince($event)"
+      >
+        <el-option
+          v-for="item in provinceOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-select
+        v-model="listQuery.id_district"
+        placeholder="Kab / Kota"
+        clearable
+        class="filter-item"
+      >
+        <el-option
+          v-for="item in cityOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+          :disabled="cityOptions.length == 0"
+        />
+      </el-select>
       <el-button
-        size="mini"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter"
+      >
+        {{ $t('table.search') }}
+      </el-button>
+      <el-button
         class="filter-item"
         type="primary"
         icon="el-icon-plus"
@@ -18,39 +66,36 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="Nama Kegiatan" sortable>
+      <el-table-column align="center" label="No. Registrasi" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.project_name }}</span>
+          <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Lokasi" sortable>
+      <el-table-column align="center" label="Nama Kegiatan" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.location }}</span>
+          <span>{{ scope.row.project_title }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Jenis Dokumen" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.document_type }}</span>
+          <span>{{ scope.row.required_doc }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="'Deskripsi Kegiatan'" sortable width="200">
+      <el-table-column align="center" label="Provinsi" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.project_description }}</span>
+          <span>{{ scope.row.id_prov }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Provinsi / Kota" sortable>
+      <el-table-column align="center" label="Kab/Kota" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.state }}</span>
+          <span>{{ scope.row.id_district }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Tgl Input" sortable>
+      <el-table-column align="center" label="Tanggal Input" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.input_date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Tahap" sortable>
-        <template slot-scope="scope">
-          <span>{{ scope.row.step }}</span>
+          <span>{{
+            scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Aksi">
@@ -74,22 +119,26 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-divider />
-    <div style="text-align: center">
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :page-size="pageSize"
-        :total="total"
-        @current-change="handleCurrentChange"
-      />
-    </div>
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="handleFilter"
+    />
   </div>
 </template>
 
 <script>
+import Resource from '@/api/resource';
+import Pagination from '@/components/Pagination';
+const provinceResource = new Resource('provinces');
+const districtResource = new Resource('districts');
+const projectResource = new Resource('projects');
+
 export default {
   name: 'Project',
+  components: { Pagination },
   data() {
     return {
       loading: false,
@@ -98,9 +147,41 @@ export default {
       page: 1,
       pageSize: 4,
       total: 0,
+      listQuery: {
+        page: 1,
+        limit: 20,
+      },
+      provinceOptions: [],
+      cityOptions: [],
+      documentTypeOptions: [
+        { value: 'Tinggi', label: 'Amdal' },
+        { value: 'Menengah Tinggi', label: 'UKL-UPL MT' },
+        { value: 'Menengah Rendah', label: 'UKL-UPL MR' },
+        { value: 'Rendah', label: 'SPPL' },
+      ],
     };
   },
+  mounted() {
+    this.getProvinces();
+    this.getFiltered(this.listQuery);
+  },
   methods: {
+    handleFilter() {
+      this.getFiltered(this.listQuery);
+    },
+    async getProvinces() {
+      const { data } = await provinceResource.list({});
+      this.provinceOptions = data.map((i) => {
+        return { value: i.id, label: i.name };
+      });
+    },
+    async getFiltered(query) {
+      this.listLoading = true;
+      const { data } = await projectResource.list(query);
+      this.filtered = data;
+      this.total = data.length;
+      this.listLoading = false;
+    },
     handleCreate() {
       this.$router.push({
         name: 'createProject',
@@ -110,32 +191,32 @@ export default {
     handleCurrentChange(val) {
       this.page = val;
     },
-    searching() {
-      if (!this.search) {
-        this.total = this.categories.length;
-        return this.categories;
-      }
-      this.page = 1;
-      return this.categories.filter((data) =>
-        data.name.toLowerCase().includes(this.search.toLowerCase())
-      );
-    },
-    displayData() {
-      this.total = this.searching.length;
-
-      return this.searching.slice(
-        this.pageSize * this.page - this.pageSize,
-        this.pageSize * this.page
-      );
-    },
     download(url) {
       window.open(url, '_blank').focus();
     },
     handleEditForm(id) {
-      this.$emit('handleEditForm', id);
+      const currentProject = this.filtered.find((item) => item.id === id);
+
+      // change project_year to string
+      currentProject.project_year = currentProject.project_year.toString();
+      console.log(currentProject);
+      this.$router.push({
+        name: 'createProject',
+        params: { project: currentProject },
+      });
     },
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });
+    },
+    async changeProvince(value) {
+      // change all district by province
+      this.getDistricts(value);
+    },
+    async getDistricts(idProv) {
+      const { data } = await districtResource.list({ idProv });
+      this.cityOptions = data.map((i) => {
+        return { value: i.id, label: i.name };
+      });
     },
   },
 };

@@ -15,7 +15,7 @@
               prop="titleProject"
             >
               <el-select
-                v-model="currentProject.ossProject"
+                v-model="currentProject.project_title"
                 placeholder="Select"
                 style="width: 100%"
                 @change="changeProject($event)"
@@ -90,6 +90,7 @@
               <!-- <el-input v-model="currentProject.kbli" /> -->
               <el-autocomplete
                 v-model="currentProject.kbli"
+                :disabled="isOss"
                 class="inline-input"
                 :fetch-suggestions="kbliSearch"
                 placeholder="Please Input"
@@ -100,7 +101,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="Tingkat Resiko" prop="riskLevel">
-              <el-input v-model="currentProject.risk_level" />
+              <el-input v-model="currentProject.risk_level" :disabled="isOss" />
             </el-form-item>
           </el-col>
           <el-col :span="8" :xs="24">
@@ -233,7 +234,7 @@
                     style="margin-left: 15px"
                     @click="checkMapFile"
                   >Upload</el-button>
-                  <span>{{ fileName || currentProject.map }}</span>
+                  <span>{{ fileName }}</span>
                   <input
                     id="mapFile"
                     type="file"
@@ -324,6 +325,7 @@ export default {
       isUpload: 'Upload',
       fileName: 'No File Selected.',
       fileMap: null,
+      isOss: true,
       projectOptions: [
         {
           value: 'Pabrik Pupuk',
@@ -384,10 +386,17 @@ export default {
   mounted() {
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
+      this.fileName = this.getFileName(this.currentProject.map);
     }
     this.getAllData();
   },
   methods: {
+    getFileName(value){
+      console.log(value);
+      const onlyName = value.split('/');
+
+      return onlyName.at(-1);
+    },
     kbliSearch(queryString, cb) {
       var links = this.listKbli;
       var results = queryString
