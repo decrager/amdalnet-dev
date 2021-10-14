@@ -37,6 +37,7 @@ class CreateProjectsTable extends Migration
             $table->string('id_drafting_team')->nullable();
             $table->string('announcement_letter')->nullable();
             $table->string('kbli')->nullable();
+            $table->jsonb('marking')->nullable();
             $table->timestamps();
         });
     }

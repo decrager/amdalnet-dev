@@ -82,6 +82,7 @@ php artisan list
 
 # create graphviz for workflow 
 php artisan workflow:dump straight --class App\\Entity\\BlogPost
+php artisan workflow:dump amdalnet --class App\\Entity\\Project
 
 # create blogpost model
 php artisan make:model 'Entity\BlogPost' --migration
@@ -95,6 +96,9 @@ php artisan workflow:test
 
 # create listener
 php artisan make:listener BlogPostWorkflowSubscriber
+
+# docker shell
+docker-compose exec laravel bash
 ```
 
 Kegiatan
