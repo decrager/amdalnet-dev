@@ -151,4 +151,10 @@ Route::get('articles/{id}/pageviews', function ($id) {
 Route::apiResource('project-fields', 'ProjectFieldController');
 Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
-Route::apiResource('kblis', 'KBLIController');
+Route::apiResource('kblis', 'KbliController');
+Route::apiResource('kbli-env-params', 'KbliEnvParamController');
+Route::apiResource('projects', 'ProjectController');
+Route::apiResource('formulator-teams', 'FormulatorTeamController');
+Route::apiResource('oss-projects', 'OssProjectController');
+Route::apiResource('responder_types', 'ResponderTypeController');
+Route::apiResource('feedbacks', 'FeedbackController');

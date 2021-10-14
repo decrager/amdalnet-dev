@@ -2,24 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Entity\District;
-use App\Http\Resources\DistrictResource;
+use App\Entity\ResponderType;
 use Illuminate\Http\Request;
 
-class DistrictController extends Controller
+class ResponderTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        if($request->idProv != null){
-          return DistrictResource::collection(District::where('id_prov', $request->idProv)->get());
-        } else {
-          return DistrictResource::collection(District::all());
-        }
+        //
     }
 
     /**
@@ -46,26 +41,21 @@ class DistrictController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity\District  $district
+     * @param  \App\Entity\ResponderType  $responderType
      * @return \Illuminate\Http\Response
      */
-    public function show(District $district)
+    public function show(ResponderType $responderType)
     {
-        return $district;
-    }
-
-    public function showByProvince($id)
-    {
-        return District::where('id_prov', $id)->get();
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity\District  $district
+     * @param  \App\Entity\ResponderType  $responderType
      * @return \Illuminate\Http\Response
      */
-    public function edit(District $district)
+    public function edit(ResponderType $responderType)
     {
         //
     }
@@ -74,10 +64,10 @@ class DistrictController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Entity\District  $district
+     * @param  \App\Entity\ResponderType  $responderType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, District $district)
+    public function update(Request $request, ResponderType $responderType)
     {
         //
     }
@@ -85,10 +75,10 @@ class DistrictController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity\District  $district
+     * @param  \App\Entity\ResponderType  $responderType
      * @return \Illuminate\Http\Response
      */
-    public function destroy(District $district)
+    public function destroy(ResponderType $responderType)
     {
         //
     }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Kbli;
-use App\Http\Resources\kbliResource;
+use App\Http\Resources\KbliResource;
 use Illuminate\Http\Request;
 use DB;
 
@@ -17,21 +17,21 @@ class kbliController extends Controller
     public function index(Request $request)
     {
         if($request->sectors){
-            return kbliResource::collection(Kbli::distinct()->where('description', 'sector')->get(['value']));
+            return KbliResource::collection(Kbli::distinct()->where('description', 'sector')->get(['value']));
           } else if ($request->sectorsByKbli) {
             $kbliName = $request->sectorsByKbli;
 
             $kbli = DB::table('kblis')->where('value', $kbliName)->first();
 
             if($kbli != null){
-                return kbliResource::collection(Kbli::distinct()->where('description', 'sector')->where('parent_id', $kbli->id)->get(['value']));
+                return KbliResource::collection(Kbli::distinct()->where('description', 'sector')->where('parent_id', $kbli->id)->get(['value']));
             } else {
                 return response()->json(['error' => 'kbli '+ $request->sectorsByKbli +' not found'], 404);
             }
           } else if ($request->kblis) {
-            return kbliResource::collection(Kbli::distinct()->where('description', 'kbli_code')->get(['value']));
+            return KbliResource::collection(Kbli::distinct()->where('description', 'kbli_code')->get(['value']));
           } else {
-            return kbliResource::collection(Kbli::all());
+            return KbliResource::collection(Kbli::all());
           }
     }
 

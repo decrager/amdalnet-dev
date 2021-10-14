@@ -62,7 +62,8 @@ export default {
       document.querySelector(id).click();
     },
     checkDocFileSure(id, x) {
-      this.list[x].file = document.querySelector('#' + id).files[0].name;
+      this.list[x].fileName = document.querySelector('#' + id).files[0].name;
+      this.list[x].file = document.querySelector('#' + id).files[0];
     },
   },
 };

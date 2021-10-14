@@ -1,3 +1,7 @@
+GET http://localhost:8000/api/projects
+###
+GET http://localhost:8000/api/projects?document_type=Menengah Rendah&id_prov=1&id_district=2
+###
 GET http://localhost:8000/api/project-field
 ###
 GET http://localhost:8000/api/province
@@ -6,9 +10,23 @@ GET http://localhost:8000/api/districts/province/12
 ###
 GET http://localhost:8000/api/districts?idProv=12
 ###
+GET http://localhost:8000/api/districts/12
+###
 GET http://localhost:8000/api/kblis?sectors=true
 ###
 GET http://localhost:8000/api/kblis?kblis=true
 ###
 GET http://localhost:8000/api/kblis?sectorsByKbli=41011
+###
+GET http://localhost:8000/api/kbli-env-params?kbli=41011
+###
+GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=true
+###
+GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=Luas&unit=true
+###
+GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=Luas&unit=ha
+###
+GET http://localhost:8000/api/formulator-teams
+###
+GET http://localhost:8000/api/oss-projects
 ###
