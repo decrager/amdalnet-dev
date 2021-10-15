@@ -21,8 +21,8 @@ class CreateLpjpTable extends Migration
             $table->timestamp('date_start')->nullable();
             $table->timestamp('date_end')->nullable();
             $table->string('address')->nullable();
-            $table->string('id_district')->nullable();
-            $table->string('id_prov')->nullable();
+            $table->integer('id_district')->nullable();
+            $table->integer('id_prov')->nullable();
             $table->string('phone_no')->nullable();
             $table->string('contact_person')->nullable();
             $table->string('mobile_phone_no')->nullable();
