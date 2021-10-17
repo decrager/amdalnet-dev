@@ -89,7 +89,7 @@ const responderTypeResource = new Resource('responder_types');
 const defaultForm = {
   announcement_id: 0,
   name: '',
-  idCardNumber: '',
+  id_card_number: '',
   phone: '',
   email: '',
   photo_filepath: '',
