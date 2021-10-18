@@ -15,6 +15,7 @@ class CreateSupportDocsTable extends Migration
     {
         Schema::create('support_docs', function (Blueprint $table) {
             $table->id();
+            $table->string('id_project');
             $table->string('name');
             $table->string('file');
             $table->timestamps();

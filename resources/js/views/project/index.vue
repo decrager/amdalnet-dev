@@ -149,7 +149,7 @@ export default {
       total: 0,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
       },
       provinceOptions: [],
       cityOptions: [],
@@ -177,15 +177,15 @@ export default {
     },
     async getFiltered(query) {
       this.listLoading = true;
-      const { data } = await projectResource.list(query);
+      const { data, meta } = await projectResource.list(query);
       this.filtered = data;
-      this.total = data.length;
+      this.total = meta.total;
       this.listLoading = false;
     },
     handleCreate() {
       this.$router.push({
         name: 'createProject',
-        params: { project: {}},
+        params: {},
       });
     },
     handleCurrentChange(val) {

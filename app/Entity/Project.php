@@ -31,5 +31,6 @@ class Project extends Model
         'result_risk',
         'required_doc',
         'biz_type',
+        'id_project',
     ];
 }

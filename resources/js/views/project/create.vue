@@ -147,7 +147,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="Alamat" prop="address">
-              <el-input v-model="currentProject.location" />
+              <el-input v-model="currentProject.address" />
             </el-form-item>
           </el-col>
         </el-col>
@@ -312,6 +312,7 @@ const districtResource = new Resource('districts');
 const kbliResource = new Resource('kblis');
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const ossProjectResource = new Resource('oss-projects');
+const SupportDocResource = new Resource('support-docs');
 
 export default {
   name: 'CreateProject',
@@ -326,16 +327,7 @@ export default {
       fileName: 'No File Selected.',
       fileMap: null,
       isOss: true,
-      projectOptions: [
-        {
-          value: 'Pabrik Pupuk',
-          label: 'Pabrik Pupuk',
-        },
-        {
-          value: 'Pabrik Makanan',
-          label: 'Pabrik Makanan',
-        },
-      ],
+      projectOptions: [],
       projectFieldOptions: [
         {
           value: 'Bidang Perindustrian',
@@ -383,14 +375,23 @@ export default {
       ],
     };
   },
-  mounted() {
+  async mounted() {
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
       this.fileName = this.getFileName(this.currentProject.map);
+      this.listSupportTable = await this.getListSupporttable(this.currentProject.id);
+      console.log(this.listSupportTable);
     }
     this.getAllData();
   },
   methods: {
+    async getListSupporttable(idProject){
+      const { data } = await SupportDocResource.list({ idProject });
+
+      return data.map(e => {
+        return { fileDoc: { name: e.file }, ...e };
+      });
+    },
     getFileName(value){
       console.log(value);
       const onlyName = value.split('/');
@@ -449,7 +450,8 @@ export default {
     },
     handleSubmit() {
       this.currentProject.fileMap = this.fileMap;
-      this.currentProject.listSupportDoc = this.listSupportTable;
+      console.log(this.listSupportTable);
+      this.currentProject.listSupportDoc = this.listSupportTable.filter(item => item.name && item.file);
       console.log(this.currentProject);
 
       // send to pubishProjectRoute
@@ -519,7 +521,7 @@ export default {
       });
     },
     handleAddSupportTable() {
-      this.listSupportTable.push({ document_type: '', file: '' });
+      this.listSupportTable.push({});
     },
     handleKbliSelect(item) {
       this.getSectorsByKbli(item.value);
