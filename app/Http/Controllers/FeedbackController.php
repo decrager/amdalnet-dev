@@ -170,10 +170,12 @@ class FeedbackController extends Controller
             $feedback->set_relevant_at = $params['set_relevant_at'];
             $feedback->deleted = $params['deleted'];
             //change timezone from UTC to GMT+7
-            $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $params['deleted_at']);
-            $datetime->add(new DateInterval('PT7H'));
-            $deleted_at = $datetime->format('Y-m-d\TH:i:s');
-            $feedback->deleted_at = $deleted_at;
+            if ($params['deleted_at'] != null) {
+                $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $params['deleted_at']);
+                $datetime->add(new DateInterval('PT7H'));
+                $deleted_at = $datetime->format('Y-m-d\TH:i:s');
+                $feedback->deleted_at = $deleted_at;
+            }
 
             $feedback->save();
         }
