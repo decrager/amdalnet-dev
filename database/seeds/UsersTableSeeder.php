@@ -72,7 +72,7 @@ class UsersTableSeeder extends Seeder
                 Acl::ROLE_INITIATOR,
                 Acl::ROLE_FORMULATOR,
                 Acl::ROLE_INSTITUTION,
-                Acl::ROLE_ADMIN_INSTITUTION,
+                Acl::ROLE_ADMIN_STANDARD,
                 Acl::ROLE_EXAMINER,
                 Acl::ROLE_EXAMINER_INSTITUTION,
                 Acl::ROLE_ADMIN_SYSTEM,
