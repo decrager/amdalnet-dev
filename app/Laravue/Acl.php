@@ -21,6 +21,7 @@ final class Acl
     const ROLE_ADMIN = 'admin';
     const ROLE_MANAGER = 'manager';
     const ROLE_USER = 'user';
+    const ROLE_EDITOR = 'editor';
     const ROLE_VISITOR = 'visitor';
 
     const ROLE_INITIATOR = 'initiator'; // pemrakarsa
