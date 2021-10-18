@@ -123,16 +123,20 @@ class SetupRolePermissions extends Migration
         $adminCentralRole = Role::findByName(Acl::ROLE_ADMIN_CENTRAL); 
         $adminCentralRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_EXAMINER,
+            Acl::PERMISSION_VIEW_MENU_EXAMINER_INSTITUTION,
             Acl::PERMISSION_VIEW_MENU_EXPERT,
             Acl::PERMISSION_MANAGE_EXAMINER,
+            Acl::PERMISSION_MANAGE_EXAMINER_INSTITUTION,
             Acl::PERMISSION_MANAGE_EXPERT,
         ]);
 
         $adminRegionalRole = Role::findByName(Acl::ROLE_ADMIN_REGIONAL); 
         $adminRegionalRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_EXAMINER,
+            Acl::PERMISSION_VIEW_MENU_EXAMINER_INSTITUTION,
             Acl::PERMISSION_VIEW_MENU_EXPERT,
             Acl::PERMISSION_MANAGE_EXAMINER,
+            Acl::PERMISSION_MANAGE_EXAMINER_INSTITUTION,
             Acl::PERMISSION_MANAGE_EXPERT,
         ]);
 
