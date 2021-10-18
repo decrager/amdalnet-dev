@@ -86,6 +86,7 @@ final class Acl
     const PERMISSION_MANAGE_CLUSTER = 'manage cluster';
     const PERMISSION_MANAGE_PROJECT = 'manage project';
     // const PERMISSION_MANAGE_WORKSPACE = 'manage workspace';
+    const PERMISSION_DO_ANNOUNCEMENT = 'do announcement';
     const PERMISSION_DO_ASSEMBLE_FORMULATOR = 'do assemble formulator';
     const PERMISSION_DO_PUBLISH_ANNOUNCEMENT = 'do publish announcement';
     const PERMISSION_DO_QUALIFICATION = 'do digital workspace - initial qualification form';
