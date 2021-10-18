@@ -27,7 +27,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="16">
+        <el-row :gutter="24">
           <el-col :span="16" :xs="24">
             <el-form-item
               prop="description"
@@ -64,7 +64,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item prop="photo_filepath" style="margin-bottom: 30px;">
               <Upload v-model="postForm.photo_filepath" />
             </el-form-item>
@@ -73,7 +73,7 @@
       </div>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleCancel()"> Batal </el-button>
+      <!-- <el-button @click="handleCancel()"> Batal </el-button> -->
       <el-button type="primary" @click="handleSubmit()"> Kirim </el-button>
     </div>
   </div>
@@ -89,7 +89,7 @@ const responderTypeResource = new Resource('responder_types');
 const defaultForm = {
   announcement_id: 0,
   name: '',
-  idCardNumber: '',
+  id_card_number: '',
   phone: '',
   email: '',
   photo_filepath: '',
@@ -108,6 +108,7 @@ export default {
   },
   data() {
     return {
+      id: 0,
       postForm: Object.assign({}, defaultForm),
       responderTypes: [],
     };
@@ -115,6 +116,7 @@ export default {
   created() {
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id;
+      this.id = id;
       this.fetchData(id);
     } else {
       this.postForm = Object.assign({}, defaultForm);
@@ -138,21 +140,37 @@ export default {
       this.$router.push('/announcement/view/' + this.$route.query.announcement_id);
     },
     handleSubmit() {
-      console.log(this.postForm);
-      feedbackResource
-        .store(this.postForm)
-        .then(response => {
-          this.$message({
-            message: 'SPT berhasil dikirim',
-            type: 'success',
-            duration: 5 * 1000,
+      if (this.isEdit) {
+        feedbackResource
+          .update(this.id, this.postForm)
+          .then(response => {
+            this.$message({
+              message: 'SPT berhasil diedit',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            // console.log(response);
+            this.$router.push('/feedback/edit/' + response.data.id);
+          })
+          .catch(error => {
+            console.log(error);
           });
-          // console.log(response);
-          this.$router.push('/feedback/edit/' + response.data.id);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      } else {
+        feedbackResource
+          .store(this.postForm)
+          .then(response => {
+            this.$message({
+              message: 'SPT berhasil dikirim',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            // console.log(response);
+            this.$router.push('/feedback/edit/' + response.data.id);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
   },
 };
