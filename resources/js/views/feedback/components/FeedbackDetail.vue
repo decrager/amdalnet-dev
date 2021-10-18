@@ -27,7 +27,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="16">
+        <el-row :gutter="24">
           <el-col :span="16" :xs="24">
             <el-form-item
               prop="description"
@@ -64,7 +64,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item prop="photo_filepath" style="margin-bottom: 30px;">
               <Upload v-model="postForm.photo_filepath" />
             </el-form-item>
@@ -73,7 +73,7 @@
       </div>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleCancel()"> Batal </el-button>
+      <!-- <el-button @click="handleCancel()"> Batal </el-button> -->
       <el-button type="primary" @click="handleSubmit()"> Kirim </el-button>
     </div>
   </div>

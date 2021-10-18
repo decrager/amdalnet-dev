@@ -49,28 +49,74 @@
           <el-col :span="12">Dummy No Registrasi</el-col></el-row>
       </el-col>
     </el-row>
+    <div><h2>Saran/Pendapat/Tanggapan</h2></div>
     <el-table
       :data="feedbacks"
-      style="width: 100%"
-      :stripe="true"
-      :show-header="false"
+      border
+      fit
+      highlight-current-row
     >
-      <el-table-column prop="id" />
-      <el-table-column prop="created_at" />
-      <el-table-column prop="name" />
-      <el-table-column prop="responder_type_id" />
-      <el-table-column prop="description" />
-      <el-table-column prop="is_relevant" />
+      <el-table-column align="center" label="ID" width="40">
+        <template slot-scope="scope">
+          <span>{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Tanggal Dibuat">
+        <template slot-scope="scope">
+          <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Judul">
+        <template slot-scope="scope">
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Peran">
+        <template slot-scope="scope">
+          <span>{{ scope.row.responder_type_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Saran/Pendapat/Tanggapan">
+        <template slot-scope="scope">
+          <span v-html="scope.row.description" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Relevan">
+        <template slot-scope="scope">
+          <span>{{ scope.row.is_relevant_str }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Aksi">
+        <template slot-scope="scope">
+          <el-button
+            type="primary"
+            size="mini"
+            icon="el-icon-edit"
+            @click="handleEdit(scope.row.id)"
+          >
+            Edit
+          </el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row.id)"
+          >
+            Delete
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
-// import { fetchList } from '@/api/feedback';
+const userResource = new Resource('users');
 const districtResource = new Resource('districts');
 const feedbackResource = new Resource('feedbacks');
 const projectResource = new Resource('projects');
+const responderTypeResource = new Resource('responder_types');
 
 export default {
   props: {
@@ -81,9 +127,11 @@ export default {
   },
   data() {
     return {
+      user: {},
       project: {},
       list: [],
       feedbacks: [],
+      responder_types: [],
     };
   },
   mounted() {
@@ -92,29 +140,37 @@ export default {
   },
   methods: {
     async getAllData(id){
-      // this.project = {
-      //   id: id,
-      //   description: 'Dummy Description',
-      //   location_desc: 'Dummy Location Desc',
-      //   id_district: 35,
-      // };
+      this.getUser();
+      this.getResponderTypes();
       this.getKegiatan(id);
       this.getFeedbacks(id);
     },
+    async getUser() {
+      const { data } = await userResource.get(this.$store.getters.userId);
+      this.user = data;
+    },
+    async getResponderTypes(){
+      var { data } = await responderTypeResource.list({});
+      this.responder_types = data;
+    },
     async getFeedbacks(id){
       // filter by project ID
-      const { data } = await feedbackResource.list({
-        projectId: id,
+      var { data } = await feedbackResource.list({
+        announcement_id: id,
+        deleted: false,
+      });
+      data.map((item) => {
+        const key = item.responder_type_id;
+        var responder_type_name = '';
+        this.responder_types.map((item) => {
+          if (item.id === key){
+            responder_type_name = item.name;
+          }
+        });
+        item.responder_type_name = responder_type_name;
+        item.is_relevant_str = item.is_relevant ? 'Ya' : 'Tidak';
       });
       this.feedbacks = data;
-      // fetchList({})
-      //   .then(response => {
-      //     console.log(response.data);
-      //     this.feedbacks = response.data;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //   });
     },
     async getKegiatan(id) {
       const project = await projectResource.get(id);
@@ -161,6 +217,33 @@ export default {
           value: district.name,
         },
       ];
+    },
+    handleEdit(id) {
+      this.$router.push('/feedback/edit/' + id);
+    },
+    handleDelete(id) {
+      var toDelete = null;
+      this.feedbacks.map((item) => {
+        if (item.id === id){
+          toDelete = item;
+        }
+      });
+      toDelete.deleted = true;
+      toDelete.deleted_at = new Date().toISOString();
+      feedbackResource
+        .update(id, toDelete)
+        .then(response => {
+          this.$message({
+            message: 'SPT berhasil dihapus',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          console.log(response);
+          // this.$router.push('/announcement/view/' + this.id);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
   },
 };
