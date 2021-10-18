@@ -406,9 +406,9 @@ export default {
     checkMapFile() {
       document.querySelector('#mapFile').click();
     },
-    checkMapFileSure() {
-      this.fileName = document.querySelector('#mapFile').files[0].name;
-      this.fileMap = document.querySelector('#mapFile').files[0];
+    checkMapFileSure(e) {
+      this.fileName = e.target.files[0].name;
+      this.fileMap = e.target.files[0];
     },
     async getAllData() {
       this.getProjectFields();

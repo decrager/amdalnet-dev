@@ -200,6 +200,26 @@ export const asyncRoutes = [
       },
     ],
   },
+  {
+    path: '/master-data',
+    component: Layout,
+    redirect: '/master-data',
+    alwaysShow: true,
+    meta: { title: 'Master Data', icon: 'el-icon-reading' },
+    children: [
+      {
+        path: '/provinces',
+        component: () => import('@/views/master-data/province'),
+        name: 'project',
+        meta: { title: 'Provinsi', icon: 'el-icon-school' },
+      },
+    ],
+  },
+  {
+    path: '/home',
+    component: () => import('@/views/home/index'),
+    hidden: true,
+  },
   // excelRoutes,
   // {
   //   path: '/zip',
