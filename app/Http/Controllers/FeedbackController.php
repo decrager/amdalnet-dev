@@ -15,10 +15,13 @@ class FeedbackController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // filter by project ID, dll;
-        return FeedbackResource::collection(Feedback::all());
+        // filter by project/announcement ID;
+        return FeedbackResource::collection(Feedback::where(function ($query) use ($request) {
+            return $request->announcement_id ? 
+                $query->where('announcement_id', $request->announcement_id) : '';
+        })->get());
     }
 
     /**
