@@ -101,6 +101,16 @@
       <el-table-column align="center" label="Aksi">
         <template slot-scope="scope">
           <el-button
+            v-if="!scope.row.published"
+            type="primary"
+            size="mini"
+            icon="el-icon-edit"
+            @click="handlePublishForm(scope.row.id)"
+          >
+            Publish
+          </el-button>
+          <el-button
+            v-if="!scope.row.published"
             type="primary"
             size="mini"
             icon="el-icon-edit"
@@ -109,6 +119,7 @@
             Edit
           </el-button>
           <el-button
+            v-if="!scope.row.published"
             type="danger"
             size="mini"
             icon="el-icon-delete"
@@ -126,26 +137,33 @@
       :limit.sync="listQuery.limit"
       @pagination="handleFilter"
     />
+    <AnnouncementDialog
+      :announcement="announcement"
+      :show="show"
+      @handleSubmitAnnouncement="handleSubmitAnnouncement($event)"
+      @handleCancelAnnouncement="handleCancelAnnouncement"
+    />
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
+import AnnouncementDialog from './components/AnnouncementDialog.vue';
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const projectResource = new Resource('projects');
+const announcementResource = new Resource('announcements');
 
 export default {
   name: 'Project',
-  components: { Pagination },
+  components: { Pagination, AnnouncementDialog },
   data() {
     return {
       loading: false,
       filtered: [],
-      search: '',
-      page: 1,
-      pageSize: 4,
+      announcement: {},
+      show: false,
       total: 0,
       listQuery: {
         page: 1,
@@ -166,6 +184,38 @@ export default {
     this.getFiltered(this.listQuery);
   },
   methods: {
+    handleSubmitAnnouncement(fileProof){
+      this.announcement.fileProof = fileProof;
+      console.log(this.announcement);
+
+      // make form data because we got file
+      const formData = new FormData();
+
+      // eslint-disable-next-line no-undef
+      _.each(this.announcement, (value, key) => {
+        formData.append(key, value);
+      });
+
+      announcementResource
+        .store(formData)
+        .then((response) => {
+          this.$message({
+            message:
+                'Project ' +
+                this.announcement.project_type +
+                ' has been Published.',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          this.show = false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    handleCancelAnnouncement(){
+      this.show = false;
+    },
     handleFilter() {
       this.getFiltered(this.listQuery);
     },
@@ -188,9 +238,6 @@ export default {
         params: {},
       });
     },
-    handleCurrentChange(val) {
-      this.page = val;
-    },
     download(url) {
       window.open(url, '_blank').focus();
     },
@@ -204,6 +251,16 @@ export default {
         name: 'createProject',
         params: { project: currentProject },
       });
+    },
+    handlePublishForm(id) {
+      const currentProject = this.filtered.find((item) => item.id === id);
+      console.log(currentProject);
+      this.announcement.id_project = currentProject.id;
+      this.announcement.project_type = currentProject.project_title;
+      this.announcement.project_scale =
+        currentProject.scale + ' ' + currentProject.scale_unit;
+      this.announcement.project_location = currentProject.address;
+      this.show = true;
     },
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });

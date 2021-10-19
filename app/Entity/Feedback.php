@@ -19,5 +19,7 @@ class Feedback extends Model
         'is_relevant',
         'set_relevant_by',
         'set_relevant_at',
+        'deleted',
+        'deleted_at',
     ];
 }

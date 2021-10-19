@@ -159,3 +159,4 @@ Route::apiResource('oss-projects', 'OssProjectController');
 Route::apiResource('responder_types', 'ResponderTypeController');
 Route::apiResource('feedbacks', 'FeedbackController');
 Route::apiResource('support-docs', 'SupportDocController');
+Route::apiResource('announcements', 'AnnouncementController');

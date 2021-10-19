@@ -15,10 +15,13 @@ class CreateAnnouncementsTable extends Migration
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-            $table->string('applicant_name');
-            $table->string('applicant_address');
+            $table->string('pic_name');
+            $table->string('pic_address');
+            $table->string('cs_name');
+            $table->string('cs_address');
             $table->string('project_type');
             $table->string('project_location');
+            $table->string('project_scale');
             $table->string('proof');
             $table->string('potential_impact');
             $table->timestamp('start_date')->useCurrent();
