@@ -24,7 +24,7 @@ class FeedbackController extends Controller
         return FeedbackResource::collection(Feedback::where(function ($query) use ($request) {
                 $query->where('announcement_id', $request->announcement_id)
                 ->where('deleted', $request->deleted);
-        })->get());
+        })->orderBy('id', 'ASC')->get());
     }
 
     /**
