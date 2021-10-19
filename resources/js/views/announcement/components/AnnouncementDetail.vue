@@ -79,7 +79,7 @@
       </el-table-column>
       <el-table-column align="center" label="Saran/Pendapat/Tanggapan">
         <template slot-scope="scope">
-          <span v-html="scope.row.description" />
+          <span v-html="scope.row.suggestion" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="Relevan">

@@ -1,9 +1,15 @@
 <template>
   <div class="form-container" style="padding: 24px">
-    <el-form ref="postForm" :model="postForm" style="max-width: 100%">
+    <el-form
+      ref="postForm"
+      :model="postForm"
+      style="max-width: 100%"
+      label-position="top"
+      label-width="200px"
+    >
       <el-row>
         <el-col :span="12">
-          <el-form-item label="Judul" prop="name">
+          <el-form-item label="Nama" prop="name">
             <el-input v-model="postForm.name" />
           </el-form-item>
         </el-col>
@@ -29,13 +35,43 @@
       <el-row :gutter="24">
         <el-col :span="16" :xs="24">
           <el-form-item
-            prop="description"
+            prop="suggestion"
             style="margin-bottom: 30px"
-            label="Saran Pendapat Tanggapan"
+            label="Saran"
           >
             <tinymce
-              ref="editor"
-              v-model="postForm.description"
+              ref="editorS"
+              v-model="postForm.suggestion"
+              :height="200"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="24">
+        <el-col :span="16" :xs="24">
+          <el-form-item
+            prop="concern"
+            style="margin-bottom: 30px"
+            label="Kekhawatiran"
+          >
+            <tinymce
+              ref="editorC"
+              v-model="postForm.concern"
+              :height="200"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="24">
+        <el-col :span="16" :xs="24">
+          <el-form-item
+            prop="expectation"
+            style="margin-bottom: 30px"
+            label="Harapan"
+          >
+            <tinymce
+              ref="editorE"
+              v-model="postForm.expectation"
               :height="200"
             />
           </el-form-item>
@@ -69,6 +105,24 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row v-if="isEdit">
+        <el-col :span="8">
+          <el-form-item label="Relevan" prop="is_relevant">
+            <el-select
+              v-model="postForm.is_relevant"
+              placeholder="Select"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in relevantChoices"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="handleSubmit()"> Confirm </el-button>
@@ -90,8 +144,13 @@ const defaultForm = {
   phone: '',
   email: '',
   photo_filepath: '',
-  description: '',
+  suggestion: '',
+  concern: '',
+  expectation: '',
   responder_type_id: 1,
+  is_relevant: false,
+  is_relevant_str: '',
+  set_relevant_by: 0,
 };
 
 export default {
@@ -108,6 +167,7 @@ export default {
       id: 0,
       postForm: Object.assign({}, defaultForm),
       responderTypes: [],
+      relevantChoices: [],
     };
   },
   created() {
@@ -120,6 +180,10 @@ export default {
       // get announcement ID from query
       this.postForm.announcement_id = this.$route.query.announcement_id;
     }
+    this.relevantChoices = [
+      { value: true, label: 'Ya' },
+      { value: false, label: 'Tidak' },
+    ];
     this.fetchResponderTypes();
   },
   methods: {
@@ -135,6 +199,9 @@ export default {
     },
     handleSubmit() {
       if (this.isEdit) {
+        if (this.postForm.is_relevant) {
+          this.postForm.set_relevant_by = this.$store.getters.userId;
+        }
         feedbackResource
           .update(this.id, this.postForm)
           .then(response => {
