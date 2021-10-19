@@ -15,7 +15,7 @@
               prop="titleProject"
             >
               <el-select
-                v-model="currentProject.ossProject"
+                v-model="currentProject.project_title"
                 placeholder="Select"
                 style="width: 100%"
                 @change="changeProject($event)"
@@ -90,6 +90,7 @@
               <!-- <el-input v-model="currentProject.kbli" /> -->
               <el-autocomplete
                 v-model="currentProject.kbli"
+                :disabled="isOss"
                 class="inline-input"
                 :fetch-suggestions="kbliSearch"
                 placeholder="Please Input"
@@ -100,7 +101,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="Tingkat Resiko" prop="riskLevel">
-              <el-input v-model="currentProject.risk_level" />
+              <el-input v-model="currentProject.risk_level" :disabled="isOss" />
             </el-form-item>
           </el-col>
           <el-col :span="8" :xs="24">
@@ -146,7 +147,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="Alamat" prop="address">
-              <el-input v-model="currentProject.location" />
+              <el-input v-model="currentProject.address" />
             </el-form-item>
           </el-col>
         </el-col>
@@ -233,7 +234,7 @@
                     style="margin-left: 15px"
                     @click="checkMapFile"
                   >Upload</el-button>
-                  <span>{{ fileName || currentProject.map }}</span>
+                  <span>{{ fileName }}</span>
                   <input
                     id="mapFile"
                     type="file"
@@ -311,6 +312,7 @@ const districtResource = new Resource('districts');
 const kbliResource = new Resource('kblis');
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const ossProjectResource = new Resource('oss-projects');
+const SupportDocResource = new Resource('support-docs');
 
 export default {
   name: 'CreateProject',
@@ -324,16 +326,8 @@ export default {
       isUpload: 'Upload',
       fileName: 'No File Selected.',
       fileMap: null,
-      projectOptions: [
-        {
-          value: 'Pabrik Pupuk',
-          label: 'Pabrik Pupuk',
-        },
-        {
-          value: 'Pabrik Makanan',
-          label: 'Pabrik Makanan',
-        },
-      ],
+      isOss: true,
+      projectOptions: [],
       projectFieldOptions: [
         {
           value: 'Bidang Perindustrian',
@@ -381,13 +375,29 @@ export default {
       ],
     };
   },
-  mounted() {
+  async mounted() {
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
+      this.fileName = this.getFileName(this.currentProject.map);
+      this.listSupportTable = await this.getListSupporttable(this.currentProject.id);
+      console.log(this.listSupportTable);
     }
     this.getAllData();
   },
   methods: {
+    async getListSupporttable(idProject){
+      const { data } = await SupportDocResource.list({ idProject });
+
+      return data.map(e => {
+        return { fileDoc: { name: e.file }, ...e };
+      });
+    },
+    getFileName(value){
+      console.log(value);
+      const onlyName = value.split('/');
+
+      return onlyName.at(-1);
+    },
     kbliSearch(queryString, cb) {
       var links = this.listKbli;
       var results = queryString
@@ -440,7 +450,8 @@ export default {
     },
     handleSubmit() {
       this.currentProject.fileMap = this.fileMap;
-      this.currentProject.listSupportDoc = this.listSupportTable;
+      console.log(this.listSupportTable);
+      this.currentProject.listSupportDoc = this.listSupportTable.filter(item => item.name && item.file);
       console.log(this.currentProject);
 
       // send to pubishProjectRoute
@@ -510,7 +521,7 @@ export default {
       });
     },
     handleAddSupportTable() {
-      this.listSupportTable.push({ document_type: '', file: '' });
+      this.listSupportTable.push({});
     },
     handleKbliSelect(item) {
       this.getSectorsByKbli(item.value);

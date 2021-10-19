@@ -46,6 +46,7 @@ docker ps
 
 docker exec -it <container ID> npm run dev # or npm run watch
 docker exec -it amdalnet_laravel_1 npm run watch
+
 # Where <container ID> is the "laravel" container name, ex: src_laravel_1
 ```
 Open http://localhost:8000 (laravel container port declared in `docker-compose.yml`) to access Amdalnet
@@ -81,6 +82,7 @@ php artisan list
 
 # create graphviz for workflow 
 php artisan workflow:dump straight --class App\\Entity\\BlogPost
+php artisan workflow:dump amdalnet --class App\\Entity\\Project
 
 # create blogpost model
 php artisan make:model 'Entity\BlogPost' --migration
@@ -94,9 +96,10 @@ php artisan workflow:test
 
 # create listener
 php artisan make:listener BlogPostWorkflowSubscriber
+
+# docker shell
+docker-compose exec laravel bash
 ```
 
-.el-menu-item
-.el-submenu__title
-.el-menu-item, .el-submenu__title
-.el-submenu .el-menu-item
+Kegiatan
+- 

@@ -22,6 +22,8 @@ import adminRoutes from './modules/admin';
 import errorRoutes from './modules/error';
 // import excelRoutes from './modules/excel';
 // import permissionRoutes from './modules/permission';
+import announcementRoutes from './modules/announcement';
+import feedbackRoutes from './modules/feedback';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -220,6 +222,8 @@ export const asyncRoutes = [
     component: () => import('@/views/home/index'),
     hidden: true,
   },
+  announcementRoutes,
+  feedbackRoutes,
   // excelRoutes,
   // {
   //   path: '/zip',

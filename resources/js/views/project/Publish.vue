@@ -67,6 +67,7 @@ const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
+const supportDocResource = new Resource('support-docs');
 
 export default {
   name: 'Publish',
@@ -82,10 +83,8 @@ export default {
       doc_req: 'SPPL',
       risk_level: 'Rendah',
       teamOptions: null,
-      list: [
-        { param: 'a', value: 'hihihi' },
-        { param: 'a', value: 'hahahaha' },
-      ],
+      kabkot: null,
+      list: [],
     };
   },
   mounted() {
@@ -104,7 +103,7 @@ export default {
     async getKabKotName(id) {
       const data = await districtResource.get(id);
       console.log(data);
-      return data.name;
+      this.kabkot = data.name;
     },
     calculatedProjectDoc() {
       this.kbliEnvParams.forEach((item) => {
@@ -119,6 +118,9 @@ export default {
         if (tempStatus) {
           this.project.required_doc = item.doc_req;
           this.project.result_risk = item.risk_level;
+        } else {
+          this.project.required_doc = 'SPPL';
+          this.project.result_risk = 'Rendah';
         }
       });
     },
@@ -173,10 +175,26 @@ export default {
 
       if (this.project.id !== undefined) {
         // update
+        projectResource.updateMultipart(this.project.id, formData).then(response => {
+          const { data } = response;
+          this.saveSupportDocs(data.id);
+          this.$message({
+            type: 'success',
+            message: 'Project info has been updated successfully',
+            duration: 5 * 1000,
+          });
+          // this.$router.push('/project');
+        }).catch(error => {
+          console.log(error);
+        });
       } else {
         projectResource
           .store(formData)
           .then((response) => {
+            // save supportdocs
+            const { data } = response;
+
+            this.saveSupportDocs(data.id);
             this.$message({
               message:
                 'New Project ' +
@@ -185,15 +203,33 @@ export default {
               type: 'success',
               duration: 5 * 1000,
             });
-            // this.currentPenyusun = {};
-            // this.$router.push('/project');
+            this.$router.push('/project');
           })
           .catch((error) => {
             console.log(error);
           });
       }
     },
+    async saveSupportDocs(id_project){
+      this.project.listSupportDoc.forEach(element => {
+        element.id_project = id_project;
+
+        // make form data because we got file
+        const formData = new FormData();
+
+        // eslint-disable-next-line no-undef
+        _.each(element, (value, key) => {
+          formData.append(key, value);
+        });
+        if (element.id === undefined){
+          supportDocResource.store(formData);
+        } else {
+          supportDocResource.updateMultipart(element.id, formData);
+        }
+      });
+    },
     updateList() {
+      this.getKabKotName(this.project.id_district);
       this.list = [
         {
           param: 'Nama Kegiatan',
@@ -209,7 +245,7 @@ export default {
         },
         {
           param: 'Alamat',
-          value: this.project.location,
+          value: this.project.address,
         },
         {
           param: 'Pemrakarsa',
@@ -233,7 +269,7 @@ export default {
         },
         {
           param: 'Provinsi/Kota',
-          value: this.getKabKotName(this.project.id_district),
+          value: this.kabkot,
         },
       ];
     },

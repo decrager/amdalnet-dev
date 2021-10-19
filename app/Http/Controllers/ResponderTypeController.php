@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ResponderType;
+use App\Http\Resources\ResponderTypeResource;
 use Illuminate\Http\Request;
 
 class ResponderTypeController extends Controller
@@ -14,7 +15,7 @@ class ResponderTypeController extends Controller
      */
     public function index()
     {
-        //
+        return ResponderTypeResource::collection(ResponderType::all());
     }
 
     /**
@@ -46,7 +47,7 @@ class ResponderTypeController extends Controller
      */
     public function show(ResponderType $responderType)
     {
-        //
+        return $responderType;
     }
 
     /**

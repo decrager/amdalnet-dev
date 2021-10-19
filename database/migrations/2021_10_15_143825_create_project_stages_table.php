@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSupportDocsTable extends Migration
+class CreateProjectStagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateSupportDocsTable extends Migration
      */
     public function up()
     {
-        Schema::create('support_docs', function (Blueprint $table) {
+        Schema::create('project_stages', function (Blueprint $table) {
             $table->id();
-            $table->string('id_project');
-            $table->string('name');
-            $table->string('file');
+            $table->string('name')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ class CreateSupportDocsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('support_docs');
+        Schema::dropIfExists('project_stages');
     }
 }
