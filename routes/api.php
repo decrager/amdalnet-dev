@@ -150,7 +150,7 @@ Route::get('articles/{id}/pageviews', function ($id) {
 });
 
 Route::apiResource('project-fields', 'ProjectFieldController');
-Route::apiResource('provinces', 'ProvincesController');
+Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
 Route::apiResource('kblis', 'KbliController');
 Route::apiResource('kbli-env-params', 'KbliEnvParamController');
