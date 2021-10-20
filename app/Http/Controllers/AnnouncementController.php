@@ -65,7 +65,7 @@ class AnnouncementController extends Controller
 
             //create file
             $file = $request->file('fileProof');
-            $name = '/announcement/' . uniqid() . '.' . $file->extension();
+            $name = '/announcement/' . uniqid() . '.' . $file->giiextension();
             $file->storePubliclyAs('public', $name);
 
             DB::beginTransaction();
@@ -83,9 +83,11 @@ class AnnouncementController extends Controller
                 'potential_impact' => $params['potential_impact'],
                 'start_date' => $params['start_date'],
                 'end_date' => $params['end_date'],
+                'project_id' => $params['project_id'],
+                'project_result' => $params['project_result'],
             ]);
 
-            $project = Project::where('id', $params['id_project'])->first();
+            $project = Project::where('id', $params['project_id'])->first();
 
             $project->published = true;
             $project->save();
