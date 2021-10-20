@@ -193,7 +193,7 @@ export const asyncRoutes = [
       },
       {
         path: 'create',
-        component: () => import('@/views/project/create'),
+        component: () => import('@/views/project/Create'),
         name: 'createProject',
         hidden: true,
         meta: { title: 'Add Project', icon: 'documentation', noCache: true },
