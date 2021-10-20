@@ -24,10 +24,21 @@ Object.keys(filters).forEach(key => {
 
 Vue.config.productionTip = false;
 
+Object.defineProperty(Vue.prototype, '$bus', {
+  get() {
+    return this.$root.bus;
+  },
+});
+
+var bus = new Vue({});
+
 new Vue({
   el: '#app',
   router,
   store,
   i18n,
+  data: {
+    bus: bus,
+  },
   render: h => h(App),
 });

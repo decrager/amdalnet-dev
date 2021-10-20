@@ -16,7 +16,7 @@
     <el-table-column align="center" label="Tipe Dokumen">
       <template slot-scope="scope">
         <el-input
-          v-model="scope.row.document_type"
+          v-model="scope.row.name"
           class="edit-input"
           size="small"
         />
@@ -31,7 +31,8 @@
           size="mini"
           @click="checkDocFile('docfile' + scope.$index)"
         >Upload</el-button>
-        <span>{{ scope.row.file || 'No File Selected..' }} </span>
+        <span>{{ scope.row.fileDoc ? scope.row.fileDoc.name : 'No File Selected..' }} </span>
+        <!-- <span>{{ scope.row.fileDoc || 'No File Selected..' }} </span> -->
         <input
           :id="'docfile' + scope.$index"
           type="file"
@@ -63,6 +64,9 @@ export default {
     },
     checkDocFileSure(id, x) {
       this.list[x].file = document.querySelector('#' + id).files[0].name;
+      this.list[x].fileDoc = document.querySelector('#' + id).files[0];
+
+      console.log(this.list[x].fileDoc);
     },
   },
 };

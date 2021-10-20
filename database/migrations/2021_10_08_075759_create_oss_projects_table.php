@@ -33,6 +33,7 @@ class CreateOssProjectsTable extends Migration
             $table->string('document_code')->nullable();
             $table->string('document_name')->nullable();
             $table->string('authority')->nullable();
+            $table->json('json_content')->nullable();
             $table->timestamps();
         });
     }

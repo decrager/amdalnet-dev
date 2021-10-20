@@ -42,8 +42,8 @@
             </el-button>
           </el-form-item>
           <div class="tips">
-            <span style="margin-right:20px;">Email: admin@laravue.dev</span>
-            <span>Password: laravue</span>
+            <span style="margin-right:20px;">Email: admin@amdalnet.dev</span>
+            <span>Password: amdalnet</span>
           </div>
         </el-form>
       </div>
@@ -78,8 +78,8 @@ export default {
     };
     return {
       loginForm: {
-        email: 'admin@laravue.dev',
-        password: 'laravue',
+        email: 'admin@amdalnet.dev',
+        password: 'amdalnet',
       },
       loginRules: {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
@@ -204,15 +204,16 @@ $textColor:#eee;
     // width: 1120px;
     // min-height: 590px;
     // display: grid;
+    text-align: center;
     margin: auto;
     grid-template-columns: auto 480px;
     transition: all .3s ease-in-out;
     transform: scale(1);
 
     .logo {
-      display: block;
+      display: inline-block;
       margin-bottom: 20px;
-      width: 200px;
+      width: 250px;
     }
 
     // .login-image {
@@ -241,7 +242,8 @@ $textColor:#eee;
       background-color: #FFA84C;
     }
     .login-form {
-      min-width: 480px;
+      width: 50vw;
+      min-width: 360px;
       max-width: 560px;
       margin: auto;
       background: #fff;

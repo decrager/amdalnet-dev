@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProjectDraftingTeamsTable extends Migration
+class CreateFormulatorTeamsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateProjectDraftingTeamsTable extends Migration
      */
     public function up()
     {
-        Schema::create('project_drafting_teams', function (Blueprint $table) {
+        Schema::create('formulator_teams', function (Blueprint $table) {
             $table->id();
             $table->string('id_team');
             $table->string('name')->nullable();
@@ -21,8 +21,7 @@ class CreateProjectDraftingTeamsTable extends Migration
             $table->string('id_applicant')->nullable();
             $table->timestamp('date_input')->nullable();
             $table->string('evidence_letter')->nullable();
-            $table->string('id_drafter')->nullable();
-
+            $table->string('id_formulator')->nullable();
             $table->timestamps();
         });
     }
@@ -34,6 +33,6 @@ class CreateProjectDraftingTeamsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('project_drafting_teams');
+        Schema::dropIfExists('formulator_teams');
     }
 }

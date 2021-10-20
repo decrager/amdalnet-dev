@@ -34,6 +34,14 @@ class Resource {
       data: resource,
     });
   }
+  updateMultipart(id, resource) {
+    return request({
+      url: '/' + this.uri + '/' + id,
+      method: 'post',
+      data: resource,
+      params: { _method: 'PUT' },
+    });
+  }
   destroy(id) {
     return request({
       url: '/' + this.uri + '/' + id,

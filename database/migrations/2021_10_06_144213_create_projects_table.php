@@ -15,7 +15,7 @@ class CreateProjectsTable extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->string('id_project');
+            $table->string('id_project')->nullable();
             $table->string('project_title')->nullable();
             $table->integer('scale')->nullable();
             $table->string('scale_unit')->nullable();
@@ -34,9 +34,15 @@ class CreateProjectsTable extends Migration
             $table->string('map')->nullable();
             $table->integer('map_scale')->nullable();
             $table->string('map_scale_unit')->nullable();
-            $table->string('id_drafting_team')->nullable();
+            $table->string('id_formulator_team')->nullable();
             $table->string('announcement_letter')->nullable();
+            $table->string('result_risk')->nullable();
             $table->string('kbli')->nullable();
+            $table->jsonb('marking')->nullable();
+            $table->boolean('published')->default(0);
+            $table->string('required_doc')->nullable();
+            $table->string('biz_type')->nullable();
+
             $table->timestamps();
         });
     }

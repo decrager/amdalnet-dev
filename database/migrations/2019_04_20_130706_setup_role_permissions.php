@@ -16,6 +16,7 @@ class SetupRolePermissions extends Migration
      */
     public function up()
     {
+        // create roles if not exists
         foreach (Acl::roles() as $role) {
             Role::findOrCreate($role);
         }
@@ -26,13 +27,15 @@ class SetupRolePermissions extends Migration
         $userRole = Role::findByName(Acl::ROLE_USER);
         $visitorRole = Role::findByName(Acl::ROLE_VISITOR);
 
+        // create permission if not exists
         foreach (Acl::permissions() as $permission) {
             Permission::findOrCreate($permission, 'api');
         }
 
+
         // Setup basic permission
         $adminRole->givePermissionTo(Acl::permissions());
-        $managerRole->givePermissionTo(Acl::permissions([Acl::PERMISSION_PERMISSION_MANAGE]));
+        $managerRole->givePermissionTo(Acl::permissions([Acl::PERMISSION_MANAGE_PERMISSION]));
         $editorRole->givePermissionTo(Acl::menuPermissions());
         $editorRole->givePermissionTo(Acl::PERMISSION_ARTICLE_MANAGE);
         $userRole->givePermissionTo([
@@ -42,6 +45,99 @@ class SetupRolePermissions extends Migration
         $visitorRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_ELEMENT_UI,
             Acl::PERMISSION_VIEW_MENU_PERMISSION,
+        ]);
+
+        //// setup apps permissions
+        // initiator
+        $initiatorRole = Role::findByName(Acl::ROLE_INITIATOR);
+        $initiatorRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_PROJECT,
+            Acl::PERMISSION_MANAGE_PROJECT,
+            Acl::PERMISSION_DO_ASSEMBLE_FORMULATOR,
+            Acl::PERMISSION_DO_ANNOUNCEMENT,
+        ]);
+
+        $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+        $formulatorRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_WORKSPACE,
+            Acl::PERMISSION_DO_QUALIFICATION,
+            Acl::PERMISSION_DO_RKLRPL,
+            Acl::PERMISSION_DO_ANDAL,
+        ]);
+
+        // lpjp
+        $institutionRole = Role::findByName(Acl::ROLE_INSTITUTION); 
+        $institutionRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_FORMULATOR,
+            Acl::PERMISSION_VIEW_MENU_PROJECT,
+            Acl::PERMISSION_MANAGE_FORMULATOR,
+            Acl::PERMISSION_DO_ASSEMBLE_FORMULATOR,
+        ]);
+
+        // pustanling
+        $adminStandardRole = Role::findByName(Acl::ROLE_ADMIN_STANDARD); 
+        $adminStandardRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_INSTITUTION,
+            Acl::PERMISSION_VIEW_MENU_FORMULATOR,
+            Acl::PERMISSION_VIEW_MENU_PARAMS,
+            Acl::PERMISSION_VIEW_MENU_SOP,
+            Acl::PERMISSION_VIEW_MENU_TECHNICAL_REGULATIONS,
+            Acl::PERMISSION_VIEW_MENU_CLUSTER,
+            Acl::PERMISSION_MANAGE_INSTITUTION,
+            Acl::PERMISSION_MANAGE_FORMULATOR,
+            Acl::PERMISSION_MANAGE_PARAMS,
+            Acl::PERMISSION_MANAGE_SOP,
+            Acl::PERMISSION_MANAGE_TECHNICAL_REGULATIONS,
+            Acl::PERMISSION_MANAGE_CLUSTER,
+        ]);
+
+        $examinerRole = Role::findByName(Acl::ROLE_EXAMINER); 
+        $examinerRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_WORKSPACE,
+            Acl::PERMISSION_DO_UKLUPL,
+            Acl::PERMISSION_DO_AMDAL,
+
+            Acl::PERMISSION_DO_SK_PKPLH,
+            Acl::PERMISSION_DO_SK_SKKL,
+            Acl::PERMISSION_DO_PUSH,
+        ]);
+
+        $examinerInstitutionRole = Role::findByName(Acl::ROLE_EXAMINER_INSTITUTION); 
+        $examinerInstitutionRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_EXAMINER,
+            Acl::PERMISSION_VIEW_MENU_EXPERT,
+            Acl::PERMISSION_MANAGE_EXAMINER,
+            Acl::PERMISSION_MANAGE_EXPERT,
+        ]);
+
+        $adminSystemRole = Role::findByName(Acl::ROLE_ADMIN_SYSTEM); 
+        $adminSystemRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_USER,
+            Acl::PERMISSION_VIEW_MENU_PERMISSION,
+            Acl::PERMISSION_VIEW_MENU_ROLE,
+            Acl::PERMISSION_MANAGE_USER,
+            Acl::PERMISSION_MANAGE_ROLE,
+            Acl::PERMISSION_MANAGE_PERMISSION,
+        ]);
+
+        $adminCentralRole = Role::findByName(Acl::ROLE_ADMIN_CENTRAL); 
+        $adminCentralRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_EXAMINER,
+            Acl::PERMISSION_VIEW_MENU_EXAMINER_INSTITUTION,
+            Acl::PERMISSION_VIEW_MENU_EXPERT,
+            Acl::PERMISSION_MANAGE_EXAMINER,
+            Acl::PERMISSION_MANAGE_EXAMINER_INSTITUTION,
+            Acl::PERMISSION_MANAGE_EXPERT,
+        ]);
+
+        $adminRegionalRole = Role::findByName(Acl::ROLE_ADMIN_REGIONAL); 
+        $adminRegionalRole->givePermissionTo([
+            Acl::PERMISSION_VIEW_MENU_EXAMINER,
+            Acl::PERMISSION_VIEW_MENU_EXAMINER_INSTITUTION,
+            Acl::PERMISSION_VIEW_MENU_EXPERT,
+            Acl::PERMISSION_MANAGE_EXAMINER,
+            Acl::PERMISSION_MANAGE_EXAMINER_INSTITUTION,
+            Acl::PERMISSION_MANAGE_EXPERT,
         ]);
 
         foreach (Acl::roles() as $role) {
