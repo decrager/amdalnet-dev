@@ -1,40 +1,29 @@
-image: registry.gitlab.com/bacduong/laravue:latest
+image: php:7.4-cli
 
-services:
-  - mysql:5.7
-
-variables:
-  MYSQL_DATABASE: homestead
-  MYSQL_ROOT_PASSWORD: secret
-  DB_HOST: mysql
-  DB_USERNAME: root
+# services:
+#   - mysql:5.7
 
 stages:
-  - test
+  # - test
   - deploy
 
-unit_test:
-  stage: test
-  script:
-    - cp .env.example .env
-    - composer install
-    - php artisan key:generate
-    - php artisan migrate
-    - vendor/bin/phpunit
+# unit_test:
+#   stage: test
+#   script:
+#     - cp .env.example .env
+#     - composer install
+#     - php artisan key:generate
+#     - php artisan migrate
+#     - vendor/bin/phpunit
 
-deploy_staging:
+deploy_dev:
   stage: deploy
   script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-
-    - ~/.composer/vendor/bin/envoy run deploy --commit="$CI_COMMIT_SHA"
+    - cd /home/adminhadoop/apps/amdalnet
+    - git reset --hard HEAD
+    - git pull
   environment:
     name: staging
-    url: http://laravue.cipherpols.com
   when: on_success
   only:
-    - master
+    - devcicd
