@@ -20,14 +20,12 @@ deploy_dev:
   stage: deploy
   script:
     - cd /home/adminhadoop/apps/amdalnet/
-    # - rm -rf amdalnetdeploy/
-    # - git clone https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.com/ipbraindevs/amdalnet.git amdalnetdeploy
     - git reset --hard HEAD
     - git pull
   environment:
     name: staging
   when: on_success
   only:
-    - devcicd
+    - master
   tags:
     - amdalnet
