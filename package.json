@@ -61,6 +61,7 @@
     "collect.js": "^4.29.0",
     "core-js": "^3.6.5",
     "css-loader": "^3.6.0",
+    "dayjs": "^1.10.7",
     "driver.js": "^0.9.7",
     "dropzone": "^5.7.2",
     "echarts": "^4.8.0",

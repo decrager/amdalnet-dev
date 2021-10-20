@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Entity\Announcement;
 
 class Feedback extends Model
 {
@@ -23,4 +24,9 @@ class Feedback extends Model
         'deleted',
         'deleted_at',
     ];
+
+    public function announcement()
+    {
+        return $this->belongsTo(Announcement::class);
+    }
 }
