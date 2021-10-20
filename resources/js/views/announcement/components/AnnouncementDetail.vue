@@ -112,11 +112,16 @@
         </template>
       </el-table-column>
     </el-table>
+    <IdentityDialog
+      :feedback="selectedFeedback"
+      :show="showIdDialog"
+    />
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
+import IdentityDialog from './IdentityDialog.vue';
 const userResource = new Resource('users');
 const districtResource = new Resource('districts');
 const feedbackResource = new Resource('feedbacks');
@@ -124,6 +129,8 @@ const projectResource = new Resource('projects');
 const responderTypeResource = new Resource('responder_types');
 
 export default {
+  name: 'AnnouncementDetail',
+  components: { IdentityDialog },
   props: {
     isEdit: {
       type: Boolean,
@@ -139,6 +146,8 @@ export default {
       feedbacks: [],
       responder_types: [],
       relevantChoices: [],
+      selectedFeedback: {},
+      showIdDialog: false,
     };
   },
   mounted() {
@@ -238,8 +247,15 @@ export default {
     handleEdit(id) {
       this.$router.push('/feedback/edit/' + id);
     },
-    showIdentity(id) {
-      console.log('feedback id = ' + id);
+    showIdentity(feedbackId) {
+      var toShow = {};
+      this.feedbacks.map((item) => {
+        if (item.id === feedbackId){
+          toShow = item;
+        }
+      });
+      this.selectedFeedback = toShow;
+      this.showIdDialog = true;
     },
     async onChangeRelevant(feedbackId, event) {
       var toUpdate = {};
