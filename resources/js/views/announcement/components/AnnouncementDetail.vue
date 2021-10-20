@@ -84,26 +84,30 @@
       </el-table-column>
       <el-table-column align="center" label="Relevan">
         <template slot-scope="scope">
-          <span>{{ scope.row.is_relevant_str }}</span>
+          <el-select
+            v-model="scope.row.is_relevant"
+            placeholder="Select"
+            style="width: 100%"
+            @change="onChangeRelevant(scope.row.id, $event)"
+          >
+            <el-option
+              v-for="item in relevantChoices"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Aksi">
+      <el-table-column align="center" label="Identitas">
         <template slot-scope="scope">
           <el-button
-            type="primary"
+            type="info"
             size="mini"
-            icon="el-icon-edit"
-            @click="handleEdit(scope.row.id)"
+            icon="el-icon-view"
+            @click="showIdentity(scope.row.id)"
           >
-            Edit
-          </el-button>
-          <el-button
-            type="danger"
-            size="mini"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row.id)"
-          >
-            Delete
+            Lihat Identitas
           </el-button>
         </template>
       </el-table-column>
@@ -134,11 +138,16 @@ export default {
       list: [],
       feedbacks: [],
       responder_types: [],
+      relevantChoices: [],
     };
   },
   mounted() {
     const id = this.$route.params && this.$route.params.id;
     this.id = id;
+    this.relevantChoices = [
+      { value: true, label: 'Ya' },
+      { value: false, label: 'Tidak' },
+    ];
     this.getAllData(id);
 
     // event handler
@@ -229,25 +238,26 @@ export default {
     handleEdit(id) {
       this.$router.push('/feedback/edit/' + id);
     },
-    handleDelete(id) {
-      var toDelete = null;
+    showIdentity(id) {
+      console.log('feedback id = ' + id);
+    },
+    async onChangeRelevant(feedbackId, event) {
+      var toUpdate = {};
       this.feedbacks.map((item) => {
-        if (item.id === id){
-          toDelete = item;
+        if (item.id === feedbackId){
+          toUpdate = item;
         }
       });
-      toDelete.deleted = true;
-      toDelete.deleted_at = new Date().toISOString();
       feedbackResource
-        .update(id, toDelete)
+        .update(feedbackId, toUpdate)
         .then(response => {
+          const is_relevant_str = response.data.is_relevant ? 'RELEVAN' : 'TIDAK RELEVAN';
+          const message = 'SPT \'' + response.data.name + '\' berhasil diupdate sebagai ' + is_relevant_str;
           this.$message({
-            message: 'SPT berhasil dihapus',
+            message: message,
             type: 'success',
             duration: 5 * 1000,
           });
-          console.log(response);
-          this.$bus.$emit('updateFeedbackList', {});
         })
         .catch(error => {
           console.log(error);
