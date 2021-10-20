@@ -14,10 +14,10 @@
             <a href="#about" class="nav__link">Kebijakan</a>
           </li>
           <li class="nav__item">
-            <a href="#discover" class="nav__link">Tentang Kami</a>
+            <a href="#about" class="nav__link">Tentang Kami</a>
           </li>
           <li class="nav__item">
-            <a href="#place" class="btn__link">Masuk</a>
+            <router-link to="login" class="btn__link">Masuk</router-link>
           </li>
         </ul>
 
@@ -35,6 +35,11 @@
 export default {
   name: 'HeaderHome',
   data() {
+    return {
+      loading: false,
+    };
+  },
+  created() {
     const navMenu = document.getElementById('nav-menu');
     const navToggle = document.getElementById('nav-toggle');
     const navClose = document.getElementById('nav-close');
@@ -52,7 +57,6 @@ export default {
 
     function linkAction(){
       const navMenu = document.getElementById('nav-menu');
-      // When we click on each nav__link, we remove the show-menu class
       navMenu.classList.remove('show-menu');
     }
     navLink.forEach(n => n.addEventListener('click', linkAction));
@@ -60,7 +64,6 @@ export default {
     /* ==================== CHANGE BACKGROUND HEADER ====================*/
     function scrollHeader(){
       const header = document.getElementById('header');
-      // When the scroll is greater than 100 viewport height, add the scroll-header class to the header tag
       if (this.scrollY >= 100) {
         header.classList.add('scroll-header');
       } else {
@@ -68,6 +71,12 @@ export default {
       }
     }
     window.addEventListener('scroll', scrollHeader);
+  },
+  methods: {
+    toLogin() {
+      this.loading = true;
+      return this.$router.push('/login');
+    },
   },
 };
 </script>

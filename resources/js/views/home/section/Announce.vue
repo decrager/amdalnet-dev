@@ -73,7 +73,6 @@ export default {
       await axios.get('/api/announcements')
         .then(response => {
           this.announcement = response.data.data;
-          console.log(this.announcement);
           this.announcement.forEach(amdalData => {
             if (amdalData.project_result === 'AMDAL') {
               this.amdal.push(amdalData);
@@ -82,7 +81,6 @@ export default {
               this.uklupl.push(amdalData);
             }
           });
-          console.log(this.uklupl);
         });
     },
     formatDate(value) {
@@ -98,7 +96,6 @@ export default {
 <style scoped>
 
 .tabset {
-  max-width: 65em;
   margin-top: 30px;
 }
 

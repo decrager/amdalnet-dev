@@ -61,6 +61,12 @@ export const constantRoutes = [
     ],
   },
   {
+    path: '/home',
+    alias: '/',
+    component: () => import('@/views/home/index'),
+    hidden: true,
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,
@@ -90,7 +96,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', noCache: false },
+        meta: { title: 'Dashboard', icon: 'dashboard', noCache: false },
       },
     ],
   },
@@ -173,19 +179,53 @@ export const asyncRoutes = [
   errorRoutes,
   // excelRoutes,
   {
-    path: '/master',
+    path: '/project',
     component: Layout,
-    redirect: 'noredirect',
-    meta: {
-      title: 'master', // This title will show on the breadcrumb before submenu's title
-      icon: 'star', // Use star icon
-    },
+    redirect: '/project',
+    alwaysShow: true,
+    meta: { title: 'Project', icon: 'zip' },
     children: [
+      {
+        path: '',
+        component: () => import('@/views/project'),
+        name: 'project',
+        meta: { title: 'List Project', icon: 'documentation' },
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/project/Create'),
+        name: 'createProject',
+        hidden: true,
+        meta: { title: 'Add Project', icon: 'documentation', noCache: true },
+      },
+      {
+        path: 'publish',
+        component: () => import('@/views/project/Publish'),
+        name: 'publishProject',
+        hidden: true,
+        meta: { title: 'Publish Project', icon: 'documentation', noCache: true, breadcrumb: false },
+        props: true,
+      },
+    ],
+  },
+  {
+    path: '/master-data',
+    component: Layout,
+    redirect: '/master-data',
+    alwaysShow: true,
+    meta: { title: 'Master Data', icon: 'el-icon-reading' },
+    children: [
+      {
+        path: '/provinces',
+        component: () => import('@/views/master-data/province'),
+        name: 'project',
+        meta: { title: 'Provinsi', icon: 'el-icon-school' },
+      },
       {
         path: 'lpjp',
         component: () => import('@/views/lpjp/index'),
         name: 'lpjp',
-        meta: { title: 'lpjp', icon: 'documentation', noCache: true },
+        meta: { title: 'LPJP', icon: 'documentation', noCache: true },
       },
       {
         path: 'lpjp/create',
@@ -220,7 +260,7 @@ export const asyncRoutes = [
         component: () => import('@/views/lpjp/index'),
         name: 'Penyusun',
         meta: {
-          title: 'penyusun',
+          title: 'Penyusun',
           icon: 'documentation',
           noCache: true,
         },
@@ -232,56 +272,6 @@ export const asyncRoutes = [
       //   meta: { title: 'bankAhli', icon: 'documentation', noCache: true },
       // },
     ],
-  },
-  {
-    path: '/project',
-    component: Layout,
-    redirect: '/project',
-    alwaysShow: true,
-    meta: { title: 'project', icon: 'zip' },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/project'),
-        name: 'project',
-        meta: { title: 'listProject', icon: 'documentation' },
-      },
-      {
-        path: 'create',
-        component: () => import('@/views/project/Create'),
-        name: 'createProject',
-        hidden: true,
-        meta: { title: 'addProject', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'publish',
-        component: () => import('@/views/project/Publish'),
-        name: 'publishProject',
-        hidden: true,
-        meta: { title: 'PublishProject', icon: 'documentation', noCache: true, breadcrumb: false },
-        props: true,
-      },
-    ],
-  },
-  {
-    path: '/master-data',
-    component: Layout,
-    redirect: '/master-data',
-    alwaysShow: true,
-    meta: { title: 'Master Data', icon: 'el-icon-reading' },
-    children: [
-      {
-        path: '/provinces',
-        component: () => import('@/views/master-data/province'),
-        name: 'project',
-        meta: { title: 'Provinsi', icon: 'el-icon-school' },
-      },
-    ],
-  },
-  {
-    path: '/home',
-    component: () => import('@/views/home/index'),
-    hidden: true,
   },
   announcementRoutes,
   feedbackRoutes,

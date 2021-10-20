@@ -47,16 +47,16 @@
       <div class="actions__data__video">
         <h2 class="section__title actions__title__video">Video</h2>
         <div class="actions__video__wrapper">
-          <iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" width="213.6" height="120" type="text/html" src="https://www.youtube.com/embed/DBXH9jJRaDk?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&origin=http://youtubeembedcode.com"><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://onlinecasinoutansvensklicens.se/">onlinecasinoutansvensklicens.se</a></small></div><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://onlinecasinoutansvensklicens.se/">onlinecasinoutansvensklicens.se</a></small></div></iframe>
+          <img src="/images/no-video.png" alt="">
         </div>
         <div class="actions__video__wrapper">
-          <iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" width="213.6" height="120" type="text/html" src="https://www.youtube.com/embed/DBXH9jJRaDk?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&origin=http://youtubeembedcode.com"><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://onlinecasinoutansvensklicens.se/">onlinecasinoutansvensklicens.se</a></small></div><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://onlinecasinoutansvensklicens.se/">onlinecasinoutansvensklicens.se</a></small></div></iframe>
+          <img src="/images/no-video.png" alt="">
         </div>
         <div class="actions__video__wrapper">
-          <iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" width="213.6" height="120" type="text/html" src="https://www.youtube.com/embed/DBXH9jJRaDk?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&origin=http://youtubeembedcode.com"><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://onlinecasinoutansvensklicens.se/">onlinecasinoutansvensklicens.se</a></small></div><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://onlinecasinoutansvensklicens.se/">onlinecasinoutansvensklicens.se</a></small></div></iframe>
+          <img src="/images/no-video.png" alt="">
         </div>
         <div class="actions__video__wrapper">
-          <iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" width="213.6" height="120" type="text/html" src="https://www.youtube.com/embed/DBXH9jJRaDk?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&origin=http://youtubeembedcode.com"><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://onlinecasinoutansvensklicens.se/">onlinecasinoutansvensklicens.se</a></small></div><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://onlinecasinoutansvensklicens.se/">onlinecasinoutansvensklicens.se</a></small></div></iframe>
+          <img src="/images/no-video.png" alt="">
         </div>
       </div>
     </div>

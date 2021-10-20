@@ -498,6 +498,10 @@ input {
 .actions__video__wrapper {
     margin-bottom: 20px;
 }
+.actions__video__wrapper img {
+    height: 121px;
+    width: 100%;
+}
 
 .actions__video__wrapper:hover {
     transform: scale(1.1);
@@ -681,14 +685,14 @@ input {
 
 .counter__first__line {
     color: white;
-    line-height: 20px;
+    line-height: 25px;
     font-size: 20px;
     font-weight: 700;
 }
 
 .counter__second__line {
     color: #F6993F;
-    line-height: 20px;
+    line-height: 25px;
     font-size: 20px;
     font-weight: 700;
 }
