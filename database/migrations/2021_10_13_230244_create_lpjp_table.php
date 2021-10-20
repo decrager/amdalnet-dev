@@ -29,7 +29,7 @@ class CreateLpjpTable extends Migration
             $table->string('email')->nullable();
             $table->string('url_address')->nullable();
             $table->string('cert_file')->nullable();
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }
