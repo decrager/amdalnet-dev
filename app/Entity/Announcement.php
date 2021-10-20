@@ -18,5 +18,7 @@ class Announcement extends Model
         'potential_impact',
         'start_date',
         'end_date',
+        'project_id',
+        'project_result',
     ];
 }
