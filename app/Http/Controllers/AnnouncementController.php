@@ -65,7 +65,7 @@ class AnnouncementController extends Controller
 
             //create file
             $file = $request->file('fileProof');
-            $name = '/announcement/' . uniqid() . '.' . $file->giiextension();
+            $name = '/announcement/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
             DB::beginTransaction();
