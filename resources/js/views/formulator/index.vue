@@ -47,6 +47,10 @@ export default {
       listActive: [],
       loading: true,
       activeName: 'penyusun',
+      listQuery: {
+        page: 1,
+        limit: 10,
+      },
     };
   },
   created() {
@@ -60,7 +64,7 @@ export default {
     },
     async getList() {
       this.loading = true;
-      const { data } = await formulatorResource.list({});
+      const { data } = await formulatorResource.list(this.listQuery);
       this.list = data;
       this.loading = false;
     },
