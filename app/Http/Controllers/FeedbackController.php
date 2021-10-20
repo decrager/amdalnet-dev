@@ -52,7 +52,7 @@ class FeedbackController extends Controller
                 'id_card_number' => 'required',
                 'phone' => 'required',
                 'email' => 'required',
-                'suggestion' => 'required',
+                'concern' => 'required',
                 'photo_filepath' => 'required',
                 'responder_type_id' => 'required',
             ]
@@ -80,7 +80,6 @@ class FeedbackController extends Controller
                 'id_card_number' => $params['id_card_number'],
                 'phone' => $params['phone'],
                 'email' => $params['email'],
-                'suggestion' => $params['suggestion'],
                 'concern' => $params['concern'],
                 'expectation' => $params['expectation'],
                 'photo_filepath' => str_replace('public', 'storage', $img_filepath),
@@ -131,7 +130,7 @@ class FeedbackController extends Controller
                 'id_card_number' => 'required',
                 'phone' => 'required',
                 'email' => 'required',
-                // 'suggestion' => 'required',
+                'concern' => 'required',
                 'photo_filepath' => 'required',
                 'responder_type_id' => 'required',
             ]
@@ -164,7 +163,6 @@ class FeedbackController extends Controller
             $feedback->id_card_number = $params['id_card_number'];
             $feedback->phone = $params['phone'];
             $feedback->email = $params['email'];
-            $feedback->suggestion = $params['suggestion'];
             $feedback->concern = $params['concern'];
             $feedback->expectation = $params['expectation'];
             $feedback->photo_filepath = $photo_filepath;

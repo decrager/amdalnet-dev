@@ -35,21 +35,6 @@
       <el-row :gutter="24">
         <el-col :span="16" :xs="24">
           <el-form-item
-            prop="suggestion"
-            style="margin-bottom: 30px"
-            label="Saran"
-          >
-            <tinymce
-              ref="editorS"
-              v-model="postForm.suggestion"
-              :height="200"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row :gutter="24">
-        <el-col :span="16" :xs="24">
-          <el-form-item
             prop="concern"
             style="margin-bottom: 30px"
             label="Kekhawatiran"
@@ -144,7 +129,6 @@ const defaultForm = {
   phone: '',
   email: '',
   photo_filepath: '',
-  suggestion: '',
   concern: '',
   expectation: '',
   responder_type_id: 1,

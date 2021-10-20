@@ -173,6 +173,67 @@ export const asyncRoutes = [
   errorRoutes,
   // excelRoutes,
   {
+    path: '/master',
+    component: Layout,
+    redirect: 'noredirect',
+    meta: {
+      title: 'master', // This title will show on the breadcrumb before submenu's title
+      icon: 'star', // Use star icon
+    },
+    children: [
+      {
+        path: 'lpjp',
+        component: () => import('@/views/lpjp/index'),
+        name: 'lpjp',
+        meta: { title: 'lpjp', icon: 'documentation', noCache: true },
+      },
+      {
+        path: 'lpjp/create',
+        component: () => import('@/views/lpjp/Create'),
+        name: 'createLpjp',
+        hidden: true,
+        meta: { title: 'Tambah LPJP', icon: 'documentation', noCache: true },
+      },
+      {
+        path: 'lpjp/edit/:id',
+        component: () => import('@/views/lpjp/Create'),
+        name: 'editLpjp',
+        hidden: true,
+        meta: { title: 'Edit LPJP', icon: 'documentation', noCache: true },
+      },
+      // {
+      //   path: 'lpjp/create-penyusun',
+      //   component: () => import('@/views/lpjp/createPenyusun'),
+      //   name: 'createPenyusun',
+      //   hidden: true,
+      //   meta: { title: 'Tambah Penyusun', icon: 'documentation', noCache: true },
+      // },
+      // {
+      //   path: 'lpjp/edit-penyusun/:id',
+      //   component: () => import('@/views/lpjp/createPenyusun'),
+      //   name: 'editPenyusun',
+      //   hidden: true,
+      //   meta: { title: 'Edit Penyusun', icon: 'documentation', noCache: true },
+      // },
+      {
+        path: 'penyusun',
+        component: () => import('@/views/lpjp/index'),
+        name: 'Penyusun',
+        meta: {
+          title: 'penyusun',
+          icon: 'documentation',
+          noCache: true,
+        },
+      },
+      // {
+      //   path: 'bank-ahli',
+      //   component: () => import('@/views/bank-ahli/index'),
+      //   name: 'Bank Ahli',
+      //   meta: { title: 'bankAhli', icon: 'documentation', noCache: true },
+      // },
+    ],
+  },
+  {
     path: '/project',
     component: Layout,
     redirect: '/project',

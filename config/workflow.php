@@ -61,8 +61,69 @@ return [
             ]
         ],
     ],
+    'amdal' => [
+        'type' => 'workflow',
+        'marking_store' => [
+            'type' => 'multiple_state',
+            'property' => 'marking',
+        ],
+        'supports' => ['App\Entity\Project'],
+        'events_to_dispatch' => [
+            'workflow.enter',
+            'workflow.leave',
+            'workflow.transition',
+            'workflow.entered',
+            'workflow.completed',
+            'workflow.announce',
+            'workflow.guard',
+        ],
+        'places' => ['initial', 'amdal', 'rkl-rpl', 'ka',  'andal', 'ukl-upl', 'sppl', 'published', 'sk-pkplh', 'sk-skkl'],
+        'initial_places' => ['initial'],
+        'transitions' => [
+            'to_amdal' => [
+                'from' => 'initial',
+                'to' => 'amdal',
+            ],
+            'to_ka' => [
+                'from' => 'amdal',
+                'to' => 'ka',
+            ],
+            'to_andal' => [
+                'from' => 'ka',
+                'to' => 'andal',
+            ],
+            'to_rklrpl' => [
+                'from' => 'ka',
+                'to' => 'rkl-rpl',
+            ],
+            'gen_skkl' => [
+                'from' => ['andal', 'rkl-rpl'],
+                'to' => 'sk-skkl',
+            ],
+            'gen_pkplh' => [
+                'from' => 'ukl-upl',
+                'to' => 'sk-pkplh',
+            ],
+            'to_sppl' => [
+                'from' => 'initial',
+                'to' => 'sppl',
+            ],
+            'to_uklupl' => [
+                'from' => 'initial',
+                'to' => 'ukl-upl',
+            ],
+            'publish' => [
+                'from' => 'initial',
+                'to' => 'published',
+            ],
+            // 'finish' => [
+            //     'from' => ['sk-pkplh', 'sppl', 'sk-skkl'],
+            //     'to' => ['done'],
+            // ]
+        ]
+    ],
     'amdalnet' => [
-        'type' => 'workflow',  
+        'type' => 'workflow',
         'marking_store' => [
             'type' => 'multiple_state', // multiple_state | single_state, can be omitted to default to workflow type's default
             'property' => 'marking', // this is the property on the model, defaults to 'marking'
@@ -81,6 +142,7 @@ return [
             'workflow.announce',
             'workflow.guard',
         ],
+        'initial_places' => ['initial'],
         'places' => ['initial', 'penapisan', 'amdal', 'rkl-rpl', 'ka-draft', 'ka-review', 'ka-finish', 'andal-draft', 'andal-review', 'andal-finish', 'ukl-upl-draft', 'ukl-upl-review', 'ukl-upl-finish', 'sppl', 'finish'],
         'initial_places' => ['initial'], // defaults to the first place if omitted
         'transitions' => [

@@ -14,7 +14,6 @@ class Feedback extends Model
         'id_card_number',
         'phone',
         'email',
-        'suggestion',
         'concern',
         'expectation',
         'photo_filepath',

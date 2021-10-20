@@ -85,9 +85,11 @@ class AnnouncementController extends Controller
                 'potential_impact' => $params['potential_impact'],
                 'start_date' => $params['start_date'],
                 'end_date' => $params['end_date'],
+                'project_id' => $params['project_id'],
+                'project_result' => $params['project_result'],
             ]);
 
-            $project = Project::where('id', $params['id_project'])->first();
+            $project = Project::where('id', $params['project_id'])->first();
 
             $project->published = true;
             $project->save();
