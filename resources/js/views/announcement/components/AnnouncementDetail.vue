@@ -5,6 +5,7 @@
         :span="12"
       ><h2>Informasi rencana Usaha/Kegiatan</h2>
         <el-table
+          ref="feedbackList"
           :data="list"
           style="width: 100%"
           :stripe="true"
@@ -78,7 +79,7 @@
       </el-table-column>
       <el-table-column align="center" label="Saran/Pendapat/Tanggapan">
         <template slot-scope="scope">
-          <span v-html="scope.row.description" />
+          <span v-html="scope.row.suggestion" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="Relevan">
@@ -127,6 +128,7 @@ export default {
   },
   data() {
     return {
+      id: 0,
       user: {},
       project: {},
       list: [],
@@ -136,7 +138,13 @@ export default {
   },
   mounted() {
     const id = this.$route.params && this.$route.params.id;
+    this.id = id;
     this.getAllData(id);
+
+    // event handler
+    this.$bus.$on('updateFeedbackList', event => {
+      this.getFeedbacks(this.id);
+    });
   },
   methods: {
     async getAllData(id){
@@ -239,7 +247,7 @@ export default {
             duration: 5 * 1000,
           });
           console.log(response);
-          // this.$router.push('/announcement/view/' + this.id);
+          this.$bus.$emit('updateFeedbackList', {});
         })
         .catch(error => {
           console.log(error);

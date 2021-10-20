@@ -24,7 +24,7 @@ class FeedbackController extends Controller
         return FeedbackResource::collection(Feedback::where(function ($query) use ($request) {
                 $query->where('announcement_id', $request->announcement_id)
                 ->where('deleted', $request->deleted);
-        })->get());
+        })->orderBy('id', 'ASC')->get());
     }
 
     /**
@@ -52,7 +52,7 @@ class FeedbackController extends Controller
                 'id_card_number' => 'required',
                 'phone' => 'required',
                 'email' => 'required',
-                'description' => 'required',
+                'suggestion' => 'required',
                 'photo_filepath' => 'required',
                 'responder_type_id' => 'required',
             ]
@@ -80,7 +80,9 @@ class FeedbackController extends Controller
                 'id_card_number' => $params['id_card_number'],
                 'phone' => $params['phone'],
                 'email' => $params['email'],
-                'description' => $params['description'],
+                'suggestion' => $params['suggestion'],
+                'concern' => $params['concern'],
+                'expectation' => $params['expectation'],
                 'photo_filepath' => str_replace('public', 'storage', $img_filepath),
                 'responder_type_id' => $params['responder_type_id'],
                 'is_relevant' => false,
@@ -129,7 +131,7 @@ class FeedbackController extends Controller
                 'id_card_number' => 'required',
                 'phone' => 'required',
                 'email' => 'required',
-                'description' => 'required',
+                // 'suggestion' => 'required',
                 'photo_filepath' => 'required',
                 'responder_type_id' => 'required',
             ]
@@ -162,7 +164,9 @@ class FeedbackController extends Controller
             $feedback->id_card_number = $params['id_card_number'];
             $feedback->phone = $params['phone'];
             $feedback->email = $params['email'];
-            $feedback->description = $params['description'];
+            $feedback->suggestion = $params['suggestion'];
+            $feedback->concern = $params['concern'];
+            $feedback->expectation = $params['expectation'];
             $feedback->photo_filepath = $photo_filepath;
             $feedback->responder_type_id = $params['responder_type_id'];
             $feedback->is_relevant = $params['is_relevant'];

@@ -51,23 +51,23 @@ final class Acl
 
     const PERMISSION_ARTICLE_MANAGE = 'manage article';
     
-    const PERMISSION_VIEW_MENU_USER = 'menu user';
-    const PERMISSION_VIEW_MENU_PERMISSION = 'menu permission';
-    const PERMISSION_VIEW_MENU_ROLE = 'menu role';
-    const PERMISSION_VIEW_MENU_PARAMS = 'menu params & kbli';
-    const PERMISSION_VIEW_MENU_INSTITUTION = 'menu institution';
-    const PERMISSION_VIEW_MENU_INITIATOR = 'menu initiator';
-    const PERMISSION_VIEW_MENU_FORMULATOR = 'menu formulator';
-    const PERMISSION_VIEW_MENU_EXAMINER = 'menu examiner';
-    const PERMISSION_VIEW_MENU_EXAMINER_INSTITUTION = 'menu examiner institution';
-    const PERMISSION_VIEW_MENU_EXPERT = 'menu expert';
-    const PERMISSION_VIEW_MENU_ANNOUNCEMENT = 'menu announcement';
-    const PERMISSION_VIEW_MENU_CONSULTATION = 'menu public consultation';
-    const PERMISSION_VIEW_MENU_SOP = 'menu sop';
-    const PERMISSION_VIEW_MENU_TECHNICAL_REGULATIONS = 'menu technical regulation';
-    const PERMISSION_VIEW_MENU_CLUSTER = 'menu cluster';
-    const PERMISSION_VIEW_MENU_PROJECT = 'menu project'; // kegiatan
-    const PERMISSION_VIEW_MENU_WORKSPACE = 'menu digital workspace'; // digital workspace
+    const PERMISSION_VIEW_MENU_USER = 'view menu user';
+    const PERMISSION_VIEW_MENU_PERMISSION = 'view menu permission';
+    const PERMISSION_VIEW_MENU_ROLE = 'view menu role';
+    const PERMISSION_VIEW_MENU_PARAMS = 'view menu params & kbli';
+    const PERMISSION_VIEW_MENU_INSTITUTION = 'view menu institution';
+    const PERMISSION_VIEW_MENU_INITIATOR = 'view menu initiator';
+    const PERMISSION_VIEW_MENU_FORMULATOR = 'view menu formulator';
+    const PERMISSION_VIEW_MENU_EXAMINER = 'view menu examiner';
+    const PERMISSION_VIEW_MENU_EXAMINER_INSTITUTION = 'view menu examiner institution';
+    const PERMISSION_VIEW_MENU_EXPERT = 'view menu expert';
+    const PERMISSION_VIEW_MENU_ANNOUNCEMENT = 'view menu announcement';
+    const PERMISSION_VIEW_MENU_CONSULTATION = 'view menu public consultation';
+    const PERMISSION_VIEW_MENU_SOP = 'view menu sop';
+    const PERMISSION_VIEW_MENU_TECHNICAL_REGULATIONS = 'view menu technical regulation';
+    const PERMISSION_VIEW_MENU_CLUSTER = 'view menu cluster';
+    const PERMISSION_VIEW_MENU_PROJECT = 'view menu project'; // kegiatan
+    const PERMISSION_VIEW_MENU_WORKSPACE = 'view menu digital workspace'; // digital workspace
 
     const PERMISSION_MANAGE_USER = 'manage user';
     const PERMISSION_MANAGE_ROLE = 'manage role';
