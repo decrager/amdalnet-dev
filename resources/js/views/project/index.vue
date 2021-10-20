@@ -207,6 +207,7 @@ export default {
             type: 'success',
             duration: 5 * 1000,
           });
+          this.getFiltered(this.listQuery);
           this.show = false;
         })
         .catch((error) => {
@@ -255,7 +256,8 @@ export default {
     handlePublishForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
       console.log(currentProject);
-      this.announcement.id_project = currentProject.id;
+      this.announcement.project_id = currentProject.id;
+      this.announcement.project_result = currentProject.required_doc;
       this.announcement.project_type = currentProject.project_title;
       this.announcement.project_scale =
         currentProject.scale + ' ' + currentProject.scale_unit;
