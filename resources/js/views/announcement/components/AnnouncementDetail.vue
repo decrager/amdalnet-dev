@@ -79,40 +79,49 @@
       </el-table-column>
       <el-table-column align="center" label="Saran/Pendapat/Tanggapan">
         <template slot-scope="scope">
-          <span v-html="scope.row.suggestion" />
+          <span v-html="scope.row.concern" />
         </template>
       </el-table-column>
       <el-table-column align="center" label="Relevan">
         <template slot-scope="scope">
-          <span>{{ scope.row.is_relevant_str }}</span>
+          <el-select
+            v-model="scope.row.is_relevant"
+            placeholder="Select"
+            style="width: 100%"
+            @change="onChangeRelevant(scope.row.id, $event)"
+          >
+            <el-option
+              v-for="item in relevantChoices"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Aksi">
+      <el-table-column align="center" label="Identitas">
         <template slot-scope="scope">
           <el-button
-            type="primary"
+            type="info"
             size="mini"
-            icon="el-icon-edit"
-            @click="handleEdit(scope.row.id)"
+            icon="el-icon-view"
+            @click="showIdentity(scope.row.id)"
           >
-            Edit
-          </el-button>
-          <el-button
-            type="danger"
-            size="mini"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row.id)"
-          >
-            Delete
+            Lihat Identitas
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+    <IdentityDialog
+      :feedback="selectedFeedback"
+      :show="showIdDialog"
+    />
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
+import IdentityDialog from './IdentityDialog.vue';
 const userResource = new Resource('users');
 const districtResource = new Resource('districts');
 const feedbackResource = new Resource('feedbacks');
@@ -120,6 +129,8 @@ const projectResource = new Resource('projects');
 const responderTypeResource = new Resource('responder_types');
 
 export default {
+  name: 'AnnouncementDetail',
+  components: { IdentityDialog },
   props: {
     isEdit: {
       type: Boolean,
@@ -134,11 +145,18 @@ export default {
       list: [],
       feedbacks: [],
       responder_types: [],
+      relevantChoices: [],
+      selectedFeedback: {},
+      showIdDialog: false,
     };
   },
   mounted() {
     const id = this.$route.params && this.$route.params.id;
     this.id = id;
+    this.relevantChoices = [
+      { value: true, label: 'Ya' },
+      { value: false, label: 'Tidak' },
+    ];
     this.getAllData(id);
 
     // event handler
@@ -229,25 +247,33 @@ export default {
     handleEdit(id) {
       this.$router.push('/feedback/edit/' + id);
     },
-    handleDelete(id) {
-      var toDelete = null;
+    showIdentity(feedbackId) {
+      var toShow = {};
       this.feedbacks.map((item) => {
-        if (item.id === id){
-          toDelete = item;
+        if (item.id === feedbackId){
+          toShow = item;
         }
       });
-      toDelete.deleted = true;
-      toDelete.deleted_at = new Date().toISOString();
+      this.selectedFeedback = toShow;
+      this.showIdDialog = true;
+    },
+    async onChangeRelevant(feedbackId, event) {
+      var toUpdate = {};
+      this.feedbacks.map((item) => {
+        if (item.id === feedbackId){
+          toUpdate = item;
+        }
+      });
       feedbackResource
-        .update(id, toDelete)
+        .update(feedbackId, toUpdate)
         .then(response => {
+          const is_relevant_str = response.data.is_relevant ? 'RELEVAN' : 'TIDAK RELEVAN';
+          const message = 'SPT \'' + response.data.name + '\' berhasil diupdate sebagai ' + is_relevant_str;
           this.$message({
-            message: 'SPT berhasil dihapus',
+            message: message,
             type: 'success',
             duration: 5 * 1000,
           });
-          console.log(response);
-          this.$bus.$emit('updateFeedbackList', {});
         })
         .catch(error => {
           console.log(error);

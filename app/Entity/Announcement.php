@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Entity\Feedback;
 
 class Announcement extends Model
 {
@@ -21,4 +22,9 @@ class Announcement extends Model
         'project_id',
         'project_result',
     ];
+
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }

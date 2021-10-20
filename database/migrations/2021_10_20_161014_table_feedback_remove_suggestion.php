@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProvincesTable extends Migration
+class TableFeedbackRemoveSuggestion extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreateProvincesTable extends Migration
      */
     public function up()
     {
-        Schema::create('provinces', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-            $table->softDeletes();
+        Schema::table('feedbacks', function (Blueprint $table) {
+            $table->dropColumn('suggestion');
         });
     }
 
@@ -28,6 +25,8 @@ class CreateProvincesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('provinces');
+        Schema::table('feedbacks', function (Blueprint $table) {
+            $table->text('suggestion')->nullable();
+        });
     }
 }
