@@ -18,6 +18,12 @@
 
 
 ### Installing
+
+Create .env file by
+
+copy `.env.example` to `.env`
+or
+copy `docker/docker.env` to `.env`
 #### Manual
 
 ```bash
