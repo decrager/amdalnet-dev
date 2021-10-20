@@ -579,6 +579,70 @@ input {
     transform: var(--img-scale);
 }
 
+
+/*=============== announce ===============*/
+
+.announce__box__wrapper {
+    background-color: #062307;
+    padding: 20px;
+    border-radius: 5px;
+    display: flex;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.announce__box__button {
+    justify-content: center;
+    align-items: center;
+    display: flex
+}
+
+.button__tanggapan {
+    background-color: #F6993F;
+    padding: 7px 13px;
+    color: white;
+    border-radius: 6px
+}
+
+.button__tanggapan:hover {
+    transform: scale(1.1);
+    transition: all .2s ease;
+    background-color: #f38c25;
+    padding: 7px 13px;
+    color: white;
+    border-radius: 6px
+}
+
+.announce__box__icon {
+    flex: .5;
+}
+
+.announce__box__icon img {
+    height: 81px;
+    align-content: center;
+}
+
+.announce__box__desc__content {
+    font-size: 14px;
+    color: white;
+    line-height: 22px;
+    font-weight: 400;
+}
+
+.text__special {
+    color: #F6993F;
+    font-weight: 800;
+}
+
+.announce__box__desc {
+    flex: 2;
+}
+
+.announce__description {
+    margin-bottom: var(--mb-2);
+}
+
+
 /*=============== counter ===============*/
 .counter {
     background-color: black;

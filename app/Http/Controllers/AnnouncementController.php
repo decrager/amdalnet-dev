@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Announcement;
+use App\Entity\Feedback;
 use App\Entity\Project;
 use App\Http\Resources\AnnouncementResource;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ class AnnouncementController extends Controller
      */
     public function index()
     {
-        //
+        $getAllAnnouncement = Announcement::withCount('feedbacks')->get();
+        return AnnouncementResource::make($getAllAnnouncement);
     }
 
     /**
