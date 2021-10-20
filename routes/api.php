@@ -162,3 +162,4 @@ Route::apiResource('support-docs', 'SupportDocController');
 Route::apiResource('announcements', 'AnnouncementController');
 Route::apiResource('initiators', 'InitiatorController');
 Route::apiResource('lpjp', 'LpjpController');
+Route::apiResource('formulators', 'FormulatorController');
