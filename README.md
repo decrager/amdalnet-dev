@@ -83,6 +83,7 @@ php artisan list
 # create graphviz for workflow 
 php artisan workflow:dump straight --class App\\Entity\\BlogPost
 php artisan workflow:dump amdalnet --class App\\Entity\\Project
+php artisan workflow:dump amdal --class App\\Entity\\Project
 
 # create blogpost model
 php artisan make:model 'Entity\BlogPost' --migration
