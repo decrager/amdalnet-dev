@@ -12,7 +12,7 @@
     </div>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
       <el-tab-pane label="Penyusun" name="penyusun">
-        <lpjp-table
+        <formulator-table
           :loading="loading"
           :list="list"
           @handleEditForm="handleEditForm($event)"
@@ -20,7 +20,7 @@
         />
       </el-tab-pane>
       <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
-        <lpjp-table
+        <formulator-table
           :loading="loading"
           :list="listActive"
           @handleEditForm="handleEditForm($event)"
@@ -28,18 +28,27 @@
         />
       </el-tab-pane>
     </el-tabs>
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="handleFilter"
+    />
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
-import LpjpTable from '@/views/lpjp/components/LpjpTable.vue';
+import FormulatorTable from '@/views/formulator/components/FormulatorTable.vue';
+import Pagination from '@/components/Pagination';
 const formulatorResource = new Resource('formulators');
 
 export default {
-  name: 'LpjpList',
+  name: 'FormulatorList',
   components: {
-    LpjpTable,
+    FormulatorTable,
+    Pagination,
   },
   data() {
     return {
@@ -51,12 +60,16 @@ export default {
         page: 1,
         limit: 10,
       },
+      total: 0,
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleFilter() {
+      this.getList();
+    },
     handleClickTab(tab, event) {
       if (tab.name === 'penyusunAktif') {
         this.getListActive();
@@ -64,8 +77,9 @@ export default {
     },
     async getList() {
       this.loading = true;
-      const { data } = await formulatorResource.list(this.listQuery);
+      const { data, meta } = await formulatorResource.list(this.listQuery);
       this.list = data;
+      this.total = meta.total;
       this.loading = false;
     },
     getListActive() {
@@ -81,7 +95,7 @@ export default {
     },
     handleCreate() {
       this.$router.push({
-        name: 'createFormulators',
+        name: 'createFormulator',
         params: { formulator: {}},
       });
     },
@@ -93,15 +107,11 @@ export default {
       });
     },
     handleDelete({ id, name }) {
-      this.$confirm(
-        'Hapus Formulator ' + name + '. ?',
-        'Warning',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Batal',
-          type: 'warning',
-        }
-      )
+      this.$confirm('Hapus Formulator ' + name + '. ?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Batal',
+        type: 'warning',
+      })
         .then(() => {
           formulatorResource
             .destroy(id)

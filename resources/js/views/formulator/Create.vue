@@ -1,49 +1,18 @@
 <template>
-  <div class="form-container" style="padding: 24px">
+  <div class="form-container" style="margin: 24px">
     <el-form
       ref="categoryForm"
-      :model="currentLpjp"
+      :model="currentFormulator"
       label-position="top"
       label-width="200px"
       style="max-width: 100%"
     >
       <el-row :gutter="32">
         <el-col :span="12">
-          <el-form-item label="Nama LPJP" prop="namaLpjp">
-            <el-input v-model="currentLpjp.name" placeholder="Nama LPJP" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="PIC LPJP" prop="picLpjp">
-            <el-input v-model="currentLpjp.pic" placeholder="PIC LPJP" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row :gutter="32">
-        <el-col :span="12">
-          <el-form-item label="No. Registrasi LPJP" prop="nomorRegistrasi">
-            <el-input v-model="currentLpjp.reg_no" placeholder="No. Registrasi LPJP" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="Alamat LPJP" prop="alamatLpjp">
-            <el-input v-model="currentLpjp.address" placeholder="Alamat LPJP" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row :gutter="32">
-        <el-col :span="12">
-          <el-form-item label="Provinsi" prop="provinsi">
-            <el-select
-              v-model="currentLpjp.id_prov"
-              placeholder="Province"
-              clearable
-              class="filter-item"
-              style="width: 100%"
-              @change="changeProvince($event)"
-            >
+          <el-form-item label="Status Keanggotaan" prop="statusKeanggotaan">
+            <el-select v-model="currentFormulator.membership_status" placeholder="Select" style="width: 100%">
               <el-option
-                v-for="item in provinceOptions"
+                v-for="item in membershipStatusOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -52,54 +21,52 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="Kota" prop="kota">
-            <el-select
-              v-model="currentLpjp.id_district"
-              placeholder="Kota"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in cityOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                :disabled="cityOptions.length == 0"
-              />
-            </el-select>
-            <!-- <el-input v-model="currentLpjp.kota" /> -->
+          <el-form-item label="Nama Penyusun" prop="namaPenyusun">
+            <el-input v-model="currentFormulator.name" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="32">
         <el-col :span="12">
-          <el-form-item label="No. Telp" prop="noTelp">
-            <el-input v-model="currentLpjp.mobile_phone_no" placeholder="No. Telp" />
+          <el-form-item label="Keahlian Penyusun" prop="keahlian Penyusun">
+            <el-input v-model="currentFormulator.expertise" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="Email" prop="email">
-            <el-input v-model="currentLpjp.email" placeholder="Email" />
+          <el-form-item
+            label="Nomor Sertifikasi Penyusun"
+            prop="noSertiPenyusun"
+          >
+            <el-input v-model="currentFormulator.cert_no" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="32">
         <el-col :span="12">
-          <el-form-item label="Dokumen Sertifikat" prop="fileSertifikat">
-            <!-- <input type="file" @change="handleFileObject"> -->
+          <el-form-item
+            label="Dokumen Sertifikat Penyusun"
+            prop="dokSerPenyusun"
+          >
             <el-upload
               class="upload-demo"
               :auto-upload="false"
-              :on-change="handleUploadChange"
+              :on-change="handleUploadSertifikat"
               action="#"
               :show-file-list="false"
             >
-              <el-button size="small" type="primary">Click to upload</el-button><span style="padding-left: 10px">{{
-                fileName || currentLpjp.cert_file
-              }}</span>
+              <el-button size="small" type="primary">Click to upload</el-button>
               <div slot="tip" class="el-upload__tip">
-                upload sertifikat disini
+                {{ sertifikatFileName || currentFormulator.cert_file }}
               </div>
             </el-upload>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item
+            label="Nomor Registrasi Penyusun"
+            prop="noRegPenyusun"
+          >
+            <el-input v-model="currentFormulator.reg_no" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -107,11 +74,11 @@
         <el-col :span="12">
           <el-row :gutter="8">
             <el-col :span="12">
-              <el-form-item label="Tgl Ditetapkan" prop="tglAwal">
+              <el-form-item label="Tanggal Ditetapkan" prop="tglDitetapkan">
                 <el-date-picker
-                  v-model="currentLpjp.date_start"
+                  v-model="currentFormulator.date_start"
                   type="date"
-                  placeholder="yyyy-MM-dd"
+                  placeholder="Pick a day"
                   value-format="yyyy-MM-dd"
                   style="width: 100%"
                 />
@@ -120,9 +87,9 @@
             <el-col :span="12">
               <el-form-item label="Terakhir Berlaku" prop="terakhirBerlaku">
                 <el-date-picker
-                  v-model="currentLpjp.date_end"
+                  v-model="currentFormulator.date_end"
                   type="date"
-                  placeholder="yyyy-MM-dd"
+                  placeholder="Pick a day"
                   value-format="yyyy-MM-dd"
                   style="width: 100%"
                 />
@@ -131,20 +98,50 @@
           </el-row>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="Contact Person" prop="contactPerson">
-            <el-input v-model="currentLpjp.contact_person" placeholder="Contact Person" />
-          </el-form-item>
+          <el-col :span="12">
+            <el-form-item label="CV Penyusun" prop="cvPenyusun">
+              <el-upload
+                class="upload-demo"
+                :auto-upload="false"
+                :on-change="handleUploadCv"
+                action="#"
+                :show-file-list="false"
+              >
+                <el-button
+                  size="small"
+                  type="primary"
+                >Click to upload</el-button>
+                <div slot="tip" class="el-upload__tip">
+                  {{ cvFileName || currentFormulator.cv_file }}
+                </div>
+              </el-upload>
+            </el-form-item>
+          </el-col>
         </el-col>
       </el-row>
-      <el-row :gutter="32">
+      <el-row :gutter="12">
         <el-col :span="12">
-          <el-form-item label="No. HP" prop="noHp">
-            <el-input v-model="currentLpjp.phone_no" placeholder="No. Hp" />
+          <el-form-item label="Status Keanggotaan" prop="statusKeanggotaan">
+            <el-select v-model="currentFormulator.id_institution" placeholder="Select" style="width: 100%">
+              <el-option
+                v-for="item in afiliasiLembagaOption"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="Link Web" prop="linkWeb">
-            <el-input v-model="currentLpjp.url_address" placeholder="http://braindevs.com" />
+          <el-form-item label="LSP Penerbit" prop="lspPenerbit">
+            <el-select v-model="currentFormulator.id_lsp" placeholder="Select" style="width: 100%">
+              <el-option
+                v-for="item in lspPenerbitOption"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -158,102 +155,120 @@
 
 <script>
 import Resource from '@/api/resource';
-const lpjpResource = new Resource('lpjp');
-const provinceResource = new Resource('provinces');
-const districtResource = new Resource('districts');
+const formulatorResource = new Resource('formulators');
 
 export default {
-  name: 'CreateLpjp',
-  props: {
-    lpjp: {
-      type: Object,
-      default: null,
-    },
-  },
+  name: 'CreatePenyusun',
   data() {
     return {
-      currentLpjp: {},
-      fileUpload: null,
-      fileName: null,
-      provinceOptions: [],
-      cityOptions: [],
+      currentFormulator: {},
+      sertifikatFileUpload: null,
+      sertifikatFileName: null,
+      cvFileUpload: null,
+      cvFileName: null,
+      membershipStatusOptions: [
+        {
+          value: 'KTPA',
+          label: 'Ketua Tim Penyusun Amdal (KTPA)',
+        },
+        {
+          value: 'ATPA',
+          label: 'Anggota Tim Penyusun Amdal (ATPA)',
+        },
+      ],
+      afiliasiLembagaOption: [
+        {
+          value: 0,
+          label: 'Tidak Terafiliasi',
+        },
+        {
+          value: 1,
+          label: 'CV. Amdal Abadi',
+        },
+      ],
+      lspPenerbitOption: [
+        {
+          value: 0,
+          label: 'LSP-LH INKALINDO',
+        },
+        {
+          value: 1,
+          label: 'LSP-LH INTAKINDO',
+        },
+        {
+          value: 2,
+          label: 'LSP-LHKI',
+        },
+        {
+          value: 3,
+          label: 'LSP-TLIP',
+        },
+      ],
     };
   },
   mounted() {
-    if (this.$route.params.lpjp) {
-      this.currentLpjp = this.$route.params.lpjp;
+    console.log(this.$route.params.formulator);
+    if (this.$route.params.formulator) {
+      this.currentFormulator = this.$route.params.formulator;
     }
-
-    this.getProvinces();
   },
   methods: {
-    async changeProvince(value) {
-      // change all district by province
-      this.getDistricts(value);
-    },
-    async getProvinces(){
-      const { data } = await provinceResource.list({});
-      this.provinceOptions = data.map((i) => {
-        return { value: i.id, label: i.name };
-      });
-    },
-    async getDistricts(idProv) {
-      const { data } = await districtResource.list({ idProv });
-      this.cityOptions = data.map((i) => {
-        return { value: i.id, label: i.name };
-      });
-    },
     handleCancel() {
-      this.$router.push('/master/lpjp');
-    },
-    handleUploadChange(file, fileList) {
-      this.fileName = file.name;
-      this.fileUpload = file.raw;
+      this.$router.push('/master/formulator');
     },
     handleSubmit() {
-      this.currentLpjp.file = this.fileUpload;
+      this.currentFormulator.cv_penyusun = this.sertifikatFileUpload;
+      this.currentFormulator.file_sertifikat = this.cvFileUpload;
 
       // make form data because we got file
       const formData = new FormData();
 
       // eslint-disable-next-line no-undef
-      _.each(this.currentLpjp, (value, key) => {
+      _.each(this.currentFormulator, (value, key) => {
         formData.append(key, value);
       });
 
-      if (this.currentLpjp.id !== undefined) {
-        lpjpResource
-          .updateMultipart(this.currentLpjp.id, formData)
+      if (this.currentFormulator.id !== undefined) {
+        formulatorResource
+          .updateMultipart(this.currentFormulator.id, formData)
           .then((response) => {
             this.$message({
               type: 'success',
-              message: 'LPJP Details has been updated successfully',
+              message: 'Penyusun Berhasil di Update',
               duration: 5 * 1000,
             });
-            this.$router.push('/master/lpjp');
+            this.$router.push('/master-data/formulator');
           })
           .catch((error) => {
             console.log(error);
           });
       } else {
-        lpjpResource
+        formulatorResource
           .store(formData)
           .then((response) => {
             this.$message({
               message:
-                'New LPJP ' +
-                this.currentLpjp.nama +
-                ' has been created successfully.',
+                'Penyusun Baru atas nama ' +
+                this.currentFormulator.name +
+                ' Berhasil Dibuat',
               type: 'success',
               duration: 5 * 1000,
             });
-            this.currentLpjp = {};
-            this.$router.push('/master/lpjp');
+            this.currentFormulator = {};
+            this.$router.push('/master-data/formulator');
           })
           .catch((error) => {
             console.log(error);
           });
       }
+    },
+    handleUploadSertifikat(file, fileList) {
+      this.sertifikatFileName = file.name;
+      this.sertifikatFileUpload = file.raw;
+    },
+    handleUploadCv(file, fileList) {
+      this.cvFileName = file.name;
+      this.cvFileUpload = file.raw;
     },
   },
 };
