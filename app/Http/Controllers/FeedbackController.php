@@ -60,6 +60,8 @@ class FeedbackController extends Controller
         };
 
         $validator['announcement_id'] = $request->announcement_id;
+
+        return new FeedbackResource(Feedback::create($validator));       
     }
 
     /**
