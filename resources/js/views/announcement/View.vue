@@ -1,5 +1,9 @@
 <template>
-  <announcement-detail :is-edit="false" />
+  <announcement-detail
+    :show-project-detail="true"
+    :show-feedback-list="true"
+    :show-public-consultation="true"
+  />
 </template>
 
 <script>
