@@ -67,7 +67,7 @@
           <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Judul">
+      <el-table-column align="center" label="Nama">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
@@ -82,7 +82,7 @@
           <span v-html="scope.row.concern" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Relevan">
+      <el-table-column align="center" label="Relevansi">
         <template slot-scope="scope">
           <el-select
             v-model="scope.row.is_relevant"
@@ -157,8 +157,8 @@ export default {
     const id = this.$route.params && this.$route.params.id;
     this.id = id;
     this.relevantChoices = [
-      { value: true, label: 'Ya' },
-      { value: false, label: 'Tidak' },
+      { value: true, label: 'Relevan' },
+      { value: false, label: 'Tidak Relevan' },
     ];
     this.getAllData(id);
 
@@ -197,7 +197,7 @@ export default {
           }
         });
         item.responder_type_name = responder_type_name;
-        item.is_relevant_str = item.is_relevant ? 'Ya' : 'Tidak';
+        item.is_relevant_str = item.is_relevant ? 'Relevan' : 'Tidak Relevan';
       });
       this.feedbacks = data;
     },
