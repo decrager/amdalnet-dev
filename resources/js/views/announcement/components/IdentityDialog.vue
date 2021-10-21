@@ -1,11 +1,17 @@
 <template>
   <el-dialog :title="'Identitas'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
     <div class="form-container">
-      <div><img :src="feedback.photo_filepath" width="400px"></div>
-      <div>Nama: {{ feedback.name }}</div>
-      <div>NIK: {{ feedback.id_card_number }}</div>
-      <div>No. Telepon: {{ feedback.phone }}</div>
-      <div>Email: {{ feedback.email }}</div>
+      <div><img :src="photo" width="400px"></div>
+      <el-table
+        ref="feedbackList"
+        :data="data"
+        style="width: 100%"
+        :stripe="true"
+        :show-header="false"
+      >
+        <el-table-column prop="param" />
+        <el-table-column prop="value" />
+      </el-table>
       <el-button
         type="danger"
         size="mini"
@@ -22,16 +28,15 @@
 export default {
   name: 'IdentityDialog',
   props: {
-    feedback: {
-      type: Object,
-      default: () => {},
+    data: {
+      type: Array,
+      default: () => [],
+    },
+    photo: {
+      type: String,
+      default: () => '',
     },
     show: Boolean,
-  },
-  data(){
-    return {
-      data: {},
-    };
   },
   methods: {
     closeDialog() {
