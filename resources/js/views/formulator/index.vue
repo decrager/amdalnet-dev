@@ -95,7 +95,7 @@ export default {
     },
     handleCreate() {
       this.$router.push({
-        name: 'createFormulators',
+        name: 'createFormulator',
         params: { formulator: {}},
       });
     },

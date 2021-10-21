@@ -186,7 +186,7 @@ export default {
             message: 'Project info has been updated successfully',
             duration: 5 * 1000,
           });
-          // this.$router.push('/project');
+          this.$router.push('/project');
         }).catch(error => {
           console.log(error);
         });

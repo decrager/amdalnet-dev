@@ -96,7 +96,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', noCache: false },
+        meta: { title: 'dashboard', icon: 'dashboard', noCache: false },
       },
     ],
   },
@@ -183,27 +183,27 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/project',
     alwaysShow: true,
-    meta: { title: 'Project', icon: 'zip' },
+    meta: { title: 'project', icon: 'zip' },
     children: [
       {
         path: '',
         component: () => import('@/views/project'),
         name: 'project',
-        meta: { title: 'List Project', icon: 'documentation' },
+        meta: { title: 'listProject', icon: 'documentation' },
       },
       {
         path: 'create',
         component: () => import('@/views/project/Create'),
         name: 'createProject',
         hidden: true,
-        meta: { title: 'Add Project', icon: 'documentation', noCache: true },
+        meta: { title: 'addProject', icon: 'documentation', noCache: true },
       },
       {
         path: 'publish',
         component: () => import('@/views/project/Publish'),
         name: 'publishProject',
         hidden: true,
-        meta: { title: 'Publish Project', icon: 'documentation', noCache: true, breadcrumb: false },
+        meta: { title: 'publishProject', icon: 'documentation', noCache: true, breadcrumb: false },
         props: true,
       },
     ],
@@ -213,13 +213,13 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/master-data',
     alwaysShow: true,
-    meta: { title: 'Master Data', icon: 'el-icon-reading' },
+    meta: { title: 'masterData', icon: 'el-icon-reading' },
     children: [
       {
         path: '/provinces',
         component: () => import('@/views/master-data/province'),
-        name: 'project',
-        meta: { title: 'Provinsi', icon: 'el-icon-school' },
+        name: 'province',
+        meta: { title: 'provinsi', icon: 'el-icon-school' },
       },
       {
         path: 'lpjp',
@@ -256,7 +256,7 @@ export const asyncRoutes = [
       //   meta: { title: 'Edit Penyusun', icon: 'documentation', noCache: true },
       // },
       {
-        path: 'penyusun',
+        path: 'formulator',
         component: () => import('@/views/formulator/index'),
         name: 'formulator',
         meta: {
@@ -264,6 +264,20 @@ export const asyncRoutes = [
           icon: 'documentation',
           noCache: true,
         },
+      },
+      {
+        path: 'formulator/create',
+        component: () => import('@/views/formulator/Create'),
+        name: 'createFormulator',
+        hidden: true,
+        meta: { title: 'Tambah Penyusun', icon: 'documentation', noCache: true },
+      },
+      {
+        path: 'formulator/edit/:id',
+        component: () => import('@/views/formulator/Create'),
+        name: 'editFormulator',
+        hidden: true,
+        meta: { title: 'Edit Penyusun', icon: 'documentation', noCache: true },
       },
       // {
       //   path: 'bank-ahli',
