@@ -112,7 +112,7 @@ class AnnouncementController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Announcement $announcement)
-    {;
+    {
         return Announcement::with('project')->get()->where('id', '=', $announcement->id)->first();
     }
 

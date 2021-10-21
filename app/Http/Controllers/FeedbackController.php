@@ -45,52 +45,23 @@ class FeedbackController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name' => 'required',
-                'id_card_number' => 'required',
-                'phone' => 'required',
-                'email' => 'required',
-                'concern' => 'required',
-                'photo_filepath' => 'required',
-                'responder_type_id' => 'required',
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 403);
-        } else {
-            $params = $request->all();
-            // check base64 string
-            $data = $params['photo_filepath'];
-            list($type, $data) = explode(';', $data);
-            list(,$extension) = explode('/',$type);
-            list(,$data) = explode(',', $data);
-            $decoded_data = base64_decode($data);
-            // put to laravel storage
-            $img_filepath = 'public/images/spt/' . uniqid() . '.' . $extension;
-            Storage::put($img_filepath, $decoded_data);
-            // don't forget to make symlink:
-            // php artisan storage:link
+        $validator = $request->validate([
+            'name' => 'required',
+            'id_card_number' => 'required',
+            'phone' => 'required',
+            'email' => 'required',
+            'concern' => 'required',
+            'photo_filepath' => 'image|file',
+            'responder_type_id' => 'required',
+        ]);
 
-            // save entity
-            $feedback = Feedback::create([
-                'announcement_id' => $params['announcement_id'],
-                'name' => $params['name'],
-                'id_card_number' => $params['id_card_number'],
-                'phone' => $params['phone'],
-                'email' => $params['email'],
-                'concern' => $params['concern'],
-                'expectation' => $params['expectation'],
-                'rating' => $params['rating'],
-                'photo_filepath' => str_replace('public', 'storage', $img_filepath),
-                'responder_type_id' => $params['responder_type_id'],
-                'is_relevant' => false,
-                'set_relevant_by' => 0,
-                'set_relevant_at' => null,
-            ]);
-            return new FeedbackResource($feedback);
-        }
+        if ($request->file('photo_filepath')) {
+            $validator['photo_filepath'] = $request->file('photo_filepath')->store('/images/spt');
+        };
+
+        $validator['announcement_id'] = $request->announcement_id;
+
+        return new FeedbackResource(Feedback::create($validator));       
     }
 
     /**
