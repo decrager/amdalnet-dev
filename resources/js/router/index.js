@@ -257,10 +257,10 @@ export const asyncRoutes = [
       // },
       {
         path: 'penyusun',
-        component: () => import('@/views/lpjp/index'),
-        name: 'Penyusun',
+        component: () => import('@/views/formulator/index'),
+        name: 'formulator',
         meta: {
-          title: 'Penyusun',
+          title: 'formulator',
           icon: 'documentation',
           noCache: true,
         },

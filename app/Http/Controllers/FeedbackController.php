@@ -60,8 +60,6 @@ class FeedbackController extends Controller
         };
 
         $validator['announcement_id'] = $request->announcement_id;
-
-        return new FeedbackResource(Feedback::create($validator));            
     }
 
     /**
@@ -137,6 +135,7 @@ class FeedbackController extends Controller
             $feedback->email = $params['email'];
             $feedback->concern = $params['concern'];
             $feedback->expectation = $params['expectation'];
+            $feedback->rating = $params['rating'];
             $feedback->photo_filepath = $photo_filepath;
             $feedback->responder_type_id = $params['responder_type_id'];
             $feedback->is_relevant = $params['is_relevant'];
