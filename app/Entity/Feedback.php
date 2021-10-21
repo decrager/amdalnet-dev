@@ -16,6 +16,7 @@ class Feedback extends Model
         'email',
         'concern',
         'expectation',
+        'rating',
         'photo_filepath',
         'responder_type_id',
         'is_relevant',
