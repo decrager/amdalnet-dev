@@ -113,7 +113,8 @@
       </el-table-column>
     </el-table>
     <IdentityDialog
-      :feedback="selectedFeedback"
+      :data="identityDialogData"
+      :photo="identityDialogImg"
       :show="showIdDialog"
     />
   </div>
@@ -147,6 +148,8 @@ export default {
       responder_types: [],
       relevantChoices: [],
       selectedFeedback: {},
+      identityDialogData: [],
+      identityDialogImg: '',
       showIdDialog: false,
     };
   },
@@ -255,6 +258,25 @@ export default {
         }
       });
       this.selectedFeedback = toShow;
+      this.identityDialogImg = toShow.photo_filepath;
+      this.identityDialogData = [
+        {
+          param: 'Nama',
+          value: this.selectedFeedback.name,
+        },
+        {
+          param: 'NIK',
+          value: this.selectedFeedback.id_card_number,
+        },
+        {
+          param: 'No. Telepon',
+          value: this.selectedFeedback.phone,
+        },
+        {
+          param: 'Email',
+          value: this.selectedFeedback.email,
+        },
+      ];
       this.showIdDialog = true;
     },
     async onChangeRelevant(feedbackId, event) {

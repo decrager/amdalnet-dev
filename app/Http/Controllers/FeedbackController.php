@@ -82,6 +82,7 @@ class FeedbackController extends Controller
                 'email' => $params['email'],
                 'concern' => $params['concern'],
                 'expectation' => $params['expectation'],
+                'rating' => $params['rating'],
                 'photo_filepath' => str_replace('public', 'storage', $img_filepath),
                 'responder_type_id' => $params['responder_type_id'],
                 'is_relevant' => false,
@@ -165,6 +166,7 @@ class FeedbackController extends Controller
             $feedback->email = $params['email'];
             $feedback->concern = $params['concern'];
             $feedback->expectation = $params['expectation'];
+            $feedback->rating = $params['rating'];
             $feedback->photo_filepath = $photo_filepath;
             $feedback->responder_type_id = $params['responder_type_id'];
             $feedback->is_relevant = $params['is_relevant'];
