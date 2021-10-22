@@ -7,7 +7,7 @@ use App\Http\Resources\KbliResource;
 use Illuminate\Http\Request;
 use DB;
 
-class kbliController extends Controller
+class KbliController extends Controller
 {
     /**
      * Display a listing of the resource.

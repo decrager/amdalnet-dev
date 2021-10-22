@@ -72,7 +72,11 @@ export default {
     userProfile: 'User Profile',
     project: 'Project',
     listProject: 'List Project',
-    addProject: 'Tambah Kegiatan',
+    addProject: 'Add Project',
+    publishProject: 'publish Project',
+    masterData: 'Master Data',
+    provinsi: 'Province',
+    formulator: 'Formulator',
   },
   navbar: {
     logOut: 'Log Out',

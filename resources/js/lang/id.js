@@ -70,6 +70,13 @@ export default {
     administrator: 'Administrator',
     users: 'Pengguna',
     userProfile: 'Profile Pengguna',
+    project: 'Kegiatan',
+    listProject: 'List Kegiatan',
+    addProject: 'Tambah Kegiatan',
+    publishProject: 'Publikasi Kegiatan',
+    masterData: 'Data Master',
+    provinsi: 'Provinsi',
+    formulator: 'Penyusun',
   },
   navbar: {
     logOut: 'Keluar',

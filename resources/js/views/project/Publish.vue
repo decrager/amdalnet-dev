@@ -118,11 +118,14 @@ export default {
         if (tempStatus) {
           this.project.required_doc = item.doc_req;
           this.project.result_risk = item.risk_level;
-        } else {
-          this.project.required_doc = 'SPPL';
-          this.project.result_risk = 'Rendah';
         }
       });
+
+      // check for any condition that not in kbli param
+      if (!this.project.required_doc) {
+        this.project.required_doc = 'SPPL';
+        this.project.result_risk = 'Rendah';
+      }
     },
     checkIfTrue(item) {
       const [data1, operator, data2] = item.split(/\s+/);
@@ -183,7 +186,7 @@ export default {
             message: 'Project info has been updated successfully',
             duration: 5 * 1000,
           });
-          // this.$router.push('/project');
+          this.$router.push('/project');
         }).catch(error => {
           console.log(error);
         });

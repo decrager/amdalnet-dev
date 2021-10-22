@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Announcement;
+use App\Entity\Feedback;
 use App\Entity\Project;
 use App\Http\Resources\AnnouncementResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use DB;
+// use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
@@ -19,7 +21,8 @@ class AnnouncementController extends Controller
      */
     public function index()
     {
-        //
+        $getAllAnnouncement = Announcement::withCount('feedbacks')->get();
+        return AnnouncementResource::make($getAllAnnouncement);
     }
 
     /**
@@ -65,7 +68,7 @@ class AnnouncementController extends Controller
 
             //create file
             $file = $request->file('fileProof');
-            $name = '/announcement/' . uniqid() . '.' . $file->giiextension();
+            $name = '/announcement/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
             DB::beginTransaction();
@@ -110,7 +113,7 @@ class AnnouncementController extends Controller
      */
     public function show(Announcement $announcement)
     {
-        //
+        return Announcement::with('project')->get()->where('id', '=', $announcement->id)->first();
     }
 
     /**

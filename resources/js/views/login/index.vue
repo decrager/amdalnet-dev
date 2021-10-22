@@ -42,8 +42,8 @@
             </el-button>
           </el-form-item>
           <div class="tips">
-            <span style="margin-right:20px;">Email: admin@amdalnet.dev</span>
-            <span>Password: amdalnet</span>
+            <span style="margin-right:20px;">Email: admin@laravue.dev</span>
+            <span>Password: laravue</span>
           </div>
         </el-form>
       </div>
@@ -78,8 +78,8 @@ export default {
     };
     return {
       loginForm: {
-        email: 'admin@amdalnet.dev',
-        password: 'amdalnet',
+        email: 'admin@laravue.dev',
+        password: 'laravue',
       },
       loginRules: {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
@@ -119,8 +119,9 @@ export default {
           csrf().then(() => {
             this.$store.dispatch('user/login', this.loginForm)
               .then(() => {
-                this.$router.push({ path: this.redirect || '/', query: this.otherQuery }, onAbort => {});
+                this.$router.push({ path: this.redirect || '/dashboard', query: this.otherQuery }, onAbort => {});
                 this.loading = false;
+                window.location.reload();
               })
               .catch(() => {
                 this.loading = false;
