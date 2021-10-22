@@ -36,7 +36,7 @@
           <span v-html="scope.row.expectation" />
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Rating">
+      <el-table-column align="left" label="Rating" width="150">
         <template slot-scope="scope">
           <el-rate
             v-model="scope.row.rating"
