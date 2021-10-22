@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="'Identitas'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
+  <el-dialog :title="'Identitas'" :visible.sync="show" :close-on-click-modal="false" :show-close="true">
     <div class="form-container">
       <div><img :src="photo" width="400px"></div>
       <el-table

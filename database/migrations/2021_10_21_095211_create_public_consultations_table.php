@@ -16,6 +16,7 @@ class CreatePublicConsultationsTable extends Migration
         Schema::create('public_consultations', function (Blueprint $table) {
             $table->id();
             $table->integer('announcement_id');
+            $table->integer('project_id');
             $table->timestamp('event_date');
             $table->integer('participant');
             $table->string('location');
