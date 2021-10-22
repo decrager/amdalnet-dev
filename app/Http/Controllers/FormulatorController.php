@@ -43,7 +43,7 @@ class FormulatorController extends Controller
      */
     public function store(Request $request)
     {
-        ///validate request
+        //validate request
 
         $validator = Validator::make(
             $request->all(),

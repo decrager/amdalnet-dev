@@ -77,6 +77,7 @@ export default {
     masterData: 'Master Data',
     provinsi: 'Province',
     formulator: 'Formulator',
+    expertBank: 'Expert Bank',
   },
   navbar: {
     logOut: 'Log Out',
