@@ -60,13 +60,16 @@
         :responder-types="responder_types"
       />
     </div>
+    <div v-if="showPublicConsultation">
+      <PublicConsultationForm />
+    </div>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
-import FeedbackList from './FeedbackList.vue';
-// import ProjectDetail from './ProjectDetail.vue';
+import FeedbackList from '@/views/feedback/components/List.vue';
+import PublicConsultationForm from '@/views/public-consultation/components/Form.vue';
 const announcementResource = new Resource('announcements');
 const feedbackResource = new Resource('feedbacks');
 const responderTypeResource = new Resource('responder_types');
@@ -74,7 +77,7 @@ const districtResource = new Resource('districts');
 
 export default {
   name: 'AnnouncementDetail',
-  components: { FeedbackList },
+  components: { FeedbackList, PublicConsultationForm },
   props: {
     showProjectDetail: Boolean,
     showFeedbackList: Boolean,

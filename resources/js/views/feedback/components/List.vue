@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-bottom: 20px;">
     <el-table
       :data="feedbacks"
       border
@@ -11,12 +11,12 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Tanggal Dibuat">
+      <el-table-column align="left" label="Tanggal Dibuat">
         <template slot-scope="scope">
           <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Nama">
+      <el-table-column align="left" label="Nama">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
@@ -26,18 +26,34 @@
           <span>{{ scope.row.responder_type_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Saran/Pendapat/Tanggapan">
+      <el-table-column align="left" label="Kekhawatiran">
         <template slot-scope="scope">
           <span v-html="scope.row.concern" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Relevansi">
+      <el-table-column align="left" label="Harapan">
+        <template slot-scope="scope">
+          <span v-html="scope.row.expectation" />
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Rating">
+        <template slot-scope="scope">
+          <el-rate
+            v-model="scope.row.rating"
+            :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
+            :max="5"
+            style="margin-top:8px;"
+            @change="onChangeForm(scope.row.id, $event)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Relevansi">
         <template slot-scope="scope">
           <el-select
             v-model="scope.row.is_relevant"
             placeholder="Select"
             style="width: 100%"
-            @change="onChangeRelevant(scope.row.id, $event)"
+            @change="onChangeForm(scope.row.id, $event)"
           >
             <el-option
               v-for="item in relevantChoices"
@@ -48,7 +64,7 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Identitas">
+      <el-table-column align="left" label="Identitas">
         <template slot-scope="scope">
           <el-button
             type="info"
@@ -140,7 +156,7 @@ export default {
       ];
       this.showIdDialog = true;
     },
-    async onChangeRelevant(feedbackId, event) {
+    async onChangeForm(feedbackId, event) {
       var toUpdate = {};
       this.feedbacks.map((item) => {
         if (item.id === feedbackId){
@@ -150,8 +166,7 @@ export default {
       feedbackResource
         .update(feedbackId, toUpdate)
         .then(response => {
-          const is_relevant_str = response.data.is_relevant ? 'RELEVAN' : 'TIDAK RELEVAN';
-          const message = 'SPT \'' + response.data.name + '\' berhasil diupdate sebagai ' + is_relevant_str;
+          const message = 'SPT \'' + response.data.name + '\' berhasil diupdate';
           this.$message({
             message: message,
             type: 'success',

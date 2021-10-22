@@ -138,7 +138,7 @@ const defaultForm = {
 };
 
 export default {
-  name: 'FeedbackDetail',
+  name: 'FeedbackForm',
   components: { Tinymce, Upload },
   props: {
     isEdit: {
