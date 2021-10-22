@@ -128,12 +128,7 @@ export default {
   },
   methods: {
     showIdentity(feedbackId) {
-      var toShow = {};
-      this.feedbacks.map((item) => {
-        if (item.id === feedbackId){
-          toShow = item;
-        }
-      });
+      const toShow = this.feedbacks.find(f => f.id === feedbackId);
       this.selectedFeedback = toShow;
       this.identityDialogImg = toShow.photo_filepath;
       this.identityDialogData = [
@@ -157,12 +152,7 @@ export default {
       this.showIdDialog = true;
     },
     async onChangeForm(feedbackId, event) {
-      var toUpdate = {};
-      this.feedbacks.map((item) => {
-        if (item.id === feedbackId){
-          toUpdate = item;
-        }
-      });
+      const toUpdate = this.feedbacks.find(f => f.id === feedbackId);
       feedbackResource
         .update(feedbackId, toUpdate)
         .then(response => {

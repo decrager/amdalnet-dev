@@ -120,11 +120,11 @@ class FeedbackController extends Controller
                 list(,$data) = explode(',', $data);
                 $decoded_data = base64_decode($data);
                 // put to laravel storage
-                $img_filepath = 'public/images/spt/' . uniqid() . '.' . $extension;
+                $img_filepath = 'images/spt/' . uniqid() . '.' . $extension;
                 Storage::put($img_filepath, $decoded_data);
                 // don't forget to make symlink:
                 // php artisan storage:link
-                $photo_filepath = str_replace('public', 'storage', $img_filepath);
+                $photo_filepath = 'storage/' . $img_filepath;
             } catch (Exception $e) {
                 $photo_filepath = $data;
             }
