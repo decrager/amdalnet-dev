@@ -8,6 +8,7 @@ use App\Http\Resources\ProjectResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use DB;
 
 class ProjectController extends Controller
 {
@@ -18,7 +19,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        return ProjectResource::Collection(Project::where(function ($query) use ($request) {
+        return DB::table('projects')->select('projects.*', 'provinces.name as province', 'districts.name as district')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -28,7 +29,7 @@ class ProjectController extends Controller
             function ($query) use ($request) {
                 return $request->id_district ? $query->where('id_district', $request->id_district) : '';
             }
-        )->orderBy('id', 'DESC')->paginate($request->limit));
+        )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->orderBy('projects.id', 'DESC')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
     }
 
     /**
@@ -179,7 +180,7 @@ class ProjectController extends Controller
             $params = $request->all();
 
             //create file map
-            if($request->file('fileMap')) {
+            if ($request->file('fileMap')) {
                 $file = $request->file('fileMap');
                 $name = 'project/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
@@ -224,6 +225,12 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        try {
+            $project->delete();
+        } catch (\Exception $ex) {
+            response()->json(['error' => $ex->getMessage()], 403);
+        }
+
+        return response()->json(null, 204);
     }
 }

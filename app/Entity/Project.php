@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 
 class Project extends Model
 {
+    use SoftDeletes;
+    
     use WorkflowTrait;
 
     protected $fillable = [
