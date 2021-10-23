@@ -1,5 +1,5 @@
 # Set the base image for subsequent instructions
-FROM php:7.4
+FROM php:7.4-fpm
 
 WORKDIR /var/www
 
@@ -25,5 +25,5 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 COPY .env.example .env
 
-CMD ["bash", "./laravue-entrypoint.sh"]
+# CMD ["bash", "./laravue-entrypoint.sh"]
 

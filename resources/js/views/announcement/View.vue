@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import AnnouncementDetail from './components/AnnouncementDetail';
+import AnnouncementDetail from './components/Detail';
 
 export default {
   name: 'ViewForm',

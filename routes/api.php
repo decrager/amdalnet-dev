@@ -164,3 +164,4 @@ Route::apiResource('announcements', 'AnnouncementController');
 Route::apiResource('initiators', 'InitiatorController');
 Route::apiResource('lpjp', 'LpjpController');
 Route::apiResource('formulators', 'FormulatorController');
+Route::apiResource('expert-banks', 'ExpertBankController');

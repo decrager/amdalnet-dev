@@ -1,12 +1,12 @@
 <template>
-  <feedback-detail :is-edit="true" />
+  <feedback-form :is-edit="true" />
 </template>
 
 <script>
-import FeedbackDetail from './components/FeedbackDetail';
+import FeedbackForm from './components/Form';
 
 export default {
   name: 'EditFeedbackForm',
-  components: { FeedbackDetail },
+  components: { FeedbackForm },
 };
 </script>

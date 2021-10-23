@@ -8,8 +8,8 @@ services:
     volumes:
       - ./:/var/www
       # - ./docker/docker.env:/var/www/.env
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
 
     depends_on:
       - database
@@ -18,17 +18,14 @@ services:
   redis:
     image: redis:alpine
 
-  # mysql:
-  #   image: mysql:5.7
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #     - ./docker/mysql:/var/lib/mysql
-  #   environment:
-  #     MYSQL_DATABASE: laravue
-  #     MYSQL_USER: laravue
-  #     MYSQL_PASSWORD: laravue
-  #     MYSQL_ROOT_PASSWORD: root
+  nginx:
+    image: nginx:1.21-alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      # - ./nginx.conf:/etc/nginx/nginx.conf:ro
   database:
     image: postgres:13
     ports:
