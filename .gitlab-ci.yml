@@ -24,7 +24,7 @@ deploy_dev:
     - git pull
     - docker-compose up -d
     - docker-compose exec -T laravel composer install
-    - docker-compose exec -T laravel php artisan migrate --seed
+    - docker-compose exec -T laravel php artisan migrate
     - docker-compose exec -T laravel npm install
     - docker-compose exec -T laravel npm run production
     # - docker-compose restart laravel
