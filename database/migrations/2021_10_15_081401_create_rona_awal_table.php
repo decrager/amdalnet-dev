@@ -16,6 +16,7 @@ class CreateRonaAwalTable extends Migration
         Schema::create('rona_awal', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->integer('id_component_type');
             $table->timestamps();
         });
     }
