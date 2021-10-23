@@ -30,7 +30,6 @@ deploy_dev:
     # - docker-compose restart laravel
   environment:
     name: staging
-  when: on_success
   only:
     - master
   tags:
@@ -49,7 +48,6 @@ deploy_cloud:
     - npm run production
   environment:
     name: staging
-  when: on_success
   only:
     - master
   tags:
