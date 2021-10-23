@@ -23,10 +23,10 @@ deploy_dev:
     - git reset --hard HEAD
     - git pull
     - docker-compose up -d
-    - docker-compose exec laravel composer install
-    - docker-compose exec laravel php artisan migrate --seed
-    - docker-compose exec laravel npm install
-    - docker-compose exec laravel npm run production
+    - docker-compose exec -T laravel composer install
+    - docker-compose exec -T laravel php artisan migrate --seed
+    - docker-compose exec -T laravel npm install
+    - docker-compose exec -T laravel npm run production
     # - docker-compose restart laravel
   environment:
     name: staging
