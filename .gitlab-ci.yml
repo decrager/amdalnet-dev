@@ -39,7 +39,8 @@ deploy_dev:
 deploy_cloud:
   stage: deploy
   script:
-    - cd /var/www/amdalnet
+    - echo "xxxx"
+    - cd /var/www/amdalnet/
     - git reset --hard HEAD
     - git pull
     - composer install
