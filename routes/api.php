@@ -17,6 +17,7 @@ use \App\Laravue\Acl;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::apiResource('home', 'HomeController');
 
 Route::namespace('Api')->group(function() {
     Route::post('auth/login', 'AuthController@login');
@@ -162,3 +163,5 @@ Route::apiResource('support-docs', 'SupportDocController');
 Route::apiResource('announcements', 'AnnouncementController');
 Route::apiResource('initiators', 'InitiatorController');
 Route::apiResource('lpjp', 'LpjpController');
+Route::apiResource('formulators', 'FormulatorController');
+Route::apiResource('expert-banks', 'ExpertBankController');

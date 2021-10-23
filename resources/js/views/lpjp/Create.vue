@@ -230,7 +230,7 @@ export default {
               message: 'LPJP Details has been updated successfully',
               duration: 5 * 1000,
             });
-            this.$router.push('/master/lpjp');
+            this.$router.push('/master-data/lpjp');
           })
           .catch((error) => {
             console.log(error);
@@ -248,7 +248,7 @@ export default {
               duration: 5 * 1000,
             });
             this.currentLpjp = {};
-            this.$router.push('/master/lpjp');
+            this.$router.push('/master-data/lpjp');
           })
           .catch((error) => {
             console.log(error);

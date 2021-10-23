@@ -37,7 +37,7 @@
           <el-col :span="12">{{ project.required_doc + ' ' + project.result_risk }}</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
           <el-col :span="12">Pusat</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
+        <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
           <el-col :span="12">
             <el-select
               v-model="project.id_drafting_team"
@@ -186,7 +186,7 @@ export default {
             message: 'Project info has been updated successfully',
             duration: 5 * 1000,
           });
-          // this.$router.push('/project');
+          this.$router.push('/project');
         }).catch(error => {
           console.log(error);
         });

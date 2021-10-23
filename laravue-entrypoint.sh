@@ -22,7 +22,7 @@ then
 fi
 
 echo "NPM Install"
-npm install -g cross-env && npm install && npm run production
+# npm install -g cross-env && npm install  && npm run production
 
 echo "Serve"
 php artisan serve --host 0.0.0.0
