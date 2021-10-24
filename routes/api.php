@@ -165,3 +165,6 @@ Route::apiResource('initiators', 'InitiatorController');
 Route::apiResource('lpjp', 'LpjpController');
 Route::apiResource('formulators', 'FormulatorController');
 Route::apiResource('expert-banks', 'ExpertBankController');
+Route::apiResource('rona-awals', 'RonaAwalController');
+Route::apiResource('components', 'ComponentController');
+Route::apiResource('project-stages', 'ProjectStageController');
