@@ -72,7 +72,7 @@ import FeedbackList from '@/views/feedback/components/List.vue';
 import PublicConsultationForm from '@/views/public-consultation/components/Form.vue';
 const announcementResource = new Resource('announcements');
 const feedbackResource = new Resource('feedbacks');
-const responderTypeResource = new Resource('responder_types');
+const responderTypeResource = new Resource('responder-types');
 const districtResource = new Resource('districts');
 
 export default {
