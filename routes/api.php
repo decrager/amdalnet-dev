@@ -18,6 +18,7 @@ use \App\Laravue\Acl;
 |
 */
 Route::apiResource('home', 'HomeController');
+Route::apiResource('webgis', 'WebgisController');
 
 Route::namespace('Api')->group(function() {
     Route::post('auth/login', 'AuthController@login');

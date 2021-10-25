@@ -199,6 +199,15 @@ input {
     background-color: transparent;
 }
 
+.dark__header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-fixed);
+    background-color: #006400;
+}
+
 /*=============== NAV ===============*/
 .nav {
     height: var(--header-height);
