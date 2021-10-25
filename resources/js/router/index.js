@@ -67,6 +67,11 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/webgis',
+    component: () => import('@/views/webgis/index'),
+    hidden: true,
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,
