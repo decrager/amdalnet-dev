@@ -212,7 +212,6 @@ export default {
       this.postForm.project_id = data.project_id;
     },
     async handleSubmit() {
-      console.log(this.postForm);
       const headers = { 'Content-Type': 'multipart/form-data' };
       const formData = new FormData();
       formData.append('announcement_id', this.postForm.announcement_id);
@@ -241,18 +240,26 @@ export default {
         .post('api/public-consultations', formData, { headers })
         .then((response) => {
           console.log(response);
-        })
-        .catch(error => {
+          var msg = '';
+          var msg_type = '';
+          if (response.status === 200){
+            msg = 'Konsultasi Publik berhasil disimpan';
+            msg_type = 'success';
+          } else {
+            msg = 'Error ' + response.status;
+            msg_type = 'error';
+          }
           this.$message({
-            message: error.message,
-            type: 'error',
+            message: msg,
+            type: msg_type,
             duration: 5 * 1000,
           });
         })
-        .finally(() => {
+        .catch(error => {
+          console.log(error.message);
           this.$message({
-            message: 'Konsultasi Publik berhasil disimpan',
-            type: 'success',
+            message: 'Terjadi kesalahan pada server',
+            type: 'error',
             duration: 5 * 1000,
           });
         });
