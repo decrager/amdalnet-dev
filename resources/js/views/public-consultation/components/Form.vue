@@ -270,7 +270,7 @@ export default {
     },
     dropzoneR(file) {
       this.postForm.doc_files = this.postForm.doc_files.filter(d => d !== file);
-      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(m => m.name !== file.name);
+      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(m => m.filename !== file.name);
     },
     createDocJson(doc_type, file) {
       return {
