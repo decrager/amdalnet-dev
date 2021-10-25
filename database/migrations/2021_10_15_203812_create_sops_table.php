@@ -18,19 +18,19 @@ class CreateSopsTable extends Migration
             $table->smallInteger('id_component')->nullable();
             $table->smallInteger('id_rona_awal')->nullable();
             $table->text('mgmt_form')->nullable();
-            $table->string('mgmt_period')->nullable();
+            $table->string('mgmt_period', 100)->nullable();
             $table->text('monitoring_form')->nullable();
             $table->smallInteger('monitoring_time')->nullable();
             $table->smallInteger('monitoring_freq')->nullable();
             $table->string('monitoring_date_field', 50)->nullable();
-            $table->string('name', 100)->nullable();
+            $table->string('name', 150)->nullable();
             $table->string('impact', 50)->nullable();
             $table->string('other_impact', 100)->nullable();
             $table->string('monitoring_period', 50)->nullable();
-            $table->string('impact_quantity', 50)->nullable();
+            $table->string('impact_quantity', 150)->nullable();
             $table->string('code', 50)->nullable();
             $table->timestamp('effective_date')->nullable();
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -9,6 +9,7 @@ class PublicConsultation extends Model
     protected $table = 'public_consultations';
     protected $fillable = [
         'announcement_id',
+        'project_id',
         'event_date',
         'participant',
         'location',
@@ -16,4 +17,8 @@ class PublicConsultation extends Model
         'positive_feedback_summary',
         'negative_feedback_summary',
     ];
+
+    public function docs(){
+        return $this->hasMany(PublicConsultationDoc::class, 'public_consultation_id', 'id');
+    }
 }

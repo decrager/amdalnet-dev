@@ -65,51 +65,64 @@
       border
       fit
       highlight-current-row
+      style="width: 100%"
     >
-      <el-table-column align="center" label="No. Registrasi" sortable>
+      <el-table-column align="center" label="No. Registrasi" width="200px">
         <template slot-scope="scope">
           <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Nama Kegiatan" sortable>
+      <el-table-column align="center" label="Nama Kegiatan" width="200px">
         <template slot-scope="scope">
           <span>{{ scope.row.project_title }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Jenis Dokumen" sortable>
+      <el-table-column align="center" label="Jenis Dokumen" width="200px">
         <template slot-scope="scope">
           <span>{{ scope.row.required_doc }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Provinsi" sortable>
+      <el-table-column align="center" label="Deskripsi Kegiatan" width="250px">
         <template slot-scope="scope">
-          <span>{{ scope.row.id_prov }}</span>
+          <span v-html="scope.row.description" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Kab/Kota" sortable>
+      <el-table-column align="center" label="Provinsi" width="100px">
         <template slot-scope="scope">
-          <span>{{ scope.row.id_district }}</span>
+          <span>{{ scope.row.province }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Tanggal Input" sortable>
+      <el-table-column align="center" label="Kab/Kota" width="100px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.district }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Tanggal Buat" width="200px">
         <template slot-scope="scope">
           <span>{{
             scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Aksi">
+      <el-table-column label="Tahap" class-name="status-col" width="100">
         <template slot-scope="scope">
-          <el-button
+          <el-tag
+            :type="scope.row.tag === 'Home' ? 'primary' : 'success'"
+            disable-transitions
+          >{{ scope.row.tag }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Aksi" fixed="right" width="150px">
+        <template slot-scope="scope">
+          <el-row style="margin-bottom: 4px"><el-button
             v-if="!scope.row.published"
-            type="primary"
             size="mini"
             icon="el-icon-edit"
             @click="handlePublishForm(scope.row.id)"
           >
             Publish
-          </el-button>
-          <el-button
+          </el-button></el-row>
+          <el-row style="margin-bottom: 4px"><el-button
             v-if="!scope.row.published"
             type="primary"
             size="mini"
@@ -117,16 +130,17 @@
             @click="handleEditForm(scope.row.id)"
           >
             Edit
-          </el-button>
-          <el-button
+          </el-button></el-row>
+          <el-row><el-button
             v-if="!scope.row.published"
             type="danger"
             size="mini"
             icon="el-icon-delete"
-            @click="handleDelete(scope.row.id, scope.row.nama_penyusun)"
+            @click="handleDelete(scope.row.id, scope.row.project_title)"
           >
             Delete
-          </el-button>
+          </el-button></el-row>
+
         </template>
       </el-table-column>
     </el-table>
@@ -228,9 +242,9 @@ export default {
     },
     async getFiltered(query) {
       this.listLoading = true;
-      const { data, meta } = await projectResource.list(query);
+      const { data, total } = await projectResource.list(query);
       this.filtered = data;
-      this.total = meta.total;
+      this.total = total;
       this.listLoading = false;
     },
     handleCreate() {
@@ -265,7 +279,35 @@ export default {
       this.show = true;
     },
     handleDelete(id, nama) {
-      this.$emit('handleDelete', { id, nama });
+      this.$confirm(
+        'Hapus Project ' + nama + '. ?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          projectResource
+            .destroy(id)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Hapus Selesai',
+              });
+              this.getFiltered(this.listQuery);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Hapus Digagalkan',
+          });
+        });
     },
     async changeProvince(value) {
       // change all district by province

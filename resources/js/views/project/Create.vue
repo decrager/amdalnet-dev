@@ -113,18 +113,6 @@
                 style="width: 100%"
                 value-format="yyyy"
               />
-              <!-- <el-select
-                v-model="currentProject.project_year"
-                placeholder="Select"
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in projectYearOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select> -->
             </el-form-item>
           </el-col>
         </el-col>
@@ -328,16 +316,7 @@ export default {
       fileMap: null,
       isOss: true,
       projectOptions: [],
-      projectFieldOptions: [
-        {
-          value: 'Bidang Perindustrian',
-          label: 'Bidang Perindustrian',
-        },
-        {
-          value: 'Bidang Makanan',
-          label: 'Bidang Makanan',
-        },
-      ],
+      projectFieldOptions: [],
       sectorOptions: [],
       provinceOptions: [],
       cityOptions: [],
@@ -348,31 +327,11 @@ export default {
           label: 'Baru',
         },
         {
-          value: 'Lama',
-          label: 'Lama',
-        },
-      ],
-      projectYearOptions: [
-        {
-          value: '2021',
-          label: '2021',
-        },
-        {
-          value: '2022',
-          label: '2022',
+          value: 'Perpanjangan',
+          label: 'Perpanjangan',
         },
       ],
       unitOptions: [],
-      mapScaleOptions: [
-        {
-          value: 'm2',
-          label: 'm2',
-        },
-        {
-          value: 'ha',
-          label: 'ha',
-        },
-      ],
     };
   },
   async mounted() {
@@ -380,6 +339,7 @@ export default {
       this.currentProject = this.$route.params.project;
       this.fileName = this.getFileName(this.currentProject.map);
       this.listSupportTable = await this.getListSupporttable(this.currentProject.id);
+      this.getDistricts(this.currentProject.id_prov);
       console.log(this.listSupportTable);
     }
     this.getAllData();
