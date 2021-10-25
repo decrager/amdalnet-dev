@@ -16,12 +16,12 @@
         <el-col :span="12">
           <el-form-item label="Tanggal Berlaku" prop="effectiveDate">
             <el-date-picker
-                  v-model="currentSop.effective_date"
-                  type="date"
-                  placeholder="yyyy-MM-dd"
-                  value-format="yyyy-MM-dd"
-                  style="width: 100%"
-                />
+              v-model="currentSop.effective_date"
+              type="date"
+              placeholder="yyyy-MM-dd"
+              value-format="yyyy-MM-dd"
+              style="width: 100%"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -314,7 +314,7 @@ export default {
       _.each(this.currentSop, (value, key) => {
         formData.append(key, value);
       });
-      
+
       if (this.currentSop.id !== undefined) {
         sopResource
           .updateMultipart(this.currentSop.id, formData)

@@ -22,6 +22,8 @@ import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
+// import OAuthInfo from '@arcgis/core/identity/OAuthInfo';
+// import IdentityManager from '@arcgis/core/identity/OAuthInfo';
 
 export default {
   name: 'WebGis',
@@ -67,10 +69,66 @@ export default {
         imageTransparency: true,
       });
 
+      map.add(featureLayer);
+
       var batasProv = new MapImageLayer({
         url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
+        sublayers: [{
+          id: 0,
+          title: 'Batas Provinsi',
+        }],
       });
-      map.add(featureLayer, batasProv);
+      map.add(batasProv);
+
+      var graticuleGrid = new MapImageLayer({
+        url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
+      });
+      map.add(graticuleGrid);
+
+      var ekoregion = new MapImageLayer({
+        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
+        visible: false,
+        sublayers: [
+          {
+            id: 1,
+            visible: false,
+            title: 'Ekoregion Laut',
+          }, {
+            id: 0,
+            visible: false,
+            title: 'Ekoregion Darat',
+          },
+        ],
+      });
+      map.add(ekoregion);
+
+      var ppib = new MapImageLayer({
+        url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
+        visible: false,
+      });
+      map.add(ppib);
+
+      var tutupanLahan = new MapImageLayer({
+        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
+        visible: false,
+      });
+      map.add(tutupanLahan);
+
+      // var rtrw = new MapImageLayer({
+      //   url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
+      //   visible: false,
+      // });
+      // map.add(rtrw);
+
+      // var oAuthInfo = new OAuthInfo({
+      //   appId: '0123456789ABCDEF',
+      // });
+
+      // new IdentityManager({
+      //   registerOAuthInfos: [oAuthInfo],
+      // });
+      //
+
       var mapView = new MapView({
         container: 'mapViewDiv',
         map: map,
@@ -131,8 +189,8 @@ export default {
         expandIconClass: 'esri-icon-layer-list',
         expandTooltip: 'Layers',
       });
-      mapView.ui.add(layersExpand, 'top-right');
       mapView.ui.add(legendExpand, 'top-right');
+      mapView.ui.add(layersExpand, 'top-right');
     },
   },
 };
