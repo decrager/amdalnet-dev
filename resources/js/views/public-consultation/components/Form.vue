@@ -92,7 +92,7 @@
                   :auto-upload="false"
                   :on-change="handleUploadBA"
                   action="#"
-                  :show-file-list="true"
+                  :show-file-list="false"
                 >
                   <el-button
                     size="small"
@@ -110,7 +110,7 @@
                   :auto-upload="false"
                   :on-change="handleUploadDH"
                   action="#"
-                  :show-file-list="true"
+                  :show-file-list="false"
                 >
                   <el-button
                     size="small"
@@ -128,7 +128,7 @@
                   :auto-upload="false"
                   :on-change="handleUploadP"
                   action="#"
-                  :show-file-list="true"
+                  :show-file-list="false"
                 >
                   <el-button
                     size="small"
@@ -146,7 +146,7 @@
                   :auto-upload="false"
                   :on-change="handleUploadU"
                   action="#"
-                  :show-file-list="true"
+                  :show-file-list="false"
                 >
                   <el-button
                     size="small"
@@ -166,20 +166,29 @@
 </template>
 
 <script>
-// import Resource from '@/api/resource';
+import Resource from '@/api/resource';
 import Tinymce from '@/components/Tinymce';
 import Dropzone from '@/components/Dropzone';
-// import Upload from '@/components/Upload/SingleImage';
+import axios from 'axios';
+import _ from 'lodash';
+
+const announcementResource = new Resource('announcements');
 
 const defaultForm = {
+  announcement_id: 0,
+  project_id: 0,
   event_date: '',
   participant: 0,
   location: '',
   address: '',
   positive_feedback_summary: '',
   negative_feedback_summary: '',
-  photos: [],
-  docs: [],
+  doc_files: [],
+  doc_metadatas: [],
+  doc_berita_acara: {},
+  doc_daftar_hadir: {},
+  doc_pengumuman: {},
+  doc_undangan: {},
 };
 
 export default {
@@ -188,38 +197,100 @@ export default {
   data() {
     return {
       postForm: Object.assign({}, defaultForm),
+      userId: 0,
     };
   },
   mounted() {
-
+    const annId = this.$route.params && this.$route.params.id;
+    this.postForm.announcement_id = annId;
+    this.userId = this.$store.getters.userId;
+    this.getProjectId(annId);
   },
   methods: {
-    handleSubmit() {
+    async getProjectId(annId) {
+      const data = await announcementResource.get(annId);
+      this.postForm.project_id = data.project_id;
+    },
+    async handleSubmit() {
+      console.log(this.postForm);
+      const headers = { 'Content-Type': 'multipart/form-data' };
+      const formData = new FormData();
+      formData.append('announcement_id', this.postForm.announcement_id);
+      formData.append('project_id', this.postForm.project_id);
+      formData.append('event_date', this.postForm.event_date.toISOString());
+      formData.append('participant', this.postForm.participant);
+      formData.append('location', this.postForm.location);
+      formData.append('address', this.postForm.address);
+      formData.append('positive_feedback_summary', this.postForm.positive_feedback_summary);
+      formData.append('negative_feedback_summary', this.postForm.negative_feedback_summary);
+      formData.append('doc_files', JSON.stringify(this.postForm.doc_files));
+      formData.append('doc_metadatas', JSON.stringify(this.postForm.doc_metadatas));
+      formData.append('doc_berita_acara', this.postForm.doc_berita_acara);
+      formData.append('doc_daftar_hadir', this.postForm.doc_daftar_hadir);
+      formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
+      formData.append('doc_undangan', this.postForm.doc_undangan);
 
+      _.each(this.formData, (value, key) => {
+        formData.append(key, value);
+      });
+      this.$message({
+        message: 'Mengunggah file...',
+        type: 'info',
+      });
+      await axios
+        .post('api/public-consultations', formData, { headers })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch(error => {
+          this.$message({
+            message: error.message,
+            type: 'error',
+            duration: 5 * 1000,
+          });
+        })
+        .finally(() => {
+          this.$message({
+            message: 'Konsultasi Publik berhasil disimpan',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        });
     },
     dropzoneS(file) {
-      this.postForm.photos.push(file);
-      console.log(this.postForm.photos);
+      this.postForm.doc_files.push(file);
+      this.postForm.doc_metadatas.push(this.createDocJson('Foto Dokumentasi', file));
     },
     dropzoneR(file) {
-      this.postForm.photos = this.postForm.photos.filter(ph => ph !== file);
-      console.log(this.postForm.photos);
+      this.postForm.doc_files = this.postForm.doc_files.filter(d => d !== file);
+      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(m => m.name !== file.name);
+    },
+    createDocJson(doc_type, file) {
+      return {
+        doc_type: doc_type,
+        filename: file.name,
+        uploaded_by: this.userId,
+      };
     },
     handleUploadBA(file, fileList) {
-      this.postForm.docs.push(file);
-      console.log(this.postForm.docs);
+      this.postForm.doc_files.push(file);
+      this.postForm.doc_metadatas.push(this.createDocJson('Berita Acara', file));
+      this.postForm.doc_berita_acara = file.raw;
     },
     handleUploadDH(file, fileList) {
-      this.postForm.docs.push(file);
-      console.log(this.postForm.docs);
+      this.postForm.doc_files.push(file);
+      this.postForm.doc_metadatas.push(this.createDocJson('Daftar Hadir', file));
+      this.postForm.doc_daftar_hadir = file.raw;
     },
     handleUploadP(file, fileList) {
-      this.postForm.docs.push(file);
-      console.log(this.postForm.docs);
+      this.postForm.doc_files.push(file);
+      this.postForm.doc_metadatas.push(this.createDocJson('Pengumuman', file));
+      this.postForm.doc_pengumuman = file.raw;
     },
     handleUploadU(file, fileList) {
-      this.postForm.docs.push(file);
-      console.log(this.postForm.docs);
+      this.postForm.doc_files.push(file);
+      this.postForm.doc_metadatas.push(this.createDocJson('Undangan', file));
+      this.postForm.doc_undangan = file.raw;
     },
   },
 };
