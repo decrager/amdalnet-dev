@@ -15,10 +15,13 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="Tanggal Berlaku" prop="effectiveDate">
-            <el-input
-              v-model="currentSop.effective_date"
-              placeholder="Tanggal Berlaku"
-            />
+            <el-date-picker
+                  v-model="currentSop.effective_date"
+                  type="date"
+                  placeholder="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
+                  style="width: 100%"
+                />
           </el-form-item>
         </el-col>
       </el-row>
@@ -91,7 +94,7 @@
         <el-col :span="12">
           <el-form-item label="Komponen Lingkungan" prop="ronaAwal">
             <el-select
-              v-model="currentSop.rona_awal"
+              v-model="currentSop.id_rona_awal"
               placeholder="Komponen Lingkungan"
               clearable
               class="filter-item"
@@ -109,7 +112,7 @@
         <el-col :span="12">
           <el-form-item label="Komponen Dampak" prop="impactComponent">
             <el-select
-              v-model="impact"
+              v-model="currentSop.impact"
               placeholder="Komponen Dampak"
               clearable
               class="filter-item"
@@ -127,6 +130,7 @@
             <el-input
               v-model="currentSop.other_impact"
               placeholder="Dampak Lainnya"
+              :disabled="true"
             />
           </el-form-item>
         </el-col>
@@ -231,11 +235,11 @@
 <script>
 import Tinymce from '@/components/Tinymce';
 import Resource from '@/api/resource';
-const sopResource = new Resource('sop');
+const sopResource = new Resource('sops');
 const projectStageResource = new Resource('project-stages');
 const componentResource = new Resource('components');
 const componentTypeResource = new Resource('component-types');
-const ronaAwalResource = new Resource('rona-awal');
+const ronaAwalResource = new Resource('rona-awals');
 
 export default {
   name: 'CreateSop',
@@ -253,6 +257,12 @@ export default {
       componentOptions: [],
       componentTypeOptions: [],
       ronaAwalOptions: [],
+      impactOptions: [
+        { value: 'Penurunan', label: 'Penurunan' },
+        { value: 'Peningkatan', label: 'Peningkatan' },
+        { value: 'Perubahan', label: 'Perubahan' },
+        { value: 'Lainnya', label: 'Lainnya' },
+      ],
     };
   },
   mounted() {
@@ -263,13 +273,13 @@ export default {
     this.getComponentTypes();
   },
   methods: {
-    async getProjectStages(){
+    async getProjectStages() {
       const { data } = await projectStageResource.list({});
       this.projectStageOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
     },
-    async getComponentTypes(){
+    async getComponentTypes() {
       const { data } = await componentTypeResource.list({});
       this.componentTypeOptions = data.map((i) => {
         return { value: i.id, label: i.name };
@@ -297,14 +307,14 @@ export default {
       this.$router.push('/master/sop');
     },
     handleSubmit() {
+      console.log('Masuk');
       // make form data because we got file
       const formData = new FormData();
-
       // eslint-disable-next-line no-undef
       _.each(this.currentSop, (value, key) => {
         formData.append(key, value);
       });
-
+      
       if (this.currentSop.id !== undefined) {
         sopResource
           .updateMultipart(this.currentSop.id, formData)

@@ -169,3 +169,5 @@ Route::apiResource('public-consultations', 'PublicConsultationController');
 Route::apiResource('rona-awals', 'RonaAwalController');
 Route::apiResource('components', 'ComponentController');
 Route::apiResource('project-stages', 'ProjectStageController');
+Route::apiResource('sops', 'SopController');
+Route::apiResource('component-types', 'ComponentTypeController');
