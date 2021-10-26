@@ -102,7 +102,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 
 .tabset {
   margin-top: 30px;

@@ -18,6 +18,7 @@ use \App\Laravue\Acl;
 |
 */
 Route::apiResource('home', 'HomeController');
+Route::apiResource('webgis', 'WebgisController');
 
 Route::namespace('Api')->group(function() {
     Route::post('auth/login', 'AuthController@login');
@@ -169,3 +170,5 @@ Route::apiResource('public-consultations', 'PublicConsultationController');
 Route::apiResource('rona-awals', 'RonaAwalController');
 Route::apiResource('components', 'ComponentController');
 Route::apiResource('project-stages', 'ProjectStageController');
+Route::apiResource('sops', 'SopController');
+Route::apiResource('component-types', 'ComponentTypeController');
