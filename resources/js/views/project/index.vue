@@ -12,7 +12,7 @@
             {{ ' Kegiatan' }}
           </el-button>
         </el-col>
-        <el-col :span="13">
+        <el-col :span="15">
           <el-select
             v-model="listQuery.document_type"
             :placeholder="'Jenis Dokumen'"
@@ -138,7 +138,7 @@
             v-if="!scope.row.published"
             type="info"
             size="mini"
-            icon="el-icon-edit"
+            icon="el-icon-view"
             @click="handleViewForm(scope.row.id)"
           >
             Lihat
