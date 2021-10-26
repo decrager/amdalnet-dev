@@ -67,6 +67,11 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/webgis',
+    component: () => import('@/views/webgis/index'),
+    hidden: true,
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,
@@ -303,6 +308,19 @@ export const asyncRoutes = [
         name: 'editExpertBank',
         hidden: true,
         meta: { title: 'Edit Bank Ahli', icon: 'documentation', noCache: true },
+      },
+      {
+        path: 'sop',
+        component: () => import('@/views/master-sop/index'),
+        name: 'sop',
+        meta: { title: 'SOP', icon: 'documentation', noCache: true },
+      },
+      {
+        path: 'sop/create',
+        component: () => import('@/views/master-sop/Create'),
+        name: 'createSop',
+        hidden: true,
+        meta: { title: 'Tambah SOP', icon: 'documentation', noCache: true },
       },
     ],
   },

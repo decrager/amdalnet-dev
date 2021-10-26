@@ -13,15 +13,17 @@
           </div>
         </div>
 
-        <div class="actions__box__links__wrapper">
-          <div class="actions__box__links__icon">
-            <img src="/images/map.svg" alt="">
+        <router-link to="/webgis">
+          <div class="actions__box__links__wrapper">
+            <div class="actions__box__links__icon">
+              <img src="/images/map.svg" alt="">
+            </div>
+            <div class="actions__box__links__desc">
+              <h2 class="actions__box__links__desc__title"><span class="title__primary">WEBGIS</span> AMDAL</h2>
+              <span class="actions__box__links__desc__subtitle">Peta tematik penyebaran daerah yang sudah mendapat izin AMDAL</span>
+            </div>
           </div>
-          <div class="actions__box__links__desc">
-            <h2 class="actions__box__links__desc__title"><span class="title__primary">WEBGIS</span> AMDAL</h2>
-            <span class="actions__box__links__desc__subtitle">Peta tematik penyebaran daerah yang sudah mendapat izin AMDAL</span>
-          </div>
-        </div>
+        </router-link>
 
         <div class="actions__box__links__wrapper">
           <div class="actions__box__links__icon">

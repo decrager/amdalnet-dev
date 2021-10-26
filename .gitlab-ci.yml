@@ -46,8 +46,6 @@ deploy_cloud:
     - php artisan migrate
     - npm install
     - npm run production
-  environment:
-    name: staging
   only:
     - master
   tags:

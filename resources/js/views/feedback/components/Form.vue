@@ -120,7 +120,7 @@ import Tinymce from '@/components/Tinymce';
 import Resource from '@/api/resource';
 import Upload from '@/components/Upload/SingleImage';
 const feedbackResource = new Resource('feedbacks');
-const responderTypeResource = new Resource('responder_types');
+const responderTypeResource = new Resource('responder-types');
 
 const defaultForm = {
   announcement_id: 0,

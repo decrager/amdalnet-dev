@@ -3,7 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Entity\PublicConsultation;
+use App\Entity\PublicConsultationDoc;
+use App\Http\Resources\PublicConsultationResource;
+use DateInterval;
+use DateTime;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class PublicConsultationController extends Controller
 {
@@ -14,7 +21,7 @@ class PublicConsultationController extends Controller
      */
     public function index()
     {
-        //
+        return PublicConsultationResource::collection(PublicConsultation::all());
     }
 
     /**
@@ -35,7 +42,100 @@ class PublicConsultationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'announcement_id' => 'required',
+                'project_id' => 'required',
+                'event_date' => 'required',
+                'participant' => 'required',
+                'location' => 'required',
+                'address' => 'required',
+                'positive_feedback_summary' => 'required',
+                'negative_feedback_summary' => 'required',
+                'doc_files' => 'required',
+                'doc_metadatas' => 'required',
+                'doc_berita_acara' => 'required',
+                'doc_daftar_hadir' => 'required',
+                'doc_pengumuman' => 'required',
+                'doc_undangan' => 'required',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $validated = $request->all();
+
+            $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $validated['event_date']);
+            $datetime->add(new DateInterval('PT7H'));
+            $event_date = $datetime->format('Y-m-d\TH:i:s');
+            $validated['event_date'] = $event_date;
+            $parent = PublicConsultation::create([
+                'announcement_id' => $validated['announcement_id'],
+                'project_id' => $validated['project_id'],
+                'event_date' => $validated['event_date'],
+                'participant' => $validated['participant'],
+                'location' => $validated['location'],
+                'address' => $validated['address'],
+                'positive_feedback_summary' => $validated['positive_feedback_summary'],
+                'negative_feedback_summary' => $validated['negative_feedback_summary'],
+            ]);
+
+            try {
+                //upload docs
+                $metadatas = json_decode($validated['doc_metadatas']);
+                $doc_files = json_decode($validated['doc_files']);
+                foreach ($doc_files as $i => $doc_file){
+                    //upload file
+                    $metadata = $metadatas[$i];
+                    $file_extension = '';
+                    $filepath = '';
+                    if (array_key_exists('dataURL', $doc_file)){
+                        // Foto Dokumentasi (base64)
+                        $data = $doc_file->dataURL;
+                        list($type, $data) = explode(';', $data);
+                        list(,$extension) = explode('/',$type);
+                        list(,$data) = explode(',', $data);
+                        $decoded_data = base64_decode($data);
+                        // save img
+                        $img_filepath = 'docs/pubcons/img/' . uniqid() . '.' . $extension;
+                        Storage::put($img_filepath, $decoded_data);
+                        $filepath = 'storage/' . $img_filepath;
+                        $file_extension = $extension;
+                    } else {
+                        // Dokumen Lampiran
+                        $file_field_name = sprintf('doc_%s', 
+                                            str_replace(' ', '_', strtolower($metadata->doc_type)));
+                        $file = $request->file($file_field_name);
+                        $filename = uniqid() . '.' . $file->extension();
+                        // create subfolder: ba/dh/p/u
+                        $exp = explode(' ', $metadata->doc_type);
+                        $f = $exp[0][0];
+                        $r = count($exp) == 2 ? $exp[1][0] : '';
+                        $subfolder = strtolower(sprintf('%s%s', $f, $r));
+                        $folder = sprintf('docs/pubcons/%s', $subfolder);
+                        // save file
+                        $file->storePubliclyAs($folder, $filename);
+                        $filepath = sprintf('storage/%s/%s', $folder, $filename);
+                        $file_extension = $file->extension();
+                    }
+                    PublicConsultationDoc::create([
+                        'public_consultation_id' => $parent->id,
+                        'doc_json' => json_encode([
+                            'doc_type' => $metadata->doc_type,
+                            'original_filename' => $metadata->filename,
+                            'file_extension' => $file_extension,
+                            'filepath' => $filepath,
+                            'uploaded_by' => $metadata->uploaded_by,
+                        ]),
+                    ]);
+                }
+            } catch (Exception $e){
+                return response()->json(['errors' => 'Error uploading file'], 500);
+            }
+            $created = PublicConsultation::with('docs')->get()->where('id', '=', $parent->id)->first();
+            return new PublicConsultationResource($created);
+        }
     }
 
     /**
@@ -46,7 +146,7 @@ class PublicConsultationController extends Controller
      */
     public function show(PublicConsultation $publicConsultation)
     {
-        //
+        return PublicConsultation::with('docs')->get()->where('id', '=', $publicConsultation->id)->first();
     }
 
     /**
