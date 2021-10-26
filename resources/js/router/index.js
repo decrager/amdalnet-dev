@@ -188,7 +188,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/project',
     alwaysShow: true,
-    meta: { title: 'project', icon: 'zip' },
+    meta: { title: 'project', icon: 'zip', roles: ['initiator', 'editor'] },
     children: [
       {
         path: '',
@@ -218,7 +218,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/master-data',
     alwaysShow: true,
-    meta: { title: 'masterData', icon: 'el-icon-reading' },
+    meta: { title: 'masterData', icon: 'el-icon-reading', permissions: ['view menu administrator'] },
     children: [
       {
         path: '/provinces',
