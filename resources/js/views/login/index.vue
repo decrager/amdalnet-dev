@@ -86,7 +86,7 @@
           <el-input v-model="registrationForm.phone" name="phone" type="text" auto-complete="on" :placeholder="$t('login.phone')" suffix-icon="el-icon-phone" />
         </el-form-item>
         <el-row type="flex" class="row-bg" justify="space-between">
-          <el-button type="text" style="background-color: transparent; color: blue;" @click="handleCancelReg">Sudah Memiliki Aku?</el-button>
+          <el-button type="text" style="background-color: transparent; color: blue;" @click="handleCancelReg">Sudah Memiliki Akun?</el-button>
           <el-button type="warning" :loading="loading" size="mini" @click="handleReg">Buat</el-button>
         </el-row>
       </el-form>
