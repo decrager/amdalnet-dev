@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <div class="login-container">
+    <div v-if="form === 'login'" class="login-container">
       <div class="login-content">
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
           <div class="title-wrap">
@@ -41,12 +41,55 @@
               {{ $t('login.logIn') }}
             </el-button>
           </el-form-item>
+          <el-row type="flex" class="row-bg" justify="space-between">
+            <el-button type="text" style="background-color: transparent; color: blue;">Lupa Kata Sandi?</el-button>
+            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak Memiliki Akun? <span style="color: red">Buat Akun Baru</span> </el-button>
+          </el-row>
           <div class="tips">
             <span style="margin-right:20px;">Email: admin@laravue.dev</span>
             <span>Password: laravue</span>
           </div>
         </el-form>
       </div>
+    </div>
+    <div v-else class="registration-container">
+      <el-form ref="registrationForm" :model="registrationForm" :rules="registrationRules" class="registration-form" auto-complete="on" label-position="top">
+        <h2>{{ $t('login.registrationForm') }}</h2>
+        <el-form-item prop="user_type" :label="$t('login.userType')">
+          <el-select
+            v-model="registrationForm.user_type"
+            name="user_type"
+            :placeholder="$t('login.userType')"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in userTypeoptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="name" :label="$t('login.name')">
+          <el-input v-model="registrationForm.name" name="name" type="text" auto-complete="on" :placeholder="$t('login.name')" suffix-icon="el-icon-user" />
+        </el-form-item>
+        <el-form-item prop="pic" :label="$t('login.pic')">
+          <el-input v-model="registrationForm.pic" name="pic" type="text" auto-complete="on" :placeholder="$t('login.pic')" suffix-icon="el-icon-user" />
+        </el-form-item>
+        <el-form-item prop="address" :label="$t('login.address')">
+          <el-input v-model="registrationForm.address" name="address" type="textarea" auto-complete="on" :placeholder="$t('login.address')" />
+        </el-form-item>
+        <el-form-item prop="email" :label="$t('login.email')">
+          <el-input v-model="registrationForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" suffix-icon="el-icon-message" />
+        </el-form-item>
+        <el-form-item prop="phone" :label="$t('login.phone')">
+          <el-input v-model="registrationForm.phone" name="phone" type="text" auto-complete="on" :placeholder="$t('login.phone')" suffix-icon="el-icon-phone" />
+        </el-form-item>
+        <el-row type="flex" class="row-bg" justify="space-between">
+          <el-button type="text" style="background-color: transparent; color: blue;" @click="handleCancelReg">Sudah Memiliki Aku?</el-button>
+          <el-button type="warning" :loading="loading" size="mini" @click="handleReg">Buat</el-button>
+        </el-row>
+      </el-form>
     </div>
   </div>
 </template>
@@ -55,6 +98,8 @@
 // import LangSelect from '@/components/LangSelect';
 import { validEmail } from '@/utils/validate';
 import { csrf } from '@/api/auth';
+import Resource from '@/api/resource';
+const initiatorResource = new Resource('initiators');
 
 const logo = require('@/assets/login/logo-amdal.png').default;
 
@@ -85,11 +130,31 @@ export default {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }],
       },
+      registrationRules: {
+        user_type: [{ required: true, trigger: 'change', message: 'Pilih Jenis User' }],
+        name: [{ required: true, trigger: 'blur' }],
+        pic: [{ required: true, trigger: 'blur' }],
+        address: [{ required: true, trigger: 'blur' }],
+        email: [{ required: true, trigger: 'blur' }],
+        phone: [{ required: true, trigger: 'blur' }],
+      },
       loading: false,
       pwdType: 'password',
       redirect: undefined,
       otherQuery: {},
       logo: logo,
+      registrationForm: {},
+      userTypeoptions: [
+        {
+          value: 'Pemrakarsa',
+          label: 'Pemrakarsa',
+        },
+        {
+          value: 'Pemerintah',
+          label: 'Pemerintah',
+        },
+      ],
+      form: 'login',
     };
   },
   watch: {
@@ -141,6 +206,42 @@ export default {
         return acc;
       }, {});
     },
+    handleCancelReg(){
+      this.form = 'login';
+    },
+    handleOpenRegister(){
+      this.form = 'register';
+    },
+    handleReg(){
+      this.$refs.registrationForm.validate(valid => {
+        if (valid) {
+          this.loading = true;
+          csrf().then(() => {
+            initiatorResource
+              .store(this.registrationForm)
+              .then((response) => {
+                this.$message({
+                  message:
+                'User Dengan Email ' +
+                this.registrationForm.email +
+                ' Berhasil Dibuat',
+                  type: 'success',
+                  duration: 5 * 1000,
+                });
+                this.loading = false;
+                this.form = 'login';
+                this.registrationForm = {};
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
   },
 };
 </script>
@@ -165,6 +266,7 @@ $light_gray:#5F6368;
       height: 47px;
       &:-webkit-autofill {
         -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
+                box-shadow: 0 0 0px 1000px $bg inset !important;
         -webkit-text-colorfill-color: rgb(8, 7, 7) !important;
       }
     }
@@ -302,6 +404,24 @@ $textColor:#eee;
       position: absolute;
       top: 40px;
       right: 35px;
+    }
+  }
+  .registration-container{
+    margin: auto;
+    grid-template-columns: auto 480px;
+    transition: all .3s ease-in-out;
+    transform: scale(1);
+    .registration-form{
+      width: 50vw;
+      min-width: 360px;
+      max-width: 560px;
+      margin: auto;
+      background: #fff;
+      padding: 50px 60px;
+      position: relative;
+      opacity: 1;
+      transition: opacity .3s ease-in-out,padding .2s ease-in-out;
+      border-radius: 20px;
     }
   }
 }

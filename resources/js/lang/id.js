@@ -96,6 +96,12 @@ export default {
     thirdparty: 'Terhubung dengan',
     thirdpartyTips: 'Tidak bisa disimulasikan di lokal, silahkan gabungkan dengan simulasi yang Anda miliki!',
     email: 'Surel',
+    userType: 'Jenis User',
+    registrationForm: 'Form Pendaftaran',
+    address: 'Alamat',
+    phone: 'Nomor Telepon',
+    pic: 'Penanggung Jawab',
+    name: 'Nama',
   },
   documentation: {
     documentation: 'Dokumentasi',
