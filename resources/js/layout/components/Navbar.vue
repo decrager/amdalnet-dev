@@ -86,8 +86,8 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
-  // background: #fff;
-  background: #CAAD14;
+  background: #fff;
+  //background: #CAAD14;
   margin: 5px;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);

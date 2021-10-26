@@ -58,50 +58,105 @@
       >
         {{ $t('table.add') + ' Kegiatan' }}
       </el-button>
+      <el-button
+        class="filter-item"
+        type="primary"
+        icon="el-icon-plus"
+        @click="handleCreate2"
+      >
+        .
+      </el-button>
     </div>
     <el-table
       v-loading="loading"
       :data="filtered"
-      border
       fit
       highlight-current-row
       style="width: 100%"
     >
-      <el-table-column align="center" label="No. Registrasi" width="200px">
+      <el-table-column type="expand" class="row-detail">
         <template slot-scope="scope">
-          <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
+          <div class="post">
+            <div class="entity-block">
+              <img
+                class="img-circle"
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDkaQO69Fro8SZLTVZQ75JH2R0T-sn5yIA_lKGwvvgQ0R0BoQtUQ"
+                alt="user image"
+              >
+              <span class="name text-muted">
+                <a href="#">PT. Pemrakarsa Sembada</a>
+                <a
+                  href="#"
+                  class="pull-right btn-box-tool"
+                >
+                  <i class="fa fa-times" />
+                </a>
+              </span>
+              <span class="description">{{ scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+              </span>
+            </div>
+            <span class="action pull-right">
+              <el-button
+                v-if="!scope.row.published"
+                type="text"
+                href="#"
+                icon="el-icon-tickets"
+                @click="handlePublishForm(scope.row.id)"
+              >
+                Publish
+              </el-button>
+              <el-button
+                v-if="!scope.row.published"
+                type="text"
+                href="#"
+                icon="el-icon-edit"
+                @click="handleEditForm(scope.row.id)"
+              >
+                Edit
+              </el-button>
+              <el-button
+                v-if="!scope.row.published"
+                type="text"
+                href="#"
+                icon="el-icon-delete"
+                @click="handleDelete(scope.row.id, scope.row.project_title)"
+              >
+                Delete
+              </el-button>
+              <el-button
+                href="#"
+                type="text"
+                icon="el-icon-view"
+              >
+                View Details
+              </el-button>
+            </span>
+            <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
+            <span v-html="scope.row.description" />
+          </div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Nama Kegiatan" width="200px">
+      <el-table-column align="left" label="No. Registrasi" width="200">
+        <template slot-scope="scope">
+          <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
+          <span>{{
+            scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Nama Kegiatan" min-width="200">
         <template slot-scope="scope">
           <span>{{ scope.row.project_title }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Jenis Dokumen" width="200px">
+      <el-table-column align="center" label="Dokumen" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.required_doc }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Deskripsi Kegiatan" width="250px">
+      <el-table-column align="left" label="Lokasi" width="200">
         <template slot-scope="scope">
-          <span v-html="scope.row.description" />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Provinsi" width="100px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.province }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Kab/Kota" width="100px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.district }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Tanggal Buat" width="200px">
-        <template slot-scope="scope">
-          <span>{{
-            scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
-          }}</span>
+          <span>{{ scope.row.district }}, {{ scope.row.province }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Tahap" class-name="status-col" width="100">
@@ -112,7 +167,7 @@
           >{{ scope.row.tag }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Aksi" fixed="right" width="150px">
+      <!--el-table-column align="center" label="Aksi" fixed="right" width="150px">
         <template slot-scope="scope">
           <el-row style="margin-bottom: 4px"><el-button
             v-if="!scope.row.published"
@@ -142,7 +197,7 @@
           </el-button></el-row>
 
         </template>
-      </el-table-column>
+      </el-table-column-->
     </el-table>
     <pagination
       v-show="total > 0"
@@ -253,6 +308,12 @@ export default {
         params: {},
       });
     },
+    handleCreate2() {
+      this.$router.push({
+        name: 'createProject2',
+        params: {},
+      });
+    },
     download(url) {
       window.open(url, '_blank').focus();
     },
@@ -322,4 +383,72 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.entity-block {
+  
+  display: inline-block;
+
+  .name, .description {
+    display: block;
+    margin-left: 50px;
+    padding: 2px 0;
+  }
+  .action {
+    display:  inline-block;
+    padding-right: 5%;
+  }
+  img {
+    width: 40px;
+    height: 40px;
+    float: left;
+  }
+  :after {
+    clear: both;
+  }
+  .img-circle {
+    border-radius: 50%;
+    border: 2px solid #d2d6de;
+    padding: 2px;
+  }
+  span {
+    font-weight: 500;
+    font-size: 12px;
+  }
+
+}
+.post {
+  font-size: 14px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  padding-left: 7%;
+  color: #666;
+  .image {
+    width: 100%;
+  }
+  .user-images {
+    padding-top: 20px;
+  }
+  .title {
+    display: block;
+    padding: 2px 0;
+  }
+}
+.list-inline {
+  padding-left: 0;
+  margin-left: -5px;
+  list-style: none;
+  li {
+    display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;
+    font-size: 13px;
+  }
+  .link-black {
+    &:hover, &:focus {
+      color: #999;
+    }
+  }
+}
+</style>
 

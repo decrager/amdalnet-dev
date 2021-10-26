@@ -43,7 +43,6 @@
                 </a>
               </li>
             </ul>
-            <el-input placeholder="Type a comment" />
           </div>
           <div class="post">
             <div class="user-block">
