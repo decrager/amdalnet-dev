@@ -7,19 +7,25 @@
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
-    <el-table-column align="center" label="Jenis Komponen">
+    <el-table-column label="No." width="54px">
+      <template slot-scope="scope">
+        <span>{{ scope.$index + 1 }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column label="Jenis Komponen">
       <template slot-scope="scope">
         <span>{{ scope.row.component }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Komponen Lingkungan">
+    <el-table-column label="Komponen Lingkungan">
       <template slot-scope="scope">
         <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Aksi">
+    <el-table-column label="Aksi">
       <template slot-scope="scope">
         <el-button
           type="primary"

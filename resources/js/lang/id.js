@@ -71,7 +71,7 @@ export default {
     users: 'Pengguna',
     userProfile: 'Profile Pengguna',
     project: 'Kegiatan',
-    listProject: 'List Kegiatan',
+    listProject: 'Daftar Kegiatan',
     addProject: 'Tambah Kegiatan',
     publishProject: 'Publikasi Kegiatan',
     masterData: 'Data Master',

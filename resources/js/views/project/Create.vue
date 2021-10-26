@@ -1,8 +1,9 @@
 <template>
   <div class="form-container" style="padding: 24px">
     <el-form
-      ref="categoryForm"
+      ref="currentProject"
       :model="currentProject"
+      :rules="currentProjectRules"
       label-position="top"
       label-width="200px"
       style="max-width: 100%"
@@ -12,7 +13,7 @@
           <el-col :span="16" :xs="24">
             <el-form-item
               label="Pilih Kegiatan Yang Sudah Diproses di OSS"
-              prop="titleProject"
+              prop="project_title"
             >
               <el-select
                 v-model="currentProject.project_title"
@@ -30,7 +31,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8" :xs="24">
-            <el-form-item label="Jenis Kegiatan" prop="jenisKegiatan">
+            <el-form-item label="Jenis Kegiatan" prop="project_type">
               <el-select
                 v-model="currentProject.project_type"
                 placeholder="Pilih"
@@ -48,7 +49,7 @@
         </el-col>
         <el-col :span="12" :xs="24">
           <el-col :span="12">
-            <el-form-item label="Provinsi" prop="provinsi">
+            <el-form-item label="Provinsi" prop="id_prov">
               <el-select
                 v-model="currentProject.id_prov"
                 placeholder="Pilih"
@@ -65,7 +66,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Kab / Kota" prop="kabkot">
+            <el-form-item label="Kab / Kota" prop="id_district">
               <el-select
                 v-model="currentProject.id_district"
                 placeholder="Pilih"
@@ -100,7 +101,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="Tingkat Resiko" prop="riskLevel">
+            <el-form-item label="Tingkat Resiko" prop="risk_level">
               <el-input v-model="currentProject.risk_level" :disabled="isOss" />
             </el-form-item>
           </el-col>
@@ -118,7 +119,7 @@
         </el-col>
         <el-col :span="12">
           <el-col :span="12">
-            <el-form-item label="Bidang Kegiatan" prop="fieldProject">
+            <el-form-item label="Bidang Kegiatan" prop="field">
               <el-select
                 v-model="currentProject.field"
                 placeholder="Pilih"
@@ -145,7 +146,7 @@
           :span="12"
           :xs="24"
         ><el-col :span="8">
-           <el-form-item label="Sector" prop="project">
+           <el-form-item label="Sektor" prop="sector">
              <el-select
                v-model="currentProject.sector"
                placeholder="Pilih"
@@ -161,7 +162,7 @@
            </el-form-item>
          </el-col>
           <el-col :span="8">
-            <el-form-item label="Jenis Usaha" prop="businessType">
+            <el-form-item label="Jenis Usaha" prop="biz_type">
               <el-select
                 v-model="currentProject.biz_type"
                 placeholder="Pilih"
@@ -178,29 +179,33 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="Skala/Besaran Kegiatan" prop="projectScale">
-              <el-col
-                :span="12"
-              ><el-input
-                v-model="currentProject.scale"
-              /></el-col>
-              <el-col
-                :span="12"
-              ><el-select
-                v-model="currentProject.scale_unit"
-                placeholder="Pilih"
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in unitOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                /> </el-select></el-col>
-            </el-form-item> </el-col></el-col>
+            <el-col
+              :span="12"
+            >
+              <el-form-item label="Skala/Besaran" prop="scale">
+                <el-input
+                  v-model="currentProject.scale"
+                /></el-form-item></el-col>
+            <el-col
+              :span="12"
+            >
+              <el-form-item label="Unit" prop="scale_unit">
+                <el-select
+                  v-model="currentProject.scale_unit"
+                  placeholder="Pilih"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="item in unitOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  /> </el-select>
+              </el-form-item></el-col>
+          </el-col></el-col>
         <el-col :span="12" :xs="24">
           <el-col :span="24">
-            <el-form-item label="Peta Tapak Proyek" prop="projectMap">
+            <el-form-item label="Peta Tapak Proyek" prop="fileMap">
               <el-col :span="8">
                 <el-radio-group v-model="isUpload">
                   <el-radio-button label="Upload" />
@@ -257,7 +262,7 @@
       <el-row :gutter="16">
         <el-col :span="12" :xs="24">
           <el-form-item
-            prop="locationDesc"
+            prop="location_desc"
             style="margin-bottom: 30px"
             label="Deskripsi Lokasi"
           >
@@ -270,7 +275,7 @@
         </el-col>
         <el-col :span="12" :xs="24">
           <el-form-item
-            prop="ProjectDesc"
+            prop="description"
             style="margin-bottom: 30px"
             label="Deskripsi Kegiatan"
           >
@@ -332,12 +337,31 @@ export default {
         },
       ],
       unitOptions: [],
+      currentProjectRules: {
+        project_title: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+        project_type: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+        id_prov: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+        id_district: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+        kbli: [{ required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
+        risk_level: [{ required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
+        project_year: [{ type: 'date', required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
+        field: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+        address: [{ required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
+        sector: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+        biz_type: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+        scale_unit: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+        scale: [{ required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
+        location_desc: [{ required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
+        description: [{ required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
+        fileMap: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+      },
     };
   },
   async mounted() {
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
       this.fileName = this.getFileName(this.currentProject.map);
+      this.fileMap = this.getFileName(this.currentProject.map);
       this.listSupportTable = await this.getListSupporttable(this.currentProject.id);
       this.getDistricts(this.currentProject.id_prov);
       console.log(this.listSupportTable);
@@ -410,14 +434,19 @@ export default {
     },
     handleSubmit() {
       this.currentProject.fileMap = this.fileMap;
-      console.log(this.listSupportTable);
-      this.currentProject.listSupportDoc = this.listSupportTable.filter(item => item.name && item.file);
-      console.log(this.currentProject);
+      this.$refs.currentProject.validate(valid => {
+        if (valid) {
+          this.currentProject.listSupportDoc = this.listSupportTable.filter(item => item.name && item.file);
 
-      // send to pubishProjectRoute
-      this.$router.push({
-        name: 'publishProject',
-        params: { project: this.currentProject },
+          // send to pubishProjectRoute
+          this.$router.push({
+            name: 'publishProject',
+            params: { project: this.currentProject },
+          });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
       });
     },
     async changeProvince(value) {
