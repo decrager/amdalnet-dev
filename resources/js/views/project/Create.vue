@@ -16,7 +16,7 @@
             >
               <el-select
                 v-model="currentProject.project_title"
-                placeholder="Select"
+                placeholder="Pilih"
                 style="width: 100%"
                 @change="changeProject($event)"
               >
@@ -33,7 +33,7 @@
             <el-form-item label="Jenis Kegiatan" prop="jenisKegiatan">
               <el-select
                 v-model="currentProject.project_type"
-                placeholder="Select"
+                placeholder="Pilih"
                 style="width: 100%"
               >
                 <el-option
@@ -51,7 +51,7 @@
             <el-form-item label="Provinsi" prop="provinsi">
               <el-select
                 v-model="currentProject.id_prov"
-                placeholder="Select"
+                placeholder="Pilih"
                 style="width: 100%"
                 @change="changeProvince($event)"
               >
@@ -68,7 +68,7 @@
             <el-form-item label="Kab / Kota" prop="kabkot">
               <el-select
                 v-model="currentProject.id_district"
-                placeholder="Select"
+                placeholder="Pilih"
                 style="width: 100%"
               >
                 <el-option
@@ -93,7 +93,7 @@
                 :disabled="isOss"
                 class="inline-input"
                 :fetch-suggestions="kbliSearch"
-                placeholder="Please Input"
+                placeholder="Masukan"
                 :trigger-on-focus="false"
                 @select="handleKbliSelect"
               />
@@ -109,7 +109,7 @@
               <el-date-picker
                 v-model="currentProject.project_year"
                 type="year"
-                placeholder="Pick a year"
+                placeholder="Pilih Tahun"
                 style="width: 100%"
                 value-format="yyyy"
               />
@@ -121,7 +121,7 @@
             <el-form-item label="Bidang Kegiatan" prop="fieldProject">
               <el-select
                 v-model="currentProject.field"
-                placeholder="Select"
+                placeholder="Pilih"
                 style="width: 100%"
               >
                 <el-option
@@ -148,7 +148,7 @@
            <el-form-item label="Sector" prop="project">
              <el-select
                v-model="currentProject.sector"
-               placeholder="Select"
+               placeholder="Pilih"
                style="width: 100%"
              >
                <el-option
@@ -164,7 +164,7 @@
             <el-form-item label="Jenis Usaha" prop="businessType">
               <el-select
                 v-model="currentProject.biz_type"
-                placeholder="Select"
+                placeholder="Pilih"
                 style="width: 100%"
                 @change="handleBusinessTypeSelect($event)"
               >
@@ -188,7 +188,7 @@
                 :span="12"
               ><el-select
                 v-model="currentProject.scale_unit"
-                placeholder="Select"
+                placeholder="Pilih"
                 style="width: 100%"
               >
                 <el-option
@@ -284,8 +284,8 @@
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleCancel()"> Cancel </el-button>
-      <el-button type="primary" @click="handleSubmit()"> Confirm </el-button>
+      <el-button @click="handleCancel()"> Batalkan </el-button>
+      <el-button type="primary" @click="handleSubmit()"> Lanjutkan </el-button>
     </div>
   </div>
 </template>
@@ -327,8 +327,8 @@ export default {
           label: 'Baru',
         },
         {
-          value: 'Perpanjangan',
-          label: 'Perpanjangan',
+          value: 'Pengembangan',
+          label: 'Pengembangan',
         },
       ],
       unitOptions: [],

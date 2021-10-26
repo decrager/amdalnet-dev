@@ -77,7 +77,7 @@ export default {
     masterData: 'Data Master',
     provinsi: 'Provinsi',
     formulator: 'Penyusun',
-    expertBank: 'Expert Bank',
+    expertBank: 'Bank Ahli',
   },
   navbar: {
     logOut: 'Keluar',

@@ -56,7 +56,7 @@
         icon="el-icon-plus"
         @click="handleCreate"
       >
-        {{ $t('table.add') + ' Kegiatan' }}
+        {{ ' Kegiatan' }}
       </el-button>
     </div>
     <el-table
