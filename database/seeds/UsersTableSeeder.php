@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
+use App\Laravue\Models\User;
 
 class UsersTableSeeder extends Seeder
 {
@@ -79,14 +80,20 @@ class UsersTableSeeder extends Seeder
                 Acl::ROLE_ADMIN_CENTRAL,
                 Acl::ROLE_ADMIN_REGIONAL,
             ]);
-            $user = \App\Laravue\Models\User::create([
+            $user = User::where([
                 'name' => $fullName,
-                'email' => strtolower($name) . '@amdalnet.dev',
-                'password' => \Illuminate\Support\Facades\Hash::make('amdalnet'),
-            ]);
+                'email' => strtolower($name) . '@amdalnet.dev'])->first();
+            
+            if (!$user) {
+                $user = User::create([
+                    'name' => $fullName,
+                    'email' => strtolower($name) . '@amdalnet.dev',
+                    'password' => \Illuminate\Support\Facades\Hash::make('amdalnet'),
+                ]);
 
-            $role = Role::findByName($roleName);
-            $user->syncRoles($role);
+                $role = Role::findByName($roleName);
+                $user->syncRoles($role);
+            }
         }
     }
 }
