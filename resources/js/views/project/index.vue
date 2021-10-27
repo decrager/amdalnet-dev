@@ -71,6 +71,7 @@
       border
       fit
       highlight-current-row
+      :header-cell-style="{ background: '#3AB06F', color: 'white' }"
       style="width: 100%"
     >
       <el-table-column label="No." width="54px">
@@ -124,34 +125,35 @@
           >{{ scope.row.tag }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Aksi" fixed="right" width="150px">
+      <el-table-column align="center" label="Aksi" fixed="right" width="200px">
         <template slot-scope="scope">
-          <el-row style="margin-bottom: 4px"><el-button
+          <el-row style="margin-bottom: 10px"><el-button
             v-if="!scope.row.published"
             size="mini"
-            icon="el-icon-edit"
+            icon="el-icon-s-promotion"
+            type="primary"
             @click="handlePublishForm(scope.row.id)"
           >
-            Terbitkan
+            Publikasi
           </el-button></el-row>
           <el-row style="margin-bottom: 4px"><el-button
-            v-if="!scope.row.published"
-            type="info"
-            size="mini"
-            icon="el-icon-view"
-            @click="handleViewForm(scope.row.id)"
-          >
-            Lihat
-          </el-button></el-row>
-          <el-row style="margin-bottom: 4px"><el-button
-            v-if="!scope.row.published"
-            type="primary"
-            size="mini"
-            icon="el-icon-edit"
-            @click="handleEditForm(scope.row.id)"
-          >
-            Edit
-          </el-button></el-row>
+                                               v-if="!scope.row.published"
+                                               size="mini"
+                                               icon="el-icon-view"
+                                               style="background-color:blue; color:white;"
+                                               @click="handleViewForm(scope.row.id)"
+                                             >
+                                               Lihat
+                                             </el-button>
+            <el-button
+              v-if="!scope.row.published"
+              type="warning"
+              size="mini"
+              icon="el-icon-edit"
+              @click="handleEditForm(scope.row.id)"
+            >
+              Edit
+            </el-button></el-row>
           <!-- <el-row><el-button
             v-if="!scope.row.published"
             type="danger"

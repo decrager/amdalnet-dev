@@ -5,7 +5,7 @@
         <span v-if="item.redirect==='noredirect'||index==levelList.length-1" class="no-redirect">
           {{ generateTitle(item.meta.title) }}
         </span>
-        <a v-else @click.prevent="handleLink(item)">{{ generateTitle(item.meta.title) }}</a>
+        <a v-else style="color:white" @click.prevent="handleLink(item)">{{ generateTitle(item.meta.title) }}</a>
       </el-breadcrumb-item>
     </transition-group>
   </el-breadcrumb>
@@ -69,7 +69,8 @@ export default {
   margin-left: 10px;
   .no-redirect {
     // color: #97a8be;
-    color: #2c2c2c;
+    /* color: #2c2c2c; */
+    color: white;
     cursor: text;
   }
 }
