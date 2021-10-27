@@ -147,7 +147,7 @@ export default {
       userTypeoptions: [
         {
           value: 'Pemrakarsa',
-          label: 'Pemrakarsa',
+          label: 'Pelaku Usaha',
         },
         {
           value: 'Pemerintah',
