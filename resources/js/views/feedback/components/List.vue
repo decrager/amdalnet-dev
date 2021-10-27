@@ -1,5 +1,15 @@
 <template>
   <div style="margin-bottom: 20px;">
+    <div align="right">
+      <el-button
+        type="success"
+        size="mini"
+        icon="el-icon-plus"
+        @click="showCreateFeedback()"
+      >
+        Tambah SPT Baru
+      </el-button>
+    </div>
     <el-table
       :data="feedbacks"
       border
@@ -82,17 +92,23 @@
       :photo="identityDialogImg"
       :show="showIdDialog"
     />
+    <CreateFeedback
+      :feedback="feedback"
+      :show="showFeedback"
+      :announcement-id="announcementId"
+    />
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
 import IdentityDialog from './IdentityDialog.vue';
+import CreateFeedback from '@/views/home/components/CreateFeedback.vue';
 const feedbackResource = new Resource('feedbacks');
 
 export default {
   name: 'FeedbackList',
-  components: { IdentityDialog },
+  components: { IdentityDialog, CreateFeedback },
   props: {
     announcement: {
       type: Object,
@@ -108,12 +124,16 @@ export default {
     },
   },
   data() {
+    const id = parseInt(this.$route.params && this.$route.params.id);
     return {
+      announcementId: id,
+      feedback: {},
       relevantChoices: [],
       selectedFeedback: {},
       identityDialogData: [],
       identityDialogImg: '',
       showIdDialog: false,
+      showFeedback: false,
     };
   },
   mounted() {
@@ -127,6 +147,9 @@ export default {
     // });
   },
   methods: {
+    showCreateFeedback() {
+      this.showFeedback = true;
+    },
     showIdentity(feedbackId) {
       const toShow = this.feedbacks.find(f => f.id === feedbackId);
       this.selectedFeedback = toShow;

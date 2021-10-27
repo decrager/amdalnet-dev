@@ -32,6 +32,34 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="NIK" prop="id_card_number">
+            <el-input v-model="postForm.id_card_number" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item prop="photo_filepath" style="margin-bottom: 30px;">
+            <Upload v-model="postForm.photo_filepath" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="No. Telepon/Handphone" prop="phone">
+            <el-input v-model="postForm.phone" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="Email" prop="email">
+            <el-input v-model="postForm.email" />
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-row :gutter="24">
         <el-col :span="16" :xs="24">
           <el-form-item
@@ -64,47 +92,13 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="NIK" prop="id_card_number">
-            <el-input v-model="postForm.id_card_number" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="No. Telepon/Handphone" prop="phone">
-            <el-input v-model="postForm.phone" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="Email" prop="email">
-            <el-input v-model="postForm.email" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <el-form-item prop="photo_filepath" style="margin-bottom: 30px;">
-            <Upload v-model="postForm.photo_filepath" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row v-if="isEdit">
-        <el-col :span="8">
-          <el-form-item label="Relevan" prop="is_relevant">
-            <el-select
-              v-model="postForm.is_relevant"
-              placeholder="Select"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in relevantChoices"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
+          <el-form-item label="Rating" prop="rating">
+            <el-rate
+              v-model="postForm.rating"
+              :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
+              :max="5"
+              style="margin-top:8px;"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -132,6 +126,7 @@ const defaultForm = {
   concern: '',
   expectation: '',
   responder_type_id: 1,
+  rating: 1,
   is_relevant: false,
   is_relevant_str: '',
   set_relevant_by: 0,
