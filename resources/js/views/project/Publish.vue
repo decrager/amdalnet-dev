@@ -236,8 +236,8 @@ export default {
         }
       });
     },
-    updateList() {
-      this.getKabKotName(this.project.id_district);
+    async updateList() {
+      await this.getKabKotName(this.project.id_district);
       this.list = [
         {
           param: 'Nama Kegiatan',
