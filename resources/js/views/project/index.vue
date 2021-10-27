@@ -286,6 +286,10 @@ export default {
 
       // change project_year to string
       currentProject.project_year = currentProject.project_year.toString();
+
+      // change field to number and formulator team
+      currentProject.field = Number(currentProject.field);
+      currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
       console.log(currentProject);
       this.$router.push({
         name: 'createProject',
@@ -297,6 +301,10 @@ export default {
 
       // change project_year to string
       currentProject.project_year = currentProject.project_year.toString();
+      // change field to number and formulator team
+      currentProject.field = Number(currentProject.field);
+      currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
+
       this.$router.push({
         name: 'createProject',
         params: { project: currentProject },

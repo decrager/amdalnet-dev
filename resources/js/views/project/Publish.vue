@@ -47,9 +47,9 @@
               label-width="200px"
               style="max-width: 100%"
             >
-              <el-form-item prop="id_drafting_team">
+              <el-form-item prop="id_formulator_team">
                 <el-select
-                  v-model="project.id_drafting_team"
+                  v-model="project.id_formulator_team"
                   placeholder="Pilih"
                   style="width: 100%"
                   :disabled="readonly"
