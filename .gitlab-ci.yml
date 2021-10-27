@@ -23,6 +23,7 @@ deploy_dev:
     - git reset --hard HEAD
     - git pull
     - docker-compose up -d
+    - sudo chmod 777 -R storage/
     - docker-compose exec -T laravel composer install
     - docker-compose exec -T laravel php artisan migrate
     - docker-compose exec -T laravel npm install
