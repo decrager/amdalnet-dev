@@ -224,6 +224,7 @@ export const asyncRoutes = [
         path: '/provinces',
         component: () => import('@/views/master-data/province'),
         name: 'province',
+        hidden: true,
         meta: { title: 'provinsi', icon: 'el-icon-school' },
       },
       {
