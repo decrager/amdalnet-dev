@@ -39,25 +39,37 @@
           <el-col :span="12">Pusat</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
           <el-col :span="12">
-            <el-select
-              v-model="project.id_drafting_team"
-              placeholder="Pilih"
-              style="width: 100%"
-              :disabled="readonly"
+            <el-form
+              ref="project"
+              :model="project"
+              :rules="projectRules"
+              label-position="top"
+              label-width="200px"
+              style="max-width: 100%"
             >
-              <el-option
-                v-for="item in teamOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                style="width: 200px"
-              />
-            </el-select> </el-col></el-row>
+              <el-form-item prop="id_drafting_team">
+                <el-select
+                  v-model="project.id_drafting_team"
+                  placeholder="Pilih"
+                  style="width: 100%"
+                  :disabled="readonly"
+                >
+                  <el-option
+                    v-for="item in teamOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    style="width: 200px"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col></el-row>
       </el-col>
     </el-row>
     <div slot="footer" class="dialog-footer">
       <el-button :disabled="readonly" @click="handleCancel()"> Batal </el-button>
-      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Terbitkan </el-button>
+      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Publikasi </el-button>
     </div>
   </div>
 </template>
@@ -90,6 +102,9 @@ export default {
       teamOptions: null,
       kabkot: null,
       list: [],
+      projectRules: {
+        id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+      },
     };
   },
   mounted() {
@@ -181,42 +196,49 @@ export default {
         formData.append(key, value);
       });
 
-      if (this.project.id !== undefined) {
-        // update
-        projectResource.updateMultipart(this.project.id, formData).then(response => {
-          const { data } = response;
-          this.saveSupportDocs(data.id);
-          this.$message({
-            type: 'success',
-            message: 'Project info has been updated successfully',
-            duration: 5 * 1000,
-          });
-          this.$router.push('/project');
-        }).catch(error => {
-          console.log(error);
-        });
-      } else {
-        projectResource
-          .store(formData)
-          .then((response) => {
-            // save supportdocs
-            const { data } = response;
-
-            this.saveSupportDocs(data.id);
-            this.$message({
-              message:
-                'New Project ' +
-                this.project.project_title +
-                ' has been created successfully.',
-              type: 'success',
-              duration: 5 * 1000,
+      this.$refs.project.validate(valid => {
+        if (valid) {
+          if (this.project.id !== undefined) {
+            // update
+            projectResource.updateMultipart(this.project.id, formData).then(response => {
+              const { data } = response;
+              this.saveSupportDocs(data.id);
+              this.$message({
+                type: 'success',
+                message: 'Project info has been updated successfully',
+                duration: 5 * 1000,
+              });
+              this.$router.push('/project');
+            }).catch(error => {
+              console.log(error);
             });
-            this.$router.push('/project');
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+          } else {
+            projectResource
+              .store(formData)
+              .then((response) => {
+                // save supportdocs
+                const { data } = response;
+
+                this.saveSupportDocs(data.id);
+                this.$message({
+                  message:
+                    'New Project ' +
+                    this.project.project_title +
+                    ' has been created successfully.',
+                  type: 'success',
+                  duration: 5 * 1000,
+                });
+                this.$router.push('/project');
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     async saveSupportDocs(id_project){
       this.project.listSupportDoc.forEach(element => {

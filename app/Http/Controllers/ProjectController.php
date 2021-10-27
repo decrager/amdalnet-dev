@@ -19,7 +19,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        return DB::table('projects')->select('projects.*', 'provinces.name as province', 'districts.name as district')->where(function ($query) use ($request) {
+        return Project::select('projects.*', 'provinces.name as province', 'districts.name as district')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -147,6 +147,11 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
+
+        if ($project === null) {
+            return response()->json(['error' => 'project not found'], 404);
+        }
+
         //validate request
 
         $validator = Validator::make(

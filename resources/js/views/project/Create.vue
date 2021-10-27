@@ -205,7 +205,7 @@
           </el-col></el-col>
         <el-col :span="12" :xs="24">
           <el-col :span="24">
-            <el-form-item label="Peta Tapak Proyek" prop="fileMap">
+            <el-form-item ref="fileMapUpload" label="Peta Tapak Proyek" prop="fileMap">
               <el-col :span="8">
                 <el-radio-group v-model="isUpload">
                   <el-radio-button label="Upload" />
@@ -403,6 +403,7 @@ export default {
     checkMapFileSure(e) {
       this.fileName = e.target.files[0].name;
       this.fileMap = e.target.files[0];
+      this.$refs.fileMapUpload.clearValidate();
     },
     async getAllData() {
       this.getProjectFields();

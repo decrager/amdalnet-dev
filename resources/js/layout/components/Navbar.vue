@@ -7,7 +7,7 @@
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <lang-select class="right-menu-item hover-effect" />
-        <i class="el-icon-caret-bell" />
+        <i class="el-icon-bell right-menu-item hover-effect" style="cursor: pointer; font-size: 18px; vertical-align: middle;" />
         <search id="header-search" class="right-menu-item" />
 
         <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" />

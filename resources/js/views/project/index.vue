@@ -222,7 +222,7 @@ export default {
   },
   methods: {
     handleSubmitAnnouncement(fileProof){
-      this.announcement.fileProof = fileProof;
+      // this.announcement.fileProof = fileProof;
       console.log(this.announcement);
 
       // make form data because we got file
@@ -238,13 +238,14 @@ export default {
         .then((response) => {
           this.$message({
             message:
-                'Project ' +
+                'Rencana Kegiatan ' +
                 this.announcement.project_type +
-                ' has been Published.',
+                ' Telah Dipublikasikan Di Daftar Pengumuman & Informasi Pada Halaman Utama Amdalnet',
             type: 'success',
             duration: 5 * 1000,
           });
           this.getFiltered(this.listQuery);
+          this.announcement = {};
           this.show = false;
         })
         .catch((error) => {
@@ -252,6 +253,7 @@ export default {
         });
     },
     handleCancelAnnouncement(){
+      this.announcement = {};
       this.show = false;
     },
     handleFilter() {
