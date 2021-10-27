@@ -92,8 +92,7 @@ export default {
     },
     handleDelete({ id, nama }) {
       this.$confirm(
-        'Hapus LPJP ' + nama + '. ?',
-        'Warning',
+        'apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan',
         {
           confirmButtonText: 'OK',
           cancelButtonText: 'Cancel',
