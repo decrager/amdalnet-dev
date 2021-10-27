@@ -21,7 +21,7 @@
             <el-input v-model="form.id_card_number" autocomplete="off" />
           </el-form-item>
           <div>
-            <p class="label__peran">Upload Image</p>
+            <p class="label__peran">Unggah Foto Selfie</p>
             <input ref="file" type="file" class="el-input__inner" @change="handleFileUpload()">
           </div>
         </div>
@@ -38,7 +38,7 @@
           </el-select>
         </div>
 
-        <el-form-item label="Saran / Tanggapan">
+        <el-form-item label="Kekhawatiran">
           <el-input v-model="form.concern" type="textarea" autocomplete="off" />
         </el-form-item>
         <el-form-item label="Harapan">
@@ -145,6 +145,8 @@ export default {
       formData.append('email', this.form.email);
       formData.append('responder_type_id', this.form.responder_type_id);
       formData.append('concern', this.form.concern);
+      formData.append('expectation', this.form.expectation);
+      formData.append('rating', this.form.rating);
       formData.append('announcement_id', this.announcementId);
 
       _.each(this.formData, (value, key) => {
