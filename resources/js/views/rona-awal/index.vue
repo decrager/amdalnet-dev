@@ -132,8 +132,8 @@ export default {
       this.ronaAwal = this.list.find((element) => element.id === id);
       this.show = true;
     },
-    handleDelete({ id, name }) {
-      this.$confirm('Hapus Rona Awal ' + name + '. ?', 'Warning', {
+    handleDelete({ id, nama }) {
+      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
         type: 'warning',

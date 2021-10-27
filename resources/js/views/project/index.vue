@@ -315,8 +315,7 @@ export default {
     },
     handleDelete(id, nama) {
       this.$confirm(
-        'Hapus Project ' + nama + '. ?',
-        'Warning',
+        'apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan',
         {
           confirmButtonText: 'OK',
           cancelButtonText: 'Batal',

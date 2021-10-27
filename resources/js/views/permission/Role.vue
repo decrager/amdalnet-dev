@@ -184,7 +184,7 @@ export default {
       });
     },
     handleDelete({ $index, row }) {
-      this.$confirm('Confirm to remove the role?', 'Warning', {
+      this.$confirm('apakah anda yakin akan menghapus ini?', 'Peringatan', {
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
         type: 'warning',

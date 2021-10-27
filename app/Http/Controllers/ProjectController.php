@@ -23,11 +23,11 @@ class ProjectController extends Controller
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
-                return $request->id_prov ? $query->where('id_prov', $request->id_prov) : '';
+                return $request->id_prov ? $query->where('projects.id_prov', $request->id_prov) : '';
             }
         )->where(
             function ($query) use ($request) {
-                return $request->id_district ? $query->where('id_district', $request->id_district) : '';
+                return $request->id_district ? $query->where('projects.id_district', $request->id_district) : '';
             }
         )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->orderBy('projects.id', 'DESC')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
     }

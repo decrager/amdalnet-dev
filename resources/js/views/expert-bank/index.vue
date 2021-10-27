@@ -77,8 +77,8 @@ export default {
         params: { id, expertBank: currentExpertBank },
       });
     },
-    handleDelete({ id, name }) {
-      this.$confirm('Hapus Bank Ahli ' + name + '. ?', 'Warning', {
+    handleDelete({ id, nama }) {
+      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
         type: 'warning',
