@@ -7,55 +7,55 @@
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
-    <el-table-column align="center" label="Nama Penyusun">
+    <el-table-column align="center" label="Nama Penyusun" width="150px">
       <template slot-scope="scope">
         <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="No. Registrasi">
+    <el-table-column align="center" label="No. Registrasi" width="150px">
       <template slot-scope="scope">
         <span>{{ scope.row.reg_no }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="No. Sertifikasi">
+    <el-table-column align="center" label="No. Sertifikasi" width="150px">
       <template slot-scope="scope">
         <span>{{ scope.row.cert_no }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Status Keanggotaan">
+    <el-table-column align="center" label="Status Keanggotaan" width="180px">
       <template slot-scope="scope">
         <span>{{ scope.row.membership_status }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Affiliasi">
+    <el-table-column align="center" label="Affiliasi" width="150px">
       <template slot-scope="scope">
         <span>{{ scope.row.id_institution }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Tgl. Ditetapkan">
+    <el-table-column align="center" label="Tgl. Ditetapkan" width="150px">
       <template slot-scope="scope">
         <span>{{ scope.row.date_start }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Terakhir Berlaku">
+    <el-table-column align="center" label="Terakhir Berlaku" width="150px">
       <template slot-scope="scope">
         <span>{{ scope.row.date_end }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="LSP Penerbit">
+    <el-table-column align="center" label="LSP Penerbit" width="150px">
       <template slot-scope="scope">
         <span>{{ scope.row.id_lsp }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Status">
+    <el-table-column align="center" label="Status" width="150px">
       <template slot-scope="scope">
         <el-tag :type="calculateStatus(scope.row.date_start, scope.row.date_end) | statusFilter">
           {{ calculateStatus(scope.row.date_start, scope.row.date_end) }}
@@ -63,7 +63,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Sertifikat">
+    <el-table-column label="Sertifikat" width="150px">
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -86,7 +86,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Aksi">
+    <el-table-column align="center" label="Aksi" fixed="right" width="150px">
       <template slot-scope="scope">
         <el-button
           type="primary"

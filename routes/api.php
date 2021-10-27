@@ -18,6 +18,7 @@ use \App\Laravue\Acl;
 |
 */
 Route::apiResource('home', 'HomeController');
+Route::apiResource('webgis', 'WebgisController');
 
 Route::namespace('Api')->group(function() {
     Route::post('auth/login', 'AuthController@login');
@@ -157,7 +158,7 @@ Route::apiResource('kbli-env-params', 'KbliEnvParamController');
 Route::apiResource('projects', 'ProjectController');
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('oss-projects', 'OssProjectController');
-Route::apiResource('responder_types', 'ResponderTypeController');
+Route::apiResource('responder-types', 'ResponderTypeController');
 Route::apiResource('feedbacks', 'FeedbackController');
 Route::apiResource('support-docs', 'SupportDocController');
 Route::apiResource('announcements', 'AnnouncementController');
@@ -165,6 +166,14 @@ Route::apiResource('initiators', 'InitiatorController');
 Route::apiResource('lpjp', 'LpjpController');
 Route::apiResource('formulators', 'FormulatorController');
 Route::apiResource('expert-banks', 'ExpertBankController');
+Route::apiResource('public-consultations', 'PublicConsultationController');
 Route::apiResource('rona-awals', 'RonaAwalController');
 Route::apiResource('components', 'ComponentController');
 Route::apiResource('project-stages', 'ProjectStageController');
+Route::apiResource('sops', 'SopController');
+Route::apiResource('component-types', 'ComponentTypeController');
+
+Route::get('/clear-cache', function() {
+    $exitCode = Artisan::call('config:cache');
+    return 'DONE'; //Return anything
+});

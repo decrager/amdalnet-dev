@@ -106,8 +106,8 @@ export default {
         params: { id, formulator: currentFormulator },
       });
     },
-    handleDelete({ id, name }) {
-      this.$confirm('Hapus Formulator ' + name + '. ?', 'Warning', {
+    handleDelete({ id, nama }) {
+      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
         type: 'warning',

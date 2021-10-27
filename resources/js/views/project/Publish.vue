@@ -41,8 +41,9 @@
           <el-col :span="12">
             <el-select
               v-model="project.id_drafting_team"
-              placeholder="Select"
+              placeholder="Pilih"
               style="width: 100%"
+              :disabled="readonly"
             >
               <el-option
                 v-for="item in teamOptions"
@@ -55,8 +56,8 @@
       </el-col>
     </el-row>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleCancel()"> Cancel </el-button>
-      <el-button type="primary" @click="handleSubmit()"> Confirm </el-button>
+      <el-button :disabled="readonly" @click="handleCancel()"> Batal </el-button>
+      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Terbitkan </el-button>
     </div>
   </div>
 </template>
@@ -75,6 +76,10 @@ export default {
     project: {
       type: Object,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -231,8 +236,8 @@ export default {
         }
       });
     },
-    updateList() {
-      this.getKabKotName(this.project.id_district);
+    async updateList() {
+      await this.getKabKotName(this.project.id_district);
       this.list = [
         {
           param: 'Nama Kegiatan',

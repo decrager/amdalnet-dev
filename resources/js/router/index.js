@@ -68,6 +68,11 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/webgis',
+    component: () => import('@/views/webgis/index'),
+    hidden: true,
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,
@@ -184,7 +189,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/project',
     alwaysShow: true,
-    meta: { title: 'project', icon: 'zip' },
+    meta: { title: 'project', icon: 'zip', roles: ['initiator', 'editor'] },
     children: [
       {
         path: '',
@@ -214,12 +219,13 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/master-data',
     alwaysShow: true,
-    meta: { title: 'masterData', icon: 'el-icon-reading' },
+    meta: { title: 'masterData', icon: 'el-icon-reading', permissions: ['view menu administrator'] },
     children: [
       {
         path: '/provinces',
         component: () => import('@/views/master-data/province'),
         name: 'province',
+        hidden: true,
         meta: { title: 'provinsi', icon: 'el-icon-school' },
       },
       {
@@ -304,6 +310,19 @@ export const asyncRoutes = [
         name: 'editExpertBank',
         hidden: true,
         meta: { title: 'Edit Bank Ahli', icon: 'documentation', noCache: true },
+      },
+      {
+        path: 'sop',
+        component: () => import('@/views/master-sop/index'),
+        name: 'sop',
+        meta: { title: 'SOP', icon: 'documentation', noCache: true },
+      },
+      {
+        path: 'sop/create',
+        component: () => import('@/views/master-sop/Create'),
+        name: 'createSop',
+        hidden: true,
+        meta: { title: 'Tambah SOP', icon: 'documentation', noCache: true },
       },
     ],
   },

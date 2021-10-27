@@ -5,6 +5,7 @@ const announcementRoutes = {
   component: Layout,
   redirect: '/announcement',
   alwaysShow: true,
+  hidden: true,
   meta: { title: 'Announcement', icon: 'zip' },
   children: [
     // {

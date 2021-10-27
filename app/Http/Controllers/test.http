@@ -36,3 +36,7 @@ GET http://localhost:8000/api/rona-awals
 ###
 GET http://localhost:8000/api/support-docs?idProject=20
 ###
+GET http://localhost:8000/api/clear-cache
+###
+GET http://192.168.7.94:8000/api/clear-cache
+###

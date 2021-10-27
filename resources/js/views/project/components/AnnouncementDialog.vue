@@ -65,7 +65,7 @@
             <el-form-item label="Tanggal Mulai" prop="description">
               <el-date-picker
                 v-model="announcement.start_date"
-                placeholder="Pick a Date"
+                placeholder="Pilih Hari"
                 style="width: 100%"
                 value-format="yyyy-M-d"
               />
@@ -75,7 +75,7 @@
             <el-form-item label="Batas Akhir" prop="description">
               <el-date-picker
                 v-model="announcement.end_date"
-                placeholder="Pick a Date"
+                placeholder="Pilih Hari"
                 style="width: 100%"
                 value-format="yyyy-M-d"
               />
@@ -94,8 +94,8 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="handleCancelAnnouncement()"> Cancel </el-button>
-        <el-button type="primary" @click="handleSubmitAnnouncement()"> Confirm </el-button>
+        <el-button @click="handleCancelAnnouncement()"> Batal </el-button>
+        <el-button type="primary" @click="handleSubmitAnnouncement()"> Simpan </el-button>
       </div>
     </div>
   </el-dialog>

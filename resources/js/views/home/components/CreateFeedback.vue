@@ -112,7 +112,7 @@ export default {
       this.show = false;
     },
     async getResponderType() {
-      await axios.get('api/responder_types')
+      await axios.get('api/responder-types')
         .then(response => {
           this.responders = response.data.data;
         });

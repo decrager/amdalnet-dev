@@ -1,63 +1,69 @@
 <template>
   <div style="padding: 24px" class="app-container">
     <div class="filter-container">
-      <el-select
-        v-model="listQuery.document_type"
-        :placeholder="'Jenis Document'"
-        clearable
-        class="filter-item"
-      >
-        <el-option
-          v-for="item in documentTypeOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.id_prov"
-        placeholder="Province"
-        clearable
-        class="filter-item"
-        @change="changeProvince($event)"
-      >
-        <el-option
-          v-for="item in provinceOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.id_district"
-        placeholder="Kab / Kota"
-        clearable
-        class="filter-item"
-      >
-        <el-option
-          v-for="item in cityOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-          :disabled="cityOptions.length == 0"
-        />
-      </el-select>
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        @click="handleFilter"
-      >
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >
-        {{ $t('table.add') + ' Kegiatan' }}
-      </el-button>
+      <el-row type="flex" class="row-bg" justify="space-between">
+        <div>
+          <el-button
+            class="filter-item"
+            type="primary"
+            icon="el-icon-plus"
+            @click="handleCreate"
+          >
+            {{ ' Kegiatan' }}
+          </el-button>
+        </div>
+        <div>
+          <el-select
+            v-model="listQuery.document_type"
+            :placeholder="'Jenis Dokumen'"
+            clearable
+            class="filter-item"
+          >
+            <el-option
+              v-for="item in documentTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-select
+            v-model="listQuery.id_prov"
+            placeholder="Provinsi"
+            clearable
+            class="filter-item"
+            @change="changeProvince($event)"
+          >
+            <el-option
+              v-for="item in provinceOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-select
+            v-model="listQuery.id_district"
+            placeholder="Kab / Kota"
+            clearable
+            class="filter-item"
+          >
+            <el-option
+              v-for="item in cityOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="cityOptions.length == 0"
+            />
+          </el-select>
+          <el-button
+            class="filter-item"
+            type="primary"
+            icon="el-icon-search"
+            @click="handleFilter"
+          >
+            {{ $t('table.search') }}
+          </el-button>
+        </div>
+      </el-row>
     </div>
     <el-table
       v-loading="loading"
@@ -67,9 +73,15 @@
       highlight-current-row
       style="width: 100%"
     >
+      <el-table-column label="No." width="54px">
+        <template slot-scope="scope">
+          <span>{{ scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="No. Registrasi" width="200px">
         <template slot-scope="scope">
-          <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
+          <span>{{ scope.row.project_title + '1233DD21123ASD' }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Nama Kegiatan" width="200px">
@@ -120,7 +132,16 @@
             icon="el-icon-edit"
             @click="handlePublishForm(scope.row.id)"
           >
-            Publish
+            Terbitkan
+          </el-button></el-row>
+          <el-row style="margin-bottom: 4px"><el-button
+            v-if="!scope.row.published"
+            type="info"
+            size="mini"
+            icon="el-icon-view"
+            @click="handleViewForm(scope.row.id)"
+          >
+            Lihat
           </el-button></el-row>
           <el-row style="margin-bottom: 4px"><el-button
             v-if="!scope.row.published"
@@ -131,7 +152,7 @@
           >
             Edit
           </el-button></el-row>
-          <el-row><el-button
+          <!-- <el-row><el-button
             v-if="!scope.row.published"
             type="danger"
             size="mini"
@@ -139,7 +160,7 @@
             @click="handleDelete(scope.row.id, scope.row.project_title)"
           >
             Delete
-          </el-button></el-row>
+          </el-button></el-row> -->
 
         </template>
       </el-table-column>
@@ -267,6 +288,20 @@ export default {
         params: { project: currentProject },
       });
     },
+    handleViewForm(id) {
+      const currentProject = this.filtered.find((item) => item.id === id);
+
+      // change project_year to string
+      currentProject.project_year = currentProject.project_year.toString();
+      this.$router.push({
+        name: 'createProject',
+        params: { project: currentProject },
+      });
+      this.$router.push({
+        name: 'publishProject',
+        params: { project: currentProject, readonly: true },
+      });
+    },
     handlePublishForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
       console.log(currentProject);
@@ -280,8 +315,7 @@ export default {
     },
     handleDelete(id, nama) {
       this.$confirm(
-        'Hapus Project ' + nama + '. ?',
-        'Warning',
+        'apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan',
         {
           confirmButtonText: 'OK',
           cancelButtonText: 'Batal',

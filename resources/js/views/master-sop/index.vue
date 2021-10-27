@@ -10,12 +10,12 @@
         {{ 'Tambah SOP' }}
       </el-button>
 
-       <sop-table
-          :loading="loading"
-          :list="list"
-          @handleEditForm="handleEditForm($event)"
-          @handleDelete="handleDelete($event)"
-        />
+      <sop-table
+        :loading="loading"
+        :list="list"
+        @handleEditForm="handleEditForm($event)"
+        @handleDelete="handleDelete($event)"
+      />
     </div>
   </div>
 </template>

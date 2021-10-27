@@ -96,6 +96,12 @@ export default {
     thirdparty: 'Or connect with',
     thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !',
     email: 'Email',
+    userType: 'User Type',
+    registrationForm: 'Registration Form',
+    address: 'Address',
+    phone: 'Phone Number',
+    pic: 'PIC',
+    name: 'Name',
   },
   documentation: {
     documentation: 'Documentation',
