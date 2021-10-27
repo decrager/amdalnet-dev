@@ -2,7 +2,7 @@
   <div style="padding: 24px" class="app-container">
     <div class="filter-container">
       <el-row type="flex" class="row-bg" justify="space-between">
-        <el-col :span="9">
+        <div>
           <el-button
             class="filter-item"
             type="primary"
@@ -11,8 +11,8 @@
           >
             {{ ' Kegiatan' }}
           </el-button>
-        </el-col>
-        <el-col :span="15">
+        </div>
+        <div>
           <el-select
             v-model="listQuery.document_type"
             :placeholder="'Jenis Dokumen'"
@@ -62,7 +62,7 @@
           >
             {{ $t('table.search') }}
           </el-button>
-        </el-col>
+        </div>
       </el-row>
     </div>
     <el-table
