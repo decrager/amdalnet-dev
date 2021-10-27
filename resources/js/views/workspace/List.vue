@@ -50,14 +50,6 @@
       >
         {{ $t('table.search') }}
       </el-button>
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >
-        {{ $t('table.add') + ' Kegiatan' }}
-      </el-button>
     </div>
     <el-table
       v-loading="loading"
@@ -239,12 +231,6 @@ export default {
       this.filtered = data;
       this.total = total;
       this.listLoading = false;
-    },
-    handleCreate() {
-      this.$router.push({
-        name: 'createProject',
-        params: {},
-      });
     },
     download(url) {
       window.open(url, '_blank').focus();
