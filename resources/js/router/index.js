@@ -24,6 +24,7 @@ import errorRoutes from './modules/error';
 // import permissionRoutes from './modules/permission';
 import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
+import uklUplRoutes from './modules/uklupl';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -327,6 +328,7 @@ export const asyncRoutes = [
   },
   announcementRoutes,
   feedbackRoutes,
+  uklUplRoutes,
   // excelRoutes,
   // {
   //   path: '/zip',
