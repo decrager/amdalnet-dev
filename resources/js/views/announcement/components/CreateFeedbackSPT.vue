@@ -83,9 +83,8 @@ export default {
     },
   },
   data(){
-    const id = this.$route.params && this.$route.params.id;
     return {
-      announcement_id: id,
+      announcement_id: 0,
       data: {},
       form: {
         name: null,
@@ -95,7 +94,6 @@ export default {
         responder_type_id: null,
         concern: null,
         expectation: null,
-        announcement_id: 0,
         rating: null,
       },
       responders: [],
@@ -104,12 +102,11 @@ export default {
     };
   },
   async created() {
+    const id = this.$route.params && this.$route.params.id;
+    this.announcement_id = id;
     await this.getResponderType();
   },
   methods: {
-    getAnnouncement() {
-      this.$router.push('/announcement/view/' + this.announcement_id);
-    },
     async getResponderType() {
       await axios.get('api/responder-types')
         .then(response => {
@@ -131,7 +128,7 @@ export default {
       formData.append('concern', this.form.concern);
       formData.append('expectation', this.form.expectation);
       formData.append('rating', this.form.rating);
-      formData.append('announcement_id', this.announcementId);
+      formData.append('announcement_id', this.announcement_id);
 
       _.each(this.formData, (value, key) => {
         formData.append(key, value);
@@ -141,7 +138,11 @@ export default {
       await axios
         .post('api/feedbacks', formData, { headers })
         .then(() => {
-          this.getAnnouncement();
+          this.$message({
+            message: 'SPT Berhasil Disimpan',
+            type: 'success',
+            duration: 5 * 1000,
+          });
         })
         .catch(error => {
           this.errorMessage = error.message;

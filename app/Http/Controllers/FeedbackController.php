@@ -51,6 +51,8 @@ class FeedbackController extends Controller
             'phone' => 'required',
             'email' => 'required',
             'concern' => 'required',
+            'expectation' => 'required',
+            'rating' => 'required',
             'photo_filepath' => 'image|file',
             'responder_type_id' => 'required',
         ]);
