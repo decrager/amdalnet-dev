@@ -1,58 +1,68 @@
 <template>
   <div class="app-container">
-    <aside align="center">
-      TAHAPAN PRAKONSTRUKSI
-    </aside>
-    <aside align="center">
-      TAHAPAN KONSTRUKSI
-    </aside>
-    <aside align="center">
-      TAHAPAN OPERASI
-    </aside>
-    <aside align="center">
-      TAHAPAN PASCAOPERASI
-    </aside>
+    <el-row :gutter="4">
+      <el-col v-for="stage of projectStages" :key="stage.id" :span="6" :xs="24">
+        <aside align="center" style="margin-bottom: 0px;">
+          {{ stage.name }}
+        </aside>
+        <tabel-komponen :data="data[stage.id]" />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
 
-const defaultForm = {
-};
+import Resource from '@/api/resource';
+import TabelKomponen from './TabelKomponen.vue';
+
+const prjstageResource = new Resource('project-stages');
+const componentResource = new Resource('components');
 
 export default {
   name: 'SumberDampak',
+  components: { TabelKomponen },
   data() {
     return {
-      postForm: Object.assign({}, defaultForm),
-      dataLeft: [],
-      dataRight: [],
+      komponenKegiatan: [],
+      projectStages: [],
+      data: {},
     };
   },
   mounted() {
-    this.dataLeft = [
-      { label: 'Barcode', value: '1610922263CT2021' },
-      { label: 'Jenis Dokumen', value: 'UKL-UPL' },
-      { label: 'Nama Kegiatan', value: 'Kegiatan Pembangunan Gedung Jl Pramuka, Jakarta Timur' },
-      { label: 'Bidang Usaha/Kegiatan', value: 'Bidang Multisektor' },
-      { label: 'Skala/Besaran', value: 'Ha/m/m3/liter' },
-      { label: 'Alamat', value: 'Jl. Ir. H. Djuanda No. 78 Bandung' },
-      { label: 'Lokasi', value: 'Gedung Jl Pramuka, Jakarta Timur' },
-      { label: 'Deskripsi Lokasi', value: 'Pembangunan Gedung Jl Pramuka, Jakarta Timur untuk memberikan manfaat yang besar bagi kemajuan ekonomi suatu daerah dengan terbukanya peluang usaha baru.' },
-    ];
-    this.dataRight = [
-      { label: 'Pemrakarsa', value: 'PT. Wilujeng Sumping' },
-      { label: 'Penanggung Jawab', value: 'Suyang Hartanto' },
-      { label: 'Alamat Pemrakarsa', value: 'Jl. Ir. H. Djuanda No. 78 Bandung' },
-      { label: 'No Telepon Pemrakarsa', value: '081223608250' },
-      { label: 'Email Pemrakarsa', value: 'pemrakarsa001@gmail.com' },
-      { label: 'Provinsi/Kota', value: 'Bandung' },
-      { label: 'Kewenangan', value: 'Pusat' },
-      { label: 'Deskripsi Kegiatan', value: 'Saat ini pemrakarsa telah memiliki izin lokasi yang dikeluarkan oleh Gubernur DKI Nomor xxx/123/345.0.0.1/20xx tanggal 01 Januari 2000 untuk keperluan pembangunan Gedung pada lahan seluas ± 2.000 m2. contoh' },
-    ];
+    this.getData();
   },
   methods: {
+    async getData() {
+      const projects = await prjstageResource.list({});
+      this.projectStages = projects.data;
 
+      const components = await componentResource.list({
+        all: true,
+      });
+      this.komponenKegiatan = components.data;
+      const n = [];
+      const dataPerStep = {};
+      this.projectStages.map((s) => {
+        n.push(1);
+        dataPerStep[s.id] = [];
+      });
+      this.komponenKegiatan.map((k) => {
+        const i = k.id_project_stage - 1;
+        k.no = n[i];
+        n[i]++;
+      });
+      const data = {};
+      this.projectStages.map((s) => {
+        this.komponenKegiatan.map((k) => {
+          if (k.id_project_stage === s.id){
+            dataPerStep[k.id_project_stage].push(k);
+          }
+        });
+        data[s.id] = dataPerStep[s.id];
+      });
+      this.data = data;
+    },
   },
 };
 </script>
