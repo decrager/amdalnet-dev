@@ -1,22 +1,24 @@
 <template>
-  <div class="app-container">
-    <div class="filter-container">
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >
-        {{ 'Tambah SOP' }}
-      </el-button>
+  <div class="app-container" style="padding: 24px">
+    <el-card>
+      <div class="filter-container">
+        <el-button
+          class="filter-item"
+          type="primary"
+          icon="el-icon-plus"
+          @click="handleCreate"
+        >
+          {{ 'Tambah SOP' }}
+        </el-button>
 
-      <sop-table
-        :loading="loading"
-        :list="list"
-        @handleEditForm="handleEditForm($event)"
-        @handleDelete="handleDelete($event)"
-      />
-    </div>
+        <sop-table
+          :loading="loading"
+          :list="list"
+          @handleEditForm="handleEditForm($event)"
+          @handleDelete="handleDelete($event)"
+        />
+      </div>
+    </el-card>
   </div>
 </template>
 

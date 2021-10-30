@@ -5,7 +5,7 @@
     border
     fit
     highlight-current-row
-    :header-cell-style="{ background: '#3AB06F', color: 'white' }"
+    :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
   >
     <el-table-column label="No." width="54px">
       <template slot-scope="scope">
@@ -68,3 +68,6 @@ export default {
   },
 };
 </script>
+<style rel="stylesheet/scss" lang="scss" scoped>
+  .el-table-column{border: none;}
+</style>
