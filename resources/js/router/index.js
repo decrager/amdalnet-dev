@@ -205,13 +205,6 @@ export const asyncRoutes = [
         meta: { title: 'addProject', icon: 'documentation', noCache: true },
       },
       {
-        path: 'create2',
-        component: () => import('@/views/project/Create2'),
-        name: 'createProject2',
-        hidden: true,
-        meta: { title: 'addProject', icon: 'documentation', noCache: true },
-      },
-      {
         path: 'publish',
         component: () => import('@/views/project/Publish'),
         name: 'publishProject',
