@@ -386,7 +386,6 @@ export default {
 
 <style lang="scss" scoped>
 .entity-block {
-  
   display: inline-block;
 
   .name, .description {
