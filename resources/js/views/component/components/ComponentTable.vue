@@ -7,19 +7,25 @@
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
-    <el-table-column align="center" label="Tahap Kegiatan">
+    <el-table-column label="No." width="54px">
+      <template slot-scope="scope">
+        <span>{{ scope.$index + 1 }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column label="Tahap Kegiatan">
       <template slot-scope="scope">
         <span>{{ scope.row.project_stage }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Komponen Kegiatan">
+    <el-table-column label="Komponen Kegiatan">
       <template slot-scope="scope">
         <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Aksi">
+    <el-table-column label="Aksi">
       <template slot-scope="scope">
         <el-button
           type="primary"

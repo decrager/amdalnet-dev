@@ -5,6 +5,7 @@ const feedbackRoutes = {
   component: Layout,
   redirect: '/feedback',
   alwaysShow: true,
+  hidden: true,
   meta: { title: 'Feedback', icon: 'zip' },
   children: [
     {

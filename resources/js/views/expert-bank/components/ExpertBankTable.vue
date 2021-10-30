@@ -19,7 +19,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Email LPJP">
+    <el-table-column align="center" label="Email">
       <template slot-scope="scope">
         <span>{{ scope.row.email }}</span>
       </template>

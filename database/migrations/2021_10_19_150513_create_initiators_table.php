@@ -18,8 +18,10 @@ class CreateInitiatorsTable extends Migration
             $table->string('name');
             $table->string('pic');
             $table->string('email');
-            $table->string('phone_number');
-            $table->string('username');
+            $table->string('phone');
+            $table->string('address');
+            $table->string('user_type');
+            $table->string('nib')->nullable();
             $table->timestamps();
         });
     }

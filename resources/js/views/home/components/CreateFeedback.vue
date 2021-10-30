@@ -2,7 +2,7 @@
   <el-dialog :title="'Berikan Tanggapan Baru'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
     <form enctype="multipart/form-data" @submit.prevent="saveFeedback">
       <input v-model="announcementId" type="hidden">
-      <el-form :model="form" style="max-width: 100%">
+      <el-form :model="form" style="max-width: 100%" label-position="top">
         <el-form-item label="Nama">
           <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
@@ -21,7 +21,7 @@
             <el-input v-model="form.id_card_number" autocomplete="off" />
           </el-form-item>
           <div>
-            <p class="label__peran">Upload Image</p>
+            <p class="label__peran">Unggah Foto Selfie</p>
             <input ref="file" type="file" class="el-input__inner" @change="handleFileUpload()">
           </div>
         </div>
@@ -38,8 +38,21 @@
           </el-select>
         </div>
 
-        <el-form-item label="Saran / Tanggapan">
+        <el-form-item label="Kekhawatiran">
           <el-input v-model="form.concern" type="textarea" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="Harapan">
+          <el-input v-model="form.expectation" type="textarea" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="Berikan rating Anda untuk Rencana Usaha/Kegiatan ini">
+          <span>1 = Sangat tidak Setuju/Mendukung</span>
+          <el-rate
+            v-model="form.rating"
+            :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
+            :max="5"
+            style="margin-top:8px;"
+          />
+          <span>5 = Sangat Setuju/Mendukung</span>
         </el-form-item>
 
         <el-button
@@ -91,7 +104,9 @@ export default {
         email: null,
         responder_type_id: null,
         concern: null,
+        expectation: null,
         announcement_id: 0,
+        rating: null,
       },
       responders: [],
       errorMessage: null,
@@ -130,6 +145,8 @@ export default {
       formData.append('email', this.form.email);
       formData.append('responder_type_id', this.form.responder_type_id);
       formData.append('concern', this.form.concern);
+      formData.append('expectation', this.form.expectation);
+      formData.append('rating', this.form.rating);
       formData.append('announcement_id', this.announcementId);
 
       _.each(this.formData, (value, key) => {

@@ -1,79 +1,83 @@
 <template>
   <div style="padding: 24px" class="app-container">
     <div class="filter-container">
-      <el-select
-        v-model="listQuery.document_type"
-        :placeholder="'Jenis Document'"
-        clearable
-        class="filter-item"
-      >
-        <el-option
-          v-for="item in documentTypeOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.id_prov"
-        placeholder="Province"
-        clearable
-        class="filter-item"
-        @change="changeProvince($event)"
-      >
-        <el-option
-          v-for="item in provinceOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.id_district"
-        placeholder="Kab / Kota"
-        clearable
-        class="filter-item"
-      >
-        <el-option
-          v-for="item in cityOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-          :disabled="cityOptions.length == 0"
-        />
-      </el-select>
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        @click="handleFilter"
-      >
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >
-        {{ $t('table.add') + ' Kegiatan' }}
-      </el-button>
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate2"
-      >
-        .
-      </el-button>
+      <el-row type="flex" class="row-bg" justify="space-between">
+        <div>
+          <el-button
+            class="filter-item"
+            type="primary"
+            icon="el-icon-plus"
+            @click="handleCreate"
+          >
+            {{ ' Kegiatan' }}
+          </el-button>
+        </div>
+        <div>
+          <el-select
+            v-model="listQuery.document_type"
+            :placeholder="'Jenis Dokumen'"
+            clearable
+            class="filter-item"
+          >
+            <el-option
+              v-for="item in documentTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-select
+            v-model="listQuery.id_prov"
+            placeholder="Provinsi"
+            clearable
+            class="filter-item"
+            @change="changeProvince($event)"
+          >
+            <el-option
+              v-for="item in provinceOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-select
+            v-model="listQuery.id_district"
+            placeholder="Kab / Kota"
+            clearable
+            class="filter-item"
+          >
+            <el-option
+              v-for="item in cityOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="cityOptions.length == 0"
+            />
+          </el-select>
+          <el-button
+            class="filter-item"
+            type="primary"
+            icon="el-icon-search"
+            @click="handleFilter"
+          >
+            {{ $t('table.search') }}
+          </el-button>
+        </div>
+      </el-row>
     </div>
     <el-table
       v-loading="loading"
       :data="filtered"
       fit
       highlight-current-row
+      :header-cell-style="{ background: '#3AB06F', color: 'white' }"
       style="width: 100%"
     >
+      <el-table-column label="No." width="54px">
+        <template slot-scope="scope">
+          <span>{{ scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
       <el-table-column type="expand" class="row-detail">
         <template slot-scope="scope">
           <div class="post">
@@ -167,37 +171,6 @@
           >{{ scope.row.tag }}</el-tag>
         </template>
       </el-table-column>
-      <!--el-table-column align="center" label="Aksi" fixed="right" width="150px">
-        <template slot-scope="scope">
-          <el-row style="margin-bottom: 4px"><el-button
-            v-if="!scope.row.published"
-            size="mini"
-            icon="el-icon-edit"
-            @click="handlePublishForm(scope.row.id)"
-          >
-            Publish
-          </el-button></el-row>
-          <el-row style="margin-bottom: 4px"><el-button
-            v-if="!scope.row.published"
-            type="primary"
-            size="mini"
-            icon="el-icon-edit"
-            @click="handleEditForm(scope.row.id)"
-          >
-            Edit
-          </el-button></el-row>
-          <el-row><el-button
-            v-if="!scope.row.published"
-            type="danger"
-            size="mini"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row.id, scope.row.project_title)"
-          >
-            Delete
-          </el-button></el-row>
-
-        </template>
-      </el-table-column-->
     </el-table>
     <pagination
       v-show="total > 0"
@@ -254,7 +227,7 @@ export default {
   },
   methods: {
     handleSubmitAnnouncement(fileProof){
-      this.announcement.fileProof = fileProof;
+      // this.announcement.fileProof = fileProof;
       console.log(this.announcement);
 
       // make form data because we got file
@@ -270,13 +243,14 @@ export default {
         .then((response) => {
           this.$message({
             message:
-                'Project ' +
+                'Rencana Kegiatan ' +
                 this.announcement.project_type +
-                ' has been Published.',
+                ' Telah Dipublikasikan Di Daftar Pengumuman & Informasi Pada Halaman Utama Amdalnet',
             type: 'success',
             duration: 5 * 1000,
           });
           this.getFiltered(this.listQuery);
+          this.announcement = {};
           this.show = false;
         })
         .catch((error) => {
@@ -284,6 +258,7 @@ export default {
         });
     },
     handleCancelAnnouncement(){
+      this.announcement = {};
       this.show = false;
     },
     handleFilter() {
@@ -322,10 +297,32 @@ export default {
 
       // change project_year to string
       currentProject.project_year = currentProject.project_year.toString();
+
+      // change field to number and formulator team
+      currentProject.field = Number(currentProject.field);
+      currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
       console.log(currentProject);
       this.$router.push({
         name: 'createProject',
         params: { project: currentProject },
+      });
+    },
+    handleViewForm(id) {
+      const currentProject = this.filtered.find((item) => item.id === id);
+
+      // change project_year to string
+      currentProject.project_year = currentProject.project_year.toString();
+      // change field to number and formulator team
+      currentProject.field = Number(currentProject.field);
+      currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
+
+      this.$router.push({
+        name: 'createProject',
+        params: { project: currentProject },
+      });
+      this.$router.push({
+        name: 'publishProject',
+        params: { project: currentProject, readonly: true },
       });
     },
     handlePublishForm(id) {
@@ -341,8 +338,7 @@ export default {
     },
     handleDelete(id, nama) {
       this.$confirm(
-        'Hapus Project ' + nama + '. ?',
-        'Warning',
+        'apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan',
         {
           confirmButtonText: 'OK',
           cancelButtonText: 'Batal',

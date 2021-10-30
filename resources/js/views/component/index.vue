@@ -133,8 +133,8 @@ export default {
       this.component = this.list.find((element) => element.id === id);
       this.show = true;
     },
-    handleDelete({ id, name }) {
-      this.$confirm('Hapus Komponen ' + name + '. ?', 'Warning', {
+    handleDelete({ id, nama }) {
+      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
         type: 'warning',
