@@ -66,6 +66,8 @@ export default {
       selectedFeedback: {},
       showIdDialog: false,
       selectedId: 0,
+      showInitPopup: false,
+      seen: true,
     };
   },
   async created() {
@@ -102,7 +104,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 
 .tabset {
   margin-top: 30px;
@@ -161,5 +163,28 @@ export default {
 .tab-panel {
   padding: 10px 0;
   border-top: 1px solid #ccc;
+}
+
+@media screen and (max-width: 450px) {
+  .announce__box__wrapper{
+    flex-direction: column;
+    row-gap: 10px;
+    align-items: flex-start;
+  }
+  .announce__box__icon {
+    display: none;
+  }
+  .announce__box__desc__content {
+    font-size: 12px;
+    line-height: 20px;
+  }
+  .button__tanggapan {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .button__tanggapan:hover {
+    transform: none;
+    transition: none;
+  }
 }
 </style>
