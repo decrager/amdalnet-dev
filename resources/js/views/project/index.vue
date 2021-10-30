@@ -1,190 +1,192 @@
 <template>
-  <div style="padding: 24px" class="app-container">
-    <div class="filter-container">
-      <el-row type="flex" class="row-bg" justify="space-between">
-        <div>
-          <el-button
-            class="filter-item"
-            type="primary"
-            icon="el-icon-plus"
-            @click="handleCreate"
-          >
-            {{ ' Kegiatan' }}
-          </el-button>
-        </div>
-        <div>
-          <el-select
-            v-model="listQuery.document_type"
-            :placeholder="'Jenis Dokumen'"
-            clearable
-            class="filter-item"
-          >
-            <el-option
-              v-for="item in documentTypeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-select
-            v-model="listQuery.id_prov"
-            placeholder="Provinsi"
-            clearable
-            class="filter-item"
-            @change="changeProvince($event)"
-          >
-            <el-option
-              v-for="item in provinceOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-select
-            v-model="listQuery.id_district"
-            placeholder="Kab / Kota"
-            clearable
-            class="filter-item"
-          >
-            <el-option
-              v-for="item in cityOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-              :disabled="cityOptions.length == 0"
-            />
-          </el-select>
-          <el-button
-            class="filter-item"
-            type="primary"
-            icon="el-icon-search"
-            @click="handleFilter"
-          >
-            {{ $t('table.search') }}
-          </el-button>
-        </div>
-      </el-row>
-    </div>
-    <el-table
-      v-loading="loading"
-      :data="filtered"
-      fit
-      highlight-current-row
-      :header-cell-style="{ background: '#3AB06F', color: 'white' }"
-      style="width: 100%"
-    >
-      <el-table-column label="No." width="54px">
-        <template slot-scope="scope">
-          <span>{{ scope.$index + 1 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column type="expand" class="row-detail">
-        <template slot-scope="scope">
-          <div class="post">
-            <div class="entity-block">
-              <img
-                class="img-circle"
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDkaQO69Fro8SZLTVZQ75JH2R0T-sn5yIA_lKGwvvgQ0R0BoQtUQ"
-                alt="user image"
-              >
-              <span class="name text-muted">
-                <a href="#">PT. Pemrakarsa Sembada</a>
-                <a
-                  href="#"
-                  class="pull-right btn-box-tool"
-                >
-                  <i class="fa fa-times" />
-                </a>
-              </span>
-              <span class="description">{{ scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
-              </span>
-            </div>
-            <span class="action pull-right">
-              <el-button
-                v-if="!scope.row.published"
-                type="text"
-                href="#"
-                icon="el-icon-tickets"
-                @click="handlePublishForm(scope.row.id)"
-              >
-                Publish
-              </el-button>
-              <el-button
-                v-if="!scope.row.published"
-                type="text"
-                href="#"
-                icon="el-icon-edit"
-                @click="handleEditForm(scope.row.id)"
-              >
-                Edit
-              </el-button>
-              <el-button
-                v-if="!scope.row.published"
-                type="text"
-                href="#"
-                icon="el-icon-delete"
-                @click="handleDelete(scope.row.id, scope.row.project_title)"
-              >
-                Delete
-              </el-button>
-              <el-button
-                href="#"
-                type="text"
-                icon="el-icon-view"
-              >
-                View Details
-              </el-button>
-            </span>
-            <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
-            <span v-html="scope.row.description" />
+  <div class="app-container" style="padding: 24px">
+    <el-card>
+      <div class="filter-container">
+        <el-row type="flex" class="row-bg" justify="space-between">
+          <div>
+            <el-button
+              class="filter-item"
+              type="primary"
+              icon="el-icon-plus"
+              @click="handleCreate"
+            >
+              {{ ' Kegiatan' }}
+            </el-button>
           </div>
-        </template>
-      </el-table-column>
-      <el-table-column align="left" label="No. Registrasi" width="200">
-        <template slot-scope="scope">
-          <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
-          <span>{{
-            scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
-          }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="left" label="Nama Kegiatan" min-width="200">
-        <template slot-scope="scope">
-          <span>{{ scope.row.project_title }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Dokumen" width="100">
-        <template slot-scope="scope">
-          <span>{{ scope.row.required_doc }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="left" label="Lokasi" width="200">
-        <template slot-scope="scope">
-          <span>{{ scope.row.district }}, {{ scope.row.province }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Tahap" class-name="status-col" width="100">
-        <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.tag === 'Home' ? 'primary' : 'success'"
-            disable-transitions
-          >{{ scope.row.tag }}</el-tag>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="handleFilter"
-    />
-    <AnnouncementDialog
-      :announcement="announcement"
-      :show="show"
-      @handleSubmitAnnouncement="handleSubmitAnnouncement($event)"
-      @handleCancelAnnouncement="handleCancelAnnouncement"
-    />
+          <div>
+            <el-select
+              v-model="listQuery.document_type"
+              :placeholder="'Jenis Dokumen'"
+              clearable
+              class="filter-item"
+            >
+              <el-option
+                v-for="item in documentTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <el-select
+              v-model="listQuery.id_prov"
+              placeholder="Provinsi"
+              clearable
+              class="filter-item"
+              @change="changeProvince($event)"
+            >
+              <el-option
+                v-for="item in provinceOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <el-select
+              v-model="listQuery.id_district"
+              placeholder="Kab / Kota"
+              clearable
+              class="filter-item"
+            >
+              <el-option
+                v-for="item in cityOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+                :disabled="cityOptions.length == 0"
+              />
+            </el-select>
+            <el-button
+              class="filter-item"
+              type="primary"
+              icon="el-icon-search"
+              @click="handleFilter"
+            >
+              {{ $t('table.search') }}
+            </el-button>
+          </div>
+        </el-row>
+      </div>
+      <el-table
+        v-loading="loading"
+        :data="filtered"
+        fit
+        highlight-current-row
+        :header-cell-style="{ background: '#3AB06F', color: 'white' }"
+        style="width: 100%"
+      >
+        <el-table-column type="expand" class="row-detail">
+          <template slot-scope="scope">
+            <div class="post">
+              <div class="entity-block">
+                <img
+                  class="img-circle"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDkaQO69Fro8SZLTVZQ75JH2R0T-sn5yIA_lKGwvvgQ0R0BoQtUQ"
+                  alt="user image"
+                >
+                <span class="name text-muted">
+                  <a href="#">PT. Pemrakarsa Sembada</a>
+                  <a
+                    href="#"
+                    class="pull-right btn-box-tool"
+                  >
+                    <i class="fa fa-times" />
+                  </a>
+                </span>
+                <span class="description">{{ scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+                </span>
+              </div>
+              <span class="action pull-right">
+                <el-button
+                  v-if="!scope.row.published"
+                  type="text"
+                  href="#"
+                  icon="el-icon-tickets"
+                  @click="handlePublishForm(scope.row.id)"
+                >
+                  Publish
+                </el-button>
+                <el-button
+                  v-if="!scope.row.published"
+                  type="text"
+                  href="#"
+                  icon="el-icon-edit"
+                  @click="handleEditForm(scope.row.id)"
+                >
+                  Edit
+                </el-button>
+                <el-button
+                  v-if="!scope.row.published"
+                  type="text"
+                  href="#"
+                  icon="el-icon-delete"
+                  @click="handleDelete(scope.row.id, scope.row.project_title)"
+                >
+                  Delete
+                </el-button>
+                <el-button
+                  href="#"
+                  type="text"
+                  icon="el-icon-view"
+                >
+                  View Details
+                </el-button>
+              </span>
+              <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
+              <span v-html="scope.row.description" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="No." width="54px">
+          <template slot-scope="scope">
+            <span>{{ scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="No. Registrasi" width="200">
+          <template slot-scope="scope">
+            <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
+            <span>{{
+              scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="Nama Kegiatan" min-width="200">
+          <template slot-scope="scope">
+            <span>{{ scope.row.project_title }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="Dokumen" width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.required_doc }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="Lokasi" width="200">
+          <template slot-scope="scope">
+            <span>{{ scope.row.district }}, {{ scope.row.province }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Tahap" class-name="status-col" width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.tag === 'Home' ? 'primary' : 'success'"
+              disable-transitions
+            >{{ scope.row.tag }}</el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="handleFilter"
+      />
+      <AnnouncementDialog
+        :announcement="announcement"
+        :show="show"
+        @handleSubmitAnnouncement="handleSubmitAnnouncement($event)"
+        @handleCancelAnnouncement="handleCancelAnnouncement"
+      />
+    </el-card>
   </div>
 </template>
 
@@ -415,7 +417,7 @@ export default {
 .post {
   font-size: 14px;
   margin-bottom: 15px;
-  padding-bottom: 15px;
+  padding-right: 20px;
   padding-left: 7%;
   color: #666;
   .image {
