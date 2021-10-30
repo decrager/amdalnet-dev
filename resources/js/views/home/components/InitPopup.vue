@@ -78,14 +78,12 @@ import 'dayjs/locale/id';
 
 export default {
   name: 'InitPopup',
-  props: {
-    show: Boolean,
-  },
   data() {
     return {
       init_announcement: [],
       init_amdal: [],
       init_uklupl: [],
+      show: true,
     };
   },
   async created() {
@@ -212,6 +210,10 @@ export default {
 .tab-panel {
   padding: 10px 0;
   border-top: 1px solid #ccc;
+}
+
+.announce__box__icon img {
+  height: 41px;
 }
 
 .dialog__footer {
