@@ -28,16 +28,16 @@
     <el-table-column label="Aksi">
       <template slot-scope="scope">
         <el-button
-          type="primary"
-          size="mini"
+          type="text"
+          href="#"
           icon="el-icon-edit"
           @click="handleEditForm(scope.row.id)"
         >
           Ubah
         </el-button>
         <el-button
-          type="danger"
-          size="mini"
+          type="text"
+          href="#"
           icon="el-icon-delete"
           @click="handleDelete(scope.row.id, scope.row.name)"
         >
