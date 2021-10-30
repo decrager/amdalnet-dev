@@ -107,32 +107,13 @@
       <el-table-column align="center" label="Aksi" fixed="right" width="150px">
         <template slot-scope="scope">
           <el-row style="margin-bottom: 4px"><el-button
-            v-if="!scope.row.published"
-            size="mini"
-            icon="el-icon-edit"
-            @click="handlePublishForm(scope.row.id)"
-          >
-            Publish
-          </el-button></el-row>
-          <el-row style="margin-bottom: 4px"><el-button
-            v-if="!scope.row.published"
             type="primary"
             size="mini"
-            icon="el-icon-edit"
+            icon="form"
             @click="handleEditForm(scope.row.id)"
           >
-            Edit
+            Workspace
           </el-button></el-row>
-          <el-row><el-button
-            v-if="!scope.row.published"
-            type="danger"
-            size="mini"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row.id, scope.row.project_title)"
-          >
-            Delete
-          </el-button></el-row>
-
         </template>
       </el-table-column>
     </el-table>
@@ -238,55 +219,10 @@ export default {
     handleEditForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
 
-      // change project_year to string
-      currentProject.project_year = currentProject.project_year.toString();
-      console.log(currentProject);
       this.$router.push({
-        name: 'createProject',
+        name: 'editWorkspace',
         params: { project: currentProject },
       });
-    },
-    handlePublishForm(id) {
-      const currentProject = this.filtered.find((item) => item.id === id);
-      console.log(currentProject);
-      this.announcement.project_id = currentProject.id;
-      this.announcement.project_result = currentProject.required_doc;
-      this.announcement.project_type = currentProject.project_title;
-      this.announcement.project_scale =
-        currentProject.scale + ' ' + currentProject.scale_unit;
-      this.announcement.project_location = currentProject.address;
-      this.show = true;
-    },
-    handleDelete(id, nama) {
-      this.$confirm(
-        'Hapus Project ' + nama + '. ?',
-        'Warning',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Batal',
-          type: 'warning',
-        }
-      )
-        .then(() => {
-          projectResource
-            .destroy(id)
-            .then((response) => {
-              this.$message({
-                type: 'success',
-                message: 'Hapus Selesai',
-              });
-              this.getFiltered(this.listQuery);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: 'Hapus Digagalkan',
-          });
-        });
     },
     async changeProvince(value) {
       // change all district by province

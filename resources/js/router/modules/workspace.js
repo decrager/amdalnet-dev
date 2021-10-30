@@ -10,15 +10,15 @@ const workspaceRoutes = {
     {
       path: 'edit/:id(\\d+)',
       component: () => import('@/views/workspace/Edit'),
-      name: 'Edit Workspace',
+      name: 'editWorkspace',
       hidden: true,
       meta: { title: 'Edit Workspace', icon: 'edit', noCache: true },
     },
     {
       path: 'list',
       component: () => import('@/views/workspace/List'),
-      name: 'Workspace List',
-      meta: { title: 'WorkspaceList', icon: 'list' },
+      name: 'listWorkspace',
+      meta: { title: 'Workspace List', icon: 'list' },
     },
   ],
 };
