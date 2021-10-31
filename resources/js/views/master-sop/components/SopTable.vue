@@ -6,6 +6,65 @@
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
+    <el-table-column type="expand" class="row-detail">
+      <template slot-scope="scope">
+        <div class="post">
+          <div class="entity-block">
+            <div>
+              <span style="font-weight: bold">Bentuk Pengawasan :</span>
+              <div v-html="scope.row.monitoring_form" />
+            </div>
+          </div>
+          <div class="entity-block">
+            <div>
+              <span style="font-weight: bold">Waktu Pengawasan :</span>
+              {{ scope.row.monitoring_time }}
+            </div>
+          </div>
+          <div class="entity-block">
+            <div>
+              <span style="font-weight: bold">Frekwensi Pengawasan :</span>
+              {{ scope.row.monitoring_freq }}
+            </div>
+          </div>
+          <div class="entity-block">
+            <div>
+              <span style="font-weight: bold">Nama :</span> {{ scope.row.name }}
+            </div>
+          </div>
+          <div class="entity-block">
+            <div>
+              <span style="font-weight: bold">Dampak :</span>
+              {{ scope.row.impact }}
+            </div>
+          </div>
+          <div class="entity-block">
+            <div>
+              <span style="font-weight: bold">Dampak Lainya :</span>
+              {{ scope.row.other_impact }}
+            </div>
+          </div>
+          <span class="action">
+            <el-button
+              type="text"
+              href="#"
+              icon="el-icon-edit"
+              @click="handleEditForm(scope.row.id)"
+            >
+              Ubah
+            </el-button>
+            <el-button
+              type="text"
+              href="#"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row.id, scope.row.name)"
+            >
+              Hapus
+            </el-button>
+          </span>
+        </div>
+      </template>
+    </el-table-column>
     <el-table-column align="center" label="ID Komponen">
       <template slot-scope="scope">
         <span>{{ scope.row.id_component }}</span>
@@ -30,13 +89,13 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Bentuk Pengawasan">
+    <!-- <el-table-column align="center" label="Bentuk Pengawasan">
       <template slot-scope="scope">
         <span>{{ scope.row.monitoring_form }}</span>
       </template>
-    </el-table-column>
+    </el-table-column> -->
 
-    <el-table-column align="center" label="Waktu Pengawasan">
+    <!-- <el-table-column align="center" label="Waktu Pengawasan">
       <template slot-scope="scope">
         <span>{{ scope.row.monitoring_time }}</span>
       </template>
@@ -66,7 +125,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Aksi">
+     <el-table-column align="center" label="Aksi">
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -85,7 +144,7 @@
           Hapus
         </el-button>
       </template>
-    </el-table-column>
+    </el-table-column> -->
   </el-table>
 </template>
 
