@@ -1,5 +1,5 @@
 # Set the base image for subsequent instructions
-FROM php:7.4-fpm
+FROM php:8-fpm
 
 WORKDIR /var/www
 
