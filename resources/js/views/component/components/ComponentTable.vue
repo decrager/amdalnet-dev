@@ -2,7 +2,6 @@
   <el-table
     v-loading="loading"
     :data="list"
-    border
     fit
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
