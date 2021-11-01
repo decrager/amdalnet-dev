@@ -1,40 +1,42 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >
-        {{ 'Tambah Penyusun' }}
-      </el-button>
-    </div>
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
-      <el-tab-pane label="Penyusun" name="penyusun">
-        <formulator-table
-          :loading="loading"
-          :list="list"
-          @handleEditForm="handleEditForm($event)"
-          @handleDelete="handleDelete($event)"
-        />
-      </el-tab-pane>
-      <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
-        <formulator-table
-          :loading="loading"
-          :list="listActive"
-          @handleEditForm="handleEditForm($event)"
-          @handleDelete="handleDelete($event)"
-        />
-      </el-tab-pane>
-    </el-tabs>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="handleFilter"
-    />
+    <el-card>
+      <div class="filter-container">
+        <el-button
+          class="filter-item"
+          type="primary"
+          icon="el-icon-plus"
+          @click="handleCreate"
+        >
+          {{ 'Tambah Penyusun' }}
+        </el-button>
+      </div>
+      <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
+        <el-tab-pane label="Penyusun" name="penyusun">
+          <formulator-table
+            :loading="loading"
+            :list="list"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
+          <formulator-table
+            :loading="loading"
+            :list="listActive"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
+      </el-tabs>
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="handleFilter"
+      />
+    </el-card>
   </div>
 </template>
 
@@ -96,7 +98,8 @@ export default {
     handleCreate() {
       this.$router.push({
         name: 'createFormulator',
-        params: { formulator: {}},
+        // eslint-disable-next-line object-curly-spacing
+        params: { formulator: {} },
       });
     },
     handleEditForm(id) {
@@ -107,11 +110,15 @@ export default {
       });
     },
     handleDelete({ id, nama }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Batal',
-        type: 'warning',
-      })
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + nama + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
         .then(() => {
           formulatorResource
             .destroy(id)
