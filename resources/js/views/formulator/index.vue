@@ -75,22 +75,10 @@ export default {
     handleClickTab(tab, event) {
       this.listQuery.page = 1;
       this.listQuery.limit = 10;
-      if (tab.name === 'penyusunAktif') {
-        this.listQuery.active = 'true';
-        this.getListActive();
-      } else {
-        this.listQuery.active = '';
-        this.getList();
-      }
+      this.listQuery.active = tab.name === 'penyusunAktif' ? 'true' : '';
+      this.getList();
     },
     async getList() {
-      this.loading = true;
-      const { data, meta } = await formulatorResource.list(this.listQuery);
-      this.list = data;
-      this.total = meta.total;
-      this.loading = false;
-    },
-    async getListActive() {
       this.loading = true;
       const { data, meta } = await formulatorResource.list(this.listQuery);
       this.list = data;
