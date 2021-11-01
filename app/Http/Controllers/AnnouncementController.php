@@ -19,9 +19,9 @@ class AnnouncementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $getAllAnnouncement = Announcement::withCount('feedbacks')->get();
+        $getAllAnnouncement = Announcement::withCount('feedbacks')->where('project_result', '=', $request->project)->orderby('start_date', 'DESC')->paginate($request->limit ?: 20);
         return AnnouncementResource::make($getAllAnnouncement);
     }
 
@@ -94,7 +94,7 @@ class AnnouncementController extends Controller
 
             $project->published = true;
             $project->save();
-            
+
             if(!$announcement){
                 DB::rollback();
             } else {

@@ -596,7 +596,14 @@ input {
     padding: 20px;
     border-radius: 5px;
     display: flex;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    justify-content: space-between;
+}
+
+.announce__box__wrapper:hover {
+    background-color: #021302;
+    border-radius: 0;
     cursor: pointer;
     justify-content: space-between;
 }

@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     async showPengumumanOnInit() {
-      this.showInitPopup = true;
+      this.showInitPopup = false;
     },
   },
 };

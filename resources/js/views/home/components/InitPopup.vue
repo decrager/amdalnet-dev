@@ -1,9 +1,9 @@
 <template>
   <div class="popup__wrapper">
-    <el-dialog :visible.sync="show" :close-on-click-modal="false" :show-close="false">
+    <el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="show">
       <div class="header__init__popup">
         <div style="flex: 1">
-          <img src="/images/logo-amdal-white.png" alt="">
+          <img alt="" src="/images/logo-amdal-white.png">
         </div>
         <div style="flex: 2">
           <h2>Pengumuman & Informasi Terbaru</h2>
@@ -13,49 +13,53 @@
         </div>
       </div>
       <div class="tabset">
-        <input id="tab1-popup" type="radio" name="tabset" aria-controls="amdal-popup" checked>
+        <input id="tab1-popup" aria-controls="amdal-popup" checked name="tabset" type="radio">
         <label for="tab1-popup">AMDAL</label>
-        <input id="tab2-popup" type="radio" name="tabset" aria-controls="ukl-upl-popup">
+        <input id="tab2-popup" aria-controls="ukl-upl-popup" name="tabset" type="radio">
         <label for="tab2-popup">UKL / UPL</label>
 
         <div class="tab-panels">
           <section id="amdal-popup" class="tab-panel">
-            <div v-for="init_amdals in init_amdal" :key="init_amdals.id" class="announce__box__wrapper">
+            <div v-for="amdal in amdals" :key="amdal.id" class="announce__box__wrapper">
               <div class="announce__box__icon">
-                <img src="/images/list.svg" alt="">
+                <img alt="" src="/images/list.svg">
               </div>
               <div class="announce__box__desc">
-                <p class="announce__box__desc__content">{{ init_amdals.project_type }}</p>
-                <p class="announce__box__desc__content text__special">{{ init_amdals.pic_name }}</p>
+                <p class="announce__box__desc__content">{{ amdal.project_type }}</p>
+                <p class="announce__box__desc__content text__special">{{ amdal.pic_name }}</p>
               </div>
               <div class="announce__box__dampak">
-                <p class="announce__box__desc__content">Dampak Potensial : {{ init_amdals.potential_impact }}</p>
+                <p class="announce__box__desc__content">Dampak Potensial : {{ amdal.potential_impact }}</p>
               </div>
               <div class="announce__box__date">
-                <p class="announce__box__desc__content">{{ formatDate(init_amdals.start_date) }}</p>
+                <p class="announce__box__desc__content">{{ formatDate(amdal.start_date) }}</p>
               </div>
               <div class="announce__box__button">
-                <button class="button__tanggapan" @click="createFeedback(amdals.id)">Berikan Tanggapan</button>
+                <button class="button__tanggapan" @click="createFeedback(amdal.id)"><i class="el-icon-document" />
+                  Berikan Tanggapan
+                </button>
               </div>
             </div>
           </section>
           <section id="ukl-upl-popup" class="tab-panel">
-            <div v-for="init_uklupls in init_uklupl" :key="init_uklupls.id" class="announce__box__wrapper">
+            <div v-for="uklupl in uklupls" :key="uklupl.id" class="announce__box__wrapper">
               <div class="announce__box__icon">
-                <img src="/images/list.svg" alt="">
+                <img alt="" src="/images/list.svg">
               </div>
               <div class="announce__box__desc">
-                <p class="announce__box__desc__content">{{ init_uklupls.project_type }}</p>
-                <p class="announce__box__desc__content text__special">{{ init_uklupls.pic_name }}</p>
+                <p class="announce__box__desc__content">{{ uklupl.project_type }}</p>
+                <p class="announce__box__desc__content text__special">{{ uklupl.pic_name }}</p>
               </div>
               <div class="announce__box__dampak">
-                <p class="announce__box__desc__content">Dampak Potensial : {{ init_uklupls.potential_impact }}</p>
+                <p class="announce__box__desc__content">Dampak Potensial : {{ uklupl.potential_impact }}</p>
               </div>
               <div class="announce__box__date">
-                <p class="announce__box__desc__content">{{ formatDate(init_uklupls.start_date) }}</p>
+                <p class="announce__box__desc__content">{{ formatDate(uklupl.start_date) }}</p>
               </div>
               <div class="announce__box__button">
-                <button class="button__tanggapan" @click="createFeedback(init_uklupls.id)">Berikan Tanggapan</button>
+                <button class="button__tanggapan" @click="createFeedback(uklupl.id)"><i class="el-icon-document" />
+                  Berikan Tanggapan
+                </button>
               </div>
             </div>
           </section>
@@ -72,38 +76,21 @@
 </template>
 
 <script>
-import axios from 'axios';
 import dayjs from 'dayjs';
 import 'dayjs/locale/id';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'InitPopup',
   data() {
     return {
-      init_announcement: [],
-      init_amdal: [],
-      init_uklupl: [],
       show: true,
     };
   },
-  async created() {
-    await this.getInitAnnouncement();
+  computed: {
+    ...mapGetters(['amdals', 'uklupls']),
   },
   methods: {
-    async getInitAnnouncement() {
-      await axios.get('/api/announcements')
-        .then(response => {
-          this.init_announcement = response.data.data;
-          this.init_announcement.forEach(initAmdalData => {
-            if (initAmdalData.project_result === 'AMDAL') {
-              this.init_amdal.push(initAmdalData);
-            }
-            if (initAmdalData.project_result === 'UKL-UPL') {
-              this.init_uklupl.push(initAmdalData);
-            }
-          });
-        });
-    },
     formatDate(value) {
       if (value) {
         dayjs.locale('id');
@@ -119,41 +106,42 @@ export default {
 
 <style scoped>
 .header__init__popup {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .header__init__popup img {
-    width: 150px;
+  width: 150px;
 }
 
 .header__init__popup h2 {
-    color: white;
+  color: white;
 }
 
 .header__init__popup .el-icon-close {
-    color: white;
-    font-weight: 700;
-    font-size: 30px;
-    cursor: pointer;
+  color: white;
+  font-weight: 700;
+  font-size: 30px;
+  cursor: pointer;
 }
 
 .header__init__popup .el-icon-close:hover {
-    transform: scale(1.2);
-    transition: all .2s ease-in;
-    cursor: pointer;
+  transform: scale(1.2);
+  transition: all .2s ease-in;
+  cursor: pointer;
 }
 
 .popup__wrapper >>> .el-dialog {
-    background: #133715 !important;
-    overflow: auto;
-    width: 80%;
+  background: #133715 !important;
+  overflow: auto;
+  width: 80%;
 }
 
 .popup__wrapper >>> .el-dialog__header {
-    display: none;
+  display: none;
 }
+
 .tabset {
   margin-top: 30px;
 }
@@ -212,6 +200,12 @@ export default {
   border-top: 1px solid #ccc;
 }
 
+.tab-panels {
+  overflow: auto;
+  max-height: 400px;
+  margin-bottom: 20px;
+}
+
 .announce__box__icon img {
   height: 41px;
 }
@@ -228,16 +222,20 @@ export default {
     overflow: auto;
     width: 90%;
   }
+
   .header__init__popup {
     flex-direction: column;
     row-gap: 10px;
   }
+
   .header__init__popup h2 {
     font-size: 17px;
   }
+
   .el-icon-close {
     display: none;
   }
+
   .announce__box__wrapper {
     flex-direction: column;
   }
@@ -245,21 +243,23 @@ export default {
   .announce__box__icon {
     display: none;
   }
-  .announce__box__desc__content{
+
+  .announce__box__desc__content {
     font-size: 12px;
   }
+
   .announce__box__button {
-      justify-content: flex-end;
-      align-items: flex-end;
-      display: flex;
-      margin-top: 10px;
-      border-top: 1px solid;
+    justify-content: flex-end;
+    align-items: flex-end;
+    display: flex;
+    margin-top: 10px;
+    border-top: 1px solid;
   }
 
   .button__tanggapan {
-      font-size: 12px;
-      margin-top: 10px;
-      width: 100%;
+    font-size: 12px;
+    margin-top: 10px;
+    width: 100%;
   }
 
   .tabset {
@@ -273,16 +273,18 @@ export default {
   }
 
   .popup__wrapper >>> .el-dialog__body {
-    height: 650px;
+    height: 700px;
     overflow: auto;
   }
 
   .button__tanggapan:hover {
-      transition: none;
+    transition: none;
   }
+
   .dialog__footer {
     flex-direction: column;
-    row-gap: 10px
+    row-gap: 10px;
+    margin-top: 50px;
   }
 
   .dialog__footer >>> .el-button {
