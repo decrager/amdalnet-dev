@@ -44,7 +44,7 @@ const projectStageResource = new Resource('project-stages');
 const componentResource = new Resource('components');
 
 export default {
-  name: 'TabelKomponen',
+  name: 'ComponentTable',
   components: { ComponentDialog },
   props: {
     data: {
