@@ -272,7 +272,7 @@ export const asyncRoutes = [
         component: () => import('@/views/formulator/index'),
         name: 'formulator',
         meta: {
-          title: 'formulator',
+          title: 'Penyusun',
           icon: 'documentation',
           noCache: true,
         },
