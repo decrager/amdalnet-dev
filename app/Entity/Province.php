@@ -12,4 +12,10 @@ class Province extends Model
     protected $fillable = [
         'name'
     ];
+
+   
+    public function lpjp()
+    {
+        return $this->hasMany(Lpjp::class, 'id_prov', 'id');
+    }
 }
