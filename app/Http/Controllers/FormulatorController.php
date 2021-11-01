@@ -20,8 +20,12 @@ class FormulatorController extends Controller
     {
         return FormulatorResource::collection(
             Formulator::where(function ($query) use ($request) {
+                if($request->active) {
+                    return $query->where([['date_start', '<=', date('Y-m-d H:i:s')],['date_end', '>=', date('Y-m-d H:i:s')]])
+                            ->orWhere([['date_start', null],['date_end', '>=', date('Y-m-d H:i:s')]]);
+                }
                 return '';
-            })->orderBy('id', 'DESC')->paginate($request->limit)
+            })->orderBy('id', 'DESC')->paginate($request->limit)->appends(['active' => $request->active])
         );
     }
 

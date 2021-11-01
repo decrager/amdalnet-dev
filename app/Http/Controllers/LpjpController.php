@@ -17,7 +17,11 @@ class LpjpController extends Controller
      */
     public function index()
     {
-        return LpjpResource::collection(Lpjp::all());
+        return LpjpResource::collection(Lpjp::with(['province' => function($query) {
+            return $query->select(['id', 'name']);
+        }, 'district' => function($query) {
+            return $query->select(['id', 'name']);
+        }])->get());
     }
 
     /**

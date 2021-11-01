@@ -14,6 +14,8 @@
       <rona-awal-table
         :loading="loading"
         :list="list"
+        :page="listQuery.page"
+        :limit="listQuery.limit"
         @handleEditForm="handleEditForm($event)"
         @handleDelete="handleDelete($event)"
       />

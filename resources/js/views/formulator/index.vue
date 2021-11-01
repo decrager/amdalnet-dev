@@ -23,7 +23,7 @@
         <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
           <formulator-table
             :loading="loading"
-            :list="listActive"
+            :list="list"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
           />
@@ -55,12 +55,12 @@ export default {
   data() {
     return {
       list: [],
-      listActive: [],
       loading: true,
       activeName: 'penyusun',
       listQuery: {
         page: 1,
         limit: 10,
+        active: '',
       },
       total: 0,
     };
@@ -73,9 +73,10 @@ export default {
       this.getList();
     },
     handleClickTab(tab, event) {
-      if (tab.name === 'penyusunAktif') {
-        this.getListActive();
-      }
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      this.listQuery.active = tab.name === 'penyusunAktif' ? 'true' : '';
+      this.getList();
     },
     async getList() {
       this.loading = true;
@@ -83,17 +84,6 @@ export default {
       this.list = data;
       this.total = meta.total;
       this.loading = false;
-    },
-    getListActive() {
-      this.listActive = this.list.filter((item) => {
-        const tglAwal = new Date(item.date_start);
-        const tglAkhir = new Date(item.date_end);
-
-        return (
-          new Date().getTime() >= tglAwal.getTime() &&
-          new Date().getTime() <= tglAkhir.getTime()
-        );
-      });
     },
     handleCreate() {
       this.$router.push({
