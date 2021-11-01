@@ -5,7 +5,7 @@
         <aside align="center" style="margin-bottom: 0px;">
           {{ stage.name }}
         </aside>
-        <tabel-komponen :data="data[stage.id]" />
+        <component-table :data="data[stage.id]" />
       </el-col>
     </el-row>
   </div>
@@ -14,14 +14,14 @@
 <script>
 
 import Resource from '@/api/resource';
-import TabelKomponen from './TabelKomponen.vue';
+import ComponentTable from './ComponentTable.vue';
 
 const prjstageResource = new Resource('project-stages');
 const componentResource = new Resource('components');
 
 export default {
   name: 'SumberDampak',
-  components: { TabelKomponen },
+  components: { ComponentTable },
   data() {
     return {
       komponenKegiatan: [],
