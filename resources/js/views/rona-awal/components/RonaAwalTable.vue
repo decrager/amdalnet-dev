@@ -8,7 +8,7 @@
   >
     <el-table-column label="No." width="54px">
       <template slot-scope="scope">
-        <span>{{ scope.$index + 1 }}</span>
+        <span>{{ scope.$index + 1 + page * limit - limit }}</span>
       </template>
     </el-table-column>
 
@@ -56,6 +56,14 @@ export default {
       default: () => [],
     },
     loading: Boolean,
+    page: {
+      type: Number,
+      default: () => 1,
+    },
+    limit: {
+      type: Number,
+      default: () => 10,
+    },
   },
   methods: {
     handleEditForm(id) {
