@@ -152,7 +152,10 @@ export default {
     ];
   },
   methods: {
-
+    handleUploadPDF() {
+    },
+    handleUploadSHP() {
+    },
   },
 };
 </script>
