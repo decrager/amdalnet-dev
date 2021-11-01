@@ -23,7 +23,7 @@
         <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
           <formulator-table
             :loading="loading"
-            :list="listActive"
+            :list="list"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
           />
@@ -55,12 +55,12 @@ export default {
   data() {
     return {
       list: [],
-      listActive: [],
       loading: true,
       activeName: 'penyusun',
       listQuery: {
         page: 1,
         limit: 10,
+        active: '',
       },
       total: 0,
     };
@@ -73,8 +73,14 @@ export default {
       this.getList();
     },
     handleClickTab(tab, event) {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
       if (tab.name === 'penyusunAktif') {
+        this.listQuery.active = 'true';
         this.getListActive();
+      } else {
+        this.listQuery.active = '';
+        this.getList();
       }
     },
     async getList() {
@@ -84,16 +90,12 @@ export default {
       this.total = meta.total;
       this.loading = false;
     },
-    getListActive() {
-      this.listActive = this.list.filter((item) => {
-        const tglAwal = new Date(item.date_start);
-        const tglAkhir = new Date(item.date_end);
-
-        return (
-          new Date().getTime() >= tglAwal.getTime() &&
-          new Date().getTime() <= tglAkhir.getTime()
-        );
-      });
+    async getListActive() {
+      this.loading = true;
+      const { data, meta } = await formulatorResource.list(this.listQuery);
+      this.list = data;
+      this.total = meta.total;
+      this.loading = false;
     },
     handleCreate() {
       this.$router.push({
