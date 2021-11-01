@@ -10,7 +10,11 @@
       <el-row :gutter="32">
         <el-col :span="12">
           <el-form-item label="Status Keanggotaan" prop="statusKeanggotaan">
-            <el-select v-model="currentFormulator.membership_status" placeholder="Select" style="width: 100%">
+            <el-select
+              v-model="currentFormulator.membership_status"
+              placeholder="Pilih"
+              style="width: 100%"
+            >
               <el-option
                 v-for="item in membershipStatusOptions"
                 :key="item.value"
@@ -62,10 +66,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item
-            label="Nomor Registrasi Penyusun"
-            prop="noRegPenyusun"
-          >
+          <el-form-item label="Nomor Registrasi Penyusun" prop="noRegPenyusun">
             <el-input v-model="currentFormulator.reg_no" />
           </el-form-item>
         </el-col>
@@ -78,7 +79,7 @@
                 <el-date-picker
                   v-model="currentFormulator.date_start"
                   type="date"
-                  placeholder="Pick a day"
+                  placeholder="Pilih tanggal"
                   value-format="yyyy-MM-dd"
                   style="width: 100%"
                 />
@@ -89,7 +90,7 @@
                 <el-date-picker
                   v-model="currentFormulator.date_end"
                   type="date"
-                  placeholder="Pick a day"
+                  placeholder="Pilih tanggal"
                   value-format="yyyy-MM-dd"
                   style="width: 100%"
                 />
@@ -107,10 +108,9 @@
                 action="#"
                 :show-file-list="false"
               >
-                <el-button
-                  size="small"
-                  type="primary"
-                >Click to upload</el-button>
+                <el-button size="small" type="primary">
+                  Click to upload
+                </el-button>
                 <div slot="tip" class="el-upload__tip">
                   {{ cvFileName || currentFormulator.cv_file }}
                 </div>
@@ -122,7 +122,11 @@
       <el-row :gutter="12">
         <el-col :span="12">
           <el-form-item label="Status Keanggotaan" prop="statusKeanggotaan">
-            <el-select v-model="currentFormulator.id_institution" placeholder="Select" style="width: 100%">
+            <el-select
+              v-model="currentFormulator.id_institution"
+              placeholder="Pilih"
+              style="width: 100%"
+            >
               <el-option
                 v-for="item in afiliasiLembagaOption"
                 :key="item.value"
@@ -134,7 +138,11 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="LSP Penerbit" prop="lspPenerbit">
-            <el-select v-model="currentFormulator.id_lsp" placeholder="Select" style="width: 100%">
+            <el-select
+              v-model="currentFormulator.id_lsp"
+              placeholder="Pilih"
+              style="width: 100%"
+            >
               <el-option
                 v-for="item in lspPenerbitOption"
                 :key="item.value"
@@ -147,8 +155,8 @@
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleCancel()"> Cancel </el-button>
-      <el-button type="primary" @click="handleSubmit()"> Confirm </el-button>
+      <el-button @click="handleCancel()"> Batal </el-button>
+      <el-button type="primary" @click="handleSubmit()"> Simpan </el-button>
     </div>
   </div>
 </template>
