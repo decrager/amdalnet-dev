@@ -173,4 +173,5 @@ Route::apiResource('components', 'ComponentController');
 Route::apiResource('project-stages', 'ProjectStageController');
 Route::apiResource('sops', 'SopController');
 Route::apiResource('component-types', 'ComponentTypeController');
+Route::apiResource('app-params', 'AppParamController');
 Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');
