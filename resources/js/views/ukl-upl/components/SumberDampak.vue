@@ -62,6 +62,8 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
+
+      this.$emit('handleSaveComponents', this.komponenKegiatan);
     },
   },
 };
