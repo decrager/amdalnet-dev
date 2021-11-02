@@ -104,6 +104,20 @@ class InitiatorController extends Controller
         //
     }
 
+    public function showByEmail(Request $request)
+    { 
+        If($request->email){
+            $initiator = Initiator::where('email', $request->email)->first();
+            
+            if($initiator) {
+                return $initiator;
+            } else {
+                return response()->json(null, 200);
+
+            }
+        }
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

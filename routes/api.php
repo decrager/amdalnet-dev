@@ -38,6 +38,7 @@ Route::namespace('Api')->group(function() {
 
         // Custom routes
         Route::put('users/{user}', 'UserController@update');
+        Route::put('uploadAvatar/{user}', 'UserController@updateAvatar');
         Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
         Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' .Acl::PERMISSION_MANAGE_PERMISSION);
         Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
@@ -172,3 +173,4 @@ Route::apiResource('components', 'ComponentController');
 Route::apiResource('project-stages', 'ProjectStageController');
 Route::apiResource('sops', 'SopController');
 Route::apiResource('component-types', 'ComponentTypeController');
+Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');

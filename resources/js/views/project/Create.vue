@@ -357,6 +357,11 @@ export default {
       },
     };
   },
+  watch: {
+    '$route'() {
+      console.log('hi');
+    },
+  },
   async mounted() {
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
