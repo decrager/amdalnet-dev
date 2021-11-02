@@ -142,75 +142,171 @@ return [
             'workflow.announce',
             'workflow.guard',
         ],
-        'initial_places' => ['initial'],
-        'places' => ['initial', 'penapisan', 'amdal', 'rkl-rpl', 'ka-draft', 'ka-review', 'ka-finish', 'andal-draft', 'andal-review', 'andal-finish', 'ukl-upl-draft', 'ukl-upl-review', 'ukl-upl-finish', 'sppl', 'finish'],
-        'initial_places' => ['initial'], // defaults to the first place if omitted
+        'places' => ['init', 'in-screening', 'sppl-completed', 'amdal.announcement', 'amdal.announcement-completed', 'amdal.pubcons', 'amdal.pubcons-completed', 
+            'uklupl.mr-activities', 'uklupl.mr-ukl', 'uklupl.mr-upl', 'uklupl.mr-completed', 
+            'uklupl.mt-activities', 'uklupl.mt-environment-set', 'uklupl.mt-impact', 'uklupl.mt-ukl', 'uklupl.mt-upl', 'uklupl.mt-submitted',
+            'amdal.ka-draft', 'amdal.ka-draft-submitted', 'amdal.ka-draft-reviewed', 'amdal.ka-draft-approved', 'amdal.ka-resubmitted', 
+            'amdal.andal-draft', 'amdal.rklrpl.activities', 'amdal.rklrpl.environment-set', 'amdal.rklrpl.impact-matrix', 'amdal.rklrpl.dp', 'amdal.rklrpl.dph', 'amdal.rklrpl.rkl', 'amdal.rklrpl.rpl', 
+            'amdal.submitted', 'amdal.andal-submitted', 'uklupl.mr', 'uklupl.mt', 'amdal',
+            'uklupl.mt-reviewed', 'uklupl.mt-completed', 'amdal.reviewed', 'amdal.completed'],
+        'initial_places' => ['init'], // defaults to the first place if omitted
         'transitions' => [
-            'to_filter' => [
-                'from' => 'initial',
-                'to' => 'penapisan',
-                // optional transition-level metadata
-                'metadata' => [
-                    // any data
-                ]
-            ],
-            'to_amdal' => [
-                'from' => 'penapisan',
-                'to' => 'amdal',
-                'metadata' => []
+            'screening' => [
+                'from' => 'init',
+                'to' => 'in-screening',
             ],
             'to_sppl' => [
-                'from' => 'penapisan',
-                'to' => 'sppl'
+                'from' => 'in-screening',
+                'to' => 'sppl-completed',
             ],
-            'to_ka_draft' => [
-                'from' => 'amdal',
-                'to' => ['ka-draft']
+            'to_uklupl_mr' => [
+                'from' => 'in-screening',
+                'to' => ['uklupl.mr', 'amdal.announcement'],
             ],
-            'to_ka_review' => [
-                'from' => 'ka-draft',
-                'to' => ['ka-review']
+            'to_uklupl_mt' => [
+                'from' => 'in-screening',
+                'to' => ['uklupl.mt', 'amdal.announcement'],
             ],
-            'to_ka_finish' => [
-                'from' => 'ka-review',
-                'to' => ['ka-finish']
+            'to_amdal' => [
+                'from' => 'in-screening',
+                'to' => ['amdal', 'amdal.announcement'],
             ],
-            'to_andal_draft' => [
-                'from' => 'ka-finish',
-                'to' => ['andal-draft']
+            'to_uklupl_mr_activities' => [
+                'from' => ['uklupl.mr', 'amdal.pubcons-completed'],
+                'to' => 'uklupl.mr-activities',
             ],
-            'to_andal_review' => [
-                'from' => 'andal-draft',
-                'to' => ['andal-review']
+            'to_uklupl_mt_activities' => [
+                'from' => ['uklupl.mt', 'amdal.pubcons-completed'],
+                'to' => 'uklupl.mt-activities',
             ],
-            'to_andal_finish' => [
-                'from' => 'andal-review',
-                'to' => ['andal-finish']
+            'plan_ukl_mr' => [
+                'from' => 'uklupl.mr-activities',
+                'to' => 'uklupl.mr-ukl',
             ],
-            'to_rkl_rpl' => [
-                'from' => 'ka-finish',
-                'to' => ['rkl-rpl']
+            'plan_upl_mr' => [
+                'from' => 'uklupl.mr-ukl',
+                'to' => 'uklupl.mr-upl',
             ],
-            'to_ukl_upl_draft' => [
-                'from' => 'penapisan',
-                'to' => ['ukl-upl-draft']
+            'finish_uklupl_mr' => [
+                'from' => 'uklupl.mr-upl',
+                'to' => 'uklupl.mr-completed',
             ],
-            'to_ukl_upl_review' => [
-                'from' => 'ukl-upl-draft',
-                'to' => ['ukl-upl-review']
+            'set_environment_mt' => [
+                'from' => 'uklupl.mt-activities',
+                'to' => 'uklupl.mt-environment-set',
             ],
-            'to_ukl_upl_finish' => [
-                'from' => 'ukl-upl-review',
-                'to' => ['ukl-upl-finish']
+            'set_impact_mt' => [
+                'from' => 'uklupl.mt-environment-set',
+                'to' => 'uklupl.mt-impact',
             ],
-            'to_finish' => [
-                'from' => ['ukl-upl-finish', 'sppl', 'andal-finish', 'rkl-rpl'],
-                'to' => ['finish'],
-                'metadata' => [
-                    'not_amdal' => true,
-                    'not_ukl_upl'=> true,
-                ]
-            ]
+            'plan_ukl_mt' => [
+                'from' => 'uklupl.mt-impact',
+                'to' => 'uklupl.mt-ukl',
+            ],
+            'plan_upl_mt' => [
+                'from' => 'uklupl.mt-ukl',
+                'to' => 'uklupl.mt-upl',
+            ],
+            'submit_uklupl_mt' => [
+                'from' => 'uklupl.mt-upl',
+                'to' => 'uklupl.mt-submitted',
+            ],
+            'review_uklupl_mt' => [
+                'from' => 'uklupl.mt-submitted',
+                'to' => 'uklupl.mt-reviewed',
+            ],
+            'finish_uklupl_mt' => [
+                'from' => 'uklupl.mt-reviewed',
+                'to' => 'uklupl.mt-completed',
+            ],
+            'draft_amdal_ka' => [
+                'from' => ['amdal', 'amdal.pubcons-completed'],
+                'to' => 'amdal.ka-draft',
+            ],
+            'submit_amdal_ka' => [
+                'from' => 'amdal.ka-draft',
+                'to' => 'amdal.ka-draft-submitted',
+            ],
+            'review_amdal_ka' => [
+                'from' => 'amdal.ka-draft-submitted',
+                'to' => 'amdal.ka-draft-reviewed',
+            ],
+            'approve_amdal_ka' => [
+                'from' => 'amdal.ka-draft-reviewed',
+                'to' => 'amdal.ka-draft-approved',
+            ],
+            'resubmit_amdal_ka' => [
+                'from' => 'amdal.ka-draft-approved',
+                'to' => 'amdal.ka-resubmitted',
+            ],
+            'to_andal_rklrpl' => [
+                'from' => 'amdal.ka-resubmitted',
+                'to' => ['amdal.andal-draft', 'amdal.rklrpl.activities'],
+            ],
+            'submit_andal' => [
+                'from' => 'amdal.andal-draft',
+                'to' => 'amdal.andal-submitted',
+            ],
+            // 'approve_andal' => [
+            //     'from' => 'amdal.andal-submitted',
+            //     'to' => 'amdal.andal-approved',
+            // ],
+            'set_environment_rklrpl' => [
+                'from' => 'amdal.rklrpl.activities',
+                'to' => 'amdal.rklrpl.environment-set',
+            ],
+            'to_impact_matrix_rklrpl' => [
+                'from' => 'amdal.rklrpl.environment-set',
+                'to' => 'amdal.rklrpl.impact-matrix',
+            ],
+            'to_rklrpl_dp' => [
+                'from' => 'amdal.rklrpl.impact-matrix',
+                'to' => 'amdal.rklrpl.dp',
+            ],
+            'to_rklrpl_dph' => [
+                'from' => 'amdal.rklrpl.dp',
+                'to' => 'amdal.rklrpl.dph',
+            ],
+            'plan_rklrpl_rkl' => [
+                'from' => 'amdal.rklrpl.dph',
+                'to' => 'amdal.rklrpl.rkl',
+            ],
+            'plan_rklrpl_rpl' => [
+                'from' => 'amdal.rklrpl.rkl',
+                'to' => 'amdal.rklrpl.rpl',
+            ],
+            'submit_amdal' => [
+                'from' => ['amdal.rklrpl.rpl', 'amdal.andal-submitted'],
+                'to' => 'amdal.submitted',
+            ],
+            'review_amdal' => [
+                'from' => 'amdal.submitted',
+                'to' => 'amdal.reviewed',
+            ],
+            'finish_amdal' => [
+                'from' => ['amdal.reviewed', 'sppl-completed', 'uklupl.mt-completed', 'uklupl.mr-completed'],
+                'to' => 'amdal.completed',
+            ],
+            // 'finish_amdal_sppl' => [
+            //     'from' => 'sppl-completed',
+            //     'to' => 'amdal.completed',
+            // ],
+            // 'finish_amdal_' => [
+            //     'from' => 'sppl-completed',
+            //     'to' => 'amdal.completed',
+            // ],
+            'announced' => [
+                'from' => 'amdal.announcement',
+                'to' => 'amdal.announcement-completed',
+            ],
+            'pubcons' => [
+                'from' => 'amdal.announcement-completed',
+                'to' => 'amdal.pubcons',
+            ],
+            'finish_pubcons' => [
+                'from' => 'amdal.pubcons',
+                'to' => 'amdal.pubcons-completed',
+            ],
         ],
     ],
 ];

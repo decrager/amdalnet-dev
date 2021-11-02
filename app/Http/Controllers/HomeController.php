@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\EntityHome;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -14,7 +15,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        
+        echo Storage::url('tes.jpg');
     }
 
     /**

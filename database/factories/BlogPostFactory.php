@@ -1,13 +1,27 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
+
+use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Entity\BlogPost;
-use Faker\Generator as Faker;
 
-$factory->define(BlogPost::class, function (Faker $faker) {
-    return [
-        'title' => $faker->sentence,
-        'content' => $faker->text,
-    ];
-});
+class BlogPostFactory extends Factory
+{
+    protected $model = BlogPost::class;
+
+    public function definition()
+    {
+        return [
+            'title' => $this->faker->sentence(),
+            'content' => $this->faker->text(),
+        ];
+    }
+}
+
+// $factory->define(BlogPost::class, function (Faker $faker) {
+//     return [
+//         'title' => $faker->sentence,
+//         'content' => $faker->text,
+//     ];
+// });
