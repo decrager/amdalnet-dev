@@ -1,16 +1,15 @@
 <template>
-  <div id="mapViewDiv">
-    <el-button class="button-login" type="success" @click="loginModalShow()">Login</el-button>
-    <el-button class="button-dashboard" type="success" @click="toDashboard()">Dashboard</el-button>
-    <LoginModal
-      :feedback="selectedFeedback"
-      :show="showIdDialog"
-    />
+  <div>
+    <DarkHeaderHome />
+    <div id="mapViewDiv">
+      <!--    <el-button class="button-login" type="success" @click="loginModalShow()">Login</el-button>-->
+      <!--    <el-button class="button-dashboard" type="success" @click="toDashboard()">Dashboard</el-button>-->
+    </div>
   </div>
+
 </template>
 
 <script>
-import LoginModal from './components/LoginModal.vue';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
@@ -22,13 +21,14 @@ import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
+import DarkHeaderHome from '../home/section/DarkHeader';
 // import OAuthInfo from '@arcgis/core/identity/OAuthInfo';
 // import IdentityManager from '@arcgis/core/identity/OAuthInfo';
 
 export default {
   name: 'WebGis',
   components: {
-    LoginModal,
+    DarkHeaderHome,
   },
   data() {
     return {
@@ -37,7 +37,7 @@ export default {
       showIdDialog: false,
     };
   },
-  mounted: function(){
+  mounted: function() {
     console.log('Map Component Mounted');
     this.loadMap();
   },
@@ -46,16 +46,15 @@ export default {
       this.$router.push({ path: '/dashboard' });
     },
     loginModalShow() {
-      var toShow = {};
-      this.selectedFeedback = toShow;
+      this.selectedFeedback = {};
       this.showIdDialog = true;
     },
     loadMap() {
-      var map = new Map({
+      const map = new Map({
         basemap: 'topo',
         // layers: [featureLayer],
       });
-      var featureLayer = new MapImageLayer({
+      const featureLayer = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
         sublayers: [
           {
@@ -71,7 +70,7 @@ export default {
 
       map.add(featureLayer);
 
-      var batasProv = new MapImageLayer({
+      const batasProv = new MapImageLayer({
         url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
         sublayers: [{
           id: 0,
@@ -80,12 +79,12 @@ export default {
       });
       map.add(batasProv);
 
-      var graticuleGrid = new MapImageLayer({
+      const graticuleGrid = new MapImageLayer({
         url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
       });
       map.add(graticuleGrid);
 
-      var ekoregion = new MapImageLayer({
+      const ekoregion = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
         visible: false,
         sublayers: [
@@ -102,13 +101,13 @@ export default {
       });
       map.add(ekoregion);
 
-      var ppib = new MapImageLayer({
+      const ppib = new MapImageLayer({
         url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
         visible: false,
       });
       map.add(ppib);
 
-      var tutupanLahan = new MapImageLayer({
+      const tutupanLahan = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
         visible: false,
       });
@@ -129,7 +128,7 @@ export default {
       // });
       //
 
-      var mapView = new MapView({
+      const mapView = new MapView({
         container: 'mapViewDiv',
         map: map,
         center: [115.287, -1.588],
@@ -137,20 +136,20 @@ export default {
       });
       this.$parent.mapView = mapView;
       // Map widgets
-      var home = new Home({
+      const home = new Home({
         view: mapView,
       });
       mapView.ui.add(home, 'top-left');
-      var compass = new Compass({
+      const compass = new Compass({
         view: mapView,
       });
       mapView.ui.add(compass, 'top-left');
-      var basemapToggle = new BasemapToggle({
+      const basemapToggle = new BasemapToggle({
         view: mapView,
         container: document.createElement('div'),
         secondBasemap: 'satellite',
       });
-      var expandBasemapToggler = new Expand({
+      const expandBasemapToggler = new Expand({
         view: mapView,
         name: 'basemap',
         content: basemapToggle.domNode,
@@ -158,11 +157,11 @@ export default {
       });
       mapView.ui.add(expandBasemapToggler, 'top-left');
       // mapView.ui.add(basemapToggle, "bottom-right");
-      var scaleBar = new ScaleBar({
+      const scaleBar = new ScaleBar({
         view: mapView,
       });
       mapView.ui.add(scaleBar, 'bottom-left');
-      var attribution = new Attribution({
+      const attribution = new Attribution({
         view: mapView,
       });
       mapView.ui.add(attribution, 'manual');
@@ -196,63 +195,64 @@ export default {
 };
 </script>
 <style scoped>
-  @import url('https://js.arcgis.com/4.19/esri/themes/light/main.css');
+@import url('https://js.arcgis.com/4.19/esri/themes/light/main.css');
+@import '../home/assets/css/style.css';
 
-  #mapViewDiv {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    position: relative;
-  }
+#mapViewDiv {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+}
 
-  .button-login {
-    position: absolute;
-    right: 60px;
-    top: 15px;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-    padding: 8px 15px;
-    margin: 0;
-    overflow: hidden;
-    cursor: pointer;
-    text-align: center;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 125ms ease-in-out;
-    border-radius: 5px;
-    outline: none;
-  }
+.button-login {
+  position: absolute;
+  right: 60px;
+  top: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  padding: 8px 15px;
+  margin: 0;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 125ms ease-in-out;
+  border-radius: 5px;
+  outline: none;
+}
 
-  .button-dashboard {
-    position: absolute;
-    right: 150px;
-    top: 15px;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-    padding: 8px 15px;
-    margin: 0;
-    overflow: hidden;
-    cursor: pointer;
-    text-align: center;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 125ms ease-in-out;
-    border-radius: 5px;
-    outline: none;
-  }
+.button-dashboard {
+  position: absolute;
+  right: 150px;
+  top: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  padding: 8px 15px;
+  margin: 0;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 125ms ease-in-out;
+  border-radius: 5px;
+  outline: none;
+}
 
-  .button-login:hover {
-    background-color: rgb(3, 68, 3);
-    transform: scale(1.1);
-    transition: all .3s ease-in;
-    font-weight: 700;
-    outline: none;
-  }
+.button-login:hover {
+  background-color: rgb(3, 68, 3);
+  transform: scale(1.1);
+  transition: all .3s ease-in;
+  font-weight: 700;
+  outline: none;
+}
 </style>
