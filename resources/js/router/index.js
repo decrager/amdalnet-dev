@@ -292,6 +292,23 @@ export const asyncRoutes = [
         meta: { title: 'Edit Penyusun', icon: 'documentation', noCache: true },
       },
       {
+        path: 'tim-penyusun',
+        component: () => import('@/views/formulator-team/index'),
+        name: 'formulatorTeam',
+        meta: {
+          title: 'Tim Penyusun',
+          icon: 'documentation',
+          noCache: true,
+        },
+      },
+      {
+        path: 'tim-penyusun/create',
+        component: () => import('@/views/formulator-team/Create'),
+        name: 'createFormulatorTeam',
+        hidden: true,
+        meta: { title: 'Tambah Tim Penyusun', icon: 'documentation', noCache: true },
+      },
+      {
         path: 'bank-ahli',
         component: () => import('@/views/expert-bank/index'),
         name: 'expertBank',
