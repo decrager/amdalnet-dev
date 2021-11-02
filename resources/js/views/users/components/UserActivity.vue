@@ -1,18 +1,44 @@
 <template>
   <el-card v-if="user.name">
     <el-tabs v-model="activeActivity" @tab-click="handleClick">
-      <el-tab-pane v-loading="updating" label="Account" name="third">
-        <el-form-item label="Name">
-          <el-input v-model="user.name" :disabled="user.role === 'admin'" />
-        </el-form-item>
-        <el-form-item label="Email">
-          <el-input v-model="user.email" :disabled="user.role === 'admin'" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" :disabled="user.role === 'admin'" @click="onSubmit">
-            Update
-          </el-button>
-        </el-form-item>
+      <el-tab-pane v-loading="updating" label="Akun" name="akunTab">
+        <el-form ref="userForm" :model="user">
+          <el-form-item label="Name">
+            <el-input v-model="user.name" :disabled="user.role === 'admin'" />
+          </el-form-item>
+          <el-form-item label="Email">
+            <el-input v-model="user.email" :disabled="user.role === 'admin'" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" :disabled="user.role === 'admin'" @click="onSubmit">
+              Ubah
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane v-if="user.initiatorData.email" v-loading="updating" label="Pemrakarsa" name="initiatorTab">
+        <el-form ref="initiatorForm" :model="user.initiatorData">
+          <el-form-item label="Name">
+            <el-input v-model="user.initiatorData.name" />
+          </el-form-item>
+          <el-form-item label="Email">
+            <el-input v-model="user.initiatorData.pic" />
+          </el-form-item>
+          <el-form-item label="No. Telepon">
+            <el-input v-model="user.initiatorData.phone" />
+          </el-form-item>
+          <el-form-item label="Alamat">
+            <el-input v-model="user.initiatorData.address" />
+          </el-form-item>
+          <el-form-item label="NIB">
+            <el-input v-model="user.initiatorData.nib" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onInitiatorSubmit">
+              Ubah
+            </el-button>
+          </el-form-item>
+        </el-form>
       </el-tab-pane>
     </el-tabs>
   </el-card>
@@ -21,6 +47,7 @@
 <script>
 import Resource from '@/api/resource';
 const userResource = new Resource('users');
+const initiatorResource = new Resource('initiators');
 
 export default {
   props: {
@@ -38,13 +65,33 @@ export default {
   },
   data() {
     return {
-      activeActivity: 'third',
+      activeActivity: 'akunTab',
       updating: false,
     };
   },
   methods: {
     handleClick(tab, event) {
       console.log('Switching tab ', tab, event);
+    },
+    onInitiatorSubmit(){
+      this.updating = true;
+
+      const updatedInitiator = this.user.initiatorData;
+
+      initiatorResource
+        .update(updatedInitiator.id, updatedInitiator)
+        .then(response => {
+          this.updating = false;
+          this.$message({
+            message: 'Detil Pemrakarsa Berhasil Diubah',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.updating = false;
+        });
     },
     onSubmit() {
       this.updating = true;
@@ -54,7 +101,7 @@ export default {
         .then(response => {
           this.updating = false;
           this.$message({
-            message: 'User information has been updated successfully',
+            message: 'Informasi User Berhasil Di Ubah',
             type: 'success',
             duration: 5 * 1000,
           });

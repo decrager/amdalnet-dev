@@ -11,8 +11,8 @@
           :auto-upload="false"
         >
           <img
-            v-if="imageUrl"
-            :src="imageUrl"
+            v-if="user.avatar"
+            :src="user.avatar"
             class="avatar"
           >
           <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -30,7 +30,7 @@
           {{ user.email }}
         </div>
       </div>
-      <div class="box-social">
+      <!-- <div class="box-social">
         <el-table :data="social" :show-header="false">
           <el-table-column prop="name" label="Name" />
           <el-table-column label="Count" align="left" width="100">
@@ -42,7 +42,7 @@
       </div>
       <div class="user-follow">
         <el-button type="primary" style="width: 100%"> Follow </el-button>
-      </div>
+      </div> -->
     </div>
   </el-card>
 </template>
