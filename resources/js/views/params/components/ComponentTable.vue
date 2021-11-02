@@ -12,17 +12,23 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="No Parameter">
+    <el-table-column label="Nama Parameter">
       <template slot-scope="scope">
-        <span>{{ scope.row.project_stage }}</span>
+        <span>{{ scope.row.parameter_name }}</span>
       </template>
     </el-table-column>
 
-    <!-- <el-table-column label="Komponen Kegiatan">
+    <el-table-column label="Title">
       <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
+        <span>{{ scope.row.title }}</span>
       </template>
-    </el-table-column> -->
+    </el-table-column>
+
+    <el-table-column label="Value">
+      <template slot-scope="scope">
+        <span>{{ scope.row.value }}</span>
+      </template>
+    </el-table-column>
 
     <el-table-column label="Aksi" width="250px">
       <template slot-scope="scope">

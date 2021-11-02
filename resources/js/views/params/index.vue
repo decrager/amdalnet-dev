@@ -41,11 +41,10 @@ import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import ComponentTable from './components/ComponentTable.vue';
 import ComponentDialog from './components/ComponentDialog.vue';
-const componentResource = new Resource('components');
-const projectStageResource = new Resource('project-stages');
+const appParamResource = new Resource('app-params');
 
 export default {
-  name: 'ComponentList',
+  name: 'AppParamtList',
   components: {
     Pagination,
     ComponentTable,
@@ -70,13 +69,9 @@ export default {
     this.getProjectStage();
   },
   methods: {
-    handleCancelComponent(){
-      this.component = {};
-      this.show = false;
-    },
     handleSubmitComponent(){
       if (this.component.id !== undefined) {
-        componentResource
+        appParamResource
           .updateMultipart(this.component.id, this.component)
           .then((response) => {
             this.$message({
@@ -92,7 +87,7 @@ export default {
             console.log(error);
           });
       } else {
-        componentResource
+        appParamResource
           .store(this.component)
           .then((response) => {
             this.$message({
@@ -112,18 +107,14 @@ export default {
           });
       }
     },
-    async getProjectStage() {
-      const { data } = await projectStageResource.list({ limit: 1000 });
-      this.componentOptions = data.map((i) => {
-        return { value: i.id, label: i.name };
-      });
-    },
+
     handleFilter() {
       this.getList();
     },
     async getList() {
       this.loading = true;
-      const { data, total } = await componentResource.list(this.listQuery);
+      const { data, total } = await appParamResource.list(this.listQuery);
+      console.log(total);
       this.list = data;
       this.total = total;
       this.loading = false;
@@ -137,33 +128,6 @@ export default {
     handleEditForm(id) {
       this.component = this.list.find((element) => element.id === id);
       this.show = true;
-    },
-    handleDelete({ id, nama }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Batal',
-        type: 'warning',
-      })
-        .then(() => {
-          componentResource
-            .destroy(id)
-            .then((response) => {
-              this.$message({
-                type: 'success',
-                message: 'Hapus Selesai',
-              });
-              this.getList();
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: 'Hapus Digagalkan',
-          });
-        });
     },
   },
 };

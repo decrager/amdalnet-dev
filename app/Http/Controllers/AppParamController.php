@@ -14,9 +14,9 @@ class AppParamController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return AppParamResource::collection(AppParam::orderBy('created_at', 'desc')->get());
+        return AppParam::orderBy('id', 'desc')->paginate($request->limit ? $request->limit : 10);
     }
 
     /**
