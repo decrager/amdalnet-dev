@@ -1,9 +1,23 @@
 <template>
   <div>
+    <el-button
+      type="success"
+      size="small"
+      icon="el-icon-check"
+      @click="handleSaveForm()"
+    >
+      Simpan Perubahan
+    </el-button>
     <h3>Komponen Kegiatan yang Menjadi Sumber Dampak</h3>
-    <sumber-dampak />
+    <sumber-dampak
+      @handleSaveComponents="handleSaveComponents"
+      @handleUpdateComponents="handleUpdateComponents"
+    />
     <h3 style="margin-top:20px;">Rona Lingkungan Awal</h3>
-    <rona-awal-table />
+    <rona-awal-table
+      @handleSaveRonaAwals="handleSaveRonaAwals"
+      @handleUpdateRonaAwals="handleUpdateRonaAwals"
+    />
   </div>
 </template>
 
@@ -16,11 +30,34 @@ export default {
   components: { SumberDampak, RonaAwalTable },
   data() {
     return {
+      rona_awal: {
+        components: [],
+        rona_awals: [],
+      },
     };
   },
   mounted() {
   },
   methods: {
+    handleSaveForm(){
+      this.$emit('handleSaveRonaAwalData', this.rona_awal);
+    },
+    async handleSaveComponents(data){
+      this.rona_awal.components = await data;
+      this.$emit('handleSaveComponents', data);
+    },
+    handleUpdateComponents(data){
+      this.rona_awal.components = data;
+      this.$emit('handleUpdateComponents', data);
+    },
+    async handleSaveRonaAwals(data){
+      this.rona_awal.rona_awals = await data;
+      this.$emit('handleSaveRonaAwals', data);
+    },
+    handleUpdateRonaAwals(data){
+      this.rona_awal.rona_awals = data;
+      this.$emit('handleUpdateRonaAwals', data);
+    },
   },
 };
 </script>
