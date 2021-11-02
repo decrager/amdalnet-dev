@@ -1,151 +1,111 @@
 <template>
-  <el-table
-    v-loading="loading"
-    :data="list"
-    fit
-    highlight-current-row
-    :header-cell-style="{ background: '#3AB06F', color: 'white' }"
-  >
-    <el-table-column type="expand" class="row-detail">
-      <template slot-scope="scope">
-        <div class="post">
-          <div class="entity-block">
-            <div>
-              <span style="font-weight: bold">Bentuk Pengawasan :</span>
-              <div v-html="scope.row.monitoring_form" />
-            </div>
+  <div class="app-container" style="padding: 24px">
+    <el-card>
+      <el-row :gutter="20">
+        <el-col :span="14">
+          <div class="form-container">
+            <el-form ref="paramsForm">
+              <el-row>
+                <el-form-item label="Nama Parameter" prop="parameter">
+                  <el-input type="text" placeholder="Nama Parameter" />
+                </el-form-item>
+              </el-row>
+            </el-form>
+            <el-form ref="paramsForm">
+              <el-row>
+                <el-form-item label="Judul" prop="judul">
+                  <el-input type="text" placeholder="Judul" />
+                </el-form-item>
+              </el-row>
+            </el-form>
+            <el-form ref="paramsForm">
+              <el-row>
+                <el-form-item label="Nilai" prop="nilai">
+                  <el-input type="text" placeholder="Nilai" />
+                </el-form-item>
+              </el-row>
+            </el-form>
+            <el-form ref="paramsForm">
+              <el-row>
+                <el-form-item label="Value Berupa Angka" prop="value" />
+                <el-form-item label="">
+                  <el-radio v-model="radio" label="1">Ya</el-radio>
+                  <el-radio v-model="radio" label="2">Tidak</el-radio>
+                </el-form-item>
+              </el-row>
+            </el-form>
           </div>
-          <div class="entity-block">
-            <div>
-              <span style="font-weight: bold">Waktu Pengawasan :</span>
-              {{ scope.row.monitoring_time }}
-            </div>
-          </div>
-          <div class="entity-block">
-            <div>
-              <span style="font-weight: bold">Frekwensi Pengawasan :</span>
-              {{ scope.row.monitoring_freq }}
-            </div>
-          </div>
-          <div class="entity-block">
-            <div>
-              <span style="font-weight: bold">Nama :</span> {{ scope.row.name }}
-            </div>
-          </div>
-          <div class="entity-block">
-            <div>
-              <span style="font-weight: bold">Dampak :</span>
-              {{ scope.row.impact }}
-            </div>
-          </div>
-          <div class="entity-block">
-            <div>
-              <span style="font-weight: bold">Dampak Lainya :</span>
-              {{ scope.row.other_impact }}
-            </div>
-          </div>
-          <span class="action">
-            <el-button
-              type="text"
-              href="#"
-              icon="el-icon-edit"
-              @click="handleEditForm(scope.row.id)"
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="18">
+          <el-button
+            class="filter-item"
+            type=""
+            icon="el-icon-plus"
+          >
+            {{ 'Tambah' }}
+          </el-button>
+          <el-table
+            :data="tableData"
+            style="width: 100%"
+            :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
+          >
+            <el-table-column
+              prop="no"
+              label="No"
+              width="90px"
+            />
+            <el-table-column
+              prop="name"
+              label="Nama Parameter"
+            />
+            <el-table-column
+              prop="judul"
+              label="Judul"
+            />
+            <el-table-column
+              prop="value"
+              label="Value"
+            />
+            <el-table-column
+              prop="aksi"
+              label="Aksi"
             >
-              Ubah
-            </el-button>
-            <el-button
-              type="text"
-              href="#"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row.id, scope.row.name)"
-            >
-              Hapus
-            </el-button>
-          </span>
-        </div>
-      </template>
-    </el-table-column>
-    <el-table-column align="center" label="ID Komponen">
-      <template slot-scope="scope">
-        <span>{{ scope.row.id_component }}</span>
-      </template>
-    </el-table-column>
+              <el-button
+                type="text"
+                href="#"
+                icon="el-icon-edit"
+                class="edit"
+              />
+              <el-button
+                type="text"
+                href="#"
+                icon="el-icon-delete"
+                class="delete"
+              />
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col :span="18" class="parentButton">
+          <el-button
+            class="batal"
+            type=""
+            @click="handleCancle"
+          >
+            {{ 'Batalkan' }}
+          </el-button>
+          <el-button
+            class="batal"
+            type=""
+          >
+            {{ 'Buat Baru' }}
+          </el-button>
+        </el-col>
 
-    <el-table-column align="center" label="ID Rona Awal">
-      <template slot-scope="scope">
-        <span>{{ scope.row.id_rona_awal }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Bentuk Pengelolaan">
-      <template slot-scope="scope">
-        <span v-html="scope.row.mgmt_form" />
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Periode Pengelolaan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.mgmt_period }}</span>
-      </template>
-    </el-table-column>
-
-    <!-- <el-table-column align="center" label="Bentuk Pengawasan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.monitoring_form }}</span>
-      </template>
-    </el-table-column> -->
-
-    <!-- <el-table-column align="center" label="Waktu Pengawasan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.monitoring_time }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Frekwensi Pengawasan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.monitoring_freq }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Nama">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Dampak">
-      <template slot-scope="scope">
-        <span>{{ scope.row.impact }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Dampak Lainnya">
-      <template slot-scope="scope">
-        <span>{{ scope.row.other_impact }}</span>
-      </template>
-    </el-table-column>
-
-     <el-table-column align="center" label="Aksi">
-      <template slot-scope="scope">
-        <el-button
-          type="text"
-          href="#"
-          icon="el-icon-edit"
-          @click="handleEditForm(scope.row.id)"
-        >
-          Ubah
-        </el-button>
-        <el-button
-          type="text"
-          href="#"
-          icon="el-icon-delete"
-          @click="handleDelete(scope.row.id, scope.row.name)"
-        >
-          Hapus
-        </el-button>
-      </template>
-    </el-table-column> -->
-  </el-table>
+      </el-row>
+    </el-card>
+  </div>
 </template>
 
 <script>
@@ -167,6 +127,19 @@ export default {
     },
     loading: Boolean,
   },
+  data() {
+    return {
+      radio: '1',
+      tableData: [{
+        no: 1,
+        nilai: 1,
+        name: 'Tom',
+        judul: 'No. 189, Grove St, Los Angeles',
+        value: 20,
+        aksi: 'ok',
+      }],
+    };
+  },
   methods: {
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
@@ -174,6 +147,17 @@ export default {
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });
     },
+    handleCancle() {
+      this.$router.push('/params');
+    },
   },
 };
 </script>
+<style scoped>
+  .el-form-item{margin-bottom: 0 !important;}
+  .edit{background-color: #f19e02; padding: 0.5rem; display: inline-block; color: #fff;}
+  .delete{background-color: #f50103; padding: 0.5rem; display: inline-block; color: #fff;}
+  .filter-item{float: right;margin-bottom: 1rem;margin-top: 2rem;background-color: #3AB06F; color: #fff; font-weight: bold;}
+  .batal{background-color: gray; color:#fff;}
+  .parentButton{justify-content: right;display: flex;margin-top: 1rem;}
+</style>

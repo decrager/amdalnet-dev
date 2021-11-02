@@ -129,10 +129,8 @@ export default {
       this.loading = false;
     },
     handleCreate() {
-      // this.component = {};
-      // this.show = true;
       this.$router.push({
-        name: 'createParams',
+        name: 'addParams',
         params: {},
       });
     },

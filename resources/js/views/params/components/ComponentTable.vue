@@ -29,7 +29,7 @@
         <el-button
           type="text"
           href="#"
-          icon="el-icon-eye"
+          icon="el-icon-view"
           @click="handleEditForm(scope.row.id)"
         >
           View

@@ -12,11 +12,11 @@ const paramRoutes = {
       meta: { title: 'Params', icon: 'user', noCache: true },
     },
     {
-      path: 'createParams',
+      path: 'create-params',
       component: () => import('@/views/params/Create'),
-      name: 'createParams',
+      name: 'addParams',
       hidden: true,
-      meta: { title: 'addParams', icon: 'documentation', noCache: true },
+      meta: { title: 'Tambah Parameter Aplikasi', icon: 'documentation', noCache: true },
     },
   ],
 };
