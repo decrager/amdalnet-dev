@@ -17,13 +17,18 @@ class RonaAwalController extends Controller
      */
     public function index(Request $request)
     {
-        return RonaAwal::select('rona_awal.*', 'components.name as component')->where(function ($query) use ($request) {
-            return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
-        })->where(
-            function ($query) use ($request) {
-                return $request->idComponentType ? $query->where('idComponentType', $request->idComponentType) : '';
-            }
-        )->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
+        $params = $request->all();
+        if (isset($params['all']) && $params['all']) {
+            return RonaAwalResource::collection(RonaAwal::all());
+        } else {
+            return RonaAwal::select('rona_awal.*', 'components.name as component')->where(function ($query) use ($request) {
+                return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
+            })->where(
+                function ($query) use ($request) {
+                    return $request->idComponentType ? $query->where('idComponentType', $request->idComponentType) : '';
+                }
+            )->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
+        }
     }
 
     /**

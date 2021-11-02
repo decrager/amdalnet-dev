@@ -19,9 +19,14 @@ class InitiatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $params = $request->all();
+        $list = Initiator::all();
+        if (isset($params['email'])){
+            $list = $list->where('email', $params['email']);
+        }
+        return InitiatorResource::collection($list);
     }
 
     /**

@@ -51,12 +51,15 @@ class FeedbackController extends Controller
             'phone' => 'required',
             'email' => 'required',
             'concern' => 'required',
+            'expectation' => 'required',
+            'rating' => 'required',
             'photo_filepath' => 'image|file',
             'responder_type_id' => 'required',
         ]);
 
         if ($request->file('photo_filepath')) {
-            $validator['photo_filepath'] = $request->file('photo_filepath')->store('/images/spt');
+            $name = 'images/spt/' . uniqid() . '.' . $request->file('photo_filepath')->extension();
+            $validator['photo_filepath'] = $request->file('photo_filepath')->storePubliclyAs('public', $name);
         };
 
         $validator['announcement_id'] = $request->announcement_id;

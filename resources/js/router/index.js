@@ -26,6 +26,7 @@ import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
+import uklUplRoutes from './modules/uklupl';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -201,6 +202,7 @@ export const asyncRoutes = [
   masterRoutes,
   announcementRoutes,
   feedbackRoutes,
+  uklUplRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 
