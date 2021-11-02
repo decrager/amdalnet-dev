@@ -22,7 +22,7 @@
       </el-tab-pane>
 
       <el-tab-pane label="UKL - UPL">
-        <div v-for="uklupl in uklupls" :key="uklupl.id" class="announce__box__wrapper">
+        <div v-for="uklupl in uklupls" :key="uklupl.id" class="announce__box__wrapper" @click="openDetails(uklupl.id)">
           <div class="announce__box__icon">
             <img alt="" src="/images/list.svg">
           </div>
@@ -77,7 +77,6 @@ export default {
       showDetailsDialog: false,
       selectedId: 0,
       showInitPopup: false,
-      seen: true,
     };
   },
   computed: {
