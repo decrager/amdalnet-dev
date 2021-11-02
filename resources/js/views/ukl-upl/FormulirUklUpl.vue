@@ -13,9 +13,11 @@
           </vsa-heading>
           <vsa-content>
             <rona-lingkungan-awal
-              @handleSaveAll="handleSaveRonaAwalData"
+              @handleSaveRonaAwalData="handleSaveRonaAwalData"
               @handleSaveComponents="handleSaveComponents"
               @handleSaveRonaAwals="handleSaveRonaAwals"
+              @handleUpdateComponents="handleUpdateComponents"
+              @handleUpdateRonaAwals="handleUpdateRonaAwals"
             />
           </vsa-content>
         </vsa-item>
@@ -95,6 +97,12 @@ export default {
     async handleSaveRonaAwals(data){
       this.postForm.rona_awal.rona_awals = await data;
       console.log(this.postForm.rona_awal);
+    },
+    handleUpdateComponents(data){
+      this.postForm.rona_awal.components = data;
+    },
+    handleUpdateRonaAwals(data){
+      this.postForm.rona_awal.rona_awals = data;
     },
     handleSaveForm() {
     },

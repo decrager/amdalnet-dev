@@ -5,7 +5,11 @@
         <aside align="center" style="margin-bottom: 0px;">
           {{ stage.name }}
         </aside>
-        <component-table :data="data[stage.id]" />
+        <component-table
+          :data="data[stage.id]"
+          @handleUpdateComponents="handleUpdateComponents"
+          @handleRenderTable="handleRenderTable"
+        />
       </el-col>
     </el-row>
   </div>
@@ -64,6 +68,13 @@ export default {
       this.data = data;
 
       this.$emit('handleSaveComponents', this.komponenKegiatan);
+    },
+    async handleRenderTable(){
+      this.getData();
+    },
+    handleUpdateComponents(data){
+      this.komponenKegiatan.push(data);
+      this.$emit('handleUpdateComponents', this.komponenKegiatan);
     },
   },
 };

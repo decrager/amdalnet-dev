@@ -11,10 +11,12 @@
     <h3>Komponen Kegiatan yang Menjadi Sumber Dampak</h3>
     <sumber-dampak
       @handleSaveComponents="handleSaveComponents"
+      @handleUpdateComponents="handleUpdateComponents"
     />
     <h3 style="margin-top:20px;">Rona Lingkungan Awal</h3>
     <rona-awal-table
       @handleSaveRonaAwals="handleSaveRonaAwals"
+      @handleUpdateRonaAwals="handleUpdateRonaAwals"
     />
   </div>
 </template>
@@ -38,15 +40,23 @@ export default {
   },
   methods: {
     handleSaveForm(){
-      this.$emit('handleSaveAll', this.rona_awal);
+      this.$emit('handleSaveRonaAwalData', this.rona_awal);
     },
     async handleSaveComponents(data){
       this.rona_awal.components = await data;
       this.$emit('handleSaveComponents', data);
     },
+    handleUpdateComponents(data){
+      this.rona_awal.components = data;
+      this.$emit('handleUpdateComponents', data);
+    },
     async handleSaveRonaAwals(data){
       this.rona_awal.rona_awals = await data;
       this.$emit('handleSaveRonaAwals', data);
+    },
+    handleUpdateRonaAwals(data){
+      this.rona_awal.rona_awals = data;
+      this.$emit('handleUpdateRonaAwals', data);
     },
   },
 };

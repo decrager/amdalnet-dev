@@ -82,6 +82,7 @@ export default {
             type: 'success',
             duration: 5 * 1000,
           });
+          this.$emit('handleRenderTable');
         })
         .catch(error => {
           console.log(error);
@@ -102,6 +103,8 @@ export default {
             type: 'success',
             duration: 5 * 1000,
           });
+          this.$emit('handleUpdateComponents', this.component);
+          this.$emit('handleRenderTable');
           this.showAddDialog = false;
           this.component = {};
         })
