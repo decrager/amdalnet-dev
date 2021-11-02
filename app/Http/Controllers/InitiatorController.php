@@ -150,8 +150,11 @@ class InitiatorController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'id_component_type'  => 'required',
-                'name'               => 'required',
+                'name'      => 'required',
+                'pic'       => 'required',
+                'email'     => 'required',
+                'phone'     => 'required',
+                'address'   => 'required',
             ]
         );
 
@@ -160,8 +163,11 @@ class InitiatorController extends Controller
         } else {
             $params = $request->all();
 
-            $initiator->id_component_type = $params['id_component_type'];
             $initiator->name = $params['name'];
+            $initiator->pic  = $params['pic'];
+            $initiator->phone  = $params['phone'];
+            $initiator->address  = $params['address'];
+            $initiator->nib  = $params['nib'];
             $initiator->save();
         }
 
