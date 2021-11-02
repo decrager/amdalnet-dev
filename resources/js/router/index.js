@@ -26,6 +26,7 @@ import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
+import paramRoutes from './modules/params';
 import uklUplRoutes from './modules/uklupl';
 
 /**
@@ -200,26 +201,7 @@ export const asyncRoutes = [
   errorRoutes,
   projectRoutes,
   masterRoutes,
-  {
-    path: '/params',
-    component: Layout,
-    name: 'Params',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/params/index'),
-        name: 'Params',
-        meta: { title: 'Params', icon: 'user', noCache: true },
-      },
-      {
-        path: 'create-params',
-        component: () => import('@/views/params/Create'),
-        name: 'createParams',
-        hidden: true,
-        meta: { title: 'addParams', icon: 'documentation', noCache: true },
-      },
-    ],
-  },
+  paramRoutes,
   announcementRoutes,
   feedbackRoutes,
   uklUplRoutes,
