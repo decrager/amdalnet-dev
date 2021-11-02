@@ -200,6 +200,26 @@ export const asyncRoutes = [
   errorRoutes,
   projectRoutes,
   masterRoutes,
+  {
+    path: '/params',
+    component: Layout,
+    name: 'Params',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/params/index'),
+        name: 'Params',
+        meta: { title: 'Params', icon: 'user', noCache: true },
+      },
+      {
+        path: 'create-params',
+        component: () => import('@/views/params/Create'),
+        name: 'createParams',
+        hidden: true,
+        meta: { title: 'addParams', icon: 'documentation', noCache: true },
+      },
+    ],
+  },
   announcementRoutes,
   feedbackRoutes,
   uklUplRoutes,
