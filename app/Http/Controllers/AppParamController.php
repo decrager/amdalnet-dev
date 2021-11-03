@@ -16,7 +16,10 @@ class AppParamController extends Controller
      */
     public function index(Request $request)
     {
-        return AppParam::orderBy('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+        return AppParam::select('parameter_name')
+        ->groupBy('parameter_name')
+        ->paginate($request->limit ? $request->limit : 10);
+
     }
 
     /**
@@ -70,9 +73,9 @@ class AppParamController extends Controller
      * @param  \App\Entity\\AppParam  $appParam
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($name)
     {
-        $detailAppParam = AppParam::find($id);
+        $detailAppParam = AppParam::where('parameter_name', $name)->get();
         return new AppParamResource($detailAppParam);
     }
 
