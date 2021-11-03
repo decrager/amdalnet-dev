@@ -4,7 +4,7 @@
       <img src="https://lonelyplanetimages.imgix.net/mastheads/GettyImages-538096543_medium.jpg?sharp=10&vib=20&w=1200">
     </div>
     <div style="position:relative;">
-      <pan-thumb :image="avatar" class="panThumb" />
+      <pan-thumb :image="avatar || 'https://i.pravatar.cc/128'" class="panThumb" />
       <div class="mallki-text">
         Laravue
       </div>

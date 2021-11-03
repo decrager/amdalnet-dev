@@ -26,14 +26,14 @@ export default {
       showInitPopup: false,
     };
   },
-  created() {
-    setTimeout(() => {
-      this.showPengumumanOnInit();
-    }, 3000);
+  mounted() {
+    this.showPengumumanOnInit();
   },
   methods: {
-    async showPengumumanOnInit() {
-      this.showInitPopup = true;
+    showPengumumanOnInit() {
+      setTimeout(() => {
+        this.showInitPopup = true;
+      }, 3000);
     },
   },
 };

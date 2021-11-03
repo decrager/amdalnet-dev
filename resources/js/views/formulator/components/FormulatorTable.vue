@@ -2,74 +2,80 @@
   <el-table
     v-loading="loading"
     :data="list"
-    border
     fit
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
-    <el-table-column align="center" label="Nama Penyusun" width="150px">
+    <el-table-column type="expand">
+      <template slot-scope="scope">
+        <div class="expand-container">
+          <div>
+            <p><b>Status Keanggotaan: </b>{{ scope.row.membership_status }}</p>
+            <p><b>Affiliasi: </b>{{ scope.row.id_institution }}</p>
+            <p><b>Tgl. Ditetapkan: </b>{{ scope.row.date_start }}</p>
+            <p><b>Terakhir Berlaku: </b>{{ scope.row.date_end }}</p>
+            <p><b>LSP Penerbit: </b>{{ scope.row.id_lsp }}</p>
+          </div>
+          <div>
+            <el-button
+              type="text"
+              href="#"
+              icon="el-icon-edit"
+              @click="handleEditForm(scope.row.id)"
+            >
+              Ubah
+            </el-button>
+            <el-button
+              type="text"
+              href="#"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row.id, scope.row.name)"
+            >
+              Hapus
+            </el-button>
+          </div>
+        </div>
+      </template>
+    </el-table-column>
+
+    <el-table-column align="center" label="Nama Penyusun">
       <template slot-scope="scope">
         <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="No. Registrasi" width="150px">
+    <el-table-column align="center" label="No. Registrasi">
       <template slot-scope="scope">
         <span>{{ scope.row.reg_no }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="No. Sertifikasi" width="150px">
+    <el-table-column align="center" label="No. Sertifikasi">
       <template slot-scope="scope">
         <span>{{ scope.row.cert_no }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Status Keanggotaan" width="180px">
+    <el-table-column align="center" label="Status">
       <template slot-scope="scope">
-        <span>{{ scope.row.membership_status }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Affiliasi" width="150px">
-      <template slot-scope="scope">
-        <span>{{ scope.row.id_institution }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Tgl. Ditetapkan" width="150px">
-      <template slot-scope="scope">
-        <span>{{ scope.row.date_start }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Terakhir Berlaku" width="150px">
-      <template slot-scope="scope">
-        <span>{{ scope.row.date_end }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="LSP Penerbit" width="150px">
-      <template slot-scope="scope">
-        <span>{{ scope.row.id_lsp }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Status" width="150px">
-      <template slot-scope="scope">
-        <el-tag :type="calculateStatus(scope.row.date_start, scope.row.date_end) | statusFilter">
+        <el-tag
+          :type="
+            calculateStatus(scope.row.date_start, scope.row.date_end)
+              | statusFilter
+          "
+        >
           {{ calculateStatus(scope.row.date_start, scope.row.date_end) }}
         </el-tag>
       </template>
     </el-table-column>
 
-    <el-table-column label="Sertifikat" width="150px">
+    <el-table-column label="Sertifikat">
       <template slot-scope="scope">
         <el-button
           type="text"
           size="medium"
           icon="el-icon-download"
-          style="color:blue;"
+          style="color: blue"
           @click.prevent="download(scope.row.cert_file)"
         >
           Sertifikat
@@ -78,31 +84,10 @@
           type="text"
           size="medium"
           icon="el-icon-download"
-          style="color:blue;"
+          style="color: blue"
           @click.prevent="download(scope.row.cv_file)"
         >
           CV
-        </el-button>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Aksi" fixed="right" width="150px">
-      <template slot-scope="scope">
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-edit"
-          @click="handleEditForm(scope.row.id)"
-        >
-          Ubah
-        </el-button>
-        <el-button
-          type="danger"
-          size="mini"
-          icon="el-icon-delete"
-          @click="handleDelete(scope.row.id, scope.row.name)"
-        >
-          Hapus
         </el-button>
       </template>
     </el-table-column>
@@ -153,3 +138,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.expand-container {
+  display: flex;
+  justify-content: space-around;
+}
+.expand-container div {
+  width: 50%;
+  padding: 1rem 3rem;
+}
+</style>

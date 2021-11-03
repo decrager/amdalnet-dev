@@ -2,14 +2,13 @@
   <el-table
     v-loading="loading"
     :data="list"
-    border
     fit
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
     <el-table-column label="No." width="54px">
       <template slot-scope="scope">
-        <span>{{ scope.$index + 1 }}</span>
+        <span>{{ scope.$index + 1 + page * limit - limit }}</span>
       </template>
     </el-table-column>
 
@@ -28,16 +27,16 @@
     <el-table-column label="Aksi">
       <template slot-scope="scope">
         <el-button
-          type="primary"
-          size="mini"
+          type="text"
+          href="#"
           icon="el-icon-edit"
           @click="handleEditForm(scope.row.id)"
         >
           Ubah
         </el-button>
         <el-button
-          type="danger"
-          size="mini"
+          type="text"
+          href="#"
           icon="el-icon-delete"
           @click="handleDelete(scope.row.id, scope.row.name)"
         >
@@ -57,6 +56,14 @@ export default {
       default: () => [],
     },
     loading: Boolean,
+    page: {
+      type: Number,
+      default: () => 1,
+    },
+    limit: {
+      type: Number,
+      default: () => 10,
+    },
   },
   methods: {
     handleEditForm(id) {

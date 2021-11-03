@@ -24,6 +24,8 @@ import errorRoutes from './modules/error';
 // import permissionRoutes from './modules/permission';
 import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
+import masterRoutes from './modules/master';
+import projectRoutes from './modules/project';
 import uklUplRoutes from './modules/uklupl';
 
 /**
@@ -182,211 +184,25 @@ export const asyncRoutes = [
   //     },
   //   ],
   // },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/edit',
+    children: [
+      {
+        path: 'edit',
+        component: () => import('@/views/users/SelfProfile'),
+        name: 'SelfProfile',
+        meta: { title: 'userProfile', icon: 'user', noCache: true },
+      },
+    ],
+  },
   errorRoutes,
-  // excelRoutes,
-  {
-    path: '/project',
-    component: Layout,
-    redirect: '/project',
-    alwaysShow: true,
-    meta: { title: 'project', icon: 'zip', roles: ['initiator', 'editor'] },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/project'),
-        name: 'project',
-        meta: { title: 'listProject', icon: 'documentation' },
-      },
-      {
-        path: 'create',
-        component: () => import('@/views/project/Create'),
-        name: 'createProject',
-        hidden: true,
-        meta: { title: 'addProject', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'publish',
-        component: () => import('@/views/project/Publish'),
-        name: 'publishProject',
-        hidden: true,
-        meta: { title: 'publishProject', icon: 'documentation', noCache: true, breadcrumb: false },
-        props: true,
-      },
-    ],
-  },
-  {
-    path: '/master-data',
-    component: Layout,
-    redirect: '/master-data',
-    alwaysShow: true,
-    meta: { title: 'masterData', icon: 'el-icon-reading', permissions: ['view menu administrator'] },
-    children: [
-      {
-        path: '/provinces',
-        component: () => import('@/views/master-data/province'),
-        name: 'province',
-        hidden: true,
-        meta: { title: 'provinsi', icon: 'el-icon-school' },
-      },
-      {
-        path: 'lpjp',
-        component: () => import('@/views/lpjp/index'),
-        name: 'lpjp',
-        meta: { title: 'LPJP', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'lpjp/create',
-        component: () => import('@/views/lpjp/Create'),
-        name: 'createLpjp',
-        hidden: true,
-        meta: { title: 'Tambah LPJP', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'lpjp/edit/:id',
-        component: () => import('@/views/lpjp/Create'),
-        name: 'editLpjp',
-        hidden: true,
-        meta: { title: 'Edit LPJP', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'rona-awal',
-        component: () => import('@/views/rona-awal/index'),
-        name: 'rona-awal',
-        meta: { title: 'Rona-Awal', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'rona-awal/create',
-        component: () => import('@/views/lpjp/Create'),
-        name: 'createRonaAwal',
-        hidden: true,
-        meta: { title: 'Tambah Rona Lingkungan', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'component',
-        component: () => import('@/views/component/index'),
-        name: 'component',
-        meta: { title: 'Komponen', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'formulator',
-        component: () => import('@/views/formulator/index'),
-        name: 'formulator',
-        meta: {
-          title: 'formulator',
-          icon: 'documentation',
-          noCache: true,
-        },
-      },
-      {
-        path: 'formulator/create',
-        component: () => import('@/views/formulator/Create'),
-        name: 'createFormulator',
-        hidden: true,
-        meta: { title: 'Tambah Penyusun', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'formulator/edit/:id',
-        component: () => import('@/views/formulator/Create'),
-        name: 'editFormulator',
-        hidden: true,
-        meta: { title: 'Edit Penyusun', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'bank-ahli',
-        component: () => import('@/views/expert-bank/index'),
-        name: 'expertBank',
-        meta: { title: 'expertBank', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'bank-ahli/create',
-        component: () => import('@/views/expert-bank/Create'),
-        name: 'createExpertBank',
-        hidden: true,
-        meta: { title: 'Tambah Bank Ahli', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'bank-ahli/edit/:id',
-        component: () => import('@/views/expert-bank/Create'),
-        name: 'editExpertBank',
-        hidden: true,
-        meta: { title: 'Edit Bank Ahli', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'sop',
-        component: () => import('@/views/master-sop/index'),
-        name: 'sop',
-        meta: { title: 'SOP', icon: 'documentation', noCache: true },
-      },
-      {
-        path: 'sop/create',
-        component: () => import('@/views/master-sop/Create'),
-        name: 'createSop',
-        hidden: true,
-        meta: { title: 'Tambah SOP', icon: 'documentation', noCache: true },
-      },
-    ],
-  },
+  projectRoutes,
+  masterRoutes,
   announcementRoutes,
   feedbackRoutes,
   uklUplRoutes,
-  // excelRoutes,
-  // {
-  //   path: '/zip',
-  //   component: Layout,
-  //   redirect: '/zip/download',
-  //   alwaysShow: true,
-  //   meta: { title: 'zip', icon: 'zip', permissions: ['view menu zip'] },
-  //   children: [
-  //     {
-  //       path: 'download',
-  //       component: () => import('@/views/zip'),
-  //       name: 'ExportZip',
-  //       meta: { title: 'exportZip' },
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/pdf',
-  //   component: Layout,
-  //   redirect: '/pdf/index',
-  //   meta: { title: 'pdf', icon: 'pdf', permissions: ['view menu pdf'] },
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/pdf'),
-  //       name: 'Pdf',
-  //       meta: { title: 'pdf' },
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/pdf/download',
-  //   component: () => import('@/views/pdf/Download'),
-  //   hidden: true,
-  // },
-  // {
-  //   path: '/i18n',
-  //   component: Layout,
-  //   meta: { permissions: ['view menu i18n'] },
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/i18n'),
-  //       name: 'I18n',
-  //       meta: { title: 'i18n', icon: 'international' },
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/external-link',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'https://github.com/tuandm/laravue',
-  //       meta: { title: 'externalLink', icon: 'link' },
-  //     },
-  //   ],
-  // },
   { path: '*', redirect: '/404', hidden: true },
 ];
 

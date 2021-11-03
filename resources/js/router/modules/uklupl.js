@@ -9,11 +9,25 @@ const uklUplRoutes = {
   meta: { title: 'UKL-UPL', icon: 'zip' },
   children: [
     {
-      path: '',
-      component: () => import('@/views/ukl-upl'),
-      name: 'UklUpl',
+      path: ':id(\\d+)/formulir',
+      component: () => import('@/views/ukl-upl/FormulirUklUpl'),
+      name: 'FormulirUklUpl',
       hidden: false,
-      meta: { title: 'UKL-UPL', icon: 'documentation' },
+      meta: { title: 'Formulir UKL-UPL', icon: 'documentation' },
+    },
+    {
+      path: ':id(\\d+)/matriks',
+      component: () => import('@/views/ukl-upl/MatriksUklUpl'),
+      name: 'MatriksUklUpl',
+      hidden: false,
+      meta: { title: 'Matriks UKL-UPL', icon: 'documentation' },
+    },
+    {
+      path: ':id(\\d+)/dokumen',
+      component: () => import('@/views/ukl-upl/DokumenUklUpl'),
+      name: 'DokumenUklUpl',
+      hidden: false,
+      meta: { title: 'Dokumen UKL-UPL', icon: 'documentation' },
     },
   ],
 };

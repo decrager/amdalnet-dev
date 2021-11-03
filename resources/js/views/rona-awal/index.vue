@@ -1,35 +1,39 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >
-        {{ 'Tambah Master Rona Lingkungan' }}
-      </el-button>
-    </div>
-    <rona-awal-table
-      :loading="loading"
-      :list="list"
-      @handleEditForm="handleEditForm($event)"
-      @handleDelete="handleDelete($event)"
-    />
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="handleFilter"
-    />
-    <rona-awal-dialog
-      :rona="ronaAwal"
-      :show="show"
-      :options="componentOptions"
-      @handleSubmitRonaAwal="handleSubmitRonaAwal"
-      @handleCancelRonaAwal="handleCancelRonaAwal"
-    />
+    <el-card>
+      <div class="filter-container">
+        <el-button
+          class="filter-item"
+          type="primary"
+          icon="el-icon-plus"
+          @click="handleCreate"
+        >
+          {{ 'Tambah Master Rona Lingkungan' }}
+        </el-button>
+      </div>
+      <rona-awal-table
+        :loading="loading"
+        :list="list"
+        :page="listQuery.page"
+        :limit="listQuery.limit"
+        @handleEditForm="handleEditForm($event)"
+        @handleDelete="handleDelete($event)"
+      />
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="handleFilter"
+      />
+      <rona-awal-dialog
+        :rona="ronaAwal"
+        :show="show"
+        :options="componentOptions"
+        @handleSubmitRonaAwal="handleSubmitRonaAwal"
+        @handleCancelRonaAwal="handleCancelRonaAwal"
+      />
+    </el-card>
   </div>
 </template>
 
@@ -67,7 +71,7 @@ export default {
     this.getComponentList();
   },
   methods: {
-    handleSubmitRonaAwal(){
+    handleSubmitRonaAwal() {
       if (this.ronaAwal.id !== undefined) {
         ronaAwalesource
           .updateMultipart(this.ronaAwal.id, this.ronaAwal)
@@ -90,9 +94,7 @@ export default {
           .then((response) => {
             this.$message({
               message:
-                'Rona Lingkungan ' +
-                this.ronaAwal.name +
-                ' Berhasil Dibuat',
+                'Rona Lingkungan ' + this.ronaAwal.name + ' Berhasil Dibuat',
               type: 'success',
               duration: 5 * 1000,
             });
@@ -133,11 +135,15 @@ export default {
       this.show = true;
     },
     handleDelete({ id, nama }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Batal',
-        type: 'warning',
-      })
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + nama + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
         .then(() => {
           ronaAwalesource
             .destroy(id)

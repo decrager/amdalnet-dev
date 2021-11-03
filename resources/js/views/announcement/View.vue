@@ -15,19 +15,39 @@
 <script>
 import AnnouncementDetail from './components/Detail';
 import CreateFeedbackSPT from './components/CreateFeedbackSPT.vue';
+import { fetchInitiatorByEmail } from '@/api/klhk-role';
 
 export default {
   name: 'ViewForm',
   components: { AnnouncementDetail, CreateFeedbackSPT },
   data() {
-    const showSPT = this.$store.getters.userId === 85;
-    const showPD = this.$store.getters.userId !== 85;
     return {
-      showProjectDetail: showPD,
-      showCreateFeedback: showPD,
-      showFeedbackList: showSPT,
-      showPublicConsultation: showSPT,
+      showProjectDetail: false,
+      showCreateFeedback: false,
+      showFeedbackList: false,
+      showPublicConsultation: false,
     };
+  },
+  mounted() {
+    this.setData();
+  },
+  methods: {
+    async setData(){
+      const user = await this.$store.dispatch('user/getInfo');
+      fetchInitiatorByEmail(user.email)
+        .then(response => {
+          if (response.data.length > 0 || user.email === 'admin@laravue.dev') {
+            this.showFeedbackList = true;
+            this.showPublicConsultation = true;
+          } else {
+            // this.showProjectDetail = true;
+            this.showCreateFeedback = true;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>

@@ -19,9 +19,14 @@ class InitiatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $params = $request->all();
+        $list = Initiator::all();
+        if (isset($params['email'])){
+            $list = $list->where('email', $params['email']);
+        }
+        return InitiatorResource::collection($list);
     }
 
     /**
@@ -104,6 +109,20 @@ class InitiatorController extends Controller
         //
     }
 
+    public function showByEmail(Request $request)
+    { 
+        If($request->email){
+            $initiator = Initiator::where('email', $request->email)->first();
+            
+            if($initiator) {
+                return $initiator;
+            } else {
+                return response()->json(null, 200);
+
+            }
+        }
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -131,8 +150,11 @@ class InitiatorController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'id_component_type'  => 'required',
-                'name'               => 'required',
+                'name'      => 'required',
+                'pic'       => 'required',
+                'email'     => 'required',
+                'phone'     => 'required',
+                'address'   => 'required',
             ]
         );
 
@@ -141,8 +163,11 @@ class InitiatorController extends Controller
         } else {
             $params = $request->all();
 
-            $initiator->id_component_type = $params['id_component_type'];
             $initiator->name = $params['name'];
+            $initiator->pic  = $params['pic'];
+            $initiator->phone  = $params['phone'];
+            $initiator->address  = $params['address'];
+            $initiator->nib  = $params['nib'];
             $initiator->save();
         }
 

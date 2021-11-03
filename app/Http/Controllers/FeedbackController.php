@@ -58,7 +58,8 @@ class FeedbackController extends Controller
         ]);
 
         if ($request->file('photo_filepath')) {
-            $validator['photo_filepath'] = $request->file('photo_filepath')->store('/images/spt');
+            $name = 'images/spt/' . uniqid() . '.' . $request->file('photo_filepath')->extension();
+            $validator['photo_filepath'] = $request->file('photo_filepath')->storePubliclyAs('public', $name);
         };
 
         $validator['announcement_id'] = $request->announcement_id;
