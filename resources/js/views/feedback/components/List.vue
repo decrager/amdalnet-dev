@@ -93,6 +93,7 @@
       :data="identityDialogData"
       :photo="identityDialogImg"
       :show="showIdDialog"
+      @handleCloseDialog="handleCloseIdentityDialog"
     />
     <CreateFeedback
       :feedback="feedback"
@@ -162,14 +163,19 @@ export default {
         item.is_relevant_str = item.is_relevant ? 'Relevan' : 'Tidak Relevan';
       });
       this.feedbacks = data;
-      console.log(data);
       this.loading = false;
     },
     showCreateFeedback() {
       this.showFeedback = true;
+      this.showIdDialog = false;
     },
     handleCloseFeedbackDialog(){
       this.showFeedback = false;
+      this.showIdDialog = false;
+    },
+    handleCloseIdentityDialog(){
+      this.showFeedback = false;
+      this.showIdDialog = false;
     },
     showIdentity(feedbackId) {
       const toShow = this.feedbacks.find(f => f.id === feedbackId);
@@ -194,6 +200,7 @@ export default {
         },
       ];
       this.showIdDialog = true;
+      this.showFeedback = false;
     },
     async onChangeForm(feedbackId, event) {
       const toUpdate = this.feedbacks.find(f => f.id === feedbackId);
