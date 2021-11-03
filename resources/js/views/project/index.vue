@@ -127,6 +127,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-view"
+                  @click="handleViewForm(scope.row.id)"
                 >
                   View Details
                 </el-button>
@@ -318,10 +319,10 @@ export default {
       currentProject.field = Number(currentProject.field);
       currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
 
-      this.$router.push({
-        name: 'createProject',
-        params: { project: currentProject },
-      });
+      // this.$router.push({
+      //   name: 'createProject',
+      //   params: { project: currentProject },
+      // });
       this.$router.push({
         name: 'publishProject',
         params: { project: currentProject, readonly: true },
