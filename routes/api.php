@@ -174,3 +174,4 @@ Route::apiResource('project-stages', 'ProjectStageController');
 Route::apiResource('sops', 'SopController');
 Route::apiResource('component-types', 'ComponentTypeController');
 Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');
+Route::apiResource('impact-identifications', 'ImpactIdentificationController');
