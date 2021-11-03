@@ -12,19 +12,25 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Jenis Komponen">
-      <template slot-scope="scope">
-        <span>{{ scope.row.component }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column label="Komponen Lingkungan">
+    <el-table-column label="Nama Team">
       <template slot-scope="scope">
         <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column label="Aksi" align="right">
+    <el-table-column label="Anggota">
+      <template slot-scope="scope">
+        <span>{{ scope.row.teamTotal }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column label="Tanggal Buat">
+      <template slot-scope="scope">
+        <span>{{ scope.row.created_at }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column label="Aksi">
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -49,7 +55,7 @@
 
 <script>
 export default {
-  name: 'RonaAwalTable',
+  name: 'FormulatorTeamTable',
   props: {
     list: {
       type: Array,
