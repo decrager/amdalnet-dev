@@ -26,6 +26,7 @@ deploy_dev:
     - sudo chown adminhadoop:adminhadoop -R storage/
     - sudo chmod 777 -R storage/
     - docker-compose exec -T laravel composer install
+    - docker-compose exec -T laravel composer dump-autoload
     - docker-compose exec -T laravel php artisan migrate
     - docker-compose exec -T laravel npm install
     - docker-compose exec -T laravel npm run production
@@ -45,6 +46,7 @@ deploy_cloud:
     - git reset --hard HEAD
     - git pull
     - composer install
+    - composer dump-autoload
     - php artisan migrate
     - npm install
     - npm run production

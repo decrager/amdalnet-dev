@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
@@ -13,6 +15,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        // clean up first
+        
         $userList = [
             "Adriana C. Ocampo Uria",
             "Albert Einstein",
@@ -71,10 +75,10 @@ class UsersTableSeeder extends Seeder
             $roleName = \App\Laravue\Faker::randomInArray([
                 Acl::ROLE_INITIATOR,
                 Acl::ROLE_FORMULATOR,
-                Acl::ROLE_INSTITUTION,
-                Acl::ROLE_ADMIN_STANDARD,
+                Acl::ROLE_LPJP,
+                Acl::ROLE_PUSTANLING,
                 Acl::ROLE_EXAMINER,
-                Acl::ROLE_EXAMINER_INSTITUTION,
+                Acl::ROLE_LUK,
                 Acl::ROLE_ADMIN_SYSTEM,
                 Acl::ROLE_ADMIN_CENTRAL,
                 Acl::ROLE_ADMIN_REGIONAL,

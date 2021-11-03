@@ -67,7 +67,7 @@ class UpdateRolePermission extends Migration
         ]);
 
         // lpjp
-        $institutionRole = Role::findByName(Acl::ROLE_INSTITUTION); 
+        $institutionRole = Role::findByName(Acl::ROLE_LPJP); 
         $institutionRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_FORMULATOR,
             Acl::PERMISSION_VIEW_MENU_PROJECT,
@@ -76,15 +76,15 @@ class UpdateRolePermission extends Migration
         ]);
 
         // pustanling
-        $adminStandardRole = Role::findByName(Acl::ROLE_ADMIN_STANDARD); 
+        $adminStandardRole = Role::findByName(Acl::ROLE_PUSTANLING); 
         $adminStandardRole->givePermissionTo([
-            Acl::PERMISSION_VIEW_MENU_INSTITUTION,
+            Acl::PERMISSION_VIEW_MENU_LPJP,
             Acl::PERMISSION_VIEW_MENU_FORMULATOR,
             Acl::PERMISSION_VIEW_MENU_PARAMS,
             Acl::PERMISSION_VIEW_MENU_SOP,
-            Acl::PERMISSION_VIEW_MENU_TECHNICAL_REGULATIONS,
+            // Acl::PERMISSION_VIEW_MENU_TECHNICAL_REGULATIONS,
             Acl::PERMISSION_VIEW_MENU_CLUSTER,
-            Acl::PERMISSION_MANAGE_INSTITUTION,
+            Acl::PERMISSION_MANAGE_LPJP,
             Acl::PERMISSION_MANAGE_FORMULATOR,
             Acl::PERMISSION_MANAGE_PARAMS,
             Acl::PERMISSION_MANAGE_SOP,
@@ -103,7 +103,7 @@ class UpdateRolePermission extends Migration
             Acl::PERMISSION_DO_PUSH,
         ]);
 
-        $examinerInstitutionRole = Role::findByName(Acl::ROLE_EXAMINER_INSTITUTION); 
+        $examinerInstitutionRole = Role::findByName(Acl::ROLE_LUK); 
         $examinerInstitutionRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_EXAMINER,
             Acl::PERMISSION_VIEW_MENU_EXPERT,
@@ -124,20 +124,20 @@ class UpdateRolePermission extends Migration
         $adminCentralRole = Role::findByName(Acl::ROLE_ADMIN_CENTRAL); 
         $adminCentralRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_EXAMINER,
-            Acl::PERMISSION_VIEW_MENU_EXAMINER_INSTITUTION,
+            Acl::PERMISSION_VIEW_MENU_LUK,
             Acl::PERMISSION_VIEW_MENU_EXPERT,
             Acl::PERMISSION_MANAGE_EXAMINER,
-            Acl::PERMISSION_MANAGE_EXAMINER_INSTITUTION,
+            Acl::PERMISSION_MANAGE_LUK,
             Acl::PERMISSION_MANAGE_EXPERT,
         ]);
 
         $adminRegionalRole = Role::findByName(Acl::ROLE_ADMIN_REGIONAL); 
         $adminRegionalRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_EXAMINER,
-            Acl::PERMISSION_VIEW_MENU_EXAMINER_INSTITUTION,
+            Acl::PERMISSION_VIEW_MENU_LUK,
             Acl::PERMISSION_VIEW_MENU_EXPERT,
             Acl::PERMISSION_MANAGE_EXAMINER,
-            Acl::PERMISSION_MANAGE_EXAMINER_INSTITUTION,
+            Acl::PERMISSION_MANAGE_LUK,
             Acl::PERMISSION_MANAGE_EXPERT,
         ]);
 
