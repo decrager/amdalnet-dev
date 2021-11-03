@@ -69,7 +69,7 @@ export default {
     this.getProjectStage();
   },
   methods: {
-    handleSubmitComponent(){
+    handleSubmitComponent() {
       if (this.component.id !== undefined) {
         appParamResource
           .updateMultipart(this.component.id, this.component)
@@ -91,10 +91,7 @@ export default {
           .store(this.component)
           .then((response) => {
             this.$message({
-              message:
-                'Komponen ' +
-                this.component.name +
-                ' Berhasil Dibuat',
+              message: 'Komponen ' + this.component.name + ' Berhasil Dibuat',
               type: 'success',
               duration: 5 * 1000,
             });
@@ -133,5 +130,7 @@ export default {
 };
 </script>
 <style scoped>
-  h2{margin: 0 0 2rem 0;}
+h2 {
+  margin: 0 0 2rem 0;
+}
 </style>

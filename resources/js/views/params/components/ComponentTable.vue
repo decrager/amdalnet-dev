@@ -18,18 +18,6 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Title">
-      <template slot-scope="scope">
-        <span>{{ scope.row.title }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column label="Value">
-      <template slot-scope="scope">
-        <span>{{ scope.row.value }}</span>
-      </template>
-    </el-table-column>
-
     <el-table-column label="Aksi" width="250px">
       <template slot-scope="scope">
         <el-button
