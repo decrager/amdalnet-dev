@@ -89,6 +89,7 @@ const masterRoutes = {
       path: 'tim-penyusun',
       component: () => import('@/views/formulator-team/index'),
       name: 'formulatorTeam',
+      hidden: true,
       meta: {
         title: 'Tim Penyusun',
         icon: 'documentation',
