@@ -16,6 +16,7 @@
         :loading="loading"
         :list="list"
         @handleEditForm="handleEditForm($event)"
+        @handleView="handleView($event)"
         @handleDelete="handleDelete($event)"
       />
       <pagination
@@ -53,6 +54,7 @@ export default {
   data() {
     return {
       list: [],
+      listView: [],
       loading: true,
       listQuery: {
         page: 1,
@@ -104,17 +106,19 @@ export default {
           });
       }
     },
-
     handleFilter() {
       this.getList();
     },
     async getList() {
       this.loading = true;
       const { data, total } = await appParamResource.list(this.listQuery);
-      console.log(total);
       this.list = data;
       this.total = total;
       this.loading = false;
+    },
+    async getListView(name) {
+      const { data } = await appParamResource.get(name);
+      this.listView = data;
     },
     handleCreate() {
       this.$router.push({
@@ -125,6 +129,16 @@ export default {
     handleEditForm(id) {
       this.component = this.list.find((element) => element.id === id);
       this.show = true;
+    },
+    async handleView(row) {
+      // this.getListView(row.parameter_name);
+      // console.log(this.listView)
+      const { data } = await appParamResource.get(row.parameter_name);
+      this.listView = data;
+      this.show = true;
+    },
+    handleCancelComponent(){
+      this.show = false;
     },
   },
 };

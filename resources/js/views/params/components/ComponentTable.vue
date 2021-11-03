@@ -24,7 +24,7 @@
           type="text"
           href="#"
           icon="el-icon-view"
-          @click="handleEditForm(scope.row.id)"
+          @click="handleView(scope.row)"
         >
           View
         </el-button>
@@ -60,6 +60,9 @@ export default {
     loading: Boolean,
   },
   methods: {
+    handleView(row) {
+      this.$emit('handleView', row);
+    },
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },

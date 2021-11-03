@@ -1,33 +1,29 @@
 <template>
   <el-dialog :title="'Buat Komponen'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
-    <div class="form-container">
-      <el-form ref="categoryForm" :model="component">
-        <el-row>
-          <el-form-item label="Tahap Kegiatan" prop="tahapKegiatan">
-            <el-select
-              v-model="component.id_project_stage"
-              placeholder="Select"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-row>
-        <el-row>
-          <el-form-item label="Komponen Kegiatan" prop="komponenKegiatan">
-            <el-input v-model="component.name" type="textarea" />
-          </el-form-item>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="handleCancelComponent()"> Cancel </el-button>
-        <el-button type="primary" @click="handleSubmitComponent()"> Confirm </el-button>
-      </div>
+    <el-table
+      :data="listView"
+      border
+      style="width: 100%"
+    >
+      <el-table-column label="No." width="180">
+        <template slot-scope="scope">
+          <span>{{ scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Judul" width="180">
+        <template slot-scope="scope">
+          <span>{{ scope.row.title }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Address">
+        <template slot-scope="scope">
+          <span>{{ scope.row.value }}</span>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="handleCancelComponent()"> Cancel </el-button>
+      <el-button type="primary" @click="handleSubmitComponent()"> Confirm </el-button>
     </div>
   </el-dialog>
 </template>
@@ -42,6 +38,10 @@ export default {
     },
     show: Boolean,
     options: {
+      type: Array,
+      default: () => [],
+    },
+    listView: {
       type: Array,
       default: () => [],
     },
