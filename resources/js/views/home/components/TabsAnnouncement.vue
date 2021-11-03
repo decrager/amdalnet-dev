@@ -46,6 +46,7 @@
       :announcement-id="selectedId"
       :details="selectedFeedback"
       :show="showIdDialog"
+      @handleCloseDialog="handleCloseDialog"
     />
     <AnnouncementDetail
       :announcement-id="selectedId"
@@ -106,6 +107,9 @@ export default {
         .then(response => {
           this.selectedAnnouncement = response.data;
         });
+    },
+    handleCloseDialog(){
+      this.showIdDialog = false;
     },
   },
 };
