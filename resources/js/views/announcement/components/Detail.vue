@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 24px" class="app-container">
+  <div>
     <div v-if="showProjectDetail">
       <el-row class="form-container">
         <el-col
@@ -53,12 +53,8 @@
       </el-row>
     </div>
     <div v-if="showFeedbackList">
-      <div><h2>Saran/Pendapat/Tanggapan</h2></div>
-      <FeedbackList
-        :announcement="announcement"
-        :feedbacks="feedbacks"
-        :responder-types="responder_types"
-      />
+      <div><h3 style="color: #3AB06F; margin-bottom: 10px;">Saran/Pendapat/Tanggapan</h3></div>
+      <FeedbackList />
     </div>
     <div v-if="showPublicConsultation">
       <PublicConsultationForm />
@@ -71,8 +67,6 @@ import Resource from '@/api/resource';
 import FeedbackList from '@/views/feedback/components/List.vue';
 import PublicConsultationForm from '@/views/public-consultation/components/Form.vue';
 const announcementResource = new Resource('announcements');
-const feedbackResource = new Resource('feedbacks');
-const responderTypeResource = new Resource('responder-types');
 const districtResource = new Resource('districts');
 
 export default {
@@ -88,16 +82,12 @@ export default {
       id: 0,
       announcement: {},
       announcementDetails: [],
-      feedbacks: [],
-      responder_types: [],
     };
   },
   mounted() {
     const id = this.$route.params && this.$route.params.id;
     this.id = parseInt(id);
     this.getAnnouncement();
-    this.getResponderTypes();
-    this.getFeedbacks(this.id);
   },
   methods: {
     async getAnnouncement() {
@@ -147,29 +137,6 @@ export default {
           value: data.district.name,
         },
       ];
-    },
-    async getFeedbacks(id){
-      // filter by project ID
-      var { data } = await feedbackResource.list({
-        announcement_id: id,
-        deleted: false,
-      });
-      data.map((item) => {
-        const key = item.responder_type_id;
-        var responder_type_name = '';
-        this.responder_types.map((item) => {
-          if (item.id === key){
-            responder_type_name = item.name;
-          }
-        });
-        item.responder_type_name = responder_type_name;
-        item.is_relevant_str = item.is_relevant ? 'Relevan' : 'Tidak Relevan';
-      });
-      this.feedbacks = data;
-    },
-    async getResponderTypes(){
-      var { data } = await responderTypeResource.list({});
-      this.responder_types = data;
     },
   },
 };
