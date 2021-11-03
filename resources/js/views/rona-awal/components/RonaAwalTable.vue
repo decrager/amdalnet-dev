@@ -24,7 +24,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Aksi">
+    <el-table-column label="Aksi" align="right">
       <template slot-scope="scope">
         <el-button
           type="text"
