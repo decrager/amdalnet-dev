@@ -16,7 +16,7 @@
             <p><b>Terakhir Berlaku: </b>{{ scope.row.date_end }}</p>
             <p><b>LSP Penerbit: </b>{{ scope.row.id_lsp }}</p>
           </div>
-          <div>
+          <div class="expand-container__right">
             <el-button
               type="text"
               href="#"
@@ -147,5 +147,8 @@ export default {
 .expand-container div {
   width: 50%;
   padding: 1rem 3rem;
+}
+.expand-container__right {
+  text-align: right;
 }
 </style>
