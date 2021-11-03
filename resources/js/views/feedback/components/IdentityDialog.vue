@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.show = false;
+      this.$emit('handleCloseDialog');
     },
   },
 };

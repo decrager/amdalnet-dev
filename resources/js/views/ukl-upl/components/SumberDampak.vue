@@ -45,16 +45,9 @@ export default {
         all: true,
       });
       this.komponenKegiatan = components.data;
-      const n = [];
       const dataPerStep = {};
       this.projectStages.map((s) => {
-        n.push(1);
         dataPerStep[s.id] = [];
-      });
-      this.komponenKegiatan.map((k) => {
-        const i = k.id_project_stage - 1;
-        k.no = n[i];
-        n[i]++;
       });
       const data = {};
       this.projectStages.map((s) => {
