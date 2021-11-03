@@ -16,7 +16,7 @@ class CreateImpactIdentificationsTable extends Migration
         Schema::create('impact_identifications', function (Blueprint $table) {
             $table->id();
             $table->integer('id_project');
-            $table->integer('id_component_type');
+            $table->integer('id_component');
             $table->integer('id_rona_awal');
             $table->timestamps();
         });

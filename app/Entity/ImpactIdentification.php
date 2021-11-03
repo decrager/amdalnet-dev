@@ -9,7 +9,7 @@ class ImpactIdentification extends Model
     protected $table = 'impact_identifications';
     protected $fillable = [
         'id_project',
-        'id_component_type',
+        'id_component',
         'id_rona_awal',
     ];
 }
