@@ -124,7 +124,8 @@ export default {
         });
     },
     closeDialog() {
-      this.show = false;
+      // this.show = false;
+      this.$emit('handleCloseDialog');
     },
     async getResponderType() {
       await axios.get('api/responder-types')
