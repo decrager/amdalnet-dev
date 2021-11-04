@@ -1,5 +1,6 @@
 <template>
-  <el-dialog :title="'Buat Komponen'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
+  <el-dialog :title="'Parameter Detail'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
+    <h3>Nama Parameter : {{ listViewTitle.title }}</h3>
     <el-table
       :data="listView"
       border
@@ -15,15 +16,14 @@
           <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Address">
+      <el-table-column label="Nilai">
         <template slot-scope="scope">
           <span>{{ scope.row.value }}</span>
         </template>
       </el-table-column>
     </el-table>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleCancelComponent()"> Cancel </el-button>
-      <el-button type="primary" @click="handleSubmitComponent()"> Confirm </el-button>
+      <el-button @click="handleCancelComponent()">Tutup</el-button>
     </div>
   </el-dialog>
 </template>
@@ -32,29 +32,18 @@
 export default {
   name: 'ComponentDialog',
   props: {
-    component: {
-      type: Object,
-      default: () => {},
-    },
     show: Boolean,
-    options: {
-      type: Array,
-      default: () => [],
-    },
     listView: {
       type: Array,
       default: () => [],
     },
+    listViewTitle: Object,
   },
   data(){
     return {
-      fileName: 'File Not Found',
     };
   },
   methods: {
-    handleSubmitComponent() {
-      this.$emit('handleSubmitComponent');
-    },
     handleCancelComponent() {
       this.$emit('handleCancelComponent');
     },

@@ -29,8 +29,8 @@
       <component-dialog
         :component="component"
         :show="show"
-        :options="componentOptions"
-        @handleSubmitComponent="handleSubmitComponent"
+        :list-view="listView"
+        :list-view-title="listViewTitle"
         @handleCancelComponent="handleCancelComponent"
       />
     </el-card>
@@ -55,6 +55,7 @@ export default {
     return {
       list: [],
       listView: [],
+      listViewTitle: {},
       loading: true,
       listQuery: {
         page: 1,
@@ -68,44 +69,43 @@ export default {
   },
   created() {
     this.getList();
-    this.getProjectStage();
   },
   methods: {
-    handleSubmitComponent() {
-      if (this.component.id !== undefined) {
-        appParamResource
-          .updateMultipart(this.component.id, this.component)
-          .then((response) => {
-            this.$message({
-              type: 'success',
-              message: 'Komponen Berhasil Diupdate',
-              duration: 5 * 1000,
-            });
-            this.show = false;
-            this.component = {};
-            this.getList();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        appParamResource
-          .store(this.component)
-          .then((response) => {
-            this.$message({
-              message: 'Komponen ' + this.component.name + ' Berhasil Dibuat',
-              type: 'success',
-              duration: 5 * 1000,
-            });
-            this.show = false;
-            this.component = {};
-            this.getList();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    },
+    // handleSubmitComponent() {
+    //   if (this.component.id !== undefined) {
+    //     appParamResource
+    //       .updateMultipart(this.component.id, this.component)
+    //       .then((response) => {
+    //         this.$message({
+    //           type: 'success',
+    //           message: 'Komponen Berhasil Diupdate',
+    //           duration: 5 * 1000,
+    //         });
+    //         this.show = false;
+    //         this.component = {};
+    //         this.getList();
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    //   } else {
+    //     appParamResource
+    //       .store(this.component)
+    //       .then((response) => {
+    //         this.$message({
+    //           message: 'Komponen ' + this.component.name + ' Berhasil Dibuat',
+    //           type: 'success',
+    //           duration: 5 * 1000,
+    //         });
+    //         this.show = false;
+    //         this.component = {};
+    //         this.getList();
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    //   }
+    // },
     handleFilter() {
       this.getList();
     },
@@ -118,6 +118,7 @@ export default {
     },
     async getListView(name) {
       const { data } = await appParamResource.get(name);
+      console.log(data);
       this.listView = data;
     },
     handleCreate() {
@@ -130,11 +131,9 @@ export default {
       this.component = this.list.find((element) => element.id === id);
       this.show = true;
     },
-    async handleView(row) {
-      // this.getListView(row.parameter_name);
-      // console.log(this.listView)
-      const { data } = await appParamResource.get(row.parameter_name);
-      this.listView = data;
+    handleView(row) {
+      this.getListView(row.parameter_name);
+      this.listViewTitle = { title: row.parameter_name };
       this.show = true;
     },
     handleCancelComponent(){
@@ -144,7 +143,6 @@ export default {
 };
 </script>
 <style scoped>
-h2 {
-  margin: 0 0 2rem 0;
-}
+  h2 {margin: 0 0 2rem 0;}
+  .el-dialog__body{padding-top: 0 !important;}
 </style>
