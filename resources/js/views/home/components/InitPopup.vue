@@ -1,77 +1,85 @@
 <template>
   <div class="popup__wrapper">
-    <el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="show">
-      <div class="header__init__popup">
-        <div style="flex: 1">
-          <img alt="" src="/images/logo-amdal-white.png">
-        </div>
-        <div style="flex: 2">
-          <h2>Pengumuman & Informasi Terbaru</h2>
-        </div>
-        <div>
-          <i class="el-icon-close" title="Tutup" @click="closeDialog()" />
-        </div>
-      </div>
-      <div class="tabset">
-        <input id="tab1-popup" aria-controls="amdal-popup" checked name="tabset" type="radio">
-        <label for="tab1-popup">AMDAL</label>
-        <input id="tab2-popup" aria-controls="ukl-upl-popup" name="tabset" type="radio">
-        <label for="tab2-popup">UKL / UPL</label>
+    <div v-show="loadingStatus" />
 
-        <div class="tab-panels">
-          <section id="amdal-popup" class="tab-panel">
-            <div v-for="amdal in amdals" :key="amdal.id" class="announce__box__wrapper">
-              <div class="announce__box__icon">
-                <img alt="" src="/images/list.svg">
-              </div>
-              <div class="announce__box__desc">
-                <p class="announce__box__desc__content">{{ amdal.project_type }}</p>
-                <p class="announce__box__desc__content text__special">{{ amdal.pic_name }}</p>
-              </div>
-              <div class="announce__box__dampak">
-                <p class="announce__box__desc__content">Dampak Potensial : {{ amdal.potential_impact }}</p>
-              </div>
-              <div class="announce__box__date">
-                <p class="announce__box__desc__content">{{ formatDate(amdal.start_date) }}</p>
-              </div>
-              <div class="announce__box__button">
-                <button class="button__tanggapan" @click="createFeedback(amdal.id)"><i class="el-icon-document" />
-                  Berikan Tanggapan
-                </button>
-              </div>
-            </div>
-          </section>
-          <section id="ukl-upl-popup" class="tab-panel">
-            <div v-for="uklupl in uklupls" :key="uklupl.id" class="announce__box__wrapper">
-              <div class="announce__box__icon">
-                <img alt="" src="/images/list.svg">
-              </div>
-              <div class="announce__box__desc">
-                <p class="announce__box__desc__content">{{ uklupl.project_type }}</p>
-                <p class="announce__box__desc__content text__special">{{ uklupl.pic_name }}</p>
-              </div>
-              <div class="announce__box__dampak">
-                <p class="announce__box__desc__content">Dampak Potensial : {{ uklupl.potential_impact }}</p>
-              </div>
-              <div class="announce__box__date">
-                <p class="announce__box__desc__content">{{ formatDate(uklupl.start_date) }}</p>
-              </div>
-              <div class="announce__box__button">
-                <button class="button__tanggapan" @click="createFeedback(uklupl.id)"><i class="el-icon-document" />
-                  Berikan Tanggapan
-                </button>
-              </div>
-            </div>
-          </section>
+    <div v-show="!loadingStatus">
+      <el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="show">
+        <div class="header__init__popup">
+          <div style="flex: 1">
+            <img alt="" src="/images/logo-amdal-white.png">
+          </div>
+          <div style="flex: 2">
+            <h2>Pengumuman & Informasi Terbaru</h2>
+          </div>
+          <div>
+            <i class="el-icon-close" title="Tutup" @click="closeDialog()" />
+          </div>
         </div>
-      </div>
+        <div class="tabset">
+          <input id="tab1-popup" aria-controls="amdal-popup" checked name="tabset" type="radio">
+          <label>AMDAL</label>
+          <input id="tab2-popup" aria-controls="ukl-upl-popup" name="tabset" type="radio">
+          <label>UKL / UPL</label>
 
-      <div class="dialog__footer">
-        <el-button @click="closeDialog()"><i class="el-icon-close" /> Tutup</el-button>
-        <el-button type="primary" @click="closeDialog()"><i class="el-icon-menu" /> Lihat Semua Pengumuman</el-button>
-      </div>
+          <div class="tab-panels">
+            <section id="amdal-popup" class="tab-panel">
+              <div v-for="amdal in amdals.data" :key="amdal.id" class="announce__box__wrapper">
+                <div class="announce__box__icon">
+                  <img alt="Logo" src="/images/list.svg">
+                </div>
+                <div class="announce__box__desc">
+                  <p class="announce__box__desc__content">{{ amdal.project_type }}</p>
+                  <p class="announce__box__desc__content text__special">{{ amdal.pic_name }}</p>
+                </div>
+                <div class="announce__box__dampak">
+                  <p class="announce__box__desc__content">Dampak Potensial : {{ amdal.potential_impact }}</p>
+                </div>
+                <div class="announce__box__date">
+                  <p class="announce__box__desc__content">{{ formatDate(amdal.start_date) }}</p>
+                </div>
+                <div class="announce__box__button">
+                  <button class="button__tanggapan" @click="openDetail(amdal.id)"><i class="el-icon-document" />
+                    Berikan Tanggapan
+                  </button>
+                </div>
+              </div>
+            </section>
+            <section id="ukl-upl-popup" class="tab-panel">
+              <div v-for="uklupl in uklupls.data" :key="uklupl.id" class="announce__box__wrapper">
+                <div class="announce__box__icon">
+                  <img alt="" src="/images/list.svg">
+                </div>
+                <div class="announce__box__desc">
+                  <p class="announce__box__desc__content">{{ uklupl.project_type }}</p>
+                  <p class="announce__box__desc__content text__special">{{ uklupl.pic_name }}</p>
+                </div>
+                <div class="announce__box__dampak">
+                  <p class="announce__box__desc__content">Dampak Potensial : {{ uklupl.potential_impact }}</p>
+                </div>
+                <div class="announce__box__date">
+                  <p class="announce__box__desc__content">{{ formatDate(uklupl.start_date) }}</p>
+                </div>
+                <div class="announce__box__button">
+                  <button class="button__tanggapan" @click="openDetail(uklupl.id)"><i class="el-icon-document" />
+                    Berikan Tanggapan
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="dialog__footer">
+          <el-button @click="closeDialog()"><i class="el-icon-close" /> Tutup</el-button>
+          <el-button type="primary" @click="closeDialog()"><i class="el-icon-menu" /> Lihat Semua Pengumuman</el-button>
+        </div>
 
-    </el-dialog>
+      </el-dialog>
+    </div>
+    <AnnouncementDetail
+      :announcement-id="selectedId"
+      :details="selectedAnnouncement"
+      :show="showDetailsDialog"
+    />
   </div>
 </template>
 
@@ -79,16 +87,28 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/id';
 import { mapGetters } from 'vuex';
+import AnnouncementDetail from '../../announcement/components/Detail';
+import axios from 'axios';
 
 export default {
   name: 'InitPopup',
+  components: { AnnouncementDetail },
   data() {
     return {
       show: true,
+      loading: false,
+      showIdDialog: false,
+      showDetailsDialog: false,
+      selectedId: 0,
+      selectedAnnouncement: {},
     };
   },
   computed: {
-    ...mapGetters(['amdals', 'uklupls']),
+    ...mapGetters(['loadingStatus', 'amdals', 'uklupls']),
+  },
+  created() {
+    this.$store.dispatch('getAmdal');
+    this.$store.dispatch('getUklupl');
   },
   methods: {
     formatDate(value) {
@@ -99,6 +119,16 @@ export default {
     },
     closeDialog() {
       this.show = false;
+    },
+    openDetail(id) {
+      this.selectedId = id;
+      this.selectedAnnouncement = {};
+      this.showDetailsDialog = true;
+      axios.get('/api/announcements/' + this.selectedId)
+        .then(response => {
+          console.log(response);
+          this.selectedAnnouncement = response.data;
+        });
     },
   },
 };
@@ -202,7 +232,7 @@ export default {
 
 .tab-panels {
   overflow: auto;
-  max-height: 400px;
+  max-height: 600px;
   margin-bottom: 20px;
 }
 
@@ -220,7 +250,7 @@ export default {
   .popup__wrapper >>> .el-dialog {
     background: #133715 !important;
     overflow: auto;
-    width: 90%;
+    width: 80%;
   }
 
   .header__init__popup {

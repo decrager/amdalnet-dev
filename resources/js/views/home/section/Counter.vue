@@ -3,19 +3,19 @@
     <div class="counter__container container">
       <div class="counter__data">
         <div class="counter__box">
-          <h1 class="counter__number">{{ amdal }}</h1>
+          <h1 class="counter__number">{{ countAmdal }}</h1>
           <p class="counter__first__line">Persetujuan</p>
           <p class="counter__second__line">AMDAL</p>
         </div>
 
         <div class="counter__box">
-          <h1 class="counter__number">{{ uklupl }}</h1>
+          <h1 class="counter__number">{{ countUklupl }}</h1>
           <p class="counter__first__line">Persetujuan</p>
           <p class="counter__second__line">UKL/UPL</p>
         </div>
 
         <div class="counter__box">
-          <h1 class="counter__number">{{ allcount }}</h1>
+          <h1 class="counter__number">{{ countAll }}</h1>
           <p class="counter__first__line">Persetujuan</p>
           <p class="counter__second__line">Sedang Diproses</p>
         </div>
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'CounterHome',
@@ -37,26 +37,13 @@ export default {
       allcount: 0,
     };
   },
-  async created() {
-    await this.getData();
+  computed: {
+    ...mapGetters(['countAmdal', 'countUklupl', 'countAll']),
   },
-  methods: {
-    async getData() {
-      await axios.get('api/announcements')
-        .then(response => {
-          this.announcement = response.data.data;
-          var countAmdal = this.announcement.filter(function(element){
-            return element.project_result === 'AMDAL';
-          }).length;
-          this.amdal += countAmdal;
-
-          var countUklupl = this.announcement.filter(function(element){
-            return element.project_result === 'UKL-UPL';
-          }).length;
-          this.uklupl += countUklupl;
-          this.allcount += this.announcement.length;
-        });
-    },
+  created() {
+    this.$store.dispatch('countAmdal');
+    this.$store.dispatch('countUklupl');
+    this.$store.dispatch('countAll');
   },
 };
 </script>
