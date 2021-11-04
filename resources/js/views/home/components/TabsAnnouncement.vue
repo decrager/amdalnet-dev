@@ -2,7 +2,7 @@
   <div class="tabset">
     <el-tabs type="card">
       <el-tab-pane label="AMDAL">
-        <div v-for="amdal in amdals" :key="amdal.id" class="announce__box__wrapper" @click="openDetails(amdal.id)">
+        <div v-for="amdal in amdals.data" :key="amdal.id" class="announce__box__wrapper">
           <div class="announce__box__icon">
             <img alt="" src="/images/list.svg">
           </div>
@@ -14,7 +14,7 @@
               Tanggapan</p>
           </div>
           <div class="announce__box__button">
-            <button class="button__tanggapan" @click="createFeedback(amdal.id)"><i class="el-icon-document" /> Berikan
+            <button class="button__tanggapan" @click="openDetails(amdal.id)"><i class="el-icon-document" /> Berikan
               Tanggapan
             </button>
           </div>
@@ -22,7 +22,7 @@
       </el-tab-pane>
 
       <el-tab-pane label="UKL - UPL">
-        <div v-for="uklupl in uklupls" :key="uklupl.id" class="announce__box__wrapper" @click="openDetails(uklupl.id)">
+        <div v-for="uklupl in uklupls.data" :key="uklupl.id" class="announce__box__wrapper">
           <div class="announce__box__icon">
             <img alt="" src="/images/list.svg">
           </div>
@@ -34,19 +34,16 @@
               Tanggapan</p>
           </div>
           <div class="announce__box__button">
-            <button class="button__tanggapan" @click="createFeedback(uklupl.id)"><i class="el-icon-document" /> Berikan
+            <button class="button__tanggapan" @click="openDetails(amdal.id)"><i class="el-icon-document" /> Berikan
               Tanggapan
             </button>
           </div>
         </div>
+
       </el-tab-pane>
 
     </el-tabs>
-    <CreateFeedback
-      :announcement-id="selectedId"
-      :details="selectedFeedback"
-      :show="showIdDialog"
-    />
+
     <AnnouncementDetail
       :announcement-id="selectedId"
       :details="selectedAnnouncement"
@@ -59,19 +56,16 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import 'dayjs/locale/id';
-import CreateFeedback from '../components/CreateFeedback.vue';
 import AnnouncementDetail from './AnnouncementDetail';
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'AnnouncementTabs',
   components: {
-    CreateFeedback,
     AnnouncementDetail,
   },
   data() {
     return {
-      selectedFeedback: {},
       selectedAnnouncement: {},
       showIdDialog: false,
       showDetailsDialog: false,
@@ -92,11 +86,6 @@ export default {
         dayjs.locale('id');
         return dayjs(String(value)).format('DD MMMM YYYY');
       }
-    },
-    createFeedback(id) {
-      this.selectedId = id;
-      this.selectedFeedback = {};
-      this.showIdDialog = true;
     },
     openDetails(id) {
       this.selectedId = id;
@@ -131,10 +120,6 @@ export default {
   color: white;
   font-weight: 400;
   border-left: none
-}
-
-.tabset >>> .el-button.el-button--primary.el-button--medium {
-  float: right;
 }
 
 @media screen and (max-width: 450px) {
