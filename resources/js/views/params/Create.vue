@@ -44,6 +44,31 @@
                   </el-form-item>
                 </el-row>
               </el-form>
+
+              <el-form ref="paramsForm">
+                <el-row>
+                  <el-form-item
+                    label="Apalah Nilai Berupa Angka ?"
+                    prop="is_numeric"
+                  >
+                    <el-radio
+                      v-model="currentParam.is_numeric"
+                      label="1"
+                      :checked="currentParam.is_numeric === true"
+                      :value="true"
+                    >Ya
+                    </el-radio>
+
+                    <el-radio
+                      v-model="currentParam.is_numeric"
+                      label="0"
+                      :checked="currentParam.is_numeric === 1"
+                      :value="true"
+                    >Tidak
+                    </el-radio>
+                  </el-form-item>
+                </el-row>
+              </el-form>
             </div>
           </el-col>
         </el-row>
@@ -51,7 +76,7 @@
           <el-col :span="14">
             <el-button
               class="filter-item"
-              icon="el-icon-plus"
+              :icon="tableView ? 'el-icon-plus' : 'el-icon-edit'"
               type="primary"
               @click="handleSubmit()"
             >
@@ -81,7 +106,19 @@
                 </template>
               </el-table-column>
 
-              <el-table-column label="Aksi" width="250px">
+              <el-table-column label="Judul">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.title }}</span>
+                </template>
+              </el-table-column>
+
+              <el-table-column label="Nilai">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.value }}</span>
+                </template>
+              </el-table-column>
+
+              <el-table-column label="Aksi" width="200px">
                 <template slot-scope="scope">
                   <el-button
                     type="text"
@@ -147,8 +184,9 @@ export default {
       this.currentParam = this.$route.params.appParams;
       this.tableView = this.$route.params.tableView;
     }
+    console.log(this.currentParam);
     this.getList();
-    if (this.$router.currentRoute.name === 'updateParams'){
+    if (this.$router.currentRoute.name === 'updateParams') {
       this.tableView = false;
     } else {
       this.tableView = true;

@@ -16,7 +16,7 @@ class AppParamController extends Controller
      */
     public function index(Request $request)
     {
-        return AppParam::select('id', 'parameter_name', 'title', 'value')
+        return AppParam::select('id', 'parameter_name', 'title', 'value', 'is_numeric')
         ->paginate($request->limit ? $request->limit : 10);
 
     }
