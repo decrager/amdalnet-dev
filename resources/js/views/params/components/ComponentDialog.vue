@@ -1,6 +1,6 @@
 <template>
   <el-dialog :title="'Parameter Detail'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
-    <h3>Nama Parameter : {{ listViewTitle.title }}</h3>
+    <h3>Nama Parameter : {{ listViewTitle }}</h3>
     <el-table
       :data="listView"
       border
@@ -37,7 +37,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    listViewTitle: Object,
+    listViewTitle: String,
   },
   data(){
     return {

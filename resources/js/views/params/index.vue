@@ -55,7 +55,7 @@ export default {
     return {
       list: [],
       listView: [],
-      listViewTitle: {},
+      listViewTitle: String,
       loading: true,
       listQuery: {
         page: 1,
@@ -133,7 +133,7 @@ export default {
     },
     handleView(row) {
       this.getListView(row.parameter_name);
-      this.listViewTitle = { title: row.parameter_name };
+      this.listViewTitle = row.parameter_name;
       this.show = true;
     },
     handleCancelComponent(){
