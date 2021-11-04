@@ -16,14 +16,14 @@ const expertBankRoutes = {
       component: () => import('@/views/expert-bank/Create'),
       name: 'createExpertBank',
       hidden: true,
-      meta: { title: 'Tambah Bank Ahli', icon: 'documentation', noCache: true },
+      meta: { title: 'createExpertBank', icon: 'documentation', noCache: true },
     },
     {
       path: 'edit/:id',
       component: () => import('@/views/expert-bank/Create'),
       name: 'editExpertBank',
       hidden: true,
-      meta: { title: 'Edit Bank Ahli', icon: 'documentation', noCache: true },
+      meta: { title: 'editExpertBank', icon: 'documentation', noCache: true },
     },
   ],
 };

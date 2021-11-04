@@ -9,6 +9,7 @@ use DateInterval;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -65,11 +66,15 @@ class PublicConsultationController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $validated = $request->all();
-
-            $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $validated['event_date']);
-            $datetime->add(new DateInterval('PT7H'));
-            $event_date = $datetime->format('Y-m-d\TH:i:s');
-            $validated['event_date'] = $event_date;
+            try {
+                $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $validated['event_date']);
+                $datetime->add(new DateInterval('PT7H'));
+                $event_date = $datetime->format('Y-m-d\TH:i:s');
+                $validated['event_date'] = $event_date;
+            } catch (Exception $e){
+                return response()->json(['errors' => 'Invalid event_data'], 400);
+            }
+            DB::beginTransaction();
             $parent = PublicConsultation::create([
                 'announcement_id' => $validated['announcement_id'],
                 'project_id' => $validated['project_id'],
@@ -81,16 +86,28 @@ class PublicConsultationController extends Controller
                 'negative_feedback_summary' => $validated['negative_feedback_summary'],
             ]);
 
+            $metadatas = null;
+            $doc_files = null;
             try {
                 //upload docs
                 $metadatas = json_decode($validated['doc_metadatas']);
                 $doc_files = json_decode($validated['doc_files']);
-                foreach ($doc_files as $i => $doc_file){
-                    //upload file
-                    $metadata = $metadatas[$i];
-                    $file_extension = '';
-                    $filepath = '';
-                    if (array_key_exists('dataURL', $doc_file)){
+            } catch (Exception $e){
+                DB::rollBack();
+                return response()->json(['errors' => 'Invalid doc metadata'], 400);
+            }
+            if (count($metadatas) != count($doc_files)){
+                DB::rollBack();
+                return response()->json(['errors' => 'Metadata mismatch'], 400);
+            }
+            $doc_inserted = 0;
+            foreach ($doc_files as $i => $doc_file){
+                //upload file
+                $metadata = $metadatas[$i];
+                $file_extension = '';
+                $filepath = '';
+                try {
+                    if (property_exists($doc_file, 'dataURL')){
                         // Foto Dokumentasi (base64)
                         $data = $doc_file->dataURL;
                         list($type, $data) = explode(';', $data);
@@ -119,19 +136,28 @@ class PublicConsultationController extends Controller
                         $filepath = sprintf('storage/%s/%s', $folder, $filename);
                         $file_extension = $file->extension();
                     }
-                    PublicConsultationDoc::create([
-                        'public_consultation_id' => $parent->id,
-                        'doc_json' => json_encode([
-                            'doc_type' => $metadata->doc_type,
-                            'original_filename' => $metadata->filename,
-                            'file_extension' => $file_extension,
-                            'filepath' => $filepath,
-                            'uploaded_by' => $metadata->uploaded_by,
-                        ]),
-                    ]);
+                } catch (Exception $e){
+                    DB::rollBack();
+                    return response()->json(['errors' => 'Error uploading file'], 500);
                 }
-            } catch (Exception $e){
-                return response()->json(['errors' => 'Error uploading file'], 500);
+                $pubconsDoc = PublicConsultationDoc::create([
+                    'public_consultation_id' => $parent->id,
+                    'doc_json' => json_encode([
+                        'doc_type' => $metadata->doc_type,
+                        'original_filename' => $metadata->filename,
+                        'file_extension' => $file_extension,
+                        'filepath' => $filepath,
+                        'uploaded_by' => $metadata->uploaded_by,
+                    ]),
+                ]);
+                if ($pubconsDoc){
+                    $doc_inserted++;
+                }
+            }
+            if ($parent && ($doc_inserted == count($metadatas))){
+                DB::commit();
+            } else {
+                DB::rollBack();
             }
             $created = PublicConsultation::with('docs')->get()->where('id', '=', $parent->id)->first();
             return new PublicConsultationResource($created);

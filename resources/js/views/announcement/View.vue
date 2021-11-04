@@ -1,14 +1,16 @@
 <template>
-  <div>
-    <announcement-detail
-      :show-project-detail="showProjectDetail"
-      :show-feedback-list="showFeedbackList"
-      :show-public-consultation="showPublicConsultation"
-    />
-    <div v-if="showCreateFeedback" style="padding: 24px" class="app-container">
-      <h2>Saran/Tanggapan untuk Kegiatan</h2>
-      <CreateFeedbackSPT />
-    </div>
+  <div class="app-container" style="padding: 24px">
+    <el-card>
+      <announcement-detail
+        :show-project-detail="showProjectDetail"
+        :show-feedback-list="showFeedbackList"
+        :show-public-consultation="showPublicConsultation"
+      />
+      <div v-if="showCreateFeedback">
+        <h2>Saran/Tanggapan untuk Kegiatan</h2>
+        <CreateFeedbackSPT />
+      </div>
+    </el-card>
   </div>
 </template>
 

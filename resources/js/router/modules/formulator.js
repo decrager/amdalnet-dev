@@ -47,9 +47,16 @@ const formulatorRoutes = {
     },
     {
       path: 'team',
-      component: () => import('@/views/error-page/404'),
+      component: () => import('@/views/formulator-team/index'),
       name: 'formulatorTeam',
       meta: { title: 'formulatorTeam', icon: 'user', noCache: true, permissions: ['view menu formulator team'] },
+    },
+    {
+      path: 'team/create',
+      component: () => import('@/views/formulator-team/Create'),
+      name: 'createFormulatorTeam',
+      hidden: true,
+      meta: { title: 'createFormulatorTeam', icon: 'documentation', noCache: true },
     },
   ],
 };

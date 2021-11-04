@@ -98,16 +98,9 @@ export default {
         all: true,
       });
       const ronaAwals = ronaAwalList.data;
-      const n = [];
       const dataPerStep = {};
       this.componentTypes.map((s) => {
-        n.push(1);
         dataPerStep[s.id] = [];
-      });
-      ronaAwals.map((k) => {
-        const i = k.id_component_type - 1;
-        k.no = n[i];
-        n[i]++;
       });
       const data = {};
       this.componentTypes.map((s) => {
@@ -119,7 +112,7 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
-      this.ronaAwals = this.ronaAwals;
+      this.ronaAwals = ronaAwals;
       this.$emit('handleSaveRonaAwals', ronaAwals);
     },
     handleSubmitRonaAwal() {
