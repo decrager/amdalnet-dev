@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class EnvParam extends Model
 {
+    public $timestamps = false;
+    
     protected $table = 'env_params';
 
     protected $fillable = [
