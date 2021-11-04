@@ -1,157 +1,278 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <el-card>
-      <el-row :gutter="20">
-        <el-col :span="14">
-          <div class="form-container">
-            <el-form ref="paramsForm">
-              <el-row>
-                <el-form-item label="Nama Parameter" prop="parameter">
-                  <el-input type="text" placeholder="Nama Parameter" />
-                </el-form-item>
-              </el-row>
-            </el-form>
-            <el-form ref="paramsForm">
-              <el-row>
-                <el-form-item label="Judul" prop="judul">
-                  <el-input type="text" placeholder="Judul" />
-                </el-form-item>
-              </el-row>
-            </el-form>
-            <el-form ref="paramsForm">
-              <el-row>
-                <el-form-item label="Nilai" prop="nilai">
-                  <el-input type="text" placeholder="Nilai" />
-                </el-form-item>
-              </el-row>
-            </el-form>
-            <el-form ref="paramsForm">
-              <el-row>
-                <el-form-item label="Value Berupa Angka" prop="value" />
-                <el-form-item label="">
-                  <el-radio v-model="radio" label="1">Ya</el-radio>
-                  <el-radio v-model="radio" label="2">Tidak</el-radio>
-                </el-form-item>
-              </el-row>
-            </el-form>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="18">
-          <el-button
-            class="filter-item"
-            type=""
-            icon="el-icon-plus"
-          >
-            {{ 'Tambah' }}
-          </el-button>
-          <el-table
-            :data="tableData"
-            style="width: 100%"
-            :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
-          >
-            <el-table-column
-              prop="no"
-              label="No"
-              width="90px"
-            />
-            <el-table-column
-              prop="name"
-              label="Nama Parameter"
-            />
-            <el-table-column
-              prop="judul"
-              label="Judul"
-            />
-            <el-table-column
-              prop="value"
-              label="Value"
-            />
-            <el-table-column
-              prop="aksi"
-              label="Aksi"
+    <el-form
+      ref="categoryForm"
+      :model="currentParam"
+      label-position="top"
+      label-width="200px"
+      style="max-width: 100%"
+    >
+      <el-card>
+        <el-row :gutter="20">
+          <el-col :span="14">
+            <div class="form-container">
+              <el-form ref="paramsForm">
+                <el-row>
+                  <el-form-item label="Nama Parameter" prop="parameter_name">
+                    <el-input
+                      v-model="currentParam.parameter_name"
+                      type="text"
+                      placeholder="Nama Parameter"
+                    />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form ref="paramsForm">
+                <el-row>
+                  <el-form-item label="Judul" prop="title">
+                    <el-input
+                      v-model="currentParam.title"
+                      type="text"
+                      placeholder="Judul"
+                    />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form ref="paramsForm">
+                <el-row>
+                  <el-form-item label="Nilai" prop="value">
+                    <el-input
+                      v-model="currentParam.value"
+                      type="text"
+                      placeholder="Nilai"
+                    />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="18">
+            <el-button
+              class="filter-item"
+              icon="el-icon-plus"
+              type="primary"
+              @click="handleSubmit()"
             >
-              <el-button
-                type="text"
-                href="#"
-                icon="el-icon-edit"
-                class="edit"
-              />
-              <el-button
-                type="text"
-                href="#"
-                icon="el-icon-delete"
-                class="delete"
-              />
-            </el-table-column>
-          </el-table>
-        </el-col>
-        <el-col :span="18" class="parentButton">
-          <el-button
-            class="batal"
-            type=""
-            @click="handleCancle"
-          >
-            {{ 'Batalkan' }}
-          </el-button>
-        </el-col>
+              {{ 'Tambah' }}
+            </el-button>
+            <el-table
+              v-loading="loading"
+              :data="list"
+              fit
+              highlight-current-row
+              :header-cell-style="{
+                background: '#3AB06F',
+                color: 'white',
+                border: '0',
+              }"
+            >
+              <el-table-column label="No." width="54px">
+                <template slot-scope="scope">
+                  <span>{{ scope.$index + 1 }}</span>
+                </template>
+              </el-table-column>
 
-      </el-row>
-    </el-card>
+              <el-table-column label="Nama Parameter">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.parameter_name }}</span>
+                </template>
+              </el-table-column>
+
+              <el-table-column label="Aksi" width="250px">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    href="#"
+                    icon="el-icon-edit"
+                    @click="handleEditForm(scope.row)"
+                  >
+                    Ubah
+                  </el-button>
+                  <el-button
+                    type="text"
+                    href="#"
+                    icon="el-icon-delete"
+                    @click="handleDelete(scope.row)"
+                  >
+                    Hapus
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+          <el-col :span="18" class="parentButton">
+            <el-button class="batal" type="" @click="handleCancle">
+              {{ 'Batalkan' }}
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-form>
   </div>
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const appParamResource = new Resource('app-params');
+
 export default {
-  name: 'SopTable',
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        Aktif: 'success',
-        NonAktif: 'danger',
-      };
-      return statusMap[status];
-    },
-  },
+  name: 'CreateParam',
   props: {
-    list: {
-      type: Array,
-      default: () => [],
+    param: {
+      type: Object,
+      default: null,
     },
-    loading: Boolean,
   },
   data() {
     return {
-      radio: '1',
-      tableData: [{
-        no: 1,
-        nilai: 1,
-        name: 'Tom',
-        judul: 'No. 189, Grove St, Los Angeles',
-        value: 20,
-        aksi: 'ok',
-      }],
+      currentParam: {},
+      list: [],
+      listView: [],
+      listViewTitle: '',
+      loading: true,
+      listQuery: {
+        page: 1,
+        limit: 10,
+      },
+      total: 0,
     };
   },
+
+  mounted() {
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+    }
+    this.getList();
+  },
   methods: {
-    handleEditForm(id) {
-      this.$emit('handleEditForm', id);
+    async getList() {
+      this.loading = true;
+      const { data, total } = await appParamResource.list(this.listQuery);
+      this.list = data;
+      this.total = total;
+      this.loading = false;
     },
-    handleDelete(id, nama) {
-      this.$emit('handleDelete', { id, nama });
+    handleSubmit() {
+      const formData = new FormData();
+      // eslint-disable-next-line no-undef
+      _.each(this.currentParam, (value, key) => {
+        formData.append(key, value);
+      });
+      console.log(this.currentParam.id);
+      if (this.currentParam.id !== undefined) {
+        appParamResource
+          .updateMultipart(this.currentParam.id, formData)
+          .then((response) => {
+            this.$message({
+              type: 'success',
+              message: 'App Params has been updated successfully',
+              duration: 5 * 1000,
+            });
+            this.$router.push('/master-data/params');
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        appParamResource
+          .store(formData)
+          .then((response) => {
+            this.$message({
+              message:
+                'New App Param ' +
+                this.currentParam.parameter_name +
+                ' has been created successfully.',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            this.currentParam = {};
+            this.$router.push('/master-data/params');
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+    handleEditForm(row) {
+      console.log(row);
+      const currentParam = this.list.find((element) => element.id === row.id);
+      console.log(currentParam);
+      this.$router.push({
+        name: 'updateParams',
+        params: { row, appParams: currentParam },
+      });
+    },
+    handleDelete(rows) {
+      console.log(rows);
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + rows.id + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          appParamResource
+            .destroy(rows.id)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Hapus Selesai',
+              });
+              this.getList();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Hapus Digagalkan',
+          });
+        });
     },
     handleCancle() {
-      this.$router.push('/params');
+      this.$router.push('/master-data/params');
     },
   },
 };
 </script>
 <style scoped>
-  .el-form-item{margin-bottom: 0 !important;}
-  .edit{background-color: #f19e02; padding: 0.5rem; display: inline-block; color: #fff;}
-  .delete{background-color: #f50103; padding: 0.5rem; display: inline-block; color: #fff;}
-  .filter-item{float: right;margin-bottom: 1rem;margin-top: 2rem;background-color: #3AB06F; color: #fff; font-weight: bold;}
-  .batal{background-color: gray; color:#fff;}
-  .parentButton{justify-content: right;display: flex;margin-top: 1rem;}
+.el-form-item {
+  margin-bottom: 0 !important;
+}
+.edit {
+  background-color: #f19e02;
+  padding: 0.5rem;
+  display: inline-block;
+  color: #fff;
+}
+.delete {
+  background-color: #f50103;
+  padding: 0.5rem;
+  display: inline-block;
+  color: #fff;
+}
+.filter-item {
+  float: right;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+  background-color: #3ab06f;
+  color: #fff;
+  font-weight: bold;
+}
+.batal {
+  background-color: gray;
+  color: #fff;
+}
+.parentButton {
+  justify-content: right;
+  display: flex;
+  margin-top: 1rem;
+}
 </style>

@@ -128,11 +128,12 @@ export default {
       });
     },
     handleEditForm(row) {
-      // this.component = this.list.find((element) => element.id === id);
-      // this.show = true;
+      console.log(row);
+      const currentParam = this.list.find((element) => element.parameter_name === row.parameter_name);
+      console.log(currentParam);
       this.$router.push({
         name: 'updateParams',
-        params: {},
+        params: { row, appParams: currentParam },
       });
     },
     handleView(row) {

@@ -45,7 +45,10 @@ export default {
       type: Array,
       default: () => [],
     },
-    listViewTitle: String,
+    listViewTitle: {
+      type: String,
+      default: '-',
+    },
   },
   data(){
     return {

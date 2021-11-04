@@ -16,8 +16,7 @@ class AppParamController extends Controller
      */
     public function index(Request $request)
     {
-        return AppParam::select('parameter_name')
-        ->groupBy('parameter_name')
+        return AppParam::select('id', 'parameter_name', 'title', 'value')
         ->paginate($request->limit ? $request->limit : 10);
 
     }
@@ -131,10 +130,10 @@ class AppParamController extends Controller
      * @param  \App\Entity\\AppParam  $sop
      * @return \Illuminate\Http\Response
      */
-    public function destroy($paramName)
+    public function destroy($id)
     {
         try {
-            $appParam = AppParam::where('parameter_name', $paramName);
+            $appParam = AppParam::where('id', $id);
             return $appParam->delete();
         } catch (\Exception $ex) {
             return response()->json(['error' => $ex->getMessage()], 403);
