@@ -48,16 +48,17 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="18">
+          <el-col :span="14">
             <el-button
               class="filter-item"
               icon="el-icon-plus"
               type="primary"
               @click="handleSubmit()"
             >
-              {{ 'Tambah' }}
+              {{ tableView ? 'Tambah' : 'Ubah' }}
             </el-button>
             <el-table
+              v-if="tableView"
               v-loading="loading"
               :data="list"
               fit
@@ -102,7 +103,7 @@
               </el-table-column>
             </el-table>
           </el-col>
-          <el-col :span="18" class="parentButton">
+          <el-col :span="14" class="parentButton">
             <el-button class="batal" type="" @click="handleCancle">
               {{ 'Batalkan' }}
             </el-button>
@@ -137,14 +138,21 @@ export default {
         limit: 10,
       },
       total: 0,
+      tableView: Boolean,
     };
   },
 
   mounted() {
     if (this.$route.params.appParams) {
       this.currentParam = this.$route.params.appParams;
+      this.tableView = this.$route.params.tableView;
     }
     this.getList();
+    if (this.$router.currentRoute.name === 'updateParams'){
+      this.tableView = false;
+    } else {
+      this.tableView = true;
+    }
   },
   methods: {
     async getList() {

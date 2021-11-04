@@ -27,7 +27,6 @@
         @pagination="handleFilter"
       />
       <component-dialog
-        :loading="loading"
         :component="component"
         :show="show"
         :list-view="listView"
@@ -72,41 +71,6 @@ export default {
     this.getList();
   },
   methods: {
-    // handleSubmitComponent() {
-    //   if (this.component.id !== undefined) {
-    //     appParamResource
-    //       .updateMultipart(this.component.id, this.component)
-    //       .then((response) => {
-    //         this.$message({
-    //           type: 'success',
-    //           message: 'Komponen Berhasil Diupdate',
-    //           duration: 5 * 1000,
-    //         });
-    //         this.show = false;
-    //         this.component = {};
-    //         this.getList();
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //       });
-    //   } else {
-    //     appParamResource
-    //       .store(this.component)
-    //       .then((response) => {
-    //         this.$message({
-    //           message: 'Komponen ' + this.component.name + ' Berhasil Dibuat',
-    //           type: 'success',
-    //           duration: 5 * 1000,
-    //         });
-    //         this.show = false;
-    //         this.component = {};
-    //         this.getList();
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //       });
-    //   }
-    // },
     handleFilter() {
       this.getList();
     },
@@ -124,24 +88,20 @@ export default {
     handleCreate() {
       this.$router.push({
         name: 'addParams',
-        params: {},
+        params: { tableView: true },
       });
     },
     handleEditForm(row) {
-      console.log(row);
       const currentParam = this.list.find((element) => element.parameter_name === row.parameter_name);
-      console.log(currentParam);
       this.$router.push({
         name: 'updateParams',
-        params: { row, appParams: currentParam },
+        params: { row, appParams: currentParam, tableView: false },
       });
     },
     handleView(row) {
-      this.loading = true;
       this.getListView(row.parameter_name);
       this.listViewTitle = row.parameter_name;
       this.show = true;
-      this.loading = false;
     },
     handleCancelComponent(){
       this.show = false;
