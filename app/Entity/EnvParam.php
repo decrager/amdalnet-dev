@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class EnvParam extends Model
 {
     public $timestamps = false;
-    
+
     protected $table = 'env_params';
 
     protected $fillable = [
@@ -20,4 +20,12 @@ class EnvParam extends Model
         'risk_level',
         'is_param_multisector',
     ];
+
+    public function param(){
+        return $this->hasOne(Param::class, 'id', 'id_param');
+    }
+
+    public function unit(){
+        return $this->hasOne(Unit::class, 'id', 'id_unit');
+    }
 }
