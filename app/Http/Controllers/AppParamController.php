@@ -131,10 +131,11 @@ class AppParamController extends Controller
      * @param  \App\Entity\\AppParam  $sop
      * @return \Illuminate\Http\Response
      */
-    public function destroy(AppParam $appParam)
+    public function destroy($paramName)
     {
         try {
-            $appParam->delete();
+            $appParam = AppParam::where('parameter_name', $paramName);
+            return $appParam->delete();
         } catch (\Exception $ex) {
             return response()->json(['error' => $ex->getMessage()], 403);
         }
