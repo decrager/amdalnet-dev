@@ -1,27 +1,51 @@
 <template>
   <div style="margin-bottom: 20px;">
-    <div align="right">
-      <el-button
-        type="success"
-        size="mini"
-        icon="el-icon-plus"
-        @click="showCreateFeedback()"
-      >
-        Tambah SPT Baru
-      </el-button>
+    <div class="filter-container">
+      <el-row type="flex" class="row-bg" justify="space-between">
+        <el-button
+          class="filter-item"
+          type="primary"
+          icon="el-icon-plus"
+          @click="showCreateFeedback()"
+        >
+          Tambah SPT Baru
+        </el-button>
+      </el-row>
     </div>
     <el-table
+      v-loading="loading"
       :data="feedbacks"
-      border
       fit
       highlight-current-row
+      :header-cell-style="{ background: '#3AB06F', color: 'white' }"
     >
-      <el-table-column align="center" label="ID" width="40">
+      <el-table-column type="expand" class="row-detail">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <div class="post">
+            <div class="entity-block" />
+            <span class="action pull-right">
+              <el-button
+                href="#"
+                type="text"
+                icon="el-icon-view"
+                @click="showIdentity(scope.row.id)"
+              >
+                View Identity
+              </el-button>
+            </span>
+            <p><b>Kekhawatiran:</b></p>
+            <div class="description" v-html="scope.row.concern" />
+            <p style="margin-top: 10px;"><b>Harapan:</b></p>
+            <div class="description" v-html="scope.row.expectation" />
+          </div>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Tanggal Dibuat">
+      <el-table-column label="No." width="54px">
+        <template slot-scope="scope">
+          <span>{{ scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="left" label="Tanggal" width="200">
         <template slot-scope="scope">
           <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -31,19 +55,9 @@
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Peran">
+      <el-table-column align="left" label="Peran" width="260">
         <template slot-scope="scope">
           <span>{{ scope.row.responder_type_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="left" label="Kekhawatiran">
-        <template slot-scope="scope">
-          <span v-html="scope.row.concern" />
-        </template>
-      </el-table-column>
-      <el-table-column align="left" label="Harapan">
-        <template slot-scope="scope">
-          <span v-html="scope.row.expectation" />
         </template>
       </el-table-column>
       <el-table-column align="left" label="Rating" width="150">
@@ -57,7 +71,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Relevansi">
+      <el-table-column align="left" label="Relevansi" width="130">
         <template slot-scope="scope">
           <el-select
             v-model="scope.row.is_relevant"
@@ -74,28 +88,18 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Identitas">
-        <template slot-scope="scope">
-          <el-button
-            type="info"
-            size="mini"
-            icon="el-icon-view"
-            @click="showIdentity(scope.row.id)"
-          >
-            Lihat Identitas
-          </el-button>
-        </template>
-      </el-table-column>
     </el-table>
     <IdentityDialog
       :data="identityDialogData"
       :photo="identityDialogImg"
       :show="showIdDialog"
+      @handleCloseDialog="handleCloseIdentityDialog"
     />
     <CreateFeedback
       :feedback="feedback"
       :show="showFeedback"
       :announcement-id="announcementId"
+      @handleCloseDialog="handleCloseFeedbackDialog"
     />
   </div>
 </template>
@@ -105,28 +109,16 @@ import Resource from '@/api/resource';
 import IdentityDialog from './IdentityDialog.vue';
 import CreateFeedback from '@/views/home/components/CreateFeedback.vue';
 const feedbackResource = new Resource('feedbacks');
+const responderTypeResource = new Resource('responder-types');
 
 export default {
   name: 'FeedbackList',
   components: { IdentityDialog, CreateFeedback },
-  props: {
-    announcement: {
-      type: Object,
-      default: () => {},
-    },
-    feedbacks: {
-      type: Array,
-      default: () => [],
-    },
-    responderTypes: {
-      type: Array,
-      default: () => [],
-    },
-  },
   data() {
-    const id = parseInt(this.$route.params && this.$route.params.id);
     return {
-      announcementId: id,
+      feedbacks: [],
+      loading: true,
+      announcementId: 0,
       feedback: {},
       relevantChoices: [],
       selectedFeedback: {},
@@ -145,10 +137,45 @@ export default {
     // this.$bus.$on('updateFeedbackList', event => {
     //   this.getFeedbacks(this.id);
     // });
+    this.getFeedbacks();
   },
   methods: {
+    async getFeedbacks(){
+      const id = parseInt(this.$route.params && this.$route.params.id);
+      this.announcementId = id;
+      // filter by project ID
+      this.loading = true;
+      const { data } = await feedbackResource.list({
+        announcement_id: id,
+        deleted: false,
+      });
+      const responderTypes = await responderTypeResource.list({});
+      const responder_types = responderTypes.data;
+      data.map((item) => {
+        const key = item.responder_type_id;
+        var responder_type_name = '';
+        responder_types.map((item) => {
+          if (item.id === key){
+            responder_type_name = item.name;
+          }
+        });
+        item.responder_type_name = responder_type_name;
+        item.is_relevant_str = item.is_relevant ? 'Relevan' : 'Tidak Relevan';
+      });
+      this.feedbacks = data;
+      this.loading = false;
+    },
     showCreateFeedback() {
       this.showFeedback = true;
+      this.showIdDialog = false;
+    },
+    handleCloseFeedbackDialog(){
+      this.showFeedback = false;
+      this.showIdDialog = false;
+    },
+    handleCloseIdentityDialog(){
+      this.showFeedback = false;
+      this.showIdDialog = false;
     },
     showIdentity(feedbackId) {
       const toShow = this.feedbacks.find(f => f.id === feedbackId);
@@ -173,6 +200,7 @@ export default {
         },
       ];
       this.showIdDialog = true;
+      this.showFeedback = false;
     },
     async onChangeForm(feedbackId, event) {
       const toUpdate = this.feedbacks.find(f => f.id === feedbackId);

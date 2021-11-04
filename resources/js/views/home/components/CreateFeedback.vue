@@ -20,22 +20,22 @@
           <el-form-item label="NIK">
             <el-input v-model="form.id_card_number" autocomplete="off" />
           </el-form-item>
-          <div>
-            <p class="label__peran">Unggah Foto Selfie</p>
+          <el-form-item label="Unggah Foto Selfie">
             <input ref="file" type="file" class="el-input__inner" @change="handleFileUpload()">
-          </div>
+          </el-form-item>
         </div>
 
         <div>
-          <p class="label__peran">Peran</p>
-          <el-select v-model="form.responder_type_id" placeholder="Pilih" class="select__peran">
-            <el-option
-              v-for="item in responders"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
+          <el-form-item label="Peran">
+            <el-select v-model="form.responder_type_id" placeholder="Pilih" class="select__peran">
+              <el-option
+                v-for="item in responders"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
         </div>
 
         <el-form-item label="Kekhawatiran">
@@ -124,7 +124,8 @@ export default {
         });
     },
     closeDialog() {
-      this.show = false;
+      // this.show = false;
+      this.$emit('handleCloseDialog');
     },
     async getResponderType() {
       await axios.get('api/responder-types')

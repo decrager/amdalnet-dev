@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div><h2>Hasil Konsultasi Publik</h2></div>
+    <div><h3 style="color: #3AB06F;">Hasil Konsultasi Publik</h3></div>
     <el-form
       ref="postForm"
       :model="postForm"

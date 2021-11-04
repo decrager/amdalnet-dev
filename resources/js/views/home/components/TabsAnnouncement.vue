@@ -96,6 +96,9 @@ export default {
           this.selectedAnnouncement = response.data;
         });
     },
+    handleCloseDialog() {
+      this.showIdDialog = false;
+    },
   },
 };
 </script>
