@@ -53,7 +53,7 @@ class SetupRolePermissions extends Migration
         $initiatorRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_PROJECT,
             Acl::PERMISSION_MANAGE_PROJECT,
-            Acl::PERMISSION_DO_ASSEMBLE_FORMULATOR,
+            Acl::PERMISSION_DO_FORMULATOR_TEAM,
             Acl::PERMISSION_DO_ANNOUNCEMENT,
         ]);
 
@@ -71,7 +71,7 @@ class SetupRolePermissions extends Migration
             Acl::PERMISSION_VIEW_MENU_FORMULATOR,
             Acl::PERMISSION_VIEW_MENU_PROJECT,
             Acl::PERMISSION_MANAGE_FORMULATOR,
-            Acl::PERMISSION_DO_ASSEMBLE_FORMULATOR,
+            Acl::PERMISSION_DO_FORMULATOR_TEAM,
         ]);
 
         // pustanling
@@ -87,7 +87,7 @@ class SetupRolePermissions extends Migration
             Acl::PERMISSION_MANAGE_FORMULATOR,
             Acl::PERMISSION_MANAGE_PARAMS,
             Acl::PERMISSION_MANAGE_SOP,
-            Acl::PERMISSION_MANAGE_TECHNICAL_REGULATIONS,
+            // Acl::PERMISSION_MANAGE_TECHNICAL_REGULATIONS,
             Acl::PERMISSION_MANAGE_CLUSTER,
         ]);
 
@@ -106,7 +106,7 @@ class SetupRolePermissions extends Migration
         $examinerInstitutionRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_EXAMINER,
             Acl::PERMISSION_VIEW_MENU_EXPERT,
-            Acl::PERMISSION_MANAGE_EXAMINER,
+            Acl::PERMISSION_MANAGE_EXPERT,
             Acl::PERMISSION_MANAGE_EXPERT,
         ]);
 

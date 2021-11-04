@@ -171,12 +171,12 @@ return [
                 'from' => 'in-screening',
                 'to' => ['amdal', 'amdal.announcement'],
             ],
-            'to_uklupl_mr_activities' => [
-                'from' => ['uklupl.mr', 'amdal.pubcons-completed'],
+            'start_uklupl_mr' => [
+                'from' => ['uklupl.mr', 'amdal.announcement-completed'],
                 'to' => 'uklupl.mr-activities',
             ],
-            'to_uklupl_mt_activities' => [
-                'from' => ['uklupl.mt', 'amdal.pubcons-completed'],
+            'start_uklupl_mt' => [
+                'from' => ['uklupl.mt', 'amdal.announcement-completed'],
                 'to' => 'uklupl.mt-activities',
             ],
             'plan_ukl_mr' => [

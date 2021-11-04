@@ -97,7 +97,7 @@ php artisan make:model 'Entity\BlogPost' --migration
 php artisan make:factory BlogPostFactory --model='Entity\BlogPost'
 php artisan migrate --seed
 php artisan db:wipe
-php artisan db:seed --class=BlogPostTableSeeder
+php artisan db:seed --class=RolesPermissionsUsersSeeder
 
 # test workflow
 php artisan workflow:test
