@@ -8,7 +8,6 @@
       <h4>Nama Parameter : <span>{{ listViewTitle }}</span></h4>
     </div>
     <el-table
-      v-loading="loading"
       :data="listView"
       border
       :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
