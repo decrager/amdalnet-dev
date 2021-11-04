@@ -60,6 +60,7 @@ class AppParamController extends Controller
                 'parameter_name' => $params['parameter_name'],
                 'title' => $params['title'],
                 'value' => $params['value'],
+                'is_numeric' => $params['is_numeric'],
             ]);
 
             return new AppParamResource($appParam);
@@ -118,6 +119,7 @@ class AppParamController extends Controller
             $appParam->parameter_name = $params['parameter_name'];
             $appParam->title = $params['title'];
             $appParam->value = $params['value'];
+            $appParam->is_numeric = $params['is_numeric'];
             $appParam->save();
         }
 

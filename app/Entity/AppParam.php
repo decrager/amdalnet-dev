@@ -15,5 +15,6 @@ class AppParam extends Model
         'parameter_name',
         'title',
         'value',
+        'is_numeric'
     ];
 }
