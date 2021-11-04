@@ -1,82 +1,110 @@
 <template>
   <div class="popup__wrapper">
     <el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="show">
-      <!--      <input v-model="details.id" type="text">-->
-
       <div class="body__wrapper">
         <div class="header__init__popup">
           <div>
-            <h2>Informasi Rencana Kegiatan</h2>
+            <h2><i class="el-icon-info" /> Informasi Rencana Kegiatan</h2>
           </div>
           <div>
             <i class="el-icon-close" title="Tutup" @click="closeDialog()" />
           </div>
         </div>
         <div class="detail__wrapper">
-          <div class="table__wrapper">
-            <table class="table__striped">
-              <tbody>
-                <tr>
-                  <td>No. Barcode</td>
-                  <td>{{ details.project.id_project }}</td>
-                </tr>
-                <tr>
-                  <td>Jenis Dokumen</td>
-                  <td>{{ details.project.required_doc }}</td>
-                </tr>
-                <tr>
-                  <td>Nama Kegiatan</td>
-                  <td>{{ details.project.project_title }}</td>
-                </tr>
-                <tr>
-                  <td>Bidang Usaha/Kegiatan</td>
-                  <td>{{ details.project.sector }}</td>
-                </tr>
-                <tr>
-                  <td>Skala/Besaran</td>
-                  <td>{{ details.project_scale }}</td>
-                </tr>
-                <tr>
-                  <td>Alamat</td>
-                  <td>{{ details.project_location }}</td>
-                </tr>
-                <tr>
-                  <td>Kewenangan</td>
-                  <td>{{ details.project.authority || '-' }}</td>
-                </tr>
-                <tr>
-                  <td>Pemrakarsa</td>
-                  <td>{{ details.pic_name }}</td>
-                </tr>
-                <tr>
-                  <td>Penanggung Jawab</td>
-                  <td>{{ details.cs_name }}</td>
-                </tr>
-                <tr>
-                  <td>Alamat Pemrakarsa</td>
-                  <td>{{ details.pic_address }}</td>
-                </tr>
-                <tr>
-                  <td>No. Telepon Pemrakarsa</td>
-                  <td>-</td>
-                </tr>
-                <tr>
-                  <td>Email Pemrakarsa</td>
-                  <td>-</td>
-                </tr>
-                <tr>
-                  <td>Provinsi/Kota</td>
-                  <td>-</td>
-                </tr>
-                <tr>
-                  <td colspan="2">Deskripsi Kegiatan</td>
-                </tr>
-                <tr>
-                  <td colspan="2"><span v-html="details.project.description" /></td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="information__wrapper">
+            <div class="first__info">
+              <div class="table__wrapper">
+                <table class="table__striped">
+                  <tbody>
+                    <tr>
+                      <td class="title__table">Nama Kegiatan</td>
+                      <td class="value__table">{{ details.project.project_title }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Bidang Usaha / Kegiatan</td>
+                      <td class="value__table">{{ details.project.biz_type }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Skala / Besaran</td>
+                      <td class="value__table">{{ details.project_scale }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Alamat</td>
+                      <td class="value__table">{{ details.project.address }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Pemrakarsa</td>
+                      <td class="value__table">{{ details.project_scale }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Penanggung Jawab</td>
+                      <td class="value__table">{{ details.pic_name }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Alamat Pemrakarsa</td>
+                      <td class="value__table">{{ details.pic_address }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">No. Telp Pemrakarsa</td>
+                      <td class="value__table">{{ details.pic_address }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Email Pemrakarsa</td>
+                      <td class="value__table">-</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Provinsi Pemrakarsa</td>
+                      <td class="value__table">-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="second__info">
+              <div class="hasil__penapisan">
+                <div>
+                  <h2><i class="el-icon-document" /> Deskripsi</h2>
+                </div>
+              </div>
+              <table class="table__striped">
+                <tbody>
+                  <tr>
+                    <td colspan="2"><span v-html="details.project.description" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="third__info">
+              <div class="hasil__penapisan">
+                <div>
+                  <h2><i class="el-icon-circle-check" /> Hasil Penapisan</h2>
+                </div>
+              </div>
+              <div class="table__wrapper">
+                <table class="table__striped">
+                  <tbody>
+                    <tr>
+                      <td class="title__table">No Registrasi</td>
+                      <td class="value__table">{{ details.project.id_project }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Jenis Dokumen</td>
+                      <td class="value__table">{{ details.project.required_doc }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Kewenangan</td>
+                      <td class="value__table">{{ details.project.authority || '-' }}</td>
+                    </tr>
+                    <tr>
+                      <td class="title__table">Tim Penyusun</td>
+                      <td class="value__table" />
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
+
           <div class="map__wrapper">
             Map Canvas
           </div>
@@ -143,6 +171,7 @@ export default {
   background: #133715 !important;
   overflow: auto;
   width: 80%;
+  margin-top: 10vh !important;
 }
 
 .popup__wrapper >>> .el-dialog__header {
@@ -164,7 +193,14 @@ export default {
   color: #333;
   font-size: 15px;
   font-weight: 700;
-  width: 50%;
+}
+
+.title__table {
+  width: 40%;
+}
+
+.value__table {
+  width: 60%;
 }
 
 .table__striped tr:nth-child(odd) {
@@ -182,6 +218,15 @@ export default {
   margin-top: 10px;
 }
 
+.information__wrapper {
+  flex: 1
+}
+
+.information__wrapper h2 {
+  margin: 10px 0;
+  color: white;
+}
+
 .map__wrapper {
   flex: 1;
   border: 2px solid greenyellow;
@@ -192,8 +237,7 @@ export default {
 @media screen and (max-width: 450px) {
   .popup__wrapper >>> .el-dialog {
     background: #133715 !important;
-    overflow: auto;
-    width: 90%;
+    width: 80%;
   }
 
   .header__init__popup {
