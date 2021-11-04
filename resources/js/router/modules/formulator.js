@@ -3,7 +3,7 @@ import Layout from '@/layout';
 const formulatorRoutes = {
   path: '/formulator',
   component: Layout,
-  meta: { title: 'formulator', icon: 'documentation', permissions: ['view menu formulator'] },
+  meta: { title: 'formulator', icon: 'documentation', permissions: ['view menu lpjp', 'view menu formulator expert', 'view menu formulator team'] },
   children: [
     {
       path: 'lpjp',
@@ -44,6 +44,12 @@ const formulatorRoutes = {
       name: 'editFormulator',
       hidden: true,
       meta: { title: 'editFormulator', icon: 'user', noCache: true },
+    },
+    {
+      path: 'team',
+      component: () => import('@/views/error-page/404'),
+      name: 'formulatorTeam',
+      meta: { title: 'formulatorTeam', icon: 'user', noCache: true, permissions: ['view menu formulator team'] },
     },
   ],
 };

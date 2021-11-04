@@ -3,6 +3,7 @@ import Layout from '@/layout';
 const lukRoutes = {
   path: '/luk',
   component: Layout,
+  meta: { title: 'luk', icon: 'zip', permissions: ['view menu luk'] },
   children: [
     {
       path: '',

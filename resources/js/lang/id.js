@@ -95,6 +95,8 @@ export default {
     sop: 'SOP',
     addSop: 'Tambah SOP',
     cluster: 'Cluster',
+    formulatorTeam: 'Tim Penyusun',
+    tuk: 'Tim Uji Kelayakan',
   },
   navbar: {
     logOut: 'Keluar',

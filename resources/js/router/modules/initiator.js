@@ -3,6 +3,7 @@ import Layout from '@/layout';
 const initiatorRoutes = {
   path: '/initiator',
   component: Layout,
+  meta: { title: 'initiator', icon: 'user', permissions: ['view menu initiator'] },
   children: [
     {
       path: '',

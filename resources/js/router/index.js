@@ -30,6 +30,7 @@ import uklUplRoutes from './modules/uklupl';
 import initiatorRoutes from './modules/initiator';
 import formulatorRoutes from './modules/formulator';
 import lukRoutes from './modules/luk';
+import tukRoutes from './modules/tuk';
 import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 
@@ -208,6 +209,7 @@ export const asyncRoutes = [
   initiatorRoutes,
   formulatorRoutes,
   lukRoutes,
+  tukRoutes,
   expertBankRoutes,
   configurationRoutes,
   masterRoutes,
