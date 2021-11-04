@@ -27,6 +27,11 @@ import feedbackRoutes from './modules/feedback';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
 import uklUplRoutes from './modules/uklupl';
+import initiatorRoutes from './modules/initiator';
+import formulatorRoutes from './modules/formulator';
+import lukRoutes from './modules/luk';
+import expertBankRoutes from './modules/expert-bank';
+import configurationRoutes from './modules/configuration';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -156,7 +161,6 @@ export const asyncRoutes = [
   // chartsRoutes,
   // nestedRoutes,
   // tableRoutes,
-  adminRoutes,
   // {
   //   path: '/theme',
   //   component: Layout,
@@ -184,21 +188,28 @@ export const asyncRoutes = [
   //     },
   //   ],
   // },
+  errorRoutes,
   {
     path: '/profile',
     component: Layout,
     redirect: '/profile/edit',
+    meta: { title: 'userProfile', icon: 'user', permissions: ['view menu profile'] },
     children: [
       {
         path: 'edit',
         component: () => import('@/views/users/SelfProfile'),
         name: 'SelfProfile',
-        meta: { title: 'userProfile', icon: 'user', noCache: true },
+        meta: { title: 'userProfile', icon: 'user', noCache: true, permissions: ['view menu profile'] },
       },
     ],
   },
-  errorRoutes,
+  adminRoutes,
   projectRoutes,
+  initiatorRoutes,
+  formulatorRoutes,
+  lukRoutes,
+  expertBankRoutes,
+  configurationRoutes,
   masterRoutes,
   announcementRoutes,
   feedbackRoutes,

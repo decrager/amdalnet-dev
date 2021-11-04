@@ -45,7 +45,7 @@ class RolesPermissionsUsersSeeder extends Seeder
 
         // setup permissions roles
         $aprole = Role::findByName(Acl::ROLE_ADMIN_CENTRAL);
-        $aprole->givePermissionTo([
+        $aprole->syncPermissions([
             Acl::PERMISSION_VIEW_MENU_PROJECT,
             Acl::PERMISSION_VIEW_MENU_PROJECT_PRE_SUBMISSION,
             Acl::PERMISSION_VIEW_MENU_PROJECT_POST_SUBMISSION,
@@ -75,7 +75,7 @@ class RolesPermissionsUsersSeeder extends Seeder
 
         // admin regional
         $arRole = Role::findByName(Acl::ROLE_ADMIN_REGIONAL);
-        $arRole->givePermissionTo([
+        $arRole->syncPermissions([
             Acl::PERMISSION_VIEW_MENU_PROJECT,
             Acl::PERMISSION_VIEW_MENU_PROJECT_PRE_SUBMISSION,
             Acl::PERMISSION_VIEW_MENU_PROJECT_POST_SUBMISSION,
@@ -86,7 +86,7 @@ class RolesPermissionsUsersSeeder extends Seeder
 
         // initiator
         $inRole = Role::findByName(Acl::ROLE_INITIATOR);
-        $inRole->givePermissionTo([
+        $inRole->syncPermissions([
             Acl::PERMISSION_VIEW_MENU_PROFILE,
             Acl::PERMISSION_VIEW_MENU_PROJECT,
             Acl::PERMISSION_VIEW_MENU_PROJECT_PRE_SUBMISSION,
@@ -97,7 +97,7 @@ class RolesPermissionsUsersSeeder extends Seeder
 
         // LPJP
         $lpRole = Role::findByName(Acl::ROLE_LPJP);
-        $lpRole->givePermissionTo([
+        $lpRole->syncPermissions([
             Acl::PERMISSION_VIEW_MENU_PROFILE,
             Acl::PERMISSION_VIEW_MENU_FORMULATOR,
             Acl::PERMISSION_VIEW_MENU_FORMULATOR_TEAM,
@@ -112,7 +112,7 @@ class RolesPermissionsUsersSeeder extends Seeder
 
         // Formulator
         $foRole = Role::findByName(Acl::ROLE_FORMULATOR);
-        $foRole->givePermissionTo([
+        $foRole->syncPermissions([
             Acl::PERMISSION_VIEW_MENU_PROFILE,
             Acl::PERMISSION_VIEW_MENU_PROJECT,
             Acl::PERMISSION_VIEW_MENU_PROJECT_POST_SUBMISSION,
@@ -134,7 +134,7 @@ class RolesPermissionsUsersSeeder extends Seeder
 
         // pustanling
         $puRole = Role::findByName(Acl::ROLE_PUSTANLING);
-        $puRole->givePermissionTo([
+        $puRole->syncPermissions([
             Acl::PERMISSION_VIEW_MENU_LPJP,
             Acl::PERMISSION_VIEW_MENU_FORMULATOR_EXPERT,
             Acl::PERMISSION_MANAGE_LPJP,
@@ -143,7 +143,7 @@ class RolesPermissionsUsersSeeder extends Seeder
 
         // LUK
         $luRole = Role::findByName(Acl::ROLE_LUK);
-        $luRole->givePermissionTo([
+        $luRole->syncPermissions([
             Acl::PERMISSION_VIEW_MENU_EXAMINER_TEAM,
             Acl::PERMISSION_VIEW_MENU_EXPERT,
             Acl::PERMISSION_DO_EXAMINER_TEAM,
@@ -152,7 +152,7 @@ class RolesPermissionsUsersSeeder extends Seeder
 
         // examiner
         $luRole = Role::findByName(Acl::ROLE_EXAMINER);
-        $luRole->givePermissionTo([ 
+        $luRole->syncPermissions([ 
             Acl::PERMISSION_VIEW_MENU_PROFILE,
             Acl::PERMISSION_VIEW_MENU_PROJECT,
             Acl::PERMISSION_VIEW_MENU_PROJECT_POST_SUBMISSION,
