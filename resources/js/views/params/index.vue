@@ -27,6 +27,7 @@
         @pagination="handleFilter"
       />
       <component-dialog
+        :loading="loading"
         :component="component"
         :show="show"
         :list-view="listView"
@@ -118,7 +119,6 @@ export default {
     },
     async getListView(name) {
       const { data } = await appParamResource.get(name);
-      console.log(data);
       this.listView = data;
     },
     handleCreate() {
@@ -136,22 +136,24 @@ export default {
       });
     },
     handleView(row) {
+      this.loading = true;
       this.getListView(row.parameter_name);
       this.listViewTitle = row.parameter_name;
       this.show = true;
+      this.loading = false;
     },
     handleCancelComponent(){
       this.show = false;
     },
     handleDelete({ rows }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + rows.parameter_name + '. ?', 'Peringatan', {
+      this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
         type: 'warning',
       })
         .then(() => {
           appParamResource
-            .destroy(rows.parameter_name)
+            .destroy(rows.id)
             .then((response) => {
               this.$message({
                 type: 'success',

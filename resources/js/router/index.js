@@ -26,7 +26,7 @@ import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
-import paramRoutes from './modules/params';
+// import paramRoutes from './modules/params';
 import uklUplRoutes from './modules/uklupl';
 
 /**
@@ -201,7 +201,7 @@ export const asyncRoutes = [
   errorRoutes,
   projectRoutes,
   masterRoutes,
-  paramRoutes,
+  // paramRoutes,
   announcementRoutes,
   feedbackRoutes,
   uklUplRoutes,
