@@ -6,6 +6,7 @@ image: php:7.4-cli
 stages:
   # - test
   - deploy
+  - production
 
 # unit_test:
 #   stage: test
@@ -41,7 +42,21 @@ deploy_dev:
 deploy_cloud:
   stage: deploy
   script:
-    - echo "xxxx"
+    - cd /var/www/amdalnet/
+    - git reset --hard HEAD
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - npm run production
+  only:
+    - master
+  tags:
+    - cloud
+
+deploy_prod:
+  stage: production
+  script:
     - cd /var/www/amdalnet/
     - git reset --hard HEAD
     - git pull
@@ -51,6 +66,6 @@ deploy_cloud:
     - npm install
     - npm run production
   only:
-    - master
+    - tags
   tags:
-    - cloud
+    - prod
