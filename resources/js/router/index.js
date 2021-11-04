@@ -26,6 +26,7 @@ import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
+// import paramRoutes from './modules/params';
 import uklUplRoutes from './modules/uklupl';
 import initiatorRoutes from './modules/initiator';
 import formulatorRoutes from './modules/formulator';
@@ -213,6 +214,7 @@ export const asyncRoutes = [
   expertBankRoutes,
   configurationRoutes,
   masterRoutes,
+  // paramRoutes,
   announcementRoutes,
   feedbackRoutes,
   uklUplRoutes,

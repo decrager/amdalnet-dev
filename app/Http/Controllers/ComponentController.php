@@ -143,7 +143,7 @@ class ComponentController extends Controller
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
-    
+
         return response()->json(null, 204);
     }
 }

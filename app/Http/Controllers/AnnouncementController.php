@@ -3,32 +3,43 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Announcement;
-use App\Entity\Feedback;
 use App\Entity\Project;
 use App\Http\Resources\AnnouncementResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-// use DB;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+
+// use DB;
 
 class AnnouncementController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return AnnouncementResource
      */
-    public function index(Request $request)
+    public function index(Request $request): AnnouncementResource
     {
-        $getAllAnnouncement = Announcement::withCount('feedbacks')->where('project_result', '=', $request->project)->orderby('start_date', 'DESC')->paginate($request->limit ?: 20);
+        $getAllAnnouncement = Announcement::withCount('feedbacks')
+            ->when($request->has('project'), function ($query) use ($request) {
+                return $query->where('project_result', '=', $request->project);
+            })
+            ->orderby('start_date', 'DESC')
+            ->when(!isset($request->limit), function ($query) use ($request) {
+                return $query->get();
+            })
+            ->when($request->has('limit'), function ($query) use ($request) {
+                return $query->paginate($request->limit ?: 10);
+            });
         return AnnouncementResource::make($getAllAnnouncement);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -38,8 +49,8 @@ class AnnouncementController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -47,17 +58,17 @@ class AnnouncementController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'pic_name'          => 'required',
-                'pic_address'       => 'required',
-                'cs_name'           => 'required',
-                'cs_address'        => 'required',
-                'project_type'      => 'required',
-                'project_location'  => 'required',
-                'project_scale'     => 'required',
-                'potential_impact'  => 'required',
-                'start_date'        => 'required',
-                'end_date'          => 'required',
-                'fileProof'         => 'required',
+                'pic_name' => 'required',
+                'pic_address' => 'required',
+                'cs_name' => 'required',
+                'cs_address' => 'required',
+                'project_type' => 'required',
+                'project_location' => 'required',
+                'project_scale' => 'required',
+                'potential_impact' => 'required',
+                'start_date' => 'required',
+                'end_date' => 'required',
+                'fileProof' => 'required',
             ]
         );
 
@@ -95,7 +106,7 @@ class AnnouncementController extends Controller
             $project->published = true;
             $project->save();
 
-            if(!$announcement){
+            if (!$announcement) {
                 DB::rollback();
             } else {
                 DB::commit();
@@ -108,8 +119,8 @@ class AnnouncementController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity\Announcement  $announcement
-     * @return \Illuminate\Http\Response
+     * @param Announcement $announcement
+     * @return Response
      */
     public function show(Announcement $announcement)
     {
@@ -119,8 +130,8 @@ class AnnouncementController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity\Announcement  $announcement
-     * @return \Illuminate\Http\Response
+     * @param Announcement $announcement
+     * @return Response
      */
     public function edit(Announcement $announcement)
     {
@@ -130,9 +141,9 @@ class AnnouncementController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Entity\Announcement  $announcement
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Announcement $announcement
+     * @return Response
      */
     public function update(Request $request, Announcement $announcement)
     {
@@ -142,8 +153,8 @@ class AnnouncementController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity\Announcement  $announcement
-     * @return \Illuminate\Http\Response
+     * @param Announcement $announcement
+     * @return Response
      */
     public function destroy(Announcement $announcement)
     {

@@ -15,10 +15,10 @@ class CreateEnvParamsTable extends Migration
     {
         Schema::create('env_params', function (Blueprint $table) {
             $table->id();
-            $table->integer('kbli_id')->default(0);
-            $table->integer('id_param')->default(0);
+            $table->integer('kbli_id')->nullable();
+            $table->integer('id_param')->nullable();
             $table->string('condition')->nullable();
-            $table->integer('id_unit')->default(0);
+            $table->integer('id_unit')->nullable();
             $table->string('doc_req')->nullable();
             $table->string('amdal_type')->nullable();
             $table->string('risk_level')->nullable();
