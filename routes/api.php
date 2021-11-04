@@ -175,3 +175,6 @@ Route::apiResource('sops', 'SopController');
 Route::apiResource('component-types', 'ComponentTypeController');
 Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');
 Route::apiResource('impact-identifications', 'ImpactIdentificationController');
+Route::apiResource('env-params', 'EnvParamController');
+Route::apiResource('params', 'ParamController');
+Route::apiResource('units', 'UnitController');
