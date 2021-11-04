@@ -81,6 +81,7 @@ const districtResource = new Resource('districts');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
 const supportDocResource = new Resource('support-docs');
+const initiatorResource = new Resource('initiatorsByEmail');
 
 export default {
   name: 'Publish',
@@ -105,15 +106,21 @@ export default {
       projectRules: {
         id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
       },
+      initiatorData: {},
     };
   },
-  mounted() {
+  async mounted() {
     console.log(this.project);
-    this.getKbliEnvParams();
-    this.updateList();
-    this.getTeamOptions();
+    await this.getKbliEnvParams();
+    await this.getTeamOptions();
+    await this.getInitiatorData();
+    await this.updateList();
   },
   methods: {
+    async getInitiatorData(){
+      const data = await this.$store.dispatch('user/getInfo');
+      this.project.initiatorData = await initiatorResource.list({ email: data.email });
+    },
     async getTeamOptions() {
       const { data } = await formulatorTeamResource.list({});
       this.teamOptions = data.map((i) => {
@@ -279,23 +286,23 @@ export default {
         },
         {
           param: 'Pemrakarsa',
-          value: 'Dummy Pemrakarsa',
+          value: this.project.initiatorData.name,
         },
         {
           param: 'Penanggung Jawab',
-          value: 'Dummy Penanggung Jawab',
+          value: this.project.initiatorData.pic,
         },
         {
           param: 'Alamat Pemrakarsa',
-          value: 'Dummy Alamat Pemrakarsa',
+          value: this.project.initiatorData.address,
         },
         {
           param: 'No. Telp Pemrakarsa',
-          value: '0812121212',
+          value: this.project.initiatorData.phone,
         },
         {
           param: 'Email Pemrakarsa',
-          value: 'Pemrakarsa@Pemrakarsa.com',
+          value: this.project.initiatorData.email,
         },
         {
           param: 'Provinsi/Kota',
