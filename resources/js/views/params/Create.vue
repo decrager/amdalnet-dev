@@ -95,12 +95,6 @@
           >
             {{ 'Batalkan' }}
           </el-button>
-          <el-button
-            class="batal"
-            type=""
-          >
-            {{ 'Buat Baru' }}
-          </el-button>
         </el-col>
 
       </el-row>

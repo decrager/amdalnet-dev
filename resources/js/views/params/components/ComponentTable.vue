@@ -31,8 +31,8 @@
         <el-button
           type="text"
           href="#"
-          icon="el-icon-view"
-          @click="handleEditForm(scope.row.id)"
+          icon="el-icon-edit"
+          @click="handleEditForm(scope.row)"
         >
           Ubah
         </el-button>
@@ -40,7 +40,7 @@
           type="text"
           href="#"
           icon="el-icon-delete"
-          @click="handleDelete(scope.row.id, scope.row.name)"
+          @click="handleDelete(scope.row)"
         >
           Hapus
         </el-button>
@@ -63,11 +63,11 @@ export default {
     handleView(row) {
       this.$emit('handleView', row);
     },
-    handleEditForm(id) {
-      this.$emit('handleEditForm', id);
+    handleEditForm(row) {
+      this.$emit('handleEditForm', row);
     },
-    handleDelete(id, nama) {
-      this.$emit('handleDelete', { id, nama });
+    handleDelete(rows) {
+      this.$emit('handleDelete', { rows });
     },
   },
 };

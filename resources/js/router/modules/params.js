@@ -18,6 +18,14 @@ const paramRoutes = {
       hidden: true,
       meta: { title: 'Tambah Parameter Aplikasi', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'update-params',
+      component: () => import('@/views/params/Create'),
+      name: 'updateParams',
+      hidden: true,
+      meta: { title: 'Tambah Parameter Aplikasi', icon: 'documentation', noCache: true },
+    },
+
   ],
 };
 

@@ -55,7 +55,7 @@ export default {
     return {
       list: [],
       listView: [],
-      listViewTitle: String,
+      listViewTitle: '',
       loading: true,
       listQuery: {
         page: 1,
@@ -127,9 +127,13 @@ export default {
         params: {},
       });
     },
-    handleEditForm(id) {
-      this.component = this.list.find((element) => element.id === id);
-      this.show = true;
+    handleEditForm(row) {
+      // this.component = this.list.find((element) => element.id === id);
+      // this.show = true;
+      this.$router.push({
+        name: 'updateParams',
+        params: {},
+      });
     },
     handleView(row) {
       this.getListView(row.parameter_name);
@@ -138,6 +142,33 @@ export default {
     },
     handleCancelComponent(){
       this.show = false;
+    },
+    handleDelete({ rows }) {
+      this.$confirm('apakah anda yakin akan menghapus ' + rows.parameter_name + '. ?', 'Peringatan', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Batal',
+        type: 'warning',
+      })
+        .then(() => {
+          appParamResource
+            .destroy(rows.parameter_name)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Hapus Selesai',
+              });
+              this.getList();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Hapus Digagalkan',
+          });
+        });
     },
   },
 };
