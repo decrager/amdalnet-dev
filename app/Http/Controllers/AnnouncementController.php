@@ -23,16 +23,20 @@ class AnnouncementController extends Controller
     public function index(Request $request): AnnouncementResource
     {
         $getAllAnnouncement = Announcement::withCount('feedbacks')
-            ->when($request->has('project'), function ($query) use ($request) {
-                return $query->where('project_result', '=', $request->project);
-            })
-            ->orderby('start_date', 'DESC')
-            ->when(!isset($request->limit), function ($query) use ($request) {
-                return $query->get();
-            })
-            ->when($request->has('limit'), function ($query) use ($request) {
-                return $query->paginate($request->limit ?: 10);
-            });
+        ->when($request->has('project'), function ($query) use ($request) {
+            return $query->where('project_result', '=', $request->project);
+        })->orderby('start_date', 'DESC')->paginate(10);
+        // $getAllAnnouncement = Announcement::withCount('feedbacks')
+        //     ->when($request->has('project'), function ($query) use ($request) {
+        //         return $query->where('project_result', '=', $request->project);
+        //     })
+        //     ->orderby('start_date', 'DESC')
+        //     ->when(!isset($request->limit), function ($query) use ($request) {
+        //         return $query->get();
+        //     })
+        //     ->when($request->has('limit'), function ($query) use ($request) {
+        //         return $query->paginate($request->limit ?: 10);
+        //     });
         return AnnouncementResource::make($getAllAnnouncement);
     }
 
