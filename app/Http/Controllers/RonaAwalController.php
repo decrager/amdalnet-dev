@@ -19,7 +19,9 @@ class RonaAwalController extends Controller
     {
         $params = $request->all();
         if (isset($params['all']) && $params['all']) {
-            return RonaAwalResource::collection(RonaAwal::all());
+            return RonaAwalResource::collection(RonaAwal::select('rona_awal.*')
+                ->orderBy('name', 'asc')
+                ->get());
         } else {
             return RonaAwal::select('rona_awal.*', 'components.name as component')->where(function ($query) use ($request) {
                 return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
