@@ -158,6 +158,7 @@ Route::apiResource('kblis', 'KbliController');
 Route::apiResource('kbli-env-params', 'KbliEnvParamController');
 Route::apiResource('projects', 'ProjectController');
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
+Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
 Route::apiResource('oss-projects', 'OssProjectController');
 Route::apiResource('responder-types', 'ResponderTypeController');
 Route::apiResource('feedbacks', 'FeedbackController');

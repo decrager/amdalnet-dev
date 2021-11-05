@@ -29,11 +29,12 @@ import projectRoutes from './modules/project';
 // import paramRoutes from './modules/params';
 import uklUplRoutes from './modules/uklupl';
 import initiatorRoutes from './modules/initiator';
-import formulatorRoutes from './modules/formulator';
+// import formulatorRoutes from './modules/formulator';
 import lukRoutes from './modules/luk';
 import tukRoutes from './modules/tuk';
 import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
+import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -208,25 +209,27 @@ export const asyncRoutes = [
   adminRoutes,
   projectRoutes,
   initiatorRoutes,
-  formulatorRoutes,
+  // formulatorRoutes,
   lukRoutes,
   tukRoutes,
   expertBankRoutes,
   configurationRoutes,
   masterRoutes,
   // paramRoutes,
+  independentFormulatorTeamRoutes,
   announcementRoutes,
   feedbackRoutes,
   uklUplRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  base: process.env.MIX_LARAVUE_PATH,
-  routes: constantRoutes,
-});
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    base: process.env.MIX_LARAVUE_PATH,
+    routes: constantRoutes,
+  });
 
 const router = createRouter();
 

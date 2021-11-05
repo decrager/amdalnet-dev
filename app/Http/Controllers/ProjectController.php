@@ -19,6 +19,10 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->lastInput) {
+            return Project::whereDoesntHave('team')->orderBy('id', 'DESC')->first();
+        }
+        
         return Project::select('projects.*', 'provinces.name as province', 'districts.name as district')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
