@@ -27,6 +27,7 @@ import feedbackRoutes from './modules/feedback';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
 import uklUplRoutes from './modules/uklupl';
+import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -200,18 +201,20 @@ export const asyncRoutes = [
   errorRoutes,
   projectRoutes,
   masterRoutes,
+  independentFormulatorTeamRoutes,
   announcementRoutes,
   feedbackRoutes,
   uklUplRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  base: process.env.MIX_LARAVUE_PATH,
-  routes: constantRoutes,
-});
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    base: process.env.MIX_LARAVUE_PATH,
+    routes: constantRoutes,
+  });
 
 const router = createRouter();
 
