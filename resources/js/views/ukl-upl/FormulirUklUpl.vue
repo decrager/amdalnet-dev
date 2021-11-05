@@ -28,6 +28,7 @@
             </vsa-heading>
             <vsa-content>
               <matrik-identifikasi-dampak
+                :key="matriksComponentKey"
                 :id-project="postForm.id_project"
               />
             </vsa-content>
@@ -78,11 +79,11 @@ export default {
         },
         mappings: {},
       },
+      matriksComponentKey: 0,
     };
   },
   mounted() {
     this.setProjectId();
-    console.log(this.postForm);
   },
   methods: {
     setProjectId(){
@@ -94,18 +95,17 @@ export default {
     },
     handleSaveRonaAwalData(data) {
       this.postForm.rona_awal = data;
-      console.log(this.postForm);
     },
     async handleSaveComponents(data){
       this.postForm.rona_awal.components = await data;
-      console.log(this.postForm.rona_awal);
     },
     async handleSaveRonaAwals(data){
       this.postForm.rona_awal.rona_awals = await data;
-      console.log(this.postForm.rona_awal);
     },
     handleUpdateComponents(data){
       this.postForm.rona_awal.components = data;
+      console.log('re-render matriks');
+      this.matriksComponentKey++;
     },
     handleUpdateRonaAwals(data){
       this.postForm.rona_awal.rona_awals = data;
