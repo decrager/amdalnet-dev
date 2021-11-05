@@ -28,7 +28,7 @@ export default {
   components: { ComponentTable },
   data() {
     return {
-      komponenKegiatan: [],
+      components: [],
       projectStages: [],
       data: {},
     };
@@ -44,14 +44,14 @@ export default {
       const components = await componentResource.list({
         all: true,
       });
-      this.komponenKegiatan = components.data;
+      this.components = components.data;
       const dataPerStep = {};
       this.projectStages.map((s) => {
         dataPerStep[s.id] = [];
       });
       const data = {};
       this.projectStages.map((s) => {
-        this.komponenKegiatan.map((k) => {
+        this.components.map((k) => {
           if (k.id_project_stage === s.id){
             dataPerStep[k.id_project_stage].push(k);
           }
@@ -60,14 +60,14 @@ export default {
       });
       this.data = data;
 
-      this.$emit('handleSaveComponents', this.komponenKegiatan);
+      this.$emit('handleSaveComponents', this.components);
     },
     async handleRenderTable(){
       this.getData();
     },
     handleUpdateComponents(data){
-      this.komponenKegiatan.push(data);
-      this.$emit('handleUpdateComponents', this.komponenKegiatan);
+      this.components.push(data);
+      this.$emit('handleUpdateComponents', this.components);
     },
   },
 };
