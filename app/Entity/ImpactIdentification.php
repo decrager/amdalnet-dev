@@ -14,6 +14,18 @@ class ImpactIdentification extends Model
         'id_change_type',
         'id_unit',
         'nominal',
+        'management_effort',
+        'management_location',
+        'management_period',
+        'management_institution_executor',
+        'management_institution_recipient',
+        'management_institution_supervisor',
+        'monitoring_effort',
+        'monitoring_location',
+        'monitoring_period',
+        'monitoring_institution_executor',
+        'monitoring_institution_recipient',
+        'monitoring_institution_supervisor',
     ];
 
     public function project(){
