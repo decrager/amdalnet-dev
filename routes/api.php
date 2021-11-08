@@ -180,3 +180,5 @@ Route::apiResource('impact-identifications', 'ImpactIdentificationController');
 Route::apiResource('env-params', 'EnvParamController');
 Route::apiResource('params', 'ParamController');
 Route::apiResource('units', 'UnitController');
+Route::apiResource('project-components', 'ProjectComponentController');
+Route::apiResource('project-rona-awals', 'ProjectRonaAwalController');
