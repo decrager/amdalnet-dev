@@ -73,11 +73,9 @@ export default {
     return {
       postForm: {
         id_project: 0,
-        rona_awal: {
-          components: [],
-          rona_awals: [],
-        },
-        mappings: {},
+        components: [],
+        ronaAwals: [],
+        impact_identifications: [],
       },
       matriksComponentKey: 0,
     };
@@ -94,23 +92,27 @@ export default {
       console.log(tab, event);
     },
     handleSaveRonaAwalData(data) {
-      this.postForm.rona_awal = data;
+      this.postForm.ronaAwals = data;
     },
     async handleSaveComponents(data){
-      this.postForm.rona_awal.components = await data;
+      this.postForm.components = await data;
+      // console.log(this.postForm);
     },
     async handleSaveRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = await data;
+      this.postForm.ronaAwals = await data;
     },
     handleUpdateComponents(data){
-      this.postForm.rona_awal.components = data;
-      console.log('re-render matriks');
+      this.postForm.components = data;
+      // console.log('re-render matriks');
       this.matriksComponentKey++;
+      // console.log(this.postForm);
     },
     handleUpdateRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = data;
+      this.postForm.ronaAwals = data;
+      // console.log(this.postForm);
     },
     handleSaveForm() {
+      console.log(this.postForm);
     },
   },
 };

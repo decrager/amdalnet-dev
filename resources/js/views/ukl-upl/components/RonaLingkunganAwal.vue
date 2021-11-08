@@ -30,10 +30,8 @@ export default {
   components: { SumberDampak, RonaAwalTable },
   data() {
     return {
-      rona_awal: {
-        components: [],
-        rona_awals: [],
-      },
+      components: [],
+      ronaAwals: [],
     };
   },
   mounted() {
@@ -43,19 +41,19 @@ export default {
       this.$emit('handleSaveRonaAwalData', this.rona_awal);
     },
     async handleSaveComponents(data){
-      this.rona_awal.components = await data;
+      this.components = await data;
       this.$emit('handleSaveComponents', data);
     },
     handleUpdateComponents(data){
-      this.rona_awal.components = data;
+      this.components = data;
       this.$emit('handleUpdateComponents', data);
     },
     async handleSaveRonaAwals(data){
-      this.rona_awal.rona_awals = await data;
+      this.ronaAwals = await data;
       this.$emit('handleSaveRonaAwals', data);
     },
     handleUpdateRonaAwals(data){
-      this.rona_awal.rona_awals = data;
+      this.ronaAwals = data;
       this.$emit('handleUpdateRonaAwals', data);
     },
   },
