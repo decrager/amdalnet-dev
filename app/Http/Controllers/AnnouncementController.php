@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Validator;
 
 class AnnouncementController extends Controller
 {
+    const view_all_is_true = 1;
+    const view_all_is_false = 0;
+
     /**
      * Display a listing of the resource.
      *
@@ -22,10 +25,18 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): AnnouncementResource
     {
-        $getAllAnnouncement = Announcement::withCount('feedbacks')
-        ->when($request->has('project'), function ($query) use ($request) {
-            return $query->where('project_result', '=', $request->project);
-        })->orderby('start_date', 'DESC')->paginate(10);
+        if ($request->view_all == self::view_all_is_true) {
+            $getAllAnnouncement = Announcement::withCount('feedbacks')
+            ->when($request->has('project'), function ($query) use ($request) {
+                return $query->where('project_result', '=', $request->project);
+            })->orderby('start_date', 'DESC')->paginate(25);
+        } else {
+            $getAllAnnouncement = Announcement::withCount('feedbacks')
+            ->when($request->has('project'), function ($query) use ($request) {
+                return $query->where('project_result', '=', $request->project);
+            })->orderby('start_date', 'DESC')->limit(10)->get();
+        }
+
         // $getAllAnnouncement = Announcement::withCount('feedbacks')
         //     ->when($request->has('project'), function ($query) use ($request) {
         //         return $query->where('project_result', '=', $request->project);
