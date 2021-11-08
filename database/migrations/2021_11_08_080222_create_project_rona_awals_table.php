@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEnvironmentalExpertsTable extends Migration
+class CreateProjectRonaAwalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateEnvironmentalExpertsTable extends Migration
      */
     public function up()
     {
-        Schema::create('environmental_experts', function (Blueprint $table) {
+        Schema::create('project_rona_awals', function (Blueprint $table) {
             $table->id();
+            $table->string('id_project');
+            $table->string('id_rona_awal')->nullable();
             $table->string('name')->nullable();
-            $table->string('expertise')->nullable();
+            $table->integer('id_component_type')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ class CreateEnvironmentalExpertsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('environmental_experts');
+        Schema::dropIfExists('project_rona_awals');
     }
 }

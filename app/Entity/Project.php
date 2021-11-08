@@ -39,4 +39,9 @@ class Project extends Model
         'biz_type',
         'id_project',
     ];
+
+    public function team()
+    {
+        return $this->hasOne(FormulatorTeam::class, 'id_project', 'id');
+    }
 }

@@ -6,8 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class FormulatorTeam extends Model
 {
-    public function formulator()
+
+    public function member()
     {
-        return $this->belongsToMany(Formulator::class, 'teams', 'id_formulator_team', 'id_formulator');
+        return $this->hasMany(FormulatorTeamMember::class, 'id_formulator_team', 'id');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'id_project', 'id');
     }
 }
