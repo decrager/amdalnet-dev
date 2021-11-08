@@ -182,3 +182,4 @@ Route::apiResource('params', 'ParamController');
 Route::apiResource('units', 'UnitController');
 Route::apiResource('project-components', 'ProjectComponentController');
 Route::apiResource('project-rona-awals', 'ProjectRonaAwalController');
+Route::apiResource('change-types', 'ChangeTypeController');
