@@ -15,8 +15,8 @@ class CreateProjectComponentsTable extends Migration
     {
         Schema::create('project_components', function (Blueprint $table) {
             $table->id();
-            $table->string('id_project');
-            $table->string('id_component')->nullable();
+            $table->integer('id_project');
+            $table->integer('id_component')->nullable();
             $table->string('name')->nullable();
             $table->integer('id_project_stage')->nullable();
             $table->timestamps();
