@@ -101,6 +101,7 @@ export default {
       this.data = data;
     },
     handleSubmitRonaAwal() {
+      this.ronaAwal.id = null;
       this.ronaAwals.push(this.ronaAwal);
       this.reloadData();
       this.$emit('handleUpdateRonaAwals', this.ronaAwals);

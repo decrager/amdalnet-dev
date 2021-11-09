@@ -29,14 +29,9 @@ const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'MatrikIdentifikasiDampak',
-  props: {
-    idProject: {
-      type: Number,
-      default: () => 0,
-    },
-  },
   data() {
     return {
+      idProject: 0,
       header: [],
       projectStages: [],
       components: [],
@@ -47,6 +42,7 @@ export default {
     };
   },
   mounted() {
+    this.idProject = parseInt(this.$route.params && this.$route.params.id);
     this.getData();
   },
   methods: {

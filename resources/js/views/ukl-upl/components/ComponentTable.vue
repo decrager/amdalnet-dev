@@ -78,6 +78,7 @@ export default {
       this.showAddDialog = false;
     },
     handleSubmitComponent(){
+      this.component.id = null;
       this.$emit('handleUpdateComponents', this.component);
       this.showAddDialog = false;
     },
