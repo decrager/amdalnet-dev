@@ -14,7 +14,6 @@
             </vsa-heading>
             <vsa-content>
               <rona-lingkungan-awal
-                @handleSaveRonaAwalData="handleSaveRonaAwalData"
                 @handleSaveComponents="handleSaveComponents"
                 @handleSaveRonaAwals="handleSaveRonaAwals"
                 @handleUpdateComponents="handleUpdateComponents"
@@ -29,7 +28,6 @@
             <vsa-content>
               <matrik-identifikasi-dampak
                 :key="matriksComponentKey"
-                :id-project="postForm.id_project"
               />
             </vsa-content>
           </vsa-item>
@@ -72,12 +70,10 @@ export default {
   data() {
     return {
       postForm: {
-        id_project: 0,
-        rona_awal: {
-          components: [],
-          rona_awals: [],
-        },
-        mappings: {},
+        idProject: 0,
+        components: [],
+        ronaAwals: [],
+        impact_identifications: [],
       },
       matriksComponentKey: 0,
     };
@@ -88,29 +84,30 @@ export default {
   methods: {
     setProjectId(){
       const id = this.$route.params && this.$route.params.id;
-      this.postForm.id_project = id;
+      this.postForm.idProject = id;
     },
     handleClick(tab, event) {
       console.log(tab, event);
     },
-    handleSaveRonaAwalData(data) {
-      this.postForm.rona_awal = data;
-    },
     async handleSaveComponents(data){
-      this.postForm.rona_awal.components = await data;
+      this.postForm.components = await data;
+      // console.log(this.postForm);
     },
     async handleSaveRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = await data;
+      this.postForm.ronaAwals = await data;
     },
     handleUpdateComponents(data){
-      this.postForm.rona_awal.components = data;
-      console.log('re-render matriks');
+      this.postForm.components = data;
+      // console.log('re-render matriks');
       this.matriksComponentKey++;
+      console.log(this.postForm);
     },
     handleUpdateRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = data;
+      this.postForm.ronaAwals = data;
+      console.log(this.postForm);
     },
     handleSaveForm() {
+      console.log(this.postForm);
     },
   },
 };
