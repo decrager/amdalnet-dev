@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\ProjectComponent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProjectComponentController extends Controller
 {
@@ -35,7 +36,24 @@ class ProjectComponentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = $request->validate([
+            'id_project' => 'required',
+            'id_component' => 'required',
+            'id_project_stage' => 'required',
+            'name' => 'required',
+        ]);
+
+        if ($validator['id_component'] != null){
+            // only save id_component
+            $validator['id_project_stage'] = null;
+            $validator['name'] = null;
+        }
+        DB::beginTransaction();
+        if (ProjectComponent::create($validator)){
+            DB::commit();
+        } else {
+            DB::rollBack();
+        }
     }
 
     /**

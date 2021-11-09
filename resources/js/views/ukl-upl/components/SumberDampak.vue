@@ -8,6 +8,7 @@
         <component-table
           :data="data[stage.id]"
           @handleUpdateComponents="handleUpdateComponents"
+          @handleDeleteComponent="handleDeleteComponent"
           @handleRenderTable="handleRenderTable"
         />
       </el-col>
@@ -45,6 +46,11 @@ export default {
         all: true,
       });
       this.components = components.data;
+      this.reloadData();
+
+      this.$emit('handleSaveComponents', this.components);
+    },
+    reloadData() {
       const dataPerStep = {};
       this.projectStages.map((s) => {
         dataPerStep[s.id] = [];
@@ -59,14 +65,18 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
-
-      this.$emit('handleSaveComponents', this.components);
     },
-    async handleRenderTable(){
+    async handleRenderTable() {
       this.getData();
     },
-    handleUpdateComponents(data){
+    handleUpdateComponents(data) {
       this.components.push(data);
+      this.reloadData();
+      this.$emit('handleUpdateComponents', this.components);
+    },
+    handleDeleteComponent(id) {
+      this.components = this.components.filter(component => component.id !== id);
+      this.reloadData();
       this.$emit('handleUpdateComponents', this.components);
     },
   },

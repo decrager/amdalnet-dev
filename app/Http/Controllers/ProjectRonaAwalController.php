@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\ProjectRonaAwal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProjectRonaAwalController extends Controller
 {
@@ -35,7 +36,24 @@ class ProjectRonaAwalController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = $request->validate([
+            'id_project' => 'required',
+            'id_rona_awal' => 'required',
+            'id_component_type' => 'required',
+            'name' => 'required',
+        ]);
+
+        if ($validator['id_rona_awal'] != null){
+            // only save id_rona_awal
+            $validator['id_component_type'] = null;
+            $validator['name'] = null;
+        }
+        DB::beginTransaction();
+        if (ProjectRonaAwal::create($validator)){
+            DB::commit();
+        } else {
+            DB::rollBack();
+        }
     }
 
     /**
