@@ -741,7 +741,8 @@ export default {
 </script>
 <style>
 .el-collapse-item__header {
-  background-color: #296d36;
+  /* background-color: #296d36; */
+  background-color: #1E5128;
   padding-left: 10px;
   font-size: large;
   font-weight: bold;
