@@ -3,7 +3,7 @@
     <div class="titleDetail">
       <el-row>
         <el-col :span="24">
-          <h1>Informasi Rencana Kegiatan</h1>
+          <h1><i class="el-icon-info" /> Rencana Kegiatan</h1>
         </el-col>
       </el-row>
     </div>
@@ -53,38 +53,53 @@
                 {{ selectedAnnouncement.pic_address }}
               </td>
             </tr>
+          </tbody>
+        </table>
+      </el-col>
+    </el-row>
+    <div class="titleDetail">
+      <el-row>
+        <el-col :span="24">
+          <h1><i class="el-icon-document" /> Deskripsi</h1>
+        </el-col>
+      </el-row>
+    </div>
+    <el-row>
+      <el-col :span="12">
+        <table class="table__striped">
+          <tbody>
             <tr>
-              <td class="title__table">No. Telp Pemrakarsa</td>
-              <td class="value__table">
-                {{ selectedAnnouncement.pic_address }}
-              </td>
-            </tr>
-            <tr>
-              <td class="title__table">Email Pemrakarsa</td>
-              <td class="value__table">-</td>
-            </tr>
-            <tr>
-              <td class="title__table">Provinsi Pemrakarsa</td>
-              <td class="value__table">-</td>
+              <td class="title__table" colspan="2"><span v-html="selectedAnnouncement.description" /></td>
             </tr>
           </tbody>
         </table>
       </el-col>
+    </el-row>
+    <div class="titleDetail">
+      <el-row>
+        <el-col :span="24">
+          <h1><i class="el-icon-circle-check" /> Penapisan</h1>
+        </el-col>
+      </el-row>
+    </div>
+    <el-row>
       <el-col :span="12">
-        <div class="hasil__penapisan">
-          <div>
-            <h2><i class="el-icon-document" /> Deskripsi</h2>
-          </div>
-        </div>
-        <!-- <table class="table__striped">
+        <table class="table__striped">
           <tbody>
             <tr>
-              <td colspan="2">
-                <span v-html="selectedAnnouncement.description" />
+              <td class="title__table">No Registrasi</td>
+              <td class="value__table">
+                {{ selectedAnnouncement.id_project }}
+              </td>
+            </tr>
+            <tr>
+              <td class="title__table">Jenis Dokumen</td>
+              <td class="value__table">
+                {{ selectedAnnouncement.required_doc }}
               </td>
             </tr>
           </tbody>
-        </table> -->
+        </table>
       </el-col>
     </el-row>
     <el-row>
@@ -241,6 +256,10 @@ export default {
 };
 </script>
 <style scoped>
+.titleDetail h1 {
+  font-size: 19px;
+  margin-top:15px !important;
+}
 .detailPengumuman {
 background: #365337;
 padding: 1.5rem;
