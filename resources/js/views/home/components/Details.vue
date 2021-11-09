@@ -103,7 +103,6 @@
           </table>
         </el-col>
       </el-row>
-
       <!-- <div class="information__wrapper">
           <div class="first__info">
             <div class="table__wrapper">
