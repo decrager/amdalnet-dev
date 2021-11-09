@@ -8,6 +8,7 @@ use DateInterval;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -51,17 +52,28 @@ class FeedbackController extends Controller
             'phone' => 'required',
             'email' => 'required',
             'concern' => 'required',
+            'expectation' => 'required',
+            'rating' => 'required',
             'photo_filepath' => 'image|file',
             'responder_type_id' => 'required',
         ]);
 
         if ($request->file('photo_filepath')) {
-            $validator['photo_filepath'] = $request->file('photo_filepath')->store('/images/spt');
+            $name = 'images/spt/' . uniqid() . '.' . $request->file('photo_filepath')->extension();
+            $validator['photo_filepath'] = $request->file('photo_filepath')->storePubliclyAs('public', $name);
         };
 
+        DB::beginTransaction();
         $validator['announcement_id'] = $request->announcement_id;
 
-        return new FeedbackResource(Feedback::create($validator));       
+        $feedback = Feedback::create($validator);
+        if ($feedback){
+            DB::commit();
+        } else {
+            DB::rollBack();
+        }
+
+        return new FeedbackResource($feedback);       
     }
 
     /**
@@ -111,6 +123,8 @@ class FeedbackController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {            
             $params = $request->all();
+
+            DB::beginTransaction();
             // check base64 string
             $data = $params['photo_filepath'];
             $photo_filepath = '';
@@ -152,7 +166,13 @@ class FeedbackController extends Controller
                 $feedback->deleted_at = $deleted_at;
             }
 
-            $feedback->save();
+            $saved = $feedback->save();
+
+            if ($saved){
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
         }
         return new FeedbackResource($feedback);
     }

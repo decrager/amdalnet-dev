@@ -22,10 +22,14 @@ class ComponentController extends Controller
         // } else {
         //     return ComponentResource::collection(Component::all());
         // }
-
-        return Component::select('components.*', 'project_stages.name as project_stage')->where(function ($query) use ($request) {
-            return $request->idProjectStage ? $query->where('id_project_stage', $request->idProjectStage) : '';
-        })->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')->orderBy('components.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
+        $params = $request->all();
+        if (isset($params['all']) && $params['all']) {
+            return ComponentResource::collection(Component::all());
+        } else {
+            return Component::select('components.*', 'project_stages.name as project_stage')->where(function ($query) use ($request) {
+                return $request->idProjectStage ? $query->where('id_project_stage', $request->idProjectStage) : '';
+            })->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')->orderBy('components.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
+        }
     }
 
     /**
@@ -139,7 +143,7 @@ class ComponentController extends Controller
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
-    
+
         return response()->json(null, 204);
     }
 }

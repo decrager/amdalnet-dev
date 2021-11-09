@@ -94,4 +94,23 @@ export default {
     background: #fff url('/images/check.png') no-repeat center center;
     background-size: 40%;
 }
+
+@media screen and (max-width: 450px) {
+  .progressbar li.active {
+    line-height: 12px;
+    color: #2E7932;
+    font-weight: 400;
+    font-size: 7px;
+  }
+  .progressbar li:before {
+    width: 25px;
+    height: 25px;
+        border: none
+
+}
+
+.progressbar li:after {
+     top: 15px;
+}
+}
 </style>

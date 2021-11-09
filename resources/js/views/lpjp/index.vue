@@ -1,33 +1,35 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >
-        {{ 'Tambah LPJP' }}
-      </el-button>
-    </div>
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
-      <el-tab-pane label="LPJP" name="lpjp">
-        <lpjp-table
-          :loading="loading"
-          :list="list"
-          @handleEditForm="handleEditForm($event)"
-          @handleDelete="handleDelete($event)"
-        />
-      </el-tab-pane>
-      <el-tab-pane label="LPJP Aktif" name="lpjpAktif">
-        <lpjp-table
-          :loading="loading"
-          :list="listActive"
-          @handleEditForm="handleEditForm($event)"
-          @handleDelete="handleDelete($event)"
-        />
-      </el-tab-pane>
-    </el-tabs>
+    <el-card>
+      <div class="filter-container">
+        <el-button
+          class="filter-item"
+          type="primary"
+          icon="el-icon-plus"
+          @click="handleCreate"
+        >
+          {{ 'Tambah LPJP' }}
+        </el-button>
+      </div>
+      <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
+        <el-tab-pane label="LPJP" name="lpjp">
+          <lpjp-table
+            :loading="loading"
+            :list="list"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="LPJP Aktif" name="lpjpAktif">
+          <lpjp-table
+            :loading="loading"
+            :list="listActive"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
+      </el-tabs>
+    </el-card>
   </div>
 </template>
 
@@ -80,7 +82,8 @@ export default {
     handleCreate() {
       this.$router.push({
         name: 'createLpjp',
-        params: { lpjp: {}},
+        // eslint-disable-next-line object-curly-spacing
+        params: { lpjp: {} },
       });
     },
     handleEditForm(id) {
@@ -92,7 +95,8 @@ export default {
     },
     handleDelete({ id, nama }) {
       this.$confirm(
-        'apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan',
+        'apakah anda yakin akan menghapus ' + nama + '. ?',
+        'Peringatan',
         {
           confirmButtonText: 'OK',
           cancelButtonText: 'Cancel',

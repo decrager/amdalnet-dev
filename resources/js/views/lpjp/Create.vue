@@ -22,7 +22,10 @@
       <el-row :gutter="32">
         <el-col :span="12">
           <el-form-item label="No. Registrasi LPJP" prop="nomorRegistrasi">
-            <el-input v-model="currentLpjp.reg_no" placeholder="No. Registrasi LPJP" />
+            <el-input
+              v-model="currentLpjp.reg_no"
+              placeholder="No. Registrasi LPJP"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -36,7 +39,7 @@
           <el-form-item label="Provinsi" prop="provinsi">
             <el-select
               v-model="currentLpjp.id_prov"
-              placeholder="Province"
+              placeholder="Provinsi"
               clearable
               class="filter-item"
               style="width: 100%"
@@ -73,7 +76,10 @@
       <el-row :gutter="32">
         <el-col :span="12">
           <el-form-item label="No. Telp" prop="noTelp">
-            <el-input v-model="currentLpjp.mobile_phone_no" placeholder="No. Telp" />
+            <el-input
+              v-model="currentLpjp.mobile_phone_no"
+              placeholder="No. Telp"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -93,7 +99,10 @@
               action="#"
               :show-file-list="false"
             >
-              <el-button size="small" type="primary">Click to upload</el-button><span style="padding-left: 10px">{{
+              <el-button size="small" type="primary">
+                Click to upload
+              </el-button>
+              <span style="padding-left: 10px">{{
                 fileName || currentLpjp.cert_file
               }}</span>
               <div slot="tip" class="el-upload__tip">
@@ -132,7 +141,10 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="Contact Person" prop="contactPerson">
-            <el-input v-model="currentLpjp.contact_person" placeholder="Contact Person" />
+            <el-input
+              v-model="currentLpjp.contact_person"
+              placeholder="Contact Person"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -144,14 +156,17 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="Link Web" prop="linkWeb">
-            <el-input v-model="currentLpjp.url_address" placeholder="http://braindevs.com" />
+            <el-input
+              v-model="currentLpjp.url_address"
+              placeholder="http://braindevs.com"
+            />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleCancel()"> Cancel </el-button>
-      <el-button type="primary" @click="handleSubmit()"> Confirm </el-button>
+      <el-button @click="handleCancel()"> Batal </el-button>
+      <el-button type="primary" @click="handleSubmit()"> Simpan </el-button>
     </div>
   </div>
 </template>
@@ -191,7 +206,7 @@ export default {
       // change all district by province
       this.getDistricts(value);
     },
-    async getProvinces(){
+    async getProvinces() {
       const { data } = await provinceResource.list({});
       this.provinceOptions = data.map((i) => {
         return { value: i.id, label: i.name };

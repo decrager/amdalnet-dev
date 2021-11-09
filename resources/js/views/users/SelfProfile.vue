@@ -3,8 +3,9 @@
     <el-form v-if="user" :model="user">
       <el-row :gutter="20">
         <el-col :span="6">
-          <user-card :user="user" />
-          <user-bio />
+          <!-- <user-card :user="user" /> -->
+          <user-detail-card v-if="user" :user="user" />
+          <!-- <user-bio /> -->
         </el-col>
         <el-col :span="18">
           <user-activity :user="user" />
@@ -15,13 +16,16 @@
 </template>
 
 <script>
-import UserBio from './components/UserBio';
-import UserCard from './components/UserCard';
+import Resource from '@/api/resource';
+// import UserBio from './components/UserBio';
+// import UserCard from './components/UserCard';
+import UserDetailCard from './components/UserDetailCard';
 import UserActivity from './components/UserActivity';
+const initiatorResource = new Resource('initiatorsByEmail');
 
 export default {
   name: 'SelfProfile',
-  components: { UserBio, UserCard, UserActivity },
+  components: { UserActivity, UserDetailCard },
   data() {
     return {
       user: {},
@@ -36,7 +40,10 @@ export default {
   methods: {
     async getUser() {
       const data = await this.$store.dispatch('user/getInfo');
+      data.initiatorData = await initiatorResource.list({ email: data.email });
       this.user = data;
+
+      console.log(this.user);
     },
   },
 };

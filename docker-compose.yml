@@ -26,6 +26,9 @@ services:
       - ./:/var/www
       - ./default.conf:/etc/nginx/conf.d/default.conf
       # - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - laravel
+      
   database:
     image: postgres:13
     ports:

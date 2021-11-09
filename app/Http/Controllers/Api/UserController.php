@@ -9,6 +9,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Entity\Initiator;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
 use App\Laravue\JsonResponse;
@@ -20,6 +21,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Validator;
 
 /**
@@ -137,8 +139,49 @@ class UserController extends BaseController
                 return response()->json(['error' => 'Email has been taken'], 403);
             }
 
+            //checking if this user is initiator
+            $initiator = Initiator::where('email', $user->email)->first();
+            if($initiator && $initiator->email !== $email){
+                // update initiator with user email
+                $initiator->email = $email;
+                $initiator->save();
+            }
+
             $user->name = $request->get('name');
             $user->email = $email;
+            $user->save();
+            return new UserResource($user);
+        }
+    }
+
+    //for only update avatar
+    public function updateAvatar(Request $request, User $user)
+    {
+        if ($user === null) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        if ($user->isAdmin()) {
+            return response()->json(['error' => 'Admin can not be modified'], 403);
+        }
+
+        $currentUser = Auth::user();
+        if (!$currentUser->isAdmin()
+            && $currentUser->id !== $user->id
+            && !$currentUser->hasPermission(\App\Laravue\Acl::PERMISSION_MANAGE_USER)
+        ) {
+            return response()->json(['error' => 'Permission denied'], 403);
+        }
+
+        $validator = Validator::make($request->all(), $this->getAvatarValidationRules());
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            // create avatar file
+            $file = $request->file('file');
+            $name = '/avatar/' . uniqid() . '.' . $file->extension();
+            $file->storePubliclyAs('public', $name);
+            $user->avatar = Storage::url($name);
+
             $user->save();
             return new UserResource($user);
         }
@@ -228,6 +271,12 @@ class UserController extends BaseController
                 'required',
                 'array'
             ],
+        ];
+    }
+    private function getAvatarValidationRules()
+    {
+        return [
+            'file' => 'required',
         ];
     }
 }

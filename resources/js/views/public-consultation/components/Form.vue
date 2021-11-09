@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div><h2>Hasil Konsultasi Publik</h2></div>
+    <div><h3 style="color: #3AB06F;">Hasil Konsultasi Publik</h3></div>
     <el-form
       ref="postForm"
       :model="postForm"
@@ -160,7 +160,8 @@
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer" align="right">
-      <el-button type="primary" @click="handleSubmit()"> Continue </el-button>
+      <el-button type="danger" @click="handleBack()"> Kembali </el-button>
+      <el-button type="primary" @click="handleSubmit()"> Simpan & Lanjutkan </el-button>
     </div>
   </div>
 </template>
@@ -173,6 +174,7 @@ import axios from 'axios';
 import _ from 'lodash';
 
 const announcementResource = new Resource('announcements');
+const projectResource = new Resource('projects');
 
 const defaultForm = {
   announcement_id: 0,
@@ -198,18 +200,28 @@ export default {
     return {
       postForm: Object.assign({}, defaultForm),
       userId: 0,
+      currentProject: {},
     };
   },
   mounted() {
     const annId = this.$route.params && this.$route.params.id;
     this.postForm.announcement_id = annId;
     this.userId = this.$store.getters.userId;
-    this.getProjectId(annId);
+    this.getProjectDetail(annId);
   },
   methods: {
-    async getProjectId(annId) {
+    async getProjectDetail(annId) {
       const data = await announcementResource.get(annId);
       this.postForm.project_id = data.project_id;
+
+      const project = await projectResource.get(data.project_id);
+      this.currentProject = project;
+    },
+    handleBack() {
+      this.$router.push({
+        name: 'publishProject',
+        params: { project: this.currentProject },
+      });
     },
     async handleSubmit() {
       const headers = { 'Content-Type': 'multipart/form-data' };

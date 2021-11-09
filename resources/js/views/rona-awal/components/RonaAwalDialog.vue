@@ -1,12 +1,17 @@
 <template>
-  <el-dialog :title="'Buat Rona Lingkungan'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
+  <el-dialog
+    :title="'Buat Rona Lingkungan'"
+    :visible.sync="show"
+    :close-on-click-modal="false"
+    :show-close="false"
+  >
     <div class="form-container">
       <el-form ref="categoryForm" :model="rona">
         <el-row>
           <el-form-item label="Jenis Komponen" prop="jenisKomponen">
             <el-select
               v-model="rona.id_component_type"
-              placeholder="Select"
+              placeholder="Pilih"
               style="width: 100%"
             >
               <el-option
@@ -25,8 +30,10 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="handleCancelRonaAwal()"> Cancel </el-button>
-        <el-button type="primary" @click="handleSubmitRonaAwal()"> Confirm </el-button>
+        <el-button @click="handleCancelRonaAwal()"> Batal </el-button>
+        <el-button type="primary" @click="handleSubmitRonaAwal()">
+          Simpan
+        </el-button>
       </div>
     </div>
   </el-dialog>
@@ -46,7 +53,7 @@ export default {
       default: () => [],
     },
   },
-  data(){
+  data() {
     return {
       fileName: 'File Not Found',
     };

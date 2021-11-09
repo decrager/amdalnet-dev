@@ -19,7 +19,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        return DB::table('projects')->select('projects.*', 'provinces.name as province', 'districts.name as district')->where(function ($query) use ($request) {
+        return Project::select('projects.*', 'provinces.name as province', 'districts.name as district')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -70,7 +70,7 @@ class ProjectController extends Controller
                 'location_desc' => 'required',
                 'risk_level' => 'required',
                 'project_year' => 'required',
-                'id_drafting_team' => 'required',
+                'id_formulator_team' => 'required',
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
@@ -104,7 +104,7 @@ class ProjectController extends Controller
                 'location_desc' => $params['location_desc'],
                 'risk_level' => $params['risk_level'],
                 'project_year' => $params['project_year'],
-                'id_formulator_team' => $params['id_drafting_team'],
+                'id_formulator_team' => $params['id_formulator_team'],
                 'kbli' => $params['kbli'],
                 'result_risk' => $params['result_risk'],
                 'required_doc' => $params['required_doc'],
@@ -147,6 +147,11 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
+
+        if ($project === null) {
+            return response()->json(['error' => 'project not found'], 404);
+        }
+
         //validate request
 
         $validator = Validator::make(
@@ -167,7 +172,7 @@ class ProjectController extends Controller
                 'location_desc' => 'required',
                 'risk_level' => 'required',
                 'project_year' => 'required',
-                'id_drafting_team' => 'required',
+                'id_formulator_team' => 'required',
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
@@ -204,7 +209,7 @@ class ProjectController extends Controller
             $project->location_desc = $params['location_desc'];
             $project->risk_level = $params['risk_level'];
             $project->project_year = $params['project_year'];
-            $project->id_formulator_team = $params['id_drafting_team'];
+            $project->id_formulator_team = $params['id_formulator_team'];
             $project->kbli = $params['kbli'];
             $project->result_risk = $params['result_risk'];
             $project->required_doc = $params['required_doc'];

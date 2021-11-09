@@ -1,48 +1,53 @@
 <template>
   <div class="tabset">
-    <input id="tab1" type="radio" name="tabset" aria-controls="amdal" checked>
-    <label for="tab1">AMDAL</label>
-    <input id="tab2" type="radio" name="tabset" aria-controls="ukl-upl">
-    <label for="tab2">UKL / UPL</label>
+    <el-tabs type="card">
+      <el-tab-pane label="AMDAL">
+        <div v-for="amdal in amdals.data" :key="amdal.id" class="announce__box__wrapper">
+          <div class="announce__box__icon">
+            <img alt="" src="/images/list.svg">
+          </div>
+          <div class="announce__box__desc">
+            <p class="announce__box__desc__content">{{ amdal.project_type }}</p>
+            <p class="announce__box__desc__content text__special">{{ amdal.pic_name }}</p>
+            <p class="announce__box__desc__content">Dampak Potensial : {{ amdal.potential_impact }}</p>
+            <p class="announce__box__desc__content">{{ formatDate(amdal.start_date) }} | {{ amdal.feedbacks_count }}
+              Tanggapan</p>
+          </div>
+          <div class="announce__box__button">
+            <button class="button__tanggapan" @click="openDetails(amdal.id)"><i class="el-icon-document" /> Berikan
+              Tanggapan
+            </button>
+          </div>
+        </div>
+      </el-tab-pane>
 
-    <div class="tab-panels">
-      <section id="amdal" class="tab-panel">
-        <div v-for="amdals in amdal" :key="amdals.id" class="announce__box__wrapper">
+      <el-tab-pane label="UKL - UPL">
+        <div v-for="uklupl in uklupls.data" :key="uklupl.id" class="announce__box__wrapper">
           <div class="announce__box__icon">
-            <img src="/images/list.svg" alt="">
+            <img alt="" src="/images/list.svg">
           </div>
           <div class="announce__box__desc">
-            <p class="announce__box__desc__content">{{ amdals.project_type }}</p>
-            <p class="announce__box__desc__content text__special">{{ amdals.pic_name }}</p>
-            <p class="announce__box__desc__content">Dampak Potensial : {{ amdals.potential_impact }}</p>
-            <p class="announce__box__desc__content">{{ formatDate(amdals.start_date) }} | {{ amdals.feedbacks_count }} Tanggapan</p>
+            <p class="announce__box__desc__content">{{ uklupl.project_type }}</p>
+            <p class="announce__box__desc__content text__special">{{ uklupl.pic_name }}</p>
+            <p class="announce__box__desc__content">Dampak Potensial : {{ uklupl.potential_impact }}</p>
+            <p class="announce__box__desc__content">{{ formatDate(uklupl.start_date) }} | {{ uklupl.feedbacks_count }}
+              Tanggapan</p>
           </div>
           <div class="announce__box__button">
-            <button class="button__tanggapan" @click="createFeedback(amdals.id)">Berikan Tanggapan</button>
+            <button class="button__tanggapan" @click="openDetails(amdal.id)"><i class="el-icon-document" /> Berikan
+              Tanggapan
+            </button>
           </div>
         </div>
-      </section>
-      <section id="ukl-upl" class="tab-panel">
-        <div v-for="uklupls in uklupl" :key="uklupls.id" class="announce__box__wrapper">
-          <div class="announce__box__icon">
-            <img src="/images/list.svg" alt="">
-          </div>
-          <div class="announce__box__desc">
-            <p class="announce__box__desc__content">{{ uklupls.project_type }}</p>
-            <p class="announce__box__desc__content text__special">{{ uklupls.pic_name }}</p>
-            <p class="announce__box__desc__content">Dampak Potensial : {{ uklupls.potential_impact }}</p>
-            <p class="announce__box__desc__content">{{ formatDate(uklupls.start_date) }} | {{ uklupls.feedbacks_count }} Tanggapan</p>
-          </div>
-          <div class="announce__box__button">
-            <button class="button__tanggapan" @click="createFeedback(uklupls.id)">Berikan Tanggapan</button>
-          </div>
-        </div>
-      </section>
-    </div>
-    <CreateFeedback
-      :feedback="selectedFeedback"
-      :show="showIdDialog"
+
+      </el-tab-pane>
+
+    </el-tabs>
+
+    <AnnouncementDetail
       :announcement-id="selectedId"
+      :details="selectedAnnouncement"
+      :show="showDetailsDialog"
     />
   </div>
 </template>
@@ -51,115 +56,99 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import 'dayjs/locale/id';
-import CreateFeedback from '../components/CreateFeedback.vue';
+import AnnouncementDetail from './AnnouncementDetail';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'AnnouncementTabs',
   components: {
-    CreateFeedback,
+    AnnouncementDetail,
   },
   data() {
     return {
-      announcement: [],
-      amdal: [],
-      uklupl: [],
-      selectedFeedback: {},
+      selectedAnnouncement: {},
       showIdDialog: false,
+      showDetailsDialog: false,
       selectedId: 0,
+      showInitPopup: false,
     };
   },
-  async created() {
-    await this.getAnnouncement();
+  computed: {
+    ...mapGetters(['amdals', 'uklupls']),
+  },
+  created() {
+    this.$store.dispatch('getAmdal');
+    this.$store.dispatch('getUklupl');
   },
   methods: {
-    async getAnnouncement() {
-      await axios.get('/api/announcements')
-        .then(response => {
-          this.announcement = response.data.data;
-          this.announcement.forEach(amdalData => {
-            if (amdalData.project_result === 'AMDAL') {
-              this.amdal.push(amdalData);
-            }
-            if (amdalData.project_result === 'UKL-UPL') {
-              this.uklupl.push(amdalData);
-            }
-          });
-        });
-    },
     formatDate(value) {
       if (value) {
         dayjs.locale('id');
-        return dayjs(String(value)).format('DD-MMMM-YYYY');
+        return dayjs(String(value)).format('DD MMMM YYYY');
       }
     },
-    createFeedback(id) {
+    openDetails(id) {
       this.selectedId = id;
-      var toShow = {};
-      this.selectedFeedback = toShow;
-      this.showIdDialog = true;
+      this.selectedAnnouncement = {};
+      this.showDetailsDialog = true;
+      axios.get('/api/announcements/' + this.selectedId)
+        .then(response => {
+          this.selectedAnnouncement = response.data;
+        });
+    },
+    handleCloseDialog() {
+      this.showIdDialog = false;
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 
 .tabset {
   margin-top: 30px;
 }
 
-.tabset > input[type="radio"] {
-  position: absolute;
-  left: -200vw;
+.tabset >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
+  border-bottom-color: #FFFFFF;
+  color: #F6993F;
+  font-weight: 800;
+  background-color: #062307;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
-.tabset .tab-panel {
-  display: none;
-}
-
-.tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child,
-.tabset > input:nth-child(3):checked ~ .tab-panels > .tab-panel:nth-child(2),
-.tabset > input:nth-child(5):checked ~ .tab-panels > .tab-panel:nth-child(3),
-.tabset > input:nth-child(7):checked ~ .tab-panels > .tab-panel:nth-child(4),
-.tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
-.tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6) {
-  display: block;
-}
-
-.tabset > label {
-  position: relative;
-  display: inline-block;
-  padding: 15px 15px;
-  border: 1px solid transparent;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.tabset > label::after {
-  content: "";
-  position: absolute;
-  left: 15px;
-  bottom: 10px;
-  width: 22px;
-  height: 4px;
-}
-
-.tabset > label:hover,
-.tabset > input:focus + label {
+.tabset >>> .el-tabs--card > .el-tabs__header .el-tabs__item {
+  border-bottom-color: #FFFFFF;
   color: white;
-  font-weight: 700;
+  font-weight: 400;
+  border-left: none
 }
 
-.tabset > input:checked + label {
-  border-color: #ccc;
-  margin-bottom: -1px;
-  background-color: #062307
-}
+@media screen and (max-width: 450px) {
+  .announce__box__wrapper {
+    flex-direction: column;
+    row-gap: 10px;
+    align-items: flex-start;
+  }
 
-.tab-panel {
-  padding: 10px 0;
-  border-top: 1px solid #ccc;
+  .announce__box__icon {
+    display: none;
+  }
+
+  .announce__box__desc__content {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .button__tanggapan {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .button__tanggapan:hover {
+    transform: none;
+    transition: none;
+  }
 }
 </style>

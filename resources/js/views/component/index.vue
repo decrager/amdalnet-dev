@@ -1,35 +1,37 @@
 <template>
-  <div class="app-container">
-    <div class="filter-container">
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >
-        {{ 'Tambah Komponen' }}
-      </el-button>
-    </div>
-    <component-table
-      :loading="loading"
-      :list="list"
-      @handleEditForm="handleEditForm($event)"
-      @handleDelete="handleDelete($event)"
-    />
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="handleFilter"
-    />
-    <component-dialog
-      :component="component"
-      :show="show"
-      :options="componentOptions"
-      @handleSubmitComponent="handleSubmitComponent"
-      @handleCancelComponent="handleCancelComponent"
-    />
+  <div class="app-container" style="padding: 24px">
+    <el-card>
+      <div class="filter-container">
+        <el-button
+          class="filter-item"
+          type="primary"
+          icon="el-icon-plus"
+          @click="handleCreate"
+        >
+          {{ 'Tambah Komponen' }}
+        </el-button>
+      </div>
+      <component-table
+        :loading="loading"
+        :list="list"
+        @handleEditForm="handleEditForm($event)"
+        @handleDelete="handleDelete($event)"
+      />
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="handleFilter"
+      />
+      <component-dialog
+        :component="component"
+        :show="show"
+        :options="componentOptions"
+        @handleSubmitComponent="handleSubmitComponent"
+        @handleCancelComponent="handleCancelComponent"
+      />
+    </el-card>
   </div>
 </template>
 

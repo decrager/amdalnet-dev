@@ -39,7 +39,8 @@ class WorkflowTest extends Command
      */
     public function handle()
     {
-        $post = factory(BlogPost::class)->create();
+        // $post = factory(BlogPost::class)->create();
+        $post = BlogPost::factory()->create();
         $workflow = Workflow::get($post);
         $workflow = $post->workflow_get();
         
@@ -59,6 +60,7 @@ class WorkflowTest extends Command
         var_dump($post->workflow_can('publish')); // True
         var_dump($post->workflow_can('reject')); // True
         var_dump($post->workflow_can('to_review')); // False
+        // var_dump($post->workflow_get());
 
         // Get the post transitions
         echo "Get Transition:\n";

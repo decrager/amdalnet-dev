@@ -21,4 +21,9 @@ class Formulator extends Model
         'membership_status',
         'id_lsp',
     ];
+
+    public function teams()
+    {
+        return $this->belongsToMany(FormulatorTeam::class, 'teams', 'id_formulator', 'id_formulator_team');
+    }
 }

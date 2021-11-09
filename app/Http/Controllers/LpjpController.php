@@ -15,9 +15,18 @@ class LpjpController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return LpjpResource::collection(Lpjp::all());
+        return LpjpResource::collection(Lpjp::where(function($query) use ($request) {
+            if($request->active) {
+                return $query->where([['date_start', '<=', date('Y-m-d H:i:s')],['date_end', '>=', date('Y-m-d H:i:s')]])
+                            ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
+            }
+        })->with(['province' => function($query) {
+            return $query->select(['id', 'name']);
+        }, 'district' => function($query) {
+            return $query->select(['id', 'name']);
+        }])->get());
     }
 
     /**

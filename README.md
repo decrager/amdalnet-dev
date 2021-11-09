@@ -97,7 +97,7 @@ php artisan make:model 'Entity\BlogPost' --migration
 php artisan make:factory BlogPostFactory --model='Entity\BlogPost'
 php artisan migrate --seed
 php artisan db:wipe
-php artisan db:seed --class=BlogPostTableSeeder
+php artisan db:seed --class=RolesPermissionsUsersSeeder
 
 # test workflow
 php artisan workflow:test
@@ -113,4 +113,8 @@ docker-compose exec laravel bash
 ```
 sudo apt-get install -y graphviz libmcrypt-dev libjpeg-dev libpng-dev libfreetype6-dev libbz2-dev libonig-dev libzip-dev libpq-dev
 sudo apt-get install php-mbstring php-xml php-pgsql php-gd php-zip 
+```
+
+```
+sudo php /var/www/amdal/artisan octane:start --server=swoole --port=8000 
 ```
