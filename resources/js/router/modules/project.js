@@ -56,6 +56,7 @@ const projectRoutes = {
       name: 'editWorkspace',
       hidden: true,
       meta: { title: 'editWorkspace', icon: 'edit', noCache: true },
+      props: true,
     },
   ],
 };

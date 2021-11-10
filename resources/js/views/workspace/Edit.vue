@@ -172,11 +172,13 @@ export default {
   },
   computed: {
     padSrc() {
-      return 'http://localhost:9001/p/' + this.selectedTreeId;
+      console.log('src:', process.env.MIX_EHTERPAD_URL, this.selectedTreeId);
+      return process.env.MIX_EHTERPAD_URL + this.selectedTreeId;
     },
   },
   async mounted() {
-    console.log('props:', this.id, this.project);
+    console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
+    console.log(process.env.MIX_EHTERPAD_URL);
   },
   methods: {
     resize() {
