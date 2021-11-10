@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ProjectRonaAwal;
+use App\Http\Resources\ProjectRonaAwalResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,9 +14,20 @@ class ProjectRonaAwalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $params = $request->all();
+        if (isset($params['id_project'])){
+            $rona_awals = ProjectRonaAwal::select('project_rona_awals.*',
+                'rona_awal.name AS name_master',
+                'rona_awal.id_component_type AS id_component_type_master')
+                ->leftJoin('rona_awal', 'project_rona_awals.id_rona_awal', '=', 'rona_awal.id')
+                ->where('project_rona_awals.id_project', $params['id_project'])
+                ->get();
+            return ProjectRonaAwalResource::collection($rona_awals);
+        } else {
+            return ProjectRonaAwalResource::collection(ProjectRonaAwal::with('rona_awal')->get());
+        }
     }
 
     /**
