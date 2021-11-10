@@ -50,47 +50,47 @@ export default {
     },
     storeComponents() {
       this.components.map((component) => {
-        // var inserted = 0;
         component['id_component'] = component['id'];
         component['id_project'] = this.idProject;
-        projectComponentResource
-          .store(component)
-          .then((response) => {
-            // inserted++;
-          })
-          .catch((error) => {
-            console.log(error);
+      });
+      projectComponentResource
+        .store({
+          'components': this.components,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Komponen kegiatan berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
           });
-        // if (inserted === this.components.length) {
-        // }
-      });
-      this.$message({
-        message: 'Komponen Kegiatan Berhasil Disimpan',
-        type: 'success',
-        duration: 5 * 1000,
-      });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     storeRonaAwals() {
       this.ronaAwals.map((ronaAwal) => {
-        // var inserted = 0;
         ronaAwal['id_rona_awal'] = ronaAwal['id'];
         ronaAwal['id_project'] = this.idProject;
-        projectRonaAwalResource
-          .store(ronaAwal)
-          .then((response) => {
-            // inserted++;
-          })
-          .catch((error) => {
-            console.log(error);
+      });
+      projectRonaAwalResource
+        .store({
+          'rona_awals': this.ronaAwals,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Rona awal berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
           });
-        // if (inserted === this.ronaAwals.length) {
-        // }
-      });
-      this.$message({
-        message: 'Rona Lingkungan Awal Berhasil Disimpan',
-        type: 'success',
-        duration: 5 * 1000,
-      });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     async handleSaveComponents(data){
       this.components = await data;
