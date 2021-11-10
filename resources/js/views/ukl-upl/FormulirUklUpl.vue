@@ -7,33 +7,30 @@
         label-position="top"
         label-width="200px"
       >
-        <vsa-list>
-          <vsa-item>
+        <vsa-list :key="vsaListKey">
+          <vsa-item :init-active="ronaActive">
             <vsa-heading>
               RONA LINGKUNGAN AWAL
             </vsa-heading>
             <vsa-content>
               <rona-lingkungan-awal
-                @handleSaveRonaAwalData="handleSaveRonaAwalData"
                 @handleSaveComponents="handleSaveComponents"
                 @handleSaveRonaAwals="handleSaveRonaAwals"
                 @handleUpdateComponents="handleUpdateComponents"
                 @handleUpdateRonaAwals="handleUpdateRonaAwals"
+                @handleReloadVsaList="handleReloadVsaList"
               />
             </vsa-content>
           </vsa-item>
-          <vsa-item>
+          <vsa-item :init-active="matriksActive">
             <vsa-heading>
               MATRIKS IDENTIFIKASI DAMPAK
             </vsa-heading>
             <vsa-content>
-              <matrik-identifikasi-dampak
-                :key="matriksComponentKey"
-                :id-project="postForm.id_project"
-              />
+              <matrik-identifikasi-dampak />
             </vsa-content>
           </vsa-item>
-          <vsa-item>
+          <vsa-item :init-active="besaranActive">
             <vsa-heading>
               JENIS DAN BESARAN DAMPAK
             </vsa-heading>
@@ -72,14 +69,15 @@ export default {
   data() {
     return {
       postForm: {
-        id_project: 0,
-        rona_awal: {
-          components: [],
-          rona_awals: [],
-        },
-        mappings: {},
+        idProject: 0,
+        components: [],
+        ronaAwals: [],
+        impact_identifications: [],
       },
-      matriksComponentKey: 0,
+      vsaListKey: 0,
+      ronaActive: true,
+      matriksActive: false,
+      besaranActive: false,
     };
   },
   mounted() {
@@ -88,29 +86,44 @@ export default {
   methods: {
     setProjectId(){
       const id = this.$route.params && this.$route.params.id;
-      this.postForm.id_project = id;
+      this.postForm.idProject = id;
     },
     handleClick(tab, event) {
       console.log(tab, event);
     },
-    handleSaveRonaAwalData(data) {
-      this.postForm.rona_awal = data;
+    handleReloadVsaList(tab) {
+      this.vsaListKey = this.vsaListKey + 1;
+      if (tab === 1) {
+        this.ronaActive = true;
+        this.matriksActive = false;
+        this.besaranActive = false;
+      } else if (tab === 2) {
+        this.ronaActive = false;
+        this.matriksActive = true;
+        this.besaranActive = false;
+      } else if (tab === 3) {
+        this.ronaActive = false;
+        this.matriksActive = false;
+        this.besaranActive = true;
+      }
     },
     async handleSaveComponents(data){
-      this.postForm.rona_awal.components = await data;
+      this.postForm.components = await data;
+      // console.log(this.postForm);
     },
     async handleSaveRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = await data;
+      this.postForm.ronaAwals = await data;
     },
     handleUpdateComponents(data){
-      this.postForm.rona_awal.components = data;
-      console.log('re-render matriks');
-      this.matriksComponentKey++;
+      this.postForm.components = data;
+      console.log(this.postForm);
     },
     handleUpdateRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = data;
+      this.postForm.ronaAwals = data;
+      console.log(this.postForm);
     },
     handleSaveForm() {
+      console.log(this.postForm);
     },
   },
 };

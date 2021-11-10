@@ -22,40 +22,90 @@
 </template>
 
 <script>
+import Resource from '@/api/resource';
 import SumberDampak from './SumberDampak.vue';
 import RonaAwalTable from './RonaAwalTable.vue';
+const projectComponentResource = new Resource('project-components');
+const projectRonaAwalResource = new Resource('project-rona-awals');
 
 export default {
   name: 'RonaLingkunganAwal',
   components: { SumberDampak, RonaAwalTable },
   data() {
     return {
-      rona_awal: {
-        components: [],
-        rona_awals: [],
-      },
+      idProject: 0,
+      components: [],
+      ronaAwals: [],
     };
   },
   mounted() {
+    this.idProject = parseInt(this.$route.params && this.$route.params.id);
   },
   methods: {
     handleSaveForm(){
-      this.$emit('handleSaveRonaAwalData', this.rona_awal);
+      this.storeComponents();
+      this.storeRonaAwals();
+    },
+    storeComponents() {
+      this.components.map((component) => {
+        component['id_component'] = component['id'];
+        component['id_project'] = this.idProject;
+      });
+      projectComponentResource
+        .store({
+          'components': this.components,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Komponen kegiatan berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    storeRonaAwals() {
+      this.ronaAwals.map((ronaAwal) => {
+        ronaAwal['id_rona_awal'] = ronaAwal['id'];
+        ronaAwal['id_project'] = this.idProject;
+      });
+      projectRonaAwalResource
+        .store({
+          'rona_awals': this.ronaAwals,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Rona awal berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+          // reload accordion
+          this.$emit('handleReloadVsaList', 2);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     async handleSaveComponents(data){
-      this.rona_awal.components = await data;
+      this.components = await data;
       this.$emit('handleSaveComponents', data);
     },
     handleUpdateComponents(data){
-      this.rona_awal.components = data;
+      this.components = data;
       this.$emit('handleUpdateComponents', data);
     },
     async handleSaveRonaAwals(data){
-      this.rona_awal.rona_awals = await data;
+      this.ronaAwals = await data;
       this.$emit('handleSaveRonaAwals', data);
     },
     handleUpdateRonaAwals(data){
-      this.rona_awal.rona_awals = data;
+      this.ronaAwals = data;
       this.$emit('handleUpdateRonaAwals', data);
     },
   },

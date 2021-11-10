@@ -1,5 +1,14 @@
 <template>
   <div style="font-size: 10pt;">
+    <el-button
+      type="success"
+      size="small"
+      icon="el-icon-check"
+      style="margin-bottom: 10px;"
+      @click="handleSaveForm()"
+    >
+      Simpan Perubahan
+    </el-button>
     <table>
       <tr class="tr-header">
         <td v-for="comp of header[0]" :key="comp.id" :colspan="comp.colspan" :rowspan="comp.rowspan" align="center" class="td-header">
@@ -23,20 +32,15 @@
 <script>
 import Resource from '@/api/resource';
 const prjStageResource = new Resource('project-stages');
-const componentResource = new Resource('components');
-const ronaAwalResource = new Resource('rona-awals');
+const projectComponentResource = new Resource('project-components');
+const projectRonaAwalResource = new Resource('project-rona-awals');
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'MatrikIdentifikasiDampak',
-  props: {
-    idProject: {
-      type: Number,
-      default: () => 0,
-    },
-  },
   data() {
     return {
+      idProject: 0,
       header: [],
       projectStages: [],
       components: [],
@@ -47,9 +51,31 @@ export default {
     };
   },
   mounted() {
+    this.idProject = parseInt(this.$route.params && this.$route.params.id);
     this.getData();
   },
   methods: {
+    handleSaveForm() {
+      impactIdtResource
+        .store({
+          checked: this.checked,
+          id_project: this.idProject,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Matriks Identifikasi Dampak berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+          // reload accordion
+          this.$emit('handleReloadVsaList', 3);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     async getChecked() {
       const dataArray = [];
       this.ronaAwals.map((r) => {
@@ -57,7 +83,7 @@ export default {
         this.components.map((c) => {
           var checked = false;
           this.impacts.map((i) => {
-            if (i.id_rona_awal === r.id && i.id_component === c.id){
+            if (i.id_project_rona_awal === r.id && i.id_project_component === c.id){
               checked = true;
             }
           });
@@ -89,14 +115,31 @@ export default {
     async getData() {
       const { data } = await prjStageResource.list({});
       this.projectStages = data;
-      const listC = await componentResource.list({
-        all: true,
+      // get components
+      const listC = await projectComponentResource.list({
+        id_project: this.idProject,
+      });
+      listC.data.map((c) => {
+        if (c['name'] === null) {
+          c['name'] = c['name_master'];
+        }
+        if (c['id_project_stage'] === null) {
+          c['id_project_stage'] = c['id_project_stage_master'];
+        }
       });
       this.components = this.sortComponents(listC.data);
-      const listR = await ronaAwalResource.list({
-        all: true,
+      const listR = await projectRonaAwalResource.list({
+        id_project: this.idProject,
       });
       this.ronaAwals = listR.data;
+      this.ronaAwals.map((r) => {
+        if (r['name'] === null) {
+          r['name'] = r['name_master'];
+        }
+        if (r['id_component_type'] === null) {
+          r['id_component_type'] = r['id_component_type_master'];
+        }
+      });
       const iList = await impactIdtResource.list({
         id_project: this.id_project,
       });

@@ -41,7 +41,6 @@ import Resource from '@/api/resource';
 import ComponentDialog from '@/views/component/components/ComponentDialog.vue';
 
 const projectStageResource = new Resource('project-stages');
-const componentResource = new Resource('components');
 
 export default {
   name: 'ComponentTable',
@@ -73,44 +72,15 @@ export default {
       this.showAddDialog = true;
     },
     handleDelete(id_component) {
-      componentResource
-        .destroy(id_component)
-        .then(response => {
-          const message = 'Komponen kegiatan berhasil dihapus';
-          this.$message({
-            message: message,
-            type: 'success',
-            duration: 5 * 1000,
-          });
-          this.$emit('handleRenderTable');
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      this.$emit('handleDeleteComponent', id_component);
     },
     handleCancelComponent(){
       this.showAddDialog = false;
     },
     handleSubmitComponent(){
-      componentResource
-        .store(this.component)
-        .then((response) => {
-          this.$message({
-            message:
-              'Komponen ' +
-              this.component.name +
-              ' Berhasil Dibuat',
-            type: 'success',
-            duration: 5 * 1000,
-          });
-          this.$emit('handleUpdateComponents', this.component);
-          this.$emit('handleRenderTable');
-          this.showAddDialog = false;
-          this.component = {};
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      this.component.id = null;
+      this.$emit('handleUpdateComponents', this.component);
+      this.showAddDialog = false;
     },
   },
 };

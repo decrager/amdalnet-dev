@@ -15,8 +15,8 @@ class CreateProjectRonaAwalsTable extends Migration
     {
         Schema::create('project_rona_awals', function (Blueprint $table) {
             $table->id();
-            $table->string('id_project');
-            $table->string('id_rona_awal')->nullable();
+            $table->integer('id_project');
+            $table->integer('id_rona_awal')->nullable();
             $table->string('name')->nullable();
             $table->integer('id_component_type')->nullable();
             $table->timestamps();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ImpactIdentification;
+use App\Entity\ProjectRonaAwal;
 use App\Http\Resources\ImpactIdentificationResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,19 +48,51 @@ class ImpactIdentificationController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = $request->validate([
-            'id_project' => 'required',
-            'id_component' => 'required',
-            'id_rona_awal' => 'required',
-        ]);
-        DB::beginTransaction();
-        $created = ImpactIdentification::create($validator);
-        if ($created){
-            DB::commit();
+        $params = $request->all();
+        if (isset($params['checked']) && isset($params['id_project'])){
+            $checked = 0;
+            $inserted = 0;
+            DB::beginTransaction();
+            //clear items
+            ImpactIdentification::where('id_project', $params['id_project'])->delete();
+            //insert checked items
+            foreach ($params['checked'] as $item){
+                foreach ($item['sub'] as $sub){
+                    if ($sub['checked']){
+                        $created = ImpactIdentification::create([
+                            'id_project' => $params['id_project'],
+                            'id_project_rona_awal' => $item['id'],
+                            'id_project_component' => $sub['id'],
+                        ]);
+                        if ($created){
+                            $inserted++;
+                        }
+                        $checked++;
+                    }
+                }
+            }
+            if ($inserted == $checked){
+                DB::commit();
+                return response()->json(['code' => 200]);
+            } else {
+                DB::rollBack();
+                return response()->json(['code' => 500]);
+            }            
         } else {
-            DB::rollBack();
+            $validator = $request->validate([
+                'id_project' => 'required',
+                'id_component' => 'required',
+                'id_rona_awal' => 'required',
+            ]);
+            DB::beginTransaction();
+            $created = ImpactIdentification::create($validator);
+            if ($created){
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+            return new ImpactIdentificationResource($created);
         }
-        return new ImpactIdentificationResource($created);
     }
 
     /**
