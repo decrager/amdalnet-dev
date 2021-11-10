@@ -21,5 +21,15 @@ const getters = {
   countUklupl: state => state.announcement.countUklupl,
   countAll: state => state.announcement.countAll,
   loadingStatus: state => state.announcement.loadingStatus,
+  projectOptions: state => state.project.projectOptions,
+  projectFieldOptions: state => state.project.projectFieldOptions,
+  sectorOptions: state => state.project.sectorOptions,
+  provinceOptions: state => state.project.provinceOptions,
+  cityOptions: state => state.project.cityOptions,
+  unitOptions: state => state.project.unitOptions,
+  businessTypeOptions: state => state.project.businessTypeOptions,
+  kblis: state => state.project.listKbli,
+  step: state => state.workflow.step,
+  isPemerintah: state => state.initiator.isPemerintah,
 };
 export default getters;

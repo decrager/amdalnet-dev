@@ -24,6 +24,7 @@ import errorRoutes from './modules/error';
 // import permissionRoutes from './modules/permission';
 import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
+// import workspaceRoutes from './modules/workspace';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
 // import paramRoutes from './modules/params';
@@ -191,7 +192,6 @@ export const asyncRoutes = [
   //     },
   //   ],
   // },
-  errorRoutes,
   {
     path: '/profile',
     component: Layout,
@@ -219,7 +219,9 @@ export const asyncRoutes = [
   independentFormulatorTeamRoutes,
   announcementRoutes,
   feedbackRoutes,
+  // workspaceRoutes,
   uklUplRoutes,
+  errorRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 

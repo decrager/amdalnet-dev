@@ -7,38 +7,35 @@
         label-position="top"
         label-width="200px"
       >
-        <vsa-list>
-          <vsa-item>
+        <vsa-list :key="vsaListKey">
+          <vsa-item :init-active="ronaActive">
             <vsa-heading>
               RONA LINGKUNGAN AWAL
             </vsa-heading>
             <vsa-content>
               <rona-lingkungan-awal
-                @handleSaveRonaAwalData="handleSaveRonaAwalData"
                 @handleSaveComponents="handleSaveComponents"
                 @handleSaveRonaAwals="handleSaveRonaAwals"
                 @handleUpdateComponents="handleUpdateComponents"
                 @handleUpdateRonaAwals="handleUpdateRonaAwals"
+                @handleReloadVsaList="handleReloadVsaList"
               />
             </vsa-content>
           </vsa-item>
-          <vsa-item>
+          <vsa-item :init-active="matriksActive">
             <vsa-heading>
               MATRIKS IDENTIFIKASI DAMPAK
             </vsa-heading>
             <vsa-content>
-              <matrik-identifikasi-dampak
-                :key="matriksComponentKey"
-                :id-project="postForm.id_project"
-              />
+              <matrik-identifikasi-dampak />
             </vsa-content>
           </vsa-item>
-          <vsa-item>
+          <vsa-item :init-active="besaranActive">
             <vsa-heading>
               JENIS DAN BESARAN DAMPAK
             </vsa-heading>
             <vsa-content>
-              This is the content
+              <besaran-dampak />
             </vsa-content>
           </vsa-item>
         </vsa-list>
@@ -58,6 +55,7 @@ import {
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
+import BesaranDampak from './components/BesaranDampak.vue';
 
 export default {
   name: 'FormulirUklUpl',
@@ -68,18 +66,20 @@ export default {
     VsaContent,
     RonaLingkunganAwal,
     MatrikIdentifikasiDampak,
+    BesaranDampak,
   },
   data() {
     return {
       postForm: {
-        id_project: 0,
-        rona_awal: {
-          components: [],
-          rona_awals: [],
-        },
-        mappings: {},
+        idProject: 0,
+        components: [],
+        ronaAwals: [],
+        impact_identifications: [],
       },
-      matriksComponentKey: 0,
+      vsaListKey: 0,
+      ronaActive: true,
+      matriksActive: false,
+      besaranActive: false,
     };
   },
   mounted() {
@@ -88,29 +88,44 @@ export default {
   methods: {
     setProjectId(){
       const id = this.$route.params && this.$route.params.id;
-      this.postForm.id_project = id;
+      this.postForm.idProject = id;
     },
     handleClick(tab, event) {
       console.log(tab, event);
     },
-    handleSaveRonaAwalData(data) {
-      this.postForm.rona_awal = data;
+    handleReloadVsaList(tab) {
+      this.vsaListKey = this.vsaListKey + 1;
+      if (tab === 1) {
+        this.ronaActive = true;
+        this.matriksActive = false;
+        this.besaranActive = false;
+      } else if (tab === 2) {
+        this.ronaActive = false;
+        this.matriksActive = true;
+        this.besaranActive = false;
+      } else if (tab === 3) {
+        this.ronaActive = false;
+        this.matriksActive = false;
+        this.besaranActive = true;
+      }
     },
     async handleSaveComponents(data){
-      this.postForm.rona_awal.components = await data;
+      this.postForm.components = await data;
+      // console.log(this.postForm);
     },
     async handleSaveRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = await data;
+      this.postForm.ronaAwals = await data;
     },
     handleUpdateComponents(data){
-      this.postForm.rona_awal.components = data;
-      console.log('re-render matriks');
-      this.matriksComponentKey++;
+      this.postForm.components = data;
+      console.log(this.postForm);
     },
     handleUpdateRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = data;
+      this.postForm.ronaAwals = data;
+      console.log(this.postForm);
     },
     handleSaveForm() {
+      console.log(this.postForm);
     },
   },
 };
@@ -123,7 +138,7 @@ export default {
   --vsa-min-width: 300px;
   --vsa-heading-padding: 1rem 1rem;
   --vsa-text-color: rgba(55, 55, 55, 1);
-  --vsa-highlight-color: rgba(85, 119, 170, 1);
+  --vsa-highlight-color: #abd4ff;
   --vsa-bg-color: rgba(255, 255, 255, 1);
   --vsa-border-color: rgba(0, 0, 0, 0.2);
   --vsa-border-width: 1px;
@@ -154,6 +169,12 @@ export default {
   margin:0;
   padding:var(--vsa-content-padding);
   overflow: auto;
+}
+
+.vsa-item__trigger:focus,.vsa-item__trigger:hover{
+    outline:none;
+    background-color:var(--vsa-highlight-color);
+    color: black;
 }
 
 </style>

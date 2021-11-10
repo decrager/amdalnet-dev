@@ -18,10 +18,10 @@
       </el-tab-pane>
       <el-tab-pane v-if="user.initiatorData.email" v-loading="updating" label="Pemrakarsa" name="initiatorTab">
         <el-form ref="initiatorForm" :model="user.initiatorData">
-          <el-form-item label="Name">
+          <el-form-item label="Nama Pemrakarsa">
             <el-input v-model="user.initiatorData.name" />
           </el-form-item>
-          <el-form-item label="Email">
+          <el-form-item label="Penanggung Jawab">
             <el-input v-model="user.initiatorData.pic" />
           </el-form-item>
           <el-form-item label="No. Telepon">

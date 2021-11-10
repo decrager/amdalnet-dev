@@ -2,12 +2,13 @@
   <div class="app-container">
     <el-row :gutter="4">
       <el-col v-for="stage of projectStages" :key="stage.id" :span="6" :xs="24">
-        <aside align="center" style="margin-bottom: 0px;">
+        <aside align="center" style="margin-bottom: 0px; background-color: #3AB06F; color: white;">
           {{ stage.name }}
         </aside>
         <component-table
           :data="data[stage.id]"
           @handleUpdateComponents="handleUpdateComponents"
+          @handleDeleteComponent="handleDeleteComponent"
           @handleRenderTable="handleRenderTable"
         />
       </el-col>
@@ -45,6 +46,11 @@ export default {
         all: true,
       });
       this.components = components.data;
+      this.reloadData();
+
+      this.$emit('handleSaveComponents', this.components);
+    },
+    reloadData() {
       const dataPerStep = {};
       this.projectStages.map((s) => {
         dataPerStep[s.id] = [];
@@ -59,14 +65,18 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
-
-      this.$emit('handleSaveComponents', this.components);
     },
-    async handleRenderTable(){
+    async handleRenderTable() {
       this.getData();
     },
-    handleUpdateComponents(data){
+    handleUpdateComponents(data) {
       this.components.push(data);
+      this.reloadData();
+      this.$emit('handleUpdateComponents', this.components);
+    },
+    handleDeleteComponent(id) {
+      this.components = this.components.filter(component => component.id !== id);
+      this.reloadData();
       this.$emit('handleUpdateComponents', this.components);
     },
   },

@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="4">
       <el-col v-for="type of componentTypes" :key="type.id" :span="6" :xs="24">
-        <aside align="center" style="margin-bottom: 0px;">
+        <aside align="center" style="margin-bottom: 0px; background-color: #3AB06F; color: white;">
           Komponen {{ type.name }}
         </aside>
         <el-table
@@ -68,23 +68,6 @@ export default {
     handleAddDialog() {
       this.showAddDialog = true;
     },
-    handleDelete(id) {
-      ronaAwalResource
-        .destroy(id)
-        .then(response => {
-          const message = 'Rona awal berhasil dihapus';
-          this.$message({
-            message: message,
-            type: 'success',
-            duration: 5 * 1000,
-          });
-          // refresh
-          this.getData();
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
     async getComponentTypeOptions() {
       const { data } = await componentTypesResource.list({});
       this.componentTypeOptions = data.map((i) => {
@@ -97,14 +80,18 @@ export default {
       const ronaAwalList = await ronaAwalResource.list({
         all: true,
       });
-      const ronaAwals = ronaAwalList.data;
+      this.ronaAwals = ronaAwalList.data;
+      this.reloadData();
+      this.$emit('handleSaveRonaAwals', this.ronaAwals);
+    },
+    reloadData() {
       const dataPerStep = {};
       this.componentTypes.map((s) => {
         dataPerStep[s.id] = [];
       });
       const data = {};
       this.componentTypes.map((s) => {
-        ronaAwals.map((k) => {
+        this.ronaAwals.map((k) => {
           if (k.id_component_type === s.id){
             dataPerStep[k.id_component_type].push(k);
           }
@@ -112,30 +99,18 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
-      this.ronaAwals = ronaAwals;
-      this.$emit('handleSaveRonaAwals', ronaAwals);
     },
     handleSubmitRonaAwal() {
-      ronaAwalResource
-        .store(this.ronaAwal)
-        .then((response) => {
-          this.$message({
-            message:
-              'Rona Lingkungan ' + this.ronaAwal.name + ' Berhasil Dibuat',
-            type: 'success',
-            duration: 5 * 1000,
-          });
-          this.ronaAwals.push(this.ronaAwal);
-          this.$emit('handleUpdateRonaAwals', this.ronaAwals);
-          // re-render table
-          this.getData();
-          // hide dialog
-          this.showAddDialog = false;
-          this.ronaAwal = {};
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      this.ronaAwal.id = null;
+      this.ronaAwals.push(this.ronaAwal);
+      this.reloadData();
+      this.$emit('handleUpdateRonaAwals', this.ronaAwals);
+      this.showAddDialog = false;
+    },
+    handleDelete(id) {
+      this.ronaAwals = this.ronaAwals.filter(rAwal => rAwal.id !== id);
+      this.reloadData();
+      this.$emit('handleUpdateRonaAwals', this.ronaAwals);
     },
     handleCancelRonaAwal() {
       this.ronaAwal = {};

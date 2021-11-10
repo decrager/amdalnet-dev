@@ -9,8 +9,8 @@ class ImpactIdentification extends Model
     protected $table = 'impact_identifications';
     protected $fillable = [
         'id_project',
-        'id_component',
-        'id_rona_awal',
+        'id_project_component',
+        'id_project_rona_awal',
         'id_change_type',
         'id_unit',
         'nominal',
@@ -33,11 +33,11 @@ class ImpactIdentification extends Model
     }
 
     public function component(){
-        return $this->hasOne(Component::class, 'id', 'id_component');
+        return $this->hasOne(ProjectComponent::class, 'id', 'id_project_component');
     }
 
     public function ronaAwal(){
-        return $this->hasOne(RonaAwal::class, 'id', 'id_rona_awal');
+        return $this->hasOne(ProjectRonaAwal::class, 'id', 'id_project_rona_awal');
     }
 
     public function changeType(){

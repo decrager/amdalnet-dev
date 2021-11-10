@@ -192,7 +192,12 @@ export default {
       });
     },
     handleSubmit() {
-      this.project.id_applicant = 1;
+      this.project.id_applicant = this.project.initiatorData ? this.project.initiatorData.id : null;
+
+      if (!this.project.id_project){
+        this.project.id_project = 1;
+      }
+
       console.log(this.project);
 
       // make form data because we got file
