@@ -7,8 +7,8 @@
         label-position="top"
         label-width="200px"
       >
-        <vsa-list>
-          <vsa-item>
+        <vsa-list :key="vsaListKey">
+          <vsa-item :init-active="ronaActive">
             <vsa-heading>
               RONA LINGKUNGAN AWAL
             </vsa-heading>
@@ -18,20 +18,19 @@
                 @handleSaveRonaAwals="handleSaveRonaAwals"
                 @handleUpdateComponents="handleUpdateComponents"
                 @handleUpdateRonaAwals="handleUpdateRonaAwals"
+                @handleReloadVsaList="handleReloadVsaList"
               />
             </vsa-content>
           </vsa-item>
-          <vsa-item>
+          <vsa-item :init-active="matriksActive">
             <vsa-heading>
               MATRIKS IDENTIFIKASI DAMPAK
             </vsa-heading>
             <vsa-content>
-              <matrik-identifikasi-dampak
-                :key="matriksComponentKey"
-              />
+              <matrik-identifikasi-dampak />
             </vsa-content>
           </vsa-item>
-          <vsa-item>
+          <vsa-item :init-active="besaranActive">
             <vsa-heading>
               JENIS DAN BESARAN DAMPAK
             </vsa-heading>
@@ -75,7 +74,10 @@ export default {
         ronaAwals: [],
         impact_identifications: [],
       },
-      matriksComponentKey: 0,
+      vsaListKey: 0,
+      ronaActive: true,
+      matriksActive: false,
+      besaranActive: false,
     };
   },
   mounted() {
@@ -89,6 +91,22 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
+    handleReloadVsaList(tab) {
+      this.vsaListKey = this.vsaListKey + 1;
+      if (tab === 1) {
+        this.ronaActive = true;
+        this.matriksActive = false;
+        this.besaranActive = false;
+      } else if (tab === 2) {
+        this.ronaActive = false;
+        this.matriksActive = true;
+        this.besaranActive = false;
+      } else if (tab === 3) {
+        this.ronaActive = false;
+        this.matriksActive = false;
+        this.besaranActive = true;
+      }
+    },
     async handleSaveComponents(data){
       this.postForm.components = await data;
       // console.log(this.postForm);
@@ -98,8 +116,6 @@ export default {
     },
     handleUpdateComponents(data){
       this.postForm.components = data;
-      // console.log('re-render matriks');
-      this.matriksComponentKey++;
       console.log(this.postForm);
     },
     handleUpdateRonaAwals(data){
