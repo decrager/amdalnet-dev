@@ -23,7 +23,7 @@ class ProjectController extends Controller
             return Project::whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         }
         
-        return Project::select('projects.*', 'provinces.name as province', 'districts.name as district')->where(function ($query) use ($request) {
+        return Project::select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -33,7 +33,7 @@ class ProjectController extends Controller
             function ($query) use ($request) {
                 return $request->id_district ? $query->where('projects.id_district', $request->id_district) : '';
             }
-        )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->orderBy('projects.id', 'DESC')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
+        )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
     }
 
     /**

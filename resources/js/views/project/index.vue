@@ -80,11 +80,11 @@
               <div class="entity-block">
                 <img
                   class="img-circle"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDkaQO69Fro8SZLTVZQ75JH2R0T-sn5yIA_lKGwvvgQ0R0BoQtUQ"
+                  :src="scope.row.avatar"
                   alt="user image"
                 >
                 <span class="name text-muted">
-                  <a href="#">PT. Pemrakarsa Sembada</a>
+                  <a href="#">{{ scope.row.applicant }}</a>
                   <a
                     href="#"
                     class="pull-right btn-box-tool"

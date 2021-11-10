@@ -27,5 +27,9 @@ const getters = {
   provinceOptions: state => state.project.provinceOptions,
   cityOptions: state => state.project.cityOptions,
   unitOptions: state => state.project.unitOptions,
+  businessTypeOptions: state => state.project.businessTypeOptions,
+  kblis: state => state.project.listKbli,
+  step: state => state.workflow.step,
+  isPemerintah: state => state.initiator.isPemerintah,
 };
 export default getters;
