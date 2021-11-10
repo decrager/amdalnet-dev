@@ -23,6 +23,8 @@ class ProjectRonaAwalController extends Controller
                 'rona_awal.id_component_type AS id_component_type_master')
                 ->leftJoin('rona_awal', 'project_rona_awals.id_rona_awal', '=', 'rona_awal.id')
                 ->where('project_rona_awals.id_project', $params['id_project'])
+                ->orderBy('name_master', 'ASC')
+                ->orderBy('name', 'ASC')
                 ->get();
             return ProjectRonaAwalResource::collection($rona_awals);
         } else {

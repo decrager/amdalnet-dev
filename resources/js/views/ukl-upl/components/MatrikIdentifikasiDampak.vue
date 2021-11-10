@@ -1,5 +1,14 @@
 <template>
   <div style="font-size: 10pt;">
+    <el-button
+      type="success"
+      size="small"
+      icon="el-icon-check"
+      style="margin-bottom: 10px;"
+      @click="handleSaveForm()"
+    >
+      Simpan Perubahan
+    </el-button>
     <table>
       <tr class="tr-header">
         <td v-for="comp of header[0]" :key="comp.id" :colspan="comp.colspan" :rowspan="comp.rowspan" align="center" class="td-header">
@@ -46,6 +55,25 @@ export default {
     this.getData();
   },
   methods: {
+    handleSaveForm() {
+      impactIdtResource
+        .store({
+          checked: this.checked,
+          id_project: this.idProject,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Matriks Identifikasi Dampak berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     async getChecked() {
       const dataArray = [];
       this.ronaAwals.map((r) => {
@@ -114,8 +142,6 @@ export default {
         id_project: this.id_project,
       });
       this.impacts = iList.data;
-      console.log(this.components);
-      console.log(this.ronaAwals);
       const dataRow1 = [
         {
           id: 0,
@@ -138,7 +164,6 @@ export default {
         dataRow1,
         this.components,
       ];
-      console.log(this.header);
       this.getChecked();
     },
   },

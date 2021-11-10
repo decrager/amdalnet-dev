@@ -43,8 +43,6 @@ export default {
   },
   methods: {
     handleSaveForm(){
-      console.log(this.components);
-      console.log(this.ronaAwals);
       this.storeComponents();
       this.storeRonaAwals();
     },
