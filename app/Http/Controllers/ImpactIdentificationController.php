@@ -27,6 +27,23 @@ class ImpactIdentificationController extends Controller
         if ($request->id_rona_awal){
             $list = $list->where('id_rona_awal', $request->id_rona_awal);
         }
+        if ($request->with_project_stage){
+            $list = ImpactIdentification::select('impact_identifications.*',
+                'pc.id_project_stage',
+                'c.id_project_stage AS id_project_stage_master',
+                'c.name AS component_name_master',
+                'pc.name AS component_name',
+                'ra.name AS rona_awal_name_master',
+                'pra.name AS rona_awal_name',
+                'u.name AS unit_name')
+                ->leftJoin('project_components AS pc', 'impact_identifications.id_project_component', '=', 'pc.id')
+                ->leftJoin('project_rona_awals AS pra', 'impact_identifications.id_project_rona_awal', '=', 'pra.id')
+                ->leftJoin('units AS u', 'impact_identifications.id_unit', '=', 'u.id')
+                ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
+                ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')                
+                ->get();
+            return ImpactIdentificationResource::collection($list);
+        }
         return ImpactIdentificationResource::collection($list);
     }
 

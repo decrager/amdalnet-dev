@@ -35,7 +35,7 @@
               JENIS DAN BESARAN DAMPAK
             </vsa-heading>
             <vsa-content>
-              This is the content
+              <besaran-dampak />
             </vsa-content>
           </vsa-item>
         </vsa-list>
@@ -55,6 +55,7 @@ import {
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
+import BesaranDampak from './components/BesaranDampak.vue';
 
 export default {
   name: 'FormulirUklUpl',
@@ -65,6 +66,7 @@ export default {
     VsaContent,
     RonaLingkunganAwal,
     MatrikIdentifikasiDampak,
+    BesaranDampak,
   },
   data() {
     return {
