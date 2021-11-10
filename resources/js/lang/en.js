@@ -81,6 +81,7 @@ export default {
     initiator: 'Initiator',
     masterData: 'Master Data',
     provinsi: 'Province',
+    lpjp: 'LPJP',
     formulator: 'Formulator',
     expertBank: 'Expert Bank',
     formulatorExpert: 'Formulator Expert Team',
@@ -96,6 +97,7 @@ export default {
     cluster: 'Cluster',
     formulatorTeam: 'Formulator Team',
     tuk: 'Examiner Team',
+    editWorkspace: 'Edit Workspace',
   },
   navbar: {
     logOut: 'Log Out',

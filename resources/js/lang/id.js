@@ -97,6 +97,7 @@ export default {
     cluster: 'Cluster',
     formulatorTeam: 'Tim Penyusun',
     tuk: 'Tim Uji Kelayakan',
+    editWorkspace: 'Edit Workspace',
   },
   navbar: {
     logOut: 'Keluar',

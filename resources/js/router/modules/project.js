@@ -50,6 +50,13 @@ const projectRoutes = {
       },
       props: true,
     },
+    {
+      path: 'workspace/:id(\\d+)',
+      component: () => import('@/views/workspace/Edit'),
+      name: 'editWorkspace',
+      hidden: true,
+      meta: { title: 'editWorkspace', icon: 'edit', noCache: true },
+    },
   ],
 };
 

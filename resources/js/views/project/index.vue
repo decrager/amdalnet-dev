@@ -131,6 +131,14 @@
                 >
                   View Details
                 </el-button>
+                <el-button
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspace(scope.row)"
+                >
+                  Workspace
+                </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
               <span v-html="scope.row.description" />
@@ -368,6 +376,13 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    handleWorkspace(project) {
+      console.log(project);
+      this.$router.push({
+        name: 'editWorkspace',
+        params: { id: project.id, project: project },
+      });
     },
     async changeProvince(value) {
       // change all district by province
