@@ -40,7 +40,8 @@ class ImpactIdentificationController extends Controller
                 ->leftJoin('project_rona_awals AS pra', 'impact_identifications.id_project_rona_awal', '=', 'pra.id')
                 ->leftJoin('units AS u', 'impact_identifications.id_unit', '=', 'u.id')
                 ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
-                ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')                
+                ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
+                ->where('impact_identifications.id_project', $request->id_project)
                 ->get();
             return ImpactIdentificationResource::collection($list);
         }
