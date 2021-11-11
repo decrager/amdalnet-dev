@@ -184,3 +184,4 @@ Route::apiResource('project-components', 'ProjectComponentController');
 Route::apiResource('project-rona-awals', 'ProjectRonaAwalController');
 Route::apiResource('change-types', 'ChangeTypeController');
 Route::apiResource('institutions', 'InstitutionController');
+Route::apiResource('andal-composing', 'AndalComposingController');

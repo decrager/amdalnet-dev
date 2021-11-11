@@ -47,4 +47,9 @@ class ImpactIdentification extends Model
     public function unit(){
         return $this->hasOne(Unit::class, 'id', 'id_unit');
     }
+
+    public function envImpactAnalysis()
+    {
+        return $this->hasOne(EnvImpactAnalysis::class, 'id_impact_identifications', 'id');
+    }
 }
