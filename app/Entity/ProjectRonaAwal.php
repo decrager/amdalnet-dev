@@ -18,7 +18,7 @@ class ProjectRonaAwal extends Model
         'id_component_type'
     ];
 
-    public function ronaAwal(){
+    public function rona_awal(){
         return $this->hasOne(RonaAwal::class, 'id', 'id_rona_awal');
     }
 }
