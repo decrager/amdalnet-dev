@@ -2,7 +2,7 @@
   <div>
     <div v-if="showTabs" class="tabset">
       <el-tabs type="card">
-        <el-tab-pane label="AMDAL">
+        <el-tab-pane style="color:red" label="AMDAL">
           <div v-for="amdal in amdals.data" :key="amdal.id" class="announce__box__wrapper">
             <div class="announce__box__icon">
               <img alt="" src="/images/list.svg">
@@ -15,13 +15,13 @@
                 Tanggapan</p>
             </div>
             <div class="announce__box__button">
-              <button class="button__tanggapan" @click="openDetails(amdal.id,'AMDAL')"><i class="el-icon-document" /> Berikan
+              <button class="button__tanggapan btn-tanggapan" @click="openDetails(amdal.id,'AMDAL')"><i class="el-icon-document" /> Berikan
                 Tanggapan
               </button>
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="UKL - UPL">
+        <el-tab-pane class="tabs-custom" label="UKL - UPL">
           <div v-for="uklupl in uklupls.data" :key="uklupl.id" class="announce__box__wrapper">
             <div class="announce__box__icon">
               <img alt="" src="/images/list.svg">
@@ -34,7 +34,7 @@
                 Tanggapan</p>
             </div>
             <div class="announce__box__button">
-              <button class="button__tanggapan" @click="openDetails(uklupl.id,'UKL')"><i class="el-icon-document" /> Berikan
+              <button class="button__tanggapan btn-tanggapan" @click="openDetails(uklupl.id,'UKL')"><i class="el-icon-document" /> Berikan
                 Tanggapan
               </button>
             </div>
@@ -160,4 +160,9 @@ export default {
     transition: none;
   }
 }
+.announce__box__button{align-items: end;}
+.btn-tanggapan{background-color: transparent;color: #f9902b;}
+.button__tanggapan:hover{background-color: transparent;color: #fff;}
+.el-tabs__item.is-top{color: #f6993f;}
+.el-tabs--card > .el-tabs__header .el-tabs__item.is-active,.el-tabs--card > .el-tabs__header .el-tabs__item{border-bottom: none;}
 </style>
