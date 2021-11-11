@@ -112,6 +112,13 @@ const projects = {
       });
       commit('SET_UNIT_OPTIONS', option);
     },
+    async getBusinessByKbli({ commit }, payload) {
+      const { data } = await kbliEnvParamResource.list(payload);
+      const option = data.map((i) => {
+        return { value: i.param, label: i.param };
+      });
+      commit('SET_BUSINESS_TYPE_OPTIONS', option);
+    },
   },
 };
 

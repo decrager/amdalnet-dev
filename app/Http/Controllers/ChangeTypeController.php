@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ChangeType;
+use App\Http\Resources\ChangeTypeResource;
 use Illuminate\Http\Request;
 
 class ChangeTypeController extends Controller
@@ -14,7 +15,7 @@ class ChangeTypeController extends Controller
      */
     public function index()
     {
-        //
+        return ChangeTypeResource::collection(ChangeType::all());
     }
 
     /**

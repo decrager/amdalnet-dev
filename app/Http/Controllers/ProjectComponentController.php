@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ProjectComponent;
+use App\Http\Resources\ProjectComponentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,9 +14,20 @@ class ProjectComponentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $params = $request->all();
+        if (isset($params['id_project'])){
+            $components = ProjectComponent::select('project_components.*',
+                'components.name AS name_master',
+                'components.id_project_stage AS id_project_stage_master')
+                ->leftJoin('components', 'project_components.id_component', '=', 'components.id')
+                ->where('project_components.id_project', $params['id_project'])
+                ->get();
+            return ProjectComponentResource::collection($components);
+        } else {
+            return ProjectComponentResource::collection(ProjectComponent::with('component')->get()); 
+        }
     }
 
     /**
@@ -36,23 +48,52 @@ class ProjectComponentController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = $request->validate([
-            'id_project' => 'required',
-            'id_component' => 'required',
-            'id_project_stage' => 'required',
-            'name' => 'required',
-        ]);
-
-        if ($validator['id_component'] != null){
-            // only save id_component
-            $validator['id_project_stage'] = null;
-            $validator['name'] = null;
-        }
-        DB::beginTransaction();
-        if (ProjectComponent::create($validator)){
-            DB::commit();
+        $all_params = $request->all();
+        if (isset($all_params['components'])){
+            $validator = $request->validate([
+                'components' => 'required',
+            ]);
+            DB::beginTransaction();
+            $num_created = 0;
+            foreach ($validator['components'] as $component){
+                $component['id'] == null;
+                if ($component['id_component'] != null){
+                    // only save id_component
+                    $component['id_project_stage'] = null;
+                    $component['name'] = null;
+                }
+                if (ProjectComponent::create($component)){
+                    $num_created++;
+                }
+            }
+            if ($num_created == count($validator['components'])){
+                DB::commit();
+                return response()->json(['code' => 200]);
+            } else {
+                DB::rollBack();
+                return response()->json(['code' => 500]);
+            }
         } else {
-            DB::rollBack();
+            $validator = $request->validate([
+                'id_project' => 'required',
+                'id_component' => 'required',
+                'id_project_stage' => 'required',
+                'name' => 'required',
+            ]);
+            $validator['id'] == null;
+            if ($validator['id_component'] != null){
+                // only save id_component
+                $validator['id_project_stage'] = null;
+                $validator['name'] = null;
+            }
+            DB::beginTransaction();
+            if (ProjectComponent::create($validator)){
+                DB::commit();
+                return response()->json(['code' => 200]);
+            } else {
+                DB::rollBack();
+                return response()->json(['code' => 500]);
+            }
         }
     }
 
