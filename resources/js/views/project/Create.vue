@@ -58,10 +58,10 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Upload Peta Tapak Proyek(File SHP)">
-                    <input ref="fileMap" type="file" class="el-input__inner" @change="handleFileMapUpload()">
+                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileMapUpload()">
                   </el-form-item>
+
                 </el-row>
-                <h1>PETA</h1>
                 <el-row />
               </el-col>
             </el-row>
@@ -615,6 +615,7 @@ export default {
     },
     handleFileMapUpload(){
       this.fileMap = this.$refs.fileMap.files[0];
+      console.log(`map:  $(this.fileMap)`);
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });

@@ -195,7 +195,6 @@ export default {
 };
 </script>
 <style scoped>
-@import url('https://js.arcgis.com/4.19/esri/themes/light/main.css');
 @import '../home/assets/css/style.css';
 
 #mapViewDiv {

@@ -15,7 +15,15 @@
         </el-table>
       </el-col>
       <el-col :span="12">
-        <h1>Peta Will Be Here Soon</h1>
+        <l-map style="height: 506px;border: 1px solid #333; margin: 0; padding:0;" :zoom="zoom" :center="center">
+          <!--          <l-tile-layer-->
+          <!--            :url="url"-->
+          <!--            :attribution="attribution"-->
+          <!--          />-->
+          <l-geo-json
+            :geojson="geojson"
+          />
+        </l-map>
       </el-col>
     </el-row>
     <el-row style="padding-top: 32px">
@@ -133,6 +141,8 @@
 
 <script>
 import Resource from '@/api/resource';
+import { LMap, LGeoJson } from 'vue2-leaflet';
+
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const formulatorTeamResource = new Resource('formulator-teams');
@@ -142,6 +152,11 @@ const initiatorResource = new Resource('initiatorsByEmail');
 
 export default {
   name: 'Publish',
+  components: {
+    LMap,
+    // LTileLayer,
+    LGeoJson,
+  },
   props: {
     project: {
       type: Object,
@@ -165,6 +180,12 @@ export default {
         id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
       },
       initiatorData: {},
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+      attribution:
+        'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+      zoom: 5,
+      center: [-1.588, 115.287],
+      geojson: null,
     };
   },
   computed: {
@@ -179,6 +200,8 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    const response = await fetch('storage/' + this.project.map);
+    this.geojson = await response.json();
   },
   methods: {
     onFormulatorTypeChange(value){
