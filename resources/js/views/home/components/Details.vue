@@ -2,226 +2,6 @@
   <div v-if="showDetails">
     <div class="detailPengumuman">
       <div class="wrapInDetail">
-        <!-- <div class="titleDetail">
-          <el-row>
-            <el-col :span="24">
-              <h1><i class="el-icon-info" /> Rencana Kegiatan</h1>
-            </el-col>
-          </el-row>
-        </div>
-        <el-row>
-          <el-col :span="12">
-            <table class="table__striped">
-              <tbody>
-                <tr>
-                  <td class="title__table">Nama Kegiatan</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.project_title }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title__table">Bidang Usaha / Kegiatan</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.biz_type }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title__table">Skala / Besaran</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.project_scale }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title__table">Alamat</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.address }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title__table">Pemrakarsa</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.project_scale }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title__table">Penanggung Jawab</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.pic_name }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title__table">Alamat Pemrakarsa</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.pic_address }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </el-col>
-        </el-row>
-        <div class="titleDetail">
-          <el-row>
-            <el-col :span="24">
-              <h1><i class="el-icon-document" /> Deskripsi</h1>
-            </el-col>
-          </el-row>
-        </div>
-        <el-row>
-          <el-col :span="12">
-            <table class="table__striped">
-              <tbody>
-                <tr>
-                  <td class="title__table" colspan="2"><span v-html="selectedAnnouncement.description" /></td>
-                </tr>
-              </tbody>
-            </table>
-          </el-col>
-        </el-row>
-        <div class="titleDetail">
-          <el-row>
-            <el-col :span="24">
-              <h1><i class="el-icon-circle-check" /> Penapisan</h1>
-            </el-col>
-          </el-row>
-        </div>
-        <el-row>
-          <el-col :span="12">
-            <table class="table__striped">
-              <tbody>
-                <tr>
-                  <td class="title__table">No Registrasi</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.id_project }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="title__table">Jenis Dokumen</td>
-                  <td class="value__table">
-                    {{ selectedAnnouncement.required_doc }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </el-col>
-        </el-row> -->
-        <!-- <div class="information__wrapper">
-            <div class="first__info">
-              <div class="table__wrapper">
-                <table class="table__striped">
-                  <tbody>
-                    <tr>
-                      <td class="title__table">Nama Kegiatan</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.project_title }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Bidang Usaha / Kegiatan</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.biz_type }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Skala / Besaran</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.project_scale }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Alamat</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.address }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Pemrakarsa</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.project_scale }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Penanggung Jawab</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.pic_name }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Alamat Pemrakarsa</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.pic_address }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">No. Telp Pemrakarsa</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.pic_address }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Email Pemrakarsa</td>
-                      <td class="value__table">-</td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Provinsi Pemrakarsa</td>
-                      <td class="value__table">-</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="second__info">
-              <div class="hasil__penapisan">
-                <div>
-                  <h2><i class="el-icon-document" /> Deskripsi</h2>
-                </div>
-              </div>
-              <table class="table__striped">
-                <tbody>
-                  <tr>
-                    <td colspan="2">
-                      <span v-html="selectedAnnouncement.description" />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="third__info">
-              <div class="hasil__penapisan">
-                <div>
-                  <h2><i class="el-icon-circle-check" /> Hasil Penapisan</h2>
-                </div>
-              </div>
-              <div class="table__wrapper">
-                <table class="table__striped">
-                  <tbody>
-                    <tr>
-                      <td class="title__table">No Registrasi</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.id_project }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Jenis Dokumen</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.required_doc }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Kewenangan</td>
-                      <td class="value__table">
-                        {{ selectedAnnouncement.authority || '-' }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="title__table">Tim Penyusun</td>
-                      <td class="value__table" />
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="map__wrapper">Map Canvas</div> -->
         <el-row :gutter="20">
           <el-col :span="16">
             <div class="wrapDetail">
@@ -315,126 +95,160 @@
       </div>
     </div>
     <div class="detailPengumuman">
-      <el-row>
-        <el-col :span="24">
-          <h1>Saran/Tanggapan untuk Ke giatan</h1>
-        </el-col>
-      </el-row>
-      <el-form
-        ref="form"
-        enctype="multipart/form-data"
-        @submit.prevent="saveFeedback"
-      >
-        <input v-model="announcementId" type="text">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item>
-                  <div class="text-white fw-bold">Nama</div>
-                  <el-input v-model="form.name" placeholder="Nama" />
-                </el-form-item>
-                <el-form-item>
-                  <div class="text-white fw-bold">Nik</div>
-                  <el-input v-model="form.id_card_number" placeholder="Nik" />
-                </el-form-item>
-                <el-form-item>
-                  <div class="text-white fw-bold">No. Telepon/Handphone</div>
-                  <el-input
-                    v-model="form.phone"
-                    placeholder="No. Telepon/Handphone"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item>
-                  <div class="text-white fw-bold">Peran</div>
-                  <el-form-item label="">
+      <div class="wrapInDetail wrapInDetailBottom">
+        <el-row>
+          <el-col :span="24">
+            <h1 style="text-align:center">SPT (Saran, Pendapat & Tanggapan</h1>
+          </el-col>
+        </el-row>
+        <el-form
+          ref="form"
+          enctype="multipart/form-data"
+          @submit.prevent="saveFeedback"
+        >
+          <input v-model="announcementId" type="hidden">
+          <el-row :gutter="20">
+            <el-col :span="15">
+              <el-row :gutter="20">
+                <el-col :span="24">
+                  <el-form-item>
+                    <div class="text-white fw-bold">Nama</div>
+                    <el-input v-model="form.name" placeholder="Nama" />
+                  </el-form-item>
+                  <el-form-item>
+                    <div class="text-white fw-bold">Nik</div>
+                    <el-input v-model="form.id_card_number" placeholder="Nik" />
+                  </el-form-item>
+                  <el-row :gutter="20">
+                    <el-col :span="12">
+                      <el-form-item>
+                        <div class="text-white fw-bold">Email</div>
+                        <el-input
+                          v-model="form.email"
+                          type="email"
+                          placeholder="Email"
+                        />
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item>
+                        <div class="text-white fw-bold">No. Telepon</div>
+                        <el-input
+                          v-model="form.phone"
+                          placeholder="No. Telepon/Handphone"
+                        />
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="7">
+              <el-form-item>
+                <div style="margin-top:2rem; display:block;">
+                  <div style="width:200px; height:200px; background:white; display:block; margin:auto">
+                    <img v-if="url" :src="url" style="width:100%;height: 100%;object-fit: contain;">
+                  </div>
+                  <div class="text-white fw-bold" style="text-align:center">Unggah Foto Selfie dengan ktp</div>
+                  <input
+                    ref="file"
+                    style="margin-left:3rem"
+                    type="file"
+                    class=""
+                    @change="handleFileUpload()"
+                  >
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item>
+                <h4 class="text-white fw-bold">Kelompok Masyarakat</h4>
+                <div style="padding-left:2rem">
+                  <div>
                     <el-radio
                       v-model="form.responder_type_id"
                       label="1"
                     >
-                      Terkena Dampak Langsung</el-radio>
+                      <span style="color:white">Dampak Langsung</span></el-radio>
+                  </div>
+                  <div>
                     <el-radio
                       v-model="form.responder_type_id"
                       label="2"
-                    >Pemerhati Lingkungan Hidup</el-radio>
+                    ><span style="color:white">Pemerhati Lingkungan Hidup</span></el-radio>
+                  </div>
+                  <div>
                     <el-radio
                       v-model="form.responder_type_id"
                       label="3"
-                    >LSM</el-radio>
+                    ><span style="color:white">LSM</span></el-radio>
+                  </div>
+                  <div>
                     <el-radio
                       v-model="form.responder_type_id"
                       label="4"
-                    >Masyarakat Berkepentingan Lainya</el-radio>
+                    ><span style="color:white">Masyarakat Berkepentingan Lainya</span></el-radio>
+                  </div>
+                </div>
+              </el-form-item>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item>
+                    <div class="text-white fw-bold">Kekhawatiran</div>
+                    <el-input
+                      v-model="form.concern"
+                      type="textarea"
+                      placeholder="Kekhawatiran"
+                    />
                   </el-form-item>
-                </el-form-item>
-                <el-form-item>
-                  <div class="text-white fw-bold">Unggah Foto Selfie</div>
-                  <input
-                    ref="file"
-                    type="file"
-                    class="el-input__inner"
-                    @change="handleFileUpload()"
-                  >
-                </el-form-item>
-                <el-form-item>
-                  <div class="text-white fw-bold">Email</div>
-                  <el-input
-                    v-model="form.email"
-                    type="email"
-                    placeholder="Email"
-                  />
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item>
-              <div class="text-white fw-bold">Kekhawatiran</div>
-              <el-input
-                v-model="form.concern"
-                type="textarea"
-                placeholder="Kekhawatiran"
-              />
-            </el-form-item>
-            <el-form-item>
-              <div class="text-white fw-bold">Harapan</div>
-              <el-input
-                v-model="form.expectation"
-                type="textarea"
-                placeholder="Harapan"
-              />
-            </el-form-item>
-            <div class="text-white fw-bold" style="margin: 2rem 0 1rem 0">
-              Berikan rating Anda untuk Rencana Usaha/Kegiatan ini:
-            </div>
-            <div class="rating">
-              <el-radio v-model="form.rating" value="1" label="1">1</el-radio>
-              <el-radio v-model="form.rating" value="2" label="2">2</el-radio>
-              <el-radio v-model="form.rating" value="3" label="3">3</el-radio>
-              <el-radio v-model="form.rating" value="4" label="4">4</el-radio>
-              <el-radio v-model="form.rating" value="5" label="5">5</el-radio>
+                  <el-form-item>
+                    <div class="text-white fw-bold">Harapan</div>
+                    <el-input
+                      v-model="form.expectation"
+                      type="textarea"
+                      placeholder="Harapan"
+                    />
+                  </el-form-item>
+                  <h3 class="fw-bold text-white">Rating</h3>
+                  <div class="text-white fw-bold" style="margin-bottom:1rem">
+                    Tingkat kesetujuan Anda terhadap Kegiatan/Proyek Ini
+                  </div>
+                  <div style="display:flex">
+                    <div>
+                      <ul>
+                        <li class="fz8">1 Bintang : Sangat tidak setuju</li>
+                        <li class="fz8">2 Bintang : Tidak setuju</li>
+                        <li class="fz8">3 Bintang : Netral</li>
+                        <li class="fz8">4 Bintang : Setuju</li>
+                        <li class="fz8">5 Bintang : Sangat Setuju</li>
+                      </ul>
+                    </div>
+                    <div style="padding-left:1rem">
+                      <el-rate v-model="ratings" @change="handleChange(ratings)" />
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-row :gutter="20">
+          <el-col :span="18">
+            <div class="detailFoot">
+              <el-button
+                id="batal"
+                type="danger"
+                @click="handleCancelComponent()"
+              >Batal</el-button>
+              <el-button
+                id="kirim"
+                type="primary"
+                @click="saveFeedback()"
+              >Kirim</el-button>
             </div>
           </el-col>
         </el-row>
-      </el-form>
-      <el-row>
-        <el-col :span="24">
-          <div class="detailFoot">
-            <el-button
-              id="batal"
-              type="danger"
-              @click="handleCancelComponent()"
-            >Batal</el-button>
-            <el-button
-              id="kirim"
-              type="primary"
-              @click="saveFeedback()"
-            >Kirim</el-button>
-          </div>
-        </el-col>
-      </el-row>
+      </div>
     </div>
   </div>
 </template>
@@ -472,19 +286,25 @@ export default {
       responders: [],
       errorMessage: null,
       photo_filepath: null,
+      ratings: null,
+      url: null,
     };
   },
   async created() {
     await this.getResponderType();
   },
   methods: {
+    handleChange(i){
+      this.form.rating = i;
+    },
     getAnnouncement() {
       axios.get('/api/announcements').then((response) => {
         return response.data.data;
       });
     },
-    handleFileUpload() {
+    handleFileUpload(e) {
       this.photo_filepath = this.$refs.file.files[0];
+      this.url = URL.createObjectURL(this.$refs.file.files[0]);
     },
     async saveFeedback() {
       const formData = new FormData();
@@ -507,7 +327,12 @@ export default {
       await axios
         .post('api/feedbacks', formData, { headers })
         .then(() => {
-          alert('Successfully create a feedback');
+          this.$message({
+            type: 'success',
+            message: 'Successfully create a feedback',
+            duration: 5 * 1000,
+          });
+          this.$emit('handleSetTabs');
           this.getAnnouncement();
         })
         .catch((error) => {
@@ -578,9 +403,9 @@ table.table__striped tr:nth-child(odd) {
 .text-white {
   color: #fff;
 }
-.el-form-item {
+/* .el-form-item {
   margin-bottom: 0;
-}
+} */
 .fw-bold {
   font-weight: bold;
 }
@@ -631,4 +456,9 @@ table.table__striped tr:nth-child(odd) {
   height: 300px;
   background-color: red;
 }
+.wrapInDetailBottom {
+  padding:2rem;
+}
+.fz8{font-size: 0.8rem;}
+.el-rate__icon{font-size: 2.5rem !important;}
 </style>
