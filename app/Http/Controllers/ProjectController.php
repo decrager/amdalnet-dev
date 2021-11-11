@@ -3,19 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Project;
-use App\Entity\SupportDoc;
 use App\Http\Resources\ProjectResource;
+use DB;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use DB;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -39,7 +40,7 @@ class ProjectController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -49,8 +50,8 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -85,6 +86,7 @@ class ProjectController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
+
 
             //create file map
             $file = $request->file('fileMap');
@@ -123,8 +125,8 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function show(Project $project)
     {
@@ -134,8 +136,8 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function edit(Project $project)
     {
@@ -145,9 +147,9 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Project $project
+     * @return Response
      */
     public function update(Request $request, Project $project)
     {
@@ -229,14 +231,14 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function destroy(Project $project)
     {
         try {
             $project->delete();
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExportDocument;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('doc-uklupl/{id}', [ExportDocument::class, 'ExportUklUpl']);
 
 Route::group(['middleware' => 'web'], function () {
     Route::get(env('LARAVUE_PATH'), 'LaravueController@index')->where('any', '.*')->name('laravue');
