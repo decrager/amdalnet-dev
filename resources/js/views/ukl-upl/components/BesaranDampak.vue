@@ -1,5 +1,14 @@
 <template>
   <div class="app-container">
+    <el-button
+      type="success"
+      size="small"
+      icon="el-icon-check"
+      style="margin-bottom: 10px;"
+      @click="handleSaveForm()"
+    >
+      Simpan Perubahan
+    </el-button>
     <table>
       <tr class="tr-header">
         <td class="td-header">
@@ -47,11 +56,12 @@
         </td>
         <td v-if="!impact.is_stage" class="td-data">
           <span>
-            <el-input v-model="impact.nominal" />
+            <el-input v-model="impact.nominal" width="65" />
             <el-select
               v-model="impact.id_unit"
               placeholder="unit"
               style="width: 100%"
+              width="65"
             >
               <el-option
                 v-for="item of unitOptions"
@@ -90,6 +100,27 @@ export default {
     this.getData();
   },
   methods: {
+    handleSaveForm() {
+      impactIdtResource
+        .store({
+          unit_data: this.data,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Besaran Dampak berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+          if (response.code === 200) {
+            this.$emit('handleEnableSubmitForm');
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     createDataArray(imps, stages) {
       var stageIds = [4, 1, 2, 3];
       const data = [];
@@ -129,6 +160,7 @@ export default {
             component_name: imp.component_name,
             rona_awal_name: imp.rona_awal_name,
             nominal: imp.nominal,
+            id_unit: imp.id_unit,
             unit_name: imp.unit_name,
           });
         });
@@ -167,6 +199,7 @@ export default {
 <style scoped>
 table {
   border-collapse: collapse;
+  font-size: 14px;
 }
 .tr-header {
   border: 1px solid white;

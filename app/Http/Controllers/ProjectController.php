@@ -3,19 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Project;
-use App\Entity\SupportDoc;
 use App\Http\Resources\ProjectResource;
+use DB;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use DB;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -39,7 +40,7 @@ class ProjectController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -49,8 +50,8 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -78,6 +79,7 @@ class ProjectController extends Controller
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
+                'type_formulator_team' => 'required',
             ]
         );
 
@@ -85,6 +87,14 @@ class ProjectController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
+
+            //create fileKtr
+            $ktrName='';
+            if ($request->file('fileKtr')) {
+                $fileKtr = $request->file('fileKtr');
+                $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
+                $fileKtr->storePubliclyAs('public', $ktrName);
+            }
 
             //create file map
             $file = $request->file('fileMap');
@@ -113,7 +123,9 @@ class ProjectController extends Controller
                 'result_risk' => $params['result_risk'],
                 'required_doc' => $params['required_doc'],
                 'id_project' => $params['id_project'],
+                'type_formulator_team' => $params['type_formulator_team'],
                 'map' => Storage::url($name),
+                'ktr' => Storage::url($ktrName),
             ]);
 
             return new ProjectResource($project);
@@ -123,8 +135,8 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function show(Project $project)
     {
@@ -134,8 +146,8 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function edit(Project $project)
     {
@@ -145,9 +157,9 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Project $project
+     * @return Response
      */
     public function update(Request $request, Project $project)
     {
@@ -180,6 +192,7 @@ class ProjectController extends Controller
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
+                'type_formulator_team' => 'required',
             ]
         );
 
@@ -195,6 +208,15 @@ class ProjectController extends Controller
                 $file->storePubliclyAs('public', $name);
             } else {
                 $name = null;
+            }
+
+            //create file ktr
+            if ($request->file('fileKtr')) {
+                $fileKtr = $request->file('fileKtr');
+                $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
+                $fileKtr->storePubliclyAs('public', $ktrName);
+            } else {
+                $ktrName = null;
             }
 
             //Update Project
@@ -218,7 +240,9 @@ class ProjectController extends Controller
             $project->result_risk = $params['result_risk'];
             $project->required_doc = $params['required_doc'];
             $project->id_project = $params['id_project'];
-            $project->map = $name != null ? Storage::url($name) : $params['map'];
+            $project->type_formulator_team = $params['type_formulator_team'];
+            $project->map = $name != null ? Storage::url($name) : $project->map;
+            $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;
 
             $project->save();
         }
@@ -229,14 +253,14 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function destroy(Project $project)
     {
         try {
             $project->delete();
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\ImpactIdentification;
 use App\Entity\ProjectRonaAwal;
 use App\Http\Resources\ImpactIdentificationResource;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -68,6 +69,7 @@ class ImpactIdentificationController extends Controller
     {
         $params = $request->all();
         if (isset($params['checked']) && isset($params['id_project'])){
+            // save matriks identifikasi dampak
             $checked = 0;
             $inserted = 0;
             DB::beginTransaction();
@@ -95,6 +97,46 @@ class ImpactIdentificationController extends Controller
             } else {
                 DB::rollBack();
                 return response()->json(['code' => 500]);
+            }            
+        } else if (isset($params['unit_data'])) {
+            // save besran dampak
+            DB::beginTransaction();
+            $num_impacts = 0;
+            $response = [];
+            try {
+                foreach ($params['unit_data'] as $impact) {
+                    if ($impact['id'] < 9990) {
+                        //not dummy
+                        $num_impacts++;
+                        $row = ImpactIdentification::find($impact['id']);
+                        if ($row != null) {
+                            $row->id_unit = $impact['id_unit'];
+                            $row->id_change_type = $impact['id_change_type'];
+                            $row->nominal = $impact['nominal'];
+                            $row->save();
+                            array_push($response, new ImpactIdentificationResource($row));
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'code' => 500,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+            if (count($response) == $num_impacts) {
+                DB::commit();
+                return response()->json([
+                    'code' => 200,
+                    'data' => $response,
+                ]);
+            } else {
+                DB::rollBack();
+                return response()->json([
+                    'code' => 500,
+                    'error' => 'Some rows failed to update.',
+                ]);
             }            
         } else {
             $validator = $request->validate([

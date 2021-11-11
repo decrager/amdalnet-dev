@@ -38,10 +38,17 @@ class Project extends Model
         'required_doc',
         'biz_type',
         'id_project',
+        'type_formulator_team',
+        'ktr',
     ];
 
     public function team()
     {
         return $this->hasOne(FormulatorTeam::class, 'id_project', 'id');
+    }
+
+    public function impactIdentifications()
+    {
+        return $this->hasMany(ImpactIdentification::class, 'id_project', 'id');
     }
 }
