@@ -12,18 +12,18 @@ const dokumenKegiatanRoutes = {
       name: 'penyusunanAndal',
       meta: { title: 'Penyusunan Andal', icon: 'zip', noCache: true },
     },
-    {
-      path: 'penyusunan-rkl-rpl',
-      component: () => import('@/views/rkl-rpl/index'),
-      name: 'penyusunanRKLRPL',
-      meta: { title: 'Penyusuan RKL RPL', icon: 'zip', noCache: true },
-    },
-    {
-      path: 'pengujian',
-      component: () => import('@/views/pengujian/index'),
-      name: 'pengujian',
-      meta: { title: 'Pengujian', icon: 'zip', noCache: true },
-    },
+    // {
+    //   path: 'penyusunan-rkl-rpl',
+    //   component: () => import('@/views/rkl-rpl/index'),
+    //   name: 'penyusunanRKLRPL',
+    //   meta: { title: 'Penyusuan RKL RPL', icon: 'zip', noCache: true },
+    // },
+    // {
+    //   path: 'pengujian',
+    //   component: () => import('@/views/pengujian/index'),
+    //   name: 'pengujian',
+    //   meta: { title: 'Pengujian', icon: 'zip', noCache: true },
+    // },
   ],
 };
 

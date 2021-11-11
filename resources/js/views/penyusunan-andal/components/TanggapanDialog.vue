@@ -10,7 +10,7 @@
         <el-row>
           <el-form-item label="Tanggapan" prop="tanggapan">
             <el-input
-              v-model="tanggapan"
+              v-model="newTanggapan"
               type="textarea"
               :rows="2"
               placeholder="Isi Tanggapan"
@@ -20,7 +20,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="handleCancelTanggapan()"> Batal </el-button>
-        <el-button type="primary" @click="handleSubmitTanggapn()">
+        <el-button type="primary" @click="handleSubmitTanggapan()">
           Simpan
         </el-button>
       </div>
@@ -38,9 +38,21 @@ export default {
     },
     show: Boolean,
   },
+  data() {
+    return {
+      newTanggapan: '',
+    };
+  },
+  watch: {
+    tanggapan() {
+      this.newTanggapan = this.tanggapan;
+    },
+  },
   methods: {
     handleSubmitTanggapan() {
-      this.$emit('handleSubmitTanggapan');
+      this.$emit('handleSubmitTanggapan', {
+        tanggapan: this.newTanggapan,
+      });
     },
     handleCancelTanggapan() {
       this.$emit('handleCancelTanggapan');

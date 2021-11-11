@@ -17,16 +17,16 @@
       <el-table-column label="Dampak Penting Hipotetik">
         <template slot-scope="scope">
           <span
-            :class="{ 'row-title': Boolean(scope.row.komponen == undefined) }"
+            :class="{ 'row-title': Boolean(scope.row.component == undefined) }"
           >
-            {{ scope.row.hipotetik }}
+            {{ scope.row.name }}
           </span>
         </template>
       </el-table-column>
 
       <el-table-column label="Komponen Lingkungan">
         <template slot-scope="scope">
-          <span>{{ scope.row.komponen ? scope.row.komponen : '' }}</span>
+          <span>{{ scope.row.component ? scope.row.component : '' }}</span>
         </template>
       </el-table-column>
 
@@ -39,36 +39,44 @@
       <el-table-column label="Hasil Prakiraan Dampak">
         <el-table-column label="Besaran Dampak">
           <template slot-scope="scope">
-            <span>{{
-              scope.row.besaranDampak ? scope.row.besaranDampak : ''
-            }}</span>
+            <el-input
+              v-if="scope.row.component != undefined"
+              v-model="scope.row.impact_size"
+            />
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="Sifat Penting">
           <template slot-scope="scope">
-            <span>{{
-              scope.row.sifatPenting ? scope.row.sifatPenting : ''
-            }}</span>
+            <el-input
+              v-if="scope.row.component != undefined"
+              v-model="scope.row.important_trait"
+            />
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
       </el-table-column>
 
       <el-table-column label="Hasil Evaluasi Dampak">
         <template slot-scope="scope">
-          <span>{{ scope.row.hasilEvaluasi }}</span>
+          <el-input
+            v-if="scope.row.component != undefined"
+            v-model="scope.row.impact_eval_result"
+          />
+          <span v-else>{{ '' }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="Tanggapan" align="center">
         <template
-          v-if="!Boolean(scope.row.komponen == undefined)"
+          v-if="!Boolean(scope.row.component == undefined)"
           slot-scope="scope"
         >
           <el-button
             type="primary"
             size="small"
-            @click.prevent="showFormTanggapan(scope.row.$index)"
+            @click.prevent="showFormTanggapan(scope.row.id)"
           >
             Tanggapan
           </el-button>
@@ -78,7 +86,7 @@
     <TanggapanDialog
       :tanggapan="tanggapan"
       :show="show"
-      @handleSubmitTanggapan="handleSubmitTanggapan"
+      @handleSubmitTanggapan="handleSubmitTanggapan($event)"
       @handleCancelTanggapan="handleCancelTanggapan"
     />
   </div>
@@ -88,7 +96,7 @@
 import TanggapanDialog from '@/views/penyusunan-andal/components/TanggapanDialog.vue';
 
 export default {
-  name: 'DumpTable',
+  name: 'PenyusunanAndalTable',
   components: {
     TanggapanDialog,
   },
@@ -103,7 +111,7 @@ export default {
     return {
       tanggapan: '',
       show: false,
-      selectedTanggapanInd: null,
+      selectedTanggapanid: null,
     };
   },
   methods: {
@@ -113,11 +121,21 @@ export default {
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });
     },
-    showFormTanggapan(ind) {
-      this.selectedTanggapanInd = ind;
+    showFormTanggapan(id) {
+      this.selectedTanggapanid = id;
+      this.tanggapan = this.list.find((li) => li.id === id).response;
       this.show = true;
     },
-    handleSubmitTanggapan() {},
+    handleSubmitTanggapan({ tanggapan }) {
+      const indexList = this.list.findIndex(
+        (li) => li.id === this.selectedTanggapanid
+      );
+      this.list[indexList].response = tanggapan;
+      this.$emit('handleSubmitTanggapan');
+      this.show = false;
+      this.selectedTanggapanid = null;
+      this.tanggapan = '';
+    },
     handleCancelTanggapan() {
       this.show = false;
       this.selectedTanggapanInd = null;
