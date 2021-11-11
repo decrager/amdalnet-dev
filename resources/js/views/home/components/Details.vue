@@ -228,41 +228,51 @@
           <h1>Saran/Tanggapan untuk Ke giatan</h1>
         </el-col>
       </el-row>
-      <el-form ref="form">
+      <el-form ref="form" enctype="multipart/form-data" @submit.prevent="saveFeedback">
+        <input v-model="announcementId" type="text">
         <el-row :gutter="20">
           <el-col :span="12">
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item>
                   <div class="text-white fw-bold">Nama</div>
-                  <el-input placeholder="Nama" />
+                  <el-input
+                    v-model="form.name"
+                    placeholder="Nama"
+                  />
                 </el-form-item>
                 <el-form-item>
                   <div class="text-white fw-bold">Nik</div>
-                  <el-input placeholder="Nik" />
+                  <el-input
+                    v-model="form.id_card_number"
+                    placeholder="Nik"
+                  />
                 </el-form-item>
                 <el-form-item>
                   <div class="text-white fw-bold">No. Telepon/Handphone</div>
-                  <el-input placeholder="No. Telepon/Handphone" />
+                  <el-input
+                    v-model="form.phone"
+                    placeholder="No. Telepon/Handphone"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item>
                   <div class="text-white fw-bold">Peran</div>
                   <el-form-item label="">
-                    <el-select v-model="form.region" placeholder="Pilih Peran Anda">
-                      <el-option label="Zone one" value="shanghai" />
-                      <el-option label="Zone two" value="beijing" />
-                    </el-select>
+                    <el-radio v-model="form.responder_type_id" label="1">Terkena Dampak Langsung</el-radio>
+                    <el-radio v-model="form.responder_type_id" label="2">Pemerhati Lingkungan Hidup</el-radio>
+                    <el-radio v-model="form.responder_type_id" label="3">LSM</el-radio>
+                    <el-radio v-model="form.responder_type_id" label="4">Masyarakat Berkepentingan Lainya</el-radio>
                   </el-form-item>
                 </el-form-item>
                 <el-form-item>
                   <div class="text-white fw-bold">Unggah Foto Selfie</div>
-                  <el-input type="file" placeholder="Unggah Foto" />
+                  <input ref="file" type="file" class="el-input__inner" @change="handleFileUpload()">
                 </el-form-item>
                 <el-form-item>
                   <div class="text-white fw-bold">Email</div>
-                  <el-input type="email" placeholder="Email" />
+                  <el-input v-model="form.email" type="email" placeholder="Email" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -270,25 +280,19 @@
           <el-col :span="12">
             <el-form-item>
               <div class="text-white fw-bold">Kekhawatiran</div>
-              <el-input type="textarea" placeholder="Kekhawatiran" />
+              <el-input v-model="form.concern" type="textarea" placeholder="Kekhawatiran" />
             </el-form-item>
             <el-form-item>
               <div class="text-white fw-bold">Harapan</div>
-              <el-input type="textarea" placeholder="Harapan" />
+              <el-input v-model="form.expectation" type="textarea" placeholder="Harapan" />
             </el-form-item>
             <div class="text-white fw-bold" style="margin:2rem 0 1rem 0">Berikan rating Anda untuk Rencana Usaha/Kegiatan ini:</div>
             <div class="rating">
-              <div style="width:25%">
-                <p class="text-white">1 = Sangat Tidak </p>
-                <p class="text-white">Setuju/Mendukung</p>
-              </div>
-              <div style="width:50%">
-                <h4>Start</h4>
-              </div>
-              <div style="width:25%">
-                <p class="text-white">1 = Sangat Tidak </p>
-                <p class="text-white">Setuju/Mendukung</p>
-              </div>
+              <el-radio v-model="form.rating" value="1" label="1">1</el-radio>
+              <el-radio v-model="form.rating" value="2" label="2">2</el-radio>
+              <el-radio v-model="form.rating" value="3" label="3">3</el-radio>
+              <el-radio v-model="form.rating" value="4" label="4">4</el-radio>
+              <el-radio v-model="form.rating" value="5" label="5">5</el-radio>
             </div>
           </el-col>
         </el-row>
@@ -301,7 +305,12 @@
               type="danger"
               @click="handleCancelComponent()"
             >Batal</el-button>
-            <el-button id="kirim" type="primary">Kirim</el-button>
+            <el-button
+              id="kirim"
+              type="primary"
+              @click="saveFeedback()"
+            >Kirim
+            </el-button>
           </div>
         </el-col>
       </el-row>
@@ -309,34 +318,89 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
+import _ from 'lodash';
+
 export default {
   name: 'Details',
   props: {
-    // list: {
-    //   type: Array,
-    //   default: () => [],
-    // },
     showDetails: Boolean,
     selectedAnnouncement: {
       type: Object,
       default: () => {},
     },
+    announcementId: {
+      type: Number,
+      default: 0,
+    },
   },
-  data() {
+  data(){
     return {
+      data: {},
       form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: '',
+        name: null,
+        id_card_number: null,
+        phone: null,
+        email: null,
+        responder_type_id: null,
+        concern: null,
+        expectation: null,
+        announcement_id: 0,
+        rating: null,
       },
+      responders: [],
+      errorMessage: null,
+      photo_filepath: null,
     };
   },
+  async created() {
+    await this.getResponderType();
+  },
   methods: {
+    getAnnouncement() {
+      axios.get('/api/announcements')
+        .then(response => {
+          return response.data.data;
+        });
+    },
+    handleFileUpload(){
+      this.photo_filepath = this.$refs.file.files[0];
+    },
+    async saveFeedback() {
+      const formData = new FormData();
+      formData.append('photo_filepath', this.photo_filepath);
+      formData.append('name', this.form.name);
+      formData.append('id_card_number', this.form.id_card_number);
+      formData.append('phone', this.form.phone);
+      formData.append('email', this.form.email);
+      formData.append('responder_type_id', this.form.responder_type_id);
+      formData.append('concern', this.form.concern);
+      formData.append('expectation', this.form.expectation);
+      formData.append('rating', this.form.rating);
+      formData.append('announcement_id', this.announcementId);
+
+      _.each(this.formData, (value, key) => {
+        formData.append(key, value);
+      });
+
+      const headers = { 'Content-Type': 'multipart/form-data' };
+      await axios
+        .post('api/feedbacks', formData, { headers })
+        .then(() => {
+          alert('Successfully create a feedback');
+          this.getAnnouncement();
+        })
+        .catch(error => {
+          this.errorMessage = error.message;
+          console.error('There was an error!', error);
+        });
+    },
+    async getResponderType() {
+      await axios.get('api/responder-types')
+        .then(response => {
+          this.responders = response.data.data;
+        });
+    },
     handleCancelComponent() {
       this.$emit('handleCancelComponent');
     },
