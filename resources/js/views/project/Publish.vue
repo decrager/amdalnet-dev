@@ -47,6 +47,35 @@
               label-width="200px"
               style="max-width: 100%"
             >
+              <el-form-item prop="type_formulator_team">
+                <el-select
+                  v-model="project.type_formulator_team"
+                  placeholder="Pilih"
+                  style="width: 100%"
+                  :disabled="readonly"
+                  @change="onFormulatorTypeChange($event)"
+                >
+                  <el-option
+                    v-for="item in teamOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    style="width: 200px"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col></el-row>
+        <el-row v-if="getFormulatedTeam === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih Tim LPJP</el-col>
+          <el-col :span="12">
+            <el-form
+              ref="project"
+              :model="project"
+              :rules="projectRules"
+              label-position="top"
+              label-width="200px"
+              style="max-width: 100%"
+            >
               <el-form-item prop="id_formulator_team">
                 <el-select
                   v-model="project.id_formulator_team"
@@ -55,7 +84,35 @@
                   :disabled="readonly"
                 >
                   <el-option
-                    v-for="item in teamOptions"
+                    v-for="item in teamToChooseOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    style="width: 200px"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col></el-row>
+        <el-row v-else-if="getFormulatedTeam === 'mandiri'" style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Mandiri</el-col>
+          <el-col :span="12">
+            <el-form
+              ref="project"
+              :model="project"
+              :rules="projectRules"
+              label-position="top"
+              label-width="200px"
+              style="max-width: 100%"
+            >
+              <el-form-item prop="id_formulator_team">
+                <el-select
+                  v-model="project.id_formulator_team"
+                  placeholder="Pilih"
+                  style="width: 100%"
+                  :disabled="readonly"
+                >
+                  <el-option
+                    v-for="item in teamToChooseOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -100,7 +157,8 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: null,
+      teamOptions: [{ value: 'mandiri', label: 'mandiri' }, { value: 'lpjp', label: 'lpjp' }],
+      teamToChooseOptions: null,
       kabkot: null,
       list: [],
       projectRules: {
@@ -108,6 +166,12 @@ export default {
       },
       initiatorData: {},
     };
+  },
+  computed: {
+    getFormulatedTeam(){
+      console.log(this.$store.getters.teamType);
+      return this.$store.getters.teamType;
+    },
   },
   async mounted() {
     console.log(this.project);
@@ -117,13 +181,17 @@ export default {
     await this.updateList();
   },
   methods: {
+    onFormulatorTypeChange(value){
+      this.$store.dispatch('getTeamType', value);
+      console.log(this.$store.getters.teamType);
+    },
     async getInitiatorData(){
       const data = await this.$store.dispatch('user/getInfo');
       this.project.initiatorData = await initiatorResource.list({ email: data.email });
     },
     async getTeamOptions() {
       const { data } = await formulatorTeamResource.list({});
-      this.teamOptions = data.map((i) => {
+      this.teamToChooseOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
     },
