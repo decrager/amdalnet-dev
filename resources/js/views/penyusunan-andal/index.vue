@@ -41,7 +41,7 @@
             @handleSubmitTanggapan="handleSubmitTanggapan"
           />
         </el-tab-pane>
-        <!-- <el-tab-pane label="Dokumen ANDAL">
+        <el-tab-pane label="Dokumen ANDAL">
           <el-row :gutter="32">
             <el-col :sm="12" :md="7">
               <MapList />
@@ -61,7 +61,7 @@
               </small>
             </el-col>
           </el-row>
-        </el-tab-pane> -->
+        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -71,15 +71,15 @@
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 import PenyusunanAndalTable from '@/views/penyusunan-andal/components/Table';
-// import MapList from '@/views/penyusunan-andal/components/MapList';
-// import DocsFrame from '@/views/penyusunan-andal/components/DocsFrame';
+import MapList from '@/views/penyusunan-andal/components/MapList';
+import DocsFrame from '@/views/penyusunan-andal/components/DocsFrame';
 
 export default {
   name: 'PenyusunanAndal',
   components: {
     PenyusunanAndalTable,
-    // MapList,
-    // DocsFrame,
+    MapList,
+    DocsFrame,
   },
   data() {
     return {
