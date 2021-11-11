@@ -94,19 +94,15 @@ export default {
     },
     async handleSaveComponents(data){
       this.components = await data;
-      this.$emit('handleSaveComponents', data);
     },
     handleUpdateComponents(data){
       this.components = data;
-      this.$emit('handleUpdateComponents', data);
     },
     async handleSaveRonaAwals(data){
       this.ronaAwals = await data;
-      this.$emit('handleSaveRonaAwals', data);
     },
     handleUpdateRonaAwals(data){
       this.ronaAwals = data;
-      this.$emit('handleUpdateRonaAwals', data);
     },
   },
 };

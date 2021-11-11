@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="4">
       <el-col v-for="stage of projectStages" :key="stage.id" :span="6" :xs="24">
-        <aside align="center" style="margin-bottom: 0px;">
+        <aside align="center" style="margin-bottom: 0px; background-color: #3AB06F; color: white;">
           {{ stage.name }}
         </aside>
         <component-table

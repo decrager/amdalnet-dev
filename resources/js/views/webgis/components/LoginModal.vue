@@ -105,8 +105,8 @@ export default {
       data: {},
       errorMessage: null,
       loginForm: {
-        email: 'admin@laravue.dev',
-        password: 'laravue',
+        email: 'admin@amdalnet.dev',
+        password: 'amdalnet',
       },
       loginRules: {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
