@@ -78,6 +78,7 @@ class ProjectController extends Controller
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
+                'type_formulator_team' => 'required',
             ]
         );
 
@@ -85,6 +86,14 @@ class ProjectController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
+
+            //create fileKtr
+            $ktrName='';
+            if ($request->file('fileKtr')) {
+                $fileKtr = $request->file('fileKtr');
+                $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
+                $fileKtr->storePubliclyAs('public', $ktrName);
+            }
 
             //create file map
             $file = $request->file('fileMap');
@@ -113,7 +122,9 @@ class ProjectController extends Controller
                 'result_risk' => $params['result_risk'],
                 'required_doc' => $params['required_doc'],
                 'id_project' => $params['id_project'],
+                'type_formulator_team' => $params['type_formulator_team'],
                 'map' => Storage::url($name),
+                'ktr' => Storage::url($ktrName),
             ]);
 
             return new ProjectResource($project);
@@ -180,6 +191,7 @@ class ProjectController extends Controller
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
+                'type_formulator_team' => 'required',
             ]
         );
 
@@ -195,6 +207,15 @@ class ProjectController extends Controller
                 $file->storePubliclyAs('public', $name);
             } else {
                 $name = null;
+            }
+
+            //create file ktr
+            if ($request->file('fileKtr')) {
+                $fileKtr = $request->file('fileKtr');
+                $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
+                $fileKtr->storePubliclyAs('public', $ktrName);
+            } else {
+                $ktrName = null;
             }
 
             //Update Project
@@ -218,7 +239,9 @@ class ProjectController extends Controller
             $project->result_risk = $params['result_risk'];
             $project->required_doc = $params['required_doc'];
             $project->id_project = $params['id_project'];
-            $project->map = $name != null ? Storage::url($name) : $params['map'];
+            $project->type_formulator_team = $params['type_formulator_team'];
+            $project->map = $name != null ? Storage::url($name) : $project->map;
+            $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;
 
             $project->save();
         }

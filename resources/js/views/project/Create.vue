@@ -672,6 +672,8 @@ export default {
     },
     handleSubmit() {
       this.currentProject.fileMap = this.fileMap;
+      this.currentProject.fileKtr = this.fileKtr;
+
       this.$refs.currentProject.validate((valid) => {
         if (valid) {
           this.currentProject.listSupportDoc = this.listSupportTable.filter(

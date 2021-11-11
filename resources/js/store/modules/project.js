@@ -30,6 +30,7 @@ const projects = {
       },
     ],
     unitOptions: [],
+    teamType: '',
 
     loadingStatus: false,
   },
@@ -57,6 +58,9 @@ const projects = {
     },
     SET_LIST_KBLI(state, payload) {
       state.listKbli = payload;
+    },
+    SET_TEAM_TYPE(state, payload) {
+      state.teamType = payload;
     },
     LOADING_STATUS(state, payload) {
       state.loadingStatus = payload;
@@ -118,6 +122,9 @@ const projects = {
         return { value: i.param, label: i.param };
       });
       commit('SET_BUSINESS_TYPE_OPTIONS', option);
+    },
+    async getTeamType({ commit }, payload) {
+      commit('SET_TEAM_TYPE', payload);
     },
   },
 };

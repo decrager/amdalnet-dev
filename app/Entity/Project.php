@@ -38,6 +38,8 @@ class Project extends Model
         'required_doc',
         'biz_type',
         'id_project',
+        'type_formulator_team',
+        'ktr',
     ];
 
     public function team()
