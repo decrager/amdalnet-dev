@@ -52,6 +52,7 @@
       :announcement-id="selectedId"
       :selected-announcement="selectedAnnouncement"
       @handleCancelComponent="handleCancelComponent"
+      @handleSetTabs="handleSetTabs"
     />
   </div>
 </template>
@@ -105,6 +106,10 @@ export default {
         });
     },
     handleCancelComponent(){
+      this.showDetails = false;
+      this.showTabs = true;
+    },
+    handleSetTabs(){
       this.showDetails = false;
       this.showTabs = true;
     },
