@@ -1,11 +1,16 @@
 <template>
   <div>
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" style="font-size: 0.8rem">
+      <el-button
+        class="filter-item"
+        type="primary"
+        style="font-size: 0.8rem"
+        @click="handleSubmit"
+      >
         {{ 'Simpan Perubahan' }}
       </el-button>
       <span style="font-size: 0.8rem">
-        <em>Terakhir diperbarui beberapa detik yang lalu</em>
+        <em>{{ lasttime }}</em>
       </span>
     </div>
     <el-table
@@ -26,10 +31,10 @@
         <template slot-scope="scope">
           <span
             :class="{
-              'row-title': Boolean(scope.row.sumberDampak == undefined),
+              'row-title': Boolean(scope.row.type === 'title'),
             }"
           >
-            {{ scope.row.dampakLingkungan }}
+            {{ scope.row.name }}
           </span>
         </template>
       </el-table-column>
@@ -37,7 +42,7 @@
       <el-table-column label="Sumber Dampak">
         <template slot-scope="scope">
           <span>{{
-            scope.row.sumberDampak ? scope.row.sumberDampak : ''
+            scope.row.impact_source ? scope.row.impact_source : ''
           }}</span>
         </template>
       </el-table-column>
@@ -46,51 +51,63 @@
         label="Indikator Keberhasilan Pengelolaan Lingkungan Hidup"
       >
         <template slot-scope="scope">
-          <span>{{
-            scope.row.indikatorKeberhasilan
-              ? scope.row.indikatorKeberhasilan
-              : ''
-          }}</span>
+          <el-input
+            v-if="scope.row.type == 'subtitle'"
+            v-model="scope.row.success_indicator"
+          />
+          <span v-else>{{ '' }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="Pengelolaan Lingkungan Hidup">
         <el-table-column label="Bentuk Pengelolaan Lingkungan Hidup">
           <template slot-scope="scope">
-            <span>{{
-              scope.row.bentukPengelolaan ? scope.row.bentukPengelolaan : ''
-            }}</span>
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.form"
+            />
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="Lokasi Pengelolaan Lingkungan Hidup">
           <template slot-scope="scope">
-            <span>{{
-              scope.row.lokasiPengelolaan ? scope.row.lokasiPengelolaan : ''
-            }}</span>
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.location"
+            />
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="Periode Pengelolaan Lingkungan Hidup">
           <template slot-scope="scope">
-            <span>{{
-              scope.row.periodePengelolaan ? scope.row.periodePengelolaan : ''
-            }}</span>
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.period"
+            />
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
       </el-table-column>
 
       <el-table-column label="Institusi Pengelolaan Lingkungan Hidup">
         <template slot-scope="scope">
-          <span>{{
-            scope.row.institusiPengelolaan ? scope.row.institusiPengelolaan : ''
-          }}</span>
+          <el-input
+            v-if="scope.row.type == 'subtitle'"
+            v-model="scope.row.institution"
+          />
+          <span v-else>{{ '' }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="Keterangan">
         <template slot-scope="scope">
-          <span>{{ scope.row.keterangan ? scope.row.keterangan : '' }}</span>
+          <el-input
+            v-if="scope.row.type == 'subtitle'"
+            v-model="scope.row.description"
+          />
+          <span v-else>{{ '' }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -100,71 +117,20 @@
 <script>
 export default {
   name: 'TableRKL',
-  data() {
-    return {
-      loading: false,
-      list: [
-        {
-          dampakLingkungan: 'Pra Konstruksi',
-        },
-        {
-          dampakLingkungan: 'Penurunan Kualitas Udara akibat Pengadaan Lahan',
-          sumberDampak: '',
-          indikatorKeberhasilan: '',
-          bentukPengelolaan: '',
-          lokasiPengelolaan: '',
-          periodePengelolaan: '',
-          institusiPengelolaan: '',
-          keterangan: '',
-        },
-        {
-          dampakLingkungan: 'Konstruksi',
-        },
-        {
-          dampakLingkungan:
-            'Penurunan Mata Pencaharian Penduduk akibat Mobilisasi Peralatan dan Material Konstruksi',
-          sumberDampak: '',
-          indikatorKeberhasilan: '',
-          bentukPengelolaan: '',
-          lokasiPengelolaan: '',
-          periodePengelolaan: '',
-          institusiPengelolaan: '',
-          keterangan: '',
-        },
-        {
-          dampakLingkungan: 'Operasi',
-        },
-        {
-          dampakLingkungan:
-            'Penurunan Keberadaan Biota Air akibat Pengoperasian Kawasan Industri dan Sarana Pendukungnya',
-          sumberDampak: '',
-          indikatorKeberhasilan: '',
-          bentukPengelolaan: '',
-          lokasiPengelolaan: '',
-          periodePengelolaan: '',
-          institusiPengelolaan: '',
-          keterangan: '',
-        },
-        {
-          dampakLingkungan:
-            'Penurunan Kualitas Air akibat Pengoperasian Kawasan Industri dan Sarana Pendukungnya',
-          sumberDampak: '',
-          indikatorKeberhasilan: '',
-          bentukPengelolaan: '',
-          lokasiPengelolaan: '',
-          periodePengelolaan: '',
-          institusiPengelolaan: '',
-          keterangan: '',
-        },
-      ],
-    };
+  props: {
+    list: {
+      type: Array,
+      default: () => [],
+    },
+    lasttime: {
+      type: String,
+      default: () => null,
+    },
+    loading: Boolean,
   },
   methods: {
-    handleEditForm(id) {
-      this.$emit('handleEditForm', id);
-    },
-    handleDelete(id, nama) {
-      this.$emit('handleDelete', { id, nama });
+    handleSubmit() {
+      this.$emit('handleSubmit');
     },
   },
 };

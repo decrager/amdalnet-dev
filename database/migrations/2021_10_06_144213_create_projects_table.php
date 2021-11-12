@@ -32,6 +32,8 @@ class CreateProjectsTable extends Migration
             $table->string('risk_level')->nullable();
             $table->integer('project_year')->nullable();
             $table->string('map')->nullable();
+            $table->string('ktr')->nullable();
+            $table->string('type_formulator_team')->nullable();
             $table->integer('map_scale')->nullable();
             $table->string('map_scale_unit')->nullable();
             $table->string('id_formulator_team')->nullable();

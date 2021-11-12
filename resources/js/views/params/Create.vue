@@ -216,7 +216,7 @@ export default {
               message: 'App Params has been updated successfully',
               duration: 5 * 1000,
             });
-            this.$router.push('/master-data/params');
+            this.$router.push('master-data/params');
           })
           .catch((error) => {
             console.log(error);
@@ -234,7 +234,7 @@ export default {
               duration: 5 * 1000,
             });
             this.currentParam = {};
-            this.$router.push('/master-data/params');
+            this.$router.push('master-data/params');
           })
           .catch((error) => {
             console.log(error);
@@ -283,7 +283,7 @@ export default {
         });
     },
     handleCancle() {
-      this.$router.push('/master-data/params');
+      this.$router.push('master-data/params');
     },
   },
 };

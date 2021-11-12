@@ -4,7 +4,12 @@
       <template slot="title">
         <span class="title">MATRIKS RENCANA PENGELOLAAN (RKL)</span>
       </template>
-      <TableRKL />
+      <TableRKL
+        :list="matriksrkl"
+        :lasttime="lasttimerkl"
+        :loading="loadingrkl"
+        @handleSubmit="handleSubmitRKL"
+      />
     </el-collapse-item>
     <el-collapse-item name="2">
       <template slot="title">
@@ -25,10 +30,26 @@ export default {
     TableRKL,
     TableRPL,
   },
+  props: {
+    matriksrkl: {
+      type: Array,
+      default: () => [],
+    },
+    lasttimerkl: {
+      type: String,
+      default: () => null,
+    },
+    loadingrkl: Boolean,
+  },
   data() {
     return {
       activeName: '1',
     };
+  },
+  methods: {
+    handleSubmitRKL() {
+      this.$emit('handleSubmitRKL');
+    },
   },
 };
 </script>
