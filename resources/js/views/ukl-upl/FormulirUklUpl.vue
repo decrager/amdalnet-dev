@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card>
-      <h2>Formulir UKL UPL</h2>
+      <h2>Formulir Kerangka Acuan</h2>
       <span>
         <el-button
           class="pull-right"
@@ -125,7 +125,7 @@ export default {
   --vsa-min-width: 300px;
   --vsa-heading-padding: 1rem 1rem;
   --vsa-text-color: rgba(55, 55, 55, 1);
-  --vsa-highlight-color: #abd4ff;
+  --vsa-highlight-color: #1e5128;
   --vsa-bg-color: rgba(255, 255, 255, 1);
   --vsa-border-color: rgba(0, 0, 0, 0.2);
   --vsa-border-width: 1px;
@@ -161,7 +161,7 @@ export default {
 .vsa-item__trigger:focus,.vsa-item__trigger:hover{
     outline:none;
     background-color:var(--vsa-highlight-color);
-    color: black;
+    color: white;
 }
 
 h2 {

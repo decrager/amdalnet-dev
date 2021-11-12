@@ -4,17 +4,14 @@
       <td class="td-header">
         <span>Komponen Dampak</span>
       </td>
-      <td class="td-header">
+      <td class="td-header" align="center">
         <span>Komponen Rona Lingkungan Awal</span>
       </td>
       <td class="td-header" width="130">
         <span />
       </td>
-      <td class="td-header">
+      <td class="td-header" align="center">
         <span>Sumber Dampak</span>
-      </td>
-      <td class="td-header">
-        <span>Besaran Dampak</span>
       </td>
     </tr>
     <tr v-for="impact of data" :key="impact.id" class="tr-data">
@@ -35,32 +32,14 @@
           />
         </el-select>
       </td>
-      <td v-if="!impact.is_stage" class="td-data">
+      <td v-if="!impact.is_stage" class="td-data" align="center">
         <span>{{ impact.rona_awal_name }}</span>
       </td>
-      <td v-if="!impact.is_stage" class="td-data">
+      <td v-if="!impact.is_stage" class="td-data" align="center">
         <span>akibat</span>
       </td>
-      <td v-if="!impact.is_stage" class="td-data">
+      <td v-if="!impact.is_stage" class="td-data" align="center">
         <span>{{ impact.component_name }}</span>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data">
-        <span>
-          <el-input v-model="impact.nominal" width="65" />
-          <el-select
-            v-model="impact.id_unit"
-            placeholder="unit"
-            style="width: 100%"
-            width="65"
-          >
-            <el-option
-              v-for="item of unitOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </span>
       </td>
     </tr>
   </table>
@@ -72,7 +51,7 @@ const changeTypeResource = new Resource('change-types');
 const unitResource = new Resource('units');
 
 export default {
-  name: 'BesaranDampakTable',
+  name: 'DampakPotensialTable',
   props: {
     data: {
       type: Array,
@@ -105,12 +84,11 @@ table {
   font-size: 14px;
 }
 .tr-header {
-  border: 1px solid white;
-  background-color: #3AB06F;
-  color: white;
+  border: 1px solid gray;
+  background-color: #def5cf;
 }
 .td-header {
-  border: 1px solid white;
+  border: 1px solid gray;
   padding: 10px;
 }
 .tr-data, .td-data {
