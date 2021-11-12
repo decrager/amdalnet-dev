@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Shapefile\Shapefile;
+use Shapefile\ShapefileReader;
+use VIPSoft\Unzip\Unzip;
+use Illuminate\Support\Facades\File;
 
 class ProjectController extends Controller
 {
@@ -23,7 +27,7 @@ class ProjectController extends Controller
         if($request->lastInput) {
             return Project::whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         }
-        
+
         return Project::select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
@@ -97,9 +101,12 @@ class ProjectController extends Controller
             }
 
             //create file map
-            $file = $request->file('fileMap');
-            $name = 'project/' . uniqid() . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
+            $mapName='';
+            if ($request->file('fileMap')) {
+                $fileMap = $request->file('fileMap');
+                $mapName = 'map/' . uniqid() . '.' . $fileMap->extension();
+                $fileMap->storePubliclyAs('public', $mapName);
+            }
 
             //create lpjp
             $project = Project::create([
@@ -124,7 +131,7 @@ class ProjectController extends Controller
                 'required_doc' => $params['required_doc'],
                 'id_project' => $params['id_project'],
                 'type_formulator_team' => $params['type_formulator_team'],
-                'map' => Storage::url($name),
+                'map' => Storage::url($mapName),
                 'ktr' => Storage::url($ktrName),
             ]);
 

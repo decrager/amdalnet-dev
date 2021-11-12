@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ExportDocument;
+use App\Http\Controllers\LaravueController;
+use App\Http\Controllers\WebgisController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,7 +21,8 @@ Route::get('/', function () {
 });
 
 Route::get('doc-uklupl/{id}', [ExportDocument::class, 'ExportUklUpl']);
+Route::post('upload-map', [WebgisController::class, 'store']);
 
 Route::group(['middleware' => 'web'], function () {
-    Route::get(env('LARAVUE_PATH'), 'LaravueController@index')->where('any', '.*')->name('laravue');
+    Route::get(env('LARAVUE_PATH'), [LaravueController::class, 'index'])->where('any', '.*')->name('laravue');
 });

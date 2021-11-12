@@ -177,12 +177,11 @@ table {
   border-collapse: collapse;
 }
 .tr-header {
-  border: 1px solid white;
-  background-color: #3AB06F;
-  color: white;
+  border: 1px solid gray;
+  background-color: #def5cf;
 }
 .td-header {
-  border: 1px solid white;
+  border: 1px solid gray;
   padding: 10px;
 }
 .tr-data, .td-data {

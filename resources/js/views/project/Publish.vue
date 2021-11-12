@@ -15,7 +15,9 @@
         </el-table>
       </el-col>
       <el-col :span="12">
-        <h1>Peta Will Be Here Soon</h1>
+        <div>
+          <div id="mapView" style="height: 500px; margin: 0 10px;" />
+        </div>
       </el-col>
     </el-row>
     <el-row style="padding-top: 32px">
@@ -133,6 +135,8 @@
 
 <script>
 import Resource from '@/api/resource';
+import L from 'leaflet';
+
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const formulatorTeamResource = new Resource('formulator-teams');
@@ -165,6 +169,7 @@ export default {
         id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
       },
       initiatorData: {},
+      geojson: null,
     };
   },
   computed: {
@@ -179,8 +184,30 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    const response = await fetch('storage/' + this.project.map);
+    this.geojson = await response.json();
+    await this.loadMap();
   },
   methods: {
+    async loadMap() {
+      const map = L.map('mapView');
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      const data = await fetch('storage/' + this.project.map);
+      this.geojson = await data.json();
+      const feature = L.geoJSON(this.geojson, {
+        style: function(feature) {
+          return { color: feature.properties.color };
+        },
+      }).bindPopup(function(layer) {
+        return layer.feature.properties.description;
+      }).addTo(map);
+
+      map.fitBounds(feature.getBounds());
+    },
     onFormulatorTypeChange(value){
       this.$store.dispatch('getTeamType', value);
       console.log(this.$store.getters.teamType);
@@ -386,3 +413,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@import url('../../../../node_modules/leaflet/dist/leaflet.css');
+</style>

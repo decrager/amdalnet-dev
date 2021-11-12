@@ -58,10 +58,10 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Upload Peta Tapak Proyek(File SHP)">
-                    <input ref="fileMap" type="file" class="el-input__inner" @change="handleFileMapUpload()">
+                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileMapUpload()">
                   </el-form-item>
+                  <div id="mapView" style="height: 400px;" />
                 </el-row>
-                <h1>PETA</h1>
                 <el-row />
               </el-col>
             </el-row>
@@ -449,6 +449,8 @@ import Resource from '@/api/resource';
 import SupportTable from './components/SupportTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
+import * as L from 'leaflet';
+import shp from 'shpjs';
 
 export default {
   name: 'CreateProject',
@@ -615,6 +617,28 @@ export default {
     },
     handleFileMapUpload(){
       this.fileMap = this.$refs.fileMap.files[0];
+      const map = L.map('mapView');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      const fr = new FileReader();
+      fr.onload = (event) => {
+        console.log(event);
+        const geo = L.geoJSON().addTo(map);
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          const feature = geo.addData(data);
+          map.fitBounds(feature.getBounds());
+        });
+        //
+        // const result = fr.result;
+        // shp(result).then(function(geojson){
+        //   geojson.addTo(map);
+        // });
+        // const shpfile = new L.Shapefile(result);
+      };
+      fr.readAsArrayBuffer(this.fileMap);
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });
@@ -757,6 +781,8 @@ export default {
 };
 </script>
 <style>
+@import url('../../../../node_modules/leaflet/dist/leaflet.css');
+
 .el-collapse-item__header {
   /* background-color: #296d36; */
   background-color: #1E5128;

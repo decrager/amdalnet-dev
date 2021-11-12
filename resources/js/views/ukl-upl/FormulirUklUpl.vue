@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card>
-      <h2>Formulir UKL UPL</h2>
+      <h2>Formulir Kerangka Acuan</h2>
       <span>
         <el-button
           class="pull-right"
@@ -35,14 +35,20 @@
             />
           </vsa-content>
         </vsa-item>
-        <vsa-item :init-active="besaranActive">
+        <vsa-item :init-active="dampakPotensialActive">
           <vsa-heading>
-            JENIS DAN BESARAN DAMPAK
+            DAMPAK POTENSIAL
           </vsa-heading>
           <vsa-content>
-            <besaran-dampak
-              @handleEnableSubmitForm="handleEnableSubmitForm"
-            />
+            <dampak-potensial />
+          </vsa-content>
+        </vsa-item>
+        <vsa-item :init-active="dampakPotensialActive">
+          <vsa-heading>
+            DAMPAK PENTING HIPOTETIK
+          </vsa-heading>
+          <vsa-content>
+            <dampak-penting-hipotetik />
           </vsa-content>
         </vsa-item>
       </vsa-list>
@@ -61,7 +67,8 @@ import {
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
-import BesaranDampak from './components/BesaranDampak.vue';
+import DampakPotensial from './components/DampakPotensial.vue';
+import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
 
 export default {
   name: 'FormulirUklUpl',
@@ -72,7 +79,8 @@ export default {
     VsaContent,
     RonaLingkunganAwal,
     MatrikIdentifikasiDampak,
-    BesaranDampak,
+    DampakPotensial,
+    DampakPentingHipotetik,
   },
   data() {
     return {
@@ -81,7 +89,7 @@ export default {
       vsaListKey: 0,
       ronaActive: true,
       matriksActive: false,
-      besaranActive: false,
+      dampakPotensialActive: false,
     };
   },
   mounted() {
@@ -103,15 +111,15 @@ export default {
       if (tab === 1) {
         this.ronaActive = true;
         this.matriksActive = false;
-        this.besaranActive = false;
+        this.dampakPotensialActive = false;
       } else if (tab === 2) {
         this.ronaActive = false;
         this.matriksActive = true;
-        this.besaranActive = false;
+        this.dampakPotensialActive = false;
       } else if (tab === 3) {
         this.ronaActive = false;
         this.matriksActive = false;
-        this.besaranActive = true;
+        this.dampakPotensialActive = true;
       }
     },
   },
@@ -125,7 +133,7 @@ export default {
   --vsa-min-width: 300px;
   --vsa-heading-padding: 1rem 1rem;
   --vsa-text-color: rgba(55, 55, 55, 1);
-  --vsa-highlight-color: #abd4ff;
+  --vsa-highlight-color: #1e5128;
   --vsa-bg-color: rgba(255, 255, 255, 1);
   --vsa-border-color: rgba(0, 0, 0, 0.2);
   --vsa-border-width: 1px;
@@ -161,7 +169,7 @@ export default {
 .vsa-item__trigger:focus,.vsa-item__trigger:hover{
     outline:none;
     background-color:var(--vsa-highlight-color);
-    color: black;
+    color: white;
 }
 
 h2 {

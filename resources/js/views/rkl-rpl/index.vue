@@ -8,6 +8,7 @@
               v-model="idProject"
               placeholder="Pilih Kegiatan"
               style="width: 100%"
+              @change="handleChange"
             >
               <el-option
                 v-for="item in projects"
@@ -21,7 +22,12 @@
       </div>
       <el-tabs type="card">
         <el-tab-pane label="Matriks RKL RPL">
-          <Matriks />
+          <Matriks
+            :matriksrkl="matriksRKL"
+            :lasttimerkl="lastTimeRKL"
+            :loadingrkl="loadingRKL"
+            @handleSubmitRKL="handleSubmitRKL"
+          />
         </el-tab-pane>
         <el-tab-pane label="Dokumen RKL RPL">
           <el-row :gutter="32">
@@ -67,55 +73,12 @@ export default {
   },
   data() {
     return {
-      loading: false,
-      dampakLingkungan: [
-        {
-          hipotetik: 'Pra Konstruksi',
-        },
-        {
-          hipotetik: 'Penurunan Kualitas Udara akibat Pengadaan Lahan',
-          komponen: '',
-          ronaAwal: '',
-          besaranDampak: '',
-          sifatPenting: '',
-          hasilEvaluasi: '',
-        },
-        {
-          hipotetik: 'Konstruksi',
-        },
-        {
-          hipotetik:
-            'Penururan Mata Pencaharian Penduduk akibat Mobilisasi Peralatan dan Material Konstruksi',
-          komponen: '',
-          ronaAwal: '',
-          besaranDampak: '',
-          sifatPenting: '',
-          hasilEvaluasi: '',
-        },
-        {
-          hipotetik: 'Operasi',
-        },
-        {
-          hipotetik:
-            'Penurunan Keberadaan Biota Air akibat Pengoperasian Kawasan Industri dan Sarana Pendukungnya',
-          komponen: '',
-          ronaAwal: '',
-          besaranDampak: '',
-          sifatPenting: '',
-          hasilEvaluasi: '',
-        },
-        {
-          hipotetik:
-            'Penurunan Kualitas Air akibat Pengoperasian Kawasan Industri dan Sarana Pendukungnya',
-          komponen: '',
-          ronaAwal: '',
-          besaranDampak: '',
-          sifatPenting: '',
-          hasilEvaluasi: '',
-        },
-      ],
+      loadingRKL: false,
+      loadingRPL: false,
       projects: [],
       idProject: null,
+      lastTimeRKL: null,
+      matriksRKL: [],
     };
   },
   created() {
@@ -125,6 +88,44 @@ export default {
     async getProjects() {
       const data = await rklResource.list({ project: 'true' });
       this.projects = data;
+    },
+    async getRKL() {
+      this.matriksRKL = await rklResource.list({
+        idProject: this.idProject,
+      });
+    },
+    async getLastTimeRKL(idProject) {
+      this.lastTimeRKL = await rklResource.list({
+        lastTime: 'true',
+        idProject,
+      });
+    },
+    async handleSubmitRKL() {
+      if (!this.idProject) {
+        return;
+      }
+
+      const sendForm = this.matriksRKL.filter((com) => com.type !== 'title');
+      const time = await rklResource.store({
+        manage: sendForm,
+        type: this.lastTimeRKL ? 'update' : 'new',
+      });
+      this.lastTimeRKL = time;
+      this.getRKL();
+      this.$message({
+        message: 'Data is saved Successfully',
+        type: 'success',
+        duration: 5 * 1000,
+      });
+    },
+    async handleChange(val) {
+      this.loadingRKL = true;
+      this.loadingRPL = true;
+      this.idProject = val;
+      this.getRKL();
+      this.loadingRKL = false;
+      this.loadingRPL = false;
+      this.getLastTimeRKL(val);
     },
   },
 };
