@@ -14,6 +14,12 @@ class ImpactIdentification extends Model
         'id_change_type',
         'id_unit',
         'nominal',
+        'potential_impact_evaluation',
+        'is_hypothetical_significant',
+        'initial_study_plan',
+        'study_location',
+        'study_length_year',
+        'study_length_month',
     ];
 
     public function project(){
