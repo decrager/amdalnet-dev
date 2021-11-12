@@ -283,7 +283,7 @@ export default {
         });
     },
     handleCancle() {
-      this.$router.push('/master-data/params');
+      this.$router.push('master-data/params');
     },
   },
 };
