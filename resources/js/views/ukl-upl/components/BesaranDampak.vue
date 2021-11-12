@@ -11,6 +11,7 @@
     </el-button>
     <identifikasi-dampak-table
       :id-project="idProject"
+      :table="'besaran-dampak'"
       @handleSetData="handleSetData"
     />
   </div>

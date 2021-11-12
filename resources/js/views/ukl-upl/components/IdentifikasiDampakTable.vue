@@ -1,91 +1,33 @@
 <template>
-  <table>
-    <tr class="tr-header">
-      <td class="td-header">
-        <span>Komponen Dampak</span>
-      </td>
-      <td class="td-header">
-        <span>Komponen Rona Lingkungan Awal</span>
-      </td>
-      <td class="td-header" width="130">
-        <span />
-      </td>
-      <td class="td-header">
-        <span>Sumber Dampak</span>
-      </td>
-      <td class="td-header">
-        <span>Besaran Dampak</span>
-      </td>
-    </tr>
-    <tr v-for="impact of data" :key="impact.id" class="tr-data">
-      <td v-if="impact.is_stage" colspan="5" class="td-data">
-        <span>{{ impact.project_stage_name }}</span>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data">
-        <el-select
-          v-model="impact.id_change_type"
-          placeholder="Perubahan"
-          style="width: 100%"
-        >
-          <el-option
-            v-for="item of changeTypeOptions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data">
-        <span>{{ impact.rona_awal_name }}</span>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data">
-        <span>akibat</span>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data">
-        <span>{{ impact.component_name }}</span>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data">
-        <span>
-          <el-input v-model="impact.nominal" width="65" />
-          <el-select
-            v-model="impact.id_unit"
-            placeholder="unit"
-            style="width: 100%"
-            width="65"
-          >
-            <el-option
-              v-for="item of unitOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </span>
-      </td>
-    </tr>
-  </table>
+  <div v-if="isBesaranDampakTable">
+    <besaran-dampak-table :data="data" />
+  </div>
 </template>
+
 <script>
 import Resource from '@/api/resource';
-const changeTypeResource = new Resource('change-types');
+import BesaranDampakTable from './BesaranDampakTable.vue';
 const projectStageResource = new Resource('project-stages');
-const unitResource = new Resource('units');
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'IdentifikasiDampakTable',
+  components: { BesaranDampakTable },
   props: {
     idProject: {
       type: Number,
       default: () => 0,
     },
+    table: {
+      type: String,
+      default: () => '',
+    },
   },
   data() {
     return {
       data: [],
-      changeTypeOptions: [],
-      unitOptions: [],
       projectStages: [],
+      isBesaranDampakTable: false,
     };
   },
   mounted() {
@@ -140,10 +82,9 @@ export default {
       return dataFlat;
     },
     async getData() {
-      const changeTypeList = await changeTypeResource.list({});
-      this.changeTypeOptions = changeTypeList.data;
-      const unitList = await unitResource.list({});
-      this.unitOptions = unitList.data;
+      if (this.table === 'besaran-dampak'){
+        this.isBesaranDampakTable = true;
+      }
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
       const impactList = await impactIdtResource.list({
@@ -167,23 +108,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-table {
-  border-collapse: collapse;
-  font-size: 14px;
-}
-.tr-header {
-  border: 1px solid white;
-  background-color: #3AB06F;
-  color: white;
-}
-.td-header {
-  border: 1px solid white;
-  padding: 10px;
-}
-.tr-data, .td-data {
-  border: 1px solid gray;
-  padding: 10px;
-}
-</style>
