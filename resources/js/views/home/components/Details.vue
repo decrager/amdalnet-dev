@@ -7,20 +7,17 @@
             <div class="wrapDetail">
               <img src="https://placeimg.com/150/150/arch/grayscale" alt="">
               <div class="wrapDetailRight">
-                <p style="margin-bottom: 1rem">
-                  Kegiatan Pembangunan Kilang Minyak Blok Cepu Kabupaten Cepu,
-                  Prov Jawa Tengah 2022
-                </p>
-                <h4 class="fw-bold">PT. Pertamina</h4>
-                <h4 class="fw-bold">Jl. Gambir No.39, Jakarta Pusat</h4>
+                <p style="margin-bottom: 1rem">{{ selectedAnnouncement.project.project_title }}</p>
+                <h4 class="fw-bold">{{ selectedAnnouncement.pic_name }}</h4>
+                <h4 class="fw-bold">{{ selectedAnnouncement.project.address }}, Jakarta Pusat</h4>
               </div>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="wrapDetailRightRow">
-              <el-button type="success" plain>AMDAL</el-button>
-              <h4 class="fw-bold">Reg No. 781224242</h4>
-              <h4 class="fw-bold">[Terpadu, Rencana, Baru]</h4>
+              <el-button type="success" plain>{{ selectedAnnouncement.project.required_doc }}</el-button>
+              <h4 class="fw-bold">Reg No. {{ selectedAnnouncement.project.id_project }}</h4>
+              <h4 class="fw-bold">[{{ selectedAnnouncement.project.project_type }}]</h4>
             </div>
           </el-col>
         </el-row>
@@ -28,7 +25,7 @@
           <el-col :span="12">
             <div style="padding-left: 2rem">
               <h4 class="fw-bold">Pengumuman</h4>
-              <p>12 November 2021 - 12 Desember 2021</p>
+              <p>{{ formatDateStr(selectedAnnouncement.start_date) }} - {{ formatDateStr(selectedAnnouncement.end_date) }}</p>
             </div>
           </el-col>
           <el-col :span="12">
@@ -40,19 +37,9 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <div style="padding-left: 2rem; margin-top: 2rem">
-              <p style="margin-bottom: 1rem">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
-                labore inventore aperiam. Rem et in assumenda, sit Lorem ipsum
-                dolor, sit amet consectetur adipisicing elit. Repellendus est
-                commodi, libero omnis sit nostrum aliquam. Veniam quia
-                accusantium quos vel doloribus exercitationem animi nobis, eos
-                a, iste id incidunt!
-              </p>
+              <p style="margin-bottom: 1rem" v-html="selectedAnnouncement.project.description" />
               <h4 class="fw-bold">Dampak Potensi</h4>
-              <p style="margin-bottom: 1.5rem">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
-                labore inventore aperiam. Rem et in assumenda, sit
-              </p>
+              <p style="margin-bottom: 1.5rem" v-html="selectedAnnouncement.project.potential_impact" />
             </div>
           </el-col>
         </el-row>
@@ -61,34 +48,20 @@
             <div style="padding-left: 2rem">
               <div style="display: flex; margin-bottom: 1rem">
                 <h4 class="fw-bold" style="">Sifat Kegiatan:</h4>
-                <h4>Terpadu,Rencana, Baru</h4>
+                <h4>&nbsp;{{ selectedAnnouncement.project.project_type }}</h4>
               </div>
-              <h4 class="fw-bold">Dampak Potensi</h4>
-              <table style="margin-bottom: 1rem">
-                <tr>
-                  <td>1232353454</td>
-                  <td>:</td>
-                  <td>Pembangunan</td>
-                </tr>
-              </table>
-              <h4 class="fw-bold">Kegiatan Pendukung</h4>
-              <table style="margin-bottom: 1rem">
-                <tr>
-                  <td>9877 - Perkebunan</td>
-                  <td>:</td>
-                  <td>Perkebunan Tebu</td>
-                </tr>
-              </table>
-              <h4 class="fw-bold">Dampak Potensi</h4>
-              <p style="margin-bottom: 1.5rem">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam
-                labore inventore aperiam. Rem et in assumenda, sit
-              </p>
+              <h4 class="fw-bold">Project Location</h4>
+              <p style="margin-bottom: 1.5rem">{{ selectedAnnouncement.project_location }}</p>
             </div>
           </el-col>
           <el-col :span="10">
             <div style="padding-right: 2rem">
-              <div class="maps" />
+              <div style="height: 400px; width: 100%">
+                <l-map :zoom="zoom" :center="center">
+                  <l-marker :lat-lng="center" />
+                  <l-tile-layer :url="urlMap" :attribution="attribution" />
+                </l-map>
+              </div>
             </div>
           </el-col>
         </el-row>
@@ -255,9 +228,15 @@
 <script>
 import axios from 'axios';
 import _ from 'lodash';
+import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 
 export default {
   name: 'Details',
+  components: {
+    LMap,
+    LTileLayer,
+    LMarker,
+  },
   props: {
     showDetails: Boolean,
     selectedAnnouncement: {
@@ -288,12 +267,33 @@ export default {
       photo_filepath: null,
       ratings: null,
       url: null,
+      urlMap: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      zoom: 12,
+      center: [-6.93, 107.60],
+      bounds: null,
     };
   },
   async created() {
     await this.getResponderType();
   },
   methods: {
+    formatDateStr(date) {
+      const today = new Date(date);
+      var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+      // Getting required values
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const day = today.getDate();
+
+      const monthID = bulan[month];
+
+      // Creating a new Date (with the delta)
+      const finalDate = `${day} ${monthID} ${year}`;
+
+      return finalDate;
+    },
     handleChange(i){
       this.form.rating = i;
     },

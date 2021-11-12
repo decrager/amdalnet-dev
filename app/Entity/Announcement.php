@@ -31,4 +31,8 @@ class Announcement extends Model
     public function project(){
         return $this->hasOne(Project::class, 'id', 'project_id');
     }
+
+    public function province(){
+        return $this->hasOne(Province::class, 'id', 'id_prov');
+    }
 }
