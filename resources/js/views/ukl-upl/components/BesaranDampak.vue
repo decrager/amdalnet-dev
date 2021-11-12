@@ -177,7 +177,7 @@ export default {
       this.projectStages = prjStageList.data;
       const impactList = await impactIdtResource.list({
         id_project: this.idProject,
-        with_project_stage: true,
+        join_tables: true,
       });
       impactList.data.map((imp) => {
         if (imp.id_project_stage === null) {
