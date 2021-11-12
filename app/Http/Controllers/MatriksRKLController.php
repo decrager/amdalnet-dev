@@ -159,7 +159,7 @@ class MatriksRKLController extends Controller
     private function getImpactNotifications($id_project, $stages) {
         $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
                                         ->where('id_project', $id_project)
-                                        ->with(['component.component', 'changeType', 'ronaAwal.ronaAwal'])->get();
+                                        ->with(['component.component', 'changeType', 'ronaAwal.rona_awal'])->get();
             $results = [];
 
             foreach($stages as $s) {
@@ -174,7 +174,7 @@ class MatriksRKLController extends Controller
                 foreach($impactIdentifications as $imp) {
                     if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
                         $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                        $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->ronaAwal->name : $imp->ronaAwal->name;
+                        $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
                         $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
 
                         $results[] = [
@@ -204,7 +204,7 @@ class MatriksRKLController extends Controller
     private function getEnvManagePlan($id_project, $stages) {
         $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
                                       ->where('id_project', $id_project)
-                                      ->with(['component.component', 'changeType', 'ronaAwal.ronaAwal', 'envManagePlan'])->get();
+                                      ->with(['component.component', 'changeType', 'ronaAwal.rona_awal', 'envManagePlan'])->get();
           $results = [];
 
           foreach($stages as $s) {
@@ -219,7 +219,7 @@ class MatriksRKLController extends Controller
               foreach($impactIdentifications as $imp) {
                   if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
                       $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                      $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->ronaAwal->name : $imp->ronaAwal->name;
+                      $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
                       $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
 
                       $results[] = [
