@@ -101,24 +101,11 @@ class ProjectController extends Controller
             }
 
             //create file map
-            if ($files = $request->file('fileMap')) {
-                $unzipper  = new Unzip();
-                $file = $files->store('map'); //store file in storage/app/zip
-                $filenames = $unzipper->extract(storage_path('app/'.$file),storage_path('app/public/'.$file));
-                //extract the files in storage/app/public
-                // dd($filenames); //show file names
-                $exactFileName = explode( '.', $filenames[0]);
-                $Shapefile = new ShapefileReader(storage_path('app/public/'. $file . '/' .$exactFileName . '.shp'));
-
-                $filePath = '';
-                while ($Geometry = $Shapefile->fetchRecord()) {
-                    if ($Geometry->isDeleted()) {
-                        continue;
-                    }
-                    $geojson = $Geometry->getGeoJSON();
-                    File::put(storage_path('app/public/'. $file . '/' . $exactFileName. '.geojson'),$geojson);
-                    $filePath = 'map/'. $file . '/' . $exactFileName. '.geojson';
-                }
+            $mapName='';
+            if ($request->file('fileMap')) {
+                $fileMap = $request->file('fileMap');
+                $mapName = 'map/' . uniqid() . '.' . $fileMap->extension();
+                $fileMap->storePubliclyAs('public', $mapName);
             }
 
             //create lpjp
@@ -144,7 +131,7 @@ class ProjectController extends Controller
                 'required_doc' => $params['required_doc'],
                 'id_project' => $params['id_project'],
                 'type_formulator_team' => $params['type_formulator_team'],
-                'map' => Storage::url($filePath),
+                'map' => Storage::url($mapName),
                 'ktr' => Storage::url($ktrName),
             ]);
 

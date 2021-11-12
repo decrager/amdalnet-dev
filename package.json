@@ -82,6 +82,7 @@
     "nprogress": "^0.2.0",
     "path-to-regexp": "^3.1.0",
     "screenfull": "^4.2.1",
+    "shpjs": "^4.0.2",
     "sortablejs": "^1.10.2",
     "tui-editor": "^1.4.6",
     "vue": "2.6.10",
