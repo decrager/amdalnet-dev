@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ImpactIdentification;
+use App\Entity\ProjectRonaAwal;
 use App\Http\Resources\ImpactIdentificationResource;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,6 +28,30 @@ class ImpactIdentificationController extends Controller
         if ($request->id_rona_awal){
             $list = $list->where('id_rona_awal', $request->id_rona_awal);
         }
+        if ($request->join_tables){
+            $list = ImpactIdentification::with('managementInstitutionExecutor')
+                ->with('managementInstitutionRecipient')
+                ->with('managementInstitutionSupervisor')
+                ->with('monitoringInstitutionExecutor')
+                ->with('monitoringInstitutionRecipient')
+                ->with('monitoringInstitutionSupervisor')
+                ->select('impact_identifications.*',
+                'pc.id_project_stage',
+                'c.id_project_stage AS id_project_stage_master',
+                'c.name AS component_name_master',
+                'pc.name AS component_name',
+                'ra.name AS rona_awal_name_master',
+                'pra.name AS rona_awal_name',
+                'u.name AS unit_name')
+                ->leftJoin('project_components AS pc', 'impact_identifications.id_project_component', '=', 'pc.id')
+                ->leftJoin('project_rona_awals AS pra', 'impact_identifications.id_project_rona_awal', '=', 'pra.id')
+                ->leftJoin('units AS u', 'impact_identifications.id_unit', '=', 'u.id')
+                ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
+                ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
+                ->where('impact_identifications.id_project', $request->id_project)
+                ->get();
+            return ImpactIdentificationResource::collection($list);
+        }
         return ImpactIdentificationResource::collection($list);
     }
 
@@ -47,19 +73,92 @@ class ImpactIdentificationController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = $request->validate([
-            'id_project' => 'required',
-            'id_component' => 'required',
-            'id_rona_awal' => 'required',
-        ]);
-        DB::beginTransaction();
-        $created = ImpactIdentification::create($validator);
-        if ($created){
-            DB::commit();
+        $params = $request->all();
+        if (isset($params['checked']) && isset($params['id_project'])){
+            // save matriks identifikasi dampak
+            $checked = 0;
+            $inserted = 0;
+            DB::beginTransaction();
+            //clear items
+            ImpactIdentification::where('id_project', $params['id_project'])->delete();
+            //insert checked items
+            foreach ($params['checked'] as $item){
+                foreach ($item['sub'] as $sub){
+                    if ($sub['checked']){
+                        $created = ImpactIdentification::create([
+                            'id_project' => $params['id_project'],
+                            'id_project_rona_awal' => $item['id'],
+                            'id_project_component' => $sub['id'],
+                        ]);
+                        if ($created){
+                            $inserted++;
+                        }
+                        $checked++;
+                    }
+                }
+            }
+            if ($inserted == $checked){
+                DB::commit();
+                return response()->json(['code' => 200]);
+            } else {
+                DB::rollBack();
+                return response()->json(['code' => 500]);
+            }            
+        } else if (isset($params['unit_data'])) {
+            // save besran dampak
+            DB::beginTransaction();
+            $num_impacts = 0;
+            $response = [];
+            try {
+                foreach ($params['unit_data'] as $impact) {
+                    if ($impact['id'] < 9990) {
+                        //not dummy
+                        $num_impacts++;
+                        $row = ImpactIdentification::find($impact['id']);
+                        if ($row != null) {
+                            $row->id_unit = $impact['id_unit'];
+                            $row->id_change_type = $impact['id_change_type'];
+                            $row->nominal = $impact['nominal'];
+                            $row->save();
+                            array_push($response, new ImpactIdentificationResource($row));
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'code' => 500,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+            if (count($response) == $num_impacts) {
+                DB::commit();
+                return response()->json([
+                    'code' => 200,
+                    'data' => $response,
+                ]);
+            } else {
+                DB::rollBack();
+                return response()->json([
+                    'code' => 500,
+                    'error' => 'Some rows failed to update.',
+                ]);
+            }            
         } else {
-            DB::rollBack();
+            $validator = $request->validate([
+                'id_project' => 'required',
+                'id_component' => 'required',
+                'id_rona_awal' => 'required',
+            ]);
+            DB::beginTransaction();
+            $created = ImpactIdentification::create($validator);
+            if ($created){
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+            return new ImpactIdentificationResource($created);
         }
-        return new ImpactIdentificationResource($created);
     }
 
     /**
