@@ -43,6 +43,7 @@ class ImpactIdentificationController extends Controller
                 ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
                 ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
                 ->where('impact_identifications.id_project', $request->id_project)
+                ->orderBy('impact_identifications.id', 'asc')
                 ->get();
             return ImpactIdentificationResource::collection($list);
         }
