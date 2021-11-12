@@ -86,22 +86,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-table {
-  border-collapse: collapse;
-  font-size: 14px;
-}
-.tr-header {
-  border: 1px solid gray;
-  background-color: #def5cf;
-}
-.td-header {
-  border: 1px solid gray;
-  padding: 10px;
-}
-.tr-data, .td-data {
-  border: 1px solid gray;
-  padding: 10px;
-}
-</style>

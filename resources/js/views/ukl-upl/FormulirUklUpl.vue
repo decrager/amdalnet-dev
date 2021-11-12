@@ -40,9 +40,15 @@
             DAMPAK POTENSIAL
           </vsa-heading>
           <vsa-content>
-            <dampak-potensial
-              @handleEnableSubmitForm="handleEnableSubmitForm"
-            />
+            <dampak-potensial />
+          </vsa-content>
+        </vsa-item>
+        <vsa-item :init-active="dampakPotensialActive">
+          <vsa-heading>
+            DAMPAK PENTING HIPOTETIK
+          </vsa-heading>
+          <vsa-content>
+            <dampak-penting-hipotetik />
           </vsa-content>
         </vsa-item>
       </vsa-list>
@@ -62,6 +68,7 @@ import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
 import DampakPotensial from './components/DampakPotensial.vue';
+import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
 
 export default {
   name: 'FormulirUklUpl',
@@ -73,6 +80,7 @@ export default {
     RonaLingkunganAwal,
     MatrikIdentifikasiDampak,
     DampakPotensial,
+    DampakPentingHipotetik,
   },
   data() {
     return {

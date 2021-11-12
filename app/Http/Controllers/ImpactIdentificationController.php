@@ -36,10 +36,10 @@ class ImpactIdentificationController extends Controller
                 'pc.name AS component_name',
                 'ra.name AS rona_awal_name_master',
                 'pra.name AS rona_awal_name',
-                'u.name AS unit_name')
+                'ct.name AS change_type_name')
                 ->leftJoin('project_components AS pc', 'impact_identifications.id_project_component', '=', 'pc.id')
                 ->leftJoin('project_rona_awals AS pra', 'impact_identifications.id_project_rona_awal', '=', 'pra.id')
-                ->leftJoin('units AS u', 'impact_identifications.id_unit', '=', 'u.id')
+                ->leftJoin('change_types AS ct', 'impact_identifications.id_change_type', '=', 'ct.id')
                 ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
                 ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
                 ->where('impact_identifications.id_project', $request->id_project)
@@ -98,13 +98,13 @@ class ImpactIdentificationController extends Controller
                 DB::rollBack();
                 return response()->json(['code' => 500]);
             }            
-        } else if (isset($params['unit_data'])) {
+        } else if (isset($params['study_data'])) {
             // save besran dampak
             DB::beginTransaction();
             $num_impacts = 0;
             $response = [];
             try {
-                foreach ($params['unit_data'] as $impact) {
+                foreach ($params['study_data'] as $impact) {
                     if ($impact['id'] < 9990) {
                         //not dummy
                         $num_impacts++;
@@ -113,6 +113,12 @@ class ImpactIdentificationController extends Controller
                             $row->id_unit = $impact['id_unit'];
                             $row->id_change_type = $impact['id_change_type'];
                             $row->nominal = $impact['nominal'];
+                            $row->potential_impact_evaluation = $impact['potential_impact_evaluation'];
+                            $row->is_hypothetical_significant = $impact['is_hypothetical_significant'];
+                            $row->initial_study_plan = $impact['initial_study_plan'];
+                            $row->study_location = $impact['study_location'];
+                            $row->study_length_year = $impact['study_length_year'];
+                            $row->study_length_month = $impact['study_length_month'];
                             $row->save();
                             array_push($response, new ImpactIdentificationResource($row));
                         }

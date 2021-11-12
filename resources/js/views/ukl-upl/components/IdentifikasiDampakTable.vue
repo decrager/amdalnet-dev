@@ -1,18 +1,20 @@
 <template>
-  <div v-if="isDampakPotensialTable">
-    <dampak-potensial-table :data="data" />
+  <div>
+    <dampak-potensial-table v-if="isDampakPotensialTable" :data="data" />
+    <dampak-penting-hipotetik-table v-if="isDampakPentingHipotetikTable" :data="data" />
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
 import DampakPotensialTable from './DampakPotensialTable.vue';
+import DampakPentingHipotetikTable from './DampakPentingHipotetikTable.vue';
 const projectStageResource = new Resource('project-stages');
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'IdentifikasiDampakTable',
-  components: { DampakPotensialTable },
+  components: { DampakPotensialTable, DampakPentingHipotetikTable },
   props: {
     idProject: {
       type: Number,
@@ -28,6 +30,7 @@ export default {
       data: [],
       projectStages: [],
       isDampakPotensialTable: false,
+      isDampakPentingHipotetikTable: false,
     };
   },
   mounted() {
@@ -66,16 +69,8 @@ export default {
         });
 
         d.impacts.map((imp) => {
-          dataFlat.push({
-            id: imp.id,
-            is_stage: false,
-            id_change_type: imp.id_change_type,
-            component_name: imp.component_name,
-            rona_awal_name: imp.rona_awal_name,
-            nominal: imp.nominal,
-            id_unit: imp.id_unit,
-            unit_name: imp.unit_name,
-          });
+          imp['is_stage'] = false;
+          dataFlat.push(imp);
         });
         dummyId++;
       });
@@ -84,6 +79,8 @@ export default {
     async getData() {
       if (this.table === 'dampak-potensial'){
         this.isDampakPotensialTable = true;
+      } else if (this.table === 'dampak-penting-hipotetik'){
+        this.isDampakPentingHipotetikTable = true;
       }
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
