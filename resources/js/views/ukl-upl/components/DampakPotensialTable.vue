@@ -1,48 +1,55 @@
 <template>
-  <table>
-    <tr class="tr-header">
-      <td class="td-header">
-        <span>Komponen Dampak</span>
-      </td>
-      <td class="td-header" align="center">
-        <span>Komponen Rona Lingkungan Awal</span>
-      </td>
-      <td class="td-header" width="130">
-        <span />
-      </td>
-      <td class="td-header" align="center">
-        <span>Sumber Dampak</span>
-      </td>
-    </tr>
-    <tr v-for="impact of data" :key="impact.id" class="tr-data">
-      <td v-if="impact.is_stage" colspan="5" class="td-data">
-        <span>{{ impact.project_stage_name }}</span>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data">
-        <el-select
-          v-model="impact.id_change_type"
-          placeholder="Perubahan"
-          style="width: 100%"
-        >
-          <el-option
-            v-for="item of changeTypeOptions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data" align="center">
-        <span>{{ impact.rona_awal_name }}</span>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data" align="center">
-        <span>akibat</span>
-      </td>
-      <td v-if="!impact.is_stage" class="td-data" align="center">
-        <span>{{ impact.component_name }}</span>
-      </td>
-    </tr>
-  </table>
+  <el-table
+    v-loading="loading"
+    :data="data"
+    fit
+    highlight-current-row
+    :header-cell-style="{ background: '#def5cf' }"
+    style="width: 100%"
+  >
+    <el-table-column label="Komponen Dampak">
+      <template slot-scope="scope">
+        <div v-if="scope.row.is_stage">
+          {{ scope.row.project_stage_name }}
+        </div>
+        <div v-if="!scope.row.is_stage">
+          <el-select
+            v-model="scope.row.id_change_type"
+            placeholder="Perubahan"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item of changeTypeOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </div>
+      </template>
+    </el-table-column>
+    <el-table-column label="Komponen Rona Lingkungan Awal" align="center">
+      <template slot-scope="scope">
+        <div v-if="!scope.row.is_stage">
+          {{ scope.row.rona_awal_name }}
+        </div>
+      </template>
+    </el-table-column>
+    <el-table-column label="" align="center">
+      <template slot-scope="scope">
+        <div v-if="!scope.row.is_stage">
+          akibat
+        </div>
+      </template>
+    </el-table-column>
+    <el-table-column label="Sumber Dampak" align="center">
+      <template slot-scope="scope">
+        <div v-if="!scope.row.is_stage">
+          {{ scope.row.component_name }}
+        </div>
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 
 <script>
@@ -60,6 +67,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       changeTypeOptions: [],
       unitOptions: [],
     };
@@ -73,6 +81,7 @@ export default {
       this.changeTypeOptions = changeTypeList.data;
       const unitList = await unitResource.list({});
       this.unitOptions = unitList.data;
+      this.loading = false;
     },
   },
 };
