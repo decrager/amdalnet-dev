@@ -16,7 +16,7 @@ const dokumenKegiatanRoutes = {
       path: 'penyusunan-rkl-rpl',
       component: () => import('@/views/rkl-rpl/index'),
       name: 'penyusunanRKLRPL',
-      meta: { title: 'Penyusuan RKL RPL', icon: 'zip', noCache: true },
+      meta: { title: 'Penyusunan RKL RPL', icon: 'zip', noCache: true },
     },
     {
       path: 'pengujian',
