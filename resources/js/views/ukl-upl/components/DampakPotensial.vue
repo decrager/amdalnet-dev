@@ -11,7 +11,7 @@
     </el-button>
     <identifikasi-dampak-table
       :id-project="idProject"
-      :table="'besaran-dampak'"
+      :table="'dampak-potensial'"
       @handleSetData="handleSetData"
     />
   </div>
@@ -23,7 +23,7 @@ import IdentifikasiDampakTable from './IdentifikasiDampakTable.vue';
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
-  name: 'BesaranDampak',
+  name: 'DampakPotensial',
   components: { IdentifikasiDampakTable },
   data() {
     return {
@@ -44,7 +44,7 @@ export default {
           unit_data: this.data,
         })
         .then((response) => {
-          var message = (response.code === 200) ? 'Besaran Dampak berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message = (response.code === 200) ? 'Dampak Potensial berhasil disimpan' : 'Terjadi kesalahan pada server';
           var message_type = (response.code === 200) ? 'success' : 'error';
           this.$message({
             message: message,

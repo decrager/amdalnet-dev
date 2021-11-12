@@ -35,12 +35,12 @@
             />
           </vsa-content>
         </vsa-item>
-        <vsa-item :init-active="besaranActive">
+        <vsa-item :init-active="dampakPotensialActive">
           <vsa-heading>
-            JENIS DAN BESARAN DAMPAK
+            DAMPAK POTENSIAL
           </vsa-heading>
           <vsa-content>
-            <besaran-dampak
+            <dampak-potensial
               @handleEnableSubmitForm="handleEnableSubmitForm"
             />
           </vsa-content>
@@ -61,7 +61,7 @@ import {
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
-import BesaranDampak from './components/BesaranDampak.vue';
+import DampakPotensial from './components/DampakPotensial.vue';
 
 export default {
   name: 'FormulirUklUpl',
@@ -72,7 +72,7 @@ export default {
     VsaContent,
     RonaLingkunganAwal,
     MatrikIdentifikasiDampak,
-    BesaranDampak,
+    DampakPotensial,
   },
   data() {
     return {
@@ -81,7 +81,7 @@ export default {
       vsaListKey: 0,
       ronaActive: true,
       matriksActive: false,
-      besaranActive: false,
+      dampakPotensialActive: false,
     };
   },
   mounted() {
@@ -103,15 +103,15 @@ export default {
       if (tab === 1) {
         this.ronaActive = true;
         this.matriksActive = false;
-        this.besaranActive = false;
+        this.dampakPotensialActive = false;
       } else if (tab === 2) {
         this.ronaActive = false;
         this.matriksActive = true;
-        this.besaranActive = false;
+        this.dampakPotensialActive = false;
       } else if (tab === 3) {
         this.ronaActive = false;
         this.matriksActive = false;
-        this.besaranActive = true;
+        this.dampakPotensialActive = true;
       }
     },
   },

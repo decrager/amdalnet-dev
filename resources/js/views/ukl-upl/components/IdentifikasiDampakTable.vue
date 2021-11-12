@@ -1,18 +1,18 @@
 <template>
-  <div v-if="isBesaranDampakTable">
-    <besaran-dampak-table :data="data" />
+  <div v-if="isDampakPotensialTable">
+    <dampak-potensial-table :data="data" />
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
-import BesaranDampakTable from './BesaranDampakTable.vue';
+import DampakPotensialTable from './DampakPotensialTable.vue';
 const projectStageResource = new Resource('project-stages');
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'IdentifikasiDampakTable',
-  components: { BesaranDampakTable },
+  components: { DampakPotensialTable },
   props: {
     idProject: {
       type: Number,
@@ -27,7 +27,7 @@ export default {
     return {
       data: [],
       projectStages: [],
-      isBesaranDampakTable: false,
+      isDampakPotensialTable: false,
     };
   },
   mounted() {
@@ -82,8 +82,8 @@ export default {
       return dataFlat;
     },
     async getData() {
-      if (this.table === 'besaran-dampak'){
-        this.isBesaranDampakTable = true;
+      if (this.table === 'dampak-potensial'){
+        this.isDampakPotensialTable = true;
       }
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
