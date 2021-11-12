@@ -81,6 +81,7 @@ export default {
     initiator: 'Initiator',
     masterData: 'Master Data',
     provinsi: 'Province',
+    lpjp: 'LPJP',
     formulator: 'Formulator',
     expertBank: 'Expert Bank',
     formulatorExpert: 'Formulator Expert Team',
@@ -96,6 +97,7 @@ export default {
     cluster: 'Cluster',
     formulatorTeam: 'Formulator Team',
     tuk: 'Examiner Team',
+    editWorkspace: 'Edit Workspace',
   },
   navbar: {
     logOut: 'Log Out',
@@ -179,6 +181,9 @@ export default {
     keyword: 'Keyword',
     role: 'Role',
   },
+  addNode: 'Add Node',
+  getTree: 'Get Tree',
+  treeNode: 'Tree Node',
   errorLog: {
     tips: 'Please click the bug icon in the upper right corner',
     description: 'Now the management system are basically the form of the spa, it enhances the user experience, but it also increases the possibility of page problems, a small negligence may lead to the entire page deadlock. Fortunately Vue provides a way to catch handling exceptions, where you can handle errors or report exceptions.',

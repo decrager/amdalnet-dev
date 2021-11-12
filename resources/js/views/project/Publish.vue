@@ -15,7 +15,9 @@
         </el-table>
       </el-col>
       <el-col :span="12">
-        <h1>Peta Will Be Here Soon</h1>
+        <div>
+          <div id="mapView" style="height: 500px; margin: 0 10px;" />
+        </div>
       </el-col>
     </el-row>
     <el-row style="padding-top: 32px">
@@ -47,6 +49,35 @@
               label-width="200px"
               style="max-width: 100%"
             >
+              <el-form-item prop="type_formulator_team">
+                <el-select
+                  v-model="project.type_formulator_team"
+                  placeholder="Pilih"
+                  style="width: 100%"
+                  :disabled="readonly"
+                  @change="onFormulatorTypeChange($event)"
+                >
+                  <el-option
+                    v-for="item in teamOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    style="width: 200px"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col></el-row>
+        <el-row v-if="getFormulatedTeam === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih Tim LPJP</el-col>
+          <el-col :span="12">
+            <el-form
+              ref="project"
+              :model="project"
+              :rules="projectRules"
+              label-position="top"
+              label-width="200px"
+              style="max-width: 100%"
+            >
               <el-form-item prop="id_formulator_team">
                 <el-select
                   v-model="project.id_formulator_team"
@@ -55,7 +86,35 @@
                   :disabled="readonly"
                 >
                   <el-option
-                    v-for="item in teamOptions"
+                    v-for="item in teamToChooseOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    style="width: 200px"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col></el-row>
+        <el-row v-else-if="getFormulatedTeam === 'mandiri'" style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Mandiri</el-col>
+          <el-col :span="12">
+            <el-form
+              ref="project"
+              :model="project"
+              :rules="projectRules"
+              label-position="top"
+              label-width="200px"
+              style="max-width: 100%"
+            >
+              <el-form-item prop="id_formulator_team">
+                <el-select
+                  v-model="project.id_formulator_team"
+                  placeholder="Pilih"
+                  style="width: 100%"
+                  :disabled="readonly"
+                >
+                  <el-option
+                    v-for="item in teamToChooseOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -76,6 +135,8 @@
 
 <script>
 import Resource from '@/api/resource';
+import L from 'leaflet';
+
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const formulatorTeamResource = new Resource('formulator-teams');
@@ -100,14 +161,22 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: null,
+      teamOptions: [{ value: 'mandiri', label: 'mandiri' }, { value: 'lpjp', label: 'lpjp' }],
+      teamToChooseOptions: null,
       kabkot: null,
       list: [],
       projectRules: {
         id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
       },
       initiatorData: {},
+      geojson: null,
     };
+  },
+  computed: {
+    getFormulatedTeam(){
+      console.log(this.$store.getters.teamType);
+      return this.$store.getters.teamType;
+    },
   },
   async mounted() {
     console.log(this.project);
@@ -115,15 +184,41 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    const response = await fetch('storage/' + this.project.map);
+    this.geojson = await response.json();
+    await this.loadMap();
   },
   methods: {
+    async loadMap() {
+      const map = L.map('mapView');
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      const data = await fetch('storage/' + this.project.map);
+      this.geojson = await data.json();
+      const feature = L.geoJSON(this.geojson, {
+        style: function(feature) {
+          return { color: feature.properties.color };
+        },
+      }).bindPopup(function(layer) {
+        return layer.feature.properties.description;
+      }).addTo(map);
+
+      map.fitBounds(feature.getBounds());
+    },
+    onFormulatorTypeChange(value){
+      this.$store.dispatch('getTeamType', value);
+      console.log(this.$store.getters.teamType);
+    },
     async getInitiatorData(){
       const data = await this.$store.dispatch('user/getInfo');
       this.project.initiatorData = await initiatorResource.list({ email: data.email });
     },
     async getTeamOptions() {
       const { data } = await formulatorTeamResource.list({});
-      this.teamOptions = data.map((i) => {
+      this.teamToChooseOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
     },
@@ -193,6 +288,11 @@ export default {
     },
     handleSubmit() {
       this.project.id_applicant = this.project.initiatorData ? this.project.initiatorData.id : null;
+
+      if (!this.project.id_project){
+        this.project.id_project = 1;
+      }
+
       console.log(this.project);
 
       // make form data because we got file
@@ -313,3 +413,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@import url('../../../../node_modules/leaflet/dist/leaflet.css');
+</style>
