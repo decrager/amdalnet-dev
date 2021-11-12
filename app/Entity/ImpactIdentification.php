@@ -14,18 +14,6 @@ class ImpactIdentification extends Model
         'id_change_type',
         'id_unit',
         'nominal',
-        'management_effort',
-        'management_location',
-        'management_period',
-        'management_institution_executor',
-        'management_institution_recipient',
-        'management_institution_supervisor',
-        'monitoring_effort',
-        'monitoring_location',
-        'monitoring_period',
-        'monitoring_institution_executor',
-        'monitoring_institution_recipient',
-        'monitoring_institution_supervisor',
     ];
 
     public function project(){
@@ -53,33 +41,4 @@ class ImpactIdentification extends Model
         return $this->hasOne(EnvImpactAnalysis::class, 'id_impact_identifications', 'id');
     }
 
-    public function managementInstitutionExecutor()
-    {
-        return $this->belongsTo(Institution::class, 'management_institution_executor');
-    }
-    
-    public function managementInstitutionRecipient()
-    {
-        return $this->belongsTo(Institution::class, 'management_institution_recipient');
-    }
-
-    public function managementInstitutionSupervisor()
-    {
-        return $this->belongsTo(Institution::class, 'management_institution_supervisor');
-    }
-
-    public function monitoringInstitutionExecutor()
-    {
-        return $this->belongsTo(Institution::class, 'monitoring_institution_executor');
-    }
-    
-    public function monitoringInstitutionRecipient()
-    {
-        return $this->belongsTo(Institution::class, 'monitoring_institution_recipient');
-    }
-
-    public function monitoringInstitutionSupervisor()
-    {
-        return $this->belongsTo(Institution::class, 'monitoring_institution_supervisor');
-    }
 }

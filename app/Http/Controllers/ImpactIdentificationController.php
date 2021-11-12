@@ -29,13 +29,7 @@ class ImpactIdentificationController extends Controller
             $list = $list->where('id_rona_awal', $request->id_rona_awal);
         }
         if ($request->join_tables){
-            $list = ImpactIdentification::with('managementInstitutionExecutor')
-                ->with('managementInstitutionRecipient')
-                ->with('managementInstitutionSupervisor')
-                ->with('monitoringInstitutionExecutor')
-                ->with('monitoringInstitutionRecipient')
-                ->with('monitoringInstitutionSupervisor')
-                ->select('impact_identifications.*',
+            $list = ImpactIdentification::select('impact_identifications.*',
                 'pc.id_project_stage',
                 'c.id_project_stage AS id_project_stage_master',
                 'c.name AS component_name_master',
