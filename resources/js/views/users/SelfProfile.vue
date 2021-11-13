@@ -22,6 +22,7 @@ import Resource from '@/api/resource';
 import UserDetailCard from './components/UserDetailCard';
 import UserActivity from './components/UserActivity';
 const initiatorResource = new Resource('initiatorsByEmail');
+const formulatorResource = new Resource('formulatorsByEmail');
 
 export default {
   name: 'SelfProfile',
@@ -41,6 +42,7 @@ export default {
     async getUser() {
       const data = await this.$store.dispatch('user/getInfo');
       data.initiatorData = await initiatorResource.list({ email: data.email });
+      data.formulatorData = await formulatorResource.list({ email: data.email });
       this.user = data;
 
       console.log(this.user);

@@ -131,6 +131,7 @@ class ProjectController extends Controller
                 'required_doc' => $params['required_doc'],
                 'id_project' => $params['id_project'],
                 'type_formulator_team' => $params['type_formulator_team'],
+                'lpjp_name' => $params['lpjp_name'] ? $params['lpjp_name'] : null,
                 'map' => Storage::url($mapName),
                 'ktr' => Storage::url($ktrName),
             ]);
@@ -248,6 +249,7 @@ class ProjectController extends Controller
             $project->required_doc = $params['required_doc'];
             $project->id_project = $params['id_project'];
             $project->type_formulator_team = $params['type_formulator_team'];
+            $project->lpjp_name = $params['lpjp_name'] ? $params['lpjp_name'] : null;
             $project->map = $name != null ? Storage::url($name) : $project->map;
             $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;
 

@@ -40,6 +40,45 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
+      <el-tab-pane v-else-if="user.formulatorData.email" v-loading="updating" label="Penyusun" name="formulatorTab">
+        <el-form ref="formulatorForm" :model="user.formulatorData">
+          <el-form-item label="Nama Penyusun">
+            <el-input v-model="user.formulatorData.name" />
+          </el-form-item>
+          <el-form-item label="Keahlian">
+            <el-input v-model="user.formulatorData.expertise" />
+          </el-form-item>
+          <el-form-item label="No. Sertifikat">
+            <el-input v-model="user.formulatorData.cert_no" />
+          </el-form-item>
+          <el-form-item label="NIP">
+            <el-input v-model="user.formulatorData.nip" />
+          </el-form-item>
+          <el-form-item label="Tanggal Ditetapkan" prop="tglDitetapkan">
+            <el-date-picker
+              v-model="user.formulatorData.date_start"
+              type="date"
+              placeholder="Pilih tanggal"
+              value-format="yyyy-MM-dd"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item label="Terakhir Berlaku" prop="terakhirBerlaku">
+            <el-date-picker
+              v-model="user.formulatorData.date_end"
+              type="date"
+              placeholder="Pilih tanggal"
+              value-format="yyyy-MM-dd"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onFormulatorSubmit">
+              Ubah
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
@@ -48,6 +87,7 @@
 import Resource from '@/api/resource';
 const userResource = new Resource('users');
 const initiatorResource = new Resource('initiators');
+const formulatorResource = new Resource('formulators');
 
 export default {
   props: {
@@ -72,6 +112,26 @@ export default {
   methods: {
     handleClick(tab, event) {
       console.log('Switching tab ', tab, event);
+    },
+    onFormulatorSubmit(){
+      this.updating = true;
+
+      const updatedFormulator = this.user.formulatorData;
+
+      formulatorResource
+        .update(updatedFormulator.id, updatedFormulator)
+        .then(response => {
+          this.updating = false;
+          this.$message({
+            message: 'Detil Penyusun Berhasil Diubah',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.updating = false;
+        });
     },
     onInitiatorSubmit(){
       this.updating = true;
