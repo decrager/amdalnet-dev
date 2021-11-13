@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\EnvImpactAnalysis;
+use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
 use App\Entity\ImpactIdentification;
+use App\Entity\Institution;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use Illuminate\Http\Request;
@@ -15,8 +18,12 @@ class MatriksRPLController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($request)
+    public function index(Request $request)
     {
+        if($request->institution) {
+            return Institution::all();
+        }
+
         if($request->project) {
             return Project::whereHas('impactIdentifications', function($q) {
                 $q->whereHas('envImpactAnalysis');
@@ -79,13 +86,12 @@ class MatriksRPLController extends Controller
             for($i = 0; $i < count($monitor); $i++) {
                 $envMonitor = new EnvMonitorPlan();
                 $envMonitor->id_impact_identifications = $monitor[$i]['id'];
-                $envMonitor->indicator = $monitor[$i]['indicator'];
                 $envMonitor->collection_method = $monitor[$i]['collection_method'];
                 $envMonitor->location = $monitor[$i]['location'];
                 $envMonitor->time_frequent = $monitor[$i]['time_frequent'];
-                $envMonitor->executor = $monitor[$i]['executor'];
-                $envMonitor->supervisor = $monitor[$i]['supervisor'];
-                $envMonitor->report_recipient = $monitor[$i]['report_recipient'];
+                $envMonitor->executor_institution_id = $monitor[$i]['executor'];
+                $envMonitor->supervisor_institution_id = $monitor[$i]['supervisor'];
+                $envMonitor->recipient_institution_id = $monitor[$i]['report_recipient'];
                 $envMonitor->description = $monitor[$i]['description'];
                 $envMonitor->save();
             }
@@ -93,17 +99,16 @@ class MatriksRPLController extends Controller
             $ids = [];
             for($i = 0; $i < count($monitor); $i++) {
                 $envMonitor = EnvMonitorPlan::where('id_impact_identifications', $monitor[$i]['id'])->first();
-                $envMonitor->indicator = $monitor[$i]['indicator'];
                 $envMonitor->collection_method = $monitor[$i]['collection_method'];
                 $envMonitor->location = $monitor[$i]['location'];
                 $envMonitor->time_frequent = $monitor[$i]['time_frequent'];
-                $envMonitor->executor = $monitor[$i]['executor'];
-                $envMonitor->supervisor = $monitor[$i]['supervisor'];
-                $envMonitor->report_recipient = $monitor[$i]['report_recipient'];
+                $envMonitor->executor_institution_id = $monitor[$i]['executor'];
+                $envMonitor->supervisor_institution_id = $monitor[$i]['supervisor'];
+                $envMonitor->recipient_institution_id = $monitor[$i]['report_recipient'];
                 $envMonitor->description = $monitor[$i]['description'];
                 $envMonitor->save();
 
-                $ids[] = $envMonitor[$i]['id'];
+                $ids[] = $monitor[$i]['id'];
             }
 
             $lastTime = EnvMonitorPlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
@@ -177,6 +182,14 @@ class MatriksRPLController extends Controller
 
                 foreach($impactIdentifications as $imp) {
                     if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
+                        // Check env manage plan
+                        $indicator = null;
+                        $manage = EnvManagePlan::where('id_impact_identifications', $imp->id)->first();
+                        if($manage) {
+                            $indicator = $manage->success_indicator;
+                        }
+                    
+
                         $changeType = $imp->id_change_type ? $imp->changeType->name : '';
                         $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
                         $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
@@ -185,7 +198,7 @@ class MatriksRPLController extends Controller
                             'id' => $imp->id,
                             'name' => "$changeType $ronaAwal akibat $component",
                             'type' => 'subtitle',
-                            'indicator' => null,
+                            'indicator' => $indicator,
                             'impact_source' => $component,
                             'collection_method' => null,
                             'location' => null,
@@ -224,6 +237,13 @@ class MatriksRPLController extends Controller
 
               foreach($impactIdentifications as $imp) {
                   if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
+                       // Check env manage plan
+                       $indicator = null;
+                       $manage = EnvManagePlan::where('id_impact_identifications', $imp->id)->first();
+                       if($manage) {
+                           $indicator = $manage->success_indicator;
+                       }
+
                       $changeType = $imp->id_change_type ? $imp->changeType->name : '';
                       $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
                       $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
@@ -232,14 +252,14 @@ class MatriksRPLController extends Controller
                           'id' => $imp->id,
                           'name' => "$changeType $ronaAwal akibat $component",
                           'type' => 'subtitle',
-                          'indicator' => $imp->envMonitorPlan->indicator,
+                          'indicator' => $indicator,
                           'impact_source' => $component,
-                          'collection_method' => $imp->envMonitorPlan->collection_method,
+                          'collection_method' =>  $imp->envMonitorPlan->collection_method,
                           'location' => $imp->envMonitorPlan->location,
                           'time_frequent' => $imp->envMonitorPlan->time_frequent,
-                          'executor' => $imp->envMonitorPlan->executor,
-                          'supervisor' => $imp->envMonitorPlan->supervisor,
-                          'report_recipient' => $imp->envMonitorPlan->report_recipient,
+                          'executor' => $imp->envMonitorPlan->executor_institution_id,
+                          'supervisor' => $imp->envMonitorPlan->supervisor_institution_id,
+                          'report_recipient' => $imp->envMonitorPlan->recipient_institution_id,
                           'description' => $imp->envMonitorPlan->description
                       ];
                       $total++;
