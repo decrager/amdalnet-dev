@@ -30,6 +30,7 @@ const getters = {
   businessTypeOptions: state => state.project.businessTypeOptions,
   teamType: state => state.project.teamType,
   kblis: state => state.project.listKbli,
+  lpjps: state => state.project.listLpjp,
   step: state => state.workflow.step,
   isPemerintah: state => state.initiator.isPemerintah,
 };

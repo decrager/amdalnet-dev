@@ -9,6 +9,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Entity\Formulator;
 use App\Entity\Initiator;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
@@ -145,6 +146,14 @@ class UserController extends BaseController
                 // update initiator with user email
                 $initiator->email = $email;
                 $initiator->save();
+            }
+
+            //checking if this user is formulator
+            $formulator = Formulator::where('email', $user->email)->first();
+            if($formulator && $formulator->email !== $email){
+                // update formulator with user email
+                $formulator->email = $email;
+                $formulator->save();
             }
 
             $user->name = $request->get('name');

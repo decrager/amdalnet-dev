@@ -5,6 +5,7 @@ const districtResource = new Resource('districts');
 const kbliResource = new Resource('kblis');
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const ossProjectResource = new Resource('oss-projects');
+const lpjpResource = new Resource('lpjp');
 // const SupportDocResource = new Resource('support-docs');
 
 // const API_URL = '/api/projects';
@@ -19,6 +20,7 @@ const projects = {
     cityOptions: [],
     businessTypeOptions: [],
     listKbli: [],
+    listLpjp: [],
     projectTypeOptions: [
       {
         value: 'Baru',
@@ -58,6 +60,9 @@ const projects = {
     },
     SET_LIST_KBLI(state, payload) {
       state.listKbli = payload;
+    },
+    SET_LIST_LPJP(state, payload) {
+      state.listLpjp = payload;
     },
     SET_TEAM_TYPE(state, payload) {
       state.teamType = payload;
@@ -101,6 +106,13 @@ const projects = {
         return { value: i.value, label: i.value };
       });
       commit('SET_LIST_KBLI', option);
+    },
+    async getLpjp({ commit }) {
+      const { data } = await lpjpResource.list({});
+      const option = data.map((i) => {
+        return { value: i.name, label: i.name };
+      });
+      commit('SET_LIST_LPJP', option);
     },
     async getDistricts({ commit }, payload) {
       const { data } = await districtResource.list(payload);
