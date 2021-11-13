@@ -40,15 +40,29 @@
             DAMPAK POTENSIAL
           </vsa-heading>
           <vsa-content>
-            <dampak-potensial />
+            <dampak-potensial
+              @handleReloadVsaList="handleReloadVsaList"
+            />
           </vsa-content>
         </vsa-item>
-        <vsa-item :init-active="dampakPotensialActive">
+        <vsa-item :init-active="dampakPentingHipotetikActive">
           <vsa-heading>
             DAMPAK PENTING HIPOTETIK
           </vsa-heading>
           <vsa-content>
-            <dampak-penting-hipotetik />
+            <dampak-penting-hipotetik
+              @handleReloadVsaList="handleReloadVsaList"
+            />
+          </vsa-content>
+        </vsa-item>
+        <vsa-item :init-active="metodeStudiActive">
+          <vsa-heading>
+            METODE STUDI
+          </vsa-heading>
+          <vsa-content>
+            <metode-studi
+              @handleReloadVsaList="handleReloadVsaList"
+            />
           </vsa-content>
         </vsa-item>
       </vsa-list>
@@ -69,6 +83,7 @@ import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
 import DampakPotensial from './components/DampakPotensial.vue';
 import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
+import MetodeStudi from './components/MetodeStudi.vue';
 
 export default {
   name: 'FormulirUklUpl',
@@ -81,6 +96,7 @@ export default {
     MatrikIdentifikasiDampak,
     DampakPotensial,
     DampakPentingHipotetik,
+    MetodeStudi,
   },
   data() {
     return {
@@ -90,6 +106,8 @@ export default {
       ronaActive: true,
       matriksActive: false,
       dampakPotensialActive: false,
+      dampakPentingHipotetikActive: false,
+      metodeStudiActive: false,
     };
   },
   mounted() {
@@ -108,18 +126,21 @@ export default {
     },
     handleReloadVsaList(tab) {
       this.vsaListKey = this.vsaListKey + 1;
+      this.ronaActive = false;
+      this.matriksActive = false;
+      this.dampakPotensialActive = false;
+      this.dampakPentingHipotetikActive = false;
+      this.metodeStudiActive = false;
       if (tab === 1) {
         this.ronaActive = true;
-        this.matriksActive = false;
-        this.dampakPotensialActive = false;
       } else if (tab === 2) {
-        this.ronaActive = false;
         this.matriksActive = true;
-        this.dampakPotensialActive = false;
       } else if (tab === 3) {
-        this.ronaActive = false;
-        this.matriksActive = false;
         this.dampakPotensialActive = true;
+      } else if (tab === 4) {
+        this.dampakPentingHipotetikActive = true;
+      } else if (tab === 5) {
+        this.metodeStudiActive = true;
       }
     },
   },

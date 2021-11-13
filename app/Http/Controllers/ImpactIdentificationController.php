@@ -124,8 +124,11 @@ class ImpactIdentificationController extends Controller
                             $row->study_length_month = $impact['study_length_month'];
                             $row->save();
                             // save impact_study
+                            $impact_study_saved = false;
                             if (isset($impact['impact_study'])) {
-                                $study = ImpactStudy::find($impact['impact_study']['id']);
+                                $study = ImpactStudy::select('impact_studies.*')
+                                    ->where('id_impact_identification', $impact['id'])
+                                    ->first();
                                 if ($study != null) {
                                     $study->id_impact_identification = $impact['id'];
                                     $study->forecast_method = $impact['impact_study']['forecast_method'];
@@ -134,9 +137,17 @@ class ImpactIdentificationController extends Controller
                                     $study->analysis_method = $impact['impact_study']['analysis_method'];
                                     $study->evaluation_method = $impact['impact_study']['evaluation_method'];
                                     $study->save();
+                                    $impact_study_saved = true;
+                                } else {
+                                    // create new
+                                    if (ImpactStudy::create($impact['impact_study'])){
+                                        $impact_study_saved = true;
+                                    }
                                 }
                             }
-                            array_push($response, new ImpactIdentificationResource($row));
+                            if ($impact_study_saved){
+                                array_push($response, new ImpactIdentificationResource($row));
+                            }
                         }
                     }
                 }
