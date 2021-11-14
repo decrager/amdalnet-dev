@@ -101,9 +101,9 @@ export default {
     async handleChange(val) {
       this.loading = true;
       this.idProject = val;
-      this.getCompose();
+      await this.getCompose();
+      await this.getLastTime(val);
       this.loading = false;
-      this.getLastTime(val);
     },
     async getLastTime(idProject) {
       this.lastTime = await andalComposingResource.list({
@@ -127,7 +127,7 @@ export default {
         type: this.lastTime ? 'update' : 'new',
       });
       this.lastTime = time;
-      this.getCompose();
+      await this.getCompose();
       this.$message({
         message: 'Data is saved Successfully',
         type: 'success',

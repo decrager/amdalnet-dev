@@ -2,6 +2,7 @@
   <div>
     <dampak-potensial-table v-if="isDampakPotensialTable" :data="data" />
     <dampak-penting-hipotetik-table v-if="isDampakPentingHipotetikTable" :data="data" />
+    <metode-studi-table v-if="isMetodeStudiTable" :data="data" />
   </div>
 </template>
 
@@ -9,12 +10,13 @@
 import Resource from '@/api/resource';
 import DampakPotensialTable from './DampakPotensialTable.vue';
 import DampakPentingHipotetikTable from './DampakPentingHipotetikTable.vue';
+import MetodeStudiTable from './MetodeStudiTable.vue';
 const projectStageResource = new Resource('project-stages');
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'IdentifikasiDampakTable',
-  components: { DampakPotensialTable, DampakPentingHipotetikTable },
+  components: { DampakPotensialTable, DampakPentingHipotetikTable, MetodeStudiTable },
   props: {
     idProject: {
       type: Number,
@@ -31,6 +33,7 @@ export default {
       projectStages: [],
       isDampakPotensialTable: false,
       isDampakPentingHipotetikTable: false,
+      isMetodeStudiTable: false,
     };
   },
   mounted() {
@@ -81,6 +84,8 @@ export default {
         this.isDampakPotensialTable = true;
       } else if (this.table === 'dampak-penting-hipotetik'){
         this.isDampakPentingHipotetikTable = true;
+      } else if (this.table === 'metode-studi'){
+        this.isMetodeStudiTable = true;
       }
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
@@ -98,8 +103,24 @@ export default {
         if (imp.rona_awal_name === null) {
           imp.rona_awal_name = imp.rona_awal_name_master;
         }
+        if (imp.impact_study === null) {
+          imp.impact_study = {
+            id: null,
+            id_impact_identification: imp.id,
+            forecast_method: null,
+            required_information: null,
+            data_gathering_method: null,
+            analysis_method: null,
+            evaluation_method: null,
+          };
+        }
       });
-      this.data = this.createDataArray(impactList.data, this.projectStages);
+      var dataList = impactList.data;
+      if (this.table === 'metode-studi'){
+        dataList = dataList.filter(imp => imp.is_hypothetical_significant);
+        console.log(dataList);
+      }
+      this.data = this.createDataArray(dataList, this.projectStages);
       this.$emit('handleSetData', this.data);
     },
   },
