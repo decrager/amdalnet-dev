@@ -32,7 +32,7 @@ class AnnouncementController extends Controller
         ])->withCount('feedbacks')
         ->when($request->has('keyword'), function ($query) use ($request) {
             $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
-            $searchQuery = '%' . $request->search . '%';
+            $searchQuery = '%' . $request->keyword . '%';
             $indents = $query->where('pic_name', 'ILIKE', '%'.$request->keyword.'%');
             foreach($columnsToSearch as $column) {
                 $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
