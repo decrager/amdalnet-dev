@@ -28,7 +28,7 @@ class AnnouncementController extends Controller
 
         $getAllAnnouncement = Announcement::with([
             'project',
-            'project.province as province_name'
+            'project.province'
         ])->withCount('feedbacks')
         ->when($request->has('keyword'), function ($query) use ($request) {
             $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
