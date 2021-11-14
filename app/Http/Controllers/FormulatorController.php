@@ -89,13 +89,13 @@ class FormulatorController extends Controller
             $email = $request->get('email');
             $found = User::where('email', $email)->first();
             if (!$found) {
-                $initiatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
                     'email' => $params['email'],
                     'password' => Hash::make('amdalnet')
                 ]);
-                $user->syncRoles($initiatorRole);
+                $user->syncRoles($formulatorRole);
             }
 
             //create Penyusun
