@@ -1,59 +1,60 @@
 <template>
   <div v-if="showAllTabs" style="margin-top:2rem;">
-    <el-form ref="form">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="5">
-          <div style="display:flex; align-items:center;">
-            <h5 style="margin-left:1.5rem; margin-right:1rem;">Urutkan</h5>
-            <el-form-item label="">
-              <el-select v-model="form.sort" style="margin-left:auto" placeholder="Terbaru" @change="handleChange">
-                <el-option label="Descending" value="DESC" />
-                <el-option label="Ascending" value="ASC" />
-              </el-select>
-            </el-form-item>
-          </div>
+    <div v-if="showFromAll" style="margin-top:2rem;">
+      <el-form ref="form">
+        <el-row :gutter="20">
+          <el-col :xs="24" :sm="5">
+            <div style="display:flex; align-items:center;">
+              <h5 style="margin-left:1.5rem; margin-right:1rem;">Urutkan</h5>
+              <el-form-item label="">
+                <el-select v-model="form.sort" style="margin-left:auto" placeholder="Terbaru" @change="handleChange">
+                  <el-option label="Descending" value="DESC" />
+                  <el-option label="Ascending" value="ASC" />
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :xs="24" :sm="19">
+            <div style="display:flex; align-items:center; justify-content: end;">
+              <el-form-item ref="form" label="">
+                <el-input v-model="keyword" type="text" placeholder="Global search (All field)" />
+              </el-form-item>
+              <el-button type="warning fw-bold" plain @click="handleSearch">Cari</el-button>
+              <el-button type="info fw-bold" @click="handleCancle">
+                <i class="el-icon-d-arrow-left" /> Kembali
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
+        <el-col :xs="24" :sm="3" style="padding-top:1rem">
+          <img class="imgCompany" src="https://placeimg.com/100/100/tech">
         </el-col>
-        <el-col :xs="24" :sm="19">
-          <div style="display:flex; align-items:center; justify-content: end;">
-            <el-form-item ref="form" label="">
-              <el-input v-model="keyword" type="text" placeholder="Global search (All field)" />
-            </el-form-item>
-            <el-button type="warning fw-bold" plain @click="handleSearch">Cari</el-button>
-            <el-button type="info fw-bold" @click="handleCancle">
-              <i class="el-icon-d-arrow-left" /> Kembali
-            </el-button>
-          </div>
+        <el-col :xs="24" :sm="18" style="padding-top:1rem">
+          <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project.province.name }}</h3>
+          <h3 class="fw-bold to mt-2-5">{{ amdal.pic_name }}</h3>
+          <p class="tw">Pengumuman : {{ formatDateStr(amdal.start_date) }} | {{ amdal.feedbacks_count }} Tanggapan</p>
+        </el-col>
+        <el-col :xs="24" :sm="3">
+          <button type="button" class="el-button el-button--success el-button--medium is-plain"><span>{{ amdal.project_result }}</span></button>
+          <button class="buttonCustom to" @click="openDetails(amdal.id)">Lihat Detail</button>
         </el-col>
       </el-row>
-    </el-form>
-    <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
-      <el-col :xs="24" :sm="3" style="padding-top:1rem">
-        <!-- <div class="wrapImage"> -->
-        <img class="imgCompany" src="https://placeimg.com/100/100/tech">
-        <!-- </div> -->
-      </el-col>
-      <el-col :xs="24" :sm="18" style="padding-top:1rem">
-        <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project.province.name }}</h3>
-        <h3 class="fw-bold to mt-2-5">{{ amdal.pic_name }}</h3>
-        <p class="tw">Pengumuman : {{ formatDateStr(amdal.start_date) }} | {{ amdal.feedbacks_count }} Tanggapan</p>
-      </el-col>
-      <el-col :xs="24" :sm="3">
-        <button type="button" class="el-button el-button--success el-button--medium is-plain"><span>{{ amdal.project_result }}</span></button>
-        <button class="buttonCustom to">Lihat Detail</button>
-      </el-col>
-    </el-row>
-    <!-- <el-row :gutter="20" v-else class="wrapOutside">
-      <el-col :xs="24" :sm="3" style="padding-top:1rem">
-        <h2>No Data Search</h2>
-      </el-col>
-    </el-row> -->
-    <div class="block" style="text-align:right">
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
-        @pagination="handleFilter"
+      <div class="block" style="text-align:right">
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="listQuery.page"
+          :limit.sync="listQuery.limit"
+          @pagination="handleFilter"
+        />
+      </div>
+    </div>
+    <div v-if="showDetailFromAll">
+      <DetailsFromAll
+        :selected-announcement="selectedAnnouncement"
+        @handleCancelComponent="handleCancelComponent"
       />
     </div>
   </div>
@@ -61,11 +62,13 @@
 <script>
 import axios from 'axios';
 import Pagination from '@/components/Pagination';
+import DetailsFromAll from './DetailsFromAll';
 
 export default {
   name: 'ShowAll',
   components: {
     Pagination,
+    DetailsFromAll,
   },
   props: {
     showAllTabs: Boolean,
@@ -87,6 +90,9 @@ export default {
         limit: 10,
       },
       keyword: '',
+      showDetailFromAll: false,
+      showFromAll: true,
+      selectedAnnouncement: [],
     };
   },
   created() {
@@ -123,6 +129,14 @@ export default {
           this.total = response.data.total;
         });
     },
+    openDetails(id) {
+      axios.get('/api/announcements/' + id)
+        .then(response => {
+          this.selectedAnnouncement = response.data;
+          this.showDetailFromAll = true;
+          this.showFromAll = false;
+        });
+    },
     handleCancle(){
       this.$emit('handleCancle');
     },
@@ -131,6 +145,10 @@ export default {
     },
     handleChange(){
       this.getAll(this.form.sort);
+    },
+    handleCancelComponent(){
+      this.showDetailFromAll = false;
+      this.showFromAll = true;
     },
   },
 };
