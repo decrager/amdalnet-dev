@@ -9,7 +9,7 @@ use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 class Project extends Model
 {
     use SoftDeletes;
-    
+
     use WorkflowTrait;
 
     protected $fillable = [
@@ -51,5 +51,9 @@ class Project extends Model
     public function impactIdentifications()
     {
         return $this->hasMany(ImpactIdentification::class, 'id_project', 'id');
+    }
+
+    public function province(){
+        return $this->hasOne(Province::class, 'id', 'id_prov');
     }
 }

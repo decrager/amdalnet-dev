@@ -17,6 +17,7 @@ const getters = {
   addRoutes: state => state.permission.addRoutes,
   amdals: state => state.announcement.amdals,
   uklupls: state => state.announcement.uklupls,
+  alls: state => state.announcement.alls,
   countAmdal: state => state.announcement.countAmdal,
   countUklupl: state => state.announcement.countUklupl,
   countAll: state => state.announcement.countAll,
