@@ -197,7 +197,7 @@
                       </ul>
                     </div>
                     <div style="padding-left:1rem">
-                      <el-rate v-model="ratings" @change="handleChange(ratings)" />
+                      <el-rate v-model="ratings" style="font-size:3rem" @change="handleChange(ratings)" />
                     </div>
                   </div>
                 </el-col>
@@ -462,4 +462,5 @@ table.table__striped tr:nth-child(odd) {
 }
 .fz8{font-size: 0.8rem;}
 .el-rate__icon{font-size: 2.5rem !important;}
+.el-rate__icon.el-icon-star-off {font-size: 3rem;}
 </style>

@@ -6,9 +6,9 @@
           <div style="display:flex; align-items:center;">
             <h5 style="margin-left:1.5rem; margin-right:1rem;">Urutkan</h5>
             <el-form-item label="">
-              <el-select v-model="form.region" style="width:60%; margin-left:auto" placeholder="Terbaru">
-                <el-option label="Zone one" value="shanghai" />
-                <el-option label="Zone two" value="beijing" />
+              <el-select v-model="form.sort" style="margin-left:auto" placeholder="Terbaru" @change="handleChange">
+                <el-option label="Descending" value="DESC" />
+                <el-option label="Ascending" value="ASC" />
               </el-select>
             </el-form-item>
           </div>
@@ -16,15 +16,17 @@
         <el-col :xs="24" :sm="19">
           <div style="display:flex; align-items:center; justify-content: end;">
             <el-form-item ref="form" label="">
-              <el-input type="text" placeholder="Global search (All field)" />
+              <el-input v-model="keyword" type="text" placeholder="Global search (All field)" />
             </el-form-item>
-            <el-button type="warning fw-bold" plain>Cari</el-button>
-            <el-button type="warning fw-bold" plain @click="handleCancle">Kembali</el-button>
+            <el-button type="warning fw-bold" plain @click="handleSearch">Cari</el-button>
+            <el-button type="info fw-bold" @click="handleCancle">
+              <i class="el-icon-d-arrow-left" /> Kembali
+            </el-button>
           </div>
         </el-col>
       </el-row>
     </el-form>
-    <el-row v-for="amdal in alls.data" :key="amdal.id" :gutter="20" class="wrapOutside">
+    <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
       <el-col :xs="24" :sm="3" style="padding-top:1rem">
         <!-- <div class="wrapImage"> -->
         <img class="imgCompany" src="https://placeimg.com/100/100/tech">
@@ -36,25 +38,35 @@
         <p class="tw">Pengumuman : {{ formatDateStr(amdal.start_date) }} | {{ amdal.feedbacks_count }} Tanggapan</p>
       </el-col>
       <el-col :xs="24" :sm="3">
-        <div class="wrapButton">
-          <button data-v-17b3d5ac="" type="button" class="el-button el-button--success el-button--medium is-plain"><!----><!----><span>{{ amdal.project_result }}</span></button>
-          <button class="buttonCustom to">Lihat Detail</button>
-        </div>
+        <button type="button" class="el-button el-button--success el-button--medium is-plain"><span>{{ amdal.project_result }}</span></button>
+        <button class="buttonCustom to">Lihat Detail</button>
       </el-col>
     </el-row>
+    <!-- <el-row :gutter="20" v-else class="wrapOutside">
+      <el-col :xs="24" :sm="3" style="padding-top:1rem">
+        <h2>No Data Search</h2>
+      </el-col>
+    </el-row> -->
     <div class="block" style="text-align:right">
-      <el-pagination
-        layout="prev, pager, next"
-        :total="50"
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="handleFilter"
       />
     </div>
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import axios from 'axios';
+import Pagination from '@/components/Pagination';
 
 export default {
   name: 'ShowAll',
+  components: {
+    Pagination,
+  },
   props: {
     showAllTabs: Boolean,
   },
@@ -62,39 +74,63 @@ export default {
     return {
       form: {
         name: '',
-        region: '',
+        sort: '',
         delivery: false,
         type: [],
         resource: '',
         desc: '',
       },
+      allData: [],
+      total: 0,
+      listQuery: {
+        page: 1,
+        limit: 10,
+      },
+      keyword: '',
     };
   },
-  computed: {
-    ...mapGetters(['alls']),
-  },
   created() {
-    this.$store.dispatch('getAll');
+    this.getAll();
   },
   methods: {
+    handleFilter() {
+      this.getAll();
+    },
     formatDateStr(date) {
       const today = new Date(date);
       var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-
-      // Getting required values
       const year = today.getFullYear();
       const month = today.getMonth();
       const day = today.getDate();
-
       const monthID = bulan[month];
-
-      // Creating a new Date (with the delta)
       const finalDate = `${day} ${monthID} ${year}`;
-
       return finalDate;
+    },
+    getAll(search, sort){
+      if (search === 'undefined'){
+        search = '';
+      } else {
+        search = `&keyword=${this.keyword}`;
+      }
+      if (sort === 'undefined'){
+        sort = `&sort=DESC`;
+      } else {
+        sort = `&sort=${this.form.sort}`;
+      }
+      axios.get(`/api/announcements?page=${this.listQuery.page}${search}${sort}`)
+        .then(response => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+        });
     },
     handleCancle(){
       this.$emit('handleCancle');
+    },
+    handleSearch(){
+      this.getAll(this.keyword);
+    },
+    handleChange(){
+      this.getAll(this.form.sort);
     },
   },
 };
@@ -117,4 +153,8 @@ export default {
   .el-pager li{background:transparent; color:#eb933c;}
   .el-pagination .btn-prev, .el-pagination .btn-next{color: #f6993f;background-color: transparent;}
   .el-pagination button:disabled {background-color: transparent;color: #f6993f;}
+  .el-button--success.is-plain {color: #fff;background: #13ce66;border-color: #13ce66;border-radius: 2rem; margin-bottom:0.5rem; margin-top:3.5rem}
+  .pagination-container[data-v-5efa73f0] {background: transparent;padding: 0;}
+  .el-pagination span:not([class*="suffix"]), .el-pagination button {color: #fff;}
+  .el-button.el-button--info.fw-bold.el-button--medium {margin-bottom: 10px;}
 </style>
