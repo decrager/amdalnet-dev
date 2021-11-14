@@ -40,7 +40,7 @@ class AnnouncementController extends Controller
 
             return $indents;
         })
-        ->orderby('start_date', 'DESC')->paginate($request->limit ? $request->limit : 10);
+        ->orderby('start_date', $request->sort ?? "DESC")->paginate($request->limit ? $request->limit : 10);
 
         // $getAllAnnouncement = Announcement::withCount('feedbacks')
         //     ->when($request->has('project'), function ($query) use ($request) {
