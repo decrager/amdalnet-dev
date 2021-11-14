@@ -30,11 +30,10 @@ class AnnouncementController extends Controller
             'project',
             'project.province'
         ])->withCount('feedbacks')
-        ->when($request->has('project'), function ($query) use ($request) {
-            if ($request->project != 'ALL') {
-                return $query->where('project_result', '=', $request->project);
-            }
-        })->orderby('start_date', 'DESC')->paginate($request->limit ? $request->limit : 10);
+        ->when($request->has('keyword'), function ($query) use ($request) {
+            return $query->where('pic_name', 'LIKE', '%'.$request->keyword.'%');
+        })
+        ->orderby('start_date', 'DESC')->paginate($request->limit ? $request->limit : 10);
 
         // $getAllAnnouncement = Announcement::withCount('feedbacks')
         //     ->when($request->has('project'), function ($query) use ($request) {
