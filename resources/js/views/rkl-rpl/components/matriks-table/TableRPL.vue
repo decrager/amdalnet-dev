@@ -1,11 +1,16 @@
 <template>
   <div>
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" style="font-size: 0.8rem">
+      <el-button
+        class="filter-item"
+        type="primary"
+        style="font-size: 0.8rem"
+        @click="handleSubmit"
+      >
         {{ 'Simpan Perubahan' }}
       </el-button>
       <span style="font-size: 0.8rem">
-        <em>Terakhir diperbarui beberapa detik yang lalu</em>
+        <em>{{ lasttime }}</em>
       </span>
     </div>
     <el-table
@@ -27,10 +32,10 @@
           <template slot-scope="scope">
             <span
               :class="{
-                'row-title': Boolean(scope.row.indikator == undefined),
+                'row-title': Boolean(scope.row.type == 'title'),
               }"
             >
-              {{ scope.row.jenisDampak }}
+              {{ scope.row.name }}
             </span>
           </template>
         </el-table-column>
@@ -38,7 +43,7 @@
         <el-table-column label="Indikator/Parameter">
           <template slot-scope="scope">
             <span>
-              {{ scope.row.indikator ? scope.row.indikator : '' }}
+              {{ scope.row.indicator ? scope.row.indicator : '' }}
             </span>
           </template>
         </el-table-column>
@@ -46,7 +51,7 @@
         <el-table-column label="Sumber Dampak">
           <template slot-scope="scope">
             <span>
-              {{ scope.row.sumberDampak ? scope.row.sumberDampak : '' }}
+              {{ scope.row.impact_source ? scope.row.impact_source : '' }}
             </span>
           </template>
         </el-table-column>
@@ -55,27 +60,31 @@
       <el-table-column label="Bentuk Pemantauan Lingkungan Hidup">
         <el-table-column label="Metode Pengumpulan & Analisis Data">
           <template slot-scope="scope">
-            <span>
-              {{
-                scope.row.metodePengumpulan ? scope.row.metodePengumpulan : ''
-              }}
-            </span>
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.collection_method"
+            />
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="Lokasi Pantau">
           <template slot-scope="scope">
-            <span>
-              {{ scope.row.lokasiPantau ? scope.row.lokasiPantau : '' }}
-            </span>
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.location"
+            />
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="Waktu & Frekuensi">
           <template slot-scope="scope">
-            <span>
-              {{ scope.row.waktuNFrekuensi ? scope.row.waktuNFrekuensi : '' }}
-            </span>
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.time_frequent"
+            />
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
       </el-table-column>
@@ -83,32 +92,69 @@
       <el-table-column label="Institusi Pemantauan Lingkungan Hidup">
         <el-table-column label="Pelaksana">
           <template slot-scope="scope">
-            <span>
-              {{ scope.row.pelaksan ? scope.row.pelaksana : '' }}
-            </span>
+            <el-select
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.executor"
+              placeholder="Pilih Pelaksana"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in institutions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="Pengawas">
           <template slot-scope="scope">
-            <span>
-              {{ scope.row.pengawas ? scope.row.pengawas : '' }}
-            </span>
+            <el-select
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.supervisor"
+              placeholder="Pilih Pengawas"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in institutions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
 
         <el-table-column label="Penerima Laporan">
           <template slot-scope="scope">
-            <span>
-              {{ scope.row.penerimaLaporan ? scope.row.penerimaLaporan : '' }}
-            </span>
+            <el-select
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.report_recipient"
+              placeholder="Pilih Penerima Laporan"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in institutions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+            <span v-else>{{ '' }}</span>
           </template>
         </el-table-column>
       </el-table-column>
 
       <el-table-column label="Keterangan">
         <template slot-scope="scope">
-          <span>{{ scope.row.keterangan ? scope.row.keterangan : '' }}</span>
+          <el-input
+            v-if="scope.row.type == 'subtitle'"
+            v-model="scope.row.description"
+          />
+          <span v-else>{{ '' }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -118,79 +164,24 @@
 <script>
 export default {
   name: 'TableRKL',
-  data() {
-    return {
-      loading: false,
-      list: [
-        {
-          jenisDampak: 'Pra Konstruksi',
-        },
-        {
-          jenisDampak: 'Penurunan Kualitas Udara akibat Pengadaan Lahan',
-          indikator: '',
-          sumberDampak: '',
-          metodePengumpulan: '',
-          lokasiPantau: '',
-          waktuNFrekuensi: '',
-          pelaksana: '',
-          pengawas: '',
-          penerimaLaporan: '',
-          keterangan: '',
-        },
-        {
-          jenisDampak: 'Konstruksi',
-        },
-        {
-          jenisDampak:
-            'Penurunan Mata Pencaharian Penduduk akibat Mobilisasi Peralatan dan Material Konstruksi',
-          indikator: '',
-          sumberDampak: '',
-          metodePengumpulan: '',
-          lokasiPantau: '',
-          waktuNFrekuensi: '',
-          pelaksana: '',
-          pengawas: '',
-          penerimaLaporan: '',
-          keterangan: '',
-        },
-        {
-          jenisDampak: 'Operasi',
-        },
-        {
-          jenisDampak:
-            'Penurunan Keberadaan Biota Air akibat Pengoperasian Kawasan Industri dan Sarana Pendukungnya',
-          indikator: '',
-          sumberDampak: '',
-          metodePengumpulan: '',
-          lokasiPantau: '',
-          waktuNFrekuensi: '',
-          pelaksana: '',
-          pengawas: '',
-          penerimaLaporan: '',
-          keterangan: '',
-        },
-        {
-          jenisDampak:
-            'Penurunan Kualitas Air akibat Pengoperasian Kawasan Industri dan Sarana Pendukungnya',
-          indikator: '',
-          sumberDampak: '',
-          metodePengumpulan: '',
-          lokasiPantau: '',
-          waktuNFrekuensi: '',
-          pelaksana: '',
-          pengawas: '',
-          penerimaLaporan: '',
-          keterangan: '',
-        },
-      ],
-    };
+  props: {
+    institutions: {
+      type: Array,
+      default: () => [],
+    },
+    list: {
+      type: Array,
+      default: () => [],
+    },
+    lasttime: {
+      type: String,
+      default: () => null,
+    },
+    loading: Boolean,
   },
   methods: {
-    handleEditForm(id) {
-      this.$emit('handleEditForm', id);
-    },
-    handleDelete(id, nama) {
-      this.$emit('handleDelete', { id, nama });
+    handleSubmit() {
+      this.$emit('handleSubmit');
     },
   },
 };

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ImpactIdentification;
+use App\Entity\ImpactStudy;
 use App\Entity\ProjectRonaAwal;
 use App\Http\Resources\ImpactIdentificationResource;
 use Exception;
@@ -29,7 +30,8 @@ class ImpactIdentificationController extends Controller
             $list = $list->where('id_rona_awal', $request->id_rona_awal);
         }
         if ($request->join_tables){
-            $list = ImpactIdentification::select('impact_identifications.*',
+            $list = ImpactIdentification::with('impactStudy')
+                ->select('impact_identifications.*',
                 'pc.id_project_stage',
                 'c.id_project_stage AS id_project_stage_master',
                 'c.name AS component_name_master',
@@ -121,7 +123,31 @@ class ImpactIdentificationController extends Controller
                             $row->study_length_year = $impact['study_length_year'];
                             $row->study_length_month = $impact['study_length_month'];
                             $row->save();
-                            array_push($response, new ImpactIdentificationResource($row));
+                            // save impact_study
+                            $impact_study_saved = false;
+                            if (isset($impact['impact_study'])) {
+                                $study = ImpactStudy::select('impact_studies.*')
+                                    ->where('id_impact_identification', $impact['id'])
+                                    ->first();
+                                if ($study != null) {
+                                    $study->id_impact_identification = $impact['id'];
+                                    $study->forecast_method = $impact['impact_study']['forecast_method'];
+                                    $study->required_information = $impact['impact_study']['required_information'];
+                                    $study->data_gathering_method = $impact['impact_study']['data_gathering_method'];
+                                    $study->analysis_method = $impact['impact_study']['analysis_method'];
+                                    $study->evaluation_method = $impact['impact_study']['evaluation_method'];
+                                    $study->save();
+                                    $impact_study_saved = true;
+                                } else {
+                                    // create new
+                                    if (ImpactStudy::create($impact['impact_study'])){
+                                        $impact_study_saved = true;
+                                    }
+                                }
+                            }
+                            if ($impact_study_saved){
+                                array_push($response, new ImpactIdentificationResource($row));
+                            }
                         }
                     }
                 }

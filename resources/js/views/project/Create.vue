@@ -78,7 +78,6 @@
                     placeholder="Pilih"
                     style="width: 100%"
                     size="medium"
-                    :disabled="true"
                     @change="changeStudyApproach($event)"
                   >
                     <el-option
@@ -104,7 +103,6 @@
                     placeholder="Pilih"
                     style="width: 100%"
                     size="medium"
-                    :disabled="true"
                     @change="changeStatus($event)"
                   >
                     <el-option
@@ -130,7 +128,6 @@
                     placeholder="Pilih"
                     style="width: 100%"
                     size="medium"
-                    :disabled="true"
                     @change="changeProjectType($event)"
                   >
                     <el-option
@@ -654,6 +651,7 @@ export default {
     },
     kbliSearch(queryString, cb) {
       var links = this.$store.getters.kblis;
+      console.log('ini yang create', links);
       var results = queryString
         ? links.filter(this.createKbliFilter(queryString))
         : links;

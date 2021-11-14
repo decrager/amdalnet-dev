@@ -40,6 +40,7 @@ class Project extends Model
         'id_project',
         'type_formulator_team',
         'ktr',
+        'lpjp_name',
     ];
 
     public function team()

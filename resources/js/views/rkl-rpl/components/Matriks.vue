@@ -15,7 +15,13 @@
       <template slot="title">
         <span class="title">MATRIKS RENCANA PEMANTAUAN LINGKUNGAN (RPL)</span>
       </template>
-      <TableRPL />
+      <TableRPL
+        :institutions="institutions"
+        :list="matriksrpl"
+        :lasttime="lasttimerpl"
+        :loading="loadingrpl"
+        @handleSubmit="handleSubmitRPL"
+      />
     </el-collapse-item>
   </el-collapse>
 </template>
@@ -40,6 +46,19 @@ export default {
       default: () => null,
     },
     loadingrkl: Boolean,
+    institutions: {
+      type: Array,
+      default: () => [],
+    },
+    matriksrpl: {
+      type: Array,
+      default: () => [],
+    },
+    lasttimerpl: {
+      type: String,
+      default: () => null,
+    },
+    loadingrpl: Boolean,
   },
   data() {
     return {
@@ -49,6 +68,9 @@ export default {
   methods: {
     handleSubmitRKL() {
       this.$emit('handleSubmitRKL');
+    },
+    handleSubmitRPL() {
+      this.$emit('handleSubmitRPL');
     },
   },
 };

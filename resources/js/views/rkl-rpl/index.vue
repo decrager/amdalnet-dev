@@ -23,10 +23,15 @@
       <el-tabs type="card">
         <el-tab-pane label="Matriks RKL RPL">
           <Matriks
+            :institutions="institutions"
             :matriksrkl="matriksRKL"
             :lasttimerkl="lastTimeRKL"
             :loadingrkl="loadingRKL"
+            :matriksrpl="matriksRPL"
+            :lasttimerpl="lastTimeRPL"
+            :loadingrpl="loadingRPL"
             @handleSubmitRKL="handleSubmitRKL"
+            @handleSubmitRPL="handleSubmitRPL"
           />
         </el-tab-pane>
         <el-tab-pane label="Dokumen RKL RPL">
@@ -60,6 +65,7 @@
 <script>
 import Resource from '@/api/resource';
 const rklResource = new Resource('matriks-rkl');
+const rplResource = new Resource('matriks-rpl');
 import Matriks from '@/views/rkl-rpl/components/Matriks';
 import MapList from '@/views/rkl-rpl/components/MapList';
 import DocsFrame from '@/views/rkl-rpl/components/DocsFrame';
@@ -79,23 +85,41 @@ export default {
       idProject: null,
       lastTimeRKL: null,
       matriksRKL: [],
+      institutions: [],
+      matriksRPL: [],
+      lastTimeRPL: null,
     };
   },
   created() {
     this.getProjects();
+    this.getInstitutions();
   },
   methods: {
     async getProjects() {
       const data = await rklResource.list({ project: 'true' });
       this.projects = data;
     },
+    async getInstitutions() {
+      this.institutions = await rplResource.list({ institution: 'true' });
+    },
     async getRKL() {
       this.matriksRKL = await rklResource.list({
         idProject: this.idProject,
       });
     },
+    async getRPL() {
+      this.matriksRPL = await rplResource.list({
+        idProject: this.idProject,
+      });
+    },
     async getLastTimeRKL(idProject) {
       this.lastTimeRKL = await rklResource.list({
+        lastTime: 'true',
+        idProject,
+      });
+    },
+    async getLastimeRPL(idProject) {
+      this.lastTimeRPL = await rplResource.list({
         lastTime: 'true',
         idProject,
       });
@@ -118,14 +142,34 @@ export default {
         duration: 5 * 1000,
       });
     },
+    async handleSubmitRPL() {
+      if (!this.idProject) {
+        return;
+      }
+
+      const sendForm = this.matriksRPL.filter((com) => com.type !== 'title');
+      const time = await rplResource.store({
+        monitor: sendForm,
+        type: this.lastTimeRPL ? 'update' : 'new',
+      });
+      this.lastTimeRPL = time;
+      this.getRPL();
+      this.$message({
+        message: 'Data is saved Successfully',
+        type: 'success',
+        duration: 5 * 1000,
+      });
+    },
     async handleChange(val) {
       this.loadingRKL = true;
       this.loadingRPL = true;
       this.idProject = val;
-      this.getRKL();
+      await this.getRKL();
+      await this.getLastTimeRKL(val);
       this.loadingRKL = false;
+      await this.getRPL();
+      await this.getLastimeRPL(val);
       this.loadingRPL = false;
-      this.getLastTimeRKL(val);
     },
   },
 };

@@ -11,7 +11,7 @@
     </el-button>
     <identifikasi-dampak-table
       :id-project="idProject"
-      :table="'dampak-potensial'"
+      :table="'metode-studi'"
       @handleSetData="handleSetData"
     />
   </div>
@@ -23,12 +23,12 @@ import IdentifikasiDampakTable from './IdentifikasiDampakTable.vue';
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
-  name: 'DampakPotensial',
+  name: 'MetodeStudi',
   components: { IdentifikasiDampakTable },
   data() {
     return {
-      idProject: 0,
       data: [],
+      idProject: 0,
     };
   },
   mounted() {
@@ -44,17 +44,13 @@ export default {
           study_data: this.data,
         })
         .then((response) => {
-          var message = (response.code === 200) ? 'Dampak Potensial berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message = (response.code === 200) ? 'Metode Studi berhasil disimpan' : 'Terjadi kesalahan pada server';
           var message_type = (response.code === 200) ? 'success' : 'error';
           this.$message({
             message: message,
             type: message_type,
             duration: 5 * 1000,
           });
-          // reload accordion
-          if (response.code === 200){
-            this.$emit('handleReloadVsaList', 4);
-          }
         })
         .catch((error) => {
           console.log(error);
