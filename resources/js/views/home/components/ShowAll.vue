@@ -24,53 +24,20 @@
         </el-col>
       </el-row>
     </el-form>
-    <el-row :gutter="20" class="wrapOutside">
+    <el-row v-for="amdal in alls.data" :key="amdal.id" :gutter="20" class="wrapOutside">
       <el-col :xs="24" :sm="3" style="padding-top:1rem">
         <!-- <div class="wrapImage"> -->
         <img class="imgCompany" src="https://placeimg.com/100/100/tech">
         <!-- </div> -->
       </el-col>
       <el-col :xs="24" :sm="18" style="padding-top:1rem">
-        <h3 class="tw">Pembangunan Pabrik Pengolahan Susu Kemasan (2022) Kota Sukabumi, Prov Jawa Barat</h3>
-        <h3 class="fw-bold to mt-2-5">PT Pertamina</h3>
-        <p class="tw">Pengumuman : 28 Septembet 2021 | 2 Tanggapan</p>
+        <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project.province.name }}</h3>
+        <h3 class="fw-bold to mt-2-5">{{ amdal.pic_name }}</h3>
+        <p class="tw">Pengumuman : {{ formatDateStr(amdal.start_date) }} | {{ amdal.feedbacks_count }} Tanggapan</p>
       </el-col>
       <el-col :xs="24" :sm="3">
         <div class="wrapButton">
-          <button class="buttonCustom to">Lihat Detail</button>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20" class="wrapOutside">
-      <el-col :xs="24" :sm="3" style="padding-top:1rem">
-        <!-- <div class="wrapImage"> -->
-        <img class="imgCompany" src="https://placeimg.com/100/100/tech">
-        <!-- </div> -->
-      </el-col>
-      <el-col :xs="24" :sm="18" style="padding-top:1rem">
-        <h3 class="tw">Pembangunan Pabrik Pengolahan Susu Kemasan (2022) Kota Sukabumi, Prov Jawa Barat</h3>
-        <h3 class="fw-bold to mt-2-5">PT Pertamina</h3>
-        <p class="tw">Pengumuman : 28 Septembet 2021 | 2 Tanggapan</p>
-      </el-col>
-      <el-col :xs="24" :sm="3">
-        <div class="wrapButton">
-          <button class="buttonCustom to">Lihat Detail</button>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20" class="wrapOutside">
-      <el-col :xs="24" :sm="3" style="padding-top:1rem">
-        <!-- <div class="wrapImage"> -->
-        <img class="imgCompany" src="https://placeimg.com/100/100/tech">
-        <!-- </div> -->
-      </el-col>
-      <el-col :xs="24" :sm="18" style="padding-top:1rem">
-        <h3 class="tw">Pembangunan Pabrik Pengolahan Susu Kemasan (2022) Kota Sukabumi, Prov Jawa Barat</h3>
-        <h3 class="fw-bold to mt-2-5">PT Pertamina</h3>
-        <p class="tw">Pengumuman : 28 Septembet 2021 | 2 Tanggapan</p>
-      </el-col>
-      <el-col :xs="24" :sm="3">
-        <div class="wrapButton">
+          <button data-v-17b3d5ac="" type="button" class="el-button el-button--success el-button--medium is-plain"><!----><!----><span>{{ amdal.project_result }}</span></button>
           <button class="buttonCustom to">Lihat Detail</button>
         </div>
       </el-col>
@@ -84,6 +51,8 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'ShowAll',
   props: {
@@ -101,9 +70,29 @@ export default {
       },
     };
   },
-  computed: {},
-  created() {},
+  computed: {
+    ...mapGetters(['alls']),
+  },
+  created() {
+    this.$store.dispatch('getAll');
+  },
   methods: {
+    formatDateStr(date) {
+      const today = new Date(date);
+      var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+      // Getting required values
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const day = today.getDate();
+
+      const monthID = bulan[month];
+
+      // Creating a new Date (with the delta)
+      const finalDate = `${day} ${monthID} ${year}`;
+
+      return finalDate;
+    },
     handleCancle(){
       this.$emit('handleCancle');
     },

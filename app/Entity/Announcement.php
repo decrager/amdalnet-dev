@@ -28,11 +28,8 @@ class Announcement extends Model
         return $this->hasMany(Feedback::class);
     }
 
-    public function project(){
-        return $this->hasOne(Project::class, 'id', 'project_id');
-    }
-
-    public function province(){
-        return $this->hasOne(Province::class, 'id', 'id_prov');
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 }

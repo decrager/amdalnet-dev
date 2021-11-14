@@ -7,9 +7,9 @@
             <div class="wrapDetail">
               <img src="https://placeimg.com/150/150/arch/grayscale" alt="">
               <div class="wrapDetailRight">
-                <p style="margin-bottom: 1rem">{{ selectedAnnouncement.project.project_title }}</p>
+                <p style="margin-bottom: 1rem">{{ selectedAnnouncement.project_type }}</p>
                 <h4 class="fw-bold">{{ selectedAnnouncement.pic_name }}</h4>
-                <h4 class="fw-bold">{{ selectedAnnouncement.project.address }}, Jakarta Pusat</h4>
+                <h4 class="fw-bold">{{ selectedAnnouncement.project.address }}, {{ selectedAnnouncement.project.province.name }}</h4>
               </div>
             </div>
           </el-col>

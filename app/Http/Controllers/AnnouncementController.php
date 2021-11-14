@@ -25,17 +25,16 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): AnnouncementResource
     {
-        if ($request->view_all == self::view_all_is_true) {
-            $getAllAnnouncement = Announcement::withCount('feedbacks')
-            ->when($request->has('project'), function ($query) use ($request) {
+
+        $getAllAnnouncement = Announcement::with([
+            'project',
+            'project.province'
+        ])->withCount('feedbacks')
+        ->when($request->has('project'), function ($query) use ($request) {
+            if ($request->project != 'ALL') {
                 return $query->where('project_result', '=', $request->project);
-            })->orderby('start_date', 'DESC')->paginate(25);
-        } else {
-            $getAllAnnouncement = Announcement::withCount('feedbacks')
-            ->when($request->has('project'), function ($query) use ($request) {
-                return $query->where('project_result', '=', $request->project);
-            })->orderby('start_date', 'DESC')->limit(10)->get();
-        }
+            }
+        })->orderby('start_date', 'DESC')->limit(100)->get();
 
         // $getAllAnnouncement = Announcement::withCount('feedbacks')
         //     ->when($request->has('project'), function ($query) use ($request) {
@@ -141,7 +140,7 @@ class AnnouncementController extends Controller
     {
         return Announcement::with([
             'project',
-            'province'
+            'project.province'
         ])->get()->where('id', '=', $announcement->id)->first();
     }
 
