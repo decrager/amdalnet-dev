@@ -26,6 +26,7 @@
     <meta name="msapplication-TileImage" content="/favicon/android-icon-192x192.png">
     <meta name="theme-color" content="#ffffff">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css">
 </head>
 
 <body>

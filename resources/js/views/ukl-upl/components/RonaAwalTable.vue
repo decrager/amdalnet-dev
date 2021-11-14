@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="4">
       <el-col v-for="type of componentTypes" :key="type.id" :span="6" :xs="24">
-        <aside align="center" style="margin-bottom: 0px;">
+        <aside align="center" style="margin-bottom: 0px; background-color: #def5cf">
           Komponen {{ type.name }}
         </aside>
         <el-table

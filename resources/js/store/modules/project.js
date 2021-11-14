@@ -5,6 +5,7 @@ const districtResource = new Resource('districts');
 const kbliResource = new Resource('kblis');
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const ossProjectResource = new Resource('oss-projects');
+const lpjpResource = new Resource('lpjp');
 // const SupportDocResource = new Resource('support-docs');
 
 // const API_URL = '/api/projects';
@@ -19,6 +20,7 @@ const projects = {
     cityOptions: [],
     businessTypeOptions: [],
     listKbli: [],
+    listLpjp: [],
     projectTypeOptions: [
       {
         value: 'Baru',
@@ -30,6 +32,7 @@ const projects = {
       },
     ],
     unitOptions: [],
+    teamType: '',
 
     loadingStatus: false,
   },
@@ -57,6 +60,12 @@ const projects = {
     },
     SET_LIST_KBLI(state, payload) {
       state.listKbli = payload;
+    },
+    SET_LIST_LPJP(state, payload) {
+      state.listLpjp = payload;
+    },
+    SET_TEAM_TYPE(state, payload) {
+      state.teamType = payload;
     },
     LOADING_STATUS(state, payload) {
       state.loadingStatus = payload;
@@ -98,6 +107,13 @@ const projects = {
       });
       commit('SET_LIST_KBLI', option);
     },
+    async getLpjp({ commit }) {
+      const { data } = await lpjpResource.list({});
+      const option = data.map((i) => {
+        return { value: i.name, label: i.name };
+      });
+      commit('SET_LIST_LPJP', option);
+    },
     async getDistricts({ commit }, payload) {
       const { data } = await districtResource.list(payload);
       const option = data.map((i) => {
@@ -111,6 +127,16 @@ const projects = {
         return { value: i.unit, label: i.unit };
       });
       commit('SET_UNIT_OPTIONS', option);
+    },
+    async getBusinessByKbli({ commit }, payload) {
+      const { data } = await kbliEnvParamResource.list(payload);
+      const option = data.map((i) => {
+        return { value: i.param, label: i.param };
+      });
+      commit('SET_BUSINESS_TYPE_OPTIONS', option);
+    },
+    async getTeamType({ commit }, payload) {
+      commit('SET_TEAM_TYPE', payload);
     },
   },
 };

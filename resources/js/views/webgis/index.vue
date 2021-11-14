@@ -16,7 +16,6 @@ import MapView from '@arcgis/core/views/MapView';
 import Home from '@arcgis/core/widgets/Home';
 import Compass from '@arcgis/core/widgets/Compass';
 import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
-import ScaleBar from '@arcgis/core/widgets/ScaleBar';
 import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
@@ -24,6 +23,10 @@ import LayerList from '@arcgis/core/widgets/LayerList';
 import DarkHeaderHome from '../home/section/DarkHeader';
 // import OAuthInfo from '@arcgis/core/identity/OAuthInfo';
 // import IdentityManager from '@arcgis/core/identity/OAuthInfo';
+import axios from 'axios';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import shp from 'shpjs';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
 
 export default {
   name: 'WebGis',
@@ -49,10 +52,22 @@ export default {
       this.selectedFeedback = {};
       this.showIdDialog = true;
     },
+    defineActions(event) {
+      const item = event.item;
+
+      item.actionsSections = [
+        [
+          {
+            title: 'Go to full extent',
+            className: 'esri-icon-zoom-in-magnifying-glass',
+            id: 'full-extent',
+          },
+        ],
+      ];
+    },
     loadMap() {
       const map = new Map({
         basemap: 'topo',
-        // layers: [featureLayer],
       });
       const featureLayer = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
@@ -68,8 +83,6 @@ export default {
         imageTransparency: true,
       });
 
-      map.add(featureLayer);
-
       const batasProv = new MapImageLayer({
         url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
         sublayers: [{
@@ -77,12 +90,10 @@ export default {
           title: 'Batas Provinsi',
         }],
       });
-      map.add(batasProv);
 
       const graticuleGrid = new MapImageLayer({
         url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
       });
-      map.add(graticuleGrid);
 
       const ekoregion = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
@@ -91,42 +102,85 @@ export default {
           {
             id: 1,
             visible: false,
+            visibility: 'exclusive',
             title: 'Ekoregion Laut',
           }, {
             id: 0,
             visible: false,
+            visibility: 'exclusive',
             title: 'Ekoregion Darat',
           },
         ],
       });
-      map.add(ekoregion);
 
       const ppib = new MapImageLayer({
         url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
         visible: false,
       });
-      map.add(ppib);
 
       const tutupanLahan = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
         visible: false,
       });
-      map.add(tutupanLahan);
+      map.addMany([featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid]);
 
-      // var rtrw = new MapImageLayer({
-      //   url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
-      //   visible: false,
-      // });
-      // map.add(rtrw);
+      const baseGroupLayer = new GroupLayer({
+        title: 'Base Layer',
+        visible: true,
+        layers: [featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid],
+        opacity: 0.90,
+      });
 
-      // var oAuthInfo = new OAuthInfo({
-      //   appId: '0123456789ABCDEF',
-      // });
+      map.add(baseGroupLayer);
 
-      // new IdentityManager({
-      //   registerOAuthInfos: [oAuthInfo],
-      // });
-      //
+      const mapGeojson = [];
+      const mapGeojsonArray = [];
+      axios.get('api/projects')
+        .then(response => {
+          const projects = response.data.data;
+          for (let i = 0; i < projects.length; i++) {
+            if (projects[i].map) {
+              shp(window.location.origin + '/storage' + projects[i].map).then(data => {
+                if (data.length > 1) {
+                  for (let i = 0; i < data.length; i++) {
+                    const blob = new Blob([JSON.stringify(data[i])], {
+                      type: 'application/json',
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      title: projects[1].project_title,
+                    });
+                    mapGeojsonArray.push(geojsonLayerArray);
+                  }
+                  const kegiatanGroupLayer = new GroupLayer({
+                    title: projects[1].project_title,
+                    visible: false,
+                    visibilityMode: 'exclusive',
+                    layers: mapGeojsonArray,
+                    opacity: 0.90,
+                  });
+
+                  map.add(kegiatanGroupLayer);
+                } else {
+                  const blob = new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const geojsonLayer = new GeoJSONLayer({
+                    url: url,
+                    visible: false,
+                    outFields: ['*'],
+                    title: projects[i].project_title,
+                  });
+                  mapGeojson.push(geojsonLayer);
+                  map.addMany(mapGeojson);
+                }
+              });
+            }
+          }
+        });
 
       const mapView = new MapView({
         container: 'mapViewDiv',
@@ -156,11 +210,6 @@ export default {
         expandIconClass: 'esri-icon-basemap',
       });
       mapView.ui.add(expandBasemapToggler, 'top-left');
-      // mapView.ui.add(basemapToggle, "bottom-right");
-      const scaleBar = new ScaleBar({
-        view: mapView,
-      });
-      mapView.ui.add(scaleBar, 'bottom-left');
       const attribution = new Attribution({
         view: mapView,
       });
@@ -173,6 +222,16 @@ export default {
       const layerList = new LayerList({
         view: mapView,
         container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
+        }
       });
 
       const legendExpand = new Expand({
@@ -195,7 +254,6 @@ export default {
 };
 </script>
 <style scoped>
-@import url('https://js.arcgis.com/4.19/esri/themes/light/main.css');
 @import '../home/assets/css/style.css';
 
 #mapViewDiv {

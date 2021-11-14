@@ -15,7 +15,9 @@
         </el-table>
       </el-col>
       <el-col :span="12">
-        <h1>Peta Will Be Here Soon</h1>
+        <div>
+          <div id="mapView" style="height: 500px; margin: 0 10px;" />
+        </div>
       </el-col>
     </el-row>
     <el-row style="padding-top: 32px">
@@ -34,7 +36,9 @@
         <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
           <el-col :span="12">123456789</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
-          <el-col :span="12">{{ project.required_doc + ' ' + project.result_risk }}</el-col></el-row>
+          <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
+        <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
+          <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
           <el-col :span="12">Pusat</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
@@ -42,7 +46,55 @@
             <el-form
               ref="project"
               :model="project"
-              :rules="projectRules"
+              label-position="top"
+              label-width="200px"
+              style="max-width: 100%"
+            >
+              <el-form-item prop="type_formulator_team">
+                <el-select
+                  v-model="project.type_formulator_team"
+                  placeholder="Pilih"
+                  style="width: 100%"
+                  :disabled="readonly"
+                  @change="onFormulatorTypeChange($event)"
+                >
+                  <el-option
+                    v-for="item in teamOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    style="width: 200px"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col></el-row>
+        <el-row v-if="getFormulatedTeam === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
+          <el-col :span="12">
+            <el-form
+              ref="project"
+              :model="project"
+              label-position="top"
+              label-width="200px"
+              style="max-width: 100%"
+            >
+              <el-form-item prop="lpjp_name">
+                <el-autocomplete
+                  v-model="project.lpjp_name"
+                  class="inline-input"
+                  :fetch-suggestions="lpjpSearch"
+                  placeholder="Masukan"
+                  :trigger-on-focus="false"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-form>
+          </el-col></el-row>
+        <el-row v-else-if="getFormulatedTeam === 'mandiri'" style="padding-bottom: 16px"><el-col :span="12">Buat Tim Mandiri</el-col>
+          <el-col :span="12">
+            <el-form
+              ref="project"
+              :model="project"
               label-position="top"
               label-width="200px"
               style="max-width: 100%"
@@ -55,7 +107,7 @@
                   :disabled="readonly"
                 >
                   <el-option
-                    v-for="item in teamOptions"
+                    v-for="item in teamToChooseOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -69,13 +121,15 @@
     </el-row>
     <div slot="footer" class="dialog-footer">
       <el-button :disabled="readonly" @click="handleCancel()"> Batal </el-button>
-      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Publikasi </el-button>
+      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
     </div>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
+import L from 'leaflet';
+
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const formulatorTeamResource = new Resource('formulator-teams');
@@ -100,14 +154,22 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: null,
+      teamOptions: [{ value: 'mandiri', label: 'mandiri' }, { value: 'lpjp', label: 'lpjp' }],
+      teamToChooseOptions: null,
       kabkot: null,
       list: [],
-      projectRules: {
-        id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
-      },
+      // projectRules: {
+      //   id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+      // },
       initiatorData: {},
+      geojson: null,
     };
+  },
+  computed: {
+    getFormulatedTeam(){
+      console.log(this.$store.getters.teamType);
+      return this.$store.getters.teamType;
+    },
   },
   async mounted() {
     console.log(this.project);
@@ -115,15 +177,60 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    console.log('a');
+    await this.$store.dispatch('getLpjp');
+    console.log('a');
+    const response = await fetch('storage/' + this.project.map);
+    this.geojson = await response.json();
+    await this.loadMap();
   },
   methods: {
+    async lpjpSearch(queryString, cb) {
+      var links = await this.$store.getters.lpjps;
+      console.log('ini', links);
+      var results = queryString
+        ? links.filter(this.createLpjpFilter(queryString))
+        : links;
+      // call callback function to return suggestions
+      cb(results);
+    },
+    createLpjpFilter(queryString) {
+      return (link) => {
+        return (
+          link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
+    async loadMap() {
+      const map = L.map('mapView');
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      const data = await fetch('storage/' + this.project.map);
+      this.geojson = await data.json();
+      const feature = L.geoJSON(this.geojson, {
+        style: function(feature) {
+          return { color: feature.properties.color };
+        },
+      }).bindPopup(function(layer) {
+        return layer.feature.properties.description;
+      }).addTo(map);
+
+      map.fitBounds(feature.getBounds());
+    },
+    onFormulatorTypeChange(value){
+      this.$store.dispatch('getTeamType', value);
+      console.log(this.$store.getters.teamType);
+    },
     async getInitiatorData(){
       const data = await this.$store.dispatch('user/getInfo');
       this.project.initiatorData = await initiatorResource.list({ email: data.email });
     },
     async getTeamOptions() {
       const { data } = await formulatorTeamResource.list({});
-      this.teamOptions = data.map((i) => {
+      this.teamToChooseOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
     },
@@ -193,6 +300,11 @@ export default {
     },
     handleSubmit() {
       this.project.id_applicant = this.project.initiatorData ? this.project.initiatorData.id : null;
+
+      if (!this.project.id_project){
+        this.project.id_project = 1;
+      }
+
       console.log(this.project);
 
       // make form data because we got file
@@ -313,3 +425,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@import url('../../../../node_modules/leaflet/dist/leaflet.css');
+</style>
