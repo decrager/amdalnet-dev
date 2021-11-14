@@ -89,6 +89,7 @@ export default {
   data() {
     return {
       selectedAnnouncement: {},
+      selectedProject: {},
       showIdDialog: false,
       showDetailsDialog: false,
       selectedId: 0,
@@ -118,10 +119,12 @@ export default {
       this.showTabs = false;
       this.selectedId = id;
       this.selectedAnnouncement = {};
+      this.selectedProject = {};
       this.showDetailsDialog = true;
       axios.get('/api/announcements/' + this.selectedId)
         .then(response => {
-          this.selectedAnnouncement = response.data.project;
+          this.selectedAnnouncement = response.data;
+          this.selectedProject = response.data.project;
         });
     },
     handleCancelComponent(){

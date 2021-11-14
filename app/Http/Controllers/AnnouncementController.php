@@ -139,7 +139,10 @@ class AnnouncementController extends Controller
      */
     public function show(Announcement $announcement)
     {
-        return Announcement::with('project')->get()->where('id', '=', $announcement->id)->first();
+        return Announcement::with([
+            'project',
+            'province'
+        ])->get()->where('id', '=', $announcement->id)->first();
     }
 
     /**
