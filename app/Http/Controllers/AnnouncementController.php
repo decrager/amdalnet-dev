@@ -28,14 +28,14 @@ class AnnouncementController extends Controller
 
         $getAllAnnouncement = Announcement::with([
             'project',
-            'project.province'
+            'project.province as province_name'
         ])->withCount('feedbacks')
         ->when($request->has('keyword'), function ($query) use ($request) {
             $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
             $searchQuery = '%' . $request->search . '%';
             $indents = $query->where('pic_name', 'ILIKE', '%'.$request->keyword.'%');
             foreach($columnsToSearch as $column) {
-                $indents = $indents->orWhere($column, 'LIKE', $searchQuery);
+                $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
             }
 
             return $indents;
