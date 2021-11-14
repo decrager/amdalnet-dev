@@ -187,3 +187,5 @@ Route::apiResource('institutions', 'InstitutionController');
 Route::apiResource('andal-composing', 'AndalComposingController');
 Route::apiResource('matriks-rkl', 'MatriksRKLController');
 Route::apiResource('matriks-rpl', 'MatriksRPLController');
+Route::apiResource('testing-verification', 'TestingVerificationController');
+Route::apiResource('testing-meeting', 'TestingMeetingController');
