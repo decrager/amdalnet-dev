@@ -30,7 +30,7 @@
           </el-col>
           <el-col :span="12">
             <div style="padding-right: 2rem">
-              <el-button type="warning">Unduh bukti pengumuman</el-button>
+              <el-button type="warning"><a :href="basePath+selectedAnnouncement.proof">Unduh bukti pengumuman</a></el-button>
             </div>
           </el-col>
         </el-row>
@@ -272,6 +272,7 @@ export default {
       zoom: 12,
       center: [-6.93, 107.60],
       bounds: null,
+      basePath: window.location.origin,
     };
   },
   async created() {
