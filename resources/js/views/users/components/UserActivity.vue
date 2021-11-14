@@ -79,6 +79,66 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
+      <el-tab-pane v-else-if="user.lpjpData.email" v-loading="updating" label="Lpjp" name="lpjpTab">
+        <el-form ref="lpjpForm" :model="user.lpjpData">
+          <el-form-item label="Nama LPJP">
+            <el-input v-model="user.lpjpData.name" />
+          </el-form-item>
+          <el-form-item label="PIC">
+            <el-input v-model="user.lpjpData.pic" />
+          </el-form-item>
+          <el-form-item label="No. Registrasi">
+            <el-input v-model="user.lpjpData.reg_no" />
+          </el-form-item>
+          <el-form-item label="No. Telepon">
+            <el-input v-model="user.lpjpData.phone_no" />
+          </el-form-item>
+          <el-form-item label="Tanggal Ditetapkan" prop="tglDitetapkan">
+            <el-date-picker
+              v-model="user.lpjpData.date_start"
+              type="date"
+              placeholder="Pilih tanggal"
+              value-format="yyyy-MM-dd"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item label="Terakhir Berlaku" prop="terakhirBerlaku">
+            <el-date-picker
+              v-model="user.lpjpData.date_end"
+              type="date"
+              placeholder="Pilih tanggal"
+              value-format="yyyy-MM-dd"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onLpjpSubmit">
+              Ubah
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane v-else-if="user.expertData.email" v-loading="updating" label="Ahli" name="expertTab">
+        <el-form ref="expertForm" :model="user.expertData">
+          <el-form-item label="Nama">
+            <el-input v-model="user.expertData.name" />
+          </el-form-item>
+          <el-form-item label="Alamat">
+            <el-input v-model="user.expertData.address" />
+          </el-form-item>
+          <el-form-item label="No. Gawai">
+            <el-input v-model="user.expertData.mobile_phone_no" />
+          </el-form-item>
+          <el-form-item label="Keahlian">
+            <el-input v-model="user.expertData.expertise" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onExpertSubmit">
+              Ubah
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
@@ -88,6 +148,8 @@ import Resource from '@/api/resource';
 const userResource = new Resource('users');
 const initiatorResource = new Resource('initiators');
 const formulatorResource = new Resource('formulators');
+const lpjpResource = new Resource('lpjps');
+const expertResource = new Resource('expert-banks');
 
 export default {
   props: {
@@ -112,6 +174,46 @@ export default {
   methods: {
     handleClick(tab, event) {
       console.log('Switching tab ', tab, event);
+    },
+    onExpertSubmit(){
+      this.updating = true;
+
+      const updatedExpert = this.user.expertData;
+
+      expertResource
+        .update(updatedExpert.id, updatedExpert)
+        .then(response => {
+          this.updating = false;
+          this.$message({
+            message: 'Detil Expert Berhasil Diubah',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.updating = false;
+        });
+    },
+    onLpjpSubmit(){
+      this.updating = true;
+
+      const updatedLpjp = this.user.lpjpData;
+
+      lpjpResource
+        .update(updatedLpjp.id, updatedLpjp)
+        .then(response => {
+          this.updating = false;
+          this.$message({
+            message: 'Detil Lpjp Berhasil Diubah',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.updating = false;
+        });
     },
     onFormulatorSubmit(){
       this.updating = true;

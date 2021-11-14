@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Entity\Lpjp;
 use App\Http\Resources\LpjpResource;
+use App\Laravue\Acl;
+use App\Laravue\Models\Role;
+use App\Laravue\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use DB;
+use Illuminate\Support\Facades\Hash;
 
 class LpjpController extends Controller
 {
@@ -74,10 +79,24 @@ class LpjpController extends Controller
         } else {
             $params = $request->all();
 
+            DB::beginTransaction();
+
             //create file
             $file = $request->file('file');
             $name = '/lpjp/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
+
+            $email = $request->get('email');
+            $found = User::where('email', $email)->first();
+            if (!$found) {
+                $lpjpRole = Role::findByName(Acl::ROLE_LPJP);
+                $user = User::create([
+                    'name' => ucfirst($params['name']),
+                    'email' => $params['email'],
+                    'password' => Hash::make('amdalnet')
+                ]);
+                $user->syncRoles($lpjpRole);
+            }
 
             //create lpjp
             $lpjp = Lpjp::create([
@@ -96,6 +115,12 @@ class LpjpController extends Controller
                 'date_start' => $params['date_start'],
                 'date_end' => $params['date_end'],
             ]);
+
+            if (!$lpjp) {
+                DB::rollback();
+            } else {
+                DB::commit();
+            }
             
             return new LpjpResource($lpjp);
         }
@@ -110,6 +135,20 @@ class LpjpController extends Controller
     public function show(Lpjp $lpjp)
     {
         //
+    }
+
+    public function showByEmail(Request $request)
+    { 
+        If($request->email){
+            $lpjp = Lpjp::where('email', $request->email)->first();
+            
+            if($lpjp) {
+                return $lpjp;
+            } else {
+                return response()->json(null, 200);
+
+            }
+        }
     }
 
     /**
@@ -147,7 +186,6 @@ class LpjpController extends Controller
                 'id_district'       => 'required',
                 'mobile_phone_no'   => 'required',
                 'email'             => 'required',
-                'file'              => 'required',
                 'contact_person'    => 'required',
                 'phone_no'          => 'required',
                 'url_address'       => 'required',
