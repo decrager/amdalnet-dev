@@ -31,7 +31,9 @@ class AnnouncementController extends Controller
             'project.province'
         ])->withCount('feedbacks')
         ->when($request->has('keyword'), function ($query) use ($request) {
-            return $query->where('pic_name', 'LIKE', '%'.$request->keyword.'%');
+            $columnsToSearch = ['column1', 'column2', 'column3'];
+            $searchQuery = '%' . $request->search . '%';
+            return $query->where('pic_name', 'ILIKE', '%'.$request->keyword.'%');
         })
         ->orderby('start_date', 'DESC')->paginate($request->limit ? $request->limit : 10);
 
