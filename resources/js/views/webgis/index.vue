@@ -26,6 +26,7 @@ import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
 
 export default {
   name: 'WebGis',
@@ -67,7 +68,6 @@ export default {
     loadMap() {
       const map = new Map({
         basemap: 'topo',
-        // layers: [featureLayer],
       });
       const featureLayer = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
@@ -83,8 +83,6 @@ export default {
         imageTransparency: true,
       });
 
-      map.add(featureLayer);
-
       const batasProv = new MapImageLayer({
         url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
         sublayers: [{
@@ -92,12 +90,10 @@ export default {
           title: 'Batas Provinsi',
         }],
       });
-      map.add(batasProv);
 
       const graticuleGrid = new MapImageLayer({
         url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
       });
-      map.add(graticuleGrid);
 
       const ekoregion = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
@@ -116,28 +112,34 @@ export default {
           },
         ],
       });
-      map.add(ekoregion);
 
       const ppib = new MapImageLayer({
         url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
         visible: false,
       });
-      map.add(ppib);
 
       const tutupanLahan = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
         visible: false,
       });
-      map.add(tutupanLahan);
+      map.addMany([featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid]);
+
+      const baseGroupLayer = new GroupLayer({
+        title: 'Base Layer',
+        visible: true,
+        layers: [featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid],
+        opacity: 0.90,
+      });
+
+      map.add(baseGroupLayer);
 
       const mapGeojson = [];
+      const mapGeojsonArray = [];
       axios.get('api/projects')
         .then(response => {
           const projects = response.data.data;
-
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].map) {
-              // const mapGeojson = [];
               shp(window.location.origin + '/storage' + projects[i].map).then(data => {
                 if (data.length > 1) {
                   for (let i = 0; i < data.length; i++) {
@@ -145,14 +147,22 @@ export default {
                       type: 'application/json',
                     });
                     const url = URL.createObjectURL(blob);
-                    const geojsonLayer = new GeoJSONLayer({
+                    const geojsonLayerArray = new GeoJSONLayer({
                       url: url,
                       outFields: ['*'],
-                      title: projects[i].project_title,
+                      title: projects[1].project_title,
                     });
-                    mapGeojson.push(geojsonLayer);
-                    map.addMany(mapGeojson);
+                    mapGeojsonArray.push(geojsonLayerArray);
                   }
+                  const kegiatanGroupLayer = new GroupLayer({
+                    title: projects[1].project_title,
+                    visible: false,
+                    visibilityMode: 'exclusive',
+                    layers: mapGeojsonArray,
+                    opacity: 0.90,
+                  });
+
+                  map.add(kegiatanGroupLayer);
                 } else {
                   const blob = new Blob([JSON.stringify(data)], {
                     type: 'application/json',
@@ -160,6 +170,7 @@ export default {
                   const url = URL.createObjectURL(blob);
                   const geojsonLayer = new GeoJSONLayer({
                     url: url,
+                    visible: false,
                     outFields: ['*'],
                     title: projects[i].project_title,
                   });
@@ -215,13 +226,11 @@ export default {
       });
 
       layerList.on('trigger-action', (event) => {
-        for (let i = 0; i < mapGeojson.length; i++) {
-          const id = event.action.id;
-          if (id === 'full-extent') {
-            mapGeojson[i].queryExtent().then(function(response) {
-              mapView.goTo(response.extent);
-            });
-          }
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
         }
       });
 
