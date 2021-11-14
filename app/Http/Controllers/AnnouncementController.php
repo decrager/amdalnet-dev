@@ -34,7 +34,7 @@ class AnnouncementController extends Controller
             if ($request->project != 'ALL') {
                 return $query->where('project_result', '=', $request->project);
             }
-        })->orderby('start_date', 'DESC')->get();
+        })->orderby('start_date', 'DESC')->paginate($request->limit ? $request->limit : 10);
 
         // $getAllAnnouncement = Announcement::withCount('feedbacks')
         //     ->when($request->has('project'), function ($query) use ($request) {
