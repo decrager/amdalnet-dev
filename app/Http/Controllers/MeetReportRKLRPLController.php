@@ -11,7 +11,7 @@ use App\Entity\Project;
 use App\Entity\TestingMeeting;
 use Illuminate\Http\Request;
 
-class MeetingReportController extends Controller
+class MeetReportRKLRPLController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,7 +20,6 @@ class MeetingReportController extends Controller
      */
     public function index(Request $request)
     {
-
         if($request->pemrakarsa) {
             return Initiator::where('user_type', 'Pemrakarsa')->get();
         }
@@ -52,7 +51,7 @@ class MeetingReportController extends Controller
 
         if($request->idProject) {
             // Check if meeting report exist
-            $report = MeetingReport::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
+            $report = MeetingReport::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
             if($report) {
                 return $this->getExistReport($request->idProject);
             } else {
@@ -87,9 +86,9 @@ class MeetingReportController extends Controller
             $report = new MeetingReport();
             $report->id_project = $request->idProject;
             $report->id_testing_meeting = $data['id_testing_meeting'];
-            $report->document_type = 'ka';
+            $report->document_type = 'rkl-rpl';
         } else {
-            $report = MeetingReport::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
+            $report = MeetingReport::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
         }
 
 
@@ -173,7 +172,7 @@ class MeetingReportController extends Controller
     }
 
     private function getFreshReport($id_project) {
-        $meeting = TestingMeeting::where([['id_project', $id_project],['document_type', 'ka']])->first();
+        $meeting = TestingMeeting::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
 
         if(!$meeting) {
             return [
@@ -230,7 +229,7 @@ class MeetingReportController extends Controller
     }
 
     private function getExistReport($id_project) {
-        $report = MeetingReport::where([['id_project', $id_project],['document_type', 'ka']])->first();
+        $report = MeetingReport::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
 
         $invitations = [];
 
