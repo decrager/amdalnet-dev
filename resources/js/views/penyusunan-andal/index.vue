@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
-      <div class="filter-container">
+      <!-- <div class="filter-container">
         <el-row :gutter="32">
           <el-col :sm="24" :md="10">
             <el-select
@@ -19,7 +19,7 @@
             </el-select>
           </el-col>
         </el-row>
-      </div>
+      </div> -->
       <el-tabs type="card">
         <el-tab-pane label="Analisa Dampak Lingkungan">
           <div class="filter-container">
@@ -84,20 +84,21 @@ export default {
   data() {
     return {
       loading: false,
-      projects: [],
-      idProject: null,
+      // projects: [],
+      idProject: this.$route.params.id,
       compose: [],
       lastTime: null,
     };
   },
   created() {
-    this.getProjects();
+    // this.getProjects();
+    this.handleChange(this.idProject);
   },
   methods: {
-    async getProjects() {
-      const data = await andalComposingResource.list({ project: 'true' });
-      this.projects = data;
-    },
+    // async getProjects() {
+    //   const data = await andalComposingResource.list({ project: 'true' });
+    //   this.projects = data;
+    // },
     async handleChange(val) {
       this.loading = true;
       this.idProject = val;
