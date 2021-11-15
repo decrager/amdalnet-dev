@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="4">
       <el-col v-for="stage of projectStages" :key="stage.id" :span="6" :xs="24">
-        <aside align="center" style="margin-bottom: 0px;">
+        <aside align="center" style="margin-bottom: 0px; background-color: #def5cf;">
           {{ stage.name }}
         </aside>
         <component-table
@@ -22,6 +22,7 @@ import Resource from '@/api/resource';
 import ComponentTable from './ComponentTable.vue';
 
 const prjstageResource = new Resource('project-stages');
+const projectComponentResource = new Resource('project-components');
 const componentResource = new Resource('components');
 
 export default {
@@ -39,13 +40,28 @@ export default {
   },
   methods: {
     async getData() {
+      const idProject = this.$route.params && this.$route.params.id;
       const projects = await prjstageResource.list({});
       this.projectStages = projects.data;
-
-      const components = await componentResource.list({
-        all: true,
+      const projectComponents = await projectComponentResource.list({
+        id_project: idProject,
       });
-      this.components = components.data;
+      if (projectComponents.data.length > 0){
+        projectComponents.data.map((c) => {
+          if (c.id_project_stage === null) {
+            c.id_project_stage = c.id_project_stage_master;
+          }
+          if (c.name === null) {
+            c.name = c.name_master;
+          }
+        });
+        this.components = projectComponents.data;
+      } else {
+        const components = await componentResource.list({
+          all: true,
+        });
+        this.components = components.data;
+      }
       this.reloadData();
 
       this.$emit('handleSaveComponents', this.components);

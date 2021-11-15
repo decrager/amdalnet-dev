@@ -17,7 +17,7 @@ class CreateExpertBankTable extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('address')->nullable();
-            $table->string('email')->nullable();
+            $table->string('email')->unique();
             $table->string('mobile_phone_no')->nullable();
             $table->string('expertise')->nullable();
             $table->string('institution')->nullable();

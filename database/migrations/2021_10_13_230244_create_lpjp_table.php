@@ -26,7 +26,7 @@ class CreateLpjpTable extends Migration
             $table->string('phone_no')->nullable();
             $table->string('contact_person')->nullable();
             $table->string('mobile_phone_no')->nullable();
-            $table->string('email')->nullable();
+            $table->string('email')->unique();
             $table->string('url_address')->nullable();
             $table->string('cert_file')->nullable();
             $table->softDeletes();

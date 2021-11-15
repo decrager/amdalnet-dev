@@ -18,14 +18,21 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         foreach (Acl::roles() as $role) {
-            $user = User::create([
+            $user = User::where([
                 'name' => ucfirst($role),
-                'email' => $role.'@amdalnet.dev',
-                'password' => Hash::make('amdalnet'),
-            ]);
+                'email' => $role.'@amdalnet.dev'])->first();
+            
+            if (!$user) {
+                $user = User::create([
+                    'name' => ucfirst($role),
+                    'email' => $role.'@amdalnet.dev',
+                    'password' => Hash::make('amdalnet'),
+                ]);
+            
 
-            $role = Role::findByName($role);
-            $user->syncRoles($role);
+                $role = Role::findByName($role);
+                $user->syncRoles($role);
+            }
         }
 
         $this->call([

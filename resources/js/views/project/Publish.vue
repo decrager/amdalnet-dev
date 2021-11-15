@@ -15,7 +15,9 @@
         </el-table>
       </el-col>
       <el-col :span="12">
-        <h1>Peta Will Be Here Soon</h1>
+        <div>
+          <div id="mapView" style="height: 500px; margin: 0 10px;" />
+        </div>
       </el-col>
     </el-row>
     <el-row style="padding-top: 32px">
@@ -34,7 +36,9 @@
         <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
           <el-col :span="12">123456789</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
-          <el-col :span="12">{{ project.required_doc + ' ' + project.result_risk }}</el-col></el-row>
+          <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
+        <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
+          <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
           <el-col :span="12">Pusat</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
@@ -42,17 +46,17 @@
             <el-form
               ref="project"
               :model="project"
-              :rules="projectRules"
               label-position="top"
               label-width="200px"
               style="max-width: 100%"
             >
-              <el-form-item prop="id_formulator_team">
+              <el-form-item prop="type_formulator_team">
                 <el-select
-                  v-model="project.id_formulator_team"
+                  v-model="project.type_formulator_team"
                   placeholder="Pilih"
                   style="width: 100%"
                   :disabled="readonly"
+                  @change="onFormulatorTypeChange($event)"
                 >
                   <el-option
                     v-for="item in teamOptions"
@@ -65,26 +69,87 @@
               </el-form-item>
             </el-form>
           </el-col></el-row>
+        <el-row v-if="getFormulatedTeam === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
+          <el-col :span="12">
+            <el-form
+              ref="project"
+              :model="project"
+              label-position="top"
+              label-width="200px"
+              style="max-width: 100%"
+            >
+              <el-form-item prop="id_lpjp">
+                <!-- <el-autocomplete
+                  v-model="project.lpjp_name"
+                  class="inline-input"
+                  :fetch-suggestions="lpjpSearch"
+                  placeholder="Masukan"
+                  :trigger-on-focus="false"
+                  style="width: 100%"
+                /> -->
+                <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
+                  <el-option
+                    v-for="item in getLpjps"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-col></el-row>
       </el-col>
+      <div v-if="getFormulatedTeam === 'mandiri'">
+        <el-row style="padding-bottom: 16px">
+          <h2>Tambah Penyusun</h2>
+          <formulator-table
+            :list="listFormulatorTeam"
+            :loading="false"
+          />
+          <el-button
+            type="primary"
+            @click="handleAddFormulatorTable"
+          >+</el-button>
+        </el-row>
+        <el-row style="padding-bottom: 16px">
+          <h2>Tambah Tenaga Ahli</h2>
+          <expert-table
+            :list="listExpertTeam"
+            :loading="false"
+          />
+          <el-button
+            type="primary"
+            @click="handleAddExpertTable"
+          >+</el-button>
+        </el-row>
+      </div>
+
     </el-row>
     <div slot="footer" class="dialog-footer">
       <el-button :disabled="readonly" @click="handleCancel()"> Batal </el-button>
-      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Publikasi </el-button>
+      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
     </div>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
+import L from 'leaflet';
+import FormulatorTable from './components/formulatorTable.vue';
+import ExpertTable from './components/expertTable.vue';
+
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
 const supportDocResource = new Resource('support-docs');
 const initiatorResource = new Resource('initiatorsByEmail');
+const formulatorResource = new Resource('formulators');
+const formulatorTeamsResource = new Resource('formulator-teams');
 
 export default {
   name: 'Publish',
+  components: { FormulatorTable, ExpertTable },
   props: {
     project: {
       type: Object,
@@ -100,14 +165,27 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: null,
+      teamOptions: [{ value: 'mandiri', label: 'mandiri' }, { value: 'lpjp', label: 'lpjp' }],
+      teamToChooseOptions: null,
       kabkot: null,
       list: [],
-      projectRules: {
-        id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
-      },
+      listFormulatorTeam: [],
+      listExpertTeam: [],
+      // projectRules: {
+      //   id_drafting_team: [{ required: true, trigger: 'change', message: 'Data Belum Dipilih' }],
+      // },
       initiatorData: {},
+      geojson: null,
+      all: [],
     };
+  },
+  computed: {
+    getFormulatedTeam(){
+      return this.$store.getters.teamType;
+    },
+    getLpjps(){
+      return this.$store.getters.lpjps;
+    },
   },
   async mounted() {
     console.log(this.project);
@@ -115,15 +193,53 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    await this.$store.dispatch('getLpjp');
+    await this.$store.dispatch('getFormulators', {
+      page: 1,
+      limit: 1000,
+      active: '',
+    });
+    const response = await fetch('storage/' + this.project.map);
+    this.geojson = await response.json();
+    await this.loadMap();
   },
   methods: {
+    handleAddExpertTable(){
+      this.listExpertTeam.push({});
+    },
+    handleAddFormulatorTable(){
+      this.listFormulatorTeam.push({});
+    },
+    async loadMap() {
+      const map = L.map('mapView');
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      const data = await fetch('storage/' + this.project.map);
+      this.geojson = await data.json();
+      const feature = L.geoJSON(this.geojson, {
+        style: function(feature) {
+          return { color: feature.properties.color };
+        },
+      }).bindPopup(function(layer) {
+        return layer.feature.properties.description;
+      }).addTo(map);
+
+      map.fitBounds(feature.getBounds());
+    },
+    onFormulatorTypeChange(value){
+      this.$store.dispatch('getTeamType', value);
+      console.log(this.$store.getters.teamType);
+    },
     async getInitiatorData(){
       const data = await this.$store.dispatch('user/getInfo');
       this.project.initiatorData = await initiatorResource.list({ email: data.email });
     },
     async getTeamOptions() {
       const { data } = await formulatorTeamResource.list({});
-      this.teamOptions = data.map((i) => {
+      this.teamToChooseOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
     },
@@ -191,9 +307,62 @@ export default {
         params: { project: this.project },
       });
     },
-    handleSubmit() {
-      this.project.id_applicant = this.project.initiatorData ? this.project.initiatorData.id : null;
-      console.log(this.project);
+    async createTimPenyusun(){
+      // insert all tim ahli
+      const listAhli = [];
+
+      await this.listExpertTeam.forEach(element => {
+        // make form data because we got file
+        const formData = new FormData();
+
+        // eslint-disable-next-line no-undef
+        _.each(element, (value, key) => {
+          formData.append(key, value);
+        });
+
+        // adding TA for membership_status
+        formData.append('membership_status', 'TA');
+
+        formulatorResource
+          .store(formData)
+          .then((response) => {
+            this.element = {};
+            listAhli.push(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+
+      this.all = [...listAhli, this.listFormulatorTeam];
+    },
+    async createTeam(id){
+      console.log('list tim ahli yang dibuat', this.all);
+      // create tim using all list
+      const submitData = {
+        id_project: id,
+        name: 'tim penyusun ' + this.project.project_title,
+        members: this.all,
+      };
+      await formulatorTeamsResource
+        .store(submitData)
+        .then((response) => {
+          this.project.id_formulator_team = response.id;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    async handleSubmit() {
+      this.project.id_applicant = this.project.initiatorData.id ? this.project.initiatorData.id : 0;
+
+      if (!this.project.id_project){
+        this.project.id_project = 1;
+      }
+
+      if (this.getFormulatedTeam === 'mandiri') {
+        // await this.createTimPenyusun();
+      }
 
       // make form data because we got file
       const formData = new FormData();
@@ -202,6 +371,8 @@ export default {
       _.each(this.project, (value, key) => {
         formData.append(key, value);
       });
+
+      console.log('project yang disubmit', formData);
 
       this.$refs.project.validate(valid => {
         if (valid) {
@@ -227,6 +398,7 @@ export default {
                 const { data } = response;
 
                 this.saveSupportDocs(data.id);
+                // this.createTeam(data.id);
                 this.$message({
                   message:
                     'New Project ' +
@@ -313,3 +485,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@import url('../../../../node_modules/leaflet/dist/leaflet.css');
+</style>

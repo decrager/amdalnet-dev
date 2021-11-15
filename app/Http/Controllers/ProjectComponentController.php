@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ProjectComponent;
+use App\Http\Resources\ProjectComponentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,9 +14,20 @@ class ProjectComponentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $params = $request->all();
+        if (isset($params['id_project'])){
+            $components = ProjectComponent::select('project_components.*',
+                'components.name AS name_master',
+                'components.id_project_stage AS id_project_stage_master')
+                ->leftJoin('components', 'project_components.id_component', '=', 'components.id')
+                ->where('project_components.id_project', $params['id_project'])
+                ->get();
+            return ProjectComponentResource::collection($components);
+        } else {
+            return ProjectComponentResource::collection(ProjectComponent::with('component')->get()); 
+        }
     }
 
     /**
@@ -42,8 +54,12 @@ class ProjectComponentController extends Controller
                 'components' => 'required',
             ]);
             DB::beginTransaction();
+            // clear items
+            $first = $validator['components'][0];
+            ProjectComponent::where('id_project', $first['id_project'])->delete();
             $num_created = 0;
             foreach ($validator['components'] as $component){
+                // create new
                 $component['id'] == null;
                 if ($component['id_component'] != null){
                     // only save id_component

@@ -76,11 +76,13 @@ export default {
     },
     handleCancelComponent(){
       this.showAddDialog = false;
+      this.component = {};
     },
     handleSubmitComponent(){
       this.component.id = null;
       this.$emit('handleUpdateComponents', this.component);
       this.showAddDialog = false;
+      this.component = {};
     },
   },
 };
