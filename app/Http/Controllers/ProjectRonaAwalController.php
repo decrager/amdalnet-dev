@@ -56,6 +56,9 @@ class ProjectRonaAwalController extends Controller
                 'rona_awals' => 'required',
             ]);
             DB::beginTransaction();
+            // clear items
+            $first = $validator['rona_awals'][0];
+            ProjectRonaAwal::where('id_project', $first['id_project'])->delete();
             $num_created = 0;
             foreach ($validator['rona_awals'] as $rona_awal){
                 $rona_awal['id'] == null;

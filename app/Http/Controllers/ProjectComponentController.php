@@ -54,8 +54,12 @@ class ProjectComponentController extends Controller
                 'components' => 'required',
             ]);
             DB::beginTransaction();
+            // clear items
+            $first = $validator['components'][0];
+            ProjectComponent::where('id_project', $first['id_project'])->delete();
             $num_created = 0;
             foreach ($validator['components'] as $component){
+                // create new
                 $component['id'] == null;
                 if ($component['id_component'] != null){
                     // only save id_component
