@@ -98,7 +98,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="!scope.row.published && !isLpjp"
+                  v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
                   icon="el-icon-tickets"
@@ -107,7 +107,7 @@
                   Publish
                 </el-button>
                 <el-button
-                  v-if="!scope.row.published && !isLpjp"
+                  v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
                   icon="el-icon-edit"
@@ -116,7 +116,7 @@
                   Edit
                 </el-button>
                 <el-button
-                  v-if="!scope.row.published && !isLpjp"
+                  v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
                   icon="el-icon-delete"
@@ -134,7 +134,7 @@
                   View Details
                 </el-button>
                 <el-button
-                  v-if="!isLpjp"
+                  v-if="isFormulator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -150,6 +150,33 @@
                   @click="handleLpjpTeam(scope.row)"
                 >
                   Tambah Tim LPJP
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleKerangkaAcuan(scope.row)"
+                >
+                  Formulir Kerangka Acuan
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleAndal(scope.row)"
+                >
+                  Andal
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleRklRpl(scope.row)"
+                >
+                  RKL/RPL
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -221,6 +248,7 @@ const districtResource = new Resource('districts');
 const projectResource = new Resource('projects');
 const announcementResource = new Resource('announcements');
 const lpjpResource = new Resource('lpjpsByEmail');
+const formulatorResource = new Resource('formulatorsByEmail');
 
 export default {
   name: 'Project',
@@ -253,6 +281,12 @@ export default {
     isLpjp() {
       return this.userInfo.roles.includes('lpjp');
     },
+    isInitiator() {
+      return this.userInfo.roles.includes('initiator');
+    },
+    isFormulator() {
+      return this.userInfo.roles.includes('formulator');
+    },
   },
   async created() {
     this.getProvinces();
@@ -263,6 +297,9 @@ export default {
     } else if (this.userInfo.roles.includes('initiator')) {
       const initiator = await initiatorResource.list({ email: this.userInfo.email });
       this.listQuery.initiatorId = initiator.id;
+    } else if (this.userInfo.roles.includes('formulator')) {
+      const formulator = await formulatorResource.list({ email: this.userInfo.email });
+      this.listQuery.formulatorId = formulator.id;
     }
 
     this.getFiltered(this.listQuery);
@@ -409,16 +446,27 @@ export default {
           });
         });
     },
+    handleKerangkaAcuan(project) {
+      this.$router.push({
+        path: `/ukl-upl/${project.id}/formulir`,
+      });
+    },
+    handleAndal(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/penyusunan-andal`,
+      });
+    },
+    handleRklRpl(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl`,
+      });
+    },
     handleLpjpTeam(project) {
       console.log(project);
       this.$router.push({
         name: 'listLpjpTeam',
         params: { project: project },
       });
-      // this.$router.push({
-      //   name: 'listLpjpTeam',
-      //   params: { id: project.id, project: project },
-      // });
     },
     handleWorkspace(project) {
       console.log(project);
