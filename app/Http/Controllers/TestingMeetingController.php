@@ -46,7 +46,7 @@ class TestingMeetingController extends Controller
 
         if($request->idProject) {
             // Check if meeting exist
-            $meetings = TestingMeeting::where('id_project', $request->idProject)->first();
+            $meetings = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
             if($meetings) {
                 return $this->getExistMeetings($request->idProject);
             } else {
@@ -81,8 +81,9 @@ class TestingMeetingController extends Controller
         if($data['type'] == 'new') {
             $meeting = new TestingMeeting();
             $meeting->id_project = $request->idProject;
+            $meeting->document_type = 'ka';
         } else {
-            $meeting = TestingMeeting::where('id_project', $request->idProject)->first();
+            $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
             $oldExpertBankTeamId = $meeting->expert_bank_team_id;
         }
 
@@ -211,7 +212,7 @@ class TestingMeetingController extends Controller
     }
 
     private function getExistMeetings($id_project) {
-        $meeting = TestingMeeting::where('id_project', $id_project)->first();
+        $meeting = TestingMeeting::where([['id_project', $id_project],['document_type', 'ka']])->first();
 
         $invitations = [];
 
