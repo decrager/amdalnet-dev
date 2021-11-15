@@ -29,10 +29,10 @@
 
 <script>
 import Resource from '@/api/resource';
-const verifikasiRapatResource = new Resource('testing-verification');
-const undanganRapatResource = new Resource('testing-meeting');
-import FormKelengkapan from '@/views/pengujian/components/verifikasiRapat/formKelengkapan';
-import UndanganRapat from '@/views/pengujian/components/verifikasiRapat/undanganRapat';
+const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
+const undanganRapatResource = new Resource('test-meet-rkl-rpl');
+import FormKelengkapan from '@/views/pengujian-rkl-rpl/components/verifikasiRapat/formKelengkapan';
+import UndanganRapat from '@/views/pengujian-rkl-rpl/components/verifikasiRapat/undanganRapat';
 
 export default {
   name: 'VerifikasiRapat',

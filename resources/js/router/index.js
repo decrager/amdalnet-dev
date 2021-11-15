@@ -105,19 +105,19 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true,
   },
-  {
-    path: '',
-    component: Layout,
-    redirect: 'dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
-        name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', noCache: false },
-      },
-    ],
-  },
+  // {
+  //   path: '',
+  //   component: Layout,
+  //   redirect: 'dashboard',
+  //   children: [
+  //     {
+  //       path: 'dashboard',
+  //       component: () => import('@/views/dashboard/index'),
+  //       name: 'Dashboard',
+  //       meta: { title: 'dashboard', icon: 'dashboard', noCache: false },
+  //     },
+  //   ],
+  // },
   // {
   //   path: '/documentation',
   //   component: Layout,
