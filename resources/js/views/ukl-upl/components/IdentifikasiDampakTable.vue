@@ -118,7 +118,6 @@ export default {
       var dataList = impactList.data;
       if (this.table === 'metode-studi'){
         dataList = dataList.filter(imp => imp.is_hypothetical_significant);
-        console.log(dataList);
       }
       this.data = this.createDataArray(dataList, this.projectStages);
       this.$emit('handleSetData', this.data);
