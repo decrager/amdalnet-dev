@@ -9,7 +9,7 @@ use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 class Project extends Model
 {
     use SoftDeletes;
-    
+
     use WorkflowTrait;
 
     protected $fillable = [
@@ -38,6 +38,9 @@ class Project extends Model
         'required_doc',
         'biz_type',
         'id_project',
+        'type_formulator_team',
+        'ktr',
+        'lpjp_name',
     ];
 
     public function team()
@@ -53,5 +56,9 @@ class Project extends Model
     public function testingMeeting()
     {
         return $this->hasOne(TestingMeeting::class, 'id_project', 'id');
+    }
+    
+    public function province(){
+        return $this->hasOne(Province::class, 'id', 'id_prov');
     }
 }

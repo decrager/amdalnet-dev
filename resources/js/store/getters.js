@@ -17,6 +17,7 @@ const getters = {
   addRoutes: state => state.permission.addRoutes,
   amdals: state => state.announcement.amdals,
   uklupls: state => state.announcement.uklupls,
+  alls: state => state.announcement.alls,
   countAmdal: state => state.announcement.countAmdal,
   countUklupl: state => state.announcement.countUklupl,
   countAll: state => state.announcement.countAll,
@@ -27,5 +28,11 @@ const getters = {
   provinceOptions: state => state.project.provinceOptions,
   cityOptions: state => state.project.cityOptions,
   unitOptions: state => state.project.unitOptions,
+  businessTypeOptions: state => state.project.businessTypeOptions,
+  teamType: state => state.project.teamType,
+  kblis: state => state.project.listKbli,
+  lpjps: state => state.project.listLpjp,
+  step: state => state.workflow.step,
+  isPemerintah: state => state.initiator.isPemerintah,
 };
 export default getters;

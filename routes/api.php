@@ -1,11 +1,12 @@
 <?php
 
+use App\Http\Controllers\ExportDocument;
 use App\Http\Resources\UserResource;
+use App\Laravue\Acl;
+use App\Laravue\Faker;
+use App\Laravue\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use \App\Laravue\Faker;
-use \App\Laravue\JsonResponse;
-use \App\Laravue\Acl;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,7 @@ use \App\Laravue\Acl;
 Route::apiResource('home', 'HomeController');
 Route::apiResource('webgis', 'WebgisController');
 
-Route::namespace('Api')->group(function() {
+Route::namespace('Api')->group(function () {
     Route::post('auth/login', 'AuthController@login');
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
@@ -36,11 +37,13 @@ Route::namespace('Api')->group(function() {
         Route::apiResource('users', 'UserController')->middleware('permission:' . Acl::PERMISSION_MANAGE_USER);
         Route::apiResource('permissions', 'PermissionController')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
 
+        Route::get('doc-uklupl', [ExportDocument::class, 'ExportUklUpl']);
+
         // Custom routes
         Route::put('users/{user}', 'UserController@update');
         Route::put('uploadAvatar/{user}', 'UserController@updateAvatar');
         Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
-        Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' .Acl::PERMISSION_MANAGE_PERMISSION);
+        Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
         Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
     });
 });
@@ -176,6 +179,9 @@ Route::apiResource('sops', 'SopController');
 Route::apiResource('component-types', 'ComponentTypeController');
 Route::apiResource('app-params', 'AppParamController');
 Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');
+Route::get('formulatorsByEmail', 'FormulatorController@showByEmail');
+Route::get('lpjpsByEmail', 'LpjpController@showByEmail');
+Route::get('expertByEmail', 'ExpertBankController@showByEmail');
 Route::apiResource('impact-identifications', 'ImpactIdentificationController');
 Route::apiResource('env-params', 'EnvParamController');
 Route::apiResource('params', 'ParamController');
@@ -190,3 +196,4 @@ Route::apiResource('matriks-rpl', 'MatriksRPLController');
 Route::apiResource('testing-verification', 'TestingVerificationController');
 Route::apiResource('testing-meeting', 'TestingMeetingController');
 Route::apiResource('meeting-report', 'MeetingReportController');
+Route::apiResource('impact-studies', 'ImpactStudyController');
