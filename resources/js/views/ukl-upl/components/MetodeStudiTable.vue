@@ -71,7 +71,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.data);
     this.getData();
   },
   methods: {

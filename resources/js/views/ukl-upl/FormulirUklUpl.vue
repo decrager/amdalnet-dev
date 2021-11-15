@@ -19,7 +19,7 @@
           <vsa-heading>
             RONA LINGKUNGAN AWAL
           </vsa-heading>
-          <vsa-content>3w
+          <vsa-content>
             <rona-lingkungan-awal
               @handleReloadVsaList="handleReloadVsaList"
             />

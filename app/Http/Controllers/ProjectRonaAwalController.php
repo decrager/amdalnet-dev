@@ -62,7 +62,9 @@ class ProjectRonaAwalController extends Controller
             $num_created = 0;
             foreach ($validator['rona_awals'] as $rona_awal){
                 $rona_awal['id'] == null;
-                if ($rona_awal['id_rona_awal'] != null){
+                if ($rona_awal['id_rona_awal'] > 99999999) {
+                    $rona_awal['id_rona_awal'] = null;
+                } else {
                     // only save id_rona_awal
                     $rona_awal['id_component_type'] = null;
                     $rona_awal['name'] = null;
