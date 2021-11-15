@@ -21,8 +21,6 @@ import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import DarkHeaderHome from '../home/section/DarkHeader';
-// import OAuthInfo from '@arcgis/core/identity/OAuthInfo';
-// import IdentityManager from '@arcgis/core/identity/OAuthInfo';
 import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
