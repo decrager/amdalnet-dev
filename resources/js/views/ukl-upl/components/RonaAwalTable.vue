@@ -59,6 +59,7 @@ export default {
       ronaAwal: {},
       componentTypes: [],
       componentTypeOptions: [],
+      dummyId: 99999999,
     };
   },
   mounted() {
@@ -116,9 +117,10 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
+      this.dummyId = this.dummyId + 1;
     },
     handleSubmitRonaAwal() {
-      this.ronaAwal.id = null;
+      this.ronaAwal.id = this.dummyId;
       this.ronaAwals.push(this.ronaAwal);
       this.reloadData();
       this.$emit('handleUpdateRonaAwals', this.ronaAwals);

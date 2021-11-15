@@ -7,6 +7,7 @@
         </aside>
         <component-table
           :data="data[stage.id]"
+          :dummy-id="dummyId"
           @handleUpdateComponents="handleUpdateComponents"
           @handleDeleteComponent="handleDeleteComponent"
           @handleRenderTable="handleRenderTable"
@@ -33,6 +34,7 @@ export default {
       components: [],
       projectStages: [],
       data: {},
+      dummyId: 99999999,
     };
   },
   mounted() {
@@ -81,6 +83,7 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
+      this.dummyId = this.dummyId + 1;
     },
     async handleRenderTable() {
       this.getData();

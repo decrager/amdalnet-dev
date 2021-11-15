@@ -61,7 +61,9 @@ class ProjectComponentController extends Controller
             foreach ($validator['components'] as $component){
                 // create new
                 $component['id'] == null;
-                if ($component['id_component'] != null){
+                if ($component['id_component'] > 99999999) {
+                    $component['id_component'] = null;
+                } else {
                     // only save id_component
                     $component['id_project_stage'] = null;
                     $component['name'] = null;
