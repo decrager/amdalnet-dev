@@ -5,24 +5,25 @@ const dokumenKegiatanRoutes = {
   component: Layout,
   redirect: '/dokumen-kegiatan',
   meta: { title: 'Dokumen Kegiatan', icon: 'zip' },
+  hidden: true,
   children: [
     {
-      path: 'penyusunan-andal',
+      path: ':id(\\d+)/penyusunan-andal',
       component: () => import('@/views/penyusunan-andal/index'),
       name: 'penyusunanAndal',
       meta: { title: 'Penyusunan Andal', icon: 'zip', noCache: true },
     },
     {
-      path: 'penyusunan-rkl-rpl',
+      path: ':id(\\d+)/penyusunan-rkl-rpl',
       component: () => import('@/views/rkl-rpl/index'),
       name: 'penyusunanRKLRPL',
       meta: { title: 'Penyusunan RKL RPL', icon: 'zip', noCache: true },
     },
     {
-      path: 'pengujian',
+      path: ':id(\\d+)/pengujian-ka',
       component: () => import('@/views/pengujian/index'),
-      name: 'pengujian',
-      meta: { title: 'Pengujian', icon: 'zip', noCache: true },
+      name: 'pengujianKA',
+      meta: { title: 'Pengujian KA', icon: 'zip', noCache: true },
     },
   ],
 };
