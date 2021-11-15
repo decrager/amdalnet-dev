@@ -621,7 +621,6 @@ export default {
 
       const fr = new FileReader();
       fr.onload = (event) => {
-        console.log(event);
         const geo = L.geoJSON().addTo(map);
         const base = event.target.result;
         shp(base).then(function(data) {
@@ -645,7 +644,6 @@ export default {
     },
     kbliSearch(queryString, cb) {
       var links = this.$store.getters.kblis;
-      console.log('ini yang create', links);
       var results = queryString
         ? links.filter(this.createKbliFilter(queryString))
         : links;
@@ -699,7 +697,7 @@ export default {
           // send to pubishProjectRoute
           this.$router.push({
             name: 'publishProject',
-            params: { project: this.currentProject },
+            params: { project: this.currentProject, mapUpload: this.fileMap },
           });
         } else {
           console.log('error submit!!');
