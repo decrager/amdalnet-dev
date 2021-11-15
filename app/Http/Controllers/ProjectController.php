@@ -28,7 +28,7 @@ class ProjectController extends Controller
             return Project::whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         }
 
-        return Project::select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar')->where(function ($query) use ($request) {
+        return Project::select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -38,7 +38,15 @@ class ProjectController extends Controller
             function ($query) use ($request) {
                 return $request->id_district ? $query->where('projects.id_district', $request->id_district) : '';
             }
-        )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
+        )->where(
+            function ($query) use ($request) {
+                return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
+            }
+        )->where(
+            function ($query) use ($request) {
+                return $request->initiatorId ? $query->where('projects.id_applicant', $request->initiatorId) : '';
+            }
+        )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->orderBy('projects.id', 'DESC')->paginate($request->limit);
     }
 
     /**
@@ -79,7 +87,7 @@ class ProjectController extends Controller
                 'location_desc' => 'required',
                 'risk_level' => 'required',
                 'project_year' => 'required',
-                'id_formulator_team' => 'required',
+                // 'id_formulator_team' => 'required',
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
@@ -125,13 +133,13 @@ class ProjectController extends Controller
                 'location_desc' => $params['location_desc'],
                 'risk_level' => $params['risk_level'],
                 'project_year' => $params['project_year'],
-                'id_formulator_team' => $params['id_formulator_team'],
+                'id_formulator_team' => isset($params['id_formulator_team']) ? $params['id_formulator_team'] : null,
                 'kbli' => $params['kbli'],
                 'result_risk' => $params['result_risk'],
                 'required_doc' => $params['required_doc'],
                 'id_project' => $params['id_project'],
                 'type_formulator_team' => $params['type_formulator_team'],
-                'lpjp_name' => $params['lpjp_name'] ? $params['lpjp_name'] : null,
+                'id_lpjp' => isset($params['id_lpjp']) ? $params['id_lpjp'] : null,
                 'map' => Storage::url($mapName),
                 'ktr' => Storage::url($ktrName),
             ]);
@@ -196,7 +204,7 @@ class ProjectController extends Controller
                 'location_desc' => 'required',
                 'risk_level' => 'required',
                 'project_year' => 'required',
-                'id_formulator_team' => 'required',
+                // 'id_formulator_team' => 'required',
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
@@ -243,13 +251,13 @@ class ProjectController extends Controller
             $project->location_desc = $params['location_desc'];
             $project->risk_level = $params['risk_level'];
             $project->project_year = $params['project_year'];
-            $project->id_formulator_team = $params['id_formulator_team'];
+            $project->id_formulator_team = isset($params['id_formulator_team']) ? $params['id_formulator_team'] : null;
             $project->kbli = $params['kbli'];
             $project->result_risk = $params['result_risk'];
             $project->required_doc = $params['required_doc'];
             $project->id_project = $params['id_project'];
             $project->type_formulator_team = $params['type_formulator_team'];
-            $project->lpjp_name = $params['lpjp_name'] ? $params['lpjp_name'] : null;
+            $project->id_lpjp = isset($params['id_lpjp']) ? $params['id_lpjp'] : null;
             $project->map = $name != null ? Storage::url($name) : $project->map;
             $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;
 

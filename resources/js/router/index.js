@@ -15,6 +15,7 @@ import errorRoutes from './modules/error';
 // import permissionRoutes from './modules/permission';
 import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
+import lpjpRoutes from './modules/lpjp';
 // import workspaceRoutes from './modules/workspace';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
@@ -210,6 +211,7 @@ export const asyncRoutes = [
   projectRoutes,
   initiatorRoutes,
   // formulatorRoutes,
+  lpjpRoutes,
   lukRoutes,
   tukRoutes,
   expertBankRoutes,
