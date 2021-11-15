@@ -16,7 +16,7 @@
       </el-col>
       <el-col :span="12">
         <div>
-          <div id="mapView" style="height: 500px; margin: 0 10px;" />
+          <div id="mapView" />
         </div>
       </el-col>
     </el-row>
@@ -134,7 +134,6 @@
 
 <script>
 import Resource from '@/api/resource';
-import L from 'leaflet';
 import FormulatorTable from './components/formulatorTable.vue';
 import ExpertTable from './components/expertTable.vue';
 
@@ -146,6 +145,20 @@ const supportDocResource = new Resource('support-docs');
 const initiatorResource = new Resource('initiatorsByEmail');
 const formulatorResource = new Resource('formulators');
 const formulatorTeamsResource = new Resource('formulator-teams');
+
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import Map from '@arcgis/core/Map';
+import MapView from '@arcgis/core/views/MapView';
+import Home from '@arcgis/core/widgets/Home';
+import Compass from '@arcgis/core/widgets/Compass';
+import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
+import Attribution from '@arcgis/core/widgets/Attribution';
+import Expand from '@arcgis/core/widgets/Expand';
+import Legend from '@arcgis/core/widgets/Legend';
+import LayerList from '@arcgis/core/widgets/LayerList';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import shp from 'shpjs';
 
 export default {
   name: 'Publish',
@@ -199,35 +212,170 @@ export default {
       limit: 1000,
       active: '',
     });
-    const response = await fetch('storage/' + this.project.map);
-    this.geojson = await response.json();
-    await this.loadMap();
+    this.loadMap();
   },
   methods: {
+    defineActions(event) {
+      const item = event.item;
+
+      item.actionsSections = [
+        [
+          {
+            title: 'Go to full extent',
+            className: 'esri-icon-zoom-in-magnifying-glass',
+            id: 'full-extent',
+          },
+        ],
+      ];
+    },
+    loadMap() {
+      console.log(this.project.map);
+      const map = new Map({
+        basemap: 'topo',
+      });
+
+      const batasProv = new MapImageLayer({
+        url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
+        sublayers: [{
+          id: 0,
+          title: 'Batas Provinsi',
+        }],
+      });
+
+      const graticuleGrid = new MapImageLayer({
+        url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
+      });
+
+      map.addMany([batasProv, graticuleGrid]);
+
+      const baseGroupLayer = new GroupLayer({
+        title: 'Base Layer',
+        visible: true,
+        layers: [batasProv, graticuleGrid],
+        opacity: 0.90,
+      });
+
+      map.add(baseGroupLayer);
+
+      const mapGeojsonArray = [];
+      shp(window.location.origin + '/' + this.project.map).then(data => {
+        if (data.length > 1) {
+          for (let i = 0; i < data.length; i++) {
+            const blob = new Blob([JSON.stringify(data[i])], {
+              type: 'application/json',
+            });
+            const url = URL.createObjectURL(blob);
+            const geojsonLayerArray = new GeoJSONLayer({
+              url: url,
+              outFields: ['*'],
+              title: 'Layers',
+            });
+            mapGeojsonArray.push(geojsonLayerArray);
+          }
+          const kegiatanGroupLayer = new GroupLayer({
+            title: this.project.project_title,
+            visible: true,
+            visibilityMode: 'exclusive',
+            layers: mapGeojsonArray,
+            opacity: 0.90,
+          });
+
+          map.add(kegiatanGroupLayer);
+        } else {
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+          const url = URL.createObjectURL(blob);
+          const geojsonLayer = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            title: this.project.project_title,
+          });
+          map.add(geojsonLayer);
+        }
+      });
+
+      const mapView = new MapView({
+        container: 'mapView',
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 6,
+      });
+      this.$parent.mapView = mapView;
+
+      const home = new Home({
+        view: mapView,
+      });
+
+      mapView.popup.on('trigger-action', (event) => {
+        if (event.action.id === 'get-details') {
+          console.log('tbd');
+        }
+      });
+
+      mapView.ui.add(home, 'top-left');
+      const compass = new Compass({
+        view: mapView,
+      });
+      mapView.ui.add(compass, 'top-left');
+      const basemapToggle = new BasemapToggle({
+        view: mapView,
+        container: document.createElement('div'),
+        secondBasemap: 'satellite',
+      });
+      const expandBasemapToggler = new Expand({
+        view: mapView,
+        name: 'basemap',
+        content: basemapToggle.domNode,
+        expandIconClass: 'esri-icon-basemap',
+      });
+      mapView.ui.add(expandBasemapToggler, 'top-left');
+      const attribution = new Attribution({
+        view: mapView,
+      });
+      mapView.ui.add(attribution, 'manual');
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
+        }
+      });
+
+      const legendExpand = new Expand({
+        view: mapView,
+        content: legend.domNode,
+        expandIconClass: 'esri-icon-collection',
+        expandTooltip: 'Legend',
+      });
+
+      const layersExpand = new Expand({
+        view: mapView,
+        content: layerList.domNode,
+        expandIconClass: 'esri-icon-layer-list',
+        expandTooltip: 'Layers',
+      });
+      mapView.ui.add(legendExpand, 'bottom-left');
+      mapView.ui.add(layersExpand, 'top-right');
+    },
     handleAddExpertTable(){
       this.listExpertTeam.push({});
     },
     handleAddFormulatorTable(){
       this.listFormulatorTeam.push({});
-    },
-    async loadMap() {
-      const map = L.map('mapView');
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
-
-      const data = await fetch('storage/' + this.project.map);
-      this.geojson = await data.json();
-      const feature = L.geoJSON(this.geojson, {
-        style: function(feature) {
-          return { color: feature.properties.color };
-        },
-      }).bindPopup(function(layer) {
-        return layer.feature.properties.description;
-      }).addTo(map);
-
-      map.fitBounds(feature.getBounds());
     },
     onFormulatorTypeChange(value){
       this.$store.dispatch('getTeamType', value);
@@ -487,5 +635,11 @@ export default {
 </script>
 
 <style scoped>
-@import url('../../../../node_modules/leaflet/dist/leaflet.css');
+#mapView {
+  width: 50%;
+  height: 100%;
+  padding: 0;
+  margin: 0 10px;
+  position: absolute;
+}
 </style>
