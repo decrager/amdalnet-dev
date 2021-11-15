@@ -628,12 +628,6 @@ export default {
           const feature = geo.addData(data);
           map.fitBounds(feature.getBounds());
         });
-        //
-        // const result = fr.result;
-        // shp(result).then(function(geojson){
-        //   geojson.addTo(map);
-        // });
-        // const shpfile = new L.Shapefile(result);
       };
       fr.readAsArrayBuffer(this.fileMap);
     },
