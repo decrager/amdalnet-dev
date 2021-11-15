@@ -62,6 +62,7 @@
           <vsa-content>
             <metode-studi
               @handleReloadVsaList="handleReloadVsaList"
+              @handleEnableSubmitForm="handleEnableSubmitForm"
             />
           </vsa-content>
         </vsa-item>
