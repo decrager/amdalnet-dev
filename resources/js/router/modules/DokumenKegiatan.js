@@ -20,10 +20,16 @@ const dokumenKegiatanRoutes = {
       meta: { title: 'Penyusunan RKL RPL', icon: 'zip', noCache: true },
     },
     {
-      path: 'pengujian-ka',
+      path: ':id(\\d+)/pengujian-ka',
       component: () => import('@/views/pengujian/index'),
       name: 'pengujianKA',
       meta: { title: 'Pengujian KA', icon: 'zip', noCache: true },
+    },
+    {
+      path: ':id(\\d+)/pengujian-rkl-rpl',
+      component: () => import('@/views/pengujian-rkl-rpl/index'),
+      name: 'pengujianRKLRPL',
+      meta: { title: 'Pengujian RKL RPL', icon: 'zip', noCache: true },
     },
   ],
 };

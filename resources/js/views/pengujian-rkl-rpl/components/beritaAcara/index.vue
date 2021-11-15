@@ -30,9 +30,9 @@
 
 <script>
 import Resource from '@/api/resource';
-const meetingReportResource = new Resource('meeting-report');
-import FormBerita from '@/views/pengujian/components/beritaAcara/FormBerita';
-import DaftarHadir from '@/views/pengujian/components/beritaAcara/DaftarHadir';
+const meetingReportResource = new Resource('meet-report-rkl-rpl');
+import FormBerita from '@/views/pengujian-rkl-rpl/components/beritaAcara/FormBerita';
+import DaftarHadir from '@/views/pengujian-rkl-rpl/components/beritaAcara/DaftarHadir';
 
 export default {
   name: 'BeritaAcara',
