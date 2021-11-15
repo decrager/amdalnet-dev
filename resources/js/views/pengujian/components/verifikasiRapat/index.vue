@@ -1,29 +1,55 @@
 <template>
   <div>
-    <div class="filter-container" align="right">
-      <el-button type="primary" style="font-size: 0.8rem">{{
-        'Simpan Perubahan'
-      }}</el-button>
-      <el-button type="info" style="font-size: 0.8rem">{{
-        'Kirim Undangan Rapat'
-      }}</el-button>
+    <div class="filter-container">
+      <el-row :gutter="32">
+        <el-col :sm="24" :md="12">
+          <el-select
+            v-model="idProject"
+            placeholder="Pilih Kegiatan"
+            style="width: 100%"
+            @change="handleChange"
+          >
+            <el-option
+              v-for="item in projects"
+              :key="item.id"
+              :label="item.project_title"
+              :value="item.id"
+            />
+          </el-select>
+        </el-col>
+        <el-col :sm="24" :md="12" align="right">
+          <el-button
+            :loading="loadingSubmit"
+            type="primary"
+            style="font-size: 0.8rem"
+            @click="handleSubmit"
+          >
+            {{ 'Simpan Perubahan' }}
+          </el-button>
+          <el-button type="info" style="font-size: 0.8rem">{{
+            'Kirim Undangan Rapat'
+          }}</el-button>
+        </el-col>
+      </el-row>
     </div>
     <el-row :gutter="32">
       <el-col :sm="12" :md="12">
         <FormKelengkapan
-          :list="kelengkapan"
-          :penyetujuan="penyetujuan"
-          :pemeriksaan="pemeriksaan"
+          :list="verifications"
+          :loadingverification="loadingverification"
         />
       </el-col>
       <el-col :sm="12" :md="12">
-        <UndanganRapat />
+        <UndanganRapat :meetings="meetings" />
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const verifikasiRapatResource = new Resource('testing-verification');
+const undanganRapatResource = new Resource('testing-meeting');
 import FormKelengkapan from '@/views/pengujian/components/verifikasiRapat/formKelengkapan';
 import UndanganRapat from '@/views/pengujian/components/verifikasiRapat/undanganRapat';
 
@@ -91,16 +117,67 @@ export default {
           keterangan: '',
         },
       ],
-      penyetujuan: {
-        jabatan: 'Kasi. Penilaian Amdan dan Izin Lingkungan',
-        lokasi: 'Jakarta',
-        nama: 'Dra. Laksmi Widyajayanti, M.Sc.',
-      },
-      pemeriksaan: {
-        lokasi: 'Jakarta',
-        oleh: 'Validator Administrasi',
-      },
+      projects: [],
+      idProject: null,
+      verifications: {},
+      loadingverification: false,
+      meetings: {},
+      loadingSubmit: false,
     };
+  },
+  created() {
+    this.getProjects();
+  },
+  methods: {
+    async getProjects() {
+      const data = await verifikasiRapatResource.list({
+        project: 'true',
+      });
+      this.projects = data;
+    },
+    async getVerifications() {
+      const data = await verifikasiRapatResource.list({
+        verification: 'true',
+        idProject: this.idProject,
+      });
+
+      this.verifications = data;
+    },
+    async getMeetings() {
+      const data = await undanganRapatResource.list({
+        idProject: this.idProject,
+      });
+      this.meetings = data;
+    },
+    async handleChange(val) {
+      this.idProject = val;
+      this.loadingverification = true;
+      await this.getVerifications();
+      await this.getMeetings();
+      this.loadingverification = false;
+    },
+    async handleSubmit() {
+      if (this.idProject == null) {
+        return;
+      }
+
+      this.loadingSubmit = true;
+      await verifikasiRapatResource.store({
+        idProject: this.idProject,
+        verifications: this.verifications,
+      });
+      await undanganRapatResource.store({
+        idProject: this.idProject,
+        meetings: this.meetings,
+      });
+      await this.handleChange(this.idProject);
+      this.$message({
+        message: 'Data is saved Successfully',
+        type: 'success',
+        duration: 5 * 1000,
+      });
+      this.loadingSubmit = false;
+    },
   },
 };
 </script>

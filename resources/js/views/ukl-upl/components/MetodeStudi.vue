@@ -51,6 +51,9 @@ export default {
             type: message_type,
             duration: 5 * 1000,
           });
+          if (response.code === 200) {
+            this.$emit('handleEnableSubmitForm');
+          }
         })
         .catch((error) => {
           console.log(error);

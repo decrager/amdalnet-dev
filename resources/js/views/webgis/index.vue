@@ -26,6 +26,7 @@ import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
 
 export default {
   name: 'WebGis',
@@ -67,7 +68,6 @@ export default {
     loadMap() {
       const map = new Map({
         basemap: 'topo',
-        // layers: [featureLayer],
       });
       const featureLayer = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
@@ -83,8 +83,6 @@ export default {
         imageTransparency: true,
       });
 
-      map.add(featureLayer);
-
       const batasProv = new MapImageLayer({
         url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
         sublayers: [{
@@ -92,12 +90,10 @@ export default {
           title: 'Batas Provinsi',
         }],
       });
-      map.add(batasProv);
 
       const graticuleGrid = new MapImageLayer({
         url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
       });
-      map.add(graticuleGrid);
 
       const ekoregion = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
@@ -116,43 +112,107 @@ export default {
           },
         ],
       });
-      map.add(ekoregion);
 
       const ppib = new MapImageLayer({
         url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
         visible: false,
       });
-      map.add(ppib);
 
       const tutupanLahan = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
         visible: false,
       });
-      map.add(tutupanLahan);
+      map.addMany([featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid]);
+
+      const baseGroupLayer = new GroupLayer({
+        title: 'Base Layer',
+        visible: true,
+        layers: [featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid],
+        opacity: 0.90,
+      });
+
+      map.add(baseGroupLayer);
 
       const mapGeojson = [];
+      const mapGeojsonArray = [];
       axios.get('api/projects')
         .then(response => {
           const projects = response.data.data;
-
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].map) {
-              // const mapGeojson = [];
               shp(window.location.origin + '/storage' + projects[i].map).then(data => {
                 if (data.length > 1) {
                   for (let i = 0; i < data.length; i++) {
+                    const getProjectDetails = {
+                      title: 'Details',
+                      id: 'get-details',
+                      image: 'information-24-f.svg',
+                    };
+                    const arrayJsonTemplate = {
+                      title: projects[i].project_title + ' (' + projects[i].project_year + ').',
+                      content: '<table style="border-collapse: collapse !important">' +
+                          '<thead>' +
+                            '<tr style="margin: 5px 0;">' +
+                              '<td style="width: 35%">KBLI Code</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].kbli + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                              '<td style="width: 35%">Pemrakarsa</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].applicant + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0;">' +
+                              '<td style="width: 35%">Provinsi</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].province + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                              '<td style="width: 35%">Kota</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].district + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0;">' +
+                              '<td style="width: 35%">Alamat</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].address + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                              '<td style="width: 35%">Deskripsi</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].description + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0;">' +
+                              '<td style="width: 35%">Skala</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].scale + ' ' + projects[i].scale_unit + '</td>' +
+                            '</tr>' +
+                          '</thead>' +
+                        '</table>',
+                      actions: [getProjectDetails],
+                    };
+
                     const blob = new Blob([JSON.stringify(data[i])], {
                       type: 'application/json',
                     });
                     const url = URL.createObjectURL(blob);
-                    const geojsonLayer = new GeoJSONLayer({
+                    const geojsonLayerArray = new GeoJSONLayer({
                       url: url,
                       outFields: ['*'],
-                      title: projects[i].project_title,
+                      title: projects[1].project_title,
+                      popupTemplate: arrayJsonTemplate,
                     });
-                    mapGeojson.push(geojsonLayer);
-                    map.addMany(mapGeojson);
+                    mapGeojsonArray.push(geojsonLayerArray);
                   }
+                  const kegiatanGroupLayer = new GroupLayer({
+                    title: projects[1].project_title,
+                    visible: false,
+                    visibilityMode: 'exclusive',
+                    layers: mapGeojsonArray,
+                    opacity: 0.90,
+                  });
+
+                  map.add(kegiatanGroupLayer);
                 } else {
                   const blob = new Blob([JSON.stringify(data)], {
                     type: 'application/json',
@@ -160,6 +220,7 @@ export default {
                   const url = URL.createObjectURL(blob);
                   const geojsonLayer = new GeoJSONLayer({
                     url: url,
+                    visible: false,
                     outFields: ['*'],
                     title: projects[i].project_title,
                   });
@@ -182,6 +243,13 @@ export default {
       const home = new Home({
         view: mapView,
       });
+
+      mapView.popup.on('trigger-action', (event) => {
+        if (event.action.id === 'get-details') {
+          console.log('tbd');
+        }
+      });
+
       mapView.ui.add(home, 'top-left');
       const compass = new Compass({
         view: mapView,
@@ -215,13 +283,11 @@ export default {
       });
 
       layerList.on('trigger-action', (event) => {
-        for (let i = 0; i < mapGeojson.length; i++) {
-          const id = event.action.id;
-          if (id === 'full-extent') {
-            mapGeojson[i].queryExtent().then(function(response) {
-              mapView.goTo(response.extent);
-            });
-          }
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
         }
       });
 
@@ -255,53 +321,11 @@ export default {
   position: absolute;
 }
 
-.button-login {
-  position: absolute;
-  right: 60px;
-  top: 15px;
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-  padding: 8px 15px;
-  margin: 0;
-  overflow: hidden;
-  cursor: pointer;
-  text-align: center;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 125ms ease-in-out;
-  border-radius: 5px;
-  outline: none;
+.esri-feature-content tr td {
+  padding: 5px !important;
 }
 
-.button-dashboard {
-  position: absolute;
-  right: 150px;
-  top: 15px;
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-  padding: 8px 15px;
-  margin: 0;
-  overflow: hidden;
-  cursor: pointer;
-  text-align: center;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 125ms ease-in-out;
-  border-radius: 5px;
-  outline: none;
-}
-
-.button-login:hover {
-  background-color: rgb(3, 68, 3);
-  transform: scale(1.1);
-  transition: all .3s ease-in;
-  font-weight: 700;
-  outline: none;
+.esri-feature-content table {
+  margin-top: 10px !important;
 }
 </style>

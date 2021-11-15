@@ -62,6 +62,7 @@
           <vsa-content>
             <metode-studi
               @handleReloadVsaList="handleReloadVsaList"
+              @handleEnableSubmitForm="handleEnableSubmitForm"
             />
           </vsa-content>
         </vsa-item>
@@ -119,7 +120,10 @@ export default {
       this.idProject = id;
     },
     handleSaveForm() {
-      this.$router.push({ path: '/ukl-upl/' + this.idProject + '/matriks' });
+      this.$router.push({
+        name: 'DokumenUklUpl',
+        params: {},
+      });
     },
     handleEnableSubmitForm() {
       this.isSubmitEnabled = true;
