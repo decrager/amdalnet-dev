@@ -2,12 +2,76 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Project;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpWord\Element\TextRun;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class ExportDocument extends Controller
 {
+    public function ExportKA($id) {
+        if (Request::segment(3) == 'docx') {
+            $getData = DB::table('impact_studies')
+                ->select('impact_studies.forecast_method',
+                    'impact_studies.required_information',
+                    'impact_studies.data_gathering_method',
+                    'impact_studies.analysis_method',
+                    'impact_studies.evaluation_method',
+                    'projects.project_title',
+                    'initiators.pic',
+                    'projects.description',
+                    'projects.location_desc')
+                ->leftJoin('impact_identifications', 'impact_studies.id_impact_identification', '=', 'impact_identifications.id')
+                ->leftJoin('projects', 'projects.id', '=', 'impact_identifications.id_project')
+                ->leftJoin('project_components', 'project_components.id', '=', 'impact_identifications.id_project_component')
+                ->leftJoin('project_rona_awals', 'project_rona_awals.id', '=', 'impact_identifications.id_project_rona_awal')
+                ->leftJoin('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
+                ->leftJoin('units', 'units.id', '=', 'impact_identifications.id_unit')
+                ->leftJoin('initiators', 'initiators.id', '=', 'projects.id_applicant')
+                ->where('projects.id', '=', $id)
+                ->first();
+
+            $templateProcessor = new TemplateProcessor('template_KA.docx');
+
+            $templateProcessor->setValue('project_title', $getData->project_title);
+            $templateProcessor->setValue('pic', $getData->pic);
+            $templateProcessor->setValue('description', htmlspecialchars($getData->description));
+            $templateProcessor->setValue('location_desc', htmlspecialchars($getData->location_desc));
+            $templateProcessor->setValue('required_information', $getData->required_information);
+            $templateProcessor->setValue('data_gathering_method', $getData->data_gathering_method);
+            $templateProcessor->setValue('analysis_method', $getData->analysis_method);
+            $templateProcessor->setValue('forecast_method', $getData->forecast_method);
+            $templateProcessor->setValue('evaluation_method', $getData->evaluation_method);
+
+            $save_file_name = 'form-ka-' . $getData->project_title . ".docx";
+            $templateProcessor->saveAs($save_file_name);
+
+            return response()->download($save_file_name)->deleteFileAfterSend(false);
+        }
+
+        if (Request::segment(3) === 'pdf') {
+            $getProject = Project::where('id', '=', $id)->first();
+
+            $domPdfPath = base_path('vendor/dompdf/dompdf');
+            Settings::setPdfRendererPath($domPdfPath);
+            Settings::setPdfRendererName('DomPDF');
+
+            //Load word file
+            $Content = IOFactory::load(public_path('form-ka-'. $getProject->project_title . '.docx'));
+
+            //Save it into PDF
+            $fileName = 'form-ka-'. $getProject->project_title . '.pdf';
+            $PDFWriter = IOFactory::createWriter($Content,'PDF');
+
+            $PDFWriter->save(public_path($fileName));
+            return response()->download($fileName)->deleteFileAfterSend(false);
+        }
+
+    }
+
     public function ExportUklUpl($id)
     {
         $getData = DB::table('announcements')
