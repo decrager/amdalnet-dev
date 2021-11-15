@@ -51,6 +51,7 @@ deploy_cloud:
     - composer install
     - composer dump-autoload
     - php artisan migrate
+    - npm install
     - npm run production
   only:
     - master
