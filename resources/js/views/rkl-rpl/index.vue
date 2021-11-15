@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
-      <div class="filter-container">
+      <!-- <div class="filter-container">
         <el-row :gutter="32">
           <el-col :sm="24" :md="10">
             <el-select
@@ -19,7 +19,7 @@
             </el-select>
           </el-col>
         </el-row>
-      </div>
+      </div> -->
       <el-tabs type="card">
         <el-tab-pane label="Matriks RKL RPL">
           <Matriks
@@ -81,8 +81,8 @@ export default {
     return {
       loadingRKL: false,
       loadingRPL: false,
-      projects: [],
-      idProject: null,
+      // projects: [],
+      idProject: this.$route.params.id,
       lastTimeRKL: null,
       matriksRKL: [],
       institutions: [],
@@ -91,14 +91,15 @@ export default {
     };
   },
   created() {
-    this.getProjects();
+    // this.getProjects();
+    this.handleChange(this.idProject);
     this.getInstitutions();
   },
   methods: {
-    async getProjects() {
-      const data = await rklResource.list({ project: 'true' });
-      this.projects = data;
-    },
+    // async getProjects() {
+    //   const data = await rklResource.list({ project: 'true' });
+    //   this.projects = data;
+    // },
     async getInstitutions() {
       this.institutions = await rplResource.list({ institution: 'true' });
     },

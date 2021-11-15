@@ -4,8 +4,9 @@
       <el-col :sm="12" :md="12">
         <el-form-item label="Tanggal Rapat">
           <el-date-picker
-            v-model="invitation.tanggalRapat"
+            v-model="reports.meeting_date"
             type="date"
+            value-format="yyyy-MM-dd"
             placeholder="Pilih tanggal"
             style="width: 100%"
           />
@@ -13,53 +14,66 @@
       </el-col>
       <el-col :sm="12" :md="12">
         <el-form-item label="Pemrakarsa">
-          <el-input v-model="invitation.Pemrakarsa" />
+          <el-select
+            v-model="reports.id_initiator"
+            placeholder="Pilih Tim"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in pemrakarsa"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
         </el-form-item>
       </el-col>
       <el-col :sm="12" :md="12">
         <el-form-item label="Waktu Rapat">
           <el-time-picker
-            v-model="invitation.waktuRapat"
+            v-model="reports.meeting_time"
             placeholder="Waktu Rapat"
             format="HH:mm"
+            value-format="HH:mm"
             style="width: 100%"
           />
         </el-form-item>
       </el-col>
       <el-col :sm="12" :md="12">
         <el-form-item label="Penanggung Jawab">
-          <el-input v-model="invitation.penanggungJawab" />
+          <el-input v-model="reports.person_responsible" />
         </el-form-item>
       </el-col>
       <el-col :sm="12" :md="12">
         <el-form-item label="Tempat Rapat">
-          <el-input v-model="invitation.tempatRapat" />
+          <el-input v-model="reports.location" />
         </el-form-item>
       </el-col>
       <el-col :sm="12" :md="12">
         <el-form-item label="Jabatan">
-          <el-input v-model="invitation.jabatan" />
+          <el-input v-model="reports.position" />
         </el-form-item>
       </el-col>
       <el-col :sm="12" :md="12">
         <el-form-item label="Tim Uji Kelayakan">
           <el-select
-            v-model="invitation.timUjiKelayakan"
+            v-model="reports.expert_bank_team_id"
             placeholder="Pilih Tim"
             style="width: 100%"
+            @change="handleChangeTimUji"
           >
             <el-option
               v-for="item in timUjiKelayakan"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             />
           </el-select>
         </el-form-item>
       </el-col>
       <el-col :sm="12" :md="12">
         <el-form-item label="Nama Usaha/Kegiatan">
-          <el-input v-model="invitation.namaUsaha" />
+          <el-input v-model="reports.project_name" />
         </el-form-item>
       </el-col>
     </el-row>
@@ -67,24 +81,48 @@
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const meetingReportResource = new Resource('meeting-report');
+
 export default {
   name: 'FormBerita',
+  props: {
+    reports: {
+      type: Object,
+      default: () => {},
+    },
+    loadingtuk: Boolean,
+  },
   data() {
     return {
-      invitation: {
-        waktuRapat: new Date(),
-      },
-      timUjiKelayakan: [
-        {
-          label: 'TUK Pusat 1',
-          value: 1,
-        },
-        {
-          label: 'TUK Pusat 2',
-          value: 2,
-        },
-      ],
+      timUjiKelayakan: [],
+      pemrakarsa: [],
     };
+  },
+  created() {
+    this.getTimUjiKelayakan();
+    this.getPemrakarsa();
+  },
+  methods: {
+    async getTimUjiKelayakan() {
+      const data = await meetingReportResource.list({
+        expert_bank_team: 'true',
+      });
+      this.timUjiKelayakan = data;
+    },
+    async getPemrakarsa() {
+      const data = await meetingReportResource.list({ pemrakarsa: 'true' });
+      this.pemrakarsa = data;
+    },
+    async handleChangeTimUji(val) {
+      this.loadingtuk = true;
+      const data = await meetingReportResource.list({
+        tuk_member: 'true',
+        tuk_id: val,
+      });
+      this.reports.invitations = data;
+      this.loadingtuk = false;
+    },
   },
 };
 </script>

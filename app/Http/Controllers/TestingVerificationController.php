@@ -23,7 +23,7 @@ class TestingVerificationController extends Controller
 
         if($request->idProject) {
             // Check if verification exist
-            $verifications = TestingVerification::where('id_project', $request->idProject)->first();
+            $verifications = TestingVerification::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
             if($verifications) {
                 return $this->getExistVerification($request->idProject);
             } else {
@@ -58,8 +58,9 @@ class TestingVerificationController extends Controller
         if($data['type'] == 'new') {
             $verification = new TestingVerification();
             $verification->id_project = $request->idProject;
+            $verification->document_type = 'ka';
         } else {
-            $verification = TestingVerification::where('id_project', $request->idProject)->first();
+            $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
         }
         
         $verification->approved_by_position = $data['approved_by_position'];
@@ -170,7 +171,7 @@ class TestingVerificationController extends Controller
 
     private function getExistVerification($id_project) {
 
-        $verification = TestingVerification::where('id_project', $id_project)->first();
+        $verification = TestingVerification::where([['id_project', $id_project],['document_type', 'ka']])->first();
         
         $form = [];
 
