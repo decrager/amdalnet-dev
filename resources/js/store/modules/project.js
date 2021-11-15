@@ -6,6 +6,7 @@ const kbliResource = new Resource('kblis');
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const ossProjectResource = new Resource('oss-projects');
 const lpjpResource = new Resource('lpjp');
+const formulatorResource = new Resource('formulators');
 // const SupportDocResource = new Resource('support-docs');
 
 // const API_URL = '/api/projects';
@@ -31,8 +32,19 @@ const projects = {
         label: 'Pengembangan',
       },
     ],
+    membershipOptions: [
+      {
+        value: 'ketua',
+        label: 'Ketua',
+      },
+      {
+        value: 'anggota',
+        label: 'Anggota',
+      },
+    ],
     unitOptions: [],
     teamType: '',
+    formulators: [],
 
     loadingStatus: false,
   },
@@ -66,6 +78,9 @@ const projects = {
     },
     SET_TEAM_TYPE(state, payload) {
       state.teamType = payload;
+    },
+    SET_FORMULATORS(state, payload) {
+      state.formulators = payload;
     },
     LOADING_STATUS(state, payload) {
       state.loadingStatus = payload;
@@ -110,7 +125,7 @@ const projects = {
     async getLpjp({ commit }) {
       const { data } = await lpjpResource.list({});
       const option = data.map((i) => {
-        return { value: i.name, label: i.name };
+        return { value: i.id, label: i.name };
       });
       commit('SET_LIST_LPJP', option);
     },
@@ -120,6 +135,13 @@ const projects = {
         return { value: i.id, label: i.name };
       });
       commit('SET_CITY_OPTIONS', option);
+    },
+    async getFormulators({ commit }, payload) {
+      const { data } = await formulatorResource.list(payload);
+      const option = data.map((i) => {
+        return { value: i.id, label: i.name };
+      });
+      commit('SET_FORMULATORS', option);
     },
     async getUnitByKbli({ commit }, payload) {
       const { data } = await kbliEnvParamResource.list(payload);
