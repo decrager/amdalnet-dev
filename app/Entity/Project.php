@@ -52,6 +52,6 @@ class Project extends Model
 
     public function testingMeeting()
     {
-        return $this->hasOne(TestingMeeting::class, 'id_project', 'id');
+        return $this->hasMany(TestingMeeting::class, 'id_project', 'id');
     }
 }
