@@ -81,8 +81,8 @@
               <div class="entity-block">
                 <img
                   class="img-circle"
-                  :src="scope.row.avatar"
-                  alt="user image"
+                  :src="scope.row.avatar || 'no-image.png'"
+                  @error="$event.target.src='no-image.png'"
                 >
                 <span class="name text-muted">
                   <a href="#">{{ scope.row.applicant }}</a>
