@@ -2,7 +2,8 @@
   <div>
     <h5>Daftar Undangan</h5>
     <el-table
-      :data="daftarUndangan"
+      v-loading="loadingtuk"
+      :data="invitations"
       fit
       highlight-current-row
       :header-cell-style="{ background: '#3AB06F', color: 'white' }"
@@ -15,9 +16,11 @@
 
       <el-table-column label="Peran">
         <template slot-scope="scope">
+          <span v-if="scope.row.type == 'tuk'">{{ scope.row.role }} TUK</span>
           <el-select
-            v-model="scope.row.peran"
-            placeholder="Pilih Kelengkapan"
+            v-else
+            v-model="scope.row.role"
+            placeholder="Pilih Peran"
             style="width: 100%"
           >
             <el-option
@@ -32,19 +35,21 @@
 
       <el-table-column label="Nama Anggota">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.namaAnggota" />
+          <span v-if="scope.row.type == 'tuk'">{{ scope.row.name }} TUK</span>
+          <el-input v-else v-model="scope.row.name" />
         </template>
       </el-table-column>
 
       <el-table-column label="E-mail">
         <template slot-scope="scope">
           <div class="email-column">
-            <span style="display: block">{{ scope.row.email }}</span>
+            <span v-if="scope.row.type == 'tuk'">{{ scope.row.email }}</span>
+            <el-input v-else v-model="scope.row.email" />
             <el-button
               type="text"
               icon="el-icon-close"
               style="display: block"
-              @click.prevent="deleteRow(scope.row.id)"
+              @click.prevent="deleteRow(scope.row.id, scope.row.type)"
             />
           </div>
         </template>
@@ -59,43 +64,22 @@
 <script>
 export default {
   name: 'DaftarHadir',
+  props: {
+    invitations: {
+      type: Array,
+      default: () => [],
+    },
+    loadingtuk: Boolean,
+  },
   data() {
     return {
-      daftarUndangan: [
-        {
-          id: 1,
-          peran: 'Ketua TUK',
-          namaAnggota: 'Ketua TUK',
-          email: 'ketuatuk@gmail.com',
-        },
-        {
-          id: 2,
-          peran: 'Sekretaris TUK',
-          namaAnggota: 'Sekretaris TUK',
-          email: 'sekretaristuk@gmail.com',
-        },
-        {
-          id: 3,
-          peran: 'Anggota TUK',
-          namaAnggota: 'Anggota TUK',
-          email: 'anggotatuk@gmail.com',
-        },
-      ],
       peran: [
         {
-          label: 'Ketua TUK',
-          value: 'Ketua TUK',
-        },
-        {
-          label: 'Sekretaris TUK',
-          value: 'Sekretaris TUK',
-        },
-        {
-          label: 'Anggota TUK',
-          value: 'Anggota TUK',
-        },
-        {
           label: 'Tenaga Ahli',
+          value: 'Tenaga Ahli',
+        },
+        {
+          label: 'Masyarakat',
           value: 'Masyarakat',
         },
       ],
@@ -103,17 +87,16 @@ export default {
   },
   methods: {
     addTableRow() {
-      this.daftarUndangan.push({
-        id:
-          this.peran.length > 0 ? this.peran[this.peran.length - 1].id + 1 : 1,
-        peran: '',
-        namaAnggota: '',
-        email: '',
+      this.invitations.push({
+        id: Math.random(),
+        role: null,
+        name: null,
+        email: null,
+        type: 'other',
       });
     },
-    deleteRow(id) {
-      const newInvitation = this.daftarUndangan.filter((daf) => daf.id !== id);
-      this.daftarUndangan = [...newInvitation];
+    deleteRow(id, personType) {
+      this.$emit('deleteinvitation', { id, personType });
     },
   },
 };
