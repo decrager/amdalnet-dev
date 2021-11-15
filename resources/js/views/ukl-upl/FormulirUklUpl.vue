@@ -120,9 +120,10 @@ export default {
       this.idProject = id;
     },
     handleSaveForm() {
+      const id = this.$route.params && this.$route.params.id;
       this.$router.push({
         name: 'DokumenUklUpl',
-        params: {},
+        params: id,
       });
     },
     handleEnableSubmitForm() {

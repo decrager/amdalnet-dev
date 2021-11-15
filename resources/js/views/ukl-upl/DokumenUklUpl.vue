@@ -1,9 +1,11 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card>
-      <h2>Dokumen Kerangka Acuan</h2>
-      <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
-      <el-button type="primary" @click="exportDocx">Export to .Docx</el-button>
+      <h2>Formulir Kerangka Acuan</h2>
+      <div>
+        <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
+        <el-button type="primary" @click="exportDocx">Export to .Docx</el-button>
+      </div>
     </el-card>
   </div>
 </template>
