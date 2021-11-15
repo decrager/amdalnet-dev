@@ -187,6 +187,24 @@
                 >
                   RKL/RPL
                 </el-button>
+                <el-button
+                  v-if="isSubtance || isAdmin"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiKa(scope.row)"
+                >
+                  Uji KA
+                </el-button>
+                <el-button
+                  v-if="isAdmin || isSubtance"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiRklRpl(scope.row)"
+                >
+                  Uji RPL
+                </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
               <span v-html="scope.row.description" />
@@ -296,6 +314,12 @@ export default {
     isFormulator() {
       return this.userInfo.roles.includes('formulator');
     },
+    isSubtance() {
+      return this.userInfo.roles.includes('examiner-substance');
+    },
+    isAdmin() {
+      return this.userInfo.roles.includes('examiner-administration');
+    },
   },
   async created() {
     this.getProvinces();
@@ -310,6 +334,10 @@ export default {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
     }
+    // else if (this.userInfo.roles.includes('examiner-substance')) {
+    //   const formulator = await formulatorResource.list({ email: this.userInfo.email });
+    //   this.listQuery.formulatorId = formulator.id;
+    // }
 
     this.getFiltered(this.listQuery);
     console.log(this.userInfo);
@@ -458,6 +486,16 @@ export default {
     handleKerangkaAcuan(project) {
       this.$router.push({
         path: `/ukl-upl/${project.id}/formulir`,
+      });
+    },
+    handleUjiKa(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/pengujian-ka`,
+      });
+    },
+    handleUjiRklRpl(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
       });
     },
     handleAndal(project) {
