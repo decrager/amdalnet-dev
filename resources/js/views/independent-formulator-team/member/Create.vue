@@ -91,7 +91,7 @@ export default {
     console.log(this.$route.params.project);
     if (this.$route.params.project){
       this.project = this.$route.params.project;
-      this.currentFormulatorTeam.name = `Tim Penyusun ${this.project_title}`;
+      this.currentFormulatorTeam.name = `Tim Penyusun ${this.project.project_title}`;
     }
     // this.getLastNewProject();
   },

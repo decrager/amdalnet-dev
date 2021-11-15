@@ -134,6 +134,15 @@
                   View Details
                 </el-button>
                 <el-button
+                  v-if="isInitiator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-view"
+                  @click="handleViewSpt(scope.row.announcementId)"
+                >
+                  Lihat SPT
+                </el-button>
+                <el-button
                   v-if="isFormulator"
                   href="#"
                   type="text"
@@ -466,6 +475,11 @@ export default {
       this.$router.push({
         name: 'listLpjpTeam',
         params: { project: project },
+      });
+    },
+    handleViewSpt(id) {
+      this.$router.push({
+        path: `/announcement/view/${id}`,
       });
     },
     handleWorkspace(project) {
