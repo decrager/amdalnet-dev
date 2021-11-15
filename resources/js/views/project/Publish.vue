@@ -361,7 +361,7 @@ export default {
       }
 
       if (this.getFormulatedTeam === 'mandiri') {
-        await this.createTimPenyusun();
+        // await this.createTimPenyusun();
       }
 
       // make form data because we got file
@@ -398,7 +398,7 @@ export default {
                 const { data } = response;
 
                 this.saveSupportDocs(data.id);
-                this.createTeam(data.id);
+                // this.createTeam(data.id);
                 this.$message({
                   message:
                     'New Project ' +
