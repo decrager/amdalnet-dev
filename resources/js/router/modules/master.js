@@ -121,7 +121,7 @@ const masterRoutes = {
       path: 'master-data/params',
       component: () => import('@/views/params/index'),
       name: 'Params',
-      meta: { title: 'Params', icon: 'user', noCache: true },
+      meta: { title: 'Parameter Aplikasi', icon: 'user', noCache: true },
     },
     {
       path: 'create-params',
