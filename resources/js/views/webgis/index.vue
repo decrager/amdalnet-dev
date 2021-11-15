@@ -143,6 +143,55 @@ export default {
               shp(window.location.origin + '/storage' + projects[i].map).then(data => {
                 if (data.length > 1) {
                   for (let i = 0; i < data.length; i++) {
+                    const getProjectDetails = {
+                      title: 'Details',
+                      id: 'get-details',
+                      image: 'information-24-f.svg',
+                    };
+                    const arrayJsonTemplate = {
+                      title: projects[i].project_title + ' (' + projects[i].project_year + ').',
+                      content: '<table style="border-collapse: collapse !important">' +
+                          '<thead>' +
+                            '<tr style="margin: 5px 0;">' +
+                              '<td style="width: 35%">KBLI Code</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].kbli + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                              '<td style="width: 35%">Pemrakarsa</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].applicant + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0;">' +
+                              '<td style="width: 35%">Provinsi</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].province + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                              '<td style="width: 35%">Kota</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].district + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0;">' +
+                              '<td style="width: 35%">Alamat</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].address + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                              '<td style="width: 35%">Deskripsi</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].description + '</td>' +
+                            '</tr>' +
+                            '<tr style="margin: 5px 0;">' +
+                              '<td style="width: 35%">Skala</td>' +
+                              '<td> : </td>' +
+                              '<td>' + projects[i].scale + ' ' + projects[i].scale_unit + '</td>' +
+                            '</tr>' +
+                          '</thead>' +
+                        '</table>',
+                      actions: [getProjectDetails],
+                    };
+
                     const blob = new Blob([JSON.stringify(data[i])], {
                       type: 'application/json',
                     });
@@ -151,6 +200,7 @@ export default {
                       url: url,
                       outFields: ['*'],
                       title: projects[1].project_title,
+                      popupTemplate: arrayJsonTemplate,
                     });
                     mapGeojsonArray.push(geojsonLayerArray);
                   }
@@ -193,6 +243,13 @@ export default {
       const home = new Home({
         view: mapView,
       });
+
+      mapView.popup.on('trigger-action', (event) => {
+        if (event.action.id === 'get-details') {
+          console.log('tbd');
+        }
+      });
+
       mapView.ui.add(home, 'top-left');
       const compass = new Compass({
         view: mapView,
@@ -264,53 +321,11 @@ export default {
   position: absolute;
 }
 
-.button-login {
-  position: absolute;
-  right: 60px;
-  top: 15px;
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-  padding: 8px 15px;
-  margin: 0;
-  overflow: hidden;
-  cursor: pointer;
-  text-align: center;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 125ms ease-in-out;
-  border-radius: 5px;
-  outline: none;
+.esri-feature-content tr td {
+  padding: 5px !important;
 }
 
-.button-dashboard {
-  position: absolute;
-  right: 150px;
-  top: 15px;
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-  padding: 8px 15px;
-  margin: 0;
-  overflow: hidden;
-  cursor: pointer;
-  text-align: center;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 125ms ease-in-out;
-  border-radius: 5px;
-  outline: none;
-}
-
-.button-login:hover {
-  background-color: rgb(3, 68, 3);
-  transform: scale(1.1);
-  transition: all .3s ease-in;
-  font-weight: 700;
-  outline: none;
+.esri-feature-content table {
+  margin-top: 10px !important;
 }
 </style>
