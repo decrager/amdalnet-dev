@@ -51,13 +51,13 @@ class ExportDocument extends Controller
             $templateProcessor->setValue('evaluation_method', $getData->evaluation_method);
 
             $save_file_name = 'form-ka-' . $getData->project_title . ".docx";
-            if (!File::exists(storage_path('formulir/'))) {
-                File::makeDirectory(storage_path('formulir/'));
-                $templateProcessor->saveAs(storage_path('formulir/' . $save_file_name));
+            if (!File::exists(storage_path('app/public/formulir/'))) {
+                File::makeDirectory(storage_path('app/public/formulir/'));
+                $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
             }
             // $templateProcessor->saveAs(storage_path('formulir/' . $save_file_name));
 
-            return response()->download(storage_path('formulir/' . $save_file_name))->deleteFileAfterSend(false);
+            return response()->download(storage_path('app/public/formulir/' . $save_file_name))->deleteFileAfterSend(false);
         }
 
         if (Request::segment(3) === 'pdf') {
@@ -68,14 +68,14 @@ class ExportDocument extends Controller
             Settings::setPdfRendererName('DomPDF');
 
             //Load word file
-            $Content = IOFactory::load(storage_path('formulir/form-ka-' . $getProject->project_title . '.docx'));
+            $Content = IOFactory::load(storage_path('app/public/formulir/form-ka-' . $getProject->project_title . '.docx'));
 
             //Save it into PDF
             $fileName = 'form-ka-' . $getProject->project_title . '.pdf';
             $PDFWriter = IOFactory::createWriter($Content, 'PDF');
 
-            $PDFWriter->save(storage_path('formulir/' . $fileName));
-            return response()->download(storage_path('formulir/' . $fileName))->deleteFileAfterSend(false);
+            $PDFWriter->save(storage_path('app/public/formulir/' . $fileName));
+            return response()->download(storage_path('app/public/formulir/' . $fileName))->deleteFileAfterSend(false);
         }
     }
 
