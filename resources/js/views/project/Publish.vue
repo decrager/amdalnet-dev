@@ -1,5 +1,6 @@
 <template>
   <div class="form-container" style="padding: 24px">
+    <workflow />
     <el-row>
       <el-col
         :span="12"
@@ -160,10 +161,11 @@ import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import L from 'leaflet';
+import Workflow from '@/components/Workflow';
 
 export default {
   name: 'Publish',
-  components: { FormulatorTable, ExpertTable },
+  components: { FormulatorTable, ExpertTable, Workflow },
   props: {
     project: {
       type: Object,
@@ -204,9 +206,17 @@ export default {
     getLpjps(){
       return this.$store.getters.lpjps;
     },
+    getProjectField() {
+      const pfield = this.$store.getters.projectFieldOptions;
+      console.log(pfield);
+      return pfield.filter(e => e.value === this.project.field)[0].label;
+    },
   },
   async mounted() {
     console.log(this.project);
+    // for step
+    this.$store.dispatch('getStep', 1);
+    await this.getProjectFields();
     await this.getKbliEnvParams();
     await this.getTeamOptions();
     await this.getInitiatorData();
@@ -232,6 +242,9 @@ export default {
           },
         ],
       ];
+    },
+    async getProjectFields() {
+      await this.$store.dispatch('getProjectFields');
     },
     loadMap() {
       if (this.readonly === true) {
@@ -628,7 +641,7 @@ export default {
         },
         {
           param: 'Bidang Usaha/Kegiatan',
-          value: this.project.field,
+          value: this.getProjectField,
         },
         {
           param: 'Skala/Besaran',
