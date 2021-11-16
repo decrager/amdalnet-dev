@@ -199,4 +199,5 @@ Route::apiResource('meeting-report', 'MeetingReportController');
 Route::apiResource('test-verif-rkl-rpl', 'TestVerifRKLRPLController');
 Route::apiResource('test-meet-rkl-rpl', 'TestMeetRKLRPLController');
 Route::apiResource('meet-report-rkl-rpl', 'MeetReportRKLRPLController');
+Route::apiResource('feasibility-test', 'FeasibilityTestController');
 Route::apiResource('impact-studies', 'ImpactStudyController');
