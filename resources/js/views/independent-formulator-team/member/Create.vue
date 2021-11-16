@@ -1,7 +1,7 @@
 <template>
   <div class="form-container" style="margin: 24px">
     <el-card v-if="!project || project.project_title">
-      <h3>Tim Penyusun Mandiri</h3>
+      <h3>Tim Penyusun LPJP</h3>
       <el-form
         ref="categoryForm"
         :model="currentFormulatorTeam"
@@ -69,6 +69,12 @@ export default {
   components: {
     MembersTable,
   },
+  // props: {
+  //   project: {
+  //     type: Object,
+  //     default: null,
+  //   },
+  // },
   data() {
     return {
       currentFormulatorTeam: { name: '' },
@@ -77,12 +83,17 @@ export default {
       projects: [],
       members: [],
       searchResult: '',
-      project: null,
       selectedMember: {},
+      project: {},
     };
   },
   created() {
-    this.getLastNewProject();
+    console.log(this.$route.params.project);
+    if (this.$route.params.project){
+      this.project = this.$route.params.project;
+      this.currentFormulatorTeam.name = `Tim Penyusun ${this.project.project_title}`;
+    }
+    // this.getLastNewProject();
   },
   methods: {
     async querySearch(queryString, cb) {

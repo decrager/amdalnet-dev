@@ -50,6 +50,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    dummyId: {
+      type: Number,
+      default: () => 0,
+    },
   },
   data() {
     return {
@@ -76,11 +80,13 @@ export default {
     },
     handleCancelComponent(){
       this.showAddDialog = false;
+      this.component = {};
     },
     handleSubmitComponent(){
-      this.component.id = null;
+      this.component.id = this.dummyId;
       this.$emit('handleUpdateComponents', this.component);
       this.showAddDialog = false;
+      this.component = {};
     },
   },
 };

@@ -6,7 +6,7 @@
           <img alt="" src="/images/logo-amdal-white.png">
         </a>
         |
-        <h1>WEBGIS AMDALNET</h1>
+        <h1>WEBGIS</h1>
       </div>
 
       <div id="nav-menu" class="nav__menu">
