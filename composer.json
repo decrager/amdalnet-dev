@@ -27,6 +27,7 @@
         "laravel/octane": "^1.0",
         "laravel/sanctum": "^2.1",
         "laravel/tinker": "^2.0",
+        "phpoffice/phpword": "^0.18.2",
         "spatie/laravel-permission": "^3.0",
         "zerodahero/laravel-workflow": "^3.3"
     },

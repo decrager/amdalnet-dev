@@ -3,13 +3,13 @@
     <split-pane split="vertical" :min-percent="20" :default-percent="30" @resize="resize">
       <template slot="paneL">
         <div class="left-container">
-          <!-- <el-button
+          <el-button
             type="primary"
             icon="el-icon-plus"
-            @click="addNode"
+            @click="etherpadAuth"
           >
             {{ $t('addNode') }}
-          </el-button> -->
+          </el-button>
           <vue-tree-list
             :model="data"
             default-tree-node-name="new node"
@@ -70,6 +70,9 @@
 <script>
 import { VueTreeList, Tree, TreeNode } from 'vue-tree-list';
 import SplitPane from 'vue-splitpane';
+import WorkspaceResource from '@/api/workspace';
+
+const workspaceResource = new WorkspaceResource();
 
 export default {
   components: {
@@ -85,7 +88,9 @@ export default {
   data() {
     return {
       newTree: {},
+      etherpadUrl: '',
       selectedTreeId: 1,
+      sessionID: null,
       data: new Tree([
         {
           name: 'Kata Pengantar',
@@ -173,12 +178,17 @@ export default {
   computed: {
     padSrc() {
       console.log('src:', process.env.MIX_EHTERPAD_URL, this.selectedTreeId);
-      return process.env.MIX_EHTERPAD_URL + this.selectedTreeId;
+      if (this.sessionID) {
+        return process.env.MIX_EHTERPAD_URL + '/auth_session?sessionID=' + this.sessionID + '&padName=' + this.selectedTreeId;
+      }
+      return '';
     },
   },
   async mounted() {
-    console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
-    console.log(process.env.MIX_EHTERPAD_URL);
+    // console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
+    // console.log(process.env.MIX_EHTERPAD_URL);
+    this.etherpadUrl = process.env.MIX_EHTERPAD_URL;
+    this.etherpadAuth();
   },
   methods: {
     resize() {
@@ -232,6 +242,15 @@ export default {
       }
 
       vm.newTree = _dfs(vm.data);
+    },
+
+    etherpadAuth() {
+      workspaceResource
+        .sessionInit()
+        .then(response => {
+          console.log(response, response.data.sessionID);
+          this.sessionID = response.data.sessionID;
+        });
     },
   },
 };

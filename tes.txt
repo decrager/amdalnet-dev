@@ -1,0 +1,205 @@
+array(29) {
+  [0]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(5) "COVER"
+  }
+  [1]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(14) "KATA PENGANTAR"
+  }
+  [2]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(10) "DAFTAR ISI"
+  }
+  [3]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(12) "DAFTAR TABEL"
+  }
+  [4]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(13) "DAFTAR GAMBAR"
+  }
+  [5]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(15) "DAFTAR LAMPIRAN"
+  }
+  [6]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(32) "IDENTITAS PENANGGUNG JAWAB USAHA"
+  }
+  [7]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(23) "DESKRIPSI RENCANA USAHA"
+  }
+  [8]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading2"
+    ["text"]=>
+    string(36) "Nama Rencana Usaha dan/atau kegiatan"
+  }
+  [9]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading2"
+    ["text"]=>
+    string(38) "Lokasi Rencana Usaha dan/atau kegiatan"
+  }
+  [10]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading2"
+    ["text"]=>
+    string(41) "Skala Besaran Rencana Usaha atau kegiatan"
+  }
+  [11]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading3"
+    ["text"]=>
+    string(16) "Penggunaan Lahan"
+  }
+  [12]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading3"
+    ["text"]=>
+    string(18) "Persetujuan Teknis"
+  }
+  [13]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading3"
+    ["text"]=>
+    string(25) "Jenis dan Kapasitas Usaha"
+  }
+  [14]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading3"
+    ["text"]=>
+    string(42) "Jenis dan Jumlah Peralatan untuk Kegiatan "
+  }
+  [15]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading2"
+    ["text"]=>
+    string(52) "Garis Besar Komponen Rencana Usaha dan/atau kegiatan"
+  }
+  [16]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading4"
+    ["text"]=>
+    string(20) "Tahap Pra Konstruksi"
+  }
+  [17]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading4"
+    ["text"]=>
+    string(16) "Tahap Konstruksi"
+  }
+  [18]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading4"
+    ["text"]=>
+    string(17) "Tahap Operasional"
+  }
+  [19]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading2"
+    ["text"]=>
+    string(19) "Tahap Pasca Operasi"
+  }
+  [20]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(15) "MATRIKS UKL-UPL"
+  }
+  [21]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(16) "SURAT PERNYATAAN"
+  }
+  [22]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(16) "SURAT PERNYATAAN"
+  }
+  [23]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(14) "DAFTAR PUSTAKA"
+  }
+  [24]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(15) "FOTO   KEGIATAN"
+  }
+  [25]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(16) "SURAT PERNYATAAN"
+  }
+  [26]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(16) "SURAT PERNYATAAN"
+  }
+  [27]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(8) "LAMPIRAN"
+  }
+  [28]=>
+  array(2) {
+    ["style"]=>
+    string(8) "Heading1"
+    ["text"]=>
+    string(22) "SURAT PENGANTAR REVISI"
+  }
+}
