@@ -4,6 +4,7 @@
       <h2>Formulir Kerangka Acuan</h2>
       <div>
         <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
+        <el-button type="primary" @click="exportDocx">Export to .DOCX</el-button>
       </div>
       <div style="margin-top: 20px;">
         <iframe :src="'https://docs.google.com/gview?url='+projects+'&embedded=true'" width="1140px" height="723px" frameborder="0" />
