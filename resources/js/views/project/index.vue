@@ -143,15 +143,6 @@
                   Lihat SPT
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
-                  href="#"
-                  type="text"
-                  icon="el-icon-document"
-                  @click="handleWorkspace(scope.row)"
-                >
-                  Workspace
-                </el-button>
-                <el-button
                   v-if="isLpjp && !scope.row.team_id"
                   href="#"
                   type="text"
@@ -204,6 +195,15 @@
                   @click="handleUjiRklRpl(scope.row)"
                 >
                   Uji RPL
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspace(scope.row)"
+                >
+                  Workspace
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
