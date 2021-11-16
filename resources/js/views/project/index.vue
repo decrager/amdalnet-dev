@@ -5,6 +5,7 @@
         <el-row type="flex" class="row-bg" justify="space-between">
           <div>
             <el-button
+              v-if="!isLpjp"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
@@ -80,11 +81,11 @@
               <div class="entity-block">
                 <img
                   class="img-circle"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDkaQO69Fro8SZLTVZQ75JH2R0T-sn5yIA_lKGwvvgQ0R0BoQtUQ"
-                  alt="user image"
+                  :src="scope.row.avatar || 'no-image.png'"
+                  @error="$event.target.src='no-image.png'"
                 >
                 <span class="name text-muted">
-                  <a href="#">PT. Pemrakarsa Sembada</a>
+                  <a href="#">{{ scope.row.applicant }}</a>
                   <a
                     href="#"
                     class="pull-right btn-box-tool"
@@ -97,7 +98,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="!scope.row.published"
+                  v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
                   icon="el-icon-tickets"
@@ -106,7 +107,7 @@
                   Publish
                 </el-button>
                 <el-button
-                  v-if="!scope.row.published"
+                  v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
                   icon="el-icon-edit"
@@ -115,7 +116,7 @@
                   Edit
                 </el-button>
                 <el-button
-                  v-if="!scope.row.published"
+                  v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
                   icon="el-icon-delete"
@@ -124,12 +125,93 @@
                   Delete
                 </el-button>
                 <el-button
+                  v-if="!isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-view"
                   @click="handleViewForm(scope.row.id)"
                 >
                   View Details
+                </el-button>
+                <el-button
+                  v-if="isInitiator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-view"
+                  @click="handleViewSpt(scope.row.announcementId)"
+                >
+                  Lihat SPT
+                </el-button>
+                <el-button
+                  v-if="isLpjp && !scope.row.team_id"
+                  href="#"
+                  type="text"
+                  icon="el-icon-user"
+                  @click="handleLpjpTeam(scope.row)"
+                >
+                  Tambah Tim LPJP
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleKerangkaAcuan(scope.row)"
+                >
+                  Formulir Kerangka Acuan
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleAndal(scope.row)"
+                >
+                  Andal
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleRklRpl(scope.row)"
+                >
+                  RKL/RPL
+                </el-button>
+                <el-button
+                  v-if="isSubtance || isAdmin"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiKa(scope.row)"
+                >
+                  Uji KA
+                </el-button>
+                <el-button
+                  v-if="isAdmin || isSubtance || isExaminer"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiRklRpl(scope.row)"
+                >
+                  Uji RKL/RPL
+                </el-button>
+                <el-button
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleFlowChart(scope.row)"
+                >
+                  Bagan Alir
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspace(scope.row)"
+                >
+                  Workspace
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -195,10 +277,13 @@
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import AnnouncementDialog from './components/AnnouncementDialog.vue';
+const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const projectResource = new Resource('projects');
 const announcementResource = new Resource('announcements');
+const lpjpResource = new Resource('lpjpsByEmail');
+const formulatorResource = new Resource('formulatorsByEmail');
 
 export default {
   name: 'Project',
@@ -206,6 +291,9 @@ export default {
   data() {
     return {
       loading: false,
+      userInfo: {
+        roles: [],
+      },
       filtered: [],
       announcement: {},
       show: false,
@@ -224,9 +312,46 @@ export default {
       ],
     };
   },
-  mounted() {
+  computed: {
+    isLpjp() {
+      return this.userInfo.roles.includes('lpjp');
+    },
+    isInitiator() {
+      return this.userInfo.roles.includes('initiator');
+    },
+    isFormulator() {
+      return this.userInfo.roles.includes('formulator');
+    },
+    isSubtance() {
+      return this.userInfo.roles.includes('examiner-substance');
+    },
+    isAdmin() {
+      return this.userInfo.roles.includes('examiner-administration');
+    },
+    isExaminer() {
+      return this.userInfo.roles.includes('examiner');
+    },
+  },
+  async created() {
     this.getProvinces();
+    this.userInfo = await this.$store.dispatch('user/getInfo');
+    if (this.userInfo.roles.includes('lpjp')){
+      const lpjp = await lpjpResource.list({ email: this.userInfo.email });
+      this.listQuery.lpjpId = lpjp.id;
+    } else if (this.userInfo.roles.includes('initiator')) {
+      const initiator = await initiatorResource.list({ email: this.userInfo.email });
+      this.listQuery.initiatorId = initiator.id;
+    } else if (this.userInfo.roles.includes('formulator')) {
+      const formulator = await formulatorResource.list({ email: this.userInfo.email });
+      this.listQuery.formulatorId = formulator.id;
+    }
+    // else if (this.userInfo.roles.includes('examiner-substance')) {
+    //   const formulator = await formulatorResource.list({ email: this.userInfo.email });
+    //   this.listQuery.formulatorId = formulator.id;
+    // }
+
     this.getFiltered(this.listQuery);
+    console.log(this.userInfo);
   },
   methods: {
     handleSubmitAnnouncement(fileProof){
@@ -368,6 +493,56 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    handleKerangkaAcuan(project) {
+      this.$router.push({
+        path: `/ukl-upl/${project.id}/formulir`,
+      });
+    },
+    handleUjiKa(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/pengujian-ka`,
+      });
+    },
+    handleUjiRklRpl(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
+      });
+    },
+    handleAndal(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/penyusunan-andal`,
+      });
+    },
+    handleRklRpl(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl`,
+      });
+    },
+    handleLpjpTeam(project) {
+      console.log(project);
+      this.$router.push({
+        name: 'listLpjpTeam',
+        params: { project: project },
+      });
+    },
+    handleViewSpt(id) {
+      this.$router.push({
+        path: `/announcement/view/${id}`,
+      });
+    },
+    handleFlowChart(project) {
+      this.$router.push({
+        name: 'flowchart',
+        params: { id: project.id, project: project },
+      });
+    },
+    handleWorkspace(project) {
+      console.log(project);
+      this.$router.push({
+        name: 'editWorkspace',
+        params: { id: project.id, project: project },
+      });
     },
     async changeProvince(value) {
       // change all district by province

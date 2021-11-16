@@ -15,7 +15,9 @@ class ComponentTypeController extends Controller
      */
     public function index()
     {
-        return ComponentTypeResource::collection(ComponentType::all());
+        return ComponentTypeResource::collection(ComponentType::select('component_types.*')
+            ->orderBy('id', 'asc')
+            ->get());
     }
 
     /**

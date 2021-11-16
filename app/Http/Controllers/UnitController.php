@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Unit;
+use App\Http\Resources\UnitResource;
 use Illuminate\Http\Request;
 
 class UnitController extends Controller
@@ -14,7 +15,7 @@ class UnitController extends Controller
      */
     public function index()
     {
-        //
+        return UnitResource::collection(Unit::all());
     }
 
     /**

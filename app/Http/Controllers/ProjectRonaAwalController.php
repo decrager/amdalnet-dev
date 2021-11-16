@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ProjectRonaAwal;
+use App\Http\Resources\ProjectRonaAwalResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,9 +14,22 @@ class ProjectRonaAwalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $params = $request->all();
+        if (isset($params['id_project'])){
+            $rona_awals = ProjectRonaAwal::select('project_rona_awals.*',
+                'rona_awal.name AS name_master',
+                'rona_awal.id_component_type AS id_component_type_master')
+                ->leftJoin('rona_awal', 'project_rona_awals.id_rona_awal', '=', 'rona_awal.id')
+                ->where('project_rona_awals.id_project', $params['id_project'])
+                ->orderBy('name_master', 'ASC')
+                ->orderBy('name', 'ASC')
+                ->get();
+            return ProjectRonaAwalResource::collection($rona_awals);
+        } else {
+            return ProjectRonaAwalResource::collection(ProjectRonaAwal::with('rona_awal')->get());
+        }
     }
 
     /**
@@ -42,10 +56,15 @@ class ProjectRonaAwalController extends Controller
                 'rona_awals' => 'required',
             ]);
             DB::beginTransaction();
+            // clear items
+            $first = $validator['rona_awals'][0];
+            ProjectRonaAwal::where('id_project', $first['id_project'])->delete();
             $num_created = 0;
             foreach ($validator['rona_awals'] as $rona_awal){
                 $rona_awal['id'] == null;
-                if ($rona_awal['id_rona_awal'] != null){
+                if ($rona_awal['id_rona_awal'] > 99999999) {
+                    $rona_awal['id_rona_awal'] = null;
+                } else {
                     // only save id_rona_awal
                     $rona_awal['id_component_type'] = null;
                     $rona_awal['name'] = null;

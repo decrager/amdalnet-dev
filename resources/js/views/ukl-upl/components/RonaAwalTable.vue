@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="4">
       <el-col v-for="type of componentTypes" :key="type.id" :span="6" :xs="24">
-        <aside align="center" style="margin-bottom: 0px;">
+        <aside align="center" style="margin-bottom: 0px; background-color: #def5cf">
           Komponen {{ type.name }}
         </aside>
         <el-table
@@ -45,6 +45,7 @@
 import Resource from '@/api/resource';
 import RonaAwalDialog from '@/views/rona-awal/components/RonaAwalDialog.vue';
 const componentTypesResource = new Resource('component-types');
+const projectRonaAwalResource = new Resource('project-rona-awals');
 const ronaAwalResource = new Resource('rona-awals');
 
 export default {
@@ -58,6 +59,7 @@ export default {
       ronaAwal: {},
       componentTypes: [],
       componentTypeOptions: [],
+      dummyId: 99999999,
     };
   },
   mounted() {
@@ -75,12 +77,28 @@ export default {
       });
     },
     async getData(){
+      const idProject = this.$route.params && this.$route.params.id;
       const compTypes = await componentTypesResource.list({});
       this.componentTypes = compTypes.data;
-      const ronaAwalList = await ronaAwalResource.list({
-        all: true,
+      const projectRonaAwals = await projectRonaAwalResource.list({
+        id_project: idProject,
       });
-      this.ronaAwals = ronaAwalList.data;
+      if (projectRonaAwals.data.length > 0) {
+        projectRonaAwals.data.map((r) => {
+          if (r.id_component_type === null) {
+            r.id_component_type = r.id_component_type_master;
+          }
+          if (r.name === null) {
+            r.name = r.name_master;
+          }
+        });
+        this.ronaAwals = projectRonaAwals.data;
+      } else {
+        const ronaAwalList = await ronaAwalResource.list({
+          all: true,
+        });
+        this.ronaAwals = ronaAwalList.data;
+      }
       this.reloadData();
       this.$emit('handleSaveRonaAwals', this.ronaAwals);
     },
@@ -99,13 +117,15 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
+      this.dummyId = this.dummyId + 1;
     },
     handleSubmitRonaAwal() {
-      this.ronaAwal.id = null;
+      this.ronaAwal.id = this.dummyId;
       this.ronaAwals.push(this.ronaAwal);
       this.reloadData();
       this.$emit('handleUpdateRonaAwals', this.ronaAwals);
       this.showAddDialog = false;
+      this.ronaAwal = {};
     },
     handleDelete(id) {
       this.ronaAwals = this.ronaAwals.filter(rAwal => rAwal.id !== id);
