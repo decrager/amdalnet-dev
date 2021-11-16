@@ -29,6 +29,7 @@ import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
 import dokumenRoutes from './modules/DokumenKegiatan';
+import flowchartRoutes from './modules/flowchart';
 
 /**
  * Layzloading will create many files and slow on compiling, so best not to use lazyloading on devlopment.
@@ -225,6 +226,7 @@ export const asyncRoutes = [
   uklUplRoutes,
   dokumenRoutes,
   errorRoutes,
+  flowchartRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 

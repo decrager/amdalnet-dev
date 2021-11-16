@@ -197,6 +197,14 @@
                   Uji RKL/RPL
                 </el-button>
                 <el-button
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleFlowChart(scope.row)"
+                >
+                  Bagan Alir
+                </el-button>
+                <el-button
                   v-if="isFormulator"
                   href="#"
                   type="text"
@@ -521,6 +529,12 @@ export default {
     handleViewSpt(id) {
       this.$router.push({
         path: `/announcement/view/${id}`,
+      });
+    },
+    handleFlowChart(project) {
+      this.$router.push({
+        name: 'flowchart',
+        params: { id: project.id, project: project },
       });
     },
     handleWorkspace(project) {
