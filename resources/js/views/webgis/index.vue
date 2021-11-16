@@ -25,6 +25,8 @@ import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
+import qs from 'qs';
+import esriConfig from '@arcgis/core/config';
 
 export default {
   name: 'WebGis',
@@ -67,6 +69,53 @@ export default {
       const map = new Map({
         basemap: 'topo',
       });
+
+      esriConfig.request.portalUrl = 'https://gistaru.atrbpn.go.id/portal';
+      esriConfig.request.proxyUrl = 'proxy/proxy.php';
+      esriConfig.request.corsEnabledServers.push('https://gistaru.atrbpn.go.id');
+      esriConfig.request.trustedServers.push('https://gistaru.atrbpn.go.id');
+      esriConfig.request.corsDetection = false;
+      esriConfig.request.forceProxy = true;
+
+      console.log(esriConfig.request.allowedOrigins);
+
+      var data = qs.stringify({
+        'username': 'klhk_amdal2',
+        'password': 'G8T9@iy!7mnb',
+        'client': 'requestip',
+        'expiration': '604800000',
+        'f': 'json',
+      });
+
+      var config = {
+        method: 'POST',
+        url: 'https://gistaru.atrbpn.go.id/portal/sharing/rest/generateToken',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'OPTIONS,POST',
+          'Access-Control-Allow-Headers': 'access-control-allow-origin, access-control-allow-headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+        },
+        data: data,
+      };
+      axios(config)
+        .then(function(response) {
+          if (response.data) {
+            const gistaruLayer = new MapImageLayer({
+              portalItem: {
+                id: '0492594c2b814804a678781548818b9d',
+              },
+              url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
+              visibilityMode: 'exclusive',
+              visible: false,
+            });
+            map.add(gistaruLayer);
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
       const featureLayer = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
         sublayers: [
