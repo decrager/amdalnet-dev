@@ -36,14 +36,14 @@
         </el-tab-pane>
         <el-tab-pane label="Dokumen RKL RPL">
           <el-row :gutter="32">
-            <el-col :sm="12" :md="7">
+            <!-- <el-col :sm="12" :md="7">
               <MapList />
-            </el-col>
-            <el-col :sm="12" :md="11">
+            </el-col> -->
+            <el-col :sm="24" :md="15">
               <DocsFrame />
             </el-col>
-            <el-col :sm="12" :md="6">
-              <div>
+            <el-col :sm="24" :md="9">
+              <div v-if="userInfo.roles.includes('initiator')">
                 <el-button type="primary" style="font-size: 0.8rem">
                   {{ 'Simpan Perubahan' }}
                 </el-button>
@@ -51,9 +51,10 @@
                   {{ 'Kirim' }}
                 </el-button>
               </div>
-              <small>
+              <small v-if="userInfo.roles.includes('initiator')">
                 <em>Terakhir diperbarui beberapa detik yang lalu</em>
               </small>
+              <Comment v-if="userInfo.roles.includes('examiner')" />
             </el-col>
           </el-row>
         </el-tab-pane>
@@ -67,15 +68,17 @@ import Resource from '@/api/resource';
 const rklResource = new Resource('matriks-rkl');
 const rplResource = new Resource('matriks-rpl');
 import Matriks from '@/views/rkl-rpl/components/Matriks';
-import MapList from '@/views/rkl-rpl/components/MapList';
+// import MapList from '@/views/rkl-rpl/components/MapList';
 import DocsFrame from '@/views/rkl-rpl/components/DocsFrame';
+import Comment from '@/views/rkl-rpl/components/Comment';
 
 export default {
   name: 'MatriksRKLRPL',
   components: {
     Matriks,
-    MapList,
+    // MapList,
     DocsFrame,
+    Comment,
   },
   data() {
     return {
@@ -88,12 +91,16 @@ export default {
       institutions: [],
       matriksRPL: [],
       lastTimeRPL: null,
+      userInfo: {
+        roles: [],
+      },
     };
   },
   created() {
     // this.getProjects();
     this.handleChange(this.idProject);
     this.getInstitutions();
+    this.getUserInfo();
   },
   methods: {
     // async getProjects() {
@@ -171,6 +178,9 @@ export default {
       await this.getRPL();
       await this.getLastimeRPL(val);
       this.loadingRPL = false;
+    },
+    async getUserInfo() {
+      this.userInfo = await this.$store.dispatch('user/getInfo');
     },
   },
 };

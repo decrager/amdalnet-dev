@@ -1,9 +1,15 @@
 <template>
-  <el-input
+  <!-- <el-input
     v-model="textarea"
     type="textarea"
     :rows="25"
     placeholder="Please input"
+  /> -->
+  <iframe
+    src="/document/Template_Dokumen_Andal.pdf"
+    frameborder="0"
+    width="100%"
+    height="630px"
   />
 </template>
 
