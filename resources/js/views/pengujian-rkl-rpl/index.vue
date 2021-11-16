@@ -8,6 +8,9 @@
         <el-tab-pane label="Berita Acara" name="beritaacara">
           <BeritaAcara v-if="activeName === 'beritaacara'" />
         </el-tab-pane>
+        <el-tab-pane label="Uji Kelayakan" name="ujikelayakan">
+          <UjiKelayakan v-if="activeName === 'ujikelayakan'" />
+        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -16,12 +19,14 @@
 <script>
 import VerifikasiRapat from '@/views/pengujian-rkl-rpl/components/verifikasiRapat/index';
 import BeritaAcara from '@/views/pengujian-rkl-rpl/components/beritaAcara/index';
+import UjiKelayakan from '@/views/pengujian-rkl-rpl/components/ujiKelayakan/index';
 
 export default {
   name: 'PengujianRKLRPL',
   components: {
     VerifikasiRapat,
     BeritaAcara,
+    UjiKelayakan,
   },
   data() {
     return {
