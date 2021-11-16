@@ -62,6 +62,6 @@ class Project extends Model
 
     public function province()
     {
-        return $this->belongsTo(Province::class, 'id_prov', 'id');
+        return $this->hasOne(Province::class, 'id', 'id_prov');
     }
 }
