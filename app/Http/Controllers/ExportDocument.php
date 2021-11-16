@@ -9,13 +9,16 @@ use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
+use Illuminate\Support\Facades\File;
 
 class ExportDocument extends Controller
 {
-    public function ExportKA($id) {
+    public function ExportKA($id)
+    {
         if (Request::segment(3) == 'docx') {
             $getData = DB::table('impact_studies')
-                ->select('impact_studies.forecast_method',
+                ->select(
+                    'impact_studies.forecast_method',
                     'impact_studies.required_information',
                     'impact_studies.data_gathering_method',
                     'impact_studies.analysis_method',
@@ -23,7 +26,8 @@ class ExportDocument extends Controller
                     'projects.project_title',
                     'initiators.pic',
                     'projects.description',
-                    'projects.location_desc')
+                    'projects.location_desc'
+                )
                 ->leftJoin('impact_identifications', 'impact_studies.id_impact_identification', '=', 'impact_identifications.id')
                 ->leftJoin('projects', 'projects.id', '=', 'impact_identifications.id_project')
                 ->leftJoin('project_components', 'project_components.id', '=', 'impact_identifications.id_project_component')
@@ -47,9 +51,13 @@ class ExportDocument extends Controller
             $templateProcessor->setValue('evaluation_method', $getData->evaluation_method);
 
             $save_file_name = 'form-ka-' . $getData->project_title . ".docx";
-            $templateProcessor->saveAs($save_file_name);
+            if (!File::exists(storage_path('formulir/'))) {
+                File::makeDirectory(storage_path('formulir/'));
+                $templateProcessor->saveAs(storage_path('formulir/' . $save_file_name));
+            }
+            // $templateProcessor->saveAs(storage_path('formulir/' . $save_file_name));
 
-            return response()->download($save_file_name)->deleteFileAfterSend(false);
+            return response()->download(storage_path('formulir/' . $save_file_name))->deleteFileAfterSend(false);
         }
 
         if (Request::segment(3) === 'pdf') {
@@ -60,16 +68,15 @@ class ExportDocument extends Controller
             Settings::setPdfRendererName('DomPDF');
 
             //Load word file
-            $Content = IOFactory::load(public_path('form-ka-'. $getProject->project_title . '.docx'));
+            $Content = IOFactory::load(storage_path('formulir/form-ka-' . $getProject->project_title . '.docx'));
 
             //Save it into PDF
-            $fileName = 'form-ka-'. $getProject->project_title . '.pdf';
-            $PDFWriter = IOFactory::createWriter($Content,'PDF');
+            $fileName = 'form-ka-' . $getProject->project_title . '.pdf';
+            $PDFWriter = IOFactory::createWriter($Content, 'PDF');
 
-            $PDFWriter->save(public_path($fileName));
-            return response()->download($fileName)->deleteFileAfterSend(false);
+            $PDFWriter->save(storage_path('formulir/' . $fileName));
+            return response()->download(storage_path('formulir/' . $fileName))->deleteFileAfterSend(false);
         }
-
     }
 
     public function ExportUklUpl($id)
@@ -218,6 +225,5 @@ class ExportDocument extends Controller
         $save_file_name = $getData->project_title . ".docx";
         $templateProcessor->saveAs($save_file_name);
         return response()->download($save_file_name)->deleteFileAfterSend(false);
-
     }
 }
