@@ -57,6 +57,11 @@ class Project extends Model
     {
         return $this->hasMany(TestingMeeting::class, 'id_project', 'id');
     }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'id_district', 'id');
+    }
     
     public function province(){
         return $this->hasOne(Province::class, 'id', 'id_prov');
