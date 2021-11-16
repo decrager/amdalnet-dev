@@ -5,7 +5,8 @@ image: php:7.4-cli
 
 stages:
   # - test
-  - deploy
+  - dev
+  - cloud
   - production
 
 # unit_test:
@@ -18,7 +19,7 @@ stages:
 #     - vendor/bin/phpunit
 
 deploy_dev:
-  stage: deploy
+  stage: dev
   script:
     - cd /home/adminhadoop/apps/amdalnet/
     - git reset --hard HEAD
@@ -32,6 +33,8 @@ deploy_dev:
     - docker-compose exec -T laravel npm install
     - docker-compose exec -T laravel npm run production
     # - docker-compose restart laravel
+    - echo "Update db cloud"
+    - ssh hadoop@192.168.7.23 'PGPASSWORD=SemangatT3rus pg_dump -h localhost -U amdaldevs -d amdalnet -c > ~/amdalnet.sql; PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet -U postgres -f ~/amdalnet.sql'
   environment:
     name: staging
   only:
@@ -40,7 +43,7 @@ deploy_dev:
     - amdalnet
 
 deploy_cloud:
-  stage: deploy
+  stage: cloud
   script:
     - cd /var/www/amdalnet/
     - git reset --hard HEAD
@@ -48,6 +51,7 @@ deploy_cloud:
     - composer install
     - composer dump-autoload
     - php artisan migrate
+    - npm install
     - npm run production
   only:
     - master

@@ -28,6 +28,7 @@ class CreateFormulatorsTable extends Migration
             $table->string('id_institution')->nullable();
             $table->string('membership_status')->nullable();
             $table->string('id_lsp')->nullable();
+            $table->string('email')->unique();
 
             $table->timestamps();
         });

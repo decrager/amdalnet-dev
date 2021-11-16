@@ -1,5 +1,6 @@
 <template>
   <div class="form-container" style="padding: 24px">
+    <workflow />
     <el-form
       ref="currentProject"
       :model="currentProject"
@@ -18,6 +19,7 @@
                   prop="project_title"
                 >
                   <el-select
+                    v-if="!isPemerintah"
                     v-model="currentProject.project_title"
                     placeholder="Pilih"
                     style="width: 100%"
@@ -31,6 +33,7 @@
                       :value="item.value"
                     />
                   </el-select>
+                  <el-input v-else v-model="currentProject.project_title" size="medium" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -55,10 +58,10 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Upload Peta Tapak Proyek(File SHP)">
-                    <input ref="fileMap" type="file" class="el-input__inner" @change="handleFileMapUpload()">
+                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileMapUpload()">
                   </el-form-item>
+                  <div id="mapView" style="height: 400px;" />
                 </el-row>
-                <h1>PETA</h1>
                 <el-row />
               </el-col>
             </el-row>
@@ -75,7 +78,6 @@
                     placeholder="Pilih"
                     style="width: 100%"
                     size="medium"
-                    :disabled="true"
                     @change="changeStudyApproach($event)"
                   >
                     <el-option
@@ -101,7 +103,6 @@
                     placeholder="Pilih"
                     style="width: 100%"
                     size="medium"
-                    :disabled="true"
                     @change="changeStatus($event)"
                   >
                     <el-option
@@ -127,7 +128,6 @@
                     placeholder="Pilih"
                     style="width: 100%"
                     size="medium"
-                    :disabled="true"
                     @change="changeProjectType($event)"
                   >
                     <el-option
@@ -158,7 +158,9 @@
                 prop="project_title"
               >
                 <el-select
+                  v-if="!isPemerintah"
                   v-model="currentProject.project_title"
+                  disabled
                   placeholder="Pilih"
                   style="width: 100%"
                   @change="changeProject($event)"
@@ -170,6 +172,7 @@
                     :value="item.value"
                   />
                 </el-select>
+                <el-input v-else v-model="currentProject.project_title" disabled />
               </el-form-item>
             </el-col>
             <el-col :span="8" :xs="24">
@@ -178,6 +181,7 @@
                   v-model="currentProject.project_type"
                   placeholder="Pilih"
                   style="width: 100%"
+                  disabled
                 >
                   <el-option
                     v-for="item in projectTypeOptions"
@@ -232,7 +236,7 @@
                 <!-- <el-input v-model="currentProject.kbli" /> -->
                 <el-autocomplete
                   v-model="currentProject.kbli"
-                  :disabled="isOss"
+                  :disabled="!isPemerintah"
                   class="inline-input"
                   :fetch-suggestions="kbliSearch"
                   placeholder="Masukan"
@@ -243,7 +247,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="Tingkat Resiko" prop="risk_level">
-                <el-input v-model="currentProject.risk_level" :disabled="isOss" />
+                <el-input v-model="currentProject.risk_level" :disabled="!isPemerintah" />
               </el-form-item>
             </el-col>
             <el-col :span="8" :xs="24">
@@ -311,7 +315,7 @@
                   @change="handleBusinessTypeSelect($event)"
                 >
                   <el-option
-                    v-for="item in businessTypeOptions"
+                    v-for="item in getBusinessTypeOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -437,17 +441,20 @@
 
 <script>
 import Tinymce from '@/components/Tinymce';
+import Workflow from '@/components/Workflow';
 import Resource from '@/api/resource';
 import SupportTable from './components/SupportTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
-const kbliEnvParamResource = new Resource('kbli-env-params');
 const SupportDocResource = new Resource('support-docs');
+import * as L from 'leaflet';
+import shp from 'shpjs';
 
 export default {
   name: 'CreateProject',
   components: {
     Tinymce,
     SupportTable,
+    Workflow,
   },
   data() {
     return {
@@ -455,13 +462,11 @@ export default {
       activeName: 1,
       currentProject: {},
       listSupportTable: [],
-      listKbli: [],
       loadingSupportTable: false,
       isUpload: 'Upload',
       fileName: 'No File Selected.',
       fileMap: null,
       isOss: true,
-      businessTypeOptions: [],
       studyApproachOptions: [
         {
           value: 'Terpadu',
@@ -572,8 +577,21 @@ export default {
     getUnitOptions() {
       return this.$store.getters.unitOptions;
     },
+    getBusinessTypeOptions() {
+      return this.$store.getters.businessTypeOptions;
+    },
+    isPemerintah() {
+      return this.$store.getters.isPemerintah;
+    },
   },
   async created() {
+    // for step
+    this.$store.dispatch('getStep', 0);
+
+    // get initiator data
+    const { email } = await this.$store.dispatch('user/getInfo');
+    this.$store.dispatch('getInitiator', email);
+
     // for default value
     this.currentProject.study_approach = 'Tunggal';
     this.currentProject.status = 'Rencana';
@@ -587,7 +605,6 @@ export default {
         this.currentProject.id
       );
       this.getDistricts(this.currentProject.id_prov);
-      console.log(this.listSupportTable);
     }
     this.getAllData();
   },
@@ -597,6 +614,21 @@ export default {
     },
     handleFileMapUpload(){
       this.fileMap = this.$refs.fileMap.files[0];
+      const map = L.map('mapView');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      const fr = new FileReader();
+      fr.onload = (event) => {
+        const geo = L.geoJSON().addTo(map);
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          const feature = geo.addData(data);
+          map.fitBounds(feature.getBounds());
+        });
+      };
+      fr.readAsArrayBuffer(this.fileMap);
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });
@@ -606,13 +638,12 @@ export default {
       });
     },
     getFileName(value) {
-      console.log(value);
       const onlyName = value.split('/');
 
       return onlyName.at(-1);
     },
     kbliSearch(queryString, cb) {
-      var links = this.listKbli;
+      var links = this.$store.getters.kblis;
       var results = queryString
         ? links.filter(this.createKbliFilter(queryString))
         : links;
@@ -655,6 +686,8 @@ export default {
     },
     handleSubmit() {
       this.currentProject.fileMap = this.fileMap;
+      this.currentProject.fileKtr = this.fileKtr;
+
       this.$refs.currentProject.validate((valid) => {
         if (valid) {
           this.currentProject.listSupportDoc = this.listSupportTable.filter(
@@ -664,7 +697,7 @@ export default {
           // send to pubishProjectRoute
           this.$router.push({
             name: 'publishProject',
-            params: { project: this.currentProject },
+            params: { project: this.currentProject, mapUpload: this.fileMap },
           });
         } else {
           console.log('error submit!!');
@@ -694,7 +727,6 @@ export default {
       this.currentProject.risk_level = value.skala_resiko;
       this.getSectorsByKbli(this.currentProject.kbli);
       this.getBusinessByKbli(this.currentProject.kbli);
-      console.log(value);
     },
     async getDistricts(idProv) {
       await this.$store.dispatch('getDistricts', { idProv });
@@ -715,12 +747,9 @@ export default {
       });
     },
     async getBusinessByKbli(nameKbli) {
-      const { data } = await kbliEnvParamResource.list({
+      await this.$store.dispatch('getBusinessByKbli', {
         kbli: nameKbli,
         businessType: true,
-      });
-      this.businessTypeOptions = data.map((i) => {
-        return { value: i.param, label: i.param };
       });
     },
     async getKblis() {
@@ -732,6 +761,8 @@ export default {
     handleKbliSelect(item) {
       this.getSectorsByKbli(item.value);
       this.getBusinessByKbli(item.value);
+      // this.currentProject.biz_type = '';
+      // this.currentProject.sector = '';
     },
     handleBusinessTypeSelect(item) {
       this.getUnitByKbli(this.currentProject.kbli, item);
@@ -740,6 +771,8 @@ export default {
 };
 </script>
 <style>
+@import url('../../../../node_modules/leaflet/dist/leaflet.css');
+
 .el-collapse-item__header {
   /* background-color: #296d36; */
   background-color: #1E5128;

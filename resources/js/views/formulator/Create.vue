@@ -47,23 +47,30 @@
       </el-row>
       <el-row :gutter="32">
         <el-col :span="12">
-          <el-form-item
-            label="Dokumen Sertifikat Penyusun"
-            prop="dokSerPenyusun"
-          >
-            <el-upload
-              class="upload-demo"
-              :auto-upload="false"
-              :on-change="handleUploadSertifikat"
-              action="#"
-              :show-file-list="false"
+          <el-col :span="12">
+            <el-form-item label="Email" prop="email">
+              <el-input v-model="currentFormulator.email" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              label="Dokumen Sertifikat Penyusun"
+              prop="dokSerPenyusun"
             >
-              <el-button size="small" type="primary">Click to upload</el-button>
-              <div slot="tip" class="el-upload__tip">
-                {{ sertifikatFileName || currentFormulator.cert_file }}
-              </div>
-            </el-upload>
-          </el-form-item>
+              <el-upload
+                class="upload-demo"
+                :auto-upload="false"
+                :on-change="handleUploadSertifikat"
+                action="#"
+                :show-file-list="false"
+              >
+                <el-button size="small" type="primary">Click to upload</el-button>
+                <div slot="tip" class="el-upload__tip">
+                  {{ sertifikatFileName || currentFormulator.cert_file }}
+                </div>
+              </el-upload>
+            </el-form-item>
+          </el-col>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Nomor Registrasi Penyusun" prop="noRegPenyusun">
