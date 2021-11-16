@@ -43,7 +43,6 @@ class MatriksRKLController extends Controller
             });
             
             $project = Project::where('id', $request->idProject)->whereHas('impactIdentifications', function($query) {
-                $query->whereHas('envImpactAnalysis');
                 $query->whereHas('envManagePlan');
             })->first();
 
