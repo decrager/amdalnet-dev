@@ -24,10 +24,9 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->lastInput) {
+        if ($request->lastInput) {
             return Project::whereDoesntHave('team')->orderBy('id', 'DESC')->first();
-        } 
-        else if ($request->formulatorId) {
+        } else if ($request->formulatorId) {
             //this code to get project base on formulator
             return Project::select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
                 return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
@@ -123,7 +122,7 @@ class ProjectController extends Controller
             $params = $request->all();
 
             //create fileKtr
-            $ktrName='';
+            $ktrName = '';
             if ($request->file('fileKtr')) {
                 $fileKtr = $request->file('fileKtr');
                 $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
@@ -131,11 +130,21 @@ class ProjectController extends Controller
             }
 
             //create file map
-            $mapName='';
-            if ($request->file('fileMap')) {
-                $fileMap = $request->file('fileMap');
-                $mapName = 'map/' . uniqid() . '.' . $fileMap->extension();
-                $fileMap->storePubliclyAs('public', $mapName);
+            // $mapName = '';
+            // if ($request->file('fileMap')) {
+            //     $fileMap = $request->file('fileMap');
+            //     $mapName = 'map/' . uniqid() . '.' . $fileMap->extension();
+            //     $fileMap->storePubliclyAs('public', $mapName);
+            // }
+
+            $mapName = array();
+            if ($files = $request->file('fileMap')) {
+                foreach ($files as $file) {
+                    $name = '/storage/map/' . uniqid() . '.' . $file->extension();
+                    $nameDB = 'map/' . uniqid() . '.' . $file->extension();
+                    $file->storePubliclyAs('public', $nameDB);
+                    $mapName[] = $name;
+                }
             }
 
             //create lpjp
@@ -162,7 +171,7 @@ class ProjectController extends Controller
                 'id_project' => $params['id_project'],
                 'type_formulator_team' => $params['type_formulator_team'],
                 'id_lpjp' => isset($params['id_lpjp']) ? $params['id_lpjp'] : null,
-                'map' => Storage::url($mapName),
+                'map' => json_encode($mapName),
                 'ktr' => Storage::url($ktrName),
             ]);
 
