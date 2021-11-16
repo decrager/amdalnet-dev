@@ -188,13 +188,13 @@
                   Uji KA
                 </el-button>
                 <el-button
-                  v-if="isAdmin || isSubtance"
+                  v-if="isAdmin || isSubtance || isExaminer"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleUjiRklRpl(scope.row)"
                 >
-                  Uji RPL
+                  Uji RKL/RPL
                 </el-button>
                 <el-button
                   v-if="isFormulator"
@@ -319,6 +319,9 @@ export default {
     },
     isAdmin() {
       return this.userInfo.roles.includes('examiner-administration');
+    },
+    isExaminer() {
+      return this.userInfo.roles.includes('examiner');
     },
   },
   async created() {
