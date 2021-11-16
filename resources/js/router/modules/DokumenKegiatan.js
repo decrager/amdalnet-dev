@@ -31,6 +31,16 @@ const dokumenKegiatanRoutes = {
       name: 'pengujianRKLRPL',
       meta: { title: 'Pengujian RKL RPL', icon: 'zip', noCache: true },
     },
+    {
+      path: ':id(\\d+)/skkl',
+      component: () => import('@/views/skkl/index'),
+      name: 'skkl',
+      meta: {
+        title: 'Surat Keputusan Kelayakan Lingkungan',
+        icon: 'zip',
+        noCache: true,
+      },
+    },
   ],
 };
 
