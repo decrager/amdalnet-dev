@@ -15,7 +15,9 @@ class ChangeTypeController extends Controller
      */
     public function index()
     {
-        return ChangeTypeResource::collection(ChangeType::all());
+        return ChangeTypeResource::collection(ChangeType::select('change_types.*')
+            ->orderBy('id', 'asc')
+            ->get());
     }
 
     /**
