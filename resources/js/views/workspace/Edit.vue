@@ -13,7 +13,8 @@
           >
             <el-button
               type="primary"
-              icon="el-icon-plus"
+              icon="el-icon-upload"
+              :loading="loading"
             >
               {{ $t('uploadTemplate') }}
             </el-button>
@@ -99,6 +100,7 @@ export default {
       etherpadUrl: '',
       selectedTreeId: 1,
       sessionID: null,
+      loading: false,
       data: new Tree([
         {
           name: 'Kata Pengantar',
@@ -254,6 +256,7 @@ export default {
 
     handleTemplateUploadChange(file, fileList) {
       // add file to multipart
+      this.loading = true;
       const formData = new FormData();
       formData.append('file', file.raw);
 
@@ -268,9 +271,11 @@ export default {
             type: 'success',
             duration: 5 * 1000,
           });
+          this.loading = false;
         })
         .catch(error => {
           console.log(error);
+          this.loading = false;
         });
     },
 
@@ -324,12 +329,12 @@ export default {
     height: calc(100vh - 94px);
   }
   .left-container {
-    background-color: #F38181;
+    /* background-color: #F38181; */
     height: 100%;
   }
 
   .right-container {
-    background-color: #FCE38A;
+    /* background-color: #FCE38A; */
     height: 100%;
   }
 
