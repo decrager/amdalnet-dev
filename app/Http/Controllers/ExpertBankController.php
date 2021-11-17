@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Entity\ExpertBank;
 use App\Http\Resources\ExpertBankResource;
+use App\Laravue\Acl;
+use App\Laravue\Models\Role;
+use App\Laravue\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use DB;
 
 class ExpertBankController extends Controller
 {
@@ -62,6 +67,8 @@ class ExpertBankController extends Controller
         } else {
             $params = $request->all();
 
+            DB::beginTransaction();
+
             //create file cv
             $fileCv = $request->file('cvFileUpload');
             $cvName = '/expert-bank/' . uniqid() . '.' . $fileCv->extension();
@@ -82,6 +89,19 @@ class ExpertBankController extends Controller
             $fileCertNonLukName = '/expert-bank/' . uniqid() . '.' . $fileCertNonLuk->extension();
             $fileCertNonLuk->storePubliclyAs('public', $fileCertNonLukName);
 
+            $email = $request->get('email');
+            $found = User::where('email', $email)->first();
+            if (!$found) {
+                $expertRole = Role::findByName(Acl::ROLE_EXAMINER);
+                $user = User::create([
+                    'name' => ucfirst($params['name']),
+                    'email' => $params['email'],
+                    'password' => Hash::make('amdalnet')
+                ]);
+                $user->syncRoles($expertRole);
+            }
+
+
             //create Penyusun
             $expertBank = ExpertBank::create([
                 'name'              => $params['name'],
@@ -89,7 +109,7 @@ class ExpertBankController extends Controller
                 'email'             => $params['email'],
                 'mobile_phone_no'   => $params['mobile_phone_no'],
                 'expertise'         => $params['expertise'],
-                'institution'       => $params['expertise'],
+                'institution'       => $params['institution'],
                 'status'            => $params['status'],
                 'cv_file'           => Storage::url($cvName),
                 'cert_luk_file'     => Storage::url($certLukName),
@@ -97,6 +117,12 @@ class ExpertBankController extends Controller
                 'ijazah_file'       => Storage::url($ijasahName),
             ]);
 
+
+            if (!$expertBank) {
+                DB::rollback();
+            } else {
+                DB::commit();
+            }
             return new ExpertBankResource($expertBank);
         }
     }
@@ -110,6 +136,20 @@ class ExpertBankController extends Controller
     public function show(ExpertBank $expertBank)
     {
         //
+    }
+
+    public function showByEmail(Request $request)
+    { 
+        If($request->email){
+            $expert = ExpertBank::where('email', $request->email)->first();
+            
+            if($expert) {
+                return $expert;
+            } else {
+                return response()->json(null, 200);
+
+            }
+        }
     }
 
     /**
@@ -132,7 +172,76 @@ class ExpertBankController extends Controller
      */
     public function update(Request $request, ExpertBank $expertBank)
     {
-        //
+        if ($expertBank === null) {
+            return response()->json(['error' => 'Bank Ahli Tidak Ditemukan'], 404);
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name'              => 'required',
+                'address'           => 'required',
+                'email'             => 'required',
+                'mobile_phone_no'   => 'required',
+                'expertise'         => 'required',
+                'institution'       => 'required',
+                'status'            => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $params = $request->all();
+
+            $cvName = null;
+            $ijasahName = null;
+            $certLukName = null;
+            $fileCertNonLukName = null;
+            
+            if($request->file('cvFileUpload') !== null){
+                //create file cv
+                $fileCv = $request->file('cvFileUpload');
+                $cvName = '/expert-bank/' . uniqid() . '.' . $fileCv->extension();
+                $fileCv->storePubliclyAs('public', $cvName);
+            }
+
+            if($request->file('ijasahFileUpload') !== null){
+                //create file cv
+                $fileIjasah = $request->file('ijasahFileUpload');
+                $ijasahName = '/expert-bank/' . uniqid() . '.' . $fileIjasah->extension();
+                $fileIjasah->storePubliclyAs('public', $ijasahName);
+            }
+
+            if($request->file('certLukFileUpload') !== null){
+                //create file cv
+                $fileCertLuk = $request->file('certLukFileUpload');
+                $certLukName = '/expert-bank/' . uniqid() . '.' . $fileCertLuk->extension();
+                $fileCertLuk->storePubliclyAs('public', $certLukName);
+            }
+
+            if($request->file('certNonLukFileUpload') !== null){
+                //create file sertifikat
+                $fileCertNonLuk = $request->file('certNonLukFileUpload');
+                $fileCertNonLukName = '/expert-bank/' . uniqid() . '.' . $fileCertNonLuk->extension();
+                $fileCertNonLuk->storePubliclyAs('public', $fileCertNonLukName);
+            }
+
+            $expertBank->name = $params['name'];
+            $expertBank->address = $params['address'];
+            $expertBank->email = $params['email'];
+            $expertBank->mobile_phone_no = $params['mobile_phone_no'];
+            $expertBank->expertise = $params['expertise'];
+            $expertBank->institution = $params['institution'];
+            $expertBank->status = $params['status'];
+            $expertBank->cv_file = $cvName ? Storage::url($cvName) : $expertBank->cv_file;
+            $expertBank->cert_luk_file = $certLukName ? Storage::url($certLukName) : $expertBank->cert_luk_file;
+            $expertBank->cert_non_luk_file = $fileCertNonLukName ? Storage::url($fileCertNonLukName) : $expertBank->cert_non_luk_file;
+            $expertBank->ijazah_file = $ijasahName ? Storage::url($ijasahName) :$expertBank->ijazah_file;
+            $expertBank->save();
+        }
+
+        return new ExpertBankResource($expertBank);
     }
 
     /**

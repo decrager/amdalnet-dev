@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Validator;
 
 class AnnouncementController extends Controller
 {
+    const view_all_is_true = 1;
+    const view_all_is_false = 0;
+
     /**
      * Display a listing of the resource.
      *
@@ -22,17 +25,34 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): AnnouncementResource
     {
-        $getAllAnnouncement = Announcement::withCount('feedbacks')
-            ->when($request->has('project'), function ($query) use ($request) {
-                return $query->where('project_result', '=', $request->project);
-            })
-            ->orderby('start_date', 'DESC')
-            ->when(!isset($request->limit), function ($query) use ($request) {
-                return $query->get();
-            })
-            ->when($request->has('limit'), function ($query) use ($request) {
-                return $query->paginate($request->limit ?: 10);
-            });
+
+        $getAllAnnouncement = Announcement::with([
+            'project',
+            'project.province'
+        ])->withCount('feedbacks')
+        ->when($request->has('keyword'), function ($query) use ($request) {
+            $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
+            $searchQuery = '%' . $request->keyword . '%';
+            $indents = $query->where('pic_name', 'ILIKE', '%'.$request->keyword.'%');
+            foreach($columnsToSearch as $column) {
+                $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+            }
+
+            return $indents;
+        })
+        ->orderby('start_date', $request->sort ?? "DESC")->paginate($request->limit ? $request->limit : 10);
+
+        // $getAllAnnouncement = Announcement::withCount('feedbacks')
+        //     ->when($request->has('project'), function ($query) use ($request) {
+        //         return $query->where('project_result', '=', $request->project);
+        //     })
+        //     ->orderby('start_date', 'DESC')
+        //     ->when(!isset($request->limit), function ($query) use ($request) {
+        //         return $query->get();
+        //     })
+        //     ->when($request->has('limit'), function ($query) use ($request) {
+        //         return $query->paginate($request->limit ?: 10);
+        //     });
         return AnnouncementResource::make($getAllAnnouncement);
     }
 
@@ -124,7 +144,10 @@ class AnnouncementController extends Controller
      */
     public function show(Announcement $announcement)
     {
-        return Announcement::with('project')->get()->where('id', '=', $announcement->id)->first();
+        return Announcement::with([
+            'project',
+            'project.province'
+        ])->get()->where('id', '=', $announcement->id)->first();
     }
 
     /**

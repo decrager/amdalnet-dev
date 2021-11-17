@@ -3,27 +3,53 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Project;
-use App\Entity\SupportDoc;
 use App\Http\Resources\ProjectResource;
+use DB;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use DB;
+use Shapefile\Shapefile;
+use Shapefile\ShapefileReader;
+use VIPSoft\Unzip\Unzip;
+use Illuminate\Support\Facades\File;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(Request $request)
     {
-        if($request->lastInput) {
+        if ($request->lastInput) {
             return Project::whereDoesntHave('team')->orderBy('id', 'DESC')->first();
+        } else if ($request->formulatorId) {
+            //this code to get project base on formulator
+            return Project::select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
+                return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
+            })->where(
+                function ($query) use ($request) {
+                    return $request->id_prov ? $query->where('projects.id_prov', $request->id_prov) : '';
+                }
+            )->where(
+                function ($query) use ($request) {
+                    return $request->id_district ? $query->where('projects.id_district', $request->id_district) : '';
+                }
+            )->where(
+                function ($query) use ($request) {
+                    return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
+                }
+            )->where(
+                function ($query) use ($request) {
+                    return $request->formulatorId ? $query->where('formulators.id', $request->formulatorId) : '';
+                }
+            )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')->orderBy('projects.id', 'DESC')->paginate($request->limit);
         }
-        
-        return Project::select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar')->where(function ($query) use ($request) {
+
+        return Project::select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -33,13 +59,21 @@ class ProjectController extends Controller
             function ($query) use ($request) {
                 return $request->id_district ? $query->where('projects.id_district', $request->id_district) : '';
             }
-        )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
+        )->where(
+            function ($query) use ($request) {
+                return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
+            }
+        )->where(
+            function ($query) use ($request) {
+                return $request->initiatorId ? $query->where('projects.id_applicant', $request->initiatorId) : '';
+            }
+        )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -49,8 +83,8 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -74,10 +108,11 @@ class ProjectController extends Controller
                 'location_desc' => 'required',
                 'risk_level' => 'required',
                 'project_year' => 'required',
-                'id_formulator_team' => 'required',
+                // 'id_formulator_team' => 'required',
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
+                'type_formulator_team' => 'required',
             ]
         );
 
@@ -86,10 +121,31 @@ class ProjectController extends Controller
         } else {
             $params = $request->all();
 
+            //create fileKtr
+            $ktrName = '';
+            if ($request->file('fileKtr')) {
+                $fileKtr = $request->file('fileKtr');
+                $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
+                $fileKtr->storePubliclyAs('public', $ktrName);
+            }
+
             //create file map
-            $file = $request->file('fileMap');
-            $name = 'project/' . uniqid() . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
+            // $mapName = '';
+            // if ($request->file('fileMap')) {
+            //     $fileMap = $request->file('fileMap');
+            //     $mapName = 'map/' . uniqid() . '.' . $fileMap->extension();
+            //     $fileMap->storePubliclyAs('public', $mapName);
+            // }
+
+            $mapName = array();
+            if ($files = $request->file('fileMap')) {
+                foreach ($files as $file) {
+                    $name = '/storage/map/' . uniqid() . '.' . $file->extension();
+                    $nameDB = 'map/' . uniqid() . '.' . $file->extension();
+                    $file->storePubliclyAs('public', $nameDB);
+                    $mapName[] = $name;
+                }
+            }
 
             //create lpjp
             $project = Project::create([
@@ -108,12 +164,15 @@ class ProjectController extends Controller
                 'location_desc' => $params['location_desc'],
                 'risk_level' => $params['risk_level'],
                 'project_year' => $params['project_year'],
-                'id_formulator_team' => $params['id_formulator_team'],
+                'id_formulator_team' => isset($params['id_formulator_team']) ? $params['id_formulator_team'] : null,
                 'kbli' => $params['kbli'],
                 'result_risk' => $params['result_risk'],
                 'required_doc' => $params['required_doc'],
                 'id_project' => $params['id_project'],
-                'map' => Storage::url($name),
+                'type_formulator_team' => $params['type_formulator_team'],
+                'id_lpjp' => isset($params['id_lpjp']) ? $params['id_lpjp'] : null,
+                'map' => json_encode($mapName),
+                'ktr' => Storage::url($ktrName),
             ]);
 
             return new ProjectResource($project);
@@ -123,8 +182,8 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function show(Project $project)
     {
@@ -134,8 +193,8 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function edit(Project $project)
     {
@@ -145,9 +204,9 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Project $project
+     * @return Response
      */
     public function update(Request $request, Project $project)
     {
@@ -176,10 +235,11 @@ class ProjectController extends Controller
                 'location_desc' => 'required',
                 'risk_level' => 'required',
                 'project_year' => 'required',
-                'id_formulator_team' => 'required',
+                // 'id_formulator_team' => 'required',
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
+                'type_formulator_team' => 'required',
             ]
         );
 
@@ -195,6 +255,15 @@ class ProjectController extends Controller
                 $file->storePubliclyAs('public', $name);
             } else {
                 $name = null;
+            }
+
+            //create file ktr
+            if ($request->file('fileKtr')) {
+                $fileKtr = $request->file('fileKtr');
+                $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
+                $fileKtr->storePubliclyAs('public', $ktrName);
+            } else {
+                $ktrName = null;
             }
 
             //Update Project
@@ -213,12 +282,15 @@ class ProjectController extends Controller
             $project->location_desc = $params['location_desc'];
             $project->risk_level = $params['risk_level'];
             $project->project_year = $params['project_year'];
-            $project->id_formulator_team = $params['id_formulator_team'];
+            $project->id_formulator_team = isset($params['id_formulator_team']) ? $params['id_formulator_team'] : null;
             $project->kbli = $params['kbli'];
             $project->result_risk = $params['result_risk'];
             $project->required_doc = $params['required_doc'];
             $project->id_project = $params['id_project'];
-            $project->map = $name != null ? Storage::url($name) : $params['map'];
+            $project->type_formulator_team = $params['type_formulator_team'];
+            $project->id_lpjp = isset($params['id_lpjp']) ? $params['id_lpjp'] : null;
+            $project->map = $name != null ? Storage::url($name) : $project->map;
+            $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;
 
             $project->save();
         }
@@ -229,14 +301,14 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity\Project  $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function destroy(Project $project)
     {
         try {
             $project->delete();
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
 

@@ -6,6 +6,7 @@ use App\Entity\EnvironmentalExpert;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
+use App\Entity\Project;
 use App\Http\Resources\FormulatorResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -34,7 +35,11 @@ class FormulatorTeamController extends Controller
             $result = $formulator->merge($expert);
             return $result;
         } else {
-            return FormulatorResource::collection(FormulatorTeam::all());
+            return FormulatorResource::collection(FormulatorTeam::select('formulator_teams.*')->where(
+                function ($query) use ($request) {
+                    return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
+                }
+            )->leftJoin('projects', 'projects.id', '=', 'formulator_teams.id_project')->paginate($request->limit));
         }
     }
 

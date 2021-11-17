@@ -56,10 +56,15 @@ class ProjectRonaAwalController extends Controller
                 'rona_awals' => 'required',
             ]);
             DB::beginTransaction();
+            // clear items
+            $first = $validator['rona_awals'][0];
+            ProjectRonaAwal::where('id_project', $first['id_project'])->delete();
             $num_created = 0;
             foreach ($validator['rona_awals'] as $rona_awal){
                 $rona_awal['id'] == null;
-                if ($rona_awal['id_rona_awal'] != null){
+                if ($rona_awal['id_rona_awal'] > 99999999) {
+                    $rona_awal['id_rona_awal'] = null;
+                } else {
                     // only save id_rona_awal
                     $rona_awal['id_component_type'] = null;
                     $rona_awal['name'] = null;

@@ -3,33 +3,34 @@ import Layout from '@/layout';
 const projectRoutes = {
   path: '/project',
   component: Layout,
-  redirect: '/project/pre',
+  redirect: '/project/',
   meta: { title: 'project', icon: 'zip', permissions: ['view menu project'] },
+  alwaysShow: true,
   children: [
     {
-      path: 'pre',
+      path: '',
       component: () => import('@/views/project'),
-      name: 'projectPre',
-      meta: { title: 'listProjectPre', icon: 'documentation', permissions: ['view menu project pre submission'] },
+      name: 'listProject',
+      meta: { title: 'listProject', icon: 'documentation', permissions: ['view menu project'] },
     },
-    {
-      path: 'post',
-      component: () => import('@/views/project'),
-      name: 'projectPost',
-      meta: { title: 'listProjectPost', icon: 'documentation', permissions: ['view menu project post submission'] },
-    },
-    {
-      path: 'process',
-      component: () => import('@/views/project'),
-      name: 'projectProcess',
-      meta: { title: 'listProjectProcess', icon: 'documentation', permissions: ['view menu project on process'] },
-    },
-    {
-      path: 'issued',
-      component: () => import('@/views/project'),
-      name: 'projectIssued',
-      meta: { title: 'listProjectIssued', icon: 'documentation', permissions: ['view menu project issued'] },
-    },
+    // {
+    //   path: 'post',
+    //   component: () => import('@/views/project'),
+    //   name: 'projectPost',
+    //   meta: { title: 'listProjectPost', icon: 'documentation', permissions: ['view menu project post submission'] },
+    // },
+    // {
+    //   path: 'process',
+    //   component: () => import('@/views/project'),
+    //   name: 'projectProcess',
+    //   meta: { title: 'listProjectProcess', icon: 'documentation', permissions: ['view menu project on process'] },
+    // },
+    // {
+    //   path: 'issued',
+    //   component: () => import('@/views/project'),
+    //   name: 'projectIssued',
+    //   meta: { title: 'listProjectIssued', icon: 'documentation', permissions: ['view menu project issued'] },
+    // },
     {
       path: 'create',
       component: () => import('@/views/project/Create'),

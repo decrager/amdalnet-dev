@@ -48,7 +48,9 @@ export default {
     },
     storeComponents() {
       this.components.map((component) => {
-        component['id_component'] = component['id'];
+        if (!('id_component' in component)) {
+          component['id_component'] = component['id'];
+        }
         component['id_project'] = this.idProject;
       });
       projectComponentResource
@@ -70,7 +72,9 @@ export default {
     },
     storeRonaAwals() {
       this.ronaAwals.map((ronaAwal) => {
-        ronaAwal['id_rona_awal'] = ronaAwal['id'];
+        if (!('id_rona_awal' in ronaAwal)) {
+          ronaAwal['id_rona_awal'] = ronaAwal['id'];
+        }
         ronaAwal['id_project'] = this.idProject;
       });
       projectRonaAwalResource
@@ -94,19 +98,15 @@ export default {
     },
     async handleSaveComponents(data){
       this.components = await data;
-      this.$emit('handleSaveComponents', data);
     },
     handleUpdateComponents(data){
       this.components = data;
-      this.$emit('handleUpdateComponents', data);
     },
     async handleSaveRonaAwals(data){
       this.ronaAwals = await data;
-      this.$emit('handleSaveRonaAwals', data);
     },
     handleUpdateRonaAwals(data){
       this.ronaAwals = data;
-      this.$emit('handleUpdateRonaAwals', data);
     },
   },
 };

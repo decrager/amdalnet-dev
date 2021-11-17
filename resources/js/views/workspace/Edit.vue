@@ -324,7 +324,7 @@ export default {
   }
 </style>
 
-<style scoped>
+<style scoped lang="scss">
   iframe {
     height: calc(100vh - 94px);
   }

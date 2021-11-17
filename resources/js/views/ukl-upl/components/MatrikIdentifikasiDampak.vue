@@ -76,17 +76,63 @@ export default {
           console.log(error);
         });
     },
+    getDefaultCheckedItems() {
+      return [
+        {
+          id_component: 2,
+          id_rona_awal: 32,
+        },
+        {
+          id_component: 16,
+          id_rona_awal: 18,
+        },
+        {
+          id_component: 11,
+          id_rona_awal: 17,
+        },
+        {
+          id_component: 11,
+          id_rona_awal: 19,
+        },
+        {
+          id_component: 2,
+          id_rona_awal: 13,
+        },
+        {
+          id_component: 4,
+          id_rona_awal: 21,
+        },
+        {
+          id_component: 18,
+          id_rona_awal: 7,
+        },
+        {
+          id_component: 20,
+          id_rona_awal: 25,
+        },
+      ];
+    },
     async getChecked() {
+      const defaultCheckedItems = this.getDefaultCheckedItems();
       const dataArray = [];
       this.ronaAwals.map((r) => {
         const subDataArray = [];
         this.components.map((c) => {
           var checked = false;
-          this.impacts.map((i) => {
-            if (i.id_project_rona_awal === r.id && i.id_project_component === c.id){
-              checked = true;
-            }
-          });
+          if (this.impacts.length > 0) {
+            this.impacts.map((i) => {
+              if (i.id_project_rona_awal === r.id && i.id_project_component === c.id){
+                checked = true;
+              }
+            });
+          } else {
+            // default values
+            defaultCheckedItems.map((d) => {
+              if (d.id_rona_awal === r.id_rona_awal && d.id_component === c.id_component){
+                checked = true;
+              }
+            });
+          }
           subDataArray.push({
             id: c.id,
             checked: checked,
@@ -141,7 +187,7 @@ export default {
         }
       });
       const iList = await impactIdtResource.list({
-        id_project: this.id_project,
+        id_project: this.idProject,
       });
       this.impacts = iList.data;
       const dataRow1 = [
@@ -177,12 +223,11 @@ table {
   border-collapse: collapse;
 }
 .tr-header {
-  border: 1px solid white;
-  background-color: #3AB06F;
-  color: white;
+  border: 1px solid gray;
+  background-color: #def5cf;
 }
 .td-header {
-  border: 1px solid white;
+  border: 1px solid gray;
   padding: 10px;
 }
 .tr-data, .td-data {
