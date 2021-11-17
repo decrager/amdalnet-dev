@@ -6,6 +6,7 @@ use App\Entity\EnvManagePlan;
 use App\Entity\ImpactIdentification;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
+use App\Entity\RklRplComment;
 use Illuminate\Http\Request;
 
 class MatriksRKLController extends Controller
@@ -17,6 +18,13 @@ class MatriksRKLController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->comment) {
+            $comments = RklRplComment::where([['id_project', $request->idProject], ['id_user', $request->idUser]])->orderBy('id', 'DESC')->with(['user' => function($q) {
+                $q->select(['id', 'name']);
+            }])->get();
+            return $comments;
+        }
+
         if($request->project) {
             return Project::whereHas('impactIdentifications', function($q) {
                 $q->whereHas('envImpactAnalysis');
@@ -43,7 +51,6 @@ class MatriksRKLController extends Controller
             });
             
             $project = Project::where('id', $request->idProject)->whereHas('impactIdentifications', function($query) {
-                $query->whereHas('envImpactAnalysis');
                 $query->whereHas('envManagePlan');
             })->first();
 
@@ -73,6 +80,16 @@ class MatriksRKLController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->type == 'comment') {
+            $comment = new RklRplComment();
+            $comment->id_project = $request->idProject;
+            $comment->id_user = $request->idUser;
+            $comment->comment = $request->comment;
+            $comment->save();
+
+            return RklRplComment::whereKey($comment->id)->with('user')->first();
+        }
+
         $manage = $request->manage;
 
         if($request->type == 'new') {

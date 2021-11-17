@@ -57,8 +57,8 @@
               </el-col>
               <el-col :span="12">
                 <el-row>
-                  <el-form-item label="Upload Peta Tapak Proyek(File SHP)">
-                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileMapUpload()">
+                  <el-form-item label="Upload Peta (File .ZIP)">
+                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" multiple @change="handleFileTapakProyekMapUpload">
                   </el-form-item>
                   <div id="mapView" style="height: 400px;" />
                 </el-row>
@@ -465,7 +465,7 @@ export default {
       loadingSupportTable: false,
       isUpload: 'Upload',
       fileName: 'No File Selected.',
-      fileMap: null,
+      fileMap: [],
       isOss: true,
       studyApproachOptions: [
         {
@@ -612,23 +612,33 @@ export default {
     handleFileKtrUpload(){
       this.fileKtr = this.$refs.fileKtr.files[0];
     },
-    handleFileMapUpload(){
-      this.fileMap = this.$refs.fileMap.files[0];
+    handleFileTapakProyekMapUpload(e){
+      var selectedFiles = e.target.files;
+
       const map = L.map('mapView');
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
-      const fr = new FileReader();
-      fr.onload = (event) => {
-        const geo = L.geoJSON().addTo(map);
-        const base = event.target.result;
-        shp(base).then(function(data) {
-          const feature = geo.addData(data);
-          map.fitBounds(feature.getBounds());
-        });
-      };
-      fr.readAsArrayBuffer(this.fileMap);
+      for (let i = 0; i < selectedFiles.length; i++){
+        this.fileMap.push(selectedFiles[i]);
+      }
+
+      for (let i = 0; i < this.fileMap.length; i++){
+        const reader = new FileReader(); // instantiate a new file reader
+        reader.onload = (event) => {
+          const geo = L.geoJSON().addTo(map);
+          const base = event.target.result;
+          shp(base).then(function(data) {
+            const feature = geo.addData(data);
+            console.log(feature);
+
+            map.fitBounds(feature.getBounds());
+          });
+        };
+
+        reader.readAsArrayBuffer(this.fileMap[i]);
+      }
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });
@@ -687,6 +697,11 @@ export default {
     handleSubmit() {
       this.currentProject.fileMap = this.fileMap;
       this.currentProject.fileKtr = this.fileKtr;
+
+      const formData = new FormData();
+      for (let i = 0; i < this.fileMap.length; i++) {
+        formData.append('map[]', this.fileMap[i]);
+      }
 
       this.$refs.currentProject.validate((valid) => {
         if (valid) {

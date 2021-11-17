@@ -26,7 +26,6 @@ import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import qs from 'qs';
-import esriConfig from '@arcgis/core/config';
 
 export default {
   name: 'WebGis',
@@ -70,15 +69,6 @@ export default {
         basemap: 'topo',
       });
 
-      esriConfig.request.portalUrl = 'https://gistaru.atrbpn.go.id/portal';
-      esriConfig.request.proxyUrl = 'proxy/proxy.php';
-      esriConfig.request.corsEnabledServers.push('https://gistaru.atrbpn.go.id');
-      esriConfig.request.trustedServers.push('https://gistaru.atrbpn.go.id');
-      esriConfig.request.corsDetection = false;
-      esriConfig.request.forceProxy = true;
-
-      console.log(esriConfig.request.allowedOrigins);
-
       var data = qs.stringify({
         'username': 'klhk_amdal2',
         'password': 'G8T9@iy!7mnb',
@@ -88,13 +78,10 @@ export default {
       });
 
       var config = {
-        method: 'POST',
+        method: 'post',
         url: 'https://gistaru.atrbpn.go.id/portal/sharing/rest/generateToken',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'OPTIONS,POST',
-          'Access-Control-Allow-Headers': 'access-control-allow-origin, access-control-allow-headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
         },
         data: data,
       };
@@ -104,12 +91,62 @@ export default {
             const gistaruLayer = new MapImageLayer({
               portalItem: {
                 id: '0492594c2b814804a678781548818b9d',
+                portal: {
+                  url: 'https://gistaru.atrbpn.go.id/portal',
+                },
               },
               url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
-              visibilityMode: 'exclusive',
+              imageTransparency: true,
               visible: false,
             });
             map.add(gistaruLayer);
+
+            const perbatasanPapua = new MapImageLayer({
+              portalItem: {
+                id: '3e3a14b0980342f0abf8a717c63517af',
+                portal: {
+                  url: 'https://gistaru.atrbpn.go.id/portal',
+                },
+              },
+              url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_PERBATASAN_PAPUA/MapServer',
+              imageTransparency: true,
+              visible: false,
+            });
+
+            const sarbagita = new MapImageLayer({
+              portalItem: {
+                id: 'c3256f2b64d640f282c346b85ba5811f',
+                portal: {
+                  url: 'https://gistaru.atrbpn.go.id/portal',
+                },
+              },
+              url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_SARBAGITA/MapServer',
+              imageTransparency: true,
+              visible: false,
+            });
+
+            const jabodetabek = new MapImageLayer({
+              portalItem: {
+                id: 'a2652f690900447baf7175d7a59234d4',
+                portal: {
+                  url: 'https://gistaru.atrbpn.go.id/portal',
+                },
+              },
+              url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_JABODETABEKPUNJUR/MapServer',
+              imageTransparency: true,
+              visible: false,
+            });
+
+            map.addMany([perbatasanPapua, sarbagita, jabodetabek]);
+
+            const ksnGroupLayer = new GroupLayer({
+              title: 'Layer Kawasan Strategis Nasional (KSN)',
+              visible: true,
+              layers: [perbatasanPapua, sarbagita, jabodetabek],
+              opacity: 0.90,
+            });
+
+            map.add(ksnGroupLayer);
           }
         })
         .catch(function(error) {
@@ -187,7 +224,7 @@ export default {
           const projects = response.data.data;
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].map) {
-              shp(window.location.origin + '/storage' + projects[i].map).then(data => {
+              shp(window.location.origin + projects[i].map).then(data => {
                 if (data.length > 1) {
                   for (let i = 0; i < data.length; i++) {
                     const getProjectDetails = {

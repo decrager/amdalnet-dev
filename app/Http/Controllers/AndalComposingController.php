@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\AndalComment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\ImpactIdentification;
 use App\Entity\Project;
@@ -17,6 +18,13 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->comment) {
+            $comments = AndalComment::where([['id_project', $request->idProject], ['id_user', $request->idUser]])->orderBy('id', 'DESC')->with(['user' => function($q) {
+                $q->select(['id', 'name']);
+            }])->get();
+            return $comments;
+        }
+
         if($request->project) {
             return Project::whereHas('impactIdentifications')->get();
         }
@@ -70,6 +78,16 @@ class AndalComposingController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->type == 'comment') {
+            $comment = new AndalComment();
+            $comment->id_project = $request->idProject;
+            $comment->id_user = $request->idUser;
+            $comment->comment = $request->comment;
+            $comment->save();
+
+            return AndalComment::whereKey($comment->id)->with('user')->first();
+        }
+
         $analysis = $request->analysis;
 
         if($request->type == 'new') {

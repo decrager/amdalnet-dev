@@ -43,22 +43,24 @@
         </el-tab-pane>
         <el-tab-pane label="Dokumen ANDAL">
           <el-row :gutter="32">
-            <el-col :sm="12" :md="7">
+            <!-- <el-col :sm="12" :md="7">
               <MapList />
-            </el-col>
-            <el-col :sm="12" :md="12">
+            </el-col> -->
+            <el-col :sm="24" :md="15">
               <DocsFrame />
             </el-col>
-            <el-col :sm="12" :md="5">
+            <el-col :sm="24" :md="9">
               <el-button
+                v-if="userInfo.roles.includes('initiator')"
                 type="primary"
                 style="font-size: 0.8rem; display: block"
               >
                 {{ 'Simpan Perubahan' }}
               </el-button>
-              <small>
+              <small v-if="userInfo.roles.includes('initiator')">
                 <em>{{ lastTime }}</em>
               </small>
+              <Comment v-if="userInfo.roles.includes('examiner')" />
             </el-col>
           </el-row>
         </el-tab-pane>
@@ -71,15 +73,17 @@
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 import PenyusunanAndalTable from '@/views/penyusunan-andal/components/Table';
-import MapList from '@/views/penyusunan-andal/components/MapList';
+// import MapList from '@/views/penyusunan-andal/components/MapList';
 import DocsFrame from '@/views/penyusunan-andal/components/DocsFrame';
+import Comment from '@/views/penyusunan-andal/components/Comment';
 
 export default {
   name: 'PenyusunanAndal',
   components: {
     PenyusunanAndalTable,
-    MapList,
+    // MapList,
     DocsFrame,
+    Comment,
   },
   data() {
     return {
@@ -88,11 +92,15 @@ export default {
       idProject: this.$route.params.id,
       compose: [],
       lastTime: null,
+      userInfo: {
+        roles: [],
+      },
     };
   },
   created() {
     // this.getProjects();
     this.handleChange(this.idProject);
+    this.getUserInfo();
   },
   methods: {
     // async getProjects() {
@@ -134,6 +142,9 @@ export default {
         type: 'success',
         duration: 5 * 1000,
       });
+    },
+    async getUserInfo() {
+      this.userInfo = await this.$store.dispatch('user/getInfo');
     },
     handleSubmitTanggapan() {
       this.handleSubmit();

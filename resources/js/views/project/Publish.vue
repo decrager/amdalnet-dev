@@ -276,6 +276,8 @@ export default {
         map.add(baseGroupLayer);
 
         const mapGeojsonArray = [];
+        const splitMap = this.project.map.split('|');
+        console.log(splitMap);
         shp(window.location.origin + this.project.map).then(data => {
           if (data.length > 1) {
             for (let i = 0; i < data.length; i++) {
@@ -401,21 +403,27 @@ export default {
         mapView.ui.add(legendExpand, 'bottom-left');
         mapView.ui.add(layersExpand, 'top-right');
       } else {
+        console.log(this.mapUpload);
         const map = L.map('mapView');
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(map);
 
-        const fr = new FileReader();
-        fr.onload = (event) => {
-          const geo = L.geoJSON().addTo(map);
-          const base = event.target.result;
-          shp(base).then(function(data) {
-            const feature = geo.addData(data);
-            map.fitBounds(feature.getBounds());
-          });
-        };
-        fr.readAsArrayBuffer(this.mapUpload);
+        for (let i = 0; i < this.mapUpload.length; i++){
+          const reader = new FileReader(); // instantiate a new file reader
+          reader.onload = (event) => {
+            const geo = L.geoJSON().addTo(map);
+            const base = event.target.result;
+            shp(base).then(function(data) {
+              const feature = geo.addData(data);
+              console.log(feature);
+
+              map.fitBounds(feature.getBounds());
+            });
+          };
+
+          reader.readAsArrayBuffer(this.mapUpload[i]);
+        }
       }
     },
     handleAddExpertTable(){
