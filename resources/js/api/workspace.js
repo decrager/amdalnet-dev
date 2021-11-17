@@ -12,6 +12,15 @@ class WorkspaceResource extends Resource {
       method: 'get',
     });
   }
+
+  importTemplate(resource) {
+    return request({
+      url: '/' + this.uri + '/template/import',
+      method: 'post',
+      data: resource,
+      params: { _method: 'POST' },
+    });
+  }
 }
 
 export { WorkspaceResource as default };

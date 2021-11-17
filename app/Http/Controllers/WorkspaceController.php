@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Entity\Workspace;
 
 class WorkspaceController extends Controller
 {
@@ -55,5 +58,26 @@ class WorkspaceController extends Controller
             return json_encode($sess);
         }
         return json_encode([]);
+    }
+
+    /**
+     * Session init
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function importTemplate(Request $request)
+    {
+        $workspace = new Workspace();
+        if ($request->file('file') !== null){
+            //create file
+            $file = $request->file('file');
+            $dir = 'workspace/template';
+            $path = $file->store($dir);
+            $pathfile = Storage::path($path);
+            // var_dump($path, $pathfile);
+            $result = $workspace->importHeadingDocx($pathfile);
+            $tree = $workspace->getHeadingTree($result);
+            return response()->json($tree);
+        }
     }
 }

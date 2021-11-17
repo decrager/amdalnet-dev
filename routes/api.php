@@ -46,42 +46,10 @@ Route::namespace('Api')->group(function() {
 });
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::apiResource('project-fields', 'ProjectFieldController');
-    Route::apiResource('provinces', 'ProvinceController');
-    Route::apiResource('districts', 'DistrictController');
-    Route::apiResource('kblis', 'KbliController');
-    Route::apiResource('kbli-env-params', 'KbliEnvParamController');
-    Route::apiResource('projects', 'ProjectController');
-    Route::apiResource('formulator-teams', 'FormulatorTeamController');
-    Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
-    Route::apiResource('oss-projects', 'OssProjectController');
-    Route::apiResource('responder-types', 'ResponderTypeController');
-    Route::apiResource('feedbacks', 'FeedbackController');
-    Route::apiResource('support-docs', 'SupportDocController');
-    Route::apiResource('announcements', 'AnnouncementController');
-    Route::apiResource('initiators', 'InitiatorController');
-    Route::apiResource('lpjp', 'LpjpController');
-    Route::apiResource('formulators', 'FormulatorController');
-    Route::apiResource('expert-banks', 'ExpertBankController');
-    Route::apiResource('public-consultations', 'PublicConsultationController');
-    Route::apiResource('rona-awals', 'RonaAwalController');
-    Route::apiResource('components', 'ComponentController');
-    Route::apiResource('project-stages', 'ProjectStageController');
-    Route::apiResource('sops', 'SopController');
-    Route::apiResource('component-types', 'ComponentTypeController');
-    Route::apiResource('app-params', 'AppParamController');
-    Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');
-    Route::apiResource('impact-identifications', 'ImpactIdentificationController');
-    Route::apiResource('env-params', 'EnvParamController');
-    Route::apiResource('params', 'ParamController');
-    Route::apiResource('units', 'UnitController');
-    Route::apiResource('project-components', 'ProjectComponentController');
-    Route::apiResource('project-rona-awals', 'ProjectRonaAwalController');
-    Route::apiResource('change-types', 'ChangeTypeController');
-    Route::apiResource('institutions', 'InstitutionController');
     Route::get('workspace/session/init', 'WorkspaceController@sessionInit');
 });
 
+Route::post('workspace/template/import', 'WorkspaceController@importTemplate');
 
 // Fake APIs
 Route::get('/table/list', function () {
@@ -189,3 +157,36 @@ Route::get('articles/{id}/pageviews', function ($id) {
     return response()->json(new JsonResponse(['pvData' => $data]));
 });
 
+Route::apiResource('project-fields', 'ProjectFieldController');
+Route::apiResource('provinces', 'ProvinceController');
+Route::apiResource('districts', 'DistrictController');
+Route::apiResource('kblis', 'KbliController');
+Route::apiResource('kbli-env-params', 'KbliEnvParamController');
+Route::apiResource('projects', 'ProjectController');
+Route::apiResource('formulator-teams', 'FormulatorTeamController');
+Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
+Route::apiResource('oss-projects', 'OssProjectController');
+Route::apiResource('responder-types', 'ResponderTypeController');
+Route::apiResource('feedbacks', 'FeedbackController');
+Route::apiResource('support-docs', 'SupportDocController');
+Route::apiResource('announcements', 'AnnouncementController');
+Route::apiResource('initiators', 'InitiatorController');
+Route::apiResource('lpjp', 'LpjpController');
+Route::apiResource('formulators', 'FormulatorController');
+Route::apiResource('expert-banks', 'ExpertBankController');
+Route::apiResource('public-consultations', 'PublicConsultationController');
+Route::apiResource('rona-awals', 'RonaAwalController');
+Route::apiResource('components', 'ComponentController');
+Route::apiResource('project-stages', 'ProjectStageController');
+Route::apiResource('sops', 'SopController');
+Route::apiResource('component-types', 'ComponentTypeController');
+Route::apiResource('app-params', 'AppParamController');
+Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');
+Route::apiResource('impact-identifications', 'ImpactIdentificationController');
+Route::apiResource('env-params', 'EnvParamController');
+Route::apiResource('params', 'ParamController');
+Route::apiResource('units', 'UnitController');
+Route::apiResource('project-components', 'ProjectComponentController');
+Route::apiResource('project-rona-awals', 'ProjectRonaAwalController');
+Route::apiResource('change-types', 'ChangeTypeController');
+Route::apiResource('institutions', 'InstitutionController');

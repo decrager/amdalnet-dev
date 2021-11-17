@@ -9,6 +9,71 @@ class Workspace
 {
 
     /**
+     * JSON Tree from headings
+     *
+     * @return array
+     */
+    public function getHeadingTree($headings)
+    {
+        $result = [];
+        $prevdepth = null;
+        $previd = null;
+        while ($node = $this->getNode($headings)) {
+            $result[] = $node;
+        }
+
+        return $result;
+    }
+
+    protected function getNode(&$headings)
+    {
+        $matches = array();
+        $depth = null;
+        $node = array_shift($headings);
+        if (!empty($node)) {
+            // var_dump($node);
+            $node['name'] = $node['text'];
+            $node['id'] = uniqid();
+            $node['pid'] = '';
+            if (preg_match('/Heading(\d)/', $node['style'], $matches)) {
+                $depth = $matches[1];
+            }
+            // var_dump('v', $depth);
+            unset($node['text']);
+            unset($node['style']);
+            $node['children'] = $this->getChilds($headings, $depth, $node['id']);
+        }
+        return $node;
+    }
+
+    protected function getNextNodeDepth($headings)
+    {
+        $depth = 0;
+        if (count($headings)>0) {
+            $node = $headings[0];
+            if (preg_match('/Heading(\d)/', $node['style'], $matches)) {
+                $depth = $matches[1];
+            }
+        }
+        return $depth;
+    }
+
+    protected function getChilds(&$headings, $depth=1, $pid='')
+    {
+        $children = [];
+        $depthNode = $this->getNextNodeDepth($headings);
+        // var_dump('c', $depth, $depthNode);
+        while ($depth < $depthNode) {
+            $node = $this->getNode($headings);
+            $node['pid'] = $pid;
+            $children[] = $node;
+            $depthNode = $this->getNextNodeDepth($headings);    
+        }
+
+        return $children;
+    }
+
+    /**
      * Import Heading from docx
      *
      * @return array

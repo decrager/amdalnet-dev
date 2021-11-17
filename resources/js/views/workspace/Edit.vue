@@ -3,13 +3,21 @@
     <split-pane split="vertical" :min-percent="20" :default-percent="30" @resize="resize">
       <template slot="paneL">
         <div class="left-container">
-          <el-button
-            type="primary"
-            icon="el-icon-plus"
-            @click="etherpadAuth"
+          <el-upload
+            class="avatar-uploader"
+            action="#"
+            :show-file-list="false"
+            :on-change="handleTemplateUploadChange"
+            :before-upload="beforeTemplateUpload"
+            :auto-upload="false"
           >
-            {{ $t('addNode') }}
-          </el-button>
+            <el-button
+              type="primary"
+              icon="el-icon-plus"
+            >
+              {{ $t('uploadTemplate') }}
+            </el-button>
+          </el-upload>
           <vue-tree-list
             :model="data"
             default-tree-node-name="new node"
@@ -185,7 +193,7 @@ export default {
     },
   },
   async mounted() {
-    // console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
+    console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
     // console.log(process.env.MIX_EHTERPAD_URL);
     this.etherpadUrl = process.env.MIX_EHTERPAD_URL;
     this.etherpadAuth();
@@ -242,6 +250,42 @@ export default {
       }
 
       vm.newTree = _dfs(vm.data);
+    },
+
+    handleTemplateUploadChange(file, fileList) {
+      // add file to multipart
+      const formData = new FormData();
+      formData.append('file', file.raw);
+
+      workspaceResource
+        .importTemplate(formData)
+        .then(response => {
+          console.log(response);
+          this.data = new Tree(response);
+          console.log(this.data);
+          this.$message({
+            message: 'Berhasil Load Template',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    beforeTemplateUpload(file) {
+      console.log('file', file.type);
+      // const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      // if (!isJPG) {
+      //   this.$message.error('Avatar picture must be JPG format!');
+      // }
+      // if (!isLt2M) {
+      //   this.$message.error('Avatar picture size can not exceed 2MB!');
+      // }
+      return isLt2M;
     },
 
     etherpadAuth() {

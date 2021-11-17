@@ -52,7 +52,8 @@ class Word extends Command
 
         $result = $this->workspace->importHeadingDocx($source);
         
-        var_dump($result);
+        $tree = $this->workspace->getHeadingTree($result);
+        var_dump('tree', $tree);
     }
 
     /**
