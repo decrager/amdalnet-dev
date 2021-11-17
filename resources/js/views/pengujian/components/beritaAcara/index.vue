@@ -9,7 +9,7 @@
       >
         {{ 'Simpan Perubahan' }}
       </el-button>
-      <el-button type="info" style="font-size: 0.8rem">{{
+      <el-button type="info" style="font-size: 0.8rem" @click="exportDocx">{{
         'Download File DOCX'
       }}</el-button>
     </div>
@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Resource from '@/api/resource';
 const meetingReportResource = new Resource('meeting-report');
 import FormBerita from '@/views/pengujian/components/beritaAcara/FormBerita';
@@ -94,6 +95,26 @@ export default {
     deleteInvitation({ id, personType }) {
       this.reports.invitations = this.reports.invitations.filter((inv) => {
         return !(inv.id === id && inv.type === personType);
+      });
+    },
+    exportDocx() {
+      const id = this.idProject;
+      axios({
+        url: `berita-acara/${id}/ka`,
+        method: 'GET',
+        responseType: 'blob',
+      }).then((response) => {
+        const getHeaders = response.headers['content-disposition'].split('; ');
+        const getFileName = getHeaders[1].split('=');
+        const getName = getFileName[1].split('=');
+        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        var fileLink = document.createElement('a');
+        fileLink.href = fileURL;
+        let newName = getName[0].slice(1);
+        newName = newName.slice(0, -1);
+        fileLink.setAttribute('download', `${newName}`);
+        document.body.appendChild(fileLink);
+        fileLink.click();
       });
     },
   },
