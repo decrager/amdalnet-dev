@@ -19,9 +19,15 @@ class MatriksRKLController extends Controller
     public function index(Request $request)
     {
         if($request->comment) {
-            $comments = RklRplComment::where([['id_project', $request->idProject], ['id_user', $request->idUser]])->orderBy('id', 'DESC')->with(['user' => function($q) {
-                $q->select(['id', 'name']);
-            }])->get();
+            if($request->role == 'true') {
+                $comments = RklRplComment::where([['id_project', $request->idProject], ['id_user', $request->idUser]])->orderBy('id', 'DESC')->with(['user' => function($q) {
+                    $q->select(['id', 'name']);
+                }])->get();
+            } else {
+                $comments = RklRplComment::where('id_project', $request->idProject)->orderBy('id', 'DESC')->with(['user' => function($q) {
+                    $q->select(['id', 'name']);
+                }])->get();
+            }
             return $comments;
         }
 

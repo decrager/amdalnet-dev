@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\ExpertBankTeamMember;
 use App\Entity\MeetingReport;
 use App\Entity\Project;
 use Carbon\Carbon;
@@ -232,6 +233,9 @@ class ExportDocument extends Controller
     public function ExportBA($id, $type) 
     {
         $beritaAcara = MeetingReport::where([['id_project', $id], ['document_type', $type]])->first();
+        $expert_bank_member = ExpertBankTeamMember::where([['id_expert_bank_team', $beritaAcara->expert_bank_team_id],['position', 'Ketua']])->first();
+        $ketua_tuk = $expert_bank_member->expertBank->name;
+        $institution = $expert_bank_member->expertBank->institution;
         $templateProcessor = new TemplateProcessor('template_berita_acara.docx');
 
         $templateProcessor->setValue('title', strtoupper($beritaAcara->project->project_title));
@@ -249,8 +253,10 @@ class ExportDocument extends Controller
         $templateProcessor->setValue('district_small', $beritaAcara->project->district->name);
         $templateProcessor->setValue('province_small', $beritaAcara->project->province->name);
         $templateProcessor->setValue('initiator_name_small', $beritaAcara->project->initiator->name);
+        $templateProcessor->setValue('ketua_tuk', $ketua_tuk);
+        $templateProcessor->setValue('institution', $institution);
 
-        $save_file_name = 'berita-acara-ka-' . $beritaAcara->project->project_title . '.docx';
+        $save_file_name = 'berita-acara-ka-' . $beritaAcara->project->project_title . '.docx'; 
         if (!File::exists(storage_path('app/public/berita-acara/'))) {
             File::makeDirectory(storage_path('app/public/berita-acara/'));
             $templateProcessor->saveAs(storage_path('app/public/berita-acara/' . $save_file_name));
