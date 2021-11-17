@@ -15,7 +15,7 @@
       <el-row :gutter="32">
         <el-col :sm="24" :md="24">
           <h4>Peta Lokasi</h4>
-          <div>
+          <div class="map-container">
             <div id="mapView" />
           </div>
         </el-col>
@@ -253,3 +253,17 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.map-container {
+  position: relative;
+  height: 500px;
+}
+#mapView {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0 10px;
+  position: absolute;
+}
+</style>

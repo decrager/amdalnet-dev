@@ -8,7 +8,16 @@
   >
     <el-table-column label="Dokumen" header-align="center">
       <template slot-scope="scope">
+        <el-button
+          v-if="scope.row.name === 'Dokumen KA'"
+          type="text"
+          class="document_link"
+          @click="exportDocx"
+        >
+          <i class="el-icon-download" /> {{ scope.row.name }}
+        </el-button>
         <a
+          v-else
           class="document_link"
           :href="
             scope.row.file ? scope.row.file : '/document/Template-SKKL.docx'
@@ -42,6 +51,7 @@
 <script>
 import Resource from '@/api/resource';
 const skklResource = new Resource('skkl');
+import axios from 'axios';
 
 export default {
   name: 'DokumenPersetujuan',
@@ -76,6 +86,26 @@ export default {
         message: 'Data is saved Successfully',
         type: 'success',
         duration: 5 * 1000,
+      });
+    },
+    exportDocx() {
+      const id = this.idProject;
+      axios({
+        url: `form-ka/${id}/docx`,
+        method: 'GET',
+        responseType: 'blob',
+      }).then((response) => {
+        const getHeaders = response.headers['content-disposition'].split('; ');
+        const getFileName = getHeaders[1].split('=');
+        const getName = getFileName[1].split('=');
+        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        var fileLink = document.createElement('a');
+        fileLink.href = fileURL;
+        let newName = getName[0].slice(1);
+        newName = newName.slice(0, -1);
+        fileLink.setAttribute('download', `${newName}`);
+        document.body.appendChild(fileLink);
+        fileLink.click();
       });
     },
   },
