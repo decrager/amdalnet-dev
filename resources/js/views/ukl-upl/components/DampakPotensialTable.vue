@@ -10,21 +10,23 @@
     <el-table-column label="Komponen Dampak">
       <template slot-scope="scope">
         <div v-if="scope.row.is_stage">
-          {{ scope.row.project_stage_name }}
+          <b>{{ scope.row.index }}. {{ scope.row.project_stage_name }}</b>
         </div>
         <div v-if="!scope.row.is_stage">
-          <el-select
-            v-model="scope.row.id_change_type"
-            placeholder="Perubahan"
-            style="width: 100%"
-          >
-            <el-option
-              v-for="item of changeTypeOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
+          <span>{{ scope.row.index }}.</span>
+          <span>
+            <el-select
+              v-model="scope.row.id_change_type"
+              placeholder="Perubahan"
+            >
+              <el-option
+                v-for="item of changeTypeOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </span>
         </div>
       </template>
     </el-table-column>

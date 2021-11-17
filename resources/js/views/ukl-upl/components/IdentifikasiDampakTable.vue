@@ -41,7 +41,8 @@ export default {
   },
   methods: {
     createDataArray(imps, stages) {
-      var stageIds = [4, 1, 2, 3];
+      const stageIds = [4, 1, 2, 3];
+      const indexes = ['', 'B', 'C', 'D', 'A'];
       const data = [];
       stageIds.map((id) => {
         const impacts = [];
@@ -57,6 +58,7 @@ export default {
           }
         });
         data.push({
+          index: indexes[id],
           id_project_stage: id,
           project_stage_name: projectStageName,
           impacts: impacts,
@@ -65,15 +67,19 @@ export default {
       const dataFlat = [];
       var dummyId = 9990;
       data.map((d) => {
+        var impactIdx = 1;
         dataFlat.push({
           id: dummyId,
+          index: d.index,
           is_stage: true,
           project_stage_name: d.project_stage_name,
         });
 
         d.impacts.map((imp) => {
+          imp['index'] = impactIdx;
           imp['is_stage'] = false;
           dataFlat.push(imp);
+          impactIdx++;
         });
         dummyId++;
       });

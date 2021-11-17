@@ -27,10 +27,10 @@
     <el-table-column label="Rencana Kegiatan yang Berpotensi">
       <template slot-scope="scope">
         <div v-if="scope.row.is_stage">
-          {{ scope.row.project_stage_name }}
+          <b>{{ scope.row.index }}. {{ scope.row.project_stage_name }}</b>
         </div>
         <div v-if="!scope.row.is_stage">
-          {{ scope.row.rona_awal_name }}
+          {{ scope.row.index }}. {{ scope.row.rona_awal_name }}
         </div>
       </template>
     </el-table-column>
