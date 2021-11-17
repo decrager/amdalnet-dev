@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
+      <WorkFlow />
       <!-- <div class="filter-container">
         <el-row :gutter="32">
           <el-col :sm="24" :md="10">
@@ -76,6 +77,7 @@ import PenyusunanAndalTable from '@/views/penyusunan-andal/components/Table';
 // import MapList from '@/views/penyusunan-andal/components/MapList';
 import DocsFrame from '@/views/penyusunan-andal/components/DocsFrame';
 import Comment from '@/views/penyusunan-andal/components/Comment';
+import WorkFlow from '@/components/Workflow';
 
 export default {
   name: 'PenyusunanAndal',
@@ -84,6 +86,7 @@ export default {
     // MapList,
     DocsFrame,
     Comment,
+    WorkFlow,
   },
   data() {
     return {
@@ -101,6 +104,7 @@ export default {
     // this.getProjects();
     this.handleChange(this.idProject);
     this.getUserInfo();
+    this.$store.dispatch('getStep', 4);
   },
   methods: {
     // async getProjects() {

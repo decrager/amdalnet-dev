@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
+      <WorkFlow />
       <h3 align="center">Surat Keputusan Kelayakan Lingkungan</h3>
       <el-row :gutter="32">
         <el-col :sm="24" :md="12">
@@ -30,6 +31,7 @@ const skklResource = new Resource('skkl');
 
 import Information from '@/views/skkl/components/Information';
 import DokumenPersetujuan from '@/views/skkl/components/DokumenPersetujuan';
+import WorkFlow from '@/components/Workflow';
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
@@ -51,6 +53,7 @@ export default {
   components: {
     Information,
     DokumenPersetujuan,
+    WorkFlow,
   },
   data() {
     return {
@@ -60,6 +63,9 @@ export default {
   },
   mounted() {
     this.loadMap();
+  },
+  created() {
+    this.$store.dispatch('getStep', 7);
   },
   methods: {
     async loadMap() {
