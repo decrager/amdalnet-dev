@@ -197,6 +197,7 @@ export default {
       initiatorData: {},
       geojson: null,
       all: [],
+      mapList: [],
     };
   },
   computed: {
@@ -276,57 +277,61 @@ export default {
         map.add(baseGroupLayer);
 
         const mapGeojsonArray = [];
-        const splitMap = this.project.map.split('|');
-        console.log(splitMap);
-        shp(window.location.origin + this.project.map).then(data => {
-          if (data.length > 1) {
-            for (let i = 0; i < data.length; i++) {
-              const blob = new Blob([JSON.stringify(data[i])], {
+        const splitMap = this.project.map.split(',');
+
+        for (let i = 0; i < splitMap.length; i++) {
+          shp(window.location.origin + '/storage/map/' + splitMap[i]).then(data => {
+            if (data.length > 1) {
+              for (let i = 0; i < data.length; i++) {
+                const blob = new Blob([JSON.stringify(data[i])], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  title: 'Layers',
+                });
+                mapView.on('layerview-create', (event) => {
+                  mapView.goTo({
+                    target: geojsonLayerArray.fullExtent,
+                  });
+                });
+
+                mapGeojsonArray.push(geojsonLayerArray);
+              }
+
+              const kegiatanGroupLayer = new GroupLayer({
+                title: this.project.project_title,
+                visible: true,
+                visibilityMode: 'exclusive',
+                layers: mapGeojsonArray,
+                opacity: 0.75,
+              });
+
+              map.add(kegiatanGroupLayer);
+            } else {
+              const blob = new Blob([JSON.stringify(data)], {
                 type: 'application/json',
               });
               const url = URL.createObjectURL(blob);
-              const geojsonLayerArray = new GeoJSONLayer({
+              const geojsonLayer = new GeoJSONLayer({
                 url: url,
+                visible: true,
                 outFields: ['*'],
-                title: 'Layers',
+                opacity: 0.75,
+                title: this.project.project_title,
               });
+
+              map.add(geojsonLayer);
               mapView.on('layerview-create', (event) => {
                 mapView.goTo({
-                  target: geojsonLayerArray.fullExtent,
+                  target: geojsonLayer.fullExtent,
                 });
               });
-              mapGeojsonArray.push(geojsonLayerArray);
             }
-            const kegiatanGroupLayer = new GroupLayer({
-              title: this.project.project_title,
-              visible: true,
-              visibilityMode: 'exclusive',
-              layers: mapGeojsonArray,
-              opacity: 0.75,
-            });
-
-            map.add(kegiatanGroupLayer);
-          } else {
-            const blob = new Blob([JSON.stringify(data)], {
-              type: 'application/json',
-            });
-            const url = URL.createObjectURL(blob);
-            const geojsonLayer = new GeoJSONLayer({
-              url: url,
-              visible: true,
-              outFields: ['*'],
-              opacity: 0.75,
-              title: this.project.project_title,
-            });
-
-            map.add(geojsonLayer);
-            mapView.on('layerview-create', (event) => {
-              mapView.goTo({
-                target: geojsonLayer.fullExtent,
-              });
-            });
-          }
-        });
+          });
+        }
 
         const mapView = new MapView({
           container: 'mapView',
@@ -569,6 +574,11 @@ export default {
 
       // make form data because we got file
       const formData = new FormData();
+
+      for (var i = 0; i < this.mapUpload.length; i++){
+        const file = this.mapUpload[i];
+        formData.append('fileMap[' + i + ']', file);
+      }
 
       // eslint-disable-next-line no-undef
       _.each(this.project, (value, key) => {

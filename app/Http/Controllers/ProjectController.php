@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\Project;
 use App\Http\Resources\ProjectResource;
+use App\MapProject;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -130,20 +131,12 @@ class ProjectController extends Controller
             }
 
             //create file map
-            // $mapName = '';
-            // if ($request->file('fileMap')) {
-            //     $fileMap = $request->file('fileMap');
-            //     $mapName = 'map/' . uniqid() . '.' . $fileMap->extension();
-            //     $fileMap->storePubliclyAs('public', $mapName);
-            // }
-
             $mapName = array();
             if ($files = $request->file('fileMap')) {
                 foreach ($files as $file) {
-                    $name = '/storage/map/' . uniqid() . '.' . $file->extension();
-                    $nameDB = 'map/' . uniqid() . '.' . $file->extension();
-                    $file->storePubliclyAs('public', $nameDB);
+                    $name = uniqid() . '.zip';
                     $mapName[] = $name;
+                    $file->move(storage_path('app/public/map'), $name);
                 }
             }
 
@@ -171,7 +164,7 @@ class ProjectController extends Controller
                 'id_project' => $params['id_project'],
                 'type_formulator_team' => $params['type_formulator_team'],
                 'id_lpjp' => isset($params['id_lpjp']) ? $params['id_lpjp'] : null,
-                'map' => json_encode($mapName),
+                'map' => implode(',', $mapName),
                 'ktr' => Storage::url($ktrName),
             ]);
 
