@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\ExpertBankTeam;
 use App\Entity\ExpertBankTeamMember;
 use App\Entity\Initiator;
+use App\Entity\Project;
 use App\Entity\TestingMeeting;
 use App\Entity\TestingMeetingInvitation;
 use Illuminate\Http\Request;
@@ -193,17 +194,19 @@ class TestMeetRKLRPLController extends Controller
     }
 
     private function getFreshMeetings($id_project) {
+        $project = Project::findOrFail($id_project);
+
         $data = [
             'type' => 'new',
             'id_project' => $id_project,
-            'id_initiator' => null,
+            'id_initiator' => $project->initiator->id,
             'meeting_date' => null,
             'meeting_time' => null,
-            'person_responsible' => null,
+            'person_responsible' => $project->initiator->pic,
             'location' => null,
             'position' => null,
             'expert_bank_team_id' => null,
-            'project_name' => null,
+            'project_name' => $project->project_title,
             'invitations' => []
         ];
 
@@ -246,14 +249,14 @@ class TestMeetRKLRPLController extends Controller
         $data = [
             'type' => 'update',
             'id_project' => $id_project,
-            'id_initiator' => $meeting->id_initiator,
+            'id_initiator' => $meeting->project->initiator->id,
             'meeting_date' => $meeting->meeting_date,
             'meeting_time' => $meeting->meeting_time,
-            'person_responsible' => $meeting->person_responsible,
+            'person_responsible' => $meeting->project->initiator->pic,
             'location' => $meeting->location,
             'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
-            'project_name' => $meeting->project_name,
+            'project_name' => $meeting->project->project_title,
             'invitations' => $invitations
         ];
 

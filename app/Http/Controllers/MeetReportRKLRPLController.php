@@ -214,14 +214,14 @@ class MeetReportRKLRPLController extends Controller
             'type' => 'new',
             'id_project' => $id_project,
             'id_testing_meeting' => $meeting->id,
-            'id_initiator' => $meeting->id_initiator,
+            'id_initiator' => $meeting->project->initiator->id,
             'meeting_date' => $meeting->meeting_date,
             'meeting_time' => $meeting->meeting_time,
-            'person_responsible' => $meeting->person_responsible,
+            'person_responsible' => $meeting->project->initiator->pic,
             'location' => $meeting->location,
             'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
-            'project_name' => $meeting->project_name,
+            'project_name' => $meeting->project->project_title,
             'invitations' => $invitations
         ];
 
@@ -265,14 +265,14 @@ class MeetReportRKLRPLController extends Controller
             'type' => 'update',
             'id_project' => $id_project,
             'id_testing_meeting' => $report->id_testing_meeting,
-            'id_initiator' => $report->id_initiator,
+            'id_initiator' => $report->project->initiator->id,
             'meeting_date' => $report->meeting_date,
             'meeting_time' => $report->meeting_time,
-            'person_responsible' => $report->person_responsible,
+            'person_responsible' => $report->project->initiator->pic,
             'location' => $report->location,
             'position' => $report->position,
             'expert_bank_team_id' => $report->expert_bank_team_id,
-            'project_name' => $report->project_name,
+            'project_name' => $report->project->project_title,
             'invitations' => $invitations
         ];
 

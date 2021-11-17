@@ -20,4 +20,9 @@ class MeetingReport extends Model
     {
         return $this->belongsTo(Initiator::class, 'id_initiator', 'id');
     }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'id_project', 'id');
+    }
 }

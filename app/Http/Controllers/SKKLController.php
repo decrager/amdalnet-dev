@@ -24,6 +24,10 @@ class SKKLController extends Controller
         if($request->document) {
             return $this->getDocument($request->idProject);
         }
+
+        if($request->map) {
+            return Project::findOrFail($request->idProject);
+        }
     }
 
     /**
@@ -136,23 +140,23 @@ class SKKLController extends Controller
         ];
         $data[] = [
             'title' => 'Pemrakarsa',
-            'description' => $beritaAcara->initiator->name
+            'description' => $project->initiator->name
         ];
         $data[] = [
             'title' => 'Penanggung Jawab',
-            'description' => $beritaAcara->person_responsible
+            'description' => $project->initiator->pic
         ];
         $data[] = [
             'title' => 'Alamat Pemrakarsa',
-            'description' => $beritaAcara->initiator->address
+            'description' => $project->initiator->address
         ];
         $data[] = [
             'title' => 'No Telepon Pemrakarsa',
-            'description' => $beritaAcara->initiator->phone
+            'description' => $project->initiator->phone
         ];
         $data[] = [
             'title' => 'Email Pemrakarsa',
-            'description' => $beritaAcara->initiator->email
+            'description' => $project->initiator->email
         ];
         $data[] = [
             'title' => 'Provinsi/Kota',

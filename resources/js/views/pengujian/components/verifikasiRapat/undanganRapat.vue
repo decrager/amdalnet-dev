@@ -20,6 +20,7 @@
               v-model="meetings.id_initiator"
               placeholder="Pilih Tim"
               style="width: 100%"
+              :disabled="true"
             >
               <el-option
                 v-for="item in pemrakarsa"
@@ -43,7 +44,7 @@
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Penanggung Jawab">
-            <el-input v-model="meetings.person_responsible" />
+            <el-input v-model="meetings.person_responsible" readonly />
           </el-form-item>
         </el-col>
         <el-col :sm="12" :md="12">
@@ -75,7 +76,7 @@
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Nama Usaha/Kegiatan">
-            <el-input v-model="meetings.project_name" />
+            <el-input v-model="meetings.project_name" readonly />
           </el-form-item>
         </el-col>
       </el-row>
