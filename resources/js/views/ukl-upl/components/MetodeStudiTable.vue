@@ -10,10 +10,10 @@
     <el-table-column label="Dampak Penting Hipotetik">
       <template slot-scope="scope">
         <div v-if="scope.row.is_stage">
-          {{ scope.row.project_stage_name }}
+          <b>{{ scope.row.index }}. {{ scope.row.project_stage_name }}</b>
         </div>
         <div v-if="!scope.row.is_stage">
-          {{ scope.row.change_type_name }} {{ scope.row.rona_awal_name }} akibat {{ scope.row.component_name }}
+          {{ scope.row.index }}. {{ scope.row.change_type_name }} {{ scope.row.rona_awal_name }} akibat {{ scope.row.component_name }}
         </div>
       </template>
     </el-table-column>
