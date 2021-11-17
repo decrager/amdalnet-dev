@@ -11,8 +11,6 @@
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage" class="post">
           <div class="entity-block">
-            <div>Rencana Studi</div>
-            <el-input v-model="scope.row.initial_study_plan" type="textarea" :rows="2" />
             <div>Wilayah Studi</div>
             <el-input v-model="scope.row.study_location" />
             <div>Batas Waktu Kajian</div>
@@ -27,10 +25,10 @@
     <el-table-column label="Rencana Kegiatan yang Berpotensi">
       <template slot-scope="scope">
         <div v-if="scope.row.is_stage">
-          {{ scope.row.project_stage_name }}
+          <b>{{ scope.row.index }}. {{ scope.row.project_stage_name }}</b>
         </div>
         <div v-if="!scope.row.is_stage">
-          {{ scope.row.rona_awal_name }}
+          {{ scope.row.index }}. {{ scope.row.rona_awal_name }}
         </div>
       </template>
     </el-table-column>

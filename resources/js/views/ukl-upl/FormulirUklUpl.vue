@@ -15,6 +15,16 @@
         </el-button>
       </span>
       <vsa-list :key="vsaListKey">
+        <vsa-item :init-active="componentActive">
+          <vsa-heading>
+            KOMPONEN KEGIATAN YANG MENJADI SUMBER DAMPAK
+          </vsa-heading>
+          <vsa-content>
+            <sumber-dampak
+              @handleReloadVsaList="handleReloadVsaList"
+            />
+          </vsa-content>
+        </vsa-item>
         <vsa-item :init-active="ronaActive">
           <vsa-heading>
             RONA LINGKUNGAN AWAL
@@ -80,6 +90,7 @@ import {
   VsaContent,
 } from 'vue-simple-accordion';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
+import SumberDampak from './components/SumberDampak.vue';
 import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
 import DampakPotensial from './components/DampakPotensial.vue';
@@ -93,6 +104,7 @@ export default {
     VsaItem,
     VsaHeading,
     VsaContent,
+    SumberDampak,
     RonaLingkunganAwal,
     MatrikIdentifikasiDampak,
     DampakPotensial,
@@ -104,7 +116,8 @@ export default {
       idProject: 0,
       isSubmitEnabled: false,
       vsaListKey: 0,
-      ronaActive: true,
+      componentActive: true,
+      ronaActive: false,
       matriksActive: false,
       dampakPotensialActive: false,
       dampakPentingHipotetikActive: false,
@@ -131,20 +144,23 @@ export default {
     },
     handleReloadVsaList(tab) {
       this.vsaListKey = this.vsaListKey + 1;
+      this.componentActive = false;
       this.ronaActive = false;
       this.matriksActive = false;
       this.dampakPotensialActive = false;
       this.dampakPentingHipotetikActive = false;
       this.metodeStudiActive = false;
-      if (tab === 1) {
+      if (tab === 'komponen') {
+        this.componentActive = true;
+      } else if (tab === 'rona-lingkungan-awal') {
         this.ronaActive = true;
-      } else if (tab === 2) {
+      } else if (tab === 'matriks-identifikasi-dampak') {
         this.matriksActive = true;
-      } else if (tab === 3) {
+      } else if (tab === 'dampak-potensial') {
         this.dampakPotensialActive = true;
-      } else if (tab === 4) {
+      } else if (tab === 'dampak-penting-hipotetik') {
         this.dampakPentingHipotetikActive = true;
-      } else if (tab === 5) {
+      } else if (tab === 'metode-studi') {
         this.metodeStudiActive = true;
       }
     },
