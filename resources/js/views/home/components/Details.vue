@@ -57,7 +57,9 @@
           <el-col :span="10">
             <div style="padding-right: 2rem">
               <div style="height: 400px; width: 100%; z-index: -1">
-                <div id="mapView" />
+                <div>
+                  <div id="mapView" />
+                </div>
                 <!-- <l-map :zoom="zoom" :center="center">
                   <l-marker :lat-lng="center" />
                   <l-tile-layer :url="urlMap" :attribution="attribution" />
@@ -646,5 +648,13 @@ table.table__striped tr:nth-child(odd) {
 .el-rate__icon.el-icon-star-off {font-size: 3rem;}
 #header {
     z-index: 99999;
+}
+#mapView {
+  width: 100%;
+  height: 76.3vh;
+  max-height: 100vh;
+  /* padding: 0;
+  margin: 0 10px;
+  position: absolute; */
 }
 </style>
