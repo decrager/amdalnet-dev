@@ -56,9 +56,11 @@
         </el-tabs>
       </div>
       <Details
+        v-if="showDetails"
         :show-details="showDetails"
         :announcement-id="selectedId"
         :selected-announcement="selectedAnnouncement"
+        :selected-project="selectedProject"
         @handleCancelComponent="handleCancelComponent"
         @handleSetTabs="handleSetTabs"
       />
@@ -125,6 +127,7 @@ export default {
         .then(response => {
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
+          console.log(this.selectedProject);
         });
     },
     handleCancelComponent(){
