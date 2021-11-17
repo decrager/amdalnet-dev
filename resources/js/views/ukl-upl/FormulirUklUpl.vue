@@ -1,6 +1,7 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card>
+      <workflow />
       <h2>Formulir Kerangka Acuan</h2>
       <span>
         <el-button
@@ -96,6 +97,7 @@ import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue'
 import DampakPotensial from './components/DampakPotensial.vue';
 import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
+import Workflow from '@/components/Workflow';
 
 export default {
   name: 'FormulirUklUpl',
@@ -110,6 +112,7 @@ export default {
     DampakPotensial,
     DampakPentingHipotetik,
     MetodeStudi,
+    Workflow,
   },
   data() {
     return {
@@ -126,6 +129,7 @@ export default {
   },
   mounted() {
     this.setProjectId();
+    this.$store.dispatch('getStep', 3);
   },
   methods: {
     setProjectId(){

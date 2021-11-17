@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h2>SPT Dari Masyarakat</h2>
     <div v-if="showProjectDetail">
       <el-row class="form-container">
         <el-col
@@ -53,7 +54,6 @@
       </el-row>
     </div>
     <div v-if="showFeedbackList">
-      <div><h3 style="color: #3AB06F; margin-bottom: 10px;">Saran/Pendapat/Tanggapan</h3></div>
       <FeedbackList />
     </div>
     <div v-if="showPublicConsultation">
