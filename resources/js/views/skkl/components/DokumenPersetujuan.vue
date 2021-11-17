@@ -17,13 +17,16 @@
           <i class="el-icon-download" /> {{ scope.row.name }}
         </el-button>
         <a
-          v-else
+          v-if="scope.row.name === 'Persetujuan Lingkungan SKKL'"
           class="document_link"
           :href="
             scope.row.file ? scope.row.file : '/document/Template-SKKL.docx'
           "
           download
         >
+          <i class="el-icon-download" /> {{ scope.row.name }}
+        </a>
+        <a v-if="checkDocument(scope.row.name)" class="document_link">
           <i class="el-icon-download" /> {{ scope.row.name }}
         </a>
         &nbsp;
@@ -66,6 +69,9 @@ export default {
     this.getDocuments();
   },
   methods: {
+    checkDocument(name) {
+      return !(name === 'Persetujuan Lingkungan SKKL' || name === 'Dokumen KA');
+    },
     async getDocuments() {
       this.loading = true;
       const data = await skklResource.list({
