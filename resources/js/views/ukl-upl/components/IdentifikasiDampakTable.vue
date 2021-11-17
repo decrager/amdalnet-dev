@@ -65,7 +65,7 @@ export default {
         });
       });
       const dataFlat = [];
-      var dummyId = 9990;
+      var dummyId = 99999999;
       data.map((d) => {
         var impactIdx = 1;
         dataFlat.push({

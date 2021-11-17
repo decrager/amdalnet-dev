@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\ComponentType;
 use App\Entity\ProjectRonaAwal;
 use App\Http\Resources\ProjectRonaAwalResource;
 use Illuminate\Http\Request;
@@ -26,7 +27,48 @@ class ProjectRonaAwalController extends Controller
                 ->orderBy('name_master', 'ASC')
                 ->orderBy('name', 'ASC')
                 ->get();
-            return ProjectRonaAwalResource::collection($rona_awals);
+            if (isset($params['with_component_type']) && $params['with_component_type']){
+                $component_types = ComponentType::select('component_types.*')
+                    ->orderBy('id', 'asc')
+                    ->get();                
+                $data = [];
+                foreach ($rona_awals as $rona_awal) {
+                    $id_component_type = $rona_awal['id_component_type_master'];
+                    if ($id_component_type == null) {
+                        $id_component_type = $rona_awal['id_component_type'];
+                    }
+                    $data[$id_component_type][] = $rona_awal;
+                }
+                $data_output = [];
+                $max_colspan = 0;
+                $dummyId = 99999999;
+                foreach ($component_types as $component_type) {
+                    $id = $component_type['id'];
+                    $count_data = 0;
+                    if (array_key_exists($id, $data)) {
+                        $count_data = count($data[$id]);
+                    }
+                    $max_colspan += $count_data;
+                    array_push($data_output, [
+                        'id' => $dummyId,
+                        'is_component_type' => true,
+                        'component_type_name' => $component_type['name'],
+                    ]);
+                    if (array_key_exists($id, $data)) {
+                        foreach ($data[$id] as $item) {
+                            $item['is_component_type'] = false;
+                            array_push($data_output, $item);
+                        }
+                    }
+                    $dummyId++;
+                }
+                return [
+                    'data' => $data_output,
+                    'colspan' => $max_colspan,
+                ];
+            } else {
+                return ProjectRonaAwalResource::collection($rona_awals);
+            }
         } else {
             return ProjectRonaAwalResource::collection(ProjectRonaAwal::with('rona_awal')->get());
         }

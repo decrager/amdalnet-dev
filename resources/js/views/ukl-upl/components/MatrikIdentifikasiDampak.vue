@@ -12,16 +12,21 @@
     <table>
       <tr class="tr-header">
         <td v-for="comp of header[0]" :key="comp.id" :colspan="comp.colspan" :rowspan="comp.rowspan" align="center" class="td-header">
-          <span>{{ comp.name }}</span>
+          <span><b>{{ comp.name }}</b></span>
         </td>
       </tr>
       <tr class="tr-header">
         <td v-for="comp of header[1]" :key="comp.id" style="width: 100px;" class="td-header">
-          <span>{{ comp.name }}</span>
+          <span><b>{{ comp.name }}</b></span>
         </td>
       </tr>
       <tr v-for="r of checked" :key="r.id" class="tr-data">
-        <td class="td-data">{{ r.name }}</td>
+        <td v-if="r.is_component_type" :colspan="r.colspan" class="td-data">
+          <span><b>{{ r.index }}. {{ r.name }}</b></span>
+        </td>
+        <td v-if="!r.is_component_type" class="td-data">
+          <span>{{ r.index }}. {{ r.name }}</span>
+        </td>
         <td v-for="c of r.sub" :key="c.id" style="width: 100px;" align="center" class="td-data">
           <input v-model="c.checked" type="checkbox">
         </td>
@@ -47,6 +52,7 @@ export default {
       ronaAwals: [],
       impacts: [],
       checked: [], // matriks
+      colspan: 0,
       data: {},
     };
   },
@@ -115,33 +121,50 @@ export default {
     async getChecked() {
       const defaultCheckedItems = this.getDefaultCheckedItems();
       const dataArray = [];
+      var rIndex = 0;
+      var rIndex2 = 1;
       this.ronaAwals.map((r) => {
         const subDataArray = [];
-        this.components.map((c) => {
-          var checked = false;
-          if (this.impacts.length > 0) {
-            this.impacts.map((i) => {
-              if (i.id_project_rona_awal === r.id && i.id_project_component === c.id){
-                checked = true;
-              }
+        if (!r.is_component_type) {
+          this.components.map((c) => {
+            var checked = false;
+            if (this.impacts.length > 0) {
+              this.impacts.map((i) => {
+                if (i.id_project_rona_awal === r.id && i.id_project_component === c.id){
+                  checked = true;
+                }
+              });
+            } else {
+              // default values
+              defaultCheckedItems.map((d) => {
+                if (d.id_rona_awal === r.id_rona_awal && d.id_component === c.id_component){
+                  checked = true;
+                }
+              });
+            }
+            subDataArray.push({
+              id: c.id,
+              checked: checked,
+              colspan: 1,
             });
-          } else {
-            // default values
-            defaultCheckedItems.map((d) => {
-              if (d.id_rona_awal === r.id_rona_awal && d.id_component === c.id_component){
-                checked = true;
-              }
-            });
-          }
-          subDataArray.push({
-            id: c.id,
-            checked: checked,
           });
-        });
+        }
+        if (r.is_component_type) {
+          r.name = r.component_type_name;
+          r.index = String.fromCharCode('A'.charCodeAt(0) + rIndex);
+          rIndex++;
+          rIndex2 = 1;
+        } else {
+          r.index = rIndex2;
+          rIndex2++;
+        }
         dataArray.push({
+          index: r.index,
           id: r.id,
+          is_component_type: r.is_component_type,
           name: r.name,
           sub: subDataArray,
+          colspan: this.colspan,
         });
       });
       this.checked = dataArray;
@@ -176,8 +199,11 @@ export default {
       this.components = this.sortComponents(listC.data);
       const listR = await projectRonaAwalResource.list({
         id_project: this.idProject,
+        with_component_type: true,
       });
       this.ronaAwals = listR.data;
+      this.colspan = listR.colspan;
+
       this.ronaAwals.map((r) => {
         if (r['name'] === null) {
           r['name'] = r['name_master'];
