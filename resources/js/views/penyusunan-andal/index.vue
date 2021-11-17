@@ -61,7 +61,7 @@
               <small v-if="userInfo.roles.includes('initiator')">
                 <em>{{ lastTime }}</em>
               </small>
-              <Comment v-if="userInfo.roles.includes('examiner')" />
+              <Comment />
             </el-col>
           </el-row>
         </el-tab-pane>
