@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\MeetingReport;
 use App\Entity\Project;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpWord\Element\TextRun;
@@ -225,5 +227,36 @@ class ExportDocument extends Controller
         $save_file_name = $getData->project_title . ".docx";
         $templateProcessor->saveAs($save_file_name);
         return response()->download($save_file_name)->deleteFileAfterSend(false);
+    }
+
+    public function ExportBA($id, $type) 
+    {
+        $beritaAcara = MeetingReport::where([['id_project', $id], ['document_type', $type]])->first();
+        $templateProcessor = new TemplateProcessor('template_berita_acara.docx');
+
+        $templateProcessor->setValue('title', strtoupper($beritaAcara->project->project_title));
+        $templateProcessor->setValue('address', strtoupper($beritaAcara->project->address));
+        $templateProcessor->setValue('district', strtoupper($beritaAcara->project->district->name));
+        $templateProcessor->setValue('province', strtoupper($beritaAcara->project->province->name));
+        $templateProcessor->setValue('initiator_name', strtoupper($beritaAcara->project->initiator->name));
+        $templateProcessor->setValue('date_meet', Carbon::createFromFormat('Y-m-d', $beritaAcara->meeting_date)->locale('id')->isoFormat('dddd/D MMMM Y'));
+        $templateProcessor->setValue('location', $beritaAcara->location);
+        $templateProcessor->setValue('initiator_name_small', $beritaAcara->project->initiator->name);
+        $templateProcessor->setValue('pic', $beritaAcara->project->initiator->pic);
+        $templateProcessor->setValue('position', $beritaAcara->location);
+        $templateProcessor->setValue('title_small', $beritaAcara->project->project_title);
+        $templateProcessor->setValue('address_small', $beritaAcara->project->address);
+        $templateProcessor->setValue('district_small', $beritaAcara->project->district->name);
+        $templateProcessor->setValue('province_small', $beritaAcara->project->province->name);
+        $templateProcessor->setValue('initiator_name_small', $beritaAcara->project->initiator->name);
+
+        $save_file_name = 'berita-acara-ka-' . $beritaAcara->project->project_title . '.docx';
+        if (!File::exists(storage_path('app/public/berita-acara/'))) {
+            File::makeDirectory(storage_path('app/public/berita-acara/'));
+            $templateProcessor->saveAs(storage_path('app/public/berita-acara/' . $save_file_name));
+        }
+
+        return response()->download(storage_path('app/public/berita-acara/' . $save_file_name))->deleteFileAfterSend(false);
+
     }
 }

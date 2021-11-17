@@ -22,6 +22,7 @@ Route::get('/', function () {
 
 Route::get('doc-uklupl/{id}', [ExportDocument::class, 'ExportUklUpl']);
 Route::get('form-ka/{id}/{doc}', [ExportDocument::class, 'ExportKA']);
+Route::get('berita-acara/{id}/{type}', [ExportDocument::class, 'ExportBA']);
 //Route::get('form-ka/{id}/pdf', [ExportDocument::class, 'ExportKA']);
 Route::post('upload-map', [WebgisController::class, 'store']);
 

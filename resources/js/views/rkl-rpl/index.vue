@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
+      <WorkFlow />
       <!-- <div class="filter-container">
         <el-row :gutter="32">
           <el-col :sm="24" :md="10">
@@ -71,6 +72,7 @@ import Matriks from '@/views/rkl-rpl/components/Matriks';
 // import MapList from '@/views/rkl-rpl/components/MapList';
 import DocsFrame from '@/views/rkl-rpl/components/DocsFrame';
 import Comment from '@/views/rkl-rpl/components/Comment';
+import WorkFlow from '@/components/Workflow';
 
 export default {
   name: 'MatriksRKLRPL',
@@ -79,6 +81,7 @@ export default {
     // MapList,
     DocsFrame,
     Comment,
+    WorkFlow,
   },
   data() {
     return {
@@ -101,6 +104,7 @@ export default {
     this.handleChange(this.idProject);
     this.getInstitutions();
     this.getUserInfo();
+    this.$store.dispatch('getStep', 5);
   },
   methods: {
     // async getProjects() {
