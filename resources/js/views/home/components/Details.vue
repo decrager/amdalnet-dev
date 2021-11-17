@@ -143,7 +143,7 @@
                       v-model="form.responder_type_id"
                       label="1"
                     >
-                      <span style="color:white">Dampak Langsung</span></el-radio>
+                      <span style="color:white">Terkena Dampak Langsung</span></el-radio>
                   </div>
                   <div>
                     <el-radio
