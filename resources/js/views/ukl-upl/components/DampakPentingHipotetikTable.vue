@@ -11,8 +11,6 @@
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage" class="post">
           <div class="entity-block">
-            <div>Rencana Studi</div>
-            <el-input v-model="scope.row.initial_study_plan" type="textarea" :rows="2" />
             <div>Wilayah Studi</div>
             <el-input v-model="scope.row.study_location" />
             <div>Batas Waktu Kajian</div>
