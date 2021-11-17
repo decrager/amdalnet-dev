@@ -1,5 +1,13 @@
 <template>
   <div class="app-container">
+    <el-button
+      type="success"
+      size="small"
+      icon="el-icon-check"
+      @click="handleSaveForm()"
+    >
+      Simpan Perubahan
+    </el-button>
     <el-row :gutter="4">
       <el-col v-for="stage of projectStages" :key="stage.id" :span="6" :xs="24">
         <aside align="center" style="margin-bottom: 0px; background-color: #def5cf;">
@@ -31,6 +39,7 @@ export default {
   components: { ComponentTable },
   data() {
     return {
+      idProject: 0,
       components: [],
       projectStages: [],
       data: {},
@@ -41,12 +50,41 @@ export default {
     this.getData();
   },
   methods: {
+    handleSaveForm(){
+      this.storeComponents();
+    },
+    storeComponents() {
+      this.components.map((component) => {
+        if (!('id_component' in component)) {
+          component['id_component'] = component['id'];
+        }
+        component['id_project'] = this.idProject;
+      });
+      projectComponentResource
+        .store({
+          'components': this.components,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Komponen kegiatan berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+          // reload accordion
+          this.$emit('handleReloadVsaList', 'rona-lingkungan-awal');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     async getData() {
-      const idProject = this.$route.params && this.$route.params.id;
+      this.idProject = parseInt(this.$route.params && this.$route.params.id);
       const projects = await prjstageResource.list({});
       this.projectStages = projects.data;
       const projectComponents = await projectComponentResource.list({
-        id_project: idProject,
+        id_project: this.idProject,
       });
       if (projectComponents.data.length > 0){
         projectComponents.data.map((c) => {

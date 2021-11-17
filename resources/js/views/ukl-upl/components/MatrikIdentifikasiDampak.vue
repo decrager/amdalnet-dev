@@ -70,7 +70,7 @@ export default {
             duration: 5 * 1000,
           });
           // reload accordion
-          this.$emit('handleReloadVsaList', 3);
+          this.$emit('handleReloadVsaList', 'dampak-potensial');
         })
         .catch((error) => {
           console.log(error);

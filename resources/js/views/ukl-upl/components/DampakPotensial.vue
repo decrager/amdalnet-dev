@@ -53,7 +53,7 @@ export default {
           });
           // reload accordion
           if (response.code === 200){
-            this.$emit('handleReloadVsaList', 4);
+            this.$emit('handleReloadVsaList', 'dampak-penting-hipotetik');
           }
         })
         .catch((error) => {
