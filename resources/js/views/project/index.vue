@@ -5,7 +5,7 @@
         <el-row type="flex" class="row-bg" justify="space-between">
           <div>
             <el-button
-              v-if="!isLpjp"
+              v-if="isInitiator"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <h1>Diagram Alir Pelingkupan</h1>
+    <h1>Bagan Alir Pelingkupan</h1>
     <img :src="bap" alt="" style="width: 100%; height: 100%;">
   </div>
 </template>
