@@ -52,7 +52,7 @@ export default {
             duration: 5 * 1000,
           });
           if (response.code === 200){
-            this.$emit('handleReloadVsaList', 5);
+            this.$emit('handleReloadVsaList', 'metode-studi');
           }
         })
         .catch((error) => {

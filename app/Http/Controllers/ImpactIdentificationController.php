@@ -80,17 +80,19 @@ class ImpactIdentificationController extends Controller
             ImpactIdentification::where('id_project', $params['id_project'])->delete();
             //insert checked items
             foreach ($params['checked'] as $item){
-                foreach ($item['sub'] as $sub){
-                    if ($sub['checked']){
-                        $created = ImpactIdentification::create([
-                            'id_project' => $params['id_project'],
-                            'id_project_rona_awal' => $item['id'],
-                            'id_project_component' => $sub['id'],
-                        ]);
-                        if ($created){
-                            $inserted++;
+                if ($item['id'] < 99999999) {
+                    foreach ($item['sub'] as $sub){
+                        if ($sub['checked']){
+                            $created = ImpactIdentification::create([
+                                'id_project' => $params['id_project'],
+                                'id_project_rona_awal' => $item['id'],
+                                'id_project_component' => $sub['id'],
+                            ]);
+                            if ($created){
+                                $inserted++;
+                            }
+                            $checked++;
                         }
-                        $checked++;
                     }
                 }
             }
@@ -108,7 +110,7 @@ class ImpactIdentificationController extends Controller
             $response = [];
             try {
                 foreach ($params['study_data'] as $impact) {
-                    if ($impact['id'] < 9990) {
+                    if ($impact['id'] < 99999999) {
                         //not dummy
                         $num_impacts++;
                         $row = ImpactIdentification::find($impact['id']);
