@@ -185,7 +185,7 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: [{ value: 'mandiri', label: 'mandiri' }, { value: 'lpjp', label: 'lpjp' }],
+      teamOptions: [{ value: 'mandiri', label: 'Mandiri' }, { value: 'lpjp', label: 'LPJP' }],
       teamToChooseOptions: null,
       kabkot: null,
       list: [],
