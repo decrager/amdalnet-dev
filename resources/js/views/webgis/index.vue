@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <DarkHeaderHome />
+  <div class="webgis__container">
+    <DarkHeaderHome class="header__container" />
     <div id="mapViewDiv">
       <!--    <el-button class="button-login" type="success" @click="loginModalShow()">Login</el-button>-->
       <!--    <el-button class="button-dashboard" type="success" @click="toDashboard()">Dashboard</el-button>-->
@@ -89,12 +89,6 @@ export default {
         .then(function(response) {
           if (response.data) {
             const gistaruLayer = new MapImageLayer({
-              portalItem: {
-                id: '0492594c2b814804a678781548818b9d',
-                portal: {
-                  url: 'https://gistaru.atrbpn.go.id/portal',
-                },
-              },
               url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
               imageTransparency: true,
               visible: false,
@@ -102,36 +96,18 @@ export default {
             map.add(gistaruLayer);
 
             const perbatasanPapua = new MapImageLayer({
-              portalItem: {
-                id: '3e3a14b0980342f0abf8a717c63517af',
-                portal: {
-                  url: 'https://gistaru.atrbpn.go.id/portal',
-                },
-              },
               url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_PERBATASAN_PAPUA/MapServer',
               imageTransparency: true,
               visible: false,
             });
 
             const sarbagita = new MapImageLayer({
-              portalItem: {
-                id: 'c3256f2b64d640f282c346b85ba5811f',
-                portal: {
-                  url: 'https://gistaru.atrbpn.go.id/portal',
-                },
-              },
               url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_SARBAGITA/MapServer',
               imageTransparency: true,
               visible: false,
             });
 
             const jabodetabek = new MapImageLayer({
-              portalItem: {
-                id: 'a2652f690900447baf7175d7a59234d4',
-                portal: {
-                  url: 'https://gistaru.atrbpn.go.id/portal',
-                },
-              },
               url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_JABODETABEKPUNJUR/MapServer',
               imageTransparency: true,
               visible: false,
@@ -224,94 +200,97 @@ export default {
           const projects = response.data.data;
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].map) {
-              shp(window.location.origin + projects[i].map).then(data => {
-                if (data.length > 1) {
-                  for (let i = 0; i < data.length; i++) {
-                    const getProjectDetails = {
-                      title: 'Details',
-                      id: 'get-details',
-                      image: 'information-24-f.svg',
-                    };
-                    const arrayJsonTemplate = {
-                      title: projects[i].project_title + ' (' + projects[i].project_year + ').',
-                      content: '<table style="border-collapse: collapse !important">' +
-                          '<thead>' +
-                            '<tr style="margin: 5px 0;">' +
-                              '<td style="width: 35%">KBLI Code</td>' +
-                              '<td> : </td>' +
-                              '<td>' + projects[i].kbli + '</td>' +
-                            '</tr>' +
-                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                              '<td style="width: 35%">Pemrakarsa</td>' +
-                              '<td> : </td>' +
-                              '<td>' + projects[i].applicant + '</td>' +
-                            '</tr>' +
-                            '<tr style="margin: 5px 0;">' +
-                              '<td style="width: 35%">Provinsi</td>' +
-                              '<td> : </td>' +
-                              '<td>' + projects[i].province + '</td>' +
-                            '</tr>' +
-                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                              '<td style="width: 35%">Kota</td>' +
-                              '<td> : </td>' +
-                              '<td>' + projects[i].district + '</td>' +
-                            '</tr>' +
-                            '<tr style="margin: 5px 0;">' +
-                              '<td style="width: 35%">Alamat</td>' +
-                              '<td> : </td>' +
-                              '<td>' + projects[i].address + '</td>' +
-                            '</tr>' +
-                            '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                              '<td style="width: 35%">Deskripsi</td>' +
-                              '<td> : </td>' +
-                              '<td>' + projects[i].description + '</td>' +
-                            '</tr>' +
-                            '<tr style="margin: 5px 0;">' +
-                              '<td style="width: 35%">Skala</td>' +
-                              '<td> : </td>' +
-                              '<td>' + projects[i].scale + ' ' + projects[i].scale_unit + '</td>' +
-                            '</tr>' +
-                          '</thead>' +
-                        '</table>',
-                      actions: [getProjectDetails],
-                    };
+              const splitMap = projects[i].map.split(',');
+              for (let i = 0; i < splitMap.length; i++) {
+                shp(window.location.origin + '/storage/map/' + splitMap[i]).then(data => {
+                  if (data.length > 1) {
+                    for (let i = 0; i < data.length; i++) {
+                      const getProjectDetails = {
+                        title: 'Details',
+                        id: 'get-details',
+                        image: 'information-24-f.svg',
+                      };
+                      const arrayJsonTemplate = {
+                        title: projects[i].project_title + ' (' + projects[i].project_year + ').',
+                        content: '<table style="border-collapse: collapse !important">' +
+                            '<thead>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">KBLI Code</td>' +
+                                '<td> : </td>' +
+                                '<td>' + projects[i].kbli + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">Pemrakarsa</td>' +
+                                '<td> : </td>' +
+                                '<td>' + projects[i].applicant + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">Provinsi</td>' +
+                                '<td> : </td>' +
+                                '<td>' + projects[i].province + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">Kota</td>' +
+                                '<td> : </td>' +
+                                '<td>' + projects[i].district + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">Alamat</td>' +
+                                '<td> : </td>' +
+                                '<td>' + projects[i].address + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">Deskripsi</td>' +
+                                '<td> : </td>' +
+                                '<td>' + projects[i].description + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">Skala</td>' +
+                                '<td> : </td>' +
+                                '<td>' + projects[i].scale + ' ' + projects[i].scale_unit + '</td>' +
+                              '</tr>' +
+                            '</thead>' +
+                          '</table>',
+                        actions: [getProjectDetails],
+                      };
 
-                    const blob = new Blob([JSON.stringify(data[i])], {
+                      const blob = new Blob([JSON.stringify(data[i])], {
+                        type: 'application/json',
+                      });
+                      const url = URL.createObjectURL(blob);
+                      const geojsonLayerArray = new GeoJSONLayer({
+                        url: url,
+                        outFields: ['*'],
+                        title: projects[1].project_title,
+                        popupTemplate: arrayJsonTemplate,
+                      });
+                      mapGeojsonArray.push(geojsonLayerArray);
+                    }
+                    const kegiatanGroupLayer = new GroupLayer({
+                      title: projects[1].project_title,
+                      visible: false,
+                      visibilityMode: 'exclusive',
+                      layers: mapGeojsonArray,
+                      opacity: 0.90,
+                    });
+
+                    map.add(kegiatanGroupLayer);
+                  } else {
+                    const blob = new Blob([JSON.stringify(data)], {
                       type: 'application/json',
                     });
                     const url = URL.createObjectURL(blob);
-                    const geojsonLayerArray = new GeoJSONLayer({
+                    const geojsonLayer = new GeoJSONLayer({
                       url: url,
+                      visible: false,
                       outFields: ['*'],
-                      title: projects[1].project_title,
-                      popupTemplate: arrayJsonTemplate,
+                      title: projects[i].project_title,
                     });
-                    mapGeojsonArray.push(geojsonLayerArray);
+                    mapGeojson.push(geojsonLayer);
+                    map.addMany(mapGeojson);
                   }
-                  const kegiatanGroupLayer = new GroupLayer({
-                    title: projects[1].project_title,
-                    visible: false,
-                    visibilityMode: 'exclusive',
-                    layers: mapGeojsonArray,
-                    opacity: 0.90,
-                  });
-
-                  map.add(kegiatanGroupLayer);
-                } else {
-                  const blob = new Blob([JSON.stringify(data)], {
-                    type: 'application/json',
-                  });
-                  const url = URL.createObjectURL(blob);
-                  const geojsonLayer = new GeoJSONLayer({
-                    url: url,
-                    visible: false,
-                    outFields: ['*'],
-                    title: projects[i].project_title,
-                  });
-                  mapGeojson.push(geojsonLayer);
-                  map.addMany(mapGeojson);
-                }
-              });
+                });
+              }
             }
           }
         });
@@ -375,34 +354,26 @@ export default {
         }
       });
 
-      const legendExpand = new Expand({
-        view: mapView,
-        content: legend.domNode,
-        expandIconClass: 'esri-icon-collection',
-        expandTooltip: 'Legend',
-      });
-
-      const layersExpand = new Expand({
-        view: mapView,
-        content: layerList.domNode,
-        expandIconClass: 'esri-icon-layer-list',
-        expandTooltip: 'Layers',
-      });
-      mapView.ui.add(legendExpand, 'top-right');
-      mapView.ui.add(layersExpand, 'top-right');
+      mapView.ui.add(layerList, 'top-right');
+      mapView.ui.add(legend, 'bottom-left');
     },
   },
 };
 </script>
 <style scoped>
 @import '../home/assets/css/style.css';
+.webgis__container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
 
 #mapViewDiv {
   width: 100%;
   height: 100%;
-  padding: 0;
-  margin: 0;
-  position: absolute;
 }
 
 .esri-feature-content tr td {

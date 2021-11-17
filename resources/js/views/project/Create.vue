@@ -698,11 +698,6 @@ export default {
       this.currentProject.fileMap = this.fileMap;
       this.currentProject.fileKtr = this.fileKtr;
 
-      const formData = new FormData();
-      for (let i = 0; i < this.fileMap.length; i++) {
-        formData.append('map[]', this.fileMap[i]);
-      }
-
       this.$refs.currentProject.validate((valid) => {
         if (valid) {
           this.currentProject.listSupportDoc = this.listSupportTable.filter(
