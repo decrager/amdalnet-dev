@@ -48,6 +48,12 @@ Route::namespace('Api')->group(function () {
     });
 });
 
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('workspace/session/init', 'WorkspaceController@sessionInit');
+});
+
+Route::post('workspace/template/import', 'WorkspaceController@importTemplate');
+
 // Fake APIs
 Route::get('/table/list', function () {
     $rowsNumber = mt_rand(20, 30);
