@@ -15,4 +15,9 @@ class TestingMeeting extends Model
     {
         return $this->hasMany(TestingMeetingInvitation::class, 'id_testing_meeting', 'id');
     }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'id_project', 'id');
+    }
 }

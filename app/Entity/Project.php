@@ -66,4 +66,9 @@ class Project extends Model
     public function province(){
         return $this->hasOne(Province::class, 'id', 'id_prov');
     }
+
+    public function initiator()
+    {
+        return $this->belongsTo(Initiator::class, 'id_applicant', 'id');
+    }
 }
