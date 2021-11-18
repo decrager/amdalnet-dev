@@ -1,10 +1,7 @@
 <template>
   <div class="webgis__container">
-    <DarkHeaderHome class="header__container" />
-    <div id="mapViewDiv">
-      <!--    <el-button class="button-login" type="success" @click="loginModalShow()">Login</el-button>-->
-      <!--    <el-button class="button-dashboard" type="success" @click="toDashboard()">Dashboard</el-button>-->
-    </div>
+    <DarkHeaderHome />
+    <div id="mapViewDiv" />
   </div>
 
 </template>
@@ -25,7 +22,6 @@ import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
-// import qs from 'qs';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
 
 export default {
@@ -70,29 +66,10 @@ export default {
         basemap: 'topo',
       });
 
-      // var data = qs.stringify({
-      //   'username': 'klhk_amdal2',
-      //   'password': 'G8T9@iy!7mnb',
-      //   'client': 'requestip',
-      //   'expiration': '604800000',
-      //   'f': 'json',
-      // });
-
-      // var config = {
-      //   method: 'post',
-      //   url: 'https://gistaru.atrbpn.go.id/portal/sharing/rest/generateToken',
-      //   headers: {
-      //     'Content-Type': 'application/x-www-form-urlencoded',
-      //   },
-      //   data: data,
-      // };
-
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
-
-      // esriConfig.request.proxyUrl = 'proxy/proxy.php';
 
       const featureLayer = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
@@ -415,6 +392,7 @@ export default {
   width: 100%;
   margin: 0;
   padding: 0;
+    position: absolute;
 }
 
 #mapViewDiv {

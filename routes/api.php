@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ExportDocument;
+use App\Http\Controllers\UklUplCommentController;
 use App\Http\Resources\UserResource;
 use App\Laravue\Acl;
 use App\Laravue\Faker;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::apiResource('home', 'HomeController');
 Route::apiResource('webgis', 'WebgisController');
 
@@ -208,3 +210,5 @@ Route::apiResource('meet-report-rkl-rpl', 'MeetReportRKLRPLController');
 Route::apiResource('feasibility-test', 'FeasibilityTestController');
 Route::apiResource('skkl', 'SKKLController');
 Route::apiResource('impact-studies', 'ImpactStudyController');
+Route::get('ukl-upl-comment', [UklUplCommentController::class, 'index']);
+Route::post('ukl-upl-comment', [UklUplCommentController::class, 'store']);
