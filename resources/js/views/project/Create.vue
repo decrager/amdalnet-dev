@@ -627,13 +627,12 @@ export default {
       for (let i = 0; i < this.fileMap.length; i++){
         const reader = new FileReader(); // instantiate a new file reader
         reader.onload = (event) => {
-          const geo = L.geoJSON().addTo(map);
           const base = event.target.result;
           shp(base).then(function(data) {
-            const feature = geo.addData(data);
-            console.log(feature);
+            const geo = L.geoJSON(data).addTo(map);
+            console.log(geo);
 
-            map.fitBounds(feature.getBounds());
+            map.fitBounds(geo.getBounds());
           });
         };
 

@@ -25,7 +25,8 @@ import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
-import qs from 'qs';
+// import qs from 'qs';
+import * as urlUtils from '@arcgis/core/core/urlUtils';
 
 export default {
   name: 'WebGis',
@@ -69,65 +70,29 @@ export default {
         basemap: 'topo',
       });
 
-      var data = qs.stringify({
-        'username': 'klhk_amdal2',
-        'password': 'G8T9@iy!7mnb',
-        'client': 'requestip',
-        'expiration': '604800000',
-        'f': 'json',
+      // var data = qs.stringify({
+      //   'username': 'klhk_amdal2',
+      //   'password': 'G8T9@iy!7mnb',
+      //   'client': 'requestip',
+      //   'expiration': '604800000',
+      //   'f': 'json',
+      // });
+
+      // var config = {
+      //   method: 'post',
+      //   url: 'https://gistaru.atrbpn.go.id/portal/sharing/rest/generateToken',
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded',
+      //   },
+      //   data: data,
+      // };
+
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
 
-      var config = {
-        method: 'post',
-        url: 'https://gistaru.atrbpn.go.id/portal/sharing/rest/generateToken',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        data: data,
-      };
-      axios(config)
-        .then(function(response) {
-          if (response.data) {
-            const gistaruLayer = new MapImageLayer({
-              url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
-              imageTransparency: true,
-              visible: false,
-            });
-            map.add(gistaruLayer);
-
-            const perbatasanPapua = new MapImageLayer({
-              url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_PERBATASAN_PAPUA/MapServer',
-              imageTransparency: true,
-              visible: false,
-            });
-
-            const sarbagita = new MapImageLayer({
-              url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_SARBAGITA/MapServer',
-              imageTransparency: true,
-              visible: false,
-            });
-
-            const jabodetabek = new MapImageLayer({
-              url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_JABODETABEKPUNJUR/MapServer',
-              imageTransparency: true,
-              visible: false,
-            });
-
-            map.addMany([perbatasanPapua, sarbagita, jabodetabek]);
-
-            const ksnGroupLayer = new GroupLayer({
-              title: 'Layer Kawasan Strategis Nasional (KSN)',
-              visible: true,
-              layers: [perbatasanPapua, sarbagita, jabodetabek],
-              opacity: 0.90,
-            });
-
-            map.add(ksnGroupLayer);
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+      // esriConfig.request.proxyUrl = 'proxy/proxy.php';
 
       const featureLayer = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
@@ -192,6 +157,87 @@ export default {
       });
 
       map.add(baseGroupLayer);
+
+      const gistaruLayer = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+      map.add(gistaruLayer);
+
+      const perbatasanPapua = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_PERBATASAN_PAPUA/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const acehSumut = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KPN_ACEH_SUMUT/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const kalSul = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KALIMANTAN_SULAWESI_PERPRES/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const bandung = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KAWASAN_PERKOTAAN_CEKUNGAN_BANDUNG/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const jabodetabek = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_JABODETABEKPUNJUR/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const borobudur = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_BOROBUDUR/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const bbk = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_BBK/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const kedungSepur = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KEDUNGSEPUR/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const toba = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_TOBA/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      map.addMany([perbatasanPapua, bandung, jabodetabek, acehSumut, kalSul, borobudur, bbk, kedungSepur, toba]);
+
+      const ksnGroupLayer = new GroupLayer({
+        title: 'Layer Kawasan Strategis Nasional (KSN)',
+        visible: false,
+        layers: [perbatasanPapua, bandung, jabodetabek, acehSumut, kalSul, borobudur, bbk, kedungSepur, toba],
+        opacity: 0.90,
+      });
+
+      map.add(ksnGroupLayer);
+
+      const rtrPulau = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/001_RTR_PULAU/_RTR_PULAU_INDONESIA/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      map.add(rtrPulau);
 
       const mapGeojson = [];
       const mapGeojsonArray = [];
