@@ -6,28 +6,100 @@
         <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
         <el-button type="primary" @click="exportDocx">Export to .DOCX</el-button>
       </div>
-      <div style="margin-top: 20px;">
-        <iframe :src="'https://docs.google.com/gview?url='+projects+'&embedded=true'" width="1140px" height="723px" frameborder="0" />
-      </div>
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="16"><div class="grid-content bg-purple" />
+          <iframe :src="'https://docs.google.com/gview?url='+projects+'&embedded=true'" width="100%" height="723px" frameborder="1" />
+        </el-col>
+        <el-col :span="8"><div class="grid-content bg-purple" />
+
+          <el-input
+            v-model="message"
+            type="textarea"
+            :rows="5"
+            placeholder="Tulis Masukan"
+          />
+          <div style="margin-top: 5px; display: flex; align-content: flex-end; justify-content: end;">
+            <el-button type="primary" icon="el-icon-s-promotion" @click="saveComment">Kirim</el-button>
+          </div>
+          <div v-if="comments" style="margin-top: 10px;">
+            <h3>Komentar Terbaru : </h3>
+            <el-card v-for="comment in commentsData" :key="comment.id" shadow="always" style="margin-top: 10px;">
+              <span style="font-weight: bold">{{ comment.name }}</span><br>
+              <span><i>{{ formatDate(comment.date) }}</i></span>
+              <p>{{ comment.comment }}</p>
+            </el-card>
+          </div>
+        </el-col>
+      </el-row>
     </el-card>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 export default {
   data() {
     return {
       idProject: 0,
       projects: '',
+      commentsData: [],
+      comments: [],
+      message: null,
+      userId: 0,
+      errorComment: '',
     };
   },
   mounted() {
     this.setProjectId;
     this.getDocument();
+    this.getComment();
+    this.getUserId();
+  },
+  http: {
+    headers: {
+      'X-CSRF-TOKEN': window.csrf,
+    },
   },
   methods: {
+    formatDate(value) {
+      if (value) {
+        dayjs.locale('id');
+        return dayjs(String(value)).format('DD-MMMM-YYYY');
+      }
+    },
+    getComment() {
+      axios.get('api/ukl-upl-comment')
+        .then((response) => {
+          this.commentsData = response.data.data;
+          this.comments = 1;
+        });
+    },
+    getUserId() {
+      axios.get('api/user')
+        .then((response) => {
+          this.userId = response.data.data;
+        });
+    },
+    saveComment() {
+      const idProject = this.$route.params && this.$route.params.id;
+      if (this.message != null && this.message !== ' ') {
+        this.errorComment = null;
+        axios.post('api/ukl-upl-comment', {
+          id_project: parseInt(idProject),
+          id_user: this.userId.id,
+          comment: this.message,
+        }).then(res => {
+          if (res.data.status) {
+            this.commentsData.push({ 'name': this.userId.name, 'date': this.formatDate(new Date()), 'comment': this.message });
+            this.message = null;
+          }
+        });
+      } else {
+        this.errorComment = 'Please enter a comment to save';
+      }
+    },
     getDocument() {
       const id = this.$route.params && this.$route.params.id;
       axios.get('api/projects/' + id)
@@ -78,3 +150,18 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.body__section {
+  display: flex;
+  column-gap: 20px;
+  margin-top: 20px;
+}
+
+.body__section.left__section {
+  flex: 2;
+}
+.body__section.right__section {
+  flex: 1
+}
+</style>
