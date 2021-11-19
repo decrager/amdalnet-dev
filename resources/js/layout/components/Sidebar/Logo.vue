@@ -48,7 +48,7 @@ export default {
     height: 80px;
     line-height: 80px;
     // background: #2b2f3a;
-    background: #2c2c2c;
+    background: #033022;
     text-align: center;
     overflow: hidden;
 
