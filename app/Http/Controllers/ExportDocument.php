@@ -16,6 +16,22 @@ use Illuminate\Support\Facades\File;
 
 class ExportDocument extends Controller
 {
+    public function KADocx($id)
+    {
+        $getData = DB::table('impact_studies')
+            ->leftJoin('impact_identifications', 'impact_studies.id_impact_identification', '=', 'impact_identifications.id')
+            ->leftJoin('projects', 'projects.id', '=', 'impact_identifications.id_project')
+            ->leftJoin('sub_project_components', 'sub_project_components.id', '=', 'impact_identifications.id_project_component')
+            ->leftJoin('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_project_rona_awal')
+            ->leftJoin('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
+            ->leftJoin('units', 'units.id', '=', 'impact_identifications.id_unit')
+            ->leftJoin('initiators', 'initiators.id', '=', 'projects.id_applicant')
+            ->where('projects.id', '=', $id)
+            ->first();
+
+        return response()->json($getData);
+    }
+
     public function ExportKA($id)
     {
         if (Request::segment(3) == 'docx') {
@@ -230,10 +246,10 @@ class ExportDocument extends Controller
         return response()->download($save_file_name)->deleteFileAfterSend(false);
     }
 
-    public function ExportBA($id, $type) 
+    public function ExportBA($id, $type)
     {
         $beritaAcara = MeetingReport::where([['id_project', $id], ['document_type', $type]])->first();
-        $expert_bank_member = ExpertBankTeamMember::where([['id_expert_bank_team', $beritaAcara->expert_bank_team_id],['position', 'Ketua']])->first();
+        $expert_bank_member = ExpertBankTeamMember::where([['id_expert_bank_team', $beritaAcara->expert_bank_team_id], ['position', 'Ketua']])->first();
         $ketua_tuk = $expert_bank_member->expertBank->name;
         $institution = $expert_bank_member->expertBank->institution;
         $templateProcessor = new TemplateProcessor('template_berita_acara.docx');
@@ -256,13 +272,12 @@ class ExportDocument extends Controller
         $templateProcessor->setValue('ketua_tuk', $ketua_tuk);
         $templateProcessor->setValue('institution', $institution);
 
-        $save_file_name = 'berita-acara-ka-' . $beritaAcara->project->project_title . '.docx'; 
+        $save_file_name = 'berita-acara-ka-' . $beritaAcara->project->project_title . '.docx';
         if (!File::exists(storage_path('app/public/berita-acara/'))) {
             File::makeDirectory(storage_path('app/public/berita-acara/'));
             $templateProcessor->saveAs(storage_path('app/public/berita-acara/' . $save_file_name));
         }
 
         return response()->download(storage_path('app/public/berita-acara/' . $save_file_name))->deleteFileAfterSend(false);
-
     }
 }

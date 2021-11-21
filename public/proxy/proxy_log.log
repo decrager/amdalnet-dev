@@ -799,3 +799,341 @@
 11-18-21 10:28:01 | Using session token
 11-18-21 10:28:01 | Ok to proxy
 11-18-21 10:28:01 | Proxy complete
+ 
+11-20-21 10:43:34 | GET detected
+11-20-21 10:43:34 | Resource using ArcGIS Server security
+11-20-21 10:43:36 | Got token endpoint
+11-20-21 10:43:36 | Adding token to session
+11-20-21 10:43:37 | Ok to proxy
+11-20-21 10:43:37 | Proxy complete
+ 
+11-20-21 10:43:37 | GET detected
+11-20-21 10:43:37 | Resource using ArcGIS Server security
+11-20-21 10:43:37 | Got token endpoint
+11-20-21 10:43:37 | Adding token to session
+11-20-21 10:43:37 | Ok to proxy
+11-20-21 10:43:37 | Proxy complete
+ 
+11-20-21 10:43:37 | GET detected
+11-20-21 10:43:37 | Resource using ArcGIS Server security
+11-20-21 10:43:37 | Got token endpoint
+11-20-21 10:43:37 | Adding token to session
+11-20-21 10:43:37 | Ok to proxy
+11-20-21 10:43:37 | Proxy complete
+ 
+11-20-21 10:43:37 | GET detected
+11-20-21 10:43:37 | Resource using ArcGIS Server security
+11-20-21 10:43:38 | Got token endpoint
+11-20-21 10:43:38 | Adding token to session
+11-20-21 10:43:38 | Ok to proxy
+11-20-21 10:43:38 | Proxy complete
+ 
+11-20-21 10:43:38 | GET detected
+11-20-21 10:43:38 | Resource using ArcGIS Server security
+11-20-21 10:43:38 | Got token endpoint
+11-20-21 10:43:38 | Adding token to session
+11-20-21 10:43:38 | Ok to proxy
+11-20-21 10:43:38 | Proxy complete
+ 
+11-20-21 10:43:38 | GET detected
+11-20-21 10:43:38 | Resource using ArcGIS Server security
+11-20-21 10:43:38 | Got token endpoint
+11-20-21 10:43:39 | Adding token to session
+11-20-21 10:43:39 | Ok to proxy
+11-20-21 10:43:39 | Proxy complete
+ 
+11-20-21 10:43:39 | GET detected
+11-20-21 10:43:39 | Resource using ArcGIS Server security
+11-20-21 10:43:39 | Got token endpoint
+11-20-21 10:43:40 | Adding token to session
+11-20-21 10:43:40 | Ok to proxy
+11-20-21 10:43:40 | Proxy complete
+ 
+11-20-21 10:43:40 | GET detected
+11-20-21 10:43:40 | Resource using ArcGIS Server security
+11-20-21 10:43:40 | Got token endpoint
+11-20-21 10:43:43 | Adding token to session
+11-20-21 10:43:43 | Ok to proxy
+11-20-21 10:43:43 | Proxy complete
+ 
+11-20-21 10:43:44 | GET detected
+11-20-21 10:43:44 | Resource using ArcGIS Server security
+11-20-21 10:43:44 | Got token endpoint
+11-20-21 10:43:44 | Adding token to session
+11-20-21 10:43:44 | Ok to proxy
+11-20-21 10:43:44 | Proxy complete
+ 
+11-20-21 10:43:44 | GET detected
+11-20-21 10:43:44 | Resource using ArcGIS Server security
+11-20-21 10:43:44 | Got token endpoint
+11-20-21 10:43:45 | Adding token to session
+11-20-21 10:43:45 | Ok to proxy
+11-20-21 10:43:45 | Proxy complete
+ 
+11-20-21 10:43:45 | GET detected
+11-20-21 10:43:45 | Resource using ArcGIS Server security
+11-20-21 10:43:45 | Got token endpoint
+11-20-21 10:43:45 | Adding token to session
+11-20-21 10:43:45 | Ok to proxy
+11-20-21 10:43:45 | Proxy complete
+ 
+11-20-21 10:44:14 | GET detected
+11-20-21 10:44:14 | Using session token
+11-20-21 10:44:15 | Ok to proxy
+11-20-21 10:44:15 | Proxy complete
+ 
+11-20-21 10:44:15 | GET detected
+11-20-21 10:44:15 | Using session token
+11-20-21 10:45:26 | Ok to proxy
+ 
+11-20-21 10:45:52 | GET detected
+11-20-21 10:45:52 | Using session token
+11-20-21 10:45:52 | Ok to proxy
+11-20-21 10:45:52 | Proxy complete
+ 
+11-20-21 10:45:52 | GET detected
+11-20-21 10:45:52 | Using session token
+11-20-21 10:45:57 | Ok to proxy
+ 
+11-20-21 10:45:58 | GET detected
+11-20-21 10:45:58 | Using session token
+11-20-21 10:45:58 | Ok to proxy
+11-20-21 10:45:58 | Proxy complete
+ 
+11-20-21 10:46:03 | GET detected
+11-20-21 10:46:03 | Using session token
+11-20-21 10:46:04 | Ok to proxy
+11-20-21 10:46:04 | Proxy complete
+ 
+11-20-21 10:46:06 | GET detected
+11-20-21 10:46:06 | Using session token
+11-20-21 10:46:07 | Ok to proxy
+11-20-21 10:46:07 | Proxy complete
+ 
+11-20-21 10:46:09 | GET detected
+11-20-21 10:46:09 | Using session token
+11-20-21 10:46:10 | Ok to proxy
+11-20-21 10:46:10 | Proxy complete
+ 
+11-20-21 10:46:24 | GET detected
+11-20-21 10:46:24 | Using session token
+11-20-21 10:46:24 | Ok to proxy
+11-20-21 10:46:24 | Proxy complete
+ 
+11-20-21 10:46:28 | GET detected
+11-20-21 10:46:28 | Using session token
+11-20-21 10:46:29 | Ok to proxy
+11-20-21 10:46:29 | Proxy complete
+ 
+11-20-21 10:46:31 | GET detected
+11-20-21 10:46:31 | Using session token
+11-20-21 10:46:35 | Ok to proxy
+11-20-21 10:46:35 | Proxy complete
+ 
+11-20-21 10:48:03 | GET detected
+11-20-21 10:48:03 | Using session token
+11-20-21 10:48:19 | Ok to proxy
+ 
+11-20-21 10:48:19 | GET detected
+11-20-21 10:48:19 | Using session token
+11-20-21 10:49:33 | Ok to proxy
+ 
+11-20-21 10:49:34 | GET detected
+11-20-21 10:49:34 | Using session token
+11-20-21 10:50:32 | Ok to proxy
+ 
+11-20-21 10:50:41 | GET detected
+11-20-21 10:50:41 | Using session token
+11-20-21 10:50:41 | Ok to proxy
+11-20-21 10:50:41 | Proxy complete
+ 
+11-20-21 10:50:41 | GET detected
+11-20-21 10:50:41 | Using session token
+11-20-21 10:50:42 | Ok to proxy
+11-20-21 10:50:42 | Proxy complete
+ 
+11-20-21 10:50:42 | GET detected
+11-20-21 10:50:42 | Using session token
+11-20-21 10:50:42 | Ok to proxy
+11-20-21 10:50:42 | Proxy complete
+ 
+11-20-21 10:50:42 | GET detected
+11-20-21 10:50:42 | Using session token
+11-20-21 10:50:42 | Ok to proxy
+11-20-21 10:50:42 | Proxy complete
+ 
+11-20-21 10:50:42 | GET detected
+11-20-21 10:50:42 | Using session token
+11-20-21 10:50:42 | Ok to proxy
+11-20-21 10:50:42 | Proxy complete
+ 
+11-20-21 10:50:42 | GET detected
+11-20-21 10:50:42 | Using session token
+11-20-21 10:50:42 | Ok to proxy
+11-20-21 10:50:42 | Proxy complete
+ 
+11-20-21 10:50:42 | GET detected
+11-20-21 10:50:42 | Using session token
+11-20-21 10:50:42 | Ok to proxy
+11-20-21 10:50:42 | Proxy complete
+ 
+11-20-21 10:50:42 | GET detected
+11-20-21 10:50:42 | Using session token
+11-20-21 10:50:43 | Ok to proxy
+11-20-21 10:50:43 | Proxy complete
+ 
+11-20-21 10:50:43 | GET detected
+11-20-21 10:50:43 | Using session token
+11-20-21 10:50:43 | Ok to proxy
+11-20-21 10:50:43 | Proxy complete
+ 
+11-20-21 10:50:43 | GET detected
+11-20-21 10:50:43 | Using session token
+11-20-21 10:50:43 | Ok to proxy
+11-20-21 10:50:43 | Proxy complete
+ 
+11-20-21 10:50:43 | GET detected
+11-20-21 10:50:43 | Using session token
+11-20-21 10:50:43 | Ok to proxy
+11-20-21 10:50:43 | Proxy complete
+ 
+11-20-21 10:52:47 | GET detected
+11-20-21 10:52:47 | Resource using ArcGIS Server security
+11-20-21 10:52:47 | Got token endpoint
+11-20-21 10:52:47 | Adding token to session
+11-20-21 10:52:47 | Ok to proxy
+11-20-21 10:52:47 | Proxy complete
+ 
+11-20-21 10:52:47 | GET detected
+11-20-21 10:52:47 | Resource using ArcGIS Server security
+11-20-21 10:52:48 | Got token endpoint
+11-20-21 10:52:48 | Adding token to session
+11-20-21 10:52:48 | Ok to proxy
+11-20-21 10:52:48 | Proxy complete
+ 
+11-20-21 10:52:48 | GET detected
+11-20-21 10:52:48 | Resource using ArcGIS Server security
+11-20-21 10:52:48 | Got token endpoint
+11-20-21 10:52:48 | Adding token to session
+11-20-21 10:52:48 | Ok to proxy
+11-20-21 10:52:48 | Proxy complete
+ 
+11-20-21 10:52:48 | GET detected
+11-20-21 10:52:48 | Resource using ArcGIS Server security
+11-20-21 10:52:48 | Got token endpoint
+11-20-21 10:52:49 | Adding token to session
+11-20-21 10:52:49 | Ok to proxy
+11-20-21 10:52:49 | Proxy complete
+ 
+11-20-21 10:52:49 | GET detected
+11-20-21 10:52:49 | Resource using ArcGIS Server security
+11-20-21 10:52:49 | Got token endpoint
+11-20-21 10:52:49 | Adding token to session
+11-20-21 10:52:49 | Ok to proxy
+11-20-21 10:52:49 | Proxy complete
+ 
+11-20-21 10:52:49 | GET detected
+11-20-21 10:52:49 | Resource using ArcGIS Server security
+11-20-21 10:52:49 | Got token endpoint
+11-20-21 10:52:49 | Adding token to session
+11-20-21 10:52:49 | Ok to proxy
+11-20-21 10:52:49 | Proxy complete
+ 
+11-20-21 10:52:49 | GET detected
+11-20-21 10:52:49 | Resource using ArcGIS Server security
+11-20-21 10:52:50 | Got token endpoint
+11-20-21 10:52:50 | Adding token to session
+11-20-21 10:52:50 | Ok to proxy
+11-20-21 10:52:50 | Proxy complete
+ 
+11-20-21 10:52:50 | GET detected
+11-20-21 10:52:50 | Resource using ArcGIS Server security
+11-20-21 10:52:50 | Got token endpoint
+11-20-21 10:52:50 | Adding token to session
+11-20-21 10:52:50 | Ok to proxy
+11-20-21 10:52:50 | Proxy complete
+ 
+11-20-21 10:52:50 | GET detected
+11-20-21 10:52:50 | Resource using ArcGIS Server security
+11-20-21 10:52:50 | Got token endpoint
+11-20-21 10:52:50 | Adding token to session
+11-20-21 10:52:51 | Ok to proxy
+11-20-21 10:52:51 | Proxy complete
+ 
+11-20-21 10:52:51 | GET detected
+11-20-21 10:52:51 | Resource using ArcGIS Server security
+11-20-21 10:52:51 | Got token endpoint
+11-20-21 10:52:51 | Adding token to session
+11-20-21 10:52:51 | Ok to proxy
+11-20-21 10:52:51 | Proxy complete
+ 
+11-20-21 10:52:51 | GET detected
+11-20-21 10:52:51 | Resource using ArcGIS Server security
+11-20-21 10:52:51 | Got token endpoint
+11-20-21 10:52:51 | Adding token to session
+11-20-21 10:52:51 | Ok to proxy
+11-20-21 10:52:51 | Proxy complete
+ 
+11-20-21 10:53:31 | GET detected
+11-20-21 10:53:31 | Using session token
+11-20-21 10:53:32 | Ok to proxy
+11-20-21 10:53:32 | Proxy complete
+ 
+11-20-21 10:53:32 | GET detected
+11-20-21 10:53:32 | Using session token
+11-20-21 10:54:45 | Ok to proxy
+ 
+11-20-21 11:04:02 | GET detected
+11-20-21 11:04:02 | Using session token
+11-20-21 11:04:02 | Ok to proxy
+11-20-21 11:04:02 | Proxy complete
+ 
+11-20-21 11:04:02 | GET detected
+11-20-21 11:04:02 | Using session token
+11-20-21 11:04:02 | Ok to proxy
+11-20-21 11:04:02 | Proxy complete
+ 
+11-20-21 11:04:02 | GET detected
+11-20-21 11:04:02 | Using session token
+11-20-21 11:04:02 | Ok to proxy
+11-20-21 11:04:02 | Proxy complete
+ 
+11-20-21 11:04:02 | GET detected
+11-20-21 11:04:02 | Using session token
+11-20-21 11:04:03 | Ok to proxy
+11-20-21 11:04:03 | Proxy complete
+ 
+11-20-21 11:04:03 | GET detected
+11-20-21 11:04:03 | Using session token
+11-20-21 11:04:03 | Ok to proxy
+11-20-21 11:04:03 | Proxy complete
+ 
+11-20-21 11:04:03 | GET detected
+11-20-21 11:04:03 | Using session token
+11-20-21 11:04:03 | Ok to proxy
+11-20-21 11:04:03 | Proxy complete
+ 
+11-20-21 11:04:03 | GET detected
+11-20-21 11:04:03 | Using session token
+11-20-21 11:04:03 | Ok to proxy
+11-20-21 11:04:03 | Proxy complete
+ 
+11-20-21 11:04:03 | GET detected
+11-20-21 11:04:03 | Using session token
+11-20-21 11:04:03 | Ok to proxy
+11-20-21 11:04:03 | Proxy complete
+ 
+11-20-21 11:04:03 | GET detected
+11-20-21 11:04:03 | Using session token
+11-20-21 11:04:03 | Ok to proxy
+11-20-21 11:04:03 | Proxy complete
+ 
+11-20-21 11:04:03 | GET detected
+11-20-21 11:04:03 | Using session token
+11-20-21 11:04:03 | Ok to proxy
+11-20-21 11:04:03 | Proxy complete
+ 
+11-20-21 11:04:03 | GET detected
+11-20-21 11:04:03 | Using session token
+11-20-21 11:04:03 | Ok to proxy
+11-20-21 11:04:03 | Proxy complete
