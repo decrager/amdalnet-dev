@@ -67,9 +67,7 @@
       </template>
       <template slot="paneR">
         <div class="right-container">
-          <iframe :src="padSrc" title="Document" frameborder="0" width="100%">
-            need iframe
-          </iframe>
+          <div id="placeholder" />
         </div>
       </template>
     </split-pane>
@@ -97,10 +95,11 @@ export default {
   data() {
     return {
       newTree: {},
-      etherpadUrl: '',
+      officeUrl: '',
       selectedTreeId: 1,
       sessionID: null,
       loading: false,
+      docEditor: null,
       data: new Tree([
         {
           name: 'Kata Pengantar',
@@ -187,18 +186,18 @@ export default {
   },
   computed: {
     padSrc() {
-      console.log('src:', process.env.MIX_EHTERPAD_URL, this.selectedTreeId);
+      console.log('src:', process.env.MIX_OFFICE_URL, this.selectedTreeId);
       if (this.sessionID) {
-        return process.env.MIX_EHTERPAD_URL + '/auth_session?sessionID=' + this.sessionID + '&padName=' + this.selectedTreeId;
+        return process.env.MIX_OFFICE_URL + '/auth_session?sessionID=' + this.sessionID + '&padName=' + this.selectedTreeId;
       }
       return '';
     },
   },
   async mounted() {
     console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
-    // console.log(process.env.MIX_EHTERPAD_URL);
-    this.etherpadUrl = process.env.MIX_EHTERPAD_URL;
-    this.etherpadAuth();
+    // console.log(process.env.MIX_OFFICE_URL);
+    this.officeUrl = process.env.MIX_OFFICE_URL;
+    this.addOfficeScript();
   },
   methods: {
     resize() {
@@ -293,6 +292,67 @@ export default {
       return isLt2M;
     },
 
+    addOfficeScript() {
+      const officeScript = document.createElement('script');
+      console.log('x', process.env.MIX_OFFICE_URL, process.env.MIX_ETHERPAD_URL);
+      officeScript.setAttribute('src', 'http://localhost/web-apps/apps/api/documents/api.js');
+      document.head.appendChild(officeScript);
+      officeScript.onload = () => {
+        // this.createOfficeEditor();
+        const config = {
+          'width': '100%',
+          'height': '100%',
+          'type': 'desktop',
+          'document': {
+            'fileType': 'docx',
+            'key': '172.23.0.1http___localhost_example_files_172.23.0.1_UKL_20UPL_20SPBU_20-_20Edit_20Nafila_edit_20FM.docx1637464264620',
+            'title': 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
+            'url': 'http://localhost/example/download?fileName=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=172.23.0.1',
+          },
+          'documentType': 'word',
+          'editorConfig': {
+            'user': {
+              'group': 'ukl/upl',
+              'id': '123456x',
+              'name': 'ryan ryvees',
+            },
+            'customization': {
+              'compactHeader': true,
+              'compactToolbar': true,
+              'compatibleFeatures': true,
+              'toolbarHideFileName': true,
+              'toolbarNoTabs': true,
+              'hideRightMenu': true,
+              'hideRulers': true,
+              'help': false,
+              'macros': false,
+              'plugins': false,
+              'reviewDisplay': 'markup',
+              'customer': {
+                'address': 'Jakarta, KLHK',
+                'info': '',
+                'logo': 'http://localhost:8000/images/logo-amdal-white.png',
+                'mail': 'admin@amdalnet.dev',
+                'name': 'AMDALNET',
+                'www': 'example.com',
+              },
+              'logo': {
+                'image': 'http://localhost:8000/images/logo-amdal-white.png',
+                'imageEmbedded': 'http://localhost:8000/images/logo-amdal-white.png',
+                'url': '',
+              },
+            },
+            'callbackUrl': 'http://localhost/example/track?filename=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=172.23.0.1',
+          },
+        };
+        this.docEditor = new window.DocsAPI.DocEditor('placeholder', config);
+      };
+    },
+
+    createOfficeEditor() {
+      console.log('create office');
+    },
+
     etherpadAuth() {
       workspaceResource
         .sessionInit()
@@ -307,6 +367,9 @@ export default {
 
 <style lang="scss">
   .vtl {
+    .vtl-tree-margin {
+      margin-left: 1em;
+    }
     .vtl-drag-disabled {
       background-color: #d0cfcf;
       &:hover {
@@ -331,10 +394,14 @@ export default {
   iframe {
     height: calc(100vh - 94px);
   }
+  .app-container {
+    height: 100vh;
+  }
+
   .left-container {
     /* background-color: #F38181; */
     height: 100%;
-    overflow: scroll;
+    // overflow: scroll;
   }
 
   .right-container {
