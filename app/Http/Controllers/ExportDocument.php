@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Component;
 use App\Entity\ExpertBankTeamMember;
+use App\Entity\ImpactIdentification;
+use App\Entity\ImpactStudy;
 use App\Entity\MeetingReport;
 use App\Entity\Project;
 use Carbon\Carbon;
@@ -18,18 +21,93 @@ class ExportDocument extends Controller
 {
     public function KADocx($id)
     {
-        $getData = DB::table('impact_studies')
-            ->leftJoin('impact_identifications', 'impact_studies.id_impact_identification', '=', 'impact_identifications.id')
-            ->leftJoin('projects', 'projects.id', '=', 'impact_identifications.id_project')
-            ->leftJoin('sub_project_components', 'sub_project_components.id', '=', 'impact_identifications.id_project_component')
-            ->leftJoin('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_project_rona_awal')
-            ->leftJoin('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
-            ->leftJoin('units', 'units.id', '=', 'impact_identifications.id_unit')
+        $getInformation = DB::table('projects')
+            ->select(
+                'projects.project_title',
+                'projects.description',
+                'projects.location_desc',
+                'initiators.name',
+                'initiators.pic',
+                'initiators.email',
+                'initiators.phone',
+                'initiators.address',
+                'initiators.user_type'
+            )
             ->leftJoin('initiators', 'initiators.id', '=', 'projects.id_applicant')
             ->where('projects.id', '=', $id)
             ->first();
 
-        return response()->json($getData);
+        $praKonstruksi = DB::table('project_components')
+            ->select(
+                'project_stages.name as project_stages_name',
+                'components.name as component_name'
+            )
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY project_components.id) as number')
+            ->leftJoin('components', 'components.id', '=', 'project_components.id_component')
+            ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->where('project_components.id_project', '=', $id)
+            ->where('project_stages.name', '=', 'Pra Konstruksi')
+            ->get();
+
+        $konstruksi = DB::table('project_components')
+            ->select(
+                'project_stages.name as project_stages_name',
+                'components.name as component_name'
+            )
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY project_components.id) as number')
+            ->leftJoin('components', 'components.id', '=', 'project_components.id_component')
+            ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->where('project_components.id_project', '=', $id)
+            ->where('project_stages.name', '=', 'Konstruksi')
+            ->get();
+        $operasi = DB::table('project_components')
+            ->select(
+                'project_stages.name as project_stages_name',
+                'components.name as component_name'
+            )
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY project_components.id) as number')
+            ->leftJoin('components', 'components.id', '=', 'project_components.id_component')
+            ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->where('project_components.id_project', '=', $id)
+            ->where('project_stages.name', '=', 'Operasi')
+            ->get();
+        $pascaOperasi = DB::table('project_components')
+            ->select(
+                'project_stages.name as project_stages_name',
+                'components.name as component_name'
+            )
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY project_components.id) as number')
+            ->leftJoin('components', 'components.id', '=', 'project_components.id_component')
+            ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->where('project_components.id_project', '=', $id)
+            ->where('project_stages.name', '=', 'Pasca Operasi')
+            ->get();
+
+        $getMetodeStudi = DB::table('impact_studies')
+            ->select(
+                'impact_studies.forecast_method',
+                'impact_studies.required_information',
+                'impact_studies.data_gathering_method',
+                'impact_studies.analysis_method',
+                'impact_studies.evaluation_method',
+                'impact_identifications.potential_impact_evaluation',
+                'impact_identifications.is_hypothetical_significant'
+            )
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY impact_studies.id) as number')
+            ->leftJoin('impact_identifications', 'impact_studies.id_impact_identification', '=', 'impact_identifications.id')
+            ->leftJoin('projects', 'projects.id', '=', 'impact_identifications.id_project')
+            ->where('projects.id', '=', $id)
+            ->where('impact_identifications.is_hypothetical_significant', '=', 'true')
+            ->get();
+
+        return response()->json([
+            'data' => $getInformation,
+            'metode_studi' => $getMetodeStudi,
+            'pra_konstruksi' => $praKonstruksi,
+            'konstruksi' => $konstruksi,
+            'operasi' => $operasi,
+            'pasca_operasi' => $pascaOperasi
+        ]);
     }
 
     public function ExportKA($id)
