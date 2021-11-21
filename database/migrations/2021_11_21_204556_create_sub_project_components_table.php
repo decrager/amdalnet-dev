@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProjectActivityRonaAwalsTable extends Migration
+class CreateSubProjectComponentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateProjectActivityRonaAwalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('project_activity_rona_awals', function (Blueprint $table) {
+        Schema::create('sub_project_components', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_project_activity');
-            $table->integer('id_rona_awal')->nullable();
+            $table->integer('id_sub_project');
+            $table->integer('id_component')->nullable();
             $table->string('name')->nullable();
-            $table->integer('id_component_type')->nullable();
+            $table->integer('id_project_stage')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ class CreateProjectActivityRonaAwalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('project_activity_rona_awals');
+        Schema::dropIfExists('sub_project_components');
     }
 }
