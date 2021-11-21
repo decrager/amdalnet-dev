@@ -14,7 +14,7 @@
           <el-collapse-item title="TAPAK PROYEK" name="1">
             <el-row :gutter="4">
               <el-col :span="12">
-                <el-form-item
+                <!-- <el-form-item
                   label="Pilih Kegiatan"
                   prop="project_title"
                 >
@@ -34,6 +34,12 @@
                     />
                   </el-select>
                   <el-input v-else v-model="currentProject.project_title" size="medium" />
+                </el-form-item> -->
+                <el-form-item
+                  label="Nama Rencana Usaha/Kegiatan"
+                  prop="project_title"
+                >
+                  <el-input v-model="currentProject.project_title" size="medium" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
