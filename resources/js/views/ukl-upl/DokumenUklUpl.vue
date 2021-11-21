@@ -64,6 +64,7 @@ export default {
       docContents: [],
       loading: false,
       projectId: this.$route.params && this.$route.params.id,
+      metodeStudi: [],
     };
   },
   mounted() {
@@ -151,6 +152,7 @@ export default {
       axios.get('api/ka-docx/' + this.projectId)
         .then((response) => {
           this.docContents = response.data;
+          // this.metodeStudi = response.data.metodeStudi;
         });
     },
     exportDocx() {
@@ -165,12 +167,16 @@ export default {
             paragraphLoop: true,
             linebreaks: true,
           });
-
           doc.render({
-            project_title: this.docContents.project_title,
-            pic: this.docContents.pic,
-            description: this.docContents.description.innerHTML,
-            location_desc: this.docContents.location_desc.innerHTML,
+            project_title: this.docContents.data.project_title,
+            pic: this.docContents.data.pic,
+            description: this.docContents.data.description,
+            location_desc: this.docContents.data.location_desc,
+            metode_studi: this.docContents.metode_studi,
+            pra_konstruksi: this.docContents.pra_konstruksi,
+            konstruksi: this.docContents.konstruksi,
+            operasi: this.docContents.operasi,
+            pasca_operasi: this.docContents.pasca_operasi,
           });
 
           const out = doc.getZip().generate({
@@ -178,7 +184,7 @@ export default {
             mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
 
-          saveAs(out, 'form-ka-' + this.docContents.project_title + '.docx');
+          saveAs(out, 'form-ka-' + this.docContents.data.project_title + '.docx');
         }
       );
     },
