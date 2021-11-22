@@ -9,16 +9,17 @@ class SubProjectRonaAwal extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'id_sub_project',
+        'id_sub_project_component',
         'id_rona_awal',
         'name',
         'id_component_type',
-        'description',
+        'description_common',
+        'description_specific',
     ];
 
-    public function subProject()
+    public function subProjectComponent()
     {
-        return $this->belongsTo(SubProject::class, 'id_sub_project');
+        return $this->belongsTo(SubProjectComponent::class, 'id_sub_project_component');
     }
     
     public function ronaAwal()

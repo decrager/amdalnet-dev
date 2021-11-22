@@ -19,7 +19,8 @@ class CreateSubProjectComponentsTable extends Migration
             $table->integer('id_component')->nullable();
             $table->string('name')->nullable();
             $table->integer('id_project_stage')->nullable();
-            $table->string('description')->nullable();
+            $table->string('description_common')->nullable();
+            $table->string('description_specific')->nullable();
             $table->timestamps();
         });
     }
