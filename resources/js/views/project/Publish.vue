@@ -176,8 +176,8 @@ export default {
       default: false,
     },
     mapUpload: {
-      type: Object,
-      default: null,
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -218,7 +218,7 @@ export default {
     // for step
     this.$store.dispatch('getStep', 1);
     await this.getProjectFields();
-    await this.getKbliEnvParams();
+    // await this.getKbliEnvParams();
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();

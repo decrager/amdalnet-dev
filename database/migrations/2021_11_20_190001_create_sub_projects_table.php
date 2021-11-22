@@ -18,6 +18,7 @@ class CreateSubProjectsTable extends Migration
             $table->string('kbli');
             $table->string('name');
             $table->string('result');
+            $table->string('biz_type');
             $table->string('type');
             $table->integer('id_project')->unsigned();
             $table->foreign('id_project')->references('id')->on('projects')->onDelete('cascade');
