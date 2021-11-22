@@ -10,31 +10,10 @@
       style="max-width: 100%"
     >
       <div v-if="preProject">
-        <el-collapse v-model="activeName">
+        <el-collapse v-model="activeName" :accordion="true">
           <el-collapse-item title="TAPAK PROYEK" name="1">
             <el-row :gutter="4">
               <el-col :span="12">
-                <!-- <el-form-item
-                  label="Pilih Kegiatan"
-                  prop="project_title"
-                >
-                  <el-select
-                    v-if="!isPemerintah"
-                    v-model="currentProject.project_title"
-                    placeholder="Pilih"
-                    style="width: 100%"
-                    size="medium"
-                    @change="changeProject($event)"
-                  >
-                    <el-option
-                      v-for="item in getProjectOption"
-                      :key="item.value.id"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                  <el-input v-else v-model="currentProject.project_title" size="medium" />
-                </el-form-item> -->
                 <el-form-item
                   label="Nama Rencana Usaha/Kegiatan"
                   prop="project_title"
@@ -68,7 +47,13 @@
                   </el-form-item>
                   <div id="mapView" style="height: 400px;" />
                 </el-row>
-                <el-row />
+              </el-col>
+            </el-row>
+            <el-row type="flex" justify="end">
+              <el-col :span="2">
+                <el-button size="medium" type="primary" @click="activeName = '2'">
+                  Lanjutkan
+                </el-button>
               </el-col>
             </el-row>
           </el-collapse-item>
@@ -96,6 +81,20 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row>
+              <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+              <el-button
+                type="primary"
+                @click="handleAddSubProjectTable"
+              >+</el-button>
+            </el-row>
+            <el-row type="flex" justify="end">
+              <el-col :span="2">
+                <el-button size="medium" type="primary" @click="handleStudyAccord">
+                  Lanjutkan
+                </el-button>
+              </el-col>
+            </el-row>
           </el-collapse-item>
           <el-collapse-item title="STATUS KEGIATAN" name="3">
             <el-row>
@@ -119,6 +118,13 @@
                     />
                   </el-select>
                 </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row type="flex" justify="end">
+              <el-col :span="2">
+                <el-button size="medium" type="primary" @click="activeName = '4'">
+                  Lanjutkan
+                </el-button>
               </el-col>
             </el-row>
           </el-collapse-item>
@@ -146,12 +152,14 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row type="flex" justify="end">
+              <el-col :span="4">
+                <el-button size="medium" @click="handleCancel()"> Batalkan </el-button>
+                <el-button size="medium" type="primary" @click="preProject = false"> Lanjutkan </el-button>
+              </el-col>
+            </el-row>
           </el-collapse-item>
         </el-collapse>
-        <div slot="footer" class="dialog-footer" style="margin-top: 10px;">
-          <el-button size="medium" @click="handleCancel()"> Batalkan </el-button>
-          <el-button size="medium" type="primary" @click="preProject = false"> Lanjutkan </el-button>
-        </div>
       </div>
 
       <div v-else>
@@ -450,6 +458,7 @@ import Tinymce from '@/components/Tinymce';
 import Workflow from '@/components/Workflow';
 import Resource from '@/api/resource';
 import SupportTable from './components/SupportTable.vue';
+import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
 import * as L from 'leaflet';
@@ -461,13 +470,15 @@ export default {
     Tinymce,
     SupportTable,
     Workflow,
+    SubProjectTable,
   },
   data() {
     return {
       preProject: true,
-      activeName: 1,
+      activeName: '1',
       currentProject: {},
       listSupportTable: [],
+      listSubProject: [],
       loadingSupportTable: false,
       isUpload: 'Upload',
       fileName: 'No File Selected.',
@@ -586,6 +597,9 @@ export default {
     getBusinessTypeOptions() {
       return this.$store.getters.businessTypeOptions;
     },
+    getListKbli() {
+      return this.$store.getters.kblis;
+    },
     isPemerintah() {
       return this.$store.getters.isPemerintah;
     },
@@ -599,9 +613,9 @@ export default {
     this.$store.dispatch('getInitiator', email);
 
     // for default value
-    this.currentProject.study_approach = 'Tunggal';
-    this.currentProject.status = 'Rencana';
-    this.currentProject.project_type = 'Baru';
+    // this.currentProject.study_approach = 'Tunggal';
+    // this.currentProject.status = 'Rencana';
+    // this.currentProject.project_type = 'Baru';
 
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
@@ -615,6 +629,58 @@ export default {
     this.getAllData();
   },
   methods: {
+    sumResult(listParam){
+      let result = '';
+      for (let i = 0; i < listParam.length; i++) {
+        if (listParam[i].result === 'AMDAL'){
+          result = listParam[i].result;
+          break;
+        } else if (listParam[i].result === 'UKL-UPL'){
+          result = listParam[i].result;
+        } else if (listParam[i].result === 'SPPL' && result !== 'UKL-UPL'){
+          result = listParam[i].result;
+        }
+      }
+      return result;
+    },
+    calculateListSubProjectResult(){
+      this.currentProject.listSubProject = this.listSubProject.map(e => {
+        e.listSubProjectParams = e.listSubProjectParams.filter(e => e.used);
+
+        e.result = this.sumResult(e.listSubProjectParams);
+
+        return e;
+      });
+    },
+    calculateChoosenProject(){
+      console.log('project tanpa filter', this.currentProject);
+      const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
+      const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
+      const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
+
+      console.log('listAmdal', listMainProjectAmdal);
+      let choosenProject = '';
+
+      if (listMainProjectAmdal.length !== 0){
+        choosenProject = listMainProjectAmdal[0];
+      } else if (listMainProjectUklUpl.length !== 0) {
+        choosenProject = listMainProjectUklUpl[0];
+      } else if (listMainProjectSppl.length !== 0) {
+        choosenProject = listMainProjectSppl[0];
+      }
+
+      console.log('choosenProject', choosenProject);
+
+      // add choosen project to current project
+      this.currentProject.kbli = choosenProject.kbli;
+      this.currentProject.required_doc = choosenProject.result;
+      this.currentProject.risk_level = choosenProject.result_risk;
+    },
+    handleStudyAccord(){
+      this.calculateListSubProjectResult();
+      this.calculateChoosenProject();
+      this.activeName = '3';
+    },
     handleFileKtrUpload(){
       this.fileKtr = this.$refs.fileKtr.files[0];
     },
@@ -772,6 +838,9 @@ export default {
     },
     handleAddSupportTable() {
       this.listSupportTable.push({});
+    },
+    handleAddSubProjectTable() {
+      this.listSubProject.push({});
     },
     handleKbliSelect(item) {
       this.getSectorsByKbli(item.value);
