@@ -10,7 +10,7 @@
         {{ 'Simpan Perubahan' }}
       </el-button>
       <span style="font-size: 0.8rem">
-        <em>{{ lasttime }}</em>
+        <em>{{ lastTime }}</em>
       </span>
     </div>
     <el-table
@@ -115,22 +115,48 @@
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const rklResource = new Resource('matriks-rkl');
+
 export default {
   name: 'TableRKL',
-  props: {
-    list: {
-      type: Array,
-      default: () => [],
-    },
-    lasttime: {
-      type: String,
-      default: () => null,
-    },
-    loading: Boolean,
+  data() {
+    return {
+      list: [],
+      lastTime: null,
+      loading: false,
+      idProject: this.$route.params.id,
+    };
+  },
+  created() {
+    this.getRKL();
+    this.getLastTimeRKL();
   },
   methods: {
-    handleSubmit() {
-      this.$emit('handleSubmit');
+    async getRKL() {
+      this.matriksRKL = await rklResource.list({
+        idProject: this.idProject,
+      });
+    },
+    async getLastTimeRKL() {
+      this.lastTime = await rklResource.list({
+        lastTime: 'true',
+        idProject: this.idProject,
+      });
+    },
+    async handleSubmit() {
+      const sendForm = this.matriksRKL.filter((com) => com.type !== 'title');
+      const time = await rklResource.store({
+        manage: sendForm,
+        type: this.lastTimeRKL ? 'update' : 'new',
+      });
+      this.lastTimeRKL = time;
+      this.getRKL();
+      this.$message({
+        message: 'Data is saved Successfully',
+        type: 'success',
+        duration: 5 * 1000,
+      });
     },
   },
 };
