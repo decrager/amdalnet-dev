@@ -18,6 +18,7 @@ class CreateSubProjectRonaAwalsTable extends Migration
             $table->integer('id_sub_project');
             $table->integer('id_rona_awal')->nullable();
             $table->string('name')->nullable();
+            $table->integer('id_project_stage')->nullable();
             $table->integer('id_component_type')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
