@@ -4,14 +4,9 @@
       <template slot="title">
         <span class="title">MATRIKS RENCANA PENGELOLAAN (RKL)</span>
       </template>
-      <TableRKL
-        :list="matriksrkl"
-        :lasttime="lasttimerkl"
-        :loading="loadingrkl"
-        @handleSubmit="handleSubmitRKL"
-      />
+      <TableRKL />
     </el-collapse-item>
-    <el-collapse-item name="2">
+    <!-- <el-collapse-item name="2">
       <template slot="title">
         <span class="title">MATRIKS RENCANA PEMANTAUAN LINGKUNGAN (RPL)</span>
       </template>
@@ -22,30 +17,21 @@
         :loading="loadingrpl"
         @handleSubmit="handleSubmitRPL"
       />
-    </el-collapse-item>
+    </el-collapse-item> -->
   </el-collapse>
 </template>
 
 <script>
 import TableRKL from '@/views/rkl-rpl/components/matriks-table/TableRKL';
-import TableRPL from '@/views/rkl-rpl/components/matriks-table/TableRPL';
+// import TableRPL from '@/views/rkl-rpl/components/matriks-table/TableRPL';
 
 export default {
   name: 'Matriks',
   components: {
     TableRKL,
-    TableRPL,
+    // TableRPL,
   },
   props: {
-    matriksrkl: {
-      type: Array,
-      default: () => [],
-    },
-    lasttimerkl: {
-      type: String,
-      default: () => null,
-    },
-    loadingrkl: Boolean,
     institutions: {
       type: Array,
       default: () => [],
@@ -66,12 +52,21 @@ export default {
     };
   },
   methods: {
-    handleSubmitRKL() {
-      this.$emit('handleSubmitRKL');
-    },
     handleSubmitRPL() {
       this.$emit('handleSubmitRPL');
     },
   },
 };
 </script>
+
+<style scoped>
+.title {
+  background: #099c4b;
+  width: 100%;
+  color: white;
+  font-weight: bold;
+  display: block;
+  padding-left: 1rem;
+  margin-bottom: 1rem;
+}
+</style>
