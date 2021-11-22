@@ -50,6 +50,7 @@ Route::namespace('Api')->group(function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('workspace/session/init', 'WorkspaceController@sessionInit');
+    Route::get('workspace/config/{id}', 'WorkspaceController@getConfig');
 });
 
 Route::post('workspace/template/import', 'WorkspaceController@importTemplate');

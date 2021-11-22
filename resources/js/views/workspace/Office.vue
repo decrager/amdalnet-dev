@@ -298,59 +298,18 @@ export default {
       officeScript.setAttribute('src', 'http://localhost/web-apps/apps/api/documents/api.js');
       document.head.appendChild(officeScript);
       officeScript.onload = () => {
-        // this.createOfficeEditor();
-        const config = {
-          'width': '100%',
-          'height': '100%',
-          'type': 'desktop',
-          'document': {
-            'fileType': 'docx',
-            'key': '172.23.0.1http___localhost_example_files_172.23.0.1_UKL_20UPL_20SPBU_20-_20Edit_20Nafila_edit_20FM.docx1637464264620',
-            'title': 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
-            'url': 'http://localhost/example/download?fileName=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=172.23.0.1',
-          },
-          'documentType': 'word',
-          'editorConfig': {
-            'user': {
-              'group': 'ukl/upl',
-              'id': '123456x',
-              'name': 'ryan ryvees',
-            },
-            'customization': {
-              'compactHeader': true,
-              'compactToolbar': true,
-              'compatibleFeatures': true,
-              'toolbarHideFileName': true,
-              'toolbarNoTabs': true,
-              'hideRightMenu': true,
-              'hideRulers': true,
-              'help': false,
-              'macros': false,
-              'plugins': false,
-              'reviewDisplay': 'markup',
-              'customer': {
-                'address': 'Jakarta, KLHK',
-                'info': '',
-                'logo': 'http://localhost:8000/images/logo-amdal-white.png',
-                'mail': 'admin@amdalnet.dev',
-                'name': 'AMDALNET',
-                'www': 'example.com',
-              },
-              'logo': {
-                'image': 'http://localhost:8000/images/logo-amdal-white.png',
-                'imageEmbedded': 'http://localhost:8000/images/logo-amdal-white.png',
-                'url': '',
-              },
-            },
-            'callbackUrl': 'http://localhost/example/track?filename=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=172.23.0.1',
-          },
-        };
-        this.docEditor = new window.DocsAPI.DocEditor('placeholder', config);
+        this.createOfficeEditor();
       };
     },
 
     createOfficeEditor() {
       console.log('create office');
+      workspaceResource
+        .getConfig(this.$route.params.id)
+        .then(resp => {
+          console.log(resp);
+          this.docEditor = new window.DocsAPI.DocEditor('placeholder', resp);
+        });
     },
 
     etherpadAuth() {

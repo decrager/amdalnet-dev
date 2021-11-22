@@ -21,8 +21,8 @@ class WorkspaceController extends Controller
         $currentUser = Auth::user();
         if ($currentUser) {
             $client = new \GuzzleHttp\Client();
-            $etherpadUrl = env("EHTERPAD_URL"); 
-            $etherpadKey = env("ETHERPAD_APIKEY");
+            $etherpadUrl = env('EHTERPAD_URL'); 
+            $etherpadKey = env('ETHERPAD_APIKEY');
 
             // author
             $reqauthor = $client->request('GET', $etherpadUrl.'/api/1/createAuthorIfNotExistsFor', ['query' => [
@@ -79,5 +79,77 @@ class WorkspaceController extends Controller
             $tree = $workspace->getHeadingTree($result);
             return response()->json($tree);
         }
+    }
+
+    /**
+     * Get config for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getConfig(Request $request, String $id) {
+        $currentUser = Auth::user();
+        $officeUrl = env('MIX_OFFICE_URL'); 
+        $officeSecret = env('OFFICE_SECRET');
+        $appUrl = env('APP_URL');
+        $config = [
+            'width' => '100%',
+            'height' => '100%',
+            'type' => 'desktop',
+            'documentType' => 'word',
+            'document' => [
+              'fileType' => 'docx',
+              'key' => '172.23.0.1http___localhost_example_files_172.23.0.1_UKL_20UPL_20SPBU_20-_20Edit_20Nafila_edit_20FM.docx1637464264620',
+              'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
+              'url' => $officeUrl.'/example/download?fileName=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=172.23.0.1',
+            ],
+            'editorConfig' => [
+              'user' => [
+                'id' => 'uid.'.$currentUser->id,
+                'name' => $currentUser->name,
+              ],
+              'customization' => [
+                'about' => false,
+                'compactHeader' => true,
+                'compactToolbar' => true,
+                'compatibleFeatures' => true,
+                'toolbarHideFileName' => true,
+                'toolbarNoTabs' => true,
+                'hideRightMenu' => true,
+                'hideRulers' => true,
+                'help' => false,
+                'macros' => false,
+                'plugins' => false,
+                'reviewDisplay' => 'markup',
+                'customer' => [
+                  'address' => 'Jakarta, KLHK',
+                  'info' => '',
+                  'logo' => $appUrl.'/images/logo-amdal-white.png',
+                  'mail' => 'admin@amdalnet.dev',
+                  'name' => 'AMDALNET',
+                  'www' => 'example.com',
+                ],
+                'logo' => [
+                  'image' => $appUrl.'/images/logo-amdal-white.png',
+                  'imageEmbedded' => $appUrl.'/images/logo-amdal-white.png',
+                  'url' => '',
+                ],
+                ],
+              'callbackUrl' => $officeUrl.'/example/track?filename=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=172.23.0.1',
+            ],
+        ];
+        return response()->json($config);
+    }
+
+    /**
+     * Track for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function track(Request $request)
+    {   
     }
 }
