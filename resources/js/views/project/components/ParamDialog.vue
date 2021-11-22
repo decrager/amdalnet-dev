@@ -7,19 +7,19 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="Parameter">
+      <el-table-column label="Parameter">
         <template slot-scope="scope">
           {{ scope.row.param }}
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Pakai">
+      <el-table-column label="Pakai">
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.used" />
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Besaran">
+      <el-table-column label="Besaran">
         <template slot-scope="scope">
           <el-input
             v-model="scope.row.scale"
@@ -31,13 +31,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Satuan">
+      <el-table-column label="Satuan">
         <template slot-scope="scope">
           {{ scope.row.scale_unit }}
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Hasil">
+      <el-table-column label="Hasil">
         <template slot-scope="scope">
           {{ scope.row.result }}
         </template>

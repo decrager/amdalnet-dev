@@ -163,49 +163,139 @@
       </div>
 
       <div v-else>
-
         <el-row :gutter="4">
           <el-col :span="12" :xs="24">
-            <el-col :span="16" :xs="24">
+            <el-row>
               <el-form-item
                 label="Nama Usaha / Kegiatan"
                 prop="project_title"
               >
-                <el-select
-                  v-if="!isPemerintah"
-                  v-model="currentProject.project_title"
-                  disabled
-                  placeholder="Pilih"
-                  style="width: 100%"
-                  @change="changeProject($event)"
-                >
-                  <el-option
-                    v-for="item in getProjectOption"
-                    :key="item.value.id"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-                <el-input v-else v-model="currentProject.project_title" disabled />
+                <el-input v-model="currentProject.project_title" disabled />
               </el-form-item>
-            </el-col>
-            <el-col :span="8" :xs="24">
-              <el-form-item label="Jenis Kegiatan" prop="project_type">
-                <el-select
-                  v-model="currentProject.project_type"
-                  placeholder="Pilih"
-                  style="width: 100%"
-                  disabled
-                >
-                  <el-option
-                    v-for="item in projectTypeOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+            </el-row>
+            <el-row :gutter="4">
+              <el-col :span="4">
+                <el-form-item label="KBLI" prop="kbli">
+                  <!-- <el-input v-model="currentProject.kbli" /> -->
+                  <el-autocomplete
+                    v-model="currentProject.kbli"
+                    class="inline-input"
+                    :fetch-suggestions="kbliSearch"
+                    placeholder="Masukan"
+                    :trigger-on-focus="false"
+                    disabled
+                    @select="handleKbliSelect"
                   />
-                </el-select>
-              </el-form-item>
-            </el-col>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="Tingkat Resiko" prop="risk_level">
+                  <el-input v-model="currentProject.risk_level" disabled />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6" :xs="24">
+                <el-form-item label="Kewenangan" prop="authority">
+                  <el-input v-model="currentProject.authority" disabled />
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="Sektor(PP 5/2021)" prop="field">
+                  <el-select
+                    v-model="currentProject.field"
+                    placeholder="Pilih"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in getProjectFieldOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="4">
+              <el-col :span="12">
+                <el-form-item label="Bidang Kegiatan (Permen LHK 4 /2021)" prop="sector">
+                  <el-select
+                    v-model="currentProject.sector"
+                    placeholder="Pilih"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in getSectorOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Jenis Rencana Kegiatan" prop="plan_type">
+                  <el-input v-model="currentProject.plan_type" disabled />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-table
+                :header-cell-style="{ background: '#099C4B', color: 'white' }"
+                :data="currentProject.listSubProjectParams"
+                fit
+                highlight-current-row
+              >
+                <el-table-column label="Skala Besaran" align="center">
+                  <el-table-column label="Parameter">
+                    <template slot-scope="scope">
+                      {{ scope.row.param }}
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="Besaran">
+                    <template slot-scope="scope">
+                      {{ scope.row.scale }}
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="Satuan">
+                    <template slot-scope="scope">
+                      {{ scope.row.scale_unit }}
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="Hasil">
+                    <template slot-scope="scope">
+                      {{ scope.row.result }}
+                    </template>
+                  </el-table-column>
+                </el-table-column>
+              </el-table>
+            </el-row>
+            <!-- <el-row :gutter="4">
+              <el-col :span="12" :xs="24">
+                <el-form-item
+                  prop="dokumenPendukung"
+                  label="Dokumen Pendukung"
+                ><support-table
+                   :list="listSupportTable"
+                   :loading="loadingSupportTable"
+                 />
+                  <el-button
+                    type="primary"
+                    @click="handleAddSupportTable"
+                  >+</el-button>
+                </el-form-item>
+              </el-col>
+            </el-row> -->
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <div id="mapView" style="height: 400px; border: 1px solid red; border-radius: 5px;" />
+          </el-col>
+        </el-row>
+        <el-row type="flex" justify="end" :gutter="4">
+          <el-col :span="12">
+            <el-col :span="12" />
           </el-col>
           <el-col :span="12" :xs="24">
             <el-col :span="12">
@@ -243,203 +333,10 @@
             </el-col>
           </el-col>
         </el-row>
-        <el-row :gutter="4">
-          <el-col :span="12" :xs="24">
-            <el-col :span="8">
-              <el-form-item label="KBLI" prop="kbli">
-                <!-- <el-input v-model="currentProject.kbli" /> -->
-                <el-autocomplete
-                  v-model="currentProject.kbli"
-                  :disabled="!isPemerintah"
-                  class="inline-input"
-                  :fetch-suggestions="kbliSearch"
-                  placeholder="Masukan"
-                  :trigger-on-focus="false"
-                  @select="handleKbliSelect"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="Tingkat Resiko" prop="risk_level">
-                <el-input v-model="currentProject.risk_level" :disabled="!isPemerintah" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="8" :xs="24">
-              <el-form-item label="Tahun Kegiatan" prop="projectYear">
-                <el-date-picker
-                  v-model="currentProject.project_year"
-                  type="year"
-                  placeholder="Pilih Tahun"
-                  style="width: 100%"
-                  value-format="yyyy"
-                />
-              </el-form-item>
-            </el-col>
-          </el-col>
+        <el-row type="flex" justify="end">
           <el-col :span="12">
-            <el-col :span="12">
-              <el-form-item label="Bidang Kegiatan" prop="field">
-                <el-select
-                  v-model="currentProject.field"
-                  placeholder="Pilih"
-                  style="width: 100%"
-                >
-                  <el-option
-                    v-for="item in getProjectFieldOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="Alamat" prop="address">
-                <el-input v-model="currentProject.address" />
-              </el-form-item>
-            </el-col>
-          </el-col>
-        </el-row>
-        <el-row :gutter="4">
-          <el-col
-            :span="12"
-            :xs="24"
-          ><el-col :span="8">
-             <el-form-item label="Sektor" prop="sector">
-               <el-select
-                 v-model="currentProject.sector"
-                 placeholder="Pilih"
-                 style="width: 100%"
-               >
-                 <el-option
-                   v-for="item in getSectorOptions"
-                   :key="item.value"
-                   :label="item.label"
-                   :value="item.value"
-                 />
-               </el-select>
-             </el-form-item>
-           </el-col>
-            <el-col :span="8">
-              <el-form-item label="Jenis Usaha" prop="biz_type">
-                <el-select
-                  v-model="currentProject.biz_type"
-                  placeholder="Pilih"
-                  style="width: 100%"
-                  @change="handleBusinessTypeSelect($event)"
-                >
-                  <el-option
-                    v-for="item in getBusinessTypeOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-col :span="12">
-                <el-form-item label="Skala/Besaran" prop="scale">
-                  <el-input v-model="currentProject.scale" /></el-form-item></el-col>
-              <el-col :span="12">
-                <el-form-item label="Unit" prop="scale_unit">
-                  <el-select
-                    v-model="currentProject.scale_unit"
-                    placeholder="Pilih"
-                    style="width: 100%"
-                  >
-                    <el-option
-                      v-for="item in getUnitOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select> </el-form-item></el-col> </el-col></el-col>
-          <el-col :span="12" :xs="24">
-            <!-- <el-col :span="24">
-              <el-form-item
-                ref="fileMapUpload"
-                label="Peta Tapak Proyek"
-                prop="fileMap"
-              >
-                <el-col :span="8">
-                  <el-radio-group v-model="isUpload">
-                    <el-radio-button label="Upload" />
-                    <el-radio-button label="WebGIS" />
-                  </el-radio-group>
-                </el-col>
-                <el-col :span="16">
-                  <div
-                    style="
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    height: 36px;
-                  "
-                  >
-                    <el-button
-                      icon="el-icon-document-copy"
-                      type="primary"
-                      size="mini"
-                      style="margin-left: 15px"
-                      @click="checkMapFile"
-                    >Upload</el-button>
-                    <span>{{ fileName }}</span>
-                    <input
-                      id="mapFile"
-                      type="file"
-                      style="display: none"
-                      @change="checkMapFileSure"
-                    >
-                  </div>
-                </el-col>
-              </el-form-item>
-            </el-col> -->
-          </el-col>
-        </el-row>
-        <el-row :gutter="4">
-          <el-col :span="12" :xs="24">
-            <el-form-item
-              prop="dokumenPendukung"
-              label="Dokumen Pendukung"
-            ><support-table
-               :list="listSupportTable"
-               :loading="loadingSupportTable"
-             />
-              <el-button
-                type="primary"
-                @click="handleAddSupportTable"
-              >+</el-button>
-            </el-form-item>
-          </el-col>
-          <!-- <el-col :span="12" :xs="24" style="text-align: center">
-            <h1>Map will be here!!</h1>
-          </el-col> -->
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :span="12" :xs="24">
-            <el-form-item
-              prop="location_desc"
-              style="margin-bottom: 30px"
-              label="Deskripsi Lokasi"
-            >
-              <tinymce
-                ref="editor"
-                v-model="currentProject.location_desc"
-                :height="200"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" :xs="24">
-            <el-form-item
-              prop="description"
-              style="margin-bottom: 30px"
-              label="Deskripsi Kegiatan"
-            >
-              <tinymce
-                ref="editor"
-                v-model="currentProject.description"
-                :height="200"
-              />
+            <el-form-item label="Alamat" prop="address">
+              <el-input v-model="currentProject.address" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -454,10 +351,10 @@
 </template>
 
 <script>
-import Tinymce from '@/components/Tinymce';
+// import Tinymce from '@/components/Tinymce';
 import Workflow from '@/components/Workflow';
 import Resource from '@/api/resource';
-import SupportTable from './components/SupportTable.vue';
+// import SupportTable from './components/SupportTable.vue';
 import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
@@ -467,8 +364,8 @@ import shp from 'shpjs';
 export default {
   name: 'CreateProject',
   components: {
-    Tinymce,
-    SupportTable,
+    // Tinymce,
+    // SupportTable,
     Workflow,
     SubProjectTable,
   },
@@ -631,23 +528,29 @@ export default {
   methods: {
     sumResult(listParam){
       let result = '';
+      let result_risk = '';
       for (let i = 0; i < listParam.length; i++) {
         if (listParam[i].result === 'AMDAL'){
           result = listParam[i].result;
+          result_risk = listParam[i].result_risk;
           break;
         } else if (listParam[i].result === 'UKL-UPL'){
           result = listParam[i].result;
+          result_risk = listParam[i].result_risk;
         } else if (listParam[i].result === 'SPPL' && result !== 'UKL-UPL'){
           result = listParam[i].result;
+          result_risk = listParam[i].result_risk;
         }
       }
-      return result;
+      return { result, result_risk };
     },
     calculateListSubProjectResult(){
       this.currentProject.listSubProject = this.listSubProject.map(e => {
         e.listSubProjectParams = e.listSubProjectParams.filter(e => e.used);
 
-        e.result = this.sumResult(e.listSubProjectParams);
+        const { result, result_risk } = this.sumResult(e.listSubProjectParams);
+        e.result = result;
+        e.result_risk = result_risk;
 
         return e;
       });
@@ -675,6 +578,10 @@ export default {
       this.currentProject.kbli = choosenProject.kbli;
       this.currentProject.required_doc = choosenProject.result;
       this.currentProject.risk_level = choosenProject.result_risk;
+      this.currentProject.result_risk = choosenProject.result_risk;
+      this.currentProject.authority = 'Pusat';
+      this.currentProject.plan_type = choosenProject.name;
+      this.currentProject.listSubProjectParams = choosenProject.listSubProjectParams;
     },
     handleStudyAccord(){
       this.calculateListSubProjectResult();
