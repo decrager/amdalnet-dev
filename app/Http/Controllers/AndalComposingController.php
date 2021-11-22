@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Entity\AndalComment;
 use App\Entity\EnvImpactAnalysis;
+use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
+use App\Entity\ImportantTrait;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use Illuminate\Http\Request;
@@ -103,20 +105,46 @@ class AndalComposingController extends Controller
                 $envAnalysis = new EnvImpactAnalysis();
                 $envAnalysis->id_impact_identifications = $analysis[$i]['id'];
                 $envAnalysis->impact_size = $analysis[$i]['impact_size'];
-                $envAnalysis->important_trait = $analysis[$i]['important_trait'];
                 $envAnalysis->impact_eval_result = $analysis[$i]['impact_eval_result'];
-                $envAnalysis->response = $analysis[$i]['response'];
+                $envAnalysis->impact_type = $analysis[$i]['impact_type'];
+                $envAnalysis->studies_condition = $analysis[$i]['studies_condition'];
+                $envAnalysis->condition_dev_no_plan = $analysis[$i]['condition_dev_no_plan'];
+                $envAnalysis->condition_dev_with_plan = $analysis[$i]['condition_dev_with_plan'];
+                $envAnalysis->impact_size_difference = $analysis[$i]['impact_size_difference'];
                 $envAnalysis->save();
+
+                $important_trait = $analysis[$i]['important_trait'];
+
+                for($a = 0; $a < count($important_trait); $a++) {
+                    $detail = new ImpactAnalysisDetail();
+                    $detail->id_env_impact_analysis = $envAnalysis->id;
+                    $detail->id_important_trait = $important_trait[$a]['id'];
+                    $detail->important_trait = $important_trait[$a]['important_trait'];
+                    $detail->description = $important_trait[$a]['desc'];
+                    $detail->save();
+                }
             }
         } else {
             $ids = [];
             for($i = 0; $i < count($analysis); $i++) {
                 $envAnalysis = EnvImpactAnalysis::where('id_impact_identifications', $analysis[$i]['id'])->first();
                 $envAnalysis->impact_size = $analysis[$i]['impact_size'];
-                $envAnalysis->important_trait = $analysis[$i]['important_trait'];
                 $envAnalysis->impact_eval_result = $analysis[$i]['impact_eval_result'];
-                $envAnalysis->response = $analysis[$i]['response'];
+                $envAnalysis->impact_type = $analysis[$i]['impact_type'];
+                $envAnalysis->studies_condition = $analysis[$i]['studies_condition'];
+                $envAnalysis->condition_dev_no_plan = $analysis[$i]['condition_dev_no_plan'];
+                $envAnalysis->condition_dev_with_plan = $analysis[$i]['condition_dev_with_plan'];
+                $envAnalysis->impact_size_difference = $analysis[$i]['impact_size_difference'];
                 $envAnalysis->save();
+
+                $important_trait = $analysis[$i]['important_trait'];
+
+                for($a = 0; $a < count($important_trait); $a++) {
+                    $detail = ImpactAnalysisDetail::where([['id_env_impact_analysis', $envAnalysis->id], ['id_important_trait', $important_trait[$a]['id']]])->first();
+                    $detail->important_trait = $important_trait[$a]['important_trait'];
+                    $detail->description = $important_trait[$a]['desc'];
+                    $detail->save();
+                }
 
                 $ids[] = $analysis[$i]['id'];
             }
@@ -177,88 +205,121 @@ class AndalComposingController extends Controller
 
     private function getImpactNotifications($id_project, $stages) {
         $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
-                                        ->where('id_project', $id_project)
+                                        ->where([['id_project', $id_project],['is_hypothetical_significant', true]])
                                         ->with(['component.component', 'changeType', 'ronaAwal.rona_awal'])->get();
-            $results = [];
+        
+        $important_trait = ImportantTrait::select('id', 'description')->get();
+        $traits = [];
 
-            foreach($stages as $s) {
-                $results[] = [
-                    'id' => $s->id,
-                    'name' => $s->name,
-                    'type' => 'title'
-                ];
+        foreach($important_trait as $it) {
+            $traits[] = [
+                'id' => $it->id,
+                'description' => $it->description,
+                'desc' => null,
+                'important_trait' => null
+            ];
+        }
+        
+        
+        $results = [];
 
-                $total = 0;
+        foreach($stages as $s) {
+            $results[] = [
+                'id' => $s->id,
+                'name' => $s->name,
+                'type' => 'title'
+            ];
 
-                foreach($impactIdentifications as $imp) {
-                    if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
-                        $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                        $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
-                        $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
+            $total = 0;
 
-                        $results[] = [
-                            'id' => $imp->id,
-                            'name' => "$changeType $ronaAwal akibat $component",
-                            'type' => 'subtitle',
-                            'component' => $component,
-                            'ronaAwal' => $ronaAwal,
-                            'impact_size' => null,
-                            'important_trait' => null,
-                            'impact_eval_result' => null,
-                            'response' => null
-                        ];
-                        $total++;
-                    }
-                }
+            foreach($impactIdentifications as $imp) {
+                if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
+                    $changeType = $imp->id_change_type ? $imp->changeType->name : '';
+                    $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
+                    $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
 
-                if($total == 0) {
-                    array_pop($results);
+                    $results[] = [
+                        'id' => $imp->id,
+                        'name' => "$changeType $ronaAwal akibat $component",
+                        'type' => 'subtitle',
+                        'component' => $component,
+                        'ronaAwal' => $ronaAwal,
+                        'impact_size' => null,
+                        'important_trait' => $traits,
+                        'impact_type' => null,
+                        'impact_eval_result' => null,
+                        'studies_condition' => null,
+                        'condition_dev_no_plan' => null,
+                        'condition_dev_with_plan' => null,
+                        'impact_size_difference' => null
+                    ];
+                    $total++;
                 }
             }
+
+            if($total == 0) {
+                array_pop($results);
+            }
+        }
            
         return $results;
     }
 
     private function getEnvImpactAnalysis($id_project, $stages) {
           $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
-                                        ->where('id_project', $id_project)
+                                        ->where([['id_project', $id_project],['is_hypothetical_significant', true]])
                                         ->with(['component.component', 'changeType', 'ronaAwal.rona_awal', 'envImpactAnalysis'])->get();
-            $results = [];
+        $results = [];
 
-            foreach($stages as $s) {
-                $results[] = [
-                    'id' => $s->id,
-                    'name' => $s->name,
-                    'type' => 'title'
-                ];
+        foreach($stages as $s) {
+            $results[] = [
+                'id' => $s->id,
+                'name' => $s->name,
+                'type' => 'title'
+            ];
 
-                $total = 0;
+            $total = 0;
 
-                foreach($impactIdentifications as $imp) {
-                    if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
-                        $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                        $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
-                        $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
+            foreach($impactIdentifications as $imp) {
+                if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
+                    $changeType = $imp->id_change_type ? $imp->changeType->name : '';
+                    $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
+                    $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
 
-                        $results[] = [
-                            'id' => $imp->id,
-                            'name' => "$changeType $ronaAwal akibat $component",
-                            'type' => 'subtitle',
-                            'component' => $component,
-                            'ronaAwal' => $ronaAwal,
-                            'impact_size' => $imp->envImpactAnalysis->impact_size,
-                            'important_trait' => $imp->envImpactAnalysis->important_trait,
-                            'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
-                            'response' => $imp->envImpactAnalysis->response
+                    $important_trait = [];
+
+                    foreach($imp->envImpactAnalysis->detail as $det) {
+                        $important_trait[] = [
+                            'id' => $det->id_important_trait,
+                            'description' => $det->importantTrait->description,
+                            'desc' => $det->description,
+                            'important_trait' => $det->important_trait
                         ];
-                        $total++;
                     }
-                }
 
-                if($total == 0) {
-                    array_pop($results);
+                    $results[] = [
+                        'id' => $imp->id,
+                        'name' => "$changeType $ronaAwal akibat $component",
+                        'type' => 'subtitle',
+                        'component' => $component,
+                        'ronaAwal' => $ronaAwal,
+                        'impact_size' => $imp->envImpactAnalysis->impact_size,
+                        'important_trait' => $important_trait,
+                        'impact_type' => $imp->envImpactAnalysis->impact_type,
+                        'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
+                        'studies_condition' => $imp->envImpactAnalysis->studies_condition,
+                        'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
+                        'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
+                        'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference
+                    ];
+                    $total++;
                 }
             }
+
+            if($total == 0) {
+                array_pop($results);
+            }
+        }
            
         return $results;
     }
