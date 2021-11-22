@@ -71,4 +71,9 @@ class Project extends Model
     {
         return $this->belongsTo(Initiator::class, 'id_applicant', 'id');
     }
+
+    public function subProjects()
+    {
+        return $this->hasMany(SubProject::class, 'id_project', 'id');
+    }
 }
