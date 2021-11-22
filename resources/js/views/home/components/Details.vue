@@ -3,6 +3,121 @@
     <div class="detailPengumuman">
       <div class="wrapInDetail">
         <el-row :gutter="20">
+          <el-col :span="12">
+            <table id="tableDetail" border="0">
+              <tr>
+                <td>No. Re gistrasi</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Jenis Dokumen</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Nama Kegiatan</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Bidang Usaha/Kegiatan</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Skala/Besaran</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Alamat</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Kewenangan</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Pemrakars</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Penanggung Jawab</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Alamat Pemrakarsa</td>
+                <td />
+              </tr>
+              <tr>
+                <td>No Telepon Pemrakarsa</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Email Pemrakars</td>
+                <td />
+              </tr>
+              <tr>
+                <td>Provinsi/Kota</td>
+                <td />
+              </tr>
+              <tr>
+                <td colspan="2">Deskripsi Kegiatan</td>
+              </tr>
+              <tr>
+                <td colspan="2">Deskripsi Kegiatan</td>
+              </tr>
+            </table>
+          </el-col>
+          <el-col :span="12">
+            <div>
+              <table border="0" style="width:100%">
+                <tr>
+                  <td rowspan="12" colspan="2">Lokasi</td>
+                </tr>
+                <!-- <tr>
+                  <td>Jenis Dokumen</td>
+                </tr>
+                <tr>
+                  <td>Nama Kegiatan</td>
+                </tr>
+                <tr>
+                  <td>Bidang Usaha/Kegiatan</td>
+                </tr>
+                <tr>
+                  <td>Skala/Besaran</td>
+                </tr>
+                <tr>
+                  <td>Alamat</td>
+                </tr>
+                <tr>
+                  <td>Kewenangan</td>
+                </tr>
+                <tr>
+                  <td>Pemrakars</td>
+                </tr>
+                <tr>
+                  <td>Penanggung Jawab</td>
+                </tr>
+                <tr>
+                  <td>Alamat Pemrakarsa</td>
+                </tr>
+                <tr>
+                  <td>No Telepon Pemrakarsa</td>
+                </tr>
+                <tr>
+                  <td>Email Pemrakars</td>
+                </tr>
+                <tr>
+                  <td>Provinsi/Kota</td>
+                </tr> -->
+                <tr>
+                  <td colspan="2">Deskripsi Kegiatan</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Deskripsi Kegiatan</td>
+                </tr>
+              </table>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="16">
             <div class="wrapDetail">
               <img src="https://placeimg.com/150/150/arch/grayscale" alt="">
@@ -657,4 +772,11 @@ table.table__striped tr:nth-child(odd) {
   margin: 0 10px;
   position: absolute; */
 }
+#tableDetail{
+  width: 100%;
+  border: 0;
+}
+#tableDetail tr:nth-child(even) {background: #aec7af}
+#tableDetail tr:nth-child(odd) {background: #FFF}
+#tableDetail td{color: #3c3f3c; padding:0.5rem; width: 50%; border:0}
 </style>
