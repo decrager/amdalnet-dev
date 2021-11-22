@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 
 class UklUplCommentController extends Controller
 {
-    public function index()
+    public function index($id)
     {
-        return UklUplResource::collection(UklUplComment::with('user')->orderBy('created_at', 'desc')->paginate(10));
+        return UklUplResource::collection(UklUplComment::with('user')->where('id_project', '=', $id)->orderBy('created_at', 'desc')->paginate(10));
     }
 
     public function store(Request $request)
