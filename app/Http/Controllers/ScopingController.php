@@ -47,29 +47,32 @@ class ScopingController extends Controller
             }
             if ($request->sub_project_rona_awals) {
                 $rona_awals = [];
-                $component_types = ComponentType::all();
+                $component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();
                 foreach ($components as $component) {
                     $id_sub_project_component = $component->id;
-                    // all component_type (no filter)
                     $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal', 'componentType'])
                         ->where('id_sub_project_component', $id_sub_project_component)->get();
                     $ra = [];
                     foreach ($component_types as $ctype) {
                         $r = [];
                         foreach ($sp_rona_awals as $rona_awal) {
-                            if ($ctype->id == $rona_awal->id_component_type
-                            || $ctype->id == $rona_awal->ronaAwal->id_component_type) {
+                            if ($ctype->id == $rona_awal->id_component_type) {
                                 array_push($r,  $rona_awal);
+                            }
+                            if ($rona_awal->ronaAwal != null) {
+                                if ($ctype->id == $rona_awal->ronaAwal->id_component_type) {
+                                    array_push($r,  $rona_awal);
+                                }
                             }
                         }
                         array_push($ra, [
                             'component_type' => $ctype,
-                            'rona_awals' => $r,
+                            'sub_project_rona_awals' => $r,
                         ]);
                     }
                     array_push($rona_awals, [
-                        'component' => $component,
-                        'rona_awals' => $ra,
+                        'sub_project_component' => $component,
+                        'sub_project_rona_awals' => $ra,
                     ]);
                 }
                 return [
