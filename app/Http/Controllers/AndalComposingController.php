@@ -204,10 +204,10 @@ class AndalComposingController extends Controller
     }
 
     private function getImpactNotifications($id_project, $stages) {
-        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
-                                        ->where([['id_project', $id_project],['is_hypothetical_significant', true]])
-                                        ->with(['component.component', 'changeType', 'ronaAwal.rona_awal'])->get();
-        
+        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant')
+        ->where([['id_project', $id_project],['is_hypothetical_significant', true]])
+        ->with(['component.component', 'changeType', 'ronaAwal.rona_awal'])->get();
+
         $important_trait = ImportantTrait::select('id', 'description')->get();
         $traits = [];
 
@@ -235,8 +235,8 @@ class AndalComposingController extends Controller
             foreach($impactIdentifications as $imp) {
                 if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
                     $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                    $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
-                    $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
+                    $ronaAwal =  $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                    $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
 
                     $results[] = [
                         'id' => $imp->id,
@@ -283,8 +283,8 @@ class AndalComposingController extends Controller
             foreach($impactIdentifications as $imp) {
                 if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
                     $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                    $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
-                    $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
+                    $ronaAwal =  $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                    $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
 
                     $important_trait = [];
 

@@ -300,8 +300,11 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .row-title {
   font-weight: bold;
+}
+.el-table .cell {
+  word-break: break-word;
 }
 </style>
