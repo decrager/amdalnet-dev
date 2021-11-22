@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\ComponentType;
 use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
@@ -44,13 +45,29 @@ class ScopingController extends Controller
             }
             if ($request->sub_project_rona_awals) {
                 $rona_awals = [];
+                $component_types = ComponentType::all();
                 foreach ($components as $component) {
                     $id_sub_project_component = $component->id;
                     // all component_type (no filter)
-                    $rona_awals = SubProjectRonaAwal::where('id_sub_project_component', $id_sub_project_component)->get();
+                    $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal', 'componentType'])
+                        ->where('id_sub_project_component', $id_sub_project_component)->get();
+                    $ra = [];
+                    foreach ($component_types as $ctype) {
+                        $r = [];
+                        foreach ($sp_rona_awals as $rona_awal) {
+                            if ($ctype->id == $rona_awal->id_component_type
+                            || $ctype->id == $rona_awal->ronaAwal->id_component_type) {
+                                array_push($r,  $rona_awal);
+                            }
+                        }
+                        array_push($ra, [
+                            'component_type' => $ctype,
+                            'rona_awals' => $r,
+                        ]);
+                    }
                     array_push($rona_awals, [
                         'component' => $component,
-                        'rona_awals' => $rona_awals,
+                        'rona_awals' => $ra,
                     ]);
                 }
                 return [
