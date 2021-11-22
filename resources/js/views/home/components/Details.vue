@@ -7,43 +7,43 @@
             <table id="tableDetail" border="0">
               <tr>
                 <td>No. Re gistrasi</td>
-                <td />
+                <td v-html="selectedAnnouncement.project.id_project" />
               </tr>
               <tr>
                 <td>Jenis Dokumen</td>
-                <td />
+                <td v-html="selectedAnnouncement.project.required_doc" />
               </tr>
               <tr>
                 <td>Nama Kegiatan</td>
-                <td />
+                <td v-html="selectedAnnouncement.project.project_title" />
               </tr>
               <tr>
                 <td>Bidang Usaha/Kegiatan</td>
-                <td />
+                <td v-html="selectedAnnouncement.project.sector" />
               </tr>
               <tr>
                 <td>Skala/Besaran</td>
-                <td />
+                <td v-html="selectedAnnouncement.project.scale_unit" />
               </tr>
               <tr>
                 <td>Alamat</td>
-                <td />
+                <td v-html="selectedAnnouncement.project.address" />
               </tr>
               <tr>
                 <td>Kewenangan</td>
-                <td />
+                <td v-html="selectedAnnouncement.project.authority" />
               </tr>
               <tr>
                 <td>Pemrakars</td>
-                <td />
+                <td v-html="selectedAnnouncement.pic_name" />
               </tr>
               <tr>
                 <td>Penanggung Jawab</td>
-                <td />
+                <td v-html="selectedAnnouncement.pic_name" />
               </tr>
               <tr>
                 <td>Alamat Pemrakarsa</td>
-                <td />
+                <td v-html="selectedAnnouncement.cs_address" />
               </tr>
               <tr>
                 <td>No Telepon Pemrakarsa</td>
@@ -55,66 +55,13 @@
               </tr>
               <tr>
                 <td>Provinsi/Kota</td>
-                <td />
+                <td v-html="selectedAnnouncement.project.province.name" />
               </tr>
               <tr>
                 <td colspan="2">Deskripsi Kegiatan</td>
-              </tr>
-              <tr>
-                <td colspan="2">Deskripsi Kegiatan</td>
+                <td v-html="selectedAnnouncement.project.description" />
               </tr>
             </table>
-          </el-col>
-          <el-col :span="12">
-            <div>
-              <table border="0" style="width:100%">
-                <tr>
-                  <td rowspan="12" colspan="2">Lokasi</td>
-                </tr>
-                <!-- <tr>
-                  <td>Jenis Dokumen</td>
-                </tr>
-                <tr>
-                  <td>Nama Kegiatan</td>
-                </tr>
-                <tr>
-                  <td>Bidang Usaha/Kegiatan</td>
-                </tr>
-                <tr>
-                  <td>Skala/Besaran</td>
-                </tr>
-                <tr>
-                  <td>Alamat</td>
-                </tr>
-                <tr>
-                  <td>Kewenangan</td>
-                </tr>
-                <tr>
-                  <td>Pemrakars</td>
-                </tr>
-                <tr>
-                  <td>Penanggung Jawab</td>
-                </tr>
-                <tr>
-                  <td>Alamat Pemrakarsa</td>
-                </tr>
-                <tr>
-                  <td>No Telepon Pemrakarsa</td>
-                </tr>
-                <tr>
-                  <td>Email Pemrakars</td>
-                </tr>
-                <tr>
-                  <td>Provinsi/Kota</td>
-                </tr> -->
-                <tr>
-                  <td colspan="2">Deskripsi Kegiatan</td>
-                </tr>
-                <tr>
-                  <td colspan="2">Deskripsi Kegiatan</td>
-                </tr>
-              </table>
-            </div>
           </el-col>
         </el-row>
         <el-row :gutter="20">
