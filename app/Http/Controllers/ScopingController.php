@@ -20,12 +20,7 @@ class ScopingController extends Controller
     public function index(Request $request)
     {
         if ($request->id_project && $request->sub_project_type) {
-            $id_project = $request->id_project;
-            // list sub projects filter by type
-            $subprojects = SubProject::with([
-                'project' => function($q) use ($id_project) {
-                    $q->select('projects.*')->where('id_project', $id_project);
-                }])
+            $subprojects = SubProject::with('project')
                 ->where('type', $request->sub_project_type) // 'utama'/'pendukung'
                 ->get();
             return SubProjectResource::collection($subprojects);
@@ -34,12 +29,19 @@ class ScopingController extends Controller
             // return sub_project_components filter by id_sub_project & id_project_stage
             $id_project_stage = $request->id_project_stage;
             $id_sub_project = $request->id_sub_project;
-            $components = SubProjectComponent::with(['component' => function($q) use ($id_project_stage) {
-                    $q->select('components.name')->where('id_project_stage', $id_project_stage);
+            $componentsUnfiltered = SubProjectComponent::with(['component' => function($q) use ($id_project_stage) {
+                    $q->where('id_project_stage', $id_project_stage);
                 }])->where('id_sub_project', $id_sub_project)
                 ->where('id_project_stage', $id_project_stage)
                 ->orWhereNull('id_project_stage')
                 ->get();
+            $components = [];
+            foreach ($componentsUnfiltered as $component) {
+                if ($component->component != null
+                    || ($component->name != null && $component->id_project_stage == $id_project_stage)) {
+                    array_push($components, $component);
+                }
+            }
             if ($request->sub_project_components) {
                 return SubProjectComponentResource::collection($components);
             }
