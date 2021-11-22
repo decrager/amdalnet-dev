@@ -20,6 +20,8 @@ class ImpactIdentification extends Model
         'study_location',
         'study_length_year',
         'study_length_month',
+        'id_sub_project_component',
+        'id_sub_project_rona_awal',
     ];
 
     public function project(){
@@ -32,6 +34,14 @@ class ImpactIdentification extends Model
 
     public function ronaAwal(){
         return $this->belongsTo(ProjectRonaAwal::class, 'id_project_rona_awal');
+    }
+
+    public function subProjectComponent(){
+        return $this->belongsTo(SubProjectComponent::class, 'id_sub_project_component');
+    }
+
+    public function subProjectRonaAwal(){
+        return $this->belongsTo(SubProjectRonaAwal::class, 'id_sub_project_rona_awal');
     }
 
     public function changeType(){
