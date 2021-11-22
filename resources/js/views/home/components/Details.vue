@@ -134,11 +134,6 @@
     </div>
     <div class="detailPengumuman">
       <div class="wrapInDetail wrapInDetailBottom">
-        <el-row>
-          <el-col :span="24">
-            <h1 style="text-align:center">SPT (Saran, Pendapat & Tanggapan</h1>
-          </el-col>
-        </el-row>
         <el-form
           ref="form"
           enctype="multipart/form-data"
@@ -146,103 +141,120 @@
         >
           <input v-model="announcementId" type="hidden">
           <el-row :gutter="20">
-            <el-col :span="15">
+            <el-col :span="12">
+              <h3 style="text-align:center; color:#fff;">Saran, Pendapat, dan Tanggapan untuk Kegiatan</h3>
               <el-row :gutter="20">
-                <el-col :span="24">
+                <el-col :span="12">
                   <el-form-item>
                     <div class="text-white fw-bold">Nama</div>
                     <el-input v-model="form.name" placeholder="Nama" />
                   </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item>
+                    <div class="text-white fw-bold">Peran</div>
+                    <el-form-item label="">
+                      <el-select v-model="form.peran" placeholder="Pilih Peran" @change="handleChangeModal">
+                        <el-option label="Masyarakat Terkena Dampak Langsung" value="1" />
+                        <el-option label="Pemerhati Lingkungan Hidup" value="2" />
+                        <el-option label="LSM" value="3" />
+                        <el-option label="Masyarakat Berkepentingan Lainya" value="4" />
+                      </el-select>
+                    </el-form-item>
+                    <!-- <div style="padding-left:2rem">
+                      <div>
+                        <el-radio
+                          v-model="form.responder_type_id"
+                          label="1"
+                        >
+                          <span style="color:white">Terkena Dampak Langsung</span></el-radio>
+                      </div>
+                      <div>
+                        <el-radio
+                          v-model="form.responder_type_id"
+                          label="2"
+                        ><span style="color:white">Pemerhati Lingkungan Hidup</span></el-radio>
+                      </div>
+                      <div>
+                        <el-radio
+                          v-model="form.responder_type_id"
+                          label="3"
+                        ><span style="color:white">LSM</span></el-radio>
+                      </div>
+                      <div>
+                        <el-radio
+                          v-model="form.responder_type_id"
+                          label="4"
+                        ><span style="color:white">Masyarakat Berkepentingan Lainya</span></el-radio>
+                      </div>
+                    </div> -->
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="12">
                   <el-form-item>
                     <div class="text-white fw-bold">Nik</div>
                     <el-input v-model="form.id_card_number" placeholder="Nik" />
                   </el-form-item>
-                  <el-row :gutter="20">
-                    <el-col :span="12">
-                      <el-form-item>
-                        <div class="text-white fw-bold">Email</div>
-                        <el-input
-                          v-model="form.email"
-                          type="email"
-                          placeholder="Email"
-                        />
-                      </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                      <el-form-item>
-                        <div class="text-white fw-bold">No. Telepon</div>
-                        <el-input
-                          v-model="form.phone"
-                          placeholder="No. Telepon/Handphone"
-                        />
-                      </el-form-item>
-                    </el-col>
-                  </el-row>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item>
+                    <div class="text-white fw-bold">No. Telepon/Handphone</div>
+                    <el-input
+                      v-model="form.phone"
+                      placeholder="No. Telepon/Handphone"
+                    />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="24">
+                  <el-form-item>
+                    <div class="text-white fw-bold">Email</div>
+                    <el-input
+                      v-model="form.email"
+                      type="email"
+                      placeholder="Email"
+                    />
+                  </el-form-item>
                 </el-col>
               </el-row>
             </el-col>
-            <el-col :span="7">
+            <el-col :span="12">
               <el-form-item>
                 <div style="margin-top:2rem; display:block;">
-                  <div style="width:200px; height:200px; background:white; display:block; margin:auto">
-                    <img v-if="url" :src="url" style="width:100%;height: 100%;object-fit: contain;">
+                  <div class="text-white fw-bold" style="text-align:center">Unggah Foto Selfie</div>
+                  <div style="width:200px; height:200px; background:#d0d0d0 none repeat scroll 0% 0%; display:block; margin:auto; border-radius:50%;line-height: 307px;text-align: center;">
+                    <img v-if="url" :src="url" style="width:60%;height: 60%;object-fit: cover;">
                   </div>
-                  <div class="text-white fw-bold" style="text-align:center">Unggah Foto Selfie dengan ktp</div>
-                  <input
-                    ref="file"
-                    style="margin-left:3rem"
-                    type="file"
-                    class=""
-                    @change="handleFileUpload()"
-                  >
+                  <div style="text-align:center;">
+                    <input
+                      ref="file"
+                      style="margin-left:6rem"
+                      type="file"
+                      class=""
+                      @change="handleFileUpload()"
+                    >
+                  </div>
                 </div>
               </el-form-item>
             </el-col>
-            <el-col :span="24">
-              <el-form-item>
-                <h4 class="text-white fw-bold">Kelompok Masyarakat</h4>
-                <div style="padding-left:2rem">
-                  <div>
-                    <el-radio
-                      v-model="form.responder_type_id"
-                      label="1"
-                    >
-                      <span style="color:white">Terkena Dampak Langsung</span></el-radio>
-                  </div>
-                  <div>
-                    <el-radio
-                      v-model="form.responder_type_id"
-                      label="2"
-                    ><span style="color:white">Pemerhati Lingkungan Hidup</span></el-radio>
-                  </div>
-                  <div>
-                    <el-radio
-                      v-model="form.responder_type_id"
-                      label="3"
-                    ><span style="color:white">LSM</span></el-radio>
-                  </div>
-                  <div>
-                    <el-radio
-                      v-model="form.responder_type_id"
-                      label="4"
-                    ><span style="color:white">Masyarakat Berkepentingan Lainya</span></el-radio>
-                  </div>
-                </div>
-              </el-form-item>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
               <el-row>
-                <el-col :span="12">
+                <el-col :span="24">
                   <el-form-item>
-                    <div class="text-white fw-bold">Kekhawatiran</div>
+                    <div class="text-white fw-bold">Kondisi Lingkungan di Dalam dan Sekitar Lokasi Tapak Proyek</div>
                     <el-input
-                      v-model="form.concern"
                       type="textarea"
                       placeholder="Kekhawatiran"
                     />
                   </el-form-item>
                   <el-form-item>
-                    <div class="text-white fw-bold">Harapan</div>
+                    <div class="text-white fw-bold">Nilai Lokal  yang Berpotensi akan Terkena Dampak</div>
                     <el-input
-                      v-model="form.expectation"
                       type="textarea"
                       placeholder="Harapan"
                     />
@@ -268,6 +280,24 @@
                 </el-col>
               </el-row>
             </el-col>
+            <el-col :span="12">
+              <el-form-item>
+                <div class="text-white fw-bold">Kekhawatiran</div>
+                <el-input
+                  v-model="form.concern"
+                  type="textarea"
+                  placeholder="Kekhawatiran"
+                />
+              </el-form-item>
+              <el-form-item>
+                <div class="text-white fw-bold">Harapan</div>
+                <el-input
+                  v-model="form.expectation"
+                  type="textarea"
+                  placeholder="Harapan"
+                />
+              </el-form-item>
+            </el-col>
           </el-row>
         </el-form>
         <el-row :gutter="20">
@@ -288,6 +318,25 @@
         </el-row>
       </div>
     </div>
+    <el-dialog
+      title="Masyarakat Terkena Dampak Langsung"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <el-checkbox-group v-model="checkList">
+        <el-checkbox label="Kelompok Masyarakat Rentan" />
+        <el-checkbox label="Kelompok Masyarakat Adat" />
+        <el-checkbox label="Kelompok Ke s etaraan Gender" />
+      </el-checkbox-group>
+      <template>
+        <el-radio v-model="radio" label="1">Laki - laki</el-radio>
+        <el-radio v-model="radio" label="2">Perempuan</el-radio>
+      </template>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="centerDialogVisible = false">Simpan</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -344,12 +393,13 @@ export default {
         expectation: null,
         announcement_id: 0,
         rating: null,
+        peran: '',
       },
       responders: [],
       errorMessage: null,
       photo_filepath: null,
       ratings: null,
-      url: null,
+      url: '/images/avatar.png',
       urlMap: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       zoom: 12,
@@ -361,6 +411,10 @@ export default {
         iconSize: [38, 95],
         iconAnchor: [22, 94],
       }),
+      centerDialogVisible: false,
+      // checkList: ['Kelompok Masyarakat Rentan','Kelompok Masyarakat Adat','Kelompok Ke s etaraan Gender'],
+      checkList: [],
+      radio: '',
     };
   },
   async created() {
@@ -583,7 +637,6 @@ export default {
         })
         .catch((error) => {
           this.errorMessage = error.message;
-          console.error('There was an error!', error);
         });
     },
     async getResponderType() {
@@ -593,6 +646,11 @@ export default {
     },
     handleCancelComponent() {
       this.$emit('handleCancelComponent');
+    },
+    handleChangeModal(){
+      if (this.form.peran === '1'){
+        this.centerDialogVisible = true;
+      }
     },
   },
 };
