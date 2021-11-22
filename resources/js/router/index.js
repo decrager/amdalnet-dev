@@ -208,6 +208,19 @@ export const asyncRoutes = [
       },
     ],
   },
+  {
+    path: '/fka',
+    component: Layout,
+    meta: { title: 'fka', icon: 'dashboard', noCache: true },
+    children: [
+      {
+        path: '/fka',
+        component: () => import('@/views/formulir-ka/index'),
+        name: 'FormulirKA',
+        meta: { title: 'Formulir Kerangka Acuan', icon: 'dashboard', noCache: true },
+      },
+    ],
+  },
   adminRoutes,
   projectRoutes,
   initiatorRoutes,
