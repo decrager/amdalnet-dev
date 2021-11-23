@@ -41,13 +41,17 @@ class ScopingController extends Controller
                 }])->where('id_sub_project', $id_sub_project)->get();
                 
             $components = [];
+            $ids = [];
             foreach ($components_by_stage as $component) {
                 array_push($components, $component);
+                array_push($ids, $component->id);
             }
             foreach ($all_stages as $component) {
                 if ($component->component != null
                     || ($component->name != null && $component->id_project_stage == $id_project_stage)) {
-                    array_push($components, $component);
+                    if (!in_array($component->id, $ids)) {
+                        array_push($components, $component);
+                    }                    
                 }
             }
             if ($request->sub_project_components) {
@@ -117,7 +121,14 @@ class ScopingController extends Controller
                 DB::rollBack();
             }
         } else if ($request->rona_awal) {
-            
+            $params = $request->all();
+            $rona_awal = $params['rona_awal'];
+            DB::beginTransaction();
+            if (SubProjectRonaAwal::create($rona_awal)) {
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
         }
     }
 

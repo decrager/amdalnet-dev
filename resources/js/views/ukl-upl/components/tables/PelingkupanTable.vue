@@ -133,6 +133,8 @@
     />
     <add-rona-awal-dialog
       :show="kLDialogueVisible"
+      :sub-projects="subProjects"
+      :sub-project-components="subProjectComponents"
       @handleCloseAddRonaAwal="handleCloseAddRonaAwal"
     />
   </el-row>
@@ -188,8 +190,11 @@ export default {
         this.tableKey = this.tableKey + 1;
       }
     },
-    handleCloseAddRonaAwal() {
+    handleCloseAddRonaAwal(reload) {
       this.kLDialogueVisible = false;
+      if (reload) {
+        this.tableKey = this.tableKey + 1;
+      }
     },
     handleViewComponentRonaAwals(idSubProject) {
       this.getComponents(idSubProject);
@@ -226,7 +231,6 @@ export default {
         }
       });
       this.subProjectComponents = components.data;
-      console.log(this.subProjectComponents);
     },
     async getRonaAwals(idSubProject) {
       const ronaAwals = await scopingResource.list({
@@ -242,7 +246,6 @@ export default {
         });
       });
       this.subProjectRonaAwals = ronaAwals.data;
-      console.log(this.subProjectRonaAwals);
     },
   },
 };
