@@ -56,11 +56,17 @@ class FeedbackController extends Controller
             'rating' => 'required',
             'photo_filepath' => 'image|file',
             'responder_type_id' => 'required',
+            'environment_condition' => 'nullable',
+            'local_impact' => 'nullable',
+            'community_type' => 'nullable',
+            'community_gender' => 'nullable',
         ]);
 
         if ($request->file('photo_filepath')) {
-            $name = 'images/spt/' . uniqid() . '.' . $request->file('photo_filepath')->extension();
-            $validator['photo_filepath'] = $request->file('photo_filepath')->storePubliclyAs('public', $name);
+            $name = uniqid() . '.' . $request->file('photo_filepath')->extension();
+            $nameWithPath = 'images/spt/' . uniqid() . '.' . $request->file('photo_filepath')->extension();
+            $request->file('photo_filepath')->move(public_path('images/spt/'), $name);
+            $validator['photo_filepath'] = $nameWithPath;
         };
 
         DB::beginTransaction();
@@ -73,7 +79,7 @@ class FeedbackController extends Controller
             DB::rollBack();
         }
 
-        return new FeedbackResource($feedback);       
+        return new FeedbackResource($feedback);
     }
 
     /**
@@ -121,7 +127,7 @@ class FeedbackController extends Controller
         );
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
-        } else {            
+        } else {
             $params = $request->all();
 
             DB::beginTransaction();
