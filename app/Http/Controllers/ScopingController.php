@@ -30,14 +30,20 @@ class ScopingController extends Controller
             // return sub_project_components filter by id_sub_project & id_project_stage
             $id_project_stage = $request->id_project_stage;
             $id_sub_project = $request->id_sub_project;
-            $componentsUnfiltered = SubProjectComponent::with(['component' => function($q) use ($id_project_stage) {
+            $components_by_stage = SubProjectComponent::with(['component' => function($q) use ($id_project_stage) {
                     $q->where('id_project_stage', $id_project_stage);
                 }])->where('id_sub_project', $id_sub_project)
                 ->where('id_project_stage', $id_project_stage)
-                ->orWhereNull('id_project_stage')
                 ->get();
+            $all_stages = SubProjectComponent::with(['component' => function($q) use ($id_project_stage) {
+                $q->where('id_project_stage', $id_project_stage);
+                }])->where('id_sub_project', $id_sub_project)->get();
+                
             $components = [];
-            foreach ($componentsUnfiltered as $component) {
+            foreach ($components_by_stage as $component) {
+                array_push($components, $component);
+            }
+            foreach ($all_stages as $component) {
                 if ($component->component != null
                     || ($component->name != null && $component->id_project_stage == $id_project_stage)) {
                     array_push($components, $component);
@@ -49,31 +55,26 @@ class ScopingController extends Controller
             if ($request->sub_project_rona_awals) {
                 $rona_awals = [];
                 $component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();
-                foreach ($components as $component) {
-                    $id_sub_project_component = $component->id;
-                    $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal', 'componentType'])
-                        ->where('id_sub_project_component', $id_sub_project_component)->get();
-                    $ra = [];
-                    foreach ($component_types as $ctype) {
-                        $r = [];
-                        foreach ($sp_rona_awals as $rona_awal) {
-                            if ($ctype->id == $rona_awal->id_component_type) {
-                                array_push($r,  $rona_awal);
-                            }
-                            if ($rona_awal->ronaAwal != null) {
-                                if ($ctype->id == $rona_awal->ronaAwal->id_component_type) {
+                foreach ($component_types as $ctype) {
+                    $r = [];
+                    foreach ($components as $component) {
+                        $id_sub_project_component = $component->id;
+                        $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal', 'componentType'])
+                            ->where('id_sub_project_component', $id_sub_project_component)->get();
+                            foreach ($sp_rona_awals as $rona_awal) {
+                                if ($ctype->id == $rona_awal->id_component_type) {
                                     array_push($r,  $rona_awal);
                                 }
+                                if ($rona_awal->ronaAwal != null) {
+                                    if ($ctype->id == $rona_awal->ronaAwal->id_component_type) {
+                                        array_push($r,  $rona_awal);
+                                    }
+                                }
                             }
-                        }
-                        array_push($ra, [
-                            'component_type' => $ctype,
-                            'sub_project_rona_awals' => $r,
-                        ]);
                     }
                     array_push($rona_awals, [
-                        'sub_project_component' => $component,
-                        'sub_project_rona_awals' => $ra,
+                        'component_type' => $ctype,
+                        'rona_awals' => $r,
                     ]);
                 }
                 return [

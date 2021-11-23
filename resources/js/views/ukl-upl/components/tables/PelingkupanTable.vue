@@ -20,7 +20,7 @@
               type="success"
               size="mini"
               class="pull-right"
-              icon=""
+              icon="el-icon-caret-right"
               @click="handleViewComponentRonaAwals(scope.row.id)"
             />
           </template>
@@ -45,14 +45,86 @@
               type="success"
               size="mini"
               class="pull-right"
-              icon=""
+              icon="el-icon-caret-right"
               @click="handleViewComponentRonaAwals(scope.row.id)"
             />
           </template>
         </el-table-column>
       </el-table>
     </el-col>
-    <el-col :span="18" :xs="24" />
+    <el-col :span="18" :xs="24">
+      <table class="title" style="border-collapse: collapse; width:100%;">
+        <thead>
+          <tr>
+            <th rowspan="2">Komponen Kegiatan</th>
+            <th colspan="6">Komponen Lingkungan</th>
+          </tr>
+          <tr>
+            <th>Geofisika Kimia</th>
+            <th>Biologi</th>
+            <th>Sosial Budaya</th>
+            <th>Kesehatan Masyarakat</th>
+            <th>Kegiatan Lain Sekitar</th>
+            <th>Lainnya</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
+                <el-tag :closable="closable" type="info">{{ comp.name }}</el-tag>
+                <el-input v-model="comp.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+              </div>
+
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kKDialogueVisible = true" />
+            </td>
+            <td>
+              <div v-for="ra in subProjectRonaAwals[0].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+              </div>
+
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+            </td>
+            <td>
+              <div v-for="ra in subProjectRonaAwals[1].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+              </div>
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+            </td>
+            <td>
+              <div v-for="ra in subProjectRonaAwals[2].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+              </div>
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+            </td>
+            <td>
+              <div v-for="ra in subProjectRonaAwals[3].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+              </div>
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+            </td>
+            <td>
+              <div v-for="ra in subProjectRonaAwals[4].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+              </div>
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+            </td>
+            <td>
+              <div v-for="ra in subProjectRonaAwals[5].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+              </div>
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </el-col>
   </el-row>
 </template>
 
@@ -75,6 +147,7 @@ export default {
   },
   data() {
     return {
+      closable: true,
       subProjects: {
         utama: [],
         pendukung: [],
@@ -82,6 +155,11 @@ export default {
       subProjectComponents: [],
       // componentTypes: [],
       subProjectRonaAwals: [],
+      kkTags: [{ id: 1, name: '1.1 Pengadaan Lahan' }, { id: 2, name: '1.2 Land Clearing' }],
+      gFTags: [{ id: 1, name: 'Sumber Daya Geologi' }, { id: 2, name: 'Air Permukaan' }, { id: 3, name: 'Udara' }],
+      bioTags: [{ id: 1, name: 'Vegetasi Flora' }, { id: 2, name: 'Tipe Ekosistem' }],
+      sosBudTags: [{ id: 1, name: 'Tingkat Pendapatan' }, { id: 2, name: 'Mata Pencaharian' }, { id: 3, name: 'Situs Arkeologi' }],
+      kesMasTags: [{ name: 'Kesehatan Masyarakat' }],
     };
   },
   mounted() {
@@ -117,6 +195,11 @@ export default {
         id_project_stage: this.idProjectStage,
         sub_project_components: true,
       });
+      components.data.map((comp) => {
+        if (comp.name === null) {
+          comp.name = comp.component.name;
+        }
+      });
       this.subProjectComponents = components.data;
       console.log(this.subProjectComponents);
     },
@@ -126,9 +209,27 @@ export default {
         id_project_stage: this.idProjectStage,
         sub_project_rona_awals: true,
       });
+      ronaAwals.data.map((ra) => {
+        ra.rona_awals.map((r) => {
+          if (r.name === null) {
+            r.name = r.rona_awal.name;
+          }
+        });
+      });
       this.subProjectRonaAwals = ronaAwals.data;
       console.log(this.subProjectRonaAwals);
     },
   },
 };
 </script>
+
+<style scoped>
+table.el-table__header {
+  background-color: #6cc26f !important;
+}
+
+table th, table td {word-break: normal !important; padding:.5em; line-height:1.2em; border: 1px solid #eee; text-align:center;}
+table td { vertical-align: top !important;}
+table thead  {background-color:#6cc26f !important; color: white !important;}
+table td.title, table tr.title td, table.title td { text-align:left;}
+</style>
