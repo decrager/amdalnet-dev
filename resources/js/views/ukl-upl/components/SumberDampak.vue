@@ -28,7 +28,7 @@
 <script>
 
 import Resource from '@/api/resource';
-import ComponentTable from './ComponentTable.vue';
+import ComponentTable from './tables/ComponentTable.vue';
 
 const prjstageResource = new Resource('project-stages');
 const projectComponentResource = new Resource('project-components');

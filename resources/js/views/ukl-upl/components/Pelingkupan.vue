@@ -11,7 +11,7 @@
 <script>
 
 import Resource from '@/api/resource';
-import PelingkupanTable from './PelingkupanTable.vue';
+import PelingkupanTable from './tables/PelingkupanTable.vue';
 const projectStageResource = new Resource('project-stages');
 
 export default {

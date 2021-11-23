@@ -19,7 +19,7 @@
 
 <script>
 import Resource from '@/api/resource';
-import IdentifikasiDampakTable from './IdentifikasiDampakTable.vue';
+import IdentifikasiDampakTable from './tables/IdentifikasiDampakTable.vue';
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
