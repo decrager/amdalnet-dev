@@ -318,7 +318,10 @@ export default {
     }
     .vtl-node {
       .vtl-node-content {
-        padding: 0 5px;
+        padding: 0 3px;
+      }
+      .vtl-node-main {
+        font-size: 14px;
       }
     }
   }
@@ -331,6 +334,7 @@ export default {
   .left-container {
     /* background-color: #F38181; */
     height: 100%;
+    overflow: scroll;
   }
 
   .right-container {
