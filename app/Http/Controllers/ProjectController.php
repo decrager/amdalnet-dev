@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Project;
+use App\Entity\SubProject;
+use App\Entity\SubProjectParam;
 use App\Http\Resources\ProjectResource;
 use App\MapProject;
 use DB;
@@ -89,87 +91,181 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        $request['listSubProject'] = json_decode($request['listSubProject']);
+
+        // return $request['listSubProject'][0]->listSubProjectParams;
+
         //validate request
+        $data = $this->validate($request, [
+            'project_title' => 'required',
+            'project_type' => 'required',
+            'sector' => 'required',
+            'description' => 'required',
+            'id_applicant' => 'required',
+            'id_prov' => 'required',
+            'id_district' => 'required',
+            'address' => 'required',
+            'field' => 'required',
+            'location_desc' => 'required',
+            'risk_level' => 'required',
+            'kbli' => 'required',
+            'result_risk' => 'required',
+            'required_doc' => 'required',
+            'type_formulator_team' => 'required',
+            'listSubProject' => 'required',
+        ]);
 
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'biz_type' => 'required',
-                'project_title' => 'required',
-                'scale' => 'required',
-                'scale_unit' => 'required',
-                'project_type' => 'required',
-                'sector' => 'required',
-                'description' => 'required',
-                'id_applicant' => 'required',
-                'id_prov' => 'required',
-                'id_district' => 'required',
-                'address' => 'required',
-                'field' => 'required',
-                'location_desc' => 'required',
-                'risk_level' => 'required',
-                'project_year' => 'required',
-                // 'id_formulator_team' => 'required',
-                'kbli' => 'required',
-                'result_risk' => 'required',
-                'required_doc' => 'required',
-                'type_formulator_team' => 'required',
-            ]
-        );
+        // return $data;
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 403);
-        } else {
-            $params = $request->all();
+        //create fileKtr
+        $ktrName = '';
+        if ($request->file('fileKtr')) {
+            $fileKtr = $request->file('fileKtr');
+            $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
+            $fileKtr->storePubliclyAs('public', $ktrName);
+        }
 
-            //create fileKtr
-            $ktrName = '';
-            if ($request->file('fileKtr')) {
-                $fileKtr = $request->file('fileKtr');
-                $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
-                $fileKtr->storePubliclyAs('public', $ktrName);
+        //create file map
+        $mapName = array();
+        if ($files = $request->file('fileMap')) {
+            foreach ($files as $file) {
+                $name = uniqid() . '.zip';
+                $mapName[] = $name;
+                $file->move(storage_path('app/public/map'), $name);
             }
+        }
 
-            //create file map
-            $mapName = array();
-            if ($files = $request->file('fileMap')) {
-                foreach ($files as $file) {
-                    $name = uniqid() . '.zip';
-                    $mapName[] = $name;
-                    $file->move(storage_path('app/public/map'), $name);
-                }
-            }
+        //create project
+        $project = Project::create([
+            // 'biz_type' => $data['biz_type'],
+            'project_title' => $data['project_title'],
+            // 'scale' => $data['scale'],
+            // 'scale_unit' => $data['scale_unit'],
+            'project_type' => $data['project_type'],
+            'sector' => $data['sector'],
+            'description' => $data['description'],
+            'id_applicant' => $data['id_applicant'],
+            'id_prov' => $data['id_prov'],
+            'id_district' => $data['id_district'],
+            'address' => $data['address'],
+            'field' => $data['field'],
+            'location_desc' => $data['location_desc'],
+            'risk_level' => $data['risk_level'],
+            // 'project_year' => $data['project_year'],
+            'id_formulator_team' => isset($data['id_formulator_team']) ? $data['id_formulator_team'] : null,
+            'kbli' => $data['kbli'],
+            'result_risk' => $data['result_risk'],
+            'required_doc' => $data['required_doc'],
+            // 'id_project' => $data['id_project'],
+            'type_formulator_team' => $data['type_formulator_team'],
+            'id_lpjp' => isset($data['id_lpjp']) ? $data['id_lpjp'] : null,
+            'map' => implode(',', $mapName),
+            'ktr' => Storage::url($ktrName),
+        ]);
 
-            //create lpjp
-            $project = Project::create([
-                'biz_type' => $params['biz_type'],
-                'project_title' => $params['project_title'],
-                'scale' => $params['scale'],
-                'scale_unit' => $params['scale_unit'],
-                'project_type' => $params['project_type'],
-                'sector' => $params['sector'],
-                'description' => $params['description'],
-                'id_applicant' => $params['id_applicant'],
-                'id_prov' => $params['id_prov'],
-                'id_district' => $params['id_district'],
-                'address' => $params['address'],
-                'field' => $params['field'],
-                'location_desc' => $params['location_desc'],
-                'risk_level' => $params['risk_level'],
-                'project_year' => $params['project_year'],
-                'id_formulator_team' => isset($params['id_formulator_team']) ? $params['id_formulator_team'] : null,
-                'kbli' => $params['kbli'],
-                'result_risk' => $params['result_risk'],
-                'required_doc' => $params['required_doc'],
-                'id_project' => $params['id_project'],
-                'type_formulator_team' => $params['type_formulator_team'],
-                'id_lpjp' => isset($params['id_lpjp']) ? $params['id_lpjp'] : null,
-                'map' => implode(',', $mapName),
-                'ktr' => Storage::url($ktrName),
+        //create sub project
+        foreach ($data['listSubProject'] as $subPro) {
+            $createdSubPro = SubProject::create([
+              'kbli' => $subPro->kbli,
+              'name' => $subPro->name,
+              'result' => $subPro->result,
+              'type' => $subPro->type,
+              'biz_type' => $subPro->biz_type,
+              'id_project' => $project->id,
             ]);
 
-            return new ProjectResource($project);
+            foreach ($subPro->listSubProjectParams as $subProParam) {
+                SubProjectParam::create([
+                    'param' => $subProParam->param,
+                    'scale' => $subProParam->scale,
+                    'scale_unit' => $subProParam->scale_unit,
+                    'result' => $subProParam->result,
+                    'id_sub_project' => $createdSubPro->id,
+                ]);
+            }
         }
+          
+        return new ProjectResource($project);
+
+        // $validator = Validator::make(
+        //     $request->all(),
+        //     [
+        //         'biz_type' => 'required',
+        //         'project_title' => 'required',
+        //         'scale' => 'required',
+        //         'scale_unit' => 'required',
+        //         'project_type' => 'required',
+        //         'sector' => 'required',
+        //         'description' => 'required',
+        //         'id_applicant' => 'required',
+        //         'id_prov' => 'required',
+        //         'id_district' => 'required',
+        //         'address' => 'required',
+        //         'field' => 'required',
+        //         'location_desc' => 'required',
+        //         'risk_level' => 'required',
+        //         'project_year' => 'required',
+        //         // 'id_formulator_team' => 'required',
+        //         'kbli' => 'required',
+        //         'result_risk' => 'required',
+        //         'required_doc' => 'required',
+        //         'type_formulator_team' => 'required',
+        //     ]
+        // );
+
+        // if ($validator->fails()) {
+        //     return response()->json(['errors' => $validator->errors()], 403);
+        // } else {
+        //     $params = $request->all();
+
+        //     //create fileKtr
+        //     $ktrName = '';
+        //     if ($request->file('fileKtr')) {
+        //         $fileKtr = $request->file('fileKtr');
+        //         $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
+        //         $fileKtr->storePubliclyAs('public', $ktrName);
+        //     }
+
+        //     //create file map
+        //     $mapName = array();
+        //     if ($files = $request->file('fileMap')) {
+        //         foreach ($files as $file) {
+        //             $name = uniqid() . '.zip';
+        //             $mapName[] = $name;
+        //             $file->move(storage_path('app/public/map'), $name);
+        //         }
+        //     }
+
+        //     //create lpjp
+        //     $project = Project::create([
+        //         'biz_type' => $params['biz_type'],
+        //         'project_title' => $params['project_title'],
+        //         'scale' => $params['scale'],
+        //         'scale_unit' => $params['scale_unit'],
+        //         'project_type' => $params['project_type'],
+        //         'sector' => $params['sector'],
+        //         'description' => $params['description'],
+        //         'id_applicant' => $params['id_applicant'],
+        //         'id_prov' => $params['id_prov'],
+        //         'id_district' => $params['id_district'],
+        //         'address' => $params['address'],
+        //         'field' => $params['field'],
+        //         'location_desc' => $params['location_desc'],
+        //         'risk_level' => $params['risk_level'],
+        //         'project_year' => $params['project_year'],
+        //         'id_formulator_team' => isset($params['id_formulator_team']) ? $params['id_formulator_team'] : null,
+        //         'kbli' => $params['kbli'],
+        //         'result_risk' => $params['result_risk'],
+        //         'required_doc' => $params['required_doc'],
+        //         'id_project' => $params['id_project'],
+        //         'type_formulator_team' => $params['type_formulator_team'],
+        //         'id_lpjp' => isset($params['id_lpjp']) ? $params['id_lpjp'] : null,
+        //         'map' => implode(',', $mapName),
+        //         'ktr' => Storage::url($ktrName),
+        //     ]);
+
+        //     return new ProjectResource($project);
+        // }
     }
 
     /**
