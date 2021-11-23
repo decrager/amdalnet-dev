@@ -73,7 +73,7 @@
           <tr>
             <td>
               <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
-                <el-tag :closable="closable" type="info">{{ comp.name }}</el-tag>
+                <el-tag :key="comp.id" type="info" :closable="closable" @close="handleDeleteComponent(comp.id)">{{ comp.name }}</el-tag>
                 <el-input v-model="comp.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
 
@@ -81,7 +81,7 @@
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[0].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-tag key="ra.id" type="info" ::closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
 
@@ -89,35 +89,35 @@
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[1].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
               <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[2].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
               <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[3].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
               <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[4].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
               <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[5].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :closable="closable" type="info">{{ ra.name }}</el-tag>
+                <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
               <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
@@ -145,6 +145,8 @@ import Resource from '@/api/resource';
 import AddComponentDialog from '../dialogs/AddComponentDialog.vue';
 import AddRonaAwalDialog from '../dialogs/AddRonaAwalDialog.vue';
 const scopingResource = new Resource('scoping');
+const subProjectComponentResource = new Resource('sub-project-components');
+const subProjectRonaAwalResource = new Resource('sub-project-rona-awals');
 
 export default {
   name: 'PelingkupanTable',
@@ -195,6 +197,40 @@ export default {
       if (reload) {
         this.tableKey = this.tableKey + 1;
       }
+    },
+    handleDeleteComponent(id) {
+      subProjectComponentResource
+        .destroy(id)
+        .then((response) => {
+          this.$message({
+            message: 'Komponen Kegiatan ' + id + ' berhasil dihapus',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          // reload PelingkupanTable
+          this.kKDialogueVisible = false;
+          this.tableKey = this.tableKey + 1;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    handleDeleteRonaAwal(id) {
+      subProjectRonaAwalResource
+        .destroy(id)
+        .then((response) => {
+          this.$message({
+            message: 'Komponen Lingkungan berhasil dihapus',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          // reload PelingkupanTable
+          this.kLDialogueVisible = false;
+          this.tableKey = this.tableKey + 1;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     handleViewComponentRonaAwals(idSubProject) {
       this.getComponents(idSubProject);

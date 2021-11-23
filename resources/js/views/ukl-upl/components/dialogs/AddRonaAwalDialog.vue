@@ -46,6 +46,19 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="Tipe Komponen Lingkungan">
+        <el-select
+          v-model="ronaAwal.id_component_type"
+          placeholder="Pilih Tipe Komponen Lingkungan"
+        >
+          <el-option
+            v-for="item of componentTypes"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="Rona Lingkungan">
         <el-input v-model="ronaAwal.name" />
       </el-form-item>
@@ -69,6 +82,7 @@
 <script>
 import Resource from '@/api/resource';
 const projectStageResource = new Resource('project-stages');
+const componentTypeResource = new Resource('component-types');
 const scopingResource = new Resource('scoping');
 
 export default {
@@ -90,6 +104,7 @@ export default {
       subProjectsArray: [],
       subProjectComponentsArray: [],
       projectStages: [],
+      componentTypes: [],
     };
   },
   mounted() {
@@ -118,6 +133,8 @@ export default {
       this.$emit('handleCloseAddRonaAwal', false);
     },
     async getData() {
+      const { data } = await componentTypeResource.list({});
+      this.componentTypes = data;
       const ps = await projectStageResource.list({
         ordered: true,
       });
