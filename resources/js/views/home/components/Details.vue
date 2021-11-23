@@ -281,7 +281,7 @@
           enctype="multipart/form-data"
           @submit.prevent="saveFeedback"
         >
-          <input v-model="announcementId" type="hidden">
+          <input v-model="selectedAnnouncement.id" type="hidden">
           <el-row :gutter="20">
             <el-col :span="12">
               <h3 style="text-align:center; color:#fff;">Saran, Pendapat, dan Tanggapan untuk Kegiatan</h3>
@@ -390,15 +390,17 @@
                   <el-form-item>
                     <div class="text-white fw-bold">Kondisi Lingkungan di Dalam dan Sekitar Lokasi Tapak Proyek</div>
                     <el-input
+                      v-model="form.envyCondition"
                       type="textarea"
-                      placeholder="Kekhawatiran"
+                      placeholder="Kondisi Lingkungan di Dalam dan Sekitar Lokasi Tapak Proyek"
                     />
                   </el-form-item>
                   <el-form-item>
                     <div class="text-white fw-bold">Nilai Lokal  yang Berpotensi akan Terkena Dampak</div>
                     <el-input
+                      v-model="form.localImpact"
                       type="textarea"
-                      placeholder="Harapan"
+                      placeholder="Nilai Lokal  yang Berpotensi akan Terkena Dampak"
                     />
                   </el-form-item>
                   <h3 class="fw-bold text-white">Rating</h3>
@@ -441,6 +443,25 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-dialog
+            title="Masyarakat Terkena Dampak Langsung"
+            :visible.sync="centerDialogVisible"
+            width="30%"
+            center
+          >
+            <el-checkbox-group v-model="form.comunityType">
+              <el-checkbox label="Kelompok Masyarakat Rentan" />
+              <el-checkbox label="Kelompok Masyarakat Adat" />
+              <el-checkbox label="Kelompok Ke s etaraan Gender" />
+            </el-checkbox-group>
+            <template>
+              <el-radio v-model="form.comunityGender" label="1">Laki - laki</el-radio>
+              <el-radio v-model="form.comunityGender" label="2">Perempuan</el-radio>
+            </template>
+            <span slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="centerDialogVisible = false">Simpan</el-button>
+            </span>
+          </el-dialog>
         </el-form>
         <el-row :gutter="20">
           <el-col :span="18">
@@ -460,25 +481,6 @@
         </el-row>
       </div>
     </div>
-    <el-dialog
-      title="Masyarakat Terkena Dampak Langsung"
-      :visible.sync="centerDialogVisible"
-      width="30%"
-      center
-    >
-      <el-checkbox-group v-model="checkList">
-        <el-checkbox label="Kelompok Masyarakat Rentan" />
-        <el-checkbox label="Kelompok Masyarakat Adat" />
-        <el-checkbox label="Kelompok Ke s etaraan Gender" />
-      </el-checkbox-group>
-      <template>
-        <el-radio v-model="radio" label="1">Laki - laki</el-radio>
-        <el-radio v-model="radio" label="2">Perempuan</el-radio>
-      </template>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="centerDialogVisible = false">Simpan</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -536,6 +538,10 @@ export default {
         announcement_id: 0,
         rating: null,
         peran: '',
+        envyCondition: null,
+        localImpact: null,
+        comunityType: ['Kelompok Masyarakat Rentan', 'Kelompok Masyarakat Adat', 'Kelompok Ke setaraan Gender'],
+        comunityGender: null,
       },
       responders: [],
       errorMessage: null,
@@ -554,7 +560,6 @@ export default {
         iconAnchor: [22, 94],
       }),
       centerDialogVisible: false,
-      // checkList: ['Kelompok Masyarakat Rentan','Kelompok Masyarakat Adat','Kelompok Ke s etaraan Gender'],
       checkList: [],
       radio: '',
     };
@@ -755,11 +760,15 @@ export default {
       formData.append('id_card_number', this.form.id_card_number);
       formData.append('phone', this.form.phone);
       formData.append('email', this.form.email);
-      formData.append('responder_type_id', this.form.responder_type_id);
+      formData.append('responder_type_id', this.form.peran);
       formData.append('concern', this.form.concern);
       formData.append('expectation', this.form.expectation);
       formData.append('rating', this.form.rating);
-      formData.append('announcement_id', this.announcementId);
+      formData.append('announcement_id', this.selectedAnnouncement.id);
+      formData.append('environment_condition', this.form.envyCondition);
+      formData.append('local_impact', this.form.localImpact);
+      formData.append('community_type', this.form.comunityType);
+      formData.append('community_gender', this.form.comunityGender);
 
       _.each(this.formData, (value, key) => {
         formData.append(key, value);
@@ -768,7 +777,8 @@ export default {
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
         .post('api/feedbacks', formData, { headers })
-        .then(() => {
+        .then((data) => {
+          console.log(data);
           this.$message({
             type: 'success',
             message: 'Successfully create a feedback',
@@ -779,6 +789,11 @@ export default {
         })
         .catch((error) => {
           this.errorMessage = error.message;
+          this.$message({
+            type: 'error',
+            message: error.message,
+            duration: 5 * 1000,
+          });
         });
     },
     async getResponderType() {

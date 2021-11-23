@@ -20,7 +20,7 @@ class Announcement extends Model
         'start_date',
         'end_date',
         'project_id',
-        'project_result',
+        'project_result'
     ];
 
     public function feedbacks()
