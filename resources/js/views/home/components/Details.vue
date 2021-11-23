@@ -508,7 +508,7 @@ export default {
     // LMarker,
   },
   props: {
-    showDetails: Boolean,
+    // showDetails: Boolean,
     selectedAnnouncement: {
       type: Object,
       default: () => {},
@@ -787,7 +787,7 @@ export default {
       });
     },
     handleCancelComponent() {
-      this.$emit('handleCancelComponent');
+      this.$emit('handleCancelComponent', 'TABS');
     },
     handleChangeModal(){
       if (this.form.peran === '1'){

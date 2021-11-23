@@ -55,15 +55,14 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      <Details
-        v-if="showDetails"
-        :show-details="showDetails"
-        :announcement-id="selectedId"
-        :selected-announcement="selectedAnnouncement"
-        :selected-project="selectedProject"
-        @handleCancelComponent="handleCancelComponent"
-        @handleSetTabs="handleSetTabs"
-      />
+      <div v-if="showDetails">
+        <Details
+          :selected-announcement="selectedAnnouncement"
+          :selected-project="selectedProject"
+          @handleCancelComponent="handleCancelComponent"
+          @handleSetTabs="handleSetTabs"
+        />
+      </div>
     </div>
     <div>
       <ShowAll
@@ -131,9 +130,11 @@ export default {
           console.log(id);
         });
     },
-    handleCancelComponent(){
-      this.showDetails = false;
-      this.showTabs = true;
+    handleCancelComponent(e){
+      if (e === 'TABS'){
+        this.showDetails = false;
+        this.showTabs = true;
+      }
     },
     handleSetTabs(){
       this.showDetails = false;

@@ -29,7 +29,7 @@
       </el-form>
       <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
         <el-col :xs="24" :sm="3" style="padding-top:1rem">
-          <img class="imgCompany" src="https://placeimg.com/100/100/tech">
+          <img alt="" src="/images/list.svg">
         </el-col>
         <el-col :xs="24" :sm="18" style="padding-top:1rem">
           <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project.province.name }}</h3>
@@ -52,9 +52,15 @@
       </div>
     </div>
     <div v-if="showDetailFromAll">
-      <DetailsFromAll
+      <!-- <DetailsFromAll
         :selected-announcement="selectedAnnouncement"
         @handleCancelComponent="handleCancelComponent"
+      /> -->
+      <Details
+        :selected-announcement="selectedAnnouncement"
+        :selected-project="selectedProject"
+        @handleCancelComponent="handleCancelComponent"
+        @handleSetTabs="handleSetTabs"
       />
     </div>
   </div>
@@ -62,13 +68,15 @@
 <script>
 import axios from 'axios';
 import Pagination from '@/components/Pagination';
-import DetailsFromAll from './DetailsFromAll';
+// import DetailsFromAll from './DetailsFromAll';
+import Details from './Details';
 
 export default {
   name: 'ShowAll',
   components: {
     Pagination,
-    DetailsFromAll,
+    // DetailsFromAll,
+    Details,
   },
   props: {
     showAllTabs: Boolean,
@@ -92,7 +100,7 @@ export default {
       keyword: '',
       showDetailFromAll: false,
       showFromAll: true,
-      selectedAnnouncement: [],
+      selectedAnnouncement: {},
     };
   },
   created() {
