@@ -21,6 +21,7 @@ class ScopingController extends Controller
     {
         if ($request->id_project && $request->sub_project_type) {
             $subprojects = SubProject::with('project')
+                ->where('id_project', $request->id_project)
                 ->where('type', $request->sub_project_type) // 'utama'/'pendukung'
                 ->get();
             return SubProjectResource::collection($subprojects);
