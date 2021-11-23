@@ -153,7 +153,48 @@
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
-              <el-col :span="4">
+              <el-col :span="2">
+                <el-button size="medium" type="primary" @click="activeName = '5'">
+                  Lanjutkan
+                </el-button>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+          <el-collapse-item title="PERSETUJUAN AWAL" name="5">
+            <el-row>
+              <el-col :span="12">
+                <el-form-item
+                  label="Jenis Kegiatan"
+                  prop="pre_agreement"
+                >
+                  <el-select
+                    v-model="currentProject.pre_agreement"
+                    placeholder="Pilih"
+                    style="width: 100%"
+                    size="medium"
+                    @change="changeProjectType($event)"
+                  >
+                    <el-option
+                      v-for="item in preAgreementOptions"
+                      :key="item.value.id"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+
+                <el-form-item
+                  v-if="currentProject.pre_agreement && currentProject.pre_agreement === 'Lainnya'"
+                  label="Unggah Persetujuan Investasi"
+                  prop="pre_agreement"
+                >
+                  <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload">
+                  <el-tag type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi ke Kementrian Investasi</el-tag>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row type="flex" justify="end">
+              <el-col :span="5">
                 <el-button size="medium" @click="handleCancel()"> Batalkan </el-button>
                 <el-button size="medium" type="primary" @click="preProject = false"> Lanjutkan </el-button>
               </el-col>
@@ -415,6 +456,64 @@ export default {
           label: 'Pengembangan',
         },
       ],
+      preAgreementOptions: [
+        {
+          value: 'Tambang',
+          label: 'Tambang',
+        },
+        {
+          value: 'Pelabuhan Diluar Terminal Khusus',
+          label: 'Pelabuhan Diluar Terminal Khusus',
+        },
+        {
+          value: 'Terminal Khusus',
+          label: 'Terminal Khusus',
+        },
+        {
+          value: 'Bandara',
+          label: 'Bandara',
+        },
+        {
+          value: 'Ketenagalistrikan',
+          label: 'Ketenagalistrikan',
+        },
+        {
+          value: 'Jalan',
+          label: 'Jalan',
+        },
+        {
+          value: 'Bendungan',
+          label: 'Bendungan',
+        },
+        {
+          value: 'Pengelolaan Limbah B3 Jasa',
+          label: 'Pengelolaan Limbah B3 Jasa',
+        },
+        {
+          value: 'Kawasan Industri',
+          label: 'Kawasan Industri',
+        },
+        {
+          value: 'Kawasan Ekonomi Khusus',
+          label: 'Kawasan Ekonomi Khusus',
+        },
+        {
+          value: 'Kawasan Pelabuhan Bebas dan Perdagangan Bebas',
+          label: 'Kawasan Pelabuhan Bebas dan Perdagangan Bebas',
+        },
+        {
+          value: 'Migas',
+          label: 'Migas',
+        },
+        {
+          value: 'Ketenaganukliran',
+          label: 'Ketenaganukliran',
+        },
+        {
+          value: 'Lainnya',
+          label: 'Lainnya',
+        },
+      ],
       currentProjectRules: {
         project_title: [
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
@@ -590,6 +689,9 @@ export default {
     },
     handleFileKtrUpload(){
       this.fileKtr = this.$refs.fileKtr.files[0];
+    },
+    handleFilePreAgreementUpload(){
+      this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
       var selectedFiles = e.target.files;
