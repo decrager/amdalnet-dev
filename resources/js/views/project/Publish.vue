@@ -582,7 +582,12 @@ export default {
 
       // eslint-disable-next-line no-undef
       _.each(this.project, (value, key) => {
-        formData.append(key, value);
+        console.log(key);
+        if (key === 'listSubProject'){
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
       });
 
       console.log('project yang disubmit', formData);
