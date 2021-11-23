@@ -17,14 +17,9 @@ const projectStageResource = new Resource('project-stages');
 export default {
   name: 'Pelingkupan',
   components: { PelingkupanTable },
-  props: {
-    idProject: {
-      type: Number,
-      default: () => 0,
-    },
-  },
   data() {
     return {
+      idProject: 0,
       projectStages: [],
     };
   },
@@ -33,6 +28,7 @@ export default {
   },
   methods: {
     async getData() {
+      this.idProject = parseInt(this.$route.params && this.$route.params.id);
       const prjStages = await projectStageResource.list({
         ordered: true,
       });
