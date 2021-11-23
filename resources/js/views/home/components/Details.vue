@@ -3,68 +3,210 @@
     <div class="detailPengumuman">
       <div class="wrapInDetail">
         <el-row :gutter="20">
+          <el-col :span="24">
+            <h1 style="color:#fff; margin-bottom:0">Informasi Rencana Kegiatan</h1>
+          </el-col>
           <el-col :span="12">
-            <table id="tableDetail" border="0">
+            <!-- <el-row>
+              <el-col :span="10">
+                <p>No. Re gistrasi</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.id_project" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Jenis Dokumen</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.required_doc" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Nama Kegiatan</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.project_title" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Bidang Usaha/Kegiatan</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.sector" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Skala/Besaran</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.scale_unit" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Alamat</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.address" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Kewenangan</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.authority" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Pemrakarsa</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.pic_name" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Penanggung Jawab</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.pic_name" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Alamat Pemrakarsa</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.cs_address" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>No Telepon Pemrakarsa</p>
+              </el-col>
+              <el-col :span="14">
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Email Pemrakarsa</p>
+              </el-col>
+              <el-col :span="14">
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <p>Provinsi/Kota</p>
+              </el-col>
+              <el-col :span="14">
+                <p v-html="selectedAnnouncement.project.province.name" />
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <p>Deskripsi Kegiatan</p>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <p v-html="selectedAnnouncement.project.description" />
+              </el-col>
+            </el-row> -->
+            <table class="tableDetail tableDetail1" cellspacing="0" cellpadding="0" style="border:none">
               <tr>
-                <td>No. Re gistrasi</td>
+                <td style="width:40%">No. Re gistrasi</td>
                 <td v-html="selectedAnnouncement.project.id_project" />
               </tr>
               <tr>
-                <td>Jenis Dokumen</td>
+                <td style="width:40%">Jenis Dokumen</td>
                 <td v-html="selectedAnnouncement.project.required_doc" />
               </tr>
               <tr>
-                <td>Nama Kegiatan</td>
+                <td style="width:40%">Nama Kegiatan</td>
                 <td v-html="selectedAnnouncement.project.project_title" />
               </tr>
               <tr>
-                <td>Bidang Usaha/Kegiatan</td>
+                <td style="width:40%">Bidang Usaha/Kegiatan</td>
                 <td v-html="selectedAnnouncement.project.sector" />
               </tr>
               <tr>
-                <td>Skala/Besaran</td>
+                <td style="width:40%">Skala/Besaran</td>
                 <td v-html="selectedAnnouncement.project.scale_unit" />
               </tr>
               <tr>
-                <td>Alamat</td>
+                <td style="width:40%">Alamat</td>
                 <td v-html="selectedAnnouncement.project.address" />
               </tr>
               <tr>
-                <td>Kewenangan</td>
+                <td style="width:40%">Kewenangan</td>
                 <td v-html="selectedAnnouncement.project.authority" />
               </tr>
               <tr>
-                <td>Pemrakars</td>
+                <td style="width:40%">Pemrakarsa</td>
                 <td v-html="selectedAnnouncement.pic_name" />
               </tr>
               <tr>
-                <td>Penanggung Jawab</td>
+                <td style="width:40%">Penanggung Jawab</td>
                 <td v-html="selectedAnnouncement.pic_name" />
               </tr>
               <tr>
-                <td>Alamat Pemrakarsa</td>
+                <td style="width:40%">Alamat Pemrakarsa</td>
                 <td v-html="selectedAnnouncement.cs_address" />
               </tr>
               <tr>
-                <td>No Telepon Pemrakarsa</td>
+                <td style="width:40%">No Telepon Pemrakarsa</td>
                 <td />
               </tr>
               <tr>
-                <td>Email Pemrakars</td>
+                <td style="width:40%">Email Pemrakarsa</td>
                 <td />
               </tr>
               <tr>
-                <td>Provinsi/Kota</td>
+                <td style="width:40%">Provinsi/Kota</td>
                 <td v-html="selectedAnnouncement.project.province.name" />
               </tr>
               <tr>
                 <td colspan="2">Deskripsi Kegiatan</td>
-                <td v-html="selectedAnnouncement.project.description" />
+              </tr>
+              <tr>
+                <td colspan="2" v-html="selectedAnnouncement.project.description" />
+              </tr>
+            </table>
+          </el-col>
+          <!-- <el-col :span="2"></el-col> -->
+          <el-col :span="12">
+            <!-- <div class="detailLokasi">
+              <p style="color:rgb(60, 63, 60)">Lokasi</p>
+              <div class="mapsDetail"></div>
+            </div> -->
+            <table class="tableDetail" cellspacing="0" cellpadding="0" style="border:none">
+              <tr>
+                <td colspan="2" class="bg-white-custom">Lokasi</td>
+              </tr>
+              <tr class="bg-white-custom">
+                <td colspan="2">
+                  <div class="detailLokasi">
+                    <div id="mapView" />
+                  </div>
+                </td>
+              </tr>
+              <tr class="bg-blue-custom">
+                <td colspan="2">Deskripsi Kegiatan</td>
+              </tr>
+              <tr class="bg-white-custom">
+                <td colspan="2" v-html="selectedAnnouncement.project.description" />
               </tr>
             </table>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <!-- <el-row :gutter="20">
           <el-col :span="16">
             <div class="wrapDetail">
               <img src="https://placeimg.com/150/150/arch/grayscale" alt="">
@@ -122,14 +264,14 @@
                 <div>
                   <div id="mapView" />
                 </div>
-                <!-- <l-map :zoom="zoom" :center="center">
+                <l-map :zoom="zoom" :center="center">
                   <l-marker :lat-lng="center" />
                   <l-tile-layer :url="urlMap" :attribution="attribution" />
-                </l-map> -->
+                </l-map>
               </div>
             </div>
           </el-col>
-        </el-row>
+        </el-row> -->
       </div>
     </div>
     <div class="detailPengumuman">
@@ -729,7 +871,7 @@ table.table__striped tr:nth-child(odd) {
   align-items: center;
 }
 .wrapInDetail {
-  background-color: #133715;
+  background-color: #365337;
   padding-bottom: 2rem;
 }
 .wrapDetailRight {
@@ -771,17 +913,17 @@ table.table__striped tr:nth-child(odd) {
 }
 #mapView {
   width: 100%;
-  height: 76.3vh;
+  height: 23.7rem;
   max-height: 100vh;
   /* padding: 0;
   margin: 0 10px;
   position: absolute; */
 }
-#tableDetail{
-  width: 100%;
-  border: 0;
-}
-#tableDetail tr:nth-child(even) {background: #aec7af}
-#tableDetail tr:nth-child(odd) {background: #FFF}
-#tableDetail td{color: #3c3f3c; padding:0.5rem; width: 50%; border:0}
+.tableDetail1 tr:nth-child(even) {background: #aec7af}
+.tableDetail1 tr:nth-child(odd) {background: #FFF}
+.bg-blue-custom {background: #aec7af}
+.bg-white-custom {background: #FFF}
+.tableDetail td{color: #3c3f3c; padding:0.5rem; width: 50%; border:0}
+.detailLokasi{background-color: #fff;padding: 0.5rem;}
+.mapsDetail{width: 100%; height: 20rem;}
 </style>
