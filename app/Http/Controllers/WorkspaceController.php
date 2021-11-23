@@ -21,8 +21,8 @@ class WorkspaceController extends Controller
         $currentUser = Auth::user();
         if ($currentUser) {
             $client = new \GuzzleHttp\Client();
-            $etherpadUrl = env("EHTERPAD_URL"); 
-            $etherpadKey = env("ETHERPAD_APIKEY");
+            $etherpadUrl = env('EHTERPAD_URL'); 
+            $etherpadKey = env('ETHERPAD_APIKEY');
 
             // author
             $reqauthor = $client->request('GET', $etherpadUrl.'/api/1/createAuthorIfNotExistsFor', ['query' => [
@@ -79,5 +79,131 @@ class WorkspaceController extends Controller
             $tree = $workspace->getHeadingTree($result);
             return response()->json($tree);
         }
+    }
+
+    /**
+     * Get config for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getConfig(Request $request, String $id) {
+        $currentUser = Auth::user();
+        $officeUrl = env('MIX_OFFICE_URL'); 
+        $officeSecret = env('OFFICE_SECRET');
+        $appUrl = env('APP_URL');
+        $config = [
+            'width' => '100%',
+            'height' => '100%',
+            'type' => 'desktop',
+            'documentType' => 'word',
+            'document' => [
+                'fileType' => 'docx',
+                'key' => '-1472914638',
+                'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
+                'url' => $officeUrl.'/example/download?fileName=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=36.72.20.141__172.17.0.1',
+                'permissions' => [
+                    'fillForms' => true,
+                    'edit' => true,
+                    'modifyContentControl' => true,
+                    'copy' => false,
+                    'print' => false,
+                    'download' => false,
+                ]
+            ],
+            'editorConfig' => [
+                'user' => [
+                    'id' => 'uid.'.$currentUser->id,
+                    'name' => $currentUser->name,
+                ],
+                'customization' => [
+                    'about' => false,
+                    'compactHeader' => true,
+                    'compactToolbar' => true,
+                    'compatibleFeatures' => true,
+                    'toolbarHideFileName' => true,
+                    'toolbarNoTabs' => true,
+                    'hideRightMenu' => true,
+                    'hideRulers' => true,
+                    'help' => false,
+                    'macros' => false,
+                    'plugins' => false,
+                    'reviewDisplay' => 'markup',
+                    'customer' => [
+                        'address' => 'Jakarta, KLHK',
+                        'info' => '',
+                        'logo' => $appUrl.'/images/logo-amdal-white.png',
+                        'mail' => 'admin@amdalnet.dev',
+                        'name' => 'AMDALNET',
+                        'www' => 'amdalnet.dev',
+                    ],
+                    'logo' => [
+                        'image' => $appUrl.'/images/logo-amdal-white.png',
+                        'imageEmbedded' => $appUrl.'/images/logo-amdal-white.png',
+                        'url' => '',
+                    ],
+                ],
+                'callbackUrl' => $officeUrl.'/example/track?filename=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=36.72.20.141__172.17.0.1',
+            ],
+        ];
+        return response()->json($config);
+    }
+
+    /**
+     * Track for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function track(Request $request)
+    {
+        $result["error"] = 0;
+        // $data = $request->
+    }
+
+    /**
+     * Upload document for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function upload(Request $request)
+    {   
+    }
+
+    /**
+     * Download document for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function download(Request $request)
+    {   
+    }
+
+    /**
+     * convert document for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function convert(Request $request)
+    {   
+    }
+
+    /**
+     * Delete document for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function delete(Request $request)
+    {   
     }
 }

@@ -17,7 +17,7 @@
 
 <script>
 import Resource from '@/api/resource';
-import RonaAwalTable from './RonaAwalTable.vue';
+import RonaAwalTable from './tables/RonaAwalTable.vue';
 const projectRonaAwalResource = new Resource('project-rona-awals');
 
 export default {
