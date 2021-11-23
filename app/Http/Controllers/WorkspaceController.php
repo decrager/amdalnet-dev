@@ -100,13 +100,13 @@ class WorkspaceController extends Controller
             'documentType' => 'word',
             'document' => [
                 'fileType' => 'docx',
-                'key' => '-41340882',
+                'key' => '-1472914638',
                 'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
                 'url' => $officeUrl.'/example/download?fileName=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=36.72.20.141__172.17.0.1',
                 'permissions' => [
                     'fillForms' => true,
                     'edit' => true,
-                    'modifyContentControl' => false,
+                    'modifyContentControl' => true,
                     'copy' => false,
                     'print' => false,
                     'download' => false,
@@ -136,7 +136,7 @@ class WorkspaceController extends Controller
                         'logo' => $appUrl.'/images/logo-amdal-white.png',
                         'mail' => 'admin@amdalnet.dev',
                         'name' => 'AMDALNET',
-                        'www' => 'example.com',
+                        'www' => 'amdalnet.dev',
                     ],
                     'logo' => [
                         'image' => $appUrl.'/images/logo-amdal-white.png',
