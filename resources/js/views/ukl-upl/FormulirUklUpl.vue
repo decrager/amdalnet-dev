@@ -21,9 +21,7 @@
             PELINGKUPAN
           </vsa-heading>
           <vsa-content>
-            <pelingkupan
-              :id-project="idProject"
-            />
+            <pelingkupan />
           </vsa-content>
         </vsa-item>
         <vsa-item :init-active="matriksActive">
