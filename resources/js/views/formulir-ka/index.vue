@@ -1,5 +1,18 @@
 <template>
   <div class="app-container">
+    <div style="margin: 2em 0;">
+      <el-steps active="3" finish-status="success">
+        <el-step title="Rencana Usaha/Kegiatan" />
+        <el-step title="Hasil Penapisan" />
+        <el-step title="SPT Dari Masyarakat" />
+        <el-step title="Formulir Kerangka Acuan" />
+        <el-step title="Dokumen Kerangka Acuan" />
+        <el-step title="Penyusunan Andal" />
+        <el-step title="Penyusunan RKL RPL" />
+        <el-step title="Uji Kelayakan" />
+        <el-step title="Surat Keputusan" />
+      </el-steps>
+    </div>
     <h1>Formulir Kerangka Acuan</h1>
 
     <el-collapse v-model="activeName" accordion>
@@ -66,21 +79,44 @@
                       <tbody>
                         <tr>
                           <td>
-                            <el-button icon="el-icon-plus" circle @click="kKDialogueVisible = true" />
+                            <div v-for="tag in kkTags" :key="'kkTags'+tag.id" style="margin:.5em 0;">
+                              <el-tag :closable="closable" type="info">{{ tag.name }}</el-tag>
+                              <el-input size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+                            </div>
+
+                            <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kKDialogueVisible = true" />
                           </td>
                           <td>
-                            <el-button icon="el-icon-plus" circle />
+                            <div v-for="tag in gFTags" :key="'gFTags'+tag.id" style="margin:.5em 0;">
+                              <el-tag :closable="closable" type="info">{{ tag.name }}</el-tag>
+                              <el-input size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+                            </div>
+
+                            <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
                           </td>
                           <td>
-                            <el-button icon="el-icon-plus" circle />
-                          </td>
-                          <td><el-button icon="el-icon-plus" circle />
+                            <div v-for="tag in bioTags" :key="'bioTags'+tag.id" style="margin:.5em 0;">
+                              <el-tag :closable="closable" type="info">{{ tag.name }}</el-tag>
+                              <el-input size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+                            </div>
+                            <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
                           </td>
                           <td>
-                            <el-button icon="el-icon-plus" circle />
+                            <div v-for="tag in sosBudTags" :key="'sosBudTags'+tag.id" style="margin:.5em 0;">
+                              <el-tag :closable="closable" type="info">{{ tag.name }}</el-tag>
+                              <el-input size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+                            </div>
+                            <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
                           </td>
                           <td>
-                            <el-button icon="el-icon-plus" circle />
+                            <div v-for="tag in kesMasTags" :key="'kesMasTags'+tag.id" style="margin:.5em 0;">
+                              <el-tag :closable="closable" type="info">{{ tag.name }}</el-tag>
+                              <el-input size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
+                            </div>
+                            <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+                          </td>
+                          <td>
+                            <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
                           </td>
                         </tr>
                       </tbody>
@@ -88,15 +124,71 @@
                     </table>
 
                     <el-dialog
-                      title="Tips"
+                      title="Tambah Komponen Kegiatan"
                       :visible.sync="kKDialogueVisible"
-                      width="30%"
+                      width="40%"
                       :before-close="handleClose"
                     >
-                      <span>This is a message</span>
+
+                      <el-form label-position="top" :model="tambahKK">
+                        <el-form-item label="Tahap Kegiatan">
+                          <el-input v-model="tambahKK.tahap" />
+                        </el-form-item>
+                        <el-form-item label="Kegiatan Utama/Pendukung">
+                          <el-input v-model="tambahKK.KUP" />
+                        </el-form-item>
+                        <el-form-item label="Komponen Kegiatan">
+                          <el-input v-model="tambahKK.KK" />
+                        </el-form-item>
+                        <el-form-item label="Definisi">
+                          <el-input v-model="tambahKK.definisi" />
+                        </el-form-item>
+                        <el-form-item label="Umum">
+                          <el-input v-model="tambahKK.umum" />
+                        </el-form-item>
+                        <el-form-item label="Khusus">
+                          <el-input v-model="tambahKK.khusus" />
+                        </el-form-item>
+                      </el-form>
                       <span slot="footer" class="dialog-footer">
-                        <el-button @click="kKDialogueVisible = false">Cancel</el-button>
-                        <el-button type="primary" @click="kKDialogueVisible = addKK">Confirm</el-button>
+                        <el-button type="info" @click="handleClose">Batal</el-button>
+                        <el-button type="primary" @click="addKK">Simpan</el-button>
+                      </span>
+                    </el-dialog>
+
+                    <el-dialog
+                      title="Tambah Komponen Lingkungan"
+                      :visible.sync="kLDialogueVisible"
+                      width="40%"
+                      :before-close="closeFAddKL"
+                    >
+
+                      <el-form label-position="top" :model="tambahKL">
+                        <el-form-item label="Tahap Kegiatan">
+                          <el-input v-model="tambahKL.tahap" />
+                        </el-form-item>
+                        <el-form-item label="Kegiatan Utama/Pendukung">
+                          <el-input v-model="tambahKL.KUP" />
+                        </el-form-item>
+                        <el-form-item label="Komponen Kegiatan">
+                          <el-input v-model="tambahKL.KK" />
+                        </el-form-item>
+                        <el-form-item label="Rona Lingkungan">
+                          <el-input v-model="tambahKL.RL" />
+                        </el-form-item>
+                        <el-form-item label="Definisi">
+                          <el-input v-model="tambahKL.definisi" />
+                        </el-form-item>
+                        <el-form-item label="Umum">
+                          <el-input v-model="tambahKL.umum" />
+                        </el-form-item>
+                        <el-form-item label="Khusus">
+                          <el-input v-model="tambahKL.khusus" />
+                        </el-form-item>
+                      </el-form>
+                      <span slot="footer" class="dialog-footer">
+                        <el-button type="info" @click="closeFAddKL">Batal</el-button>
+                        <el-button type="primary" @click="addKL">Simpan</el-button>
                       </span>
                     </el-dialog>
 
@@ -209,14 +301,22 @@
             <el-col :span="6" style="margin-right:1em;">
               <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
-                <el-col :span="4" style="margin-left:1em;"><el-button size="small" type="info">browse</el-button></el-col>
+                <el-col :span="4" style="margin-left:1em;">
+                  <el-upload>
+                    <el-button size="small" type="info">browse</el-button>
+                  </el-upload>
+                </el-col>
               </el-row>
             </el-col>
 
             <el-col :span="6" style="margin-right:1em;">
               <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
-                <el-col :span="4" style="margin-left:1em;"><el-button size="small" type="info">browse</el-button></el-col>
+                <el-col :span="4" style="margin-left:1em;">
+                  <el-upload>
+                    <el-button size="small" type="info">browse</el-button>
+                  </el-upload>
+                </el-col>
               </el-row>
             </el-col>
           </el-form-item>
@@ -224,14 +324,22 @@
             <el-col :span="6" style="margin-right:1em;">
               <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
-                <el-col :span="4" style="margin-left:1em;"><el-button size="small" type="info">browse</el-button></el-col>
+                <el-col :span="4" style="margin-left:1em;">
+                  <el-upload>
+                    <el-button size="small" type="info">browse</el-button>
+                  </el-upload>
+                </el-col>
               </el-row>
             </el-col>
 
             <el-col :span="6" style="margin-right:1em;">
               <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
-                <el-col :span="4" style="margin-left:1em;"><el-button size="small" type="info">browse</el-button></el-col>
+                <el-col :span="4" style="margin-left:1em;">
+                  <el-upload>
+                    <el-button size="small" type="info">browse</el-button>
+                  </el-upload>
+                </el-col>
               </el-row>
             </el-col>
           </el-form-item>
@@ -240,14 +348,22 @@
             <el-col :span="6" style="margin-right:1em;">
               <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
                 <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
-                <el-col :span="4" style="margin-left:1em;"><el-button size="small" type="info">browse</el-button></el-col>
+                <el-col :span="4" style="margin-left:1em;">
+                  <el-upload>
+                    <el-button size="small" type="info">browse</el-button>
+                  </el-upload>
+                </el-col>
               </el-row>
             </el-col>
 
             <el-col :span="6" style="margin-right:1em;">
               <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
                 <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
-                <el-col :span="4" style="margin-left:1em;"><el-button size="small" type="info">browse</el-button></el-col>
+                <el-col :span="4" style="margin-left:1em;">
+                  <el-upload>
+                    <el-button size="small" type="info">browse</el-button>
+                  </el-upload>
+                </el-col>
               </el-row>
             </el-col>
           </el-form-item>
@@ -618,15 +734,15 @@ export default {
       }],
       komponenPendukung: [{
         no: '1',
-        komponen: 'Pembangunan Pabrik',
+        komponen: 'Pembuatan Jalan Raya',
       },
       {
         no: '2',
-        komponen: 'Pembangunan Tambang',
+        komponen: 'Pengeboran Sumur',
       },
       {
         no: '3',
-        komponen: 'Pembangunan Dermaga',
+        komponen: 'Pembangunan Gedung',
       }],
       kejadian: [{
         value: 0,
@@ -646,6 +762,23 @@ export default {
         label: 'DTPH',
       },
       ],
+      tambahKK: {
+        tahap: '',
+        KUP: '',
+        KK: '',
+        definisi: '',
+        umum: '',
+        khusus: '',
+      },
+      tambahKL: {
+        tahap: '',
+        KUP: '',
+        KK: '',
+        KL: '',
+        definisi: '',
+        umum: '',
+        khusus: '',
+      },
       vDPHs: 0,
       tahunA: 2,
       bulanA: 0,
@@ -655,6 +788,13 @@ export default {
       textAD: '',
       textAE: '',
       kKDialogueVisible: false,
+      kLDialogueVisible: false,
+      closable: true,
+      kkTags: [{ id: 1, name: '1.1 Pengadaan Lahan' }, { id: 2, name: '1.2 Land Clearing' }],
+      gFTags: [{ id: 1, name: 'Sumber Daya Geologi' }, { id: 2, name: 'Air Permukaan' }, { id: 3, name: 'Udara' }],
+      bioTags: [{ id: 1, name: 'Vegetasi Flora' }, { id: 2, name: 'Tipe Ekosistem' }],
+      sosBudTags: [{ id: 1, name: 'Tingkat Pendapatan' }, { id: 2, name: 'Mata Pencaharian' }, { id: 3, name: 'Situs Arkeologi' }],
+      kesMasTags: [{ name: 'Kesehatan Masyarakat' }],
     };
   },
   methods: {
@@ -662,8 +802,30 @@ export default {
       console.log(tab, event);
     },
     addKK(event){
-      console.log(event);
-      return false;
+      this.handleClose(event);
+    },
+    handleClose(event){
+      this.tambahKK.tahap = '';
+      this.tambahKK.KUP = '';
+      this.tambahKK.KK = '';
+      this.tambahKK.definisi = '';
+      this.tambahKK.umum = '';
+      this.tambahKK.khusus = '';
+      this.kKDialogueVisible = false;
+    },
+    addKL(){
+      this.closeFAddKL();
+    },
+    closeFAddKL(){
+      this.tambahKL.tahap = '';
+      this.tambahKL.KUP = '';
+      this.tambahKL.KK = '';
+      this.tambahKL.KL = '';
+      this.tambahKL.definisi = '';
+      this.tambahKL.umum = '';
+      this.tambahKL.khusus = '';
+
+      this.kLDialogueVisible = false;
     },
   },
 };
