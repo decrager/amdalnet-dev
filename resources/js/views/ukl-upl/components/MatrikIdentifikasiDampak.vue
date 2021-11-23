@@ -37,8 +37,8 @@
 <script>
 import Resource from '@/api/resource';
 const prjStageResource = new Resource('project-stages');
-const projectComponentResource = new Resource('project-components');
-const projectRonaAwalResource = new Resource('project-rona-awals');
+const subProjectComponentResource = new Resource('sub-project-components');
+const subProjectRonaAwalResource = new Resource('sub-project-rona-awals');
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
@@ -130,7 +130,7 @@ export default {
             var checked = false;
             if (this.impacts.length > 0) {
               this.impacts.map((i) => {
-                if (i.id_project_rona_awal === r.id && i.id_project_component === c.id){
+                if (i.id_sub_project_rona_awal === r.id && i.id_sub_project_component === c.id){
                   checked = true;
                 }
               });
@@ -185,7 +185,7 @@ export default {
       const { data } = await prjStageResource.list({});
       this.projectStages = data;
       // get components
-      const listC = await projectComponentResource.list({
+      const listC = await subProjectComponentResource.list({
         id_project: this.idProject,
       });
       listC.data.map((c) => {
@@ -197,7 +197,7 @@ export default {
         }
       });
       this.components = this.sortComponents(listC.data);
-      const listR = await projectRonaAwalResource.list({
+      const listR = await subProjectRonaAwalResource.list({
         id_project: this.idProject,
         with_component_type: true,
       });
@@ -243,14 +243,15 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 table {
   border-collapse: collapse;
+  text-align: left;
 }
 .tr-header {
   border: 1px solid gray;
-  background-color: #def5cf;
+  background-color: #6cc26f;
+  color: white;
 }
 .td-header {
   border: 1px solid gray;
