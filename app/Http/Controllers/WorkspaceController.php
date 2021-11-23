@@ -99,44 +99,52 @@ class WorkspaceController extends Controller
             'type' => 'desktop',
             'documentType' => 'word',
             'document' => [
-              'fileType' => 'docx',
-              'key' => '172.23.0.1http___localhost_example_files_172.23.0.1_UKL_20UPL_20SPBU_20-_20Edit_20Nafila_edit_20FM.docx1637464264620',
-              'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
-              'url' => $officeUrl.'/example/download?fileName=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=172.23.0.1',
+                'fileType' => 'docx',
+                'key' => '-41340882',
+                'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
+                'url' => $officeUrl.'/example/download?fileName=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=36.72.20.141__172.17.0.1',
+                'permissions' => [
+                    'fillForms' => true,
+                    'edit' => true,
+                    'modifyContentControl' => false,
+                    'copy' => false,
+                    'print' => false,
+                    'download' => false,
+                ]
             ],
             'editorConfig' => [
-              'user' => [
-                'id' => 'uid.'.$currentUser->id,
-                'name' => $currentUser->name,
-              ],
-              'customization' => [
-                'about' => false,
-                'compactHeader' => true,
-                'compactToolbar' => true,
-                'compatibleFeatures' => true,
-                'toolbarHideFileName' => true,
-                'toolbarNoTabs' => true,
-                'hideRightMenu' => true,
-                'hideRulers' => true,
-                'help' => false,
-                'macros' => false,
-                'plugins' => false,
-                'reviewDisplay' => 'markup',
-                'customer' => [
-                  'address' => 'Jakarta, KLHK',
-                  'info' => '',
-                  'logo' => $appUrl.'/images/logo-amdal-white.png',
-                  'mail' => 'admin@amdalnet.dev',
-                  'name' => 'AMDALNET',
-                  'www' => 'example.com',
+                'user' => [
+                    'id' => 'uid.'.$currentUser->id,
+                    'name' => $currentUser->name,
                 ],
-                'logo' => [
-                  'image' => $appUrl.'/images/logo-amdal-white.png',
-                  'imageEmbedded' => $appUrl.'/images/logo-amdal-white.png',
-                  'url' => '',
+                'customization' => [
+                    'about' => false,
+                    'compactHeader' => true,
+                    'compactToolbar' => true,
+                    'compatibleFeatures' => true,
+                    'toolbarHideFileName' => true,
+                    'toolbarNoTabs' => true,
+                    'hideRightMenu' => true,
+                    'hideRulers' => true,
+                    'help' => false,
+                    'macros' => false,
+                    'plugins' => false,
+                    'reviewDisplay' => 'markup',
+                    'customer' => [
+                        'address' => 'Jakarta, KLHK',
+                        'info' => '',
+                        'logo' => $appUrl.'/images/logo-amdal-white.png',
+                        'mail' => 'admin@amdalnet.dev',
+                        'name' => 'AMDALNET',
+                        'www' => 'example.com',
+                    ],
+                    'logo' => [
+                        'image' => $appUrl.'/images/logo-amdal-white.png',
+                        'imageEmbedded' => $appUrl.'/images/logo-amdal-white.png',
+                        'url' => '',
+                    ],
                 ],
-                ],
-              'callbackUrl' => $officeUrl.'/example/track?filename=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=172.23.0.1',
+                'callbackUrl' => $officeUrl.'/example/track?filename=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=36.72.20.141__172.17.0.1',
             ],
         ];
         return response()->json($config);
@@ -150,6 +158,52 @@ class WorkspaceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function track(Request $request)
+    {
+        $result["error"] = 0;
+        // $data = $request->
+    }
+
+    /**
+     * Upload document for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function upload(Request $request)
+    {   
+    }
+
+    /**
+     * Download document for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function download(Request $request)
+    {   
+    }
+
+    /**
+     * convert document for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function convert(Request $request)
+    {   
+    }
+
+    /**
+     * Delete document for workspace editor
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function delete(Request $request)
     {   
     }
 }
