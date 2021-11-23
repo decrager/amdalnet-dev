@@ -52,6 +52,7 @@ Route::namespace('Api')->group(function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('workspace/session/init', 'WorkspaceController@sessionInit');
+    Route::get('workspace/config/{id}', 'WorkspaceController@getConfig');
 });
 
 Route::post('workspace/template/import', 'WorkspaceController@importTemplate');
@@ -214,3 +215,5 @@ Route::get('ukl-upl-comment/{id}', [UklUplCommentController::class, 'index']);
 Route::post('ukl-upl-comment', [UklUplCommentController::class, 'store']);
 Route::get('ka-docx/{id}', [ExportDocument::class, 'KADocx']);
 Route::apiResource('scoping', 'ScopingController');
+Route::apiResource('sub-project-components', 'SubProjectComponentController');
+Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');

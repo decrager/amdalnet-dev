@@ -15,72 +15,209 @@
           Simpan & Lanjutkan
         </el-button>
       </span>
-      <vsa-list :key="vsaListKey">
-        <vsa-item :init-active="scopingActive">
-          <vsa-heading>
-            PELINGKUPAN
-          </vsa-heading>
-          <vsa-content>
-            <pelingkupan
-              :id-project="idProject"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="matriksActive">
-          <vsa-heading>
-            MATRIKS IDENTIFIKASI DAMPAK
-          </vsa-heading>
-          <vsa-content>
-            <matrik-identifikasi-dampak
-              @handleReloadVsaList="handleReloadVsaList"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="dampakPotensialActive">
-          <vsa-heading>
-            DAMPAK POTENSIAL
-          </vsa-heading>
-          <vsa-content>
-            <dampak-potensial
-              @handleReloadVsaList="handleReloadVsaList"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="dampakPentingHipotetikActive">
-          <vsa-heading>
-            DAMPAK PENTING HIPOTETIK
-          </vsa-heading>
-          <vsa-content>
-            <dampak-penting-hipotetik
-              @handleReloadVsaList="handleReloadVsaList"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="metodeStudiActive">
-          <vsa-heading>
-            METODE STUDI
-          </vsa-heading>
-          <vsa-content>
-            <metode-studi
-              @handleReloadVsaList="handleReloadVsaList"
-              @handleEnableSubmitForm="handleEnableSubmitForm"
-            />
-          </vsa-content>
-        </vsa-item>
-      </vsa-list>
+      <el-collapse v-model="activeName" :accordion="true">
+        <el-collapse-item name="1" title="PELINGKUPAN">
+          <pelingkupan />
+        </el-collapse-item>
+        <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
+          <matrik-identifikasi-dampak
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+        </el-collapse-item>
+        <el-collapse-item name="3" title="PETA BATAS WILAYAH STUDI & PETA PENDUKUNG">
+          <el-form label-position="top" label-width="100px">
+            <el-form-item label="Peta Batas Ekologis" :required="required">
+              <el-col :span="6" style="margin-right:1em;">
+                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
+                  <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
+                  <el-col :span="4" style="margin-left:1em;">
+                    <el-upload>
+                      <el-button size="small" type="info">browse</el-button>
+                    </el-upload>
+                  </el-col>
+                </el-row>
+              </el-col>
+
+              <el-col :span="6" style="margin-right:1em;">
+                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
+                  <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
+                  <el-col :span="4" style="margin-left:1em;">
+                    <el-upload>
+                      <el-button size="small" type="info">browse</el-button>
+                    </el-upload>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="Peta Batas Sosial" :required="required">
+              <el-col :span="6" style="margin-right:1em;">
+                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
+                  <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
+                  <el-col :span="4" style="margin-left:1em;">
+                    <el-upload>
+                      <el-button size="small" type="info">browse</el-button>
+                    </el-upload>
+                  </el-col>
+                </el-row>
+              </el-col>
+
+              <el-col :span="6" style="margin-right:1em;">
+                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
+                  <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
+                  <el-col :span="4" style="margin-left:1em;">
+                    <el-upload>
+                      <el-button size="small" type="info">browse</el-button>
+                    </el-upload>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-form-item>
+
+            <el-form-item label="Peta Batas Wilayah Studi" :required="required">
+              <el-col :span="6" style="margin-right:1em;">
+                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
+                  <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
+                  <el-col :span="4" style="margin-left:1em;">
+                    <el-upload>
+                      <el-button size="small" type="info">browse</el-button>
+                    </el-upload>
+                  </el-col>
+                </el-row>
+              </el-col>
+
+              <el-col :span="6" style="margin-right:1em;">
+                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
+                  <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
+                  <el-col :span="4" style="margin-left:1em;">
+                    <el-upload>
+                      <el-button size="small" type="info">browse</el-button>
+                    </el-upload>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-form-item>
+
+            <el-row style="margin: 1em 0;">
+              <el-col :span="12">
+                <el-button size="medium" type="warning">Unggah Peta</el-button>
+              </el-col>
+              <el-col :span="12" style="text-align: right;">
+                <el-button size="medium" type="danger">Batal</el-button>
+                <el-button size="medium" type="primary">Simpan</el-button>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-collapse-item>
+        <el-collapse-item name="4" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+          <dampak-potensial
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+          <dampak-penting-hipotetik
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+        </el-collapse-item>
+        <el-collapse-item name="5" title="METODE STUDI">
+          <metode-studi
+            @handleReloadVsaList="handleReloadVsaList"
+            @handleEnableSubmitForm="handleEnableSubmitForm"
+          />
+        </el-collapse-item>
+        <el-collapse-item title="Matriks Dampak Penting Hipotetik" name="6">
+          <el-button size="medium" type="primary">Simpan Perubahan</el-button>
+          <table style="margin:2em 0; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th rowspan="2"> Komponen Lingkungan/ Sumber Dampak</th>
+                <th colspan="3">Pra Konstruksi</th>
+                <th colspan="2">Konstruksi</th>
+                <th colspan="2">Operasi</th>
+              </tr>
+              <tr>
+                <th>Pembebasan Lahan</th>
+                <th>Sosialisasi...</th>
+                <th>Pengamanan Perairan</th>
+                <th>Penerimaan Tenaga...</th>
+                <th>Mobilisasi Alat dan Bahan</th>
+                <th>Operasional Unit/F...</th>
+                <th>Operasional Unit/F...</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="8" class="title"><strong>Geofisik Kimia</strong></td>
+              </tr>
+              <tr>
+                <td class="title">1. Kualitas Udara</td>
+                <td>DPH</td>
+                <td />
+                <td>DPH</td>
+                <td>DPH</td>
+                <td>DPH</td>
+                <td>DPH</td>
+                <td>DPH</td>
+              </tr>
+              <tr>
+                <td colspan="8" class="title"><strong>Biologi</strong></td>
+              </tr>
+              <tr>
+                <td class="title">1. Flora</td>
+                <td />
+                <td />
+                <td>DPH</td>
+                <td />
+                <td />
+                <td />
+                <td>DPH</td>
+              </tr>
+              <tr>
+                <td class="title">2. Fauna</td>
+                <td />
+                <td>DPH</td>
+                <td />
+                <td />
+                <td>DPH</td>
+                <td />
+                <td />
+              </tr>
+              <tr>
+                <td colspan="8" class="title"><strong>Sosial, Ekonomi, Budaya</strong></td>
+              </tr>
+              <tr>
+                <td class="title">1. Demografi</td>
+                <td />
+                <td />
+                <td />
+                <td>DPH</td>
+                <td>DPH</td>
+                <td />
+                <td />
+              </tr>
+              <tr>
+                <td colspan="8" class="title"><strong>Kesehatan Masyarakat</strong></td>
+              </tr>
+              <tr>
+                <td class="title">1. Fasilitas Kesehatan</td>
+                <td>DPH</td>
+                <td />
+                <td />
+                <td />
+                <td>DPH</td>
+                <td>DPH</td>
+                <td />
+              </tr>
+            </tbody>
+          </table>
+        </el-collapse-item>
+        <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
+          <div>Bagan</div>
+          <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning">Export PDF</el-button></el-col>
+        </el-collapse-item>
+      </el-collapse>
     </el-card>
   </div>
 </template>
 
 <script>
-
-import {
-  VsaList,
-  VsaItem,
-  VsaHeading,
-  VsaContent,
-} from 'vue-simple-accordion';
-import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 import Pelingkupan from './components/Pelingkupan.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
 import DampakPotensial from './components/DampakPotensial.vue';
@@ -91,10 +228,6 @@ import Workflow from '@/components/Workflow';
 export default {
   name: 'FormulirUklUpl',
   components: {
-    VsaList,
-    VsaItem,
-    VsaHeading,
-    VsaContent,
     Pelingkupan,
     MatrikIdentifikasiDampak,
     DampakPotensial,
@@ -106,12 +239,12 @@ export default {
     return {
       idProject: 0,
       isSubmitEnabled: false,
-      vsaListKey: 0,
       scopingActive: true,
       matriksActive: false,
       dampakPotensialActive: false,
       dampakPentingHipotetikActive: false,
       metodeStudiActive: false,
+      activeName: '1',
     };
   },
   mounted() {
@@ -134,22 +267,20 @@ export default {
       this.isSubmitEnabled = true;
     },
     handleReloadVsaList(tab) {
-      this.vsaListKey = this.vsaListKey + 1;
-      this.scopingActive = false;
-      this.matriksActive = false;
-      this.dampakPotensialActive = false;
-      this.dampakPentingHipotetikActive = false;
-      this.metodeStudiActive = false;
       if (tab === 'pelingkupan') {
-        this.scopingActive = true;
+        this.activeName = '1';
       } else if (tab === 'matriks-identifikasi-dampak') {
-        this.matriksActive = true;
-      } else if (tab === 'dampak-potensial') {
-        this.dampakPotensialActive = true;
-      } else if (tab === 'dampak-penting-hipotetik') {
-        this.dampakPentingHipotetikActive = true;
+        this.activeName = '2';
+      } else if (tab === 'peta-batas') {
+        this.activeName = '3';
+      } else if (tab === 'dampak-penting') {
+        this.activeName = '4';
       } else if (tab === 'metode-studi') {
-        this.metodeStudiActive = true;
+        this.activeName = '5';
+      } else if (tab === 'matriks-dph') {
+        this.activeName = '6';
+      } else if (tab === 'bagan-alir') {
+        this.activeName = '7';
       }
     },
   },
@@ -207,4 +338,25 @@ h2 {
   margin-block-start: 0em;
 }
 
+.el-collapse-item__header {
+  /* background-color: #296d36; */
+  background-color: #1E5128;
+  padding-left: 10px;
+  font-size: large;
+  font-weight: bold;
+  color: rgb(196, 196, 196);
+}
+.el-collapse-item__content {
+  padding-top: 10px;
+}
+
+table th, table td {word-break: normal !important; padding:.5em; line-height:1.2em; border: 1px solid #eee;}
+table td { vertical-align: top !important;}
+table thead  {background-color:#6cc26f !important; color: white !important;}
+table td.title, table tr.title td, table.title td { text-align:left;}
+div.div-fka {
+  padding: 0.5em;
+  margin-bottom: 0.6em;
+  background-color: #fafafa;
+}
 </style>

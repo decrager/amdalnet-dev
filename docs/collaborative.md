@@ -1,0 +1,47 @@
+
+1. Meeting rutin
+2. quick win
+a. static html
+  - sebanyak-banyaknya ada, teh husnul
+  - generator --> bung
+  - form form
+b. web gis
+c. collaborative
+  - diakses 100
+  - 
+
+
+RKA
+RKL/RPL
+
+UKL/UPL
+- template puluhan
+- 
+- matriks --> free teks
+- 
+AMDAL
+
+- struktur
+- isian parsial --> narasi
+- dokumen
+- isian data
+- import / export
+  - templating
+- integrasi
+- collaborative
+  - comment
+  - theme
+- 
+
+Onlyoffice:
+- user integration
+- langguage
+- custom toolbar
+- protect
+
+
+
+sudo docker run -i -t -d -p 9000:80 --restart=always --name onlyoffice-document-server \
+    -v /home/amdalnet/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data \
+    -v /home/amdalnet/onlyoffice/DocumentServer/logs:/var/log/onlyoffice \
+    onlyoffice/documentserver-de

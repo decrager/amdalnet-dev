@@ -9,6 +9,7 @@ use App\Entity\SubProjectRonaAwal;
 use App\Http\Resources\SubProjectComponentResource;
 use App\Http\Resources\SubProjectResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ScopingController extends Controller
 {
@@ -20,12 +21,8 @@ class ScopingController extends Controller
     public function index(Request $request)
     {
         if ($request->id_project && $request->sub_project_type) {
-            $id_project = $request->id_project;
-            // list sub projects filter by type
-            $subprojects = SubProject::with([
-                'project' => function($q) use ($id_project) {
-                    $q->select('projects.*')->where('id_project', $id_project);
-                }])
+            $subprojects = SubProject::with('project')
+                ->where('id_project', $request->id_project)
                 ->where('type', $request->sub_project_type) // 'utama'/'pendukung'
                 ->get();
             return SubProjectResource::collection($subprojects);
@@ -34,40 +31,55 @@ class ScopingController extends Controller
             // return sub_project_components filter by id_sub_project & id_project_stage
             $id_project_stage = $request->id_project_stage;
             $id_sub_project = $request->id_sub_project;
-            $components = SubProjectComponent::with(['component' => function($q) use ($id_project_stage) {
-                    $q->select('components.name')->where('id_project_stage', $id_project_stage);
+            $components_by_stage = SubProjectComponent::with(['component' => function($q) use ($id_project_stage) {
+                    $q->where('id_project_stage', $id_project_stage);
                 }])->where('id_sub_project', $id_sub_project)
                 ->where('id_project_stage', $id_project_stage)
-                ->orWhereNull('id_project_stage')
                 ->get();
+            $all_stages = SubProjectComponent::with(['component' => function($q) use ($id_project_stage) {
+                $q->where('id_project_stage', $id_project_stage);
+                }])->where('id_sub_project', $id_sub_project)->get();
+                
+            $components = [];
+            $ids = [];
+            foreach ($components_by_stage as $component) {
+                array_push($components, $component);
+                array_push($ids, $component->id);
+            }
+            foreach ($all_stages as $component) {
+                if ($component->component != null
+                    || ($component->name != null && $component->id_project_stage == $id_project_stage)) {
+                    if (!in_array($component->id, $ids)) {
+                        array_push($components, $component);
+                    }                    
+                }
+            }
             if ($request->sub_project_components) {
                 return SubProjectComponentResource::collection($components);
             }
             if ($request->sub_project_rona_awals) {
                 $rona_awals = [];
-                $component_types = ComponentType::all();
-                foreach ($components as $component) {
-                    $id_sub_project_component = $component->id;
-                    // all component_type (no filter)
-                    $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal', 'componentType'])
-                        ->where('id_sub_project_component', $id_sub_project_component)->get();
-                    $ra = [];
-                    foreach ($component_types as $ctype) {
-                        $r = [];
-                        foreach ($sp_rona_awals as $rona_awal) {
-                            if ($ctype->id == $rona_awal->id_component_type
-                            || $ctype->id == $rona_awal->ronaAwal->id_component_type) {
-                                array_push($r,  $rona_awal);
+                $component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();
+                foreach ($component_types as $ctype) {
+                    $r = [];
+                    foreach ($components as $component) {
+                        $id_sub_project_component = $component->id;
+                        $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal', 'componentType'])
+                            ->where('id_sub_project_component', $id_sub_project_component)->get();
+                            foreach ($sp_rona_awals as $rona_awal) {
+                                if ($ctype->id == $rona_awal->id_component_type) {
+                                    array_push($r,  $rona_awal);
+                                }
+                                if ($rona_awal->ronaAwal != null) {
+                                    if ($ctype->id == $rona_awal->ronaAwal->id_component_type) {
+                                        array_push($r,  $rona_awal);
+                                    }
+                                }
                             }
-                        }
-                        array_push($ra, [
-                            'component_type' => $ctype,
-                            'rona_awals' => $r,
-                        ]);
                     }
                     array_push($rona_awals, [
-                        'component' => $component,
-                        'rona_awals' => $ra,
+                        'component_type' => $ctype,
+                        'rona_awals' => $r,
                     ]);
                 }
                 return [
@@ -99,7 +111,25 @@ class ScopingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if ($request->component) {
+            $params = $request->all();
+            $component = $params['component'];
+            DB::beginTransaction();
+            if (SubProjectComponent::create($component)) {
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+        } else if ($request->rona_awal) {
+            $params = $request->all();
+            $rona_awal = $params['rona_awal'];
+            DB::beginTransaction();
+            if (SubProjectRonaAwal::create($rona_awal)) {
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+        }
     }
 
     /**
