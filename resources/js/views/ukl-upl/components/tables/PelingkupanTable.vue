@@ -27,7 +27,6 @@
         </el-table-column>
       </el-table>
       <el-table
-        :key="tableKey"
         :data="subProjects.pendukung"
         fit
         highlight-current-row
@@ -54,7 +53,7 @@
       </el-table>
     </el-col>
     <el-col :span="18" :xs="24">
-      <table class="title" style="border-collapse: collapse; width:100%;">
+      <table :key="tableKey" class="title" style="border-collapse: collapse; width:100%;">
         <thead>
           <tr>
             <th rowspan="2">Komponen Kegiatan</th>
@@ -174,28 +173,28 @@ export default {
       subProjectComponents: [],
       // componentTypes: [],
       subProjectRonaAwals: [],
-      kkTags: [{ id: 1, name: '1.1 Pengadaan Lahan' }, { id: 2, name: '1.2 Land Clearing' }],
-      gFTags: [{ id: 1, name: 'Sumber Daya Geologi' }, { id: 2, name: 'Air Permukaan' }, { id: 3, name: 'Udara' }],
-      bioTags: [{ id: 1, name: 'Vegetasi Flora' }, { id: 2, name: 'Tipe Ekosistem' }],
-      sosBudTags: [{ id: 1, name: 'Tingkat Pendapatan' }, { id: 2, name: 'Mata Pencaharian' }, { id: 3, name: 'Situs Arkeologi' }],
-      kesMasTags: [{ name: 'Kesehatan Masyarakat' }],
+      currentIdSubProject: 0,
     };
   },
   mounted() {
     this.getData();
   },
   methods: {
+    reloadData() {
+      this.getComponents(this.currentIdSubProject);
+      this.getRonaAwals(this.currentIdSubProject);
+    },
     handleCloseAddComponent(reload) {
       this.kKDialogueVisible = false;
       // reload table
       if (reload) {
-        this.tableKey = this.tableKey + 1;
+        this.reloadData();
       }
     },
     handleCloseAddRonaAwal(reload) {
       this.kLDialogueVisible = false;
       if (reload) {
-        this.tableKey = this.tableKey + 1;
+        this.reloadData();
       }
     },
     handleDeleteComponent(id) {
@@ -209,7 +208,7 @@ export default {
           });
           // reload PelingkupanTable
           this.kKDialogueVisible = false;
-          this.tableKey = this.tableKey + 1;
+          this.reloadData();
         })
         .catch((error) => {
           console.log(error);
@@ -226,13 +225,14 @@ export default {
           });
           // reload PelingkupanTable
           this.kLDialogueVisible = false;
-          this.tableKey = this.tableKey + 1;
+          this.reloadData();
         })
         .catch((error) => {
           console.log(error);
         });
     },
     handleViewComponentRonaAwals(idSubProject) {
+      this.currentIdSubProject = idSubProject;
       this.getComponents(idSubProject);
       this.getRonaAwals(idSubProject);
     },
@@ -253,6 +253,7 @@ export default {
         const firstSubProject = this.subProjects.utama[0];
         this.getComponents(firstSubProject.id);
         this.getRonaAwals(firstSubProject.id);
+        this.currentIdSubProject = firstSubProject.id;
       }
     },
     async getComponents(idSubProject) {
