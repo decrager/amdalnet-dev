@@ -27,6 +27,7 @@
         </el-table-column>
       </el-table>
       <el-table
+        :key="tableKey"
         :data="subProjects.pendukung"
         fit
         highlight-current-row
@@ -125,16 +126,27 @@
         </tbody>
       </table>
     </el-col>
+    <add-component-dialog
+      :show="kKDialogueVisible"
+      :sub-projects="subProjects"
+      @handleCloseAddComponent="handleCloseAddComponent"
+    />
+    <add-rona-awal-dialog
+      :show="kLDialogueVisible"
+      @handleCloseAddRonaAwal="handleCloseAddRonaAwal"
+    />
   </el-row>
 </template>
 
 <script>
 import Resource from '@/api/resource';
-// const componentTypeResource = new Resource('component-types');
+import AddComponentDialog from '../dialogs/AddComponentDialog.vue';
+import AddRonaAwalDialog from '../dialogs/AddRonaAwalDialog.vue';
 const scopingResource = new Resource('scoping');
 
 export default {
   name: 'PelingkupanTable',
+  components: { AddComponentDialog, AddRonaAwalDialog },
   props: {
     idProject: {
       type: Number,
@@ -147,6 +159,9 @@ export default {
   },
   data() {
     return {
+      tableKey: 0,
+      kKDialogueVisible: false,
+      kLDialogueVisible: false,
       closable: true,
       subProjects: {
         utama: [],
@@ -166,6 +181,16 @@ export default {
     this.getData();
   },
   methods: {
+    handleCloseAddComponent(reload) {
+      this.kKDialogueVisible = false;
+      // reload table
+      if (reload) {
+        this.tableKey = this.tableKey + 1;
+      }
+    },
+    handleCloseAddRonaAwal() {
+      this.kLDialogueVisible = false;
+    },
     handleViewComponentRonaAwals(idSubProject) {
       this.getComponents(idSubProject);
       this.getRonaAwals(idSubProject);

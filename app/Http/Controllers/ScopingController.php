@@ -9,6 +9,7 @@ use App\Entity\SubProjectRonaAwal;
 use App\Http\Resources\SubProjectComponentResource;
 use App\Http\Resources\SubProjectResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ScopingController extends Controller
 {
@@ -106,7 +107,18 @@ class ScopingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if ($request->component) {
+            $params = $request->all();
+            $component = $params['component'];
+            DB::beginTransaction();
+            if (SubProjectComponent::create($component)) {
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+        } else if ($request->rona_awal) {
+            
+        }
     }
 
     /**

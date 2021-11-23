@@ -1,0 +1,116 @@
+<template>
+  <el-dialog
+    title="Tambah Komponen Kegiatan"
+    :visible.sync="show"
+    width="40%"
+    :before-close="handleClose"
+  >
+
+    <el-form label-position="top" :model="component">
+      <el-form-item label="Tahap Kegiatan">
+        <el-select
+          v-model="component.id_project_stage"
+          placeholder="Tahap Kegiatan"
+        >
+          <el-option
+            v-for="item of projectStages"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Kegiatan Utama/Pendukung">
+        <el-select
+          v-model="component.id_sub_project"
+          placeholder="Pilih Kegiatan"
+        >
+          <el-option
+            v-for="item of subProjectsArray"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Komponen Kegiatan">
+        <el-input v-model="component.name" />
+      </el-form-item>
+      <el-form-item label="Definisi">
+        <el-input v-model="component.name" />
+      </el-form-item>
+      <el-form-item label="Umum">
+        <el-input v-model="component.description_common" />
+      </el-form-item>
+      <el-form-item label="Khusus">
+        <el-input v-model="component.description_specific" />
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button type="info" @click="handleClose">Batal</el-button>
+      <el-button type="primary" @click="submitComponent">Simpan</el-button>
+    </span>
+  </el-dialog>
+</template>
+
+<script>
+import Resource from '@/api/resource';
+const projectStageResource = new Resource('project-stages');
+const scopingResource = new Resource('scoping');
+
+export default {
+  name: 'AddComponentDialog',
+  props: {
+    show: Boolean,
+    subProjects: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  data() {
+    return {
+      component: {},
+      subProjectsArray: [],
+      projectStages: [],
+    };
+  },
+  mounted() {
+    this.getData();
+  },
+  methods: {
+    submitComponent() {
+      scopingResource
+        .store({
+          component: this.component,
+        })
+        .then((response) => {
+          this.$message({
+            message: 'Komponen kegiatan berhasil disimpan',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          // reload PelingkupanTable
+          this.$emit('handleCloseAddComponent', true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    handleClose() {
+      this.$emit('handleCloseAddComponent', false);
+    },
+    async getData() {
+      const ps = await projectStageResource.list({
+        ordered: true,
+      });
+      this.projectStages = ps.data;
+      this.subProjects.utama.map((u) => {
+        this.subProjectsArray.push(u);
+      });
+      this.subProjects.pendukung.map((p) => {
+        this.subProjectsArray.push(p);
+      });
+    },
+  },
+};
+</script>
