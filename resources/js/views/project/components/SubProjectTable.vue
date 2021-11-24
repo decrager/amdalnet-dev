@@ -72,7 +72,7 @@
 
       <el-table-column align="center" label="Skala Besaran">
         <template slot-scope="scope">
-          <el-button type="primary" @click="handleClick(scope.row)">Masukkan</el-button>
+          <el-button type="primary" @click="handleClick(scope.row)">Input</el-button>
           <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.kbli" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
         </template>
       </el-table-column>

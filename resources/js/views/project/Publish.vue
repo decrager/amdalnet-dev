@@ -106,10 +106,10 @@
             prop="skala"
             label="Skala Besaran"
           />
-          <el-table-column
+          <!-- <el-table-column
             prop="hasil"
             label="Hasil"
-          />
+          /> -->
         </el-table>
       </el-col>
       <div v-if="getFormulatedTeam === 'mandiri'">
@@ -197,7 +197,7 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: [{ value: 'mandiri', label: 'Mandiri' }, { value: 'lpjp', label: 'Lembaga Penyedia Jasa Penyusun' }],
+      teamOptions: [{ value: 'mandiri', label: 'Penyusun Perseorangan' }, { value: 'lpjp', label: 'Lembaga Penyedia Jasa Penyusun' }],
       teamToChooseOptions: null,
       kabkot: null,
       list: [],

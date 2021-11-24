@@ -7,15 +7,21 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="Parameter">
+      <el-table-column label="No.">
         <template slot-scope="scope">
-          {{ scope.row.param }}
+          {{ scope.$index + 1 }}
         </template>
       </el-table-column>
 
-      <el-table-column label="Pakai">
+      <el-table-column>
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.used" />
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Parameter">
+        <template slot-scope="scope">
+          {{ scope.row.param }}
         </template>
       </el-table-column>
 
@@ -26,6 +32,7 @@
             class="edit-input"
             size="mini"
             type="number"
+            :disabled="!scope.row.used"
             @blur="handleBlur(scope.row)"
           />
         </template>
