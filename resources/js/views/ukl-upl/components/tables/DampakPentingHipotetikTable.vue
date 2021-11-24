@@ -12,11 +12,11 @@
         <div v-if="!scope.row.is_stage" class="post">
           <div class="entity-block">
             <div>Wilayah Studi</div>
-            <el-input v-model="scope.row.study_location" />
+            <el-input v-model="scope.row.study_location" :readonly="isAndal" />
             <div>Batas Waktu Kajian</div>
-            <el-input-number v-model="scope.row.study_length_year" controls-position="right" :min="0" :max="100" />
+            <el-input-number v-model="scope.row.study_length_year" controls-position="right" :min="0" :max="100" :disabled="isAndal" />
             tahun
-            <el-input-number v-model="scope.row.study_length_month" controls-position="right" :min="0" :max="11" />
+            <el-input-number v-model="scope.row.study_length_month" controls-position="right" :min="0" :max="11" :disabled="isAndal" />
             bulan
           </div>
         </div>
@@ -60,6 +60,7 @@
             v-model="scope.row.is_hypothetical_significant"
             placeholder="Tidak Menjadi DPH"
             style="width: 100%"
+            :disabled="isAndal"
           >
             <el-option
               v-for="item of dphOptions"
@@ -92,6 +93,11 @@ export default {
       dphOptions: [],
       unitOptions: [],
     };
+  },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
   },
   mounted() {
     this.getData();
