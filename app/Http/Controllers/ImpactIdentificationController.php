@@ -71,28 +71,48 @@ class ImpactIdentificationController extends Controller
     public function store(Request $request)
     {
         $params = $request->all();
+        $is_save_dph = isset($params['save_dph']) && $params['save_dph'];
         if (isset($params['checked']) && isset($params['id_project'])){
             // save matriks identifikasi dampak
             $checked = 0;
             $inserted = 0;
             DB::beginTransaction();
             //clear items
-            ImpactIdentification::where('id_project', $params['id_project'])->delete();
+            if ($is_save_dph) {
+                $impacts = ImpactIdentification::where('id_project', $params['id_project'])->get();
+                foreach ($impacts as $impact) {
+                    $impact->is_hypothetical_significant = false;
+                    $impact->save();
+                }
+            } else {
+                ImpactIdentification::where('id_project', $params['id_project'])->delete();
+            }
             //insert checked items
             try {
                 foreach ($params['checked'] as $item){
                     if ($item['id'] < 99999999) {
                         foreach ($item['sub'] as $sub){
                             if ($sub['checked']){
-                                $created = ImpactIdentification::create([
-                                    'id_project' => $params['id_project'],
-                                    'id_sub_project_rona_awal' => $item['id'],
-                                    'id_sub_project_component' => $sub['id'],
-                                ]);
-                                if ($created){
-                                    $inserted++;
+                                if ($is_save_dph) {
+                                    $impact = ImpactIdentification::select('*')
+                                        ->where('id_sub_project_rona_awal', $item['id'])
+                                        ->where('id_sub_project_component', $sub['id'])
+                                        ->first();
+                                    if ($impact != null) {
+                                        $impact->is_hypothetical_significant = true;
+                                        $impact->save();
+                                    }
+                                } else {
+                                    $created = ImpactIdentification::create([
+                                        'id_project' => $params['id_project'],
+                                        'id_sub_project_rona_awal' => $item['id'],
+                                        'id_sub_project_component' => $sub['id'],
+                                    ]);
+                                    if ($created){
+                                        $inserted++;
+                                    }
+                                    $checked++;
                                 }
-                                $checked++;
                             }
                         }
                     }
@@ -100,13 +120,18 @@ class ImpactIdentificationController extends Controller
             } catch (Exception $e) {
                 return response()->json(['code' => 500, 'error' => $e->getMessage()]);
             }
-            if ($inserted == $checked){
+            if ($is_save_dph) {
                 DB::commit();
                 return response()->json(['code' => 200]);
             } else {
-                DB::rollBack();
-                return response()->json(['code' => 500]);
-            }            
+                if ($inserted == $checked){
+                    DB::commit();
+                    return response()->json(['code' => 200]);
+                } else {
+                    DB::rollBack();
+                    return response()->json(['code' => 500]);
+                }       
+            }     
         } else if (isset($params['study_data'])) {
             // save besran dampak
             DB::beginTransaction();
