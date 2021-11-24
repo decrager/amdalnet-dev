@@ -362,11 +362,14 @@ export default {
       centerDialogVisible: false,
       checkList: [],
       radio: '',
+      selectedProject2: {},
     };
+  },
+  beforeUpdate() {
+    this.loadMap();
   },
   async created() {
     await this.getResponderType();
-    this.loadMap();
   },
   methods: {
     loadMap() {
@@ -398,7 +401,8 @@ export default {
       map.add(baseGroupLayer);
 
       const mapGeojsonArray = [];
-      const splitMap = this.selectedProject.map.split('|');
+      console.log(this.selectedProject);
+      const splitMap = this.selectedProject.map.split(',');
       console.log(splitMap);
       shp(window.location.origin + this.selectedProject.map).then(data => {
         if (data.length > 1) {
