@@ -118,6 +118,14 @@ class ProjectController extends Controller
         // return $data;
 
         //create fileKtr
+        $preAgreementName = '';
+        if ($request->file('fileKtr')) {
+            $filePreAgreement = $request->file('fileKtr');
+            $preAgreementName = 'project/preAgreement' . uniqid() . '.' . $filePreAgreement->extension();
+            $filePreAgreement->storePubliclyAs('public', $preAgreementName);
+        }
+
+        //create fileKtr
         $ktrName = '';
         if ($request->file('fileKtr')) {
             $fileKtr = $request->file('fileKtr');
@@ -161,6 +169,7 @@ class ProjectController extends Controller
             'id_lpjp' => isset($request['id_lpjp']) ? $request['id_lpjp'] : null,
             'map' => implode(',', $mapName),
             'ktr' => Storage::url($ktrName),
+            'ktr' => Storage::url($preAgreementName),
         ]);
 
         //create sub project
