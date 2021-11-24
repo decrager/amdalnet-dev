@@ -126,11 +126,13 @@
       </table>
     </el-col>
     <add-component-dialog
+      :key="componentDialogKey"
       :show="kKDialogueVisible"
       :sub-projects="subProjects"
       @handleCloseAddComponent="handleCloseAddComponent"
     />
     <add-rona-awal-dialog
+      :key="ronaAwalDialogKey"
       :show="kLDialogueVisible"
       :sub-projects="subProjects"
       :sub-project-components="subProjectComponents"
@@ -163,6 +165,8 @@ export default {
   data() {
     return {
       tableKey: 0,
+      componentDialogKey: 1,
+      ronaAwalDialogKey: 1,
       kKDialogueVisible: false,
       kLDialogueVisible: false,
       closable: true,
@@ -171,7 +175,6 @@ export default {
         pendukung: [],
       },
       subProjectComponents: [],
-      // componentTypes: [],
       subProjectRonaAwals: [],
       currentIdSubProject: 0,
     };
@@ -183,6 +186,9 @@ export default {
     reloadData() {
       this.getComponents(this.currentIdSubProject);
       this.getRonaAwals(this.currentIdSubProject);
+      // reload dialogs
+      this.componentDialogKey = this.componentDialogKey + 1;
+      this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
     handleCloseAddComponent(reload) {
       this.kKDialogueVisible = false;

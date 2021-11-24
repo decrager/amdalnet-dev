@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Comment;
 use App\Entity\EnvManagePlan;
 use App\Entity\ImpactIdentification;
 use App\Entity\Project;
@@ -60,11 +61,9 @@ class MatriksRKLController extends Controller
                 $query->whereHas('envManagePlan');
             })->first();
 
-            if($project) {
-                return $this->getEnvManagePlan($request->idProject, $stages);
-            } else {
-                return $this->getImpactNotifications($request->idProject, $stages);
-            }
+            $type = $project ? 'update' : 'new';
+
+            return $this->getEnvManagePlan($request->idProject, $stages, $type);
         }
     }
 
@@ -86,6 +85,60 @@ class MatriksRKLController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->type == 'impact-comment') {
+            $comment = new Comment();
+            $comment->id_user = $request->id_user;
+            $comment->id_impact_identification = $request->id_impact_identification;
+            $comment->description = $request->description;
+            $comment->column_type = $request->column_type;
+            $comment->document_type = 'rkl';
+            $comment->is_checked = false;
+            $comment->save();
+
+            return [
+                    'id' => $comment->id,
+                    'id_impact_identification' => $comment->id_impact_identification,
+                    'created_at' => $comment->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                    'user' => $comment->user->name,
+                    'is_checked' => $comment->is_checked,
+                    'description' => $comment->description,
+                    'column_type' => $comment->column_type,
+                    'replies' => [
+                        'id' => null,
+                        'created_at' => null,
+                        'description' => null
+                ]
+            ];
+        }
+
+        if($request->type == 'impact-comment-reply') {
+            $comment = new Comment();
+            $comment->id_user = $request->id_user;
+            $comment->id_impact_identification = $request->id_impact_identification;
+            $comment->description = $request->description;
+            $comment->document_type = 'rkl';
+            $comment->reply_to = $request->id_comment;
+            $comment->save();
+
+            return [
+                'id' => $comment->id,
+                'created_at' => $comment->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                'description' => $comment->description
+            ];
+        }
+
+        if($request->type == 'checked-comment') {
+            $comment = Comment::findOrFail($request->id);
+            if($comment->is_checked) {
+                $comment->is_checked = false;
+            } else {
+                $comment->is_checked = true;
+            }
+            $comment->save();
+
+            return $comment->is_checked;
+        }
+
         if($request->type == 'comment') {
             $comment = new RklRplComment();
             $comment->id_project = $request->idProject;
@@ -97,39 +150,33 @@ class MatriksRKLController extends Controller
         }
 
         $manage = $request->manage;
+        $envManage = null;
+        $ids = [];
 
-        if($request->type == 'new') {
+        
             for($i = 0; $i < count($manage); $i++) {
-                $envManage = new EnvManagePlan();
-                $envManage->id_impact_identifications = $manage[$i]['id'];
+                if($request->type == 'new') {
+                    $envManage = new EnvManagePlan();
+                    $envManage->id_impact_identifications = $manage[$i]['id'];
+                } else {
+                    $envManage = EnvManagePlan::where('id_impact_identifications', $manage[$i]['id'])->first();
+                    $ids[] = $manage[$i]['id'];
+                }
+
+                $envManage->impact_source = $manage[$i]['impact_source'];
                 $envManage->success_indicator = $manage[$i]['success_indicator'];
                 $envManage->form = $manage[$i]['form'];
                 $envManage->location = $manage[$i]['location'];
                 $envManage->period = $manage[$i]['period'];
                 $envManage->institution = $manage[$i]['institution'];
-                $envManage->description = $manage[$i]['description'];
                 $envManage->save();
             }
-        } else {
-            $ids = [];
-            for($i = 0; $i < count($manage); $i++) {
-                $envManage = EnvManagePlan::where('id_impact_identifications', $manage[$i]['id'])->first();
-                $envManage->success_indicator = $manage[$i]['success_indicator'];
-                $envManage->form = $manage[$i]['form'];
-                $envManage->location = $manage[$i]['location'];
-                $envManage->period = $manage[$i]['period'];
-                $envManage->institution = $manage[$i]['institution'];
-                $envManage->description = $manage[$i]['description'];
-                $envManage->save();
 
-                $ids[] = $manage[$i]['id'];
+            if($request->type != 'new') {
+                $lastTime = EnvManagePlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
+                                ->updated_at->locale('id')->diffForHumans();
+                return 'Diperbarui ' . $lastTime;
             }
-
-            $lastTime = EnvManagePlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
-                        ->updated_at->locale('id')->diffForHumans();
-
-            return 'Diperbarui ' . $lastTime;
-        }
 
         return 'Diperbarui ' . EnvManagePlan::orderBy('id', 'DESC')->first()->updated_at->locale('id')->diffForHumans();
     }
@@ -179,93 +226,200 @@ class MatriksRKLController extends Controller
         //
     }
 
-    private function getImpactNotifications($id_project, $stages) {
-        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
-                                        ->where('id_project', $id_project)
-                                        ->with(['component.component', 'changeType', 'ronaAwal.rona_awal'])->get();
-            $results = [];
+    private function getEnvManagePlan($id_project, $stages, $type) {
+        $results = [];
 
-            foreach($stages as $s) {
-                $results[] = [
-                    'id' => $s->id,
-                    'name' => $s->name,
-                    'type' => 'title'
-                ];
+        // ============== POIN A ============== //
+        $poinA = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
+            $q->whereHas('detail', function($query) {
+                $query->where('important_trait', '+P');
+            });
+        })->get();
+        $results[] = [
+            'id' => 1,
+            'no' => 'A. Dampak Penting Yang Dikelola (Hasil Arahan Pengelolaan pada ANDAL)',
+            'type' => 'master-title'
+         ];
+         $results = $this->getLoopData($stages, $poinA, $results, $type);
 
-                $total = 0;
+        //  =========== POIN B ============= //
+        $results[] = [
+            'id' => 2,
+            'no' => 'B. Dampak Lingkungan Lainnya yang Dikelola',
+            'type' => 'master-title'
+         ];
 
-                foreach($impactIdentifications as $imp) {
-                    if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
-                        $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                        $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
-                        $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
+        
+         $results = $this->getLoopDataB($stages, $id_project, $results, $type);
 
-                        $results[] = [
-                            'id' => $imp->id,
-                            'name' => "$changeType $ronaAwal akibat $component",
-                            'type' => 'subtitle',
-                            'impact_source' => $component,
-                            'success_indicator' => null,
-                            'form' => null,
-                            'location' => null,
-                            'period' => null,
-                            'institution',
-                            'description' => null
-                        ];
-                        $total++;
-                    }
-                }
-
-                if($total == 0) {
-                    array_pop($results);
-                }
-            }
-           
         return $results;
+  }
+
+  private function getLoopData($stages, $data, $results, $type) {
+    $alphabet_list = 'A';
+
+    foreach($stages as $s) {
+        $results[] = [
+            'id' => $s->id,
+            'name' => $alphabet_list . '. ' . $s->name,
+            'type' => 'title'
+        ];
+
+        $total = 0;
+
+        foreach($data as $pA) {
+            if($pA->subProjectComponent->id_project_stage == $s->id || $pA->subProjectComponent->component->id_project_stage == $s->id) {
+                $changeType = $pA->id_change_type ? $pA->changeType->name : '';
+                // $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
+                // $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
+                $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
+                $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+
+                $komen = Comment::where([['id_impact_identification', $pA->id], ['document_type', 'rkl'],['reply_to', null]])
+                            ->orderBY('id', 'DESC')->get();
+                
+                $comments = [];
+                foreach($komen as $c) {
+                    $comments[] = [
+                        'id' => $c->id,
+                        'id_impact_identification' => $c->id_impact_identification,
+                        'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                        'user' => $c->user->name,
+                        'is_checked' => $c->is_checked,
+                        'description' => $c->description,
+                        'column_type' => $c->column_type,
+                        'replies' => [
+                            'id' => $c->reply ? $c->reply->id : null,
+                            'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
+                            'description' => $c->reply ? $c->reply->description : null
+                        ]
+                    ];
+                }
+
+
+                $results[] = [
+                    'no' => $total + 1,
+                    'id' => $pA->id,
+                    'name' => "$changeType $ronaAwal akibat $component",
+                    'type' => 'subtitle',
+                    'impact_source' => $type == 'new' ? null : $pA->envManagePlan->impact_source,
+                    'success_indicator' => $type == 'new' ? null : $pA->envManagePlan->success_indicator,
+                    'form' => $type == 'new' ? null : $pA->envManagePlan->form,
+                    'location' => $type == 'new' ? null : $pA->envManagePlan->location,
+                    'period' => $type == 'new' ? null : $pA->envManagePlan->period,
+                    'institution' => $type == 'new' ? null : $pA->envManagePlan->institution,
+                    'comments' => $comments
+                ];
+                $results[] = [
+                    'id' => $pA->id,
+                    'type' => 'comments'
+                ];
+                $total++;
+            }
+        }
+
+        if($total == 0) {
+            array_pop($results);
+        } else {
+            $alphabet_list++;
+        }
     }
 
-    private function getEnvManagePlan($id_project, $stages) {
-        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
-                                      ->where('id_project', $id_project)
-                                      ->with(['component.component', 'changeType', 'ronaAwal.rona_awal', 'envManagePlan'])->get();
-          $results = [];
+    return $results;
+  }
 
-          foreach($stages as $s) {
-              $results[] = [
-                  'id' => $s->id,
-                  'name' => $s->name,
-                  'type' => 'title'
-              ];
+  private function getLoopDataB($stages, $id_project, $results, $type) {
+    //  =========== POIN B.1 ============= //
+    // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
+    $poinB1 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        ->where([['id_project', $id_project],['is_managed', true]])->get();
 
-              $total = 0;
+    //  =========== POIN B.2 ============= //
+    // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
+    $poinB2 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null]])->get();
 
-              foreach($impactIdentifications as $imp) {
-                  if($imp->component->id_project_stage == $s->id || $imp->component->component->id_project_stage == $s->id) {
-                      $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                      $ronaAwal =  $imp->ronaAwal->id_rona_awal ? $imp->ronaAwal->rona_awal->name : $imp->ronaAwal->name;
-                      $component = $imp->component->id_component ? $imp->component->component->name : $imp->component->name;
+    // ============ POIN B.3 ============= //
+    // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
+    $poinB3 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+    ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
+        $q->whereDoesntHave('detail', function($query) {
+            $query->where('important_trait', '+P');
+        });
+    })->get();
 
-                      $results[] = [
-                          'id' => $imp->id,
-                          'name' => "$changeType $ronaAwal akibat $component",
-                          'type' => 'subtitle',
-                          'impact_source' => $component,
-                          'success_indicator' => $imp->envManagePlan->success_indicator,
-                          'form' => $imp->envManagePlan->form,
-                          'location' => $imp->envManagePlan->location,
-                          'period' => $imp->envManagePlan->period,
-                          'institution' => $imp->envManagePlan->institution,
-                          'description' => $imp->envManagePlan->description
-                      ];
-                      $total++;
-                  }
-              }
+    $data_merge_1 = $poinB1->merge($poinB2);
+    $data_merge_final = $data_merge_1->merge($poinB3);
 
-              if($total == 0) {
-                  array_pop($results);
-              }
-          }
-         
-      return $results;
+    $alphabet_list = 'A';
+
+    foreach($stages as $s) {
+        $results[] = [
+            'id' => $s->id,
+            'name' => $alphabet_list . '. ' . $s->name,
+            'type' => 'title'
+        ];
+
+        $total = 0;
+
+        foreach($data_merge_final as $merge) {
+            if($merge->subProjectComponent->id_project_stage == $s->id || $merge->subProjectComponent->component->id_project_stage == $s->id) {
+                $changeType = $merge->id_change_type ? $merge->changeType->name : '';
+                // $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
+                // $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
+                $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
+                $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+
+                $komen = Comment::where([['id_impact_identification', $merge->id], ['document_type', 'rkl'],['reply_to', null]])
+                            ->orderBY('id', 'DESC')->get();
+                
+                $comments = [];
+                foreach($komen as $c) {
+                    $comments[] = [
+                        'id' => $c->id,
+                        'id_impact_identification' => $c->id_impact_identification,
+                        'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                        'user' => $c->user->name,
+                        'is_checked' => $c->is_checked,
+                        'description' => $c->description,
+                        'column_type' => $c->column_type,
+                        'replies' => [
+                            'id' => $c->reply ? $c->reply->id : null,
+                            'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
+                            'description' => $c->reply ? $c->reply->description : null
+                        ]
+                    ];
+                }
+
+                $results[] = [
+                    'no' => $total + 1,
+                    'id' => $merge->id,
+                    'name' => "$changeType $ronaAwal akibat $component",
+                    'type' => 'subtitle',
+                    'impact_source' => $type == 'new' ? null : $merge->envManagePlan->impact_source,
+                    'success_indicator' => $type == 'new' ? null : $merge->envManagePlan->success_indicator,
+                    'form' => $type == 'new' ? null : $merge->envManagePlan->form,
+                    'location' => $type == 'new' ? null : $merge->envManagePlan->location,
+                    'period' => $type == 'new' ? null : $merge->envManagePlan->period,
+                    'institution' => $type == 'new' ? null : $merge->envManagePlan->institution,
+                    'comments' => $comments
+                ];
+                $results[] = [
+                    'id' => $merge->id,
+                    'type' => 'comments'
+                ];
+                $total++;
+            }
+        }
+
+        if($total == 0) {
+            array_pop($results);
+        } else {
+            $alphabet_list++;
+        }
+    }
+
+    return $results;
   }
 }
