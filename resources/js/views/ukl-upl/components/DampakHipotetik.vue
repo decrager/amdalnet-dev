@@ -31,7 +31,7 @@
       <tbody>
 
         <template v-for="stage in data">
-          <tr :key="'stage_'+ stage.id" :data-index="stage.project_stage_name">
+          <tr v-if="stage.is_stage == true" :key="'stage_'+ stage.id" :data-index="stage.project_stage_name">
             <td colspan="9" class="title" @click="showStage(stage.id)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
           </tr>
           <tr v-show="openedStage === stage.id" :key="'hipotetik_' + stage.id" class="title" animated>
@@ -232,6 +232,10 @@ export default {
         id_project: this.idProject,
         join_tables: true,
       });
+      /*  const pieList = await pieResource.List({
+        id_project: this.idProject
+      }); */
+
       impactList.data.map((imp) => {
         if (imp.id_project_stage === null) {
           imp.id_project_stage = imp.id_project_stage_master;
