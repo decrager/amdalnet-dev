@@ -130,7 +130,7 @@
           />
         </el-collapse-item>
         <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
-          <div>Bagan</div>
+          <bagan-alir />
           <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning">Export PDF</el-button></el-col>
         </el-collapse-item>
       </el-collapse>
@@ -146,6 +146,7 @@ import DampakPotensial from './components/DampakPotensial.vue';
 import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
+import BaganAlir from './components/BaganAlir.vue';
 
 export default {
   name: 'FormulirUklUpl',
@@ -157,6 +158,13 @@ export default {
     MetodeStudi,
     MatriksDampakPentingHipotetik,
     Workflow,
+    BaganAlir,
+  },
+  props: {
+    data: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
@@ -174,6 +182,7 @@ export default {
   mounted() {
     this.setProjectId();
     this.$store.dispatch('getStep', 3);
+    this.data;
   },
   methods: {
     setProjectId(){

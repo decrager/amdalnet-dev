@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BaganAlirController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\UklUplCommentController;
 use App\Http\Resources\UserResource;
@@ -217,3 +218,4 @@ Route::get('ka-docx/{id}', [ExportDocument::class, 'KADocx']);
 Route::apiResource('scoping', 'ScopingController');
 Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
+Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
