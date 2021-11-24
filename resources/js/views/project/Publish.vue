@@ -31,11 +31,11 @@
         <div v-html="project.location_desc" />
       </el-col>
     </el-row>
-    <el-row>
+    <el-row :gutter="4">
       <el-col :span="12">
-        <h2>Hasil Penapisan</h2>
+        <h2>Hasil Penapisan Rencana Kegiatan</h2>
         <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
-          <el-col :span="12">123456789</el-col></el-row>
+          <el-col :span="12">1611182998277</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
           <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
@@ -55,7 +55,6 @@
                 <el-select
                   v-model="project.type_formulator_team"
                   placeholder="Pilih"
-                  style="width: 100%"
                   :disabled="readonly"
                   @change="onFormulatorTypeChange($event)"
                 >
@@ -64,7 +63,6 @@
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                    style="width: 200px"
                   />
                 </el-select>
               </el-form-item>
@@ -76,8 +74,6 @@
               ref="project"
               :model="project"
               label-position="top"
-              label-width="200px"
-              style="max-width: 100%"
             >
               <el-form-item prop="id_lpjp">
                 <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
@@ -91,6 +87,30 @@
               </el-form-item>
             </el-form>
           </el-col></el-row>
+      </el-col>
+      <el-col :span="12">
+        <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+          <el-table-column
+            prop="no"
+            label="No."
+          />
+          <el-table-column
+            prop="kegiatan"
+            label="Kegiatan"
+          />
+          <el-table-column
+            prop="jenisKegiatan"
+            label="Jenis Kegiatan"
+          />
+          <el-table-column
+            prop="skala"
+            label="Skala Besaran"
+          />
+          <el-table-column
+            prop="hasil"
+            label="Hasil"
+          />
+        </el-table>
       </el-col>
       <div v-if="getFormulatedTeam === 'mandiri'">
         <el-row style="padding-bottom: 16px">
@@ -177,7 +197,7 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: [{ value: 'mandiri', label: 'Mandiri' }, { value: 'lpjp', label: 'LPJP' }],
+      teamOptions: [{ value: 'mandiri', label: 'Mandiri' }, { value: 'lpjp', label: 'Lembaga Penyedia Jasa Penyusun' }],
       teamToChooseOptions: null,
       kabkot: null,
       list: [],
@@ -190,6 +210,7 @@ export default {
       geojson: null,
       all: [],
       mapList: [],
+      tableData: [],
     };
   },
   computed: {
@@ -220,9 +241,60 @@ export default {
       limit: 1000,
       active: '',
     });
+
+    // data table for subproject
+    this.setDataTables();
     this.loadMap();
   },
   methods: {
+    setDataTables(){
+      const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
+        return {
+          no: index + 1,
+          kegiatan: e.name,
+          jenisKegiatan: e.sector,
+          skala: e.scale + ' ' + e.scale_unit,
+          hasil: e.result,
+        };
+      });
+      const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
+        return {
+          no: index + 1,
+          kegiatan: e.name,
+          jenisKegiatan: e.sector,
+          skala: e.scale + ' ' + e.scale_unit,
+          hasil: e.result,
+        };
+      });
+      console.log('main', mainArr);
+      console.log('sup', suppArr);
+
+      if (mainArr.length > 0){
+        mainArr.unshift({
+          no: 'A',
+          kegiatan: 'Kegiatan Utama',
+        });
+      }
+
+      if (suppArr.length > 0){
+        suppArr.unshift({
+          no: 'B',
+          kegiatan: 'Kegiatan Pendukung',
+        });
+      }
+
+      this.tableData = [...mainArr, ...suppArr];
+      console.log('all', this.tableData);
+    },
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.scale) {
+        if (columnIndex === 1) {
+          return [1, 4];
+        } else if (columnIndex === 2) {
+          return [0, 0];
+        }
+      }
+    },
     defineActions(event) {
       const item = event.item;
 

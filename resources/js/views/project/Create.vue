@@ -715,6 +715,36 @@ export default {
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
         ],
       },
+      tableData: [
+        {
+          no: 'A',
+          kegiatan: 'Kegiatan Utama',
+          jenisKegiatan: '',
+          skala: '',
+          hasil: '',
+        },
+        {
+          no: '1',
+          kegiatan: 'Pabrik Pupuk',
+          jenisKegiatan: 'Industri ',
+          skala: '111',
+          hasil: 'aaaa',
+        },
+        {
+          no: 'B',
+          kegiatan: 'Kegiatan Pendukung',
+          jenisKegiatan: '',
+          skala: '',
+          hasil: '',
+        },
+        {
+          no: '2',
+          kegiatan: 'Pabrik Pupuk',
+          jenisKegiatan: 'Industri ',
+          skala: '111',
+          hasil: 'aaaa',
+        },
+      ],
     };
   },
   computed: {
@@ -771,6 +801,15 @@ export default {
     this.getAllData();
   },
   methods: {
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.scale) {
+        if (columnIndex === 1) {
+          return [1, 4];
+        } else if (columnIndex === 2) {
+          return [0, 0];
+        }
+      }
+    },
     handleNothingTick(){
       this.currentProject.wastewater = false;
       this.currentProject.emission = false;
@@ -780,28 +819,39 @@ export default {
     sumResult(listParam){
       let result = '';
       let result_risk = '';
+      let scale = '';
+      let scale_unit = '';
+
       for (let i = 0; i < listParam.length; i++) {
         if (listParam[i].result === 'AMDAL'){
           result = listParam[i].result;
           result_risk = listParam[i].result_risk;
+          scale = listParam[i].scale;
+          scale_unit = listParam[i].scale_unit;
           break;
         } else if (listParam[i].result === 'UKL-UPL'){
           result = listParam[i].result;
           result_risk = listParam[i].result_risk;
+          scale = listParam[i].scale;
+          scale_unit = listParam[i].scale_unit;
         } else if (listParam[i].result === 'SPPL' && result !== 'UKL-UPL'){
           result = listParam[i].result;
           result_risk = listParam[i].result_risk;
+          scale = listParam[i].scale;
+          scale_unit = listParam[i].scale_unit;
         }
       }
-      return { result, result_risk };
+      return { result, result_risk, scale, scale_unit };
     },
     calculateListSubProjectResult(){
       this.currentProject.listSubProject = this.listSubProject.map(e => {
         e.listSubProjectParams = e.listSubProjectParams.filter(e => e.used);
 
-        const { result, result_risk } = this.sumResult(e.listSubProjectParams);
+        const { result, result_risk, scale, scale_unit } = this.sumResult(e.listSubProjectParams);
         e.result = result;
         e.result_risk = result_risk;
+        e.scale = scale;
+        e.scale_unit = scale_unit;
 
         return e;
       });
@@ -833,6 +883,8 @@ export default {
       this.currentProject.sector = choosenProject.sector;
       this.currentProject.authority = 'Pusat';
       this.currentProject.plan_type = choosenProject.name;
+      this.currentProject.scale = choosenProject.scale;
+      this.currentProject.scale_unit = choosenProject.scale_unit;
       this.currentProject.listSubProjectParams = choosenProject.listSubProjectParams;
     },
     handleStudyAccord(){

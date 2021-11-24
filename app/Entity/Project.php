@@ -41,6 +41,7 @@ class Project extends Model
         'type_formulator_team',
         'ktr',
         'id_lpjp',
+        'pre_agreement',
     ];
 
     public function team()
