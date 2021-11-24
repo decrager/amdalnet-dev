@@ -194,6 +194,151 @@
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
+              <el-col :span="2">
+                <el-button size="medium" type="primary" @click="activeName = '6'">
+                  Lanjutkan
+                </el-button>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+          <el-collapse-item title="PERSETUJUAN TEKNIS(PERTEK)" name="6">
+            <el-row>
+              <el-col :span="24">
+                <el-form-item
+                  label="Limbah Yang Dihasilkan dari Rencana Usaha dan/atau Kegiatan :"
+                >
+                  <el-checkbox v-model="currentProject.wastewater" label="Air Limbah" @change="currentProject.nothing = false" />
+                  <el-checkbox v-model="currentProject.emission" label="Emisi Gas Buang" @change="currentProject.nothing = false" />
+                  <el-checkbox v-model="currentProject.b3" label="Limbah B3" @change="currentProject.nothing = false" />
+                  <el-checkbox v-model="currentProject.traffic" label="Gangguan Lalu Lintas" @change="currentProject.nothing = false" />
+                  <el-checkbox v-model="currentProject.nothing" label="Tidak Ada" @change="handleNothingTick" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row style="margin-bottom: 10px">
+              <el-col v-if="currentProject.wastewater" :span="12">
+                <el-card>
+                  <table style="width: 100%; text-align: left;">
+                    <tr>
+                      <th>Jenis Kegiatan</th>
+                      <th>Masuk Dalam Pencemaran Tinggi ?</th>
+                    </tr>
+                    <tr>
+                      <td><div>
+                            <el-checkbox v-model="currentProject.disposal_wastewater" label="Pembuangan Air Limbah" border />
+                          </div>
+                        <div>
+                          <el-checkbox v-model="currentProject.utilization_wastewater" style="margin-top: 5px" label="Pemanfaatan Air Limbah" border />
+                        </div>
+                      </td>
+                      <td>
+                        <el-radio-group v-model="currentProject.high_pollution">
+                          <el-radio :label="true">Ya</el-radio>
+                          <el-radio :label="false">Tidak</el-radio>
+                        </el-radio-group>
+                      </td>
+                    </tr>
+                  </table>
+                  <el-tag v-if="currentProject.high_pollution" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Air Limbah Ke Laut</el-tag>
+                </el-card>
+              </el-col>
+            </el-row>
+            <el-row style="margin-bottom: 10px">
+              <el-col v-if="currentProject.emission" :span="12">
+                <el-card>
+                  <table style="width: 100%; text-align: left;">
+                    <tr>
+                      <th>Jenis Kegiatan</th>
+                      <th>Masuk Dalam Emisi Tinggi ?</th>
+                    </tr>
+                    <tr>
+                      <td><div>
+                            <el-checkbox v-model="currentProject.chimney" label="Melalui Cerobong Asap" border />
+                          </div>
+                        <div>
+                          <el-checkbox v-model="currentProject.genset" style="margin-top: 5px" label="Pembuangan Emisi Gas Buang Dari Genset" border />
+                        </div>
+                      </td>
+                      <td>
+                        <el-radio-group v-model="currentProject.high_emission">
+                          <el-radio :label="true">Ya</el-radio>
+                          <el-radio :label="false">Tidak</el-radio>
+                        </el-radio-group>
+                      </td>
+                    </tr>
+                  </table>
+                  <el-tag v-if="currentProject.high_emission" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Emisi</el-tag>
+                </el-card>
+              </el-col>
+            </el-row>
+            <el-row style="margin-bottom: 10px">
+              <el-col v-if="currentProject.b3" :span="12">
+                <el-card>
+                  <table style="width: 100%; text-align: left;">
+                    <tr>
+                      <th>Jenis Kegiatan</th>
+                      <th />
+                      <th />
+                    </tr>
+                    <tr>
+                      <td>
+                        <div>
+                          <el-checkbox v-model="currentProject.collect_b3" label="Pengumpulan Limbah B3" border />
+                        </div>
+                        <div>
+                          <el-checkbox v-model="currentProject.process_b3" style="margin-top: 5px" label="Pengolahan Limbah B3" border />
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <el-checkbox v-model="currentProject.utilization_b3" label="Pemanfaatan Limbah B3" border />
+                        </div>
+                        <div>
+                          <el-checkbox v-model="currentProject.hoard_b3" style="margin-top: 5px" label="Penimbunan Limbah B3" border />
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <el-checkbox v-model="currentProject.dumping_b3" label="Dumping Limbah B3" border />
+                        </div>
+                        <div>
+                          <el-checkbox v-model="currentProject.tps" style="margin-top: 5px" label="TPS" border />
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <el-tag v-if="currentProject.b3" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag>
+                </el-card>
+              </el-col>
+            </el-row>
+            <el-row style="margin-bottom: 10px">
+              <el-col v-if="currentProject.traffic" :span="12">
+                <div>
+                  <el-card>
+                    <table style="width: 100%; text-align: left;">
+                      <tr>
+                        <th>Besaran Dampak Lalu Lintas Di Tahap Operasi :</th>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div>
+                            <el-checkbox v-model="currentProject.low_traffic" label="Rendah" border />
+                          </div>
+                          <div>
+                            <el-checkbox v-model="currentProject.mid_traffic" style="margin-top: 5px" label="Sedang" border />
+                          </div>
+                          <div>
+                            <el-checkbox v-model="currentProject.high_traffic" style="margin-top: 5px" label="Tinggi" border />
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                    <el-tag v-if="currentProject.high_traffic" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Gangguan Lalu Lintas</el-tag>
+                  </el-card>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row type="flex" justify="end">
               <el-col :span="5">
                 <el-button size="medium" @click="handleCancel()"> Batalkan </el-button>
                 <el-button size="medium" type="primary" @click="preProject = false"> Lanjutkan </el-button>
@@ -263,6 +408,7 @@
                     v-model="currentProject.sector"
                     placeholder="Pilih"
                     style="width: 100%"
+                    disabled
                   >
                     <el-option
                       v-for="item in getSectorOptions"
@@ -625,6 +771,12 @@ export default {
     this.getAllData();
   },
   methods: {
+    handleNothingTick(){
+      this.currentProject.wastewater = false;
+      this.currentProject.emission = false;
+      this.currentProject.b3 = false;
+      this.currentProject.traffic = false;
+    },
     sumResult(listParam){
       let result = '';
       let result_risk = '';
@@ -678,6 +830,7 @@ export default {
       this.currentProject.required_doc = choosenProject.result;
       this.currentProject.risk_level = choosenProject.result_risk;
       this.currentProject.result_risk = choosenProject.result_risk;
+      this.currentProject.sector = choosenProject.sector;
       this.currentProject.authority = 'Pusat';
       this.currentProject.plan_type = choosenProject.name;
       this.currentProject.listSubProjectParams = choosenProject.listSubProjectParams;
