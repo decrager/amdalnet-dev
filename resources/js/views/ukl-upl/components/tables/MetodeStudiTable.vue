@@ -4,7 +4,7 @@
     :data="data"
     fit
     highlight-current-row
-    :header-cell-style="{ background: '#def5cf' }"
+    :header-cell-style="{ background: '#6cc26f', color: 'white' }"
     style="width: 100%"
   >
     <el-table-column label="Dampak Penting Hipotetik">
@@ -14,13 +14,6 @@
         </div>
         <div v-if="!scope.row.is_stage">
           {{ scope.row.index }}. {{ scope.row.change_type_name }} {{ scope.row.rona_awal_name }} akibat {{ scope.row.component_name }}
-        </div>
-      </template>
-    </el-table-column>
-    <el-table-column label="Metode Prakiraan Dampak" align="left">
-      <template slot-scope="scope">
-        <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.forecast_method" type="textarea" :rows="2" />
         </div>
       </template>
     </el-table-column>
@@ -45,7 +38,14 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Metode Evaluasi" align="left">
+    <el-table-column label="Metode Prakiraan Dampak Penting" align="left">
+      <template slot-scope="scope">
+        <div v-if="!scope.row.is_stage">
+          <el-input v-model="scope.row.impact_study.forecast_method" type="textarea" :rows="2" />
+        </div>
+      </template>
+    </el-table-column>
+    <el-table-column label="Metode Evaluasi Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
           <el-input v-model="scope.row.impact_study.evaluation_method" type="textarea" :rows="2" />

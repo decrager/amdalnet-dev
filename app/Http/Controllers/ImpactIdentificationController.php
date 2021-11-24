@@ -79,22 +79,26 @@ class ImpactIdentificationController extends Controller
             //clear items
             ImpactIdentification::where('id_project', $params['id_project'])->delete();
             //insert checked items
-            foreach ($params['checked'] as $item){
-                if ($item['id'] < 99999999) {
-                    foreach ($item['sub'] as $sub){
-                        if ($sub['checked']){
-                            $created = ImpactIdentification::create([
-                                'id_project' => $params['id_project'],
-                                'id_project_rona_awal' => $item['id'],
-                                'id_project_component' => $sub['id'],
-                            ]);
-                            if ($created){
-                                $inserted++;
+            try {
+                foreach ($params['checked'] as $item){
+                    if ($item['id'] < 99999999) {
+                        foreach ($item['sub'] as $sub){
+                            if ($sub['checked']){
+                                $created = ImpactIdentification::create([
+                                    'id_project' => $params['id_project'],
+                                    'id_sub_project_rona_awal' => $item['id'],
+                                    'id_sub_project_component' => $sub['id'],
+                                ]);
+                                if ($created){
+                                    $inserted++;
+                                }
+                                $checked++;
                             }
-                            $checked++;
                         }
                     }
                 }
+            } catch (Exception $e) {
+                return response()->json(['code' => 500, 'error' => $e->getMessage()]);
             }
             if ($inserted == $checked){
                 DB::commit();

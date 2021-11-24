@@ -350,7 +350,7 @@ h2 {
   padding-top: 10px;
 }
 
-table th, table td {word-break: normal !important; padding:.5em; line-height:1.2em; border: 1px solid #eee; text-align:center;}
+table th, table td {word-break: normal !important; padding:.5em; line-height:1.2em; border: 1px solid #eee;}
 table td { vertical-align: top !important;}
 table thead  {background-color:#6cc26f !important; color: white !important;}
 table td.title, table tr.title td, table.title td { text-align:left;}
