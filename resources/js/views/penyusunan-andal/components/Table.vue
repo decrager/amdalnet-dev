@@ -17,6 +17,8 @@
     <el-table
       v-loading="loading"
       :data="list"
+      :span-method="arraySpanMethod"
+      :row-class-name="tableRowClassName"
       border
       fit
       highlight-current-row
@@ -33,11 +35,134 @@
     >
       <el-table-column label="Dampak Penting Hipotetik">
         <template slot-scope="scope">
-          <span
-            :class="{ 'row-title': Boolean(scope.row.component == undefined) }"
-          >
+          <span :class="{ 'row-title': scope.row.type === 'title' }">
             {{ scope.row.name }}
           </span>
+          <div
+            v-if="scope.row.type === 'subtitle'"
+            class="btn-comment-container"
+          >
+            <el-button
+              type="text"
+              size="medium"
+              @click.stop="showOrHideComment(scope.row.id)"
+            >
+              <i class="el-icon-s-comment" />
+            </el-button>
+          </div>
+          <div
+            v-if="scope.row.type === 'comments'"
+            class="comment-container"
+            @click.stop
+          >
+            <h4>MASUKAN/SARAN PERBAIKAN</h4>
+            <div class="comment-list">
+              <div class="comment-card">
+                <el-card style="margin-bottom: 10px">
+                  <div class="comment-body" style="padding-top: 20px">
+                    <el-input
+                      v-model="impactComment"
+                      type="textarea"
+                      :rows="2"
+                      placeholder="Tulis Masukan..."
+                    />
+                    <div class="send-btn-container">
+                      <el-button
+                        :loading="loadingSubmitComment"
+                        type="primary"
+                        size="mini"
+                        @click="handleSubmitComment"
+                      >
+                        {{ 'Kirim' }}
+                      </el-button>
+                    </div>
+                  </div>
+                </el-card>
+              </div>
+              <div
+                v-for="(com, index) in list[scope.$index - 1].comments"
+                :key="com.id"
+                class="comment-card"
+              >
+                <el-card style="margin-bottom: 10px">
+                  <div class="comment-header">
+                    <div>
+                      <p>{{ com.user }}</p>
+                      <p>{{ com.created_at }}</p>
+                    </div>
+                    <el-checkbox
+                      v-model="
+                        list[scope.$index - 1].comments[index].is_checked
+                      "
+                      @change="
+                        handleCheckedComment(
+                          list[scope.$index - 1].comments[index].id
+                        )
+                      "
+                    />
+                  </div>
+                  <div class="comment-body">{{ com.description }}</div>
+                  <div
+                    v-if="
+                      list[scope.$index - 1].comments[index].replies.id !== null
+                    "
+                    class="comment-header reply"
+                  >
+                    <div>
+                      <p>Catatan Balasan Penyusun</p>
+                      <p>
+                        {{
+                          list[scope.$index - 1].comments[index].replies
+                            .created_at
+                        }}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    v-if="
+                      list[scope.$index - 1].comments[index].replies.id !== null
+                    "
+                    class="comment-body reply"
+                  >
+                    {{
+                      list[scope.$index - 1].comments[index].replies.description
+                    }}
+                  </div>
+                  <div
+                    v-if="
+                      list[scope.$index - 1].comments[index].replies.id === null
+                    "
+                    class="comment-reply"
+                  >
+                    <el-input
+                      v-model="
+                        list[scope.$index - 1].comments[index].replies
+                          .description
+                      "
+                      type="textarea"
+                      :rows="2"
+                      placeholder="Tulis Catatan Balasan..."
+                    />
+                    <div class="send-btn-container">
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="
+                          handleSubmitReply(
+                            list[scope.$index - 1].comments[index].id,
+                            list[scope.$index - 1].comments[index].replies
+                              .description
+                          )
+                        "
+                      >
+                        {{ 'Kirim' }}
+                      </el-button>
+                    </div>
+                  </div>
+                </el-card>
+              </div>
+            </div>
+          </div>
         </template>
       </el-table-column>
 
@@ -204,6 +329,7 @@ export default {
   data() {
     return {
       loadingSubmit: false,
+      loadingSubmitComment: false,
       tanggapan: '',
       show: false,
       selectedTanggapanid: null,
@@ -211,6 +337,9 @@ export default {
       loading: false,
       idProject: this.$route.params.id,
       lastTime: null,
+      selectedImpactCommentId: null,
+      impactComment: null,
+      userInfo: {},
       hasilEvaluasiDampak: [
         {
           label: 'Positif',
@@ -240,6 +369,7 @@ export default {
   created() {
     this.getCompose();
     this.getLastTime();
+    this.getUserInfo();
   },
   methods: {
     async getCompose() {
@@ -271,11 +401,96 @@ export default {
         duration: 5 * 1000,
       });
     },
+    async handleSubmitComment() {
+      this.loadingSubmitComment = true;
+
+      const newComment = await andalComposingResource.store({
+        type: 'impact-comment',
+        description: this.impactComment,
+        id_impact_identification: this.selectedImpactCommentId,
+        id_user: this.userInfo.id,
+      });
+
+      const indexImpact = this.list.findIndex((ide) => {
+        return (
+          ide.id === this.selectedImpactCommentId && ide.type === 'subtitle'
+        );
+      });
+
+      this.list[indexImpact].comments.unshift(newComment);
+
+      this.loadingSubmitComment = false;
+      this.impactComment = null;
+    },
+    async handleSubmitReply(id, description) {
+      const newCommentReply = await andalComposingResource.store({
+        type: 'impact-comment-reply',
+        description: description,
+        id_comment: id,
+        id_user: this.userInfo.id,
+        id_impact_identification: this.selectedImpactCommentId,
+      });
+
+      const indexImpact = this.list.findIndex((ide) => {
+        return (
+          ide.id === this.selectedImpactCommentId && ide.type === 'subtitle'
+        );
+      });
+
+      const indexComment = this.list[indexImpact].comments.findIndex(
+        (com) => com.id === id
+      );
+
+      this.list[indexImpact].comments[indexComment].replies = newCommentReply;
+    },
+    async handleCheckedComment(id) {
+      await andalComposingResource.store({
+        type: 'checked-comment',
+        id,
+      });
+    },
+    async getUserInfo() {
+      this.userInfo = await this.$store.dispatch('user/getInfo');
+    },
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });
+    },
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.type === 'title' && columnIndex === 0) {
+        return [1, 7];
+      }
+
+      if (row.type === 'comments' && columnIndex === 0) {
+        return [1, 7];
+      }
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (row.type === 'comments') {
+        return `beige comment-${row.id} comment-hide`;
+      }
+      return '';
+    },
+    showOrHideComment(id) {
+      this.selectedImpactCommentId = id;
+      document.querySelectorAll('.beige').forEach((e) => {
+        if (!e.classList.contains(`comment-${id}`)) {
+          e.classList.add('comment-hide');
+        }
+      });
+      if (
+        document
+          .querySelector(`.comment-${id}`)
+          .classList.contains('comment-hide')
+      ) {
+        document
+          .querySelector(`.comment-${id}`)
+          .classList.remove('comment-hide');
+      } else {
+        document.querySelector(`.comment-${id}`).classList.add('comment-hide');
+      }
     },
     // showFormTanggapan(id) {
     //   this.selectedTanggapanid = id;
@@ -306,5 +521,60 @@ export default {
 }
 .el-table .cell {
   word-break: break-word;
+}
+.comment-hide {
+  display: none;
+}
+.btn-comment-container button {
+  font-size: 20px;
+}
+.comment-card {
+  width: 300px;
+  margin-right: 30px;
+  display: inline-block;
+  margin-bottom: 13px;
+  vertical-align: top;
+}
+.send-btn-container {
+  text-align: right;
+  margin-top: 10px;
+}
+.beige {
+  background: beige !important;
+}
+.beige td {
+  padding-top: 0 !important;
+}
+.comment-body {
+  font-size: 15px;
+  padding-right: 20px;
+  padding-left: 20px;
+  padding-bottom: 20px;
+}
+.comment-header {
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.comment-header p {
+  font-size: 12px;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 1px;
+  font-weight: lighter;
+}
+.comment-card .el-card__body {
+  padding: 0 !important;
+}
+.comment-reply {
+  background: #ceeccb;
+  padding: 20px;
+  border-top: 1px solid #ccc;
+}
+.comment-header.reply,
+.comment-body.reply {
+  background: #ceeccb;
 }
 </style>
