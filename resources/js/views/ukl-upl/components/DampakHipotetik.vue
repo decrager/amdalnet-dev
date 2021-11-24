@@ -29,107 +29,107 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td colspan="9" class="title"><strong>A. Pra Konstruksi</strong></td>
-        </tr>
-        <tr class="title">
-          <td>
-            <el-select v-model="valueA" placeholder="Select">
-              <el-option
-                v-for="item in kejadian"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </td>
-          <td>Kebisingan</td>
-          <td>akibat Mobilisasi Alat Berat</td>
-          <td>Pengelolaan Lingkungan yang
-            sudah direncanakan sejak awal
-            sebagai bagian dari rencana
-            kegiatan</td>
-          <td>
-            <div class="div-fka formA">
-              <p><strong>A. Besaran rencana Usaha dan/atau Kegiatan</strong> (yang
-                menyebabkan dampak tersebut dan rencana pengelolaan
-                lingkungan awal yang menjadi bagian rencana Usaha
-                dan/atau Kegiatan untuk menanggulangi dampak)</p>
-              <el-input
-                v-model="textAA"
-                type="textarea"
-                :rows="2"
-                placeholder="Please input"
-              />
-            </div>
-            <div class="div-fka formA">
-              <p><strong>B. Kondisi rona lingkungan</strong> (yang ada termasuk kemampuan
-                mendukung Usaha dan/atau Kegiatan tersebut atau tidak)</p>
-              <el-input
-                v-model="textAB"
-                type="textarea"
-                :rows="2"
-                placeholder="Please input"
-              />
-            </div>
-            <div class="div-fka formA">
-              <p><strong>C. Pengaruh rencana Usaha dan/atau Kegiatan</strong> (terhadap
-                kondisi Usaha dan/atau Kegiatan lain di sekitar lokasi</p>
-              <el-input
-                v-model="textAC"
-                type="textarea"
-                :rows="2"
-                placeholder="Please input"
-              />
-            </div>
-            <div class="div-fka formA">
-              <p><strong>D. Intensitas perhatian masyarakat</strong> (terhadap rencana Usaha
-                dan/atau Kegiatan, baik harapan, kekhawatiran,
-                persetujuan
-                atau penolakan terhadap rencana Usaha
-                dan/atau Kegiatan)</p>
-              <el-input
-                v-model="textAD"
-                type="textarea"
-                :rows="2"
-                placeholder="Please input"
-              />
-            </div>
-            <div class="div-fka formA">
-              <p><strong>E. Kesimpulan</strong></p>
-              <el-input
-                v-model="textAE"
-                type="textarea"
-                :rows="2"
-                placeholder="Please input"
-              />
-            </div>
-          </td>
-          <td>
-            <el-select v-model="vDPHs" placeholder="Select">
-              <el-option
-                v-for="item in dPHs"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                :disabled="item.disabled"
-              />
-            </el-select>
-          </td>
-          <td />
-          <td>
-            <p><el-input-number v-model="tahunA" :min="0" :max="10" size="mini" /> tahun</p>
-            <p><el-input-number v-model="bulanA" :min="0" :max="12" size="mini" /> bulan</p>
 
-          </td>
-          <td />
-        </tr>
+        <template v-for="stage in data">
+          <tr :key="'stage_'+ stage.id" :data-index="stage.project_stage_name">
+            <td colspan="9" class="title" @click="showStage(stage.id)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
+          </tr>
+          <tr v-show="openedStage === stage.id" :key="'hipotetik_' + stage.id" class="title" animated>
+            <td>
+              <el-select v-model="valueA" placeholder="Select">
+                <el-option
+                  v-for="item in kejadian"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </td>
+            <td>Kebisingan</td>
+            <td>akibat Mobilisasi Alat Berat</td>
+            <td>Pengelolaan Lingkungan yang
+              sudah direncanakan sejak awal
+              sebagai bagian dari rencana
+              kegiatan</td>
+            <td>
+              <div class="div-fka formA">
+                <p><strong>A. Besaran rencana Usaha dan/atau Kegiatan</strong> (yang
+                  menyebabkan dampak tersebut dan rencana pengelolaan
+                  lingkungan awal yang menjadi bagian rencana Usaha
+                  dan/atau Kegiatan untuk menanggulangi dampak)</p>
+                <el-input
+                  v-model="textAA"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="Please input"
+                />
+              </div>
+              <div class="div-fka formA">
+                <p><strong>B. Kondisi rona lingkungan</strong> (yang ada termasuk kemampuan
+                  mendukung Usaha dan/atau Kegiatan tersebut atau tidak)</p>
+                <el-input
+                  v-model="textAB"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="Please input"
+                />
+              </div>
+              <div class="div-fka formA">
+                <p><strong>C. Pengaruh rencana Usaha dan/atau Kegiatan</strong> (terhadap
+                  kondisi Usaha dan/atau Kegiatan lain di sekitar lokasi</p>
+                <el-input
+                  v-model="textAC"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="Please input"
+                />
+              </div>
+              <div class="div-fka formA">
+                <p><strong>D. Intensitas perhatian masyarakat</strong> (terhadap rencana Usaha
+                  dan/atau Kegiatan, baik harapan, kekhawatiran,
+                  persetujuan
+                  atau penolakan terhadap rencana Usaha
+                  dan/atau Kegiatan)</p>
+                <el-input
+                  v-model="textAD"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="Please input"
+                />
+              </div>
+              <div class="div-fka formA">
+                <p><strong>E. Kesimpulan</strong></p>
+                <el-input
+                  v-model="textAE"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="Please input"
+                />
+              </div>
+            </td>
+            <td>
+              <el-select v-model="vDPHs" placeholder="Select">
+                <el-option
+                  v-for="item in dPHs"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                  :disabled="item.disabled"
+                />
+              </el-select>
+            </td>
+            <td />
+            <td>
+              <p><el-input-number v-model="tahunA" :min="0" :max="10" size="mini" /> tahun</p>
+              <p><el-input-number v-model="bulanA" :min="0" :max="12" size="mini" /> bulan</p>
+
+            </td>
+            <td />
+          </tr>
+        </template>
 
         <tr>
-          <td colspan="9" class="title"><strong>B. Konstruksi</strong></td>
-        </tr>
-        <tr>
-          <td colspan="9" class="title"><strong>C. Operasi</strong></td>
+          <td colspan="9" class="title">NORMAL</td>
         </tr>
       </tbody>
     </table>
@@ -147,10 +147,12 @@ export default {
       idProject: 0,
       data: [],
       projectStages: [],
+      openedStage: null,
     };
   },
   mounted() {
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
+    this.getData();
   },
   methods: {
     handleSetData(data) {
@@ -223,6 +225,7 @@ export default {
       return dataFlat;
     },
     async getData() {
+      console.log('starting getData at DampakHipotetik');
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
       const impactList = await impactIdtResource.list({
@@ -253,6 +256,12 @@ export default {
       });
       var dataList = impactList.data;
       this.data = this.createDataArray(dataList, this.projectStages);
+
+      console.log('end of getData at DampakHipotetik');
+      console.log(this.data);
+    },
+    showStage(index){
+      this.openedStage = (this.openedStage === index) ? null : index;
     },
   },
 };
