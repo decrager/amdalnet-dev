@@ -42,7 +42,10 @@
         <el-input v-model="component.name" />
       </el-form-item>
       <el-form-item label="Umum">
-        <el-input v-model="component.description_common" />
+        <el-input
+          v-model="component.description_common"
+          :disabled="disableDescCommon"
+        />
       </el-form-item>
       <el-form-item label="Khusus">
         <el-input v-model="component.description_specific" />
@@ -59,6 +62,7 @@
 import Resource from '@/api/resource';
 const projectStageResource = new Resource('project-stages');
 const scopingResource = new Resource('scoping');
+const subProjectComponentResource = new Resource('sub-project-components');
 
 export default {
   name: 'AddComponentDialog',
@@ -82,6 +86,7 @@ export default {
       component: {},
       subProjectsArray: [],
       projectStages: [],
+      disableDescCommon: false,
     };
   },
   mounted() {
@@ -123,6 +128,15 @@ export default {
       this.subProjects.pendukung.map((p) => {
         this.subProjectsArray.push(p);
       });
+      // common desc
+      const comps = await subProjectComponentResource.list({
+        id_sub_project: this.currentIdSubProject,
+      });
+      if (comps.data.length > 0) {
+        const firstComp = comps.data[0];
+        this.component.description_common = firstComp.description_common;
+        this.disableDescCommon = true;
+      }
     },
   },
 };
