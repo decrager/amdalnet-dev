@@ -218,7 +218,7 @@
                       </ul>
                     </div>
                     <div style="padding-left:1rem">
-                      <el-rate v-model="ratings" size="99" style="font-size:3rem" @change="handleChange(ratings)" />
+                      <el-rate v-model="ratings" @change="handleChange(ratings)" />
                     </div>
                   </div>
                 </el-col>
@@ -726,8 +726,6 @@ table.table__striped tr:nth-child(odd) {
   padding:2rem;
 }
 .fz8{font-size: 0.8rem;}
-.el-rate__icon{font-size: 2.5rem !important;}
-.el-rate__icon.el-icon-star-off {font-size: 3rem;}
 #header {
     z-index: 99999;
 }
@@ -746,7 +744,5 @@ table.table__striped tr:nth-child(odd) {
 .tableDetail td{color: #3c3f3c; padding:0.5rem; width: 50%; border:0}
 .detailLokasi{background-color: #fff;padding: 0.5rem;}
 .mapsDetail{width: 100%; height: 20rem;}
-.el-rate__icon {
-  font-size: 70px !important;
-}
+.el-rate__item i{font-size: 3rem;}
 </style>
