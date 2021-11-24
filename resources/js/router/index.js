@@ -237,6 +237,19 @@ export const asyncRoutes = [
   feedbackRoutes,
   // workspaceRoutes,
   uklUplRoutes,
+  {
+    path: '/spt',
+    component: Layout,
+    meta: { title: 'SPT', icon: 'dashboard', noCache: true },
+    children: [
+      {
+        path: '/spt',
+        component: () => import('@/views/spt/index'),
+        name: 'SPT',
+        meta: { title: 'SPT', icon: 'dashboard', noCache: true },
+      },
+    ],
+  },
   dokumenRoutes,
   errorRoutes,
   flowchartRoutes,
