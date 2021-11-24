@@ -60,6 +60,18 @@
               <div class="comment-card">
                 <el-card style="margin-bottom: 10px">
                   <div class="comment-body" style="padding-top: 20px">
+                    <el-select
+                      v-model="impactColumnType"
+                      placeholder="Pilih Kolom"
+                      style="width: 100%; margin-bottom: 10px"
+                    >
+                      <el-option
+                        v-for="item in kolom"
+                        :key="item.label"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
                     <el-input
                       v-model="impactComment"
                       type="textarea"
@@ -88,6 +100,7 @@
                   <div class="comment-header">
                     <div>
                       <p>{{ com.user }}</p>
+                      <p>{{ com.column_type }}</p>
                       <p>{{ com.created_at }}</p>
                     </div>
                     <el-checkbox
@@ -339,6 +352,7 @@ export default {
       lastTime: null,
       selectedImpactCommentId: null,
       impactComment: null,
+      impactColumnType: null,
       userInfo: {},
       hasilEvaluasiDampak: [
         {
@@ -362,6 +376,36 @@ export default {
         {
           label: 'Tersier',
           value: 'Tersier',
+        },
+      ],
+      kolom: [
+        {
+          label: 'Dampak Penting Hipotetik',
+          value: 'Dampak Penting Hipotetik',
+        },
+        {
+          label: 'Komponen Rona Awal Lingkungan',
+          value: 'Komponen Rona Awal Lingkungan',
+        },
+        {
+          label: 'Besaran Dampak',
+          value: 'Besaran Dampak',
+        },
+        {
+          label: 'Sifat Penting',
+          value: 'Sifat Penting',
+        },
+        {
+          label: 'Perubahan Kondisi Dengan dan Tanpa Rencana Kegiatan',
+          value: 'Perubahan Kondisi Dengan dan Tanpa Rencana Kegitan',
+        },
+        {
+          label: 'Jenis Dampak',
+          value: 'Jenis Dampak',
+        },
+        {
+          label: 'Hasil Evaluasi Dampak',
+          value: 'Hasil Evaluasi Dampak',
         },
       ],
     };
@@ -409,6 +453,7 @@ export default {
         description: this.impactComment,
         id_impact_identification: this.selectedImpactCommentId,
         id_user: this.userInfo.id,
+        column_type: this.impactColumnType,
       });
 
       const indexImpact = this.list.findIndex((ide) => {
@@ -421,6 +466,7 @@ export default {
 
       this.loadingSubmitComment = false;
       this.impactComment = null;
+      this.impactColumnType = null;
     },
     async handleSubmitReply(id, description) {
       const newCommentReply = await andalComposingResource.store({
