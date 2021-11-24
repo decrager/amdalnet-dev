@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\AndalComment;
+use App\Entity\Comment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
@@ -88,6 +89,58 @@ class AndalComposingController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->type == 'impact-comment') {
+            $comment = new Comment();
+            $comment->id_user = $request->id_user;
+            $comment->id_impact_identification = $request->id_impact_identification;
+            $comment->description = $request->description;
+            $comment->document_type = 'andal';
+            $comment->is_checked = false;
+            $comment->save();
+
+            return [
+                    'id' => $comment->id,
+                    'id_impact_identification' => $comment->id_impact_identification,
+                    'created_at' => $comment->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                    'user' => $comment->user->name,
+                    'is_checked' => $comment->is_checked,
+                    'description' => $comment->description,
+                    'replies' => [
+                        'id' => null,
+                        'created_at' => null,
+                        'description' => null
+                ]
+            ];
+        }
+
+        if($request->type == 'impact-comment-reply') {
+            $comment = new Comment();
+            $comment->id_user = $request->id_user;
+            $comment->id_impact_identification = $request->id_impact_identification;
+            $comment->description = $request->description;
+            $comment->document_type = 'andal';
+            $comment->reply_to = $request->id_comment;
+            $comment->save();
+
+            return [
+                'id' => $comment->id,
+                'created_at' => $comment->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                'description' => $comment->description
+            ];
+        }
+
+        if($request->type == 'checked-comment') {
+            $comment = Comment::findOrFail($request->id);
+            if($comment->is_checked) {
+                $comment->is_checked = false;
+            } else {
+                $comment->is_checked = true;
+            }
+            $comment->save();
+
+            return $comment->is_checked;
+        }
+
         if($request->type == 'comment') {
             $comment = new AndalComment();
             $comment->id_project = $request->idProject;
@@ -204,6 +257,8 @@ class AndalComposingController extends Controller
     }
 
     private function getImpactNotifications($id_project, $stages) {
+        $alphabet_list = 'A';
+
         $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')
         ->where([['id_project', $id_project],['is_hypothetical_significant', true]])
         ->with(['component.component', 'changeType', 'ronaAwal.rona_awal'])->get();
@@ -226,7 +281,7 @@ class AndalComposingController extends Controller
         foreach($stages as $s) {
             $results[] = [
                 'id' => $s->id,
-                'name' => $s->name,
+                'name' => $alphabet_list . '. ' . $s->name,
                 'type' => 'title'
             ];
 
@@ -237,6 +292,28 @@ class AndalComposingController extends Controller
                     $changeType = $imp->id_change_type ? $imp->changeType->name : '';
                     $ronaAwal =  $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
                     $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                    // $ronaAwal = '';
+                    // $component = '';
+
+                    $komen = Comment::where([['id_impact_identification', $imp->id], ['document_type', 'andal'],['reply_to', null]])
+                            ->orderBY('id', 'DESC')->get();
+                
+                    $comments = [];
+                    foreach($komen as $c) {
+                        $comments[] = [
+                            'id' => $c->id,
+                            'id_impact_identification' => $c->id_impact_identification,
+                            'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                            'user' => $c->user->name,
+                            'is_checked' => $c->is_checked,
+                            'description' => $c->description,
+                            'replies' => [
+                                'id' => $c->reply ? $c->reply->id : null,
+                                'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
+                                'description' => $c->reply ? $c->reply->description : null
+                            ]
+                        ];
+                    }
 
                     $results[] = [
                         'id' => $imp->id,
@@ -251,7 +328,12 @@ class AndalComposingController extends Controller
                         'studies_condition' => null,
                         'condition_dev_no_plan' => null,
                         'condition_dev_with_plan' => null,
-                        'impact_size_difference' => null
+                        'impact_size_difference' => null,
+                        'comments' => $comments
+                    ];
+                    $results[] = [
+                        'id' => $imp->id,
+                        'type' => 'comments'
                     ];
                     $total++;
                 }
@@ -259,6 +341,8 @@ class AndalComposingController extends Controller
 
             if($total == 0) {
                 array_pop($results);
+            } else {
+                $alphabet_list++;
             }
         }
            
@@ -266,7 +350,9 @@ class AndalComposingController extends Controller
     }
 
     private function getEnvImpactAnalysis($id_project, $stages) {
-          $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
+        $alphabet_list = 'A';
+
+        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
                                         ->where([['id_project', $id_project],['is_hypothetical_significant', true]])
                                         ->with(['component.component', 'changeType', 'ronaAwal.rona_awal', 'envImpactAnalysis'])->get();
         $results = [];
@@ -274,7 +360,7 @@ class AndalComposingController extends Controller
         foreach($stages as $s) {
             $results[] = [
                 'id' => $s->id,
-                'name' => $s->name,
+                'name' =>  $alphabet_list . '. ' . $s->name,
                 'type' => 'title'
             ];
 
@@ -285,6 +371,28 @@ class AndalComposingController extends Controller
                     $changeType = $imp->id_change_type ? $imp->changeType->name : '';
                     $ronaAwal =  $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
                     $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                    // $ronaAwal = '';
+                    // $component = '';
+
+                    $komen = Comment::where([['id_impact_identification', $imp->id], ['document_type', 'andal'],['reply_to', null]])
+                            ->orderBY('id', 'DESC')->get();
+                
+                    $comments = [];
+                    foreach($komen as $c) {
+                        $comments[] = [
+                            'id' => $c->id,
+                            'id_impact_identification' => $c->id_impact_identification,
+                            'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                            'user' => $c->user->name,
+                            'is_checked' => $c->is_checked,
+                            'description' => $c->description,
+                            'replies' => [
+                                'id' => $c->reply ? $c->reply->id : null,
+                                'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
+                                'description' => $c->reply ? $c->reply->description : null
+                            ]
+                        ];
+                    }
 
                     $important_trait = [];
 
@@ -310,7 +418,12 @@ class AndalComposingController extends Controller
                         'studies_condition' => $imp->envImpactAnalysis->studies_condition,
                         'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
                         'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
-                        'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference
+                        'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference,
+                        'comments' => $comments
+                    ];
+                    $results[] = [
+                        'id' => $imp->id,
+                        'type' => 'comments'
                     ];
                     $total++;
                 }
@@ -318,6 +431,8 @@ class AndalComposingController extends Controller
 
             if($total == 0) {
                 array_pop($results);
+            } else {
+                $alphabet_list++;
             }
         }
            
