@@ -26,6 +26,12 @@ class SubProjectComponentController extends Controller
                 ->where('sub_projects.id_project', $params['id_project'])
                 ->get();
             return SubProjectComponentResource::collection($components);
+        } else if (isset($params['id_sub_project'])){
+            $components = SubProjectComponent::select('sub_project_components.*')
+                ->where('id_sub_project', $params['id_sub_project'])
+                ->orderBy('id', 'asc')
+                ->get();
+            return SubProjectComponentResource::collection($components);
         } else {
             return SubProjectComponentResource::collection(SubProjectComponent::with('component')->get()); 
         }

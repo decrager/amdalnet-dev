@@ -5,12 +5,12 @@
     width="40%"
     :before-close="handleClose"
   >
-
     <el-form label-position="top" :model="ronaAwal">
       <el-form-item label="Tahap Kegiatan">
         <el-select
-          v-model="ronaAwal.id_project_stage"
+          v-model="idProjectStage"
           placeholder="Tahap Kegiatan"
+          :disabled="true"
         >
           <el-option
             v-for="item of projectStages"
@@ -22,8 +22,9 @@
       </el-form-item>
       <el-form-item label="Kegiatan Utama/Pendukung">
         <el-select
-          v-model="ronaAwal.id_sub_project"
+          v-model="currentIdSubProject"
           placeholder="Pilih Kegiatan"
+          :disabled="true"
         >
           <el-option
             v-for="item of subProjectsArray"
@@ -35,7 +36,7 @@
       </el-form-item>
       <el-form-item label="Komponen Kegiatan">
         <el-select
-          v-model="ronaAwal.id_sub_project_component"
+          v-model="currentIdSubProjectComponent"
           placeholder="Pilih Komponen Kegiatan"
         >
           <el-option
@@ -48,8 +49,9 @@
       </el-form-item>
       <el-form-item label="Tipe Komponen Lingkungan">
         <el-select
-          v-model="ronaAwal.id_component_type"
+          v-model="currentIdComponentType"
           placeholder="Pilih Tipe Komponen Lingkungan"
+          :disabled="true"
         >
           <el-option
             v-for="item of componentTypes"
@@ -63,10 +65,13 @@
         <el-input v-model="ronaAwal.name" />
       </el-form-item>
       <el-form-item label="Definisi">
-        <el-input v-model="ronaAwal.name" />
+        <el-input v-model="ronaAwal.definition" />
       </el-form-item>
       <el-form-item label="Umum">
-        <el-input v-model="ronaAwal.description_common" />
+        <el-input
+          v-model="ronaAwal.description_common"
+          :disabled="disableDescCommon"
+        />
       </el-form-item>
       <el-form-item label="Khusus">
         <el-input v-model="ronaAwal.description_specific" />
@@ -84,11 +89,28 @@ import Resource from '@/api/resource';
 const projectStageResource = new Resource('project-stages');
 const componentTypeResource = new Resource('component-types');
 const scopingResource = new Resource('scoping');
+const subProjectComponentResource = new Resource('sub-project-components');
 
 export default {
   name: 'AddRonaAwalDialog',
   props: {
     show: Boolean,
+    idProjectStage: {
+      type: Number,
+      default: () => 0,
+    },
+    currentIdSubProject: {
+      type: Number,
+      default: () => 0,
+    },
+    currentIdSubProjectComponent: {
+      type: Number,
+      default: () => 0,
+    },
+    currentIdComponentType: {
+      type: Number,
+      default: () => 0,
+    },
     subProjects: {
       type: Array,
       default: () => [],
@@ -105,6 +127,7 @@ export default {
       subProjectComponentsArray: [],
       projectStages: [],
       componentTypes: [],
+      disableDescCommon: false,
     };
   },
   mounted() {
@@ -112,6 +135,8 @@ export default {
   },
   methods: {
     submitRonaAwal() {
+      this.ronaAwal.id_component_type = this.currentIdComponentType;
+      this.ronaAwal.id_sub_project_component = this.currentIdSubProjectComponent;
       scopingResource
         .store({
           rona_awal: this.ronaAwal,
@@ -151,6 +176,15 @@ export default {
         }
         this.subProjectComponentsArray.push(c);
       });
+      // common desc
+      const comps = await subProjectComponentResource.list({
+        id_sub_project: this.currentIdSubProject,
+      });
+      if (comps.data.length > 0) {
+        const firstComp = comps.data[0];
+        this.ronaAwal.description_common = firstComp.description_common;
+        this.disableDescCommon = true;
+      }
     },
   },
 };

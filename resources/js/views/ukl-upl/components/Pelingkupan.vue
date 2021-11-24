@@ -1,5 +1,13 @@
 <template>
   <el-tabs type="card">
+    <el-button
+      type="success"
+      size="small"
+      icon="el-icon-check"
+      @click="handleSaveForm()"
+    >
+      Simpan Perubahan
+    </el-button>
     <el-tab-pane v-for="s of projectStages" :key="s.id" :label="s.name">
       <pelingkupan-table
         :id-project="idProject"
@@ -27,6 +35,9 @@ export default {
     this.getData();
   },
   methods: {
+    handleSaveForm() {
+      this.$emit('handleReloadVsaList', 'matriks-identifikasi-dampak');
+    },
     async getData() {
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       const prjStages = await projectStageResource.list({
