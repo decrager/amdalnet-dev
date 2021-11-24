@@ -70,4 +70,9 @@ class ImpactIdentification extends Model
     public function impactStudy() {
         return $this->hasOne(ImpactStudy::class, 'id_impact_identification', 'id');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'id_impact_identification', 'id');
+    }
 }

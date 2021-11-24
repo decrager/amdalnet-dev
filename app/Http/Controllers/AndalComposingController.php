@@ -204,7 +204,7 @@ class AndalComposingController extends Controller
     }
 
     private function getImpactNotifications($id_project, $stages) {
-        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant')
+        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')
         ->where([['id_project', $id_project],['is_hypothetical_significant', true]])
         ->with(['component.component', 'changeType', 'ronaAwal.rona_awal'])->get();
 

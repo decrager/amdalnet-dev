@@ -21,8 +21,8 @@
       fit
       highlight-current-row
       :header-cell-style="{
-        background: '#cdf4b5',
-        color: 'black',
+        background: 'rgb(58, 176, 111)',
+        color: 'white',
         textAlign: 'center',
         border: '0px',
       }"
