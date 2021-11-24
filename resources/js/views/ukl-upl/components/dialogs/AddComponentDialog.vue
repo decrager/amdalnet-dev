@@ -9,8 +9,9 @@
     <el-form label-position="top" :model="component">
       <el-form-item label="Tahap Kegiatan">
         <el-select
-          v-model="component.id_project_stage"
+          v-model="idProjectStage"
           placeholder="Tahap Kegiatan"
+          :disabled="true"
         >
           <el-option
             v-for="item of projectStages"
@@ -22,8 +23,9 @@
       </el-form-item>
       <el-form-item label="Kegiatan Utama/Pendukung">
         <el-select
-          v-model="component.id_sub_project"
+          v-model="currentIdSubProject"
           placeholder="Pilih Kegiatan"
+          :disabled="true"
         >
           <el-option
             v-for="item of subProjectsArray"
@@ -62,6 +64,14 @@ export default {
   name: 'AddComponentDialog',
   props: {
     show: Boolean,
+    idProjectStage: {
+      type: Number,
+      default: () => 0,
+    },
+    currentIdSubProject: {
+      type: Number,
+      default: () => 0,
+    },
     subProjects: {
       type: Array,
       default: () => [],
@@ -79,6 +89,8 @@ export default {
   },
   methods: {
     submitComponent() {
+      this.component.id_project_stage = this.idProjectStage;
+      this.component.id_sub_project = this.currentIdSubProject;
       scopingResource
         .store({
           component: this.component,
@@ -91,6 +103,7 @@ export default {
           });
           // reload PelingkupanTable
           this.$emit('handleCloseAddComponent', true);
+          this.$emit('handleSetCurrentIdSubProjectComponent', response.data.id);
         })
         .catch((error) => {
           console.log(error);

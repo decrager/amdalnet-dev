@@ -76,7 +76,7 @@
                 <el-input v-model="comp.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
 
-              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kKDialogueVisible = true" />
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddComponent()" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[0].rona_awals" :key="ra.id" style="margin:.5em 0;">
@@ -84,42 +84,42 @@
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
 
-              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(1)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[1].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
-              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(2)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[2].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
-              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(3)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[3].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
-              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(4)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[4].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
-              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(5)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[5].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" />
               </div>
-              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLDialogueVisible = true" />
+              <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(6)" />
             </td>
           </tr>
         </tbody>
@@ -129,12 +129,19 @@
       :key="componentDialogKey"
       :show="kKDialogueVisible"
       :sub-projects="subProjects"
+      :id-project-stage="idProjectStage"
+      :current-id-sub-project="currentIdSubProject"
       @handleCloseAddComponent="handleCloseAddComponent"
+      @handleSetCurrentIdSubProjectComponent="handleSetCurrentIdSubProjectComponent"
     />
     <add-rona-awal-dialog
       :key="ronaAwalDialogKey"
       :show="kLDialogueVisible"
       :sub-projects="subProjects"
+      :id-project-stage="idProjectStage"
+      :current-id-sub-project="currentIdSubProject"
+      :current-id-sub-project-component="currentIdSubProjectComponent"
+      :current-id-component-type="currentIdComponentType"
       :sub-project-components="subProjectComponents"
       @handleCloseAddRonaAwal="handleCloseAddRonaAwal"
     />
@@ -177,6 +184,8 @@ export default {
       subProjectComponents: [],
       subProjectRonaAwals: [],
       currentIdSubProject: 0,
+      currentIdSubProjectComponent: 0,
+      currentIdComponentType: 0,
     };
   },
   mounted() {
@@ -190,12 +199,23 @@ export default {
       this.componentDialogKey = this.componentDialogKey + 1;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
+    handleAddComponent() {
+      this.kKDialogueVisible = true;
+    },
+    handleAddRonaAwal(idComponentType) {
+      this.currentIdComponentType = idComponentType;
+      this.kLDialogueVisible = true;
+    },
     handleCloseAddComponent(reload) {
       this.kKDialogueVisible = false;
       // reload table
       if (reload) {
         this.reloadData();
       }
+    },
+    handleSetCurrentIdSubProjectComponent(idSubProjectComponent) {
+      this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
     handleCloseAddRonaAwal(reload) {
       this.kLDialogueVisible = false;
@@ -208,7 +228,7 @@ export default {
         .destroy(id)
         .then((response) => {
           this.$message({
-            message: 'Komponen Kegiatan ' + id + ' berhasil dihapus',
+            message: 'Komponen Kegiatan berhasil dihapus',
             type: 'success',
             duration: 5 * 1000,
           });
@@ -241,6 +261,9 @@ export default {
       this.currentIdSubProject = idSubProject;
       this.getComponents(idSubProject);
       this.getRonaAwals(idSubProject);
+      // reload dialogs
+      this.componentDialogKey = this.componentDialogKey + 1;
+      this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
     async getData() {
       const subProjectUtama = await scopingResource.list({

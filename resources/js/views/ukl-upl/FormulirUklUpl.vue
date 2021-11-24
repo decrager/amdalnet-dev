@@ -17,7 +17,9 @@
       </span>
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="PELINGKUPAN">
-          <pelingkupan />
+          <pelingkupan
+            @handleReloadVsaList="handleReloadVsaList"
+          />
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
           <matrik-identifikasi-dampak

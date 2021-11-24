@@ -9,7 +9,7 @@
     <el-form label-position="top" :model="ronaAwal">
       <el-form-item label="Tahap Kegiatan">
         <el-select
-          v-model="ronaAwal.id_project_stage"
+          v-model="idProjectStage"
           placeholder="Tahap Kegiatan"
         >
           <el-option
@@ -22,7 +22,7 @@
       </el-form-item>
       <el-form-item label="Kegiatan Utama/Pendukung">
         <el-select
-          v-model="ronaAwal.id_sub_project"
+          v-model="currentIdSubProject"
           placeholder="Pilih Kegiatan"
         >
           <el-option
@@ -35,7 +35,7 @@
       </el-form-item>
       <el-form-item label="Komponen Kegiatan">
         <el-select
-          v-model="ronaAwal.id_sub_project_component"
+          v-model="currentIdSubProjectComponent"
           placeholder="Pilih Komponen Kegiatan"
         >
           <el-option
@@ -48,8 +48,9 @@
       </el-form-item>
       <el-form-item label="Tipe Komponen Lingkungan">
         <el-select
-          v-model="ronaAwal.id_component_type"
+          v-model="currentIdComponentType"
           placeholder="Pilih Tipe Komponen Lingkungan"
+          :disabled="true"
         >
           <el-option
             v-for="item of componentTypes"
@@ -89,6 +90,22 @@ export default {
   name: 'AddRonaAwalDialog',
   props: {
     show: Boolean,
+    idProjectStage: {
+      type: Number,
+      default: () => 0,
+    },
+    currentIdSubProject: {
+      type: Number,
+      default: () => 0,
+    },
+    currentIdSubProjectComponent: {
+      type: Number,
+      default: () => 0,
+    },
+    currentIdComponentType: {
+      type: Number,
+      default: () => 0,
+    },
     subProjects: {
       type: Array,
       default: () => [],
@@ -112,6 +129,8 @@ export default {
   },
   methods: {
     submitRonaAwal() {
+      this.ronaAwal.id_component_type = this.currentIdComponentType;
+      this.ronaAwal.id_sub_project_component = this.currentIdSubProjectComponent;
       scopingResource
         .store({
           rona_awal: this.ronaAwal,

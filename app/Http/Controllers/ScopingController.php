@@ -114,15 +114,21 @@ class ScopingController extends Controller
         if ($request->component) {
             $params = $request->all();
             $component = $params['component'];
+            // todo: insert id_component if exists
             DB::beginTransaction();
-            if (SubProjectComponent::create($component)) {
+            $createdComp = SubProjectComponent::create($component);
+            if ($createdComp) {
                 DB::commit();
+                return [
+                    'data' => $createdComp,
+                ];
             } else {
                 DB::rollBack();
             }
         } else if ($request->rona_awal) {
             $params = $request->all();
             $rona_awal = $params['rona_awal'];
+            // todo: insert id_rona_awal if exists
             DB::beginTransaction();
             if (SubProjectRonaAwal::create($rona_awal)) {
                 DB::commit();
