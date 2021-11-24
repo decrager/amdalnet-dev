@@ -1,6 +1,7 @@
 <template>
   <div style="font-size: 10pt;">
     <el-button
+      v-if="!isAndal"
       type="success"
       size="small"
       icon="el-icon-check"
@@ -28,7 +29,7 @@
           <span>{{ r.index }}. {{ r.name }}</span>
         </td>
         <td v-for="c of r.sub" :key="c.id" style="width: 100px;" align="center" class="td-data">
-          <input v-model="c.checked" type="checkbox">
+          <input v-model="c.checked" type="checkbox" :disabled="isAndal">
         </td>
       </tr>
     </table>
@@ -55,6 +56,11 @@ export default {
       colspan: 0,
       data: {},
     };
+  },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
   },
   mounted() {
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
