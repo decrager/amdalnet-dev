@@ -28,7 +28,13 @@
           <span>{{ r.index }}. {{ r.name }}</span>
         </td>
         <td v-for="c of r.sub" :key="c.id" style="width: 100px;" align="center" class="td-data">
-          <input v-model="c.checked" type="checkbox">
+          <template v-if="c.exists">
+            <input v-model="c.checked" type="checkbox">
+            <span>DPH</span>
+          </template>
+          <template v-if="!c.exists">
+            <span>-</span>
+          </template>
         </td>
       </tr>
     </table>
@@ -42,7 +48,7 @@ const subProjectRonaAwalResource = new Resource('sub-project-rona-awals');
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
-  name: 'MatrikIdentifikasiDampak',
+  name: 'MatrikDampakPentingHipotetik',
   data() {
     return {
       idProject: 0,
@@ -66,9 +72,10 @@ export default {
         .store({
           checked: this.checked,
           id_project: this.idProject,
+          save_dph: true,
         })
         .then((response) => {
-          var message = (response.code === 200) ? 'Matriks Identifikasi Dampak berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message = (response.code === 200) ? 'Matriks Identifikasi Dampak berhasil disimpan' : response.error;
           var message_type = (response.code === 200) ? 'success' : 'error';
           this.$message({
             message: message,
@@ -76,50 +83,13 @@ export default {
             duration: 5 * 1000,
           });
           // reload accordion
-          this.$emit('handleReloadVsaList', 'peta-batas');
+          this.$emit('handleReloadVsaList', 'bagan-alir');
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    getDefaultCheckedItems() {
-      return [
-        {
-          id_component: 2,
-          id_rona_awal: 32,
-        },
-        {
-          id_component: 16,
-          id_rona_awal: 18,
-        },
-        {
-          id_component: 11,
-          id_rona_awal: 17,
-        },
-        {
-          id_component: 11,
-          id_rona_awal: 19,
-        },
-        {
-          id_component: 2,
-          id_rona_awal: 13,
-        },
-        {
-          id_component: 4,
-          id_rona_awal: 21,
-        },
-        {
-          id_component: 18,
-          id_rona_awal: 7,
-        },
-        {
-          id_component: 20,
-          id_rona_awal: 25,
-        },
-      ];
-    },
     async getChecked() {
-      const defaultCheckedItems = this.getDefaultCheckedItems();
       const dataArray = [];
       var rIndex = 0;
       var rIndex2 = 1;
@@ -128,22 +98,18 @@ export default {
         if (!r.is_component_type) {
           this.components.map((c) => {
             var checked = false;
-            if (this.impacts.length > 0) {
-              this.impacts.map((i) => {
-                if (i.id_sub_project_rona_awal === r.id && i.id_sub_project_component === c.id){
+            var exists = false;
+            this.impacts.map((i) => {
+              if (i.id_sub_project_rona_awal === r.id && i.id_sub_project_component === c.id){
+                exists = true;
+                if (i.is_hypothetical_significant) {
                   checked = true;
                 }
-              });
-            } else {
-              // default values
-              defaultCheckedItems.map((d) => {
-                if (d.id_rona_awal === r.id_rona_awal && d.id_component === c.id_component){
-                  checked = true;
-                }
-              });
-            }
+              }
+            });
             subDataArray.push({
               id: c.id,
+              exists: exists,
               checked: checked,
               colspan: 1,
             });

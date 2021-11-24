@@ -15,7 +15,7 @@
           Simpan & Lanjutkan
         </el-button>
       </span>
-      <el-collapse v-model="activeName" :accordion="true">
+      <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="PELINGKUPAN">
           <pelingkupan />
         </el-collapse-item>
@@ -123,90 +123,9 @@
           />
         </el-collapse-item>
         <el-collapse-item title="Matriks Dampak Penting Hipotetik" name="6">
-          <el-button size="medium" type="primary">Simpan Perubahan</el-button>
-          <table style="margin:2em 0; border-collapse: collapse;">
-            <thead>
-              <tr>
-                <th rowspan="2"> Komponen Lingkungan/ Sumber Dampak</th>
-                <th colspan="3">Pra Konstruksi</th>
-                <th colspan="2">Konstruksi</th>
-                <th colspan="2">Operasi</th>
-              </tr>
-              <tr>
-                <th>Pembebasan Lahan</th>
-                <th>Sosialisasi...</th>
-                <th>Pengamanan Perairan</th>
-                <th>Penerimaan Tenaga...</th>
-                <th>Mobilisasi Alat dan Bahan</th>
-                <th>Operasional Unit/F...</th>
-                <th>Operasional Unit/F...</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="8" class="title"><strong>Geofisik Kimia</strong></td>
-              </tr>
-              <tr>
-                <td class="title">1. Kualitas Udara</td>
-                <td>DPH</td>
-                <td />
-                <td>DPH</td>
-                <td>DPH</td>
-                <td>DPH</td>
-                <td>DPH</td>
-                <td>DPH</td>
-              </tr>
-              <tr>
-                <td colspan="8" class="title"><strong>Biologi</strong></td>
-              </tr>
-              <tr>
-                <td class="title">1. Flora</td>
-                <td />
-                <td />
-                <td>DPH</td>
-                <td />
-                <td />
-                <td />
-                <td>DPH</td>
-              </tr>
-              <tr>
-                <td class="title">2. Fauna</td>
-                <td />
-                <td>DPH</td>
-                <td />
-                <td />
-                <td>DPH</td>
-                <td />
-                <td />
-              </tr>
-              <tr>
-                <td colspan="8" class="title"><strong>Sosial, Ekonomi, Budaya</strong></td>
-              </tr>
-              <tr>
-                <td class="title">1. Demografi</td>
-                <td />
-                <td />
-                <td />
-                <td>DPH</td>
-                <td>DPH</td>
-                <td />
-                <td />
-              </tr>
-              <tr>
-                <td colspan="8" class="title"><strong>Kesehatan Masyarakat</strong></td>
-              </tr>
-              <tr>
-                <td class="title">1. Fasilitas Kesehatan</td>
-                <td>DPH</td>
-                <td />
-                <td />
-                <td />
-                <td>DPH</td>
-                <td>DPH</td>
-                <td />
-              </tr>
-            </tbody>
-          </table>
+          <matriks-dampak-penting-hipotetik
+            @handleReloadVsaList="handleReloadVsaList"
+          />
         </el-collapse-item>
         <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
           <div>Bagan</div>
@@ -220,6 +139,7 @@
 <script>
 import Pelingkupan from './components/Pelingkupan.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
+import MatriksDampakPentingHipotetik from './components/MatriksDampakPentingHipotetik.vue';
 import DampakPotensial from './components/DampakPotensial.vue';
 import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
@@ -233,10 +153,12 @@ export default {
     DampakPotensial,
     DampakPentingHipotetik,
     MetodeStudi,
+    MatriksDampakPentingHipotetik,
     Workflow,
   },
   data() {
     return {
+      accordionKey: 1,
       idProject: 0,
       isSubmitEnabled: false,
       scopingActive: true,
@@ -267,6 +189,7 @@ export default {
       this.isSubmitEnabled = true;
     },
     handleReloadVsaList(tab) {
+      this.accordionKey = this.accordionKey + 1;
       if (tab === 'pelingkupan') {
         this.activeName = '1';
       } else if (tab === 'matriks-identifikasi-dampak') {
@@ -288,51 +211,6 @@ export default {
 </script>
 
 <style>
-.vsa-list {
-  /* CSS Variables */
-  --vsa-max-width: 100%;
-  --vsa-min-width: 300px;
-  --vsa-heading-padding: 1rem 1rem;
-  --vsa-text-color: rgba(55, 55, 55, 1);
-  --vsa-highlight-color: #1e5128;
-  --vsa-bg-color: rgba(255, 255, 255, 1);
-  --vsa-border-color: rgba(0, 0, 0, 0.2);
-  --vsa-border-width: 1px;
-  --vsa-border-style: solid;
-  --vsa-border: var(--vsa-border-width) var(--vsa-border-style) var(--vsa-border-color);
-  --vsa-content-padding: 1rem 1rem;
-  --vsa-default-icon-size: 1;
-
-  display: block;
-  max-width: var(--vsa-max-width);
-  min-width: var(--vsa-min-width);
-  width: 100%;
-
-  /* Reset the list styles */
-  padding: 0;
-  margin: 0;
-  list-style: none;
-
-  border: var(--vsa-border);
-  color: var(--vsa-text-color);
-  background-color: var(--vsa-bg-color);
-}
-.vsa-list [hidden]{
-  display:none
-}
-
-.vsa-item__content{
-  margin:0;
-  padding:var(--vsa-content-padding);
-  overflow: auto;
-}
-
-.vsa-item__trigger:focus,.vsa-item__trigger:hover{
-    outline:none;
-    background-color:var(--vsa-highlight-color);
-    color: white;
-}
-
 h2 {
   display:inline-block;
   margin-block-start: 0em;
