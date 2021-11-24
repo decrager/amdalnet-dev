@@ -111,12 +111,16 @@
           </el-form>
         </el-collapse-item>
         <el-collapse-item name="4" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+          <dampak-hipotetik
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+          <!--
           <dampak-potensial
             @handleReloadVsaList="handleReloadVsaList"
           />
           <dampak-penting-hipotetik
             @handleReloadVsaList="handleReloadVsaList"
-          />
+          />-->
         </el-collapse-item>
         <el-collapse-item name="5" title="METODE STUDI">
           <metode-studi
@@ -142,8 +146,7 @@
 import Pelingkupan from './components/Pelingkupan.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
 import MatriksDampakPentingHipotetik from './components/MatriksDampakPentingHipotetik.vue';
-import DampakPotensial from './components/DampakPotensial.vue';
-import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
+import DampakHipotetik from './components/DampakHipotetik.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
 import BaganAlir from './components/BaganAlir.vue';
@@ -153,8 +156,7 @@ export default {
   components: {
     Pelingkupan,
     MatrikIdentifikasiDampak,
-    DampakPotensial,
-    DampakPentingHipotetik,
+    DampakHipotetik,
     MetodeStudi,
     MatriksDampakPentingHipotetik,
     Workflow,
