@@ -61,6 +61,18 @@
               <div class="comment-card">
                 <el-card style="margin-bottom: 10px">
                   <div class="comment-body" style="padding-top: 20px">
+                    <el-select
+                      v-model="impactColumnType"
+                      placeholder="Pilih Kolom"
+                      style="width: 100%; margin-bottom: 10px"
+                    >
+                      <el-option
+                        v-for="item in kolom"
+                        :key="item.label"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
                     <el-input
                       v-model="impactComment"
                       type="textarea"
@@ -89,6 +101,7 @@
                   <div class="comment-header">
                     <div>
                       <p>{{ com.user }}</p>
+                      <p>{{ com.column_type }}</p>
                       <p>{{ com.created_at }}</p>
                     </div>
                     <el-checkbox
@@ -300,7 +313,46 @@ export default {
       idProject: this.$route.params.id,
       selectedImpactCommentId: null,
       impactComment: null,
+      impactColumnType: null,
       userInfo: {},
+      kolom: [
+        {
+          label: 'Jenis Dampak yang Timbul',
+          value: 'Jenis Dampak yang Timbul',
+        },
+        {
+          label: 'Indikator/Parameter',
+          value: 'Indikator/Parameter',
+        },
+        {
+          label: 'Sumber Dampak',
+          value: 'Sumber Dampak',
+        },
+        {
+          label: 'Metode Pengumpulan & Analisis Data',
+          value: 'Metode Pengumpulan & Analisis Data',
+        },
+        {
+          label: 'Lokasi Pemantauan Lingkungan Hidup',
+          value: 'Lokasi Pemantauan Lingkungan Hidup',
+        },
+        {
+          label: 'Waktu dan Frekuensi Pemantauan',
+          value: 'Waktu dan Frekuensi Pemantauan',
+        },
+        {
+          label: 'Pelaksana',
+          value: 'Pelaksana',
+        },
+        {
+          label: 'Pengawas',
+          value: 'Pengawas',
+        },
+        {
+          label: 'Penerima Laporan',
+          value: 'Penerima Laporan',
+        },
+      ],
     };
   },
   created() {
@@ -347,6 +399,7 @@ export default {
         description: this.impactComment,
         id_impact_identification: this.selectedImpactCommentId,
         id_user: this.userInfo.id,
+        column_type: this.impactColumnType,
       });
 
       const indexImpact = this.list.findIndex((ide) => {
@@ -359,6 +412,7 @@ export default {
 
       this.loadingSubmitComment = false;
       this.impactComment = null;
+      this.impactColumnType = null;
     },
     async handleSubmitReply(id, description) {
       const newCommentReply = await rplResource.store({

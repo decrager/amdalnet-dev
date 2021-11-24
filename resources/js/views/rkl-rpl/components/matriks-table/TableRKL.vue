@@ -375,6 +375,7 @@ export default {
 
       this.loadingSubmitComment = false;
       this.impactComment = null;
+      this.impactColumnType = null;
     },
     async handleSubmitReply(id, description) {
       const newCommentReply = await rklResource.store({

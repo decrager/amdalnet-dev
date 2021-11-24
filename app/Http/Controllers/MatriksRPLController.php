@@ -83,6 +83,7 @@ class MatriksRPLController extends Controller
             $comment->id_user = $request->id_user;
             $comment->id_impact_identification = $request->id_impact_identification;
             $comment->description = $request->description;
+            $comment->column_type = $request->column_type;
             $comment->document_type = 'rpl';
             $comment->is_checked = false;
             $comment->save();
@@ -94,6 +95,7 @@ class MatriksRPLController extends Controller
                     'user' => $comment->user->name,
                     'is_checked' => $comment->is_checked,
                     'description' => $comment->description,
+                    'column_type' => $comment->column_type,
                     'replies' => [
                         'id' => null,
                         'created_at' => null,
@@ -251,7 +253,7 @@ class MatriksRPLController extends Controller
             $total = 0;
 
             foreach($data as $pA) {
-                if($pA->component->id_project_stage == $s->id || $pA->component->component->id_project_stage == $s->id) {
+                if($pA->subProjectComponent->id_project_stage == $s->id || $pA->subProjectComponent->component->id_project_stage == $s->id) {
                     $changeType = $pA->id_change_type ? $pA->changeType->name : '';
                     // $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
                     // $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
@@ -270,6 +272,7 @@ class MatriksRPLController extends Controller
                             'user' => $c->user->name,
                             'is_checked' => $c->is_checked,
                             'description' => $c->description,
+                            'column_type' => $c->column_type,
                             'replies' => [
                                 'id' => $c->reply ? $c->reply->id : null,
                                 'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
@@ -347,7 +350,7 @@ class MatriksRPLController extends Controller
             $total = 0;
 
             foreach($data_merge_final as $merge) {
-                if($merge->component->id_project_stage == $s->id || $merge->component->component->id_project_stage == $s->id) {
+                if($merge->subProjectComponent->id_project_stage == $s->id || $merge->subProjectComponent->component->id_project_stage == $s->id) {
                     $changeType = $merge->id_change_type ? $merge->changeType->name : '';
                     // $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
                     // $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
@@ -366,6 +369,7 @@ class MatriksRPLController extends Controller
                             'user' => $c->user->name,
                             'is_checked' => $c->is_checked,
                             'description' => $c->description,
+                            'column_type' => $c->column_type,
                             'replies' => [
                                 'id' => $c->reply ? $c->reply->id : null,
                                 'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
