@@ -67,7 +67,10 @@
         <el-input v-model="ronaAwal.name" />
       </el-form-item>
       <el-form-item label="Umum">
-        <el-input v-model="ronaAwal.description_common" />
+        <el-input
+          v-model="ronaAwal.description_common"
+          :disabled="disableDescCommon"
+        />
       </el-form-item>
       <el-form-item label="Khusus">
         <el-input v-model="ronaAwal.description_specific" />
@@ -85,6 +88,7 @@ import Resource from '@/api/resource';
 const projectStageResource = new Resource('project-stages');
 const componentTypeResource = new Resource('component-types');
 const scopingResource = new Resource('scoping');
+const subProjectComponentResource = new Resource('sub-project-components');
 
 export default {
   name: 'AddRonaAwalDialog',
@@ -122,6 +126,7 @@ export default {
       subProjectComponentsArray: [],
       projectStages: [],
       componentTypes: [],
+      disableDescCommon: false,
     };
   },
   mounted() {
@@ -170,6 +175,15 @@ export default {
         }
         this.subProjectComponentsArray.push(c);
       });
+      // common desc
+      const comps = await subProjectComponentResource.list({
+        id_sub_project: this.currentIdSubProject,
+      });
+      if (comps.data.length > 0) {
+        const firstComp = comps.data[0];
+        this.ronaAwal.description_common = firstComp.description_common;
+        this.disableDescCommon = true;
+      }
     },
   },
 };
