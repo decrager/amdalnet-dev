@@ -2,71 +2,47 @@
   <el-collapse v-model="activeName" accordion>
     <el-collapse-item name="1">
       <template slot="title">
-        <span class="title">MATRIKS RENCANA PENGELOLAAN (RKL)</span>
+        <span class="title">MATRIKS RENCANA PENGELOLAAN LINGKUNGAN (RKL)</span>
       </template>
-      <TableRKL />
+      <TableRKL v-if="activeName === '1'" />
     </el-collapse-item>
-    <!-- <el-collapse-item name="2">
+    <el-collapse-item name="2">
       <template slot="title">
         <span class="title">MATRIKS RENCANA PEMANTAUAN LINGKUNGAN (RPL)</span>
       </template>
-      <TableRPL
-        :institutions="institutions"
-        :list="matriksrpl"
-        :lasttime="lasttimerpl"
-        :loading="loadingrpl"
-        @handleSubmit="handleSubmitRPL"
-      />
-    </el-collapse-item> -->
+      <TableRPL v-if="activeName === '2'" />
+    </el-collapse-item>
   </el-collapse>
 </template>
 
 <script>
 import TableRKL from '@/views/rkl-rpl/components/matriks-table/TableRKL';
-// import TableRPL from '@/views/rkl-rpl/components/matriks-table/TableRPL';
+import TableRPL from '@/views/rkl-rpl/components/matriks-table/TableRPL';
 
 export default {
   name: 'Matriks',
   components: {
     TableRKL,
-    // TableRPL,
-  },
-  props: {
-    institutions: {
-      type: Array,
-      default: () => [],
-    },
-    matriksrpl: {
-      type: Array,
-      default: () => [],
-    },
-    lasttimerpl: {
-      type: String,
-      default: () => null,
-    },
-    loadingrpl: Boolean,
+    TableRPL,
   },
   data() {
     return {
       activeName: '1',
     };
   },
-  methods: {
-    handleSubmitRPL() {
-      this.$emit('handleSubmitRPL');
-    },
-  },
 };
 </script>
 
-<style scoped>
-.title {
-  background: #099c4b;
-  width: 100%;
-  color: white;
+<style>
+.el-collapse-item__header {
+  /* background-color: #296d36; */
+  background-color: #1e5128;
+  padding-left: 10px;
+  font-size: large;
   font-weight: bold;
-  display: block;
-  padding-left: 1rem;
-  margin-bottom: 1rem;
+  color: rgb(196, 196, 196);
+}
+.el-collapse-item__content {
+  padding-top: 10px;
 }
 </style>
