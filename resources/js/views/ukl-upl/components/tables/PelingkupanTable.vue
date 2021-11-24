@@ -297,6 +297,7 @@ export default {
         }
       });
       this.subProjectComponents = components.data;
+      this.currentIdSubProjectComponent = this.subProjectComponents[0].id;
     },
     async getRonaAwals(idSubProject) {
       const ronaAwals = await scopingResource.list({

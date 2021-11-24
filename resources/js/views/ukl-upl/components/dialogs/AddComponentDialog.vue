@@ -39,7 +39,7 @@
         <el-input v-model="component.name" />
       </el-form-item>
       <el-form-item label="Definisi">
-        <el-input v-model="component.name" />
+        <el-input v-model="component.definition" />
       </el-form-item>
       <el-form-item label="Umum">
         <el-input

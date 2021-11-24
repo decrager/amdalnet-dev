@@ -5,12 +5,12 @@
     width="40%"
     :before-close="handleClose"
   >
-
     <el-form label-position="top" :model="ronaAwal">
       <el-form-item label="Tahap Kegiatan">
         <el-select
           v-model="idProjectStage"
           placeholder="Tahap Kegiatan"
+          :disabled="true"
         >
           <el-option
             v-for="item of projectStages"
@@ -24,6 +24,7 @@
         <el-select
           v-model="currentIdSubProject"
           placeholder="Pilih Kegiatan"
+          :disabled="true"
         >
           <el-option
             v-for="item of subProjectsArray"
@@ -64,7 +65,7 @@
         <el-input v-model="ronaAwal.name" />
       </el-form-item>
       <el-form-item label="Definisi">
-        <el-input v-model="ronaAwal.name" />
+        <el-input v-model="ronaAwal.definition" />
       </el-form-item>
       <el-form-item label="Umum">
         <el-input
