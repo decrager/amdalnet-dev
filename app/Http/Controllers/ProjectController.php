@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Project;
+use App\Entity\ProjectFilter;
 use App\Entity\SubProject;
 use App\Entity\SubProjectParam;
 use App\Http\Resources\ProjectResource;
@@ -93,7 +94,7 @@ class ProjectController extends Controller
     {
         $request['listSubProject'] = json_decode($request['listSubProject']);
 
-        // return $request['listSubProject'][0]->listSubProjectParams;
+        // return $request['listSubProject'];
 
         //validate request
         $data = $this->validate($request, [
@@ -113,6 +114,8 @@ class ProjectController extends Controller
             'required_doc' => 'required',
             'type_formulator_team' => 'required',
             'listSubProject' => 'required',
+            'scale' => 'required',
+            'scale_unit' => 'required',
         ]);
 
         // return $data;
@@ -147,8 +150,8 @@ class ProjectController extends Controller
         $project = Project::create([
             // 'biz_type' => $data['biz_type'],
             'project_title' => $data['project_title'],
-            // 'scale' => $data['scale'],
-            // 'scale_unit' => $data['scale_unit'],
+            'scale' => $data['scale'],
+            'scale_unit' => $data['scale_unit'],
             'project_type' => $data['project_type'],
             'sector' => $data['sector'],
             'description' => $data['description'],
@@ -169,7 +172,31 @@ class ProjectController extends Controller
             'id_lpjp' => isset($request['id_lpjp']) ? $request['id_lpjp'] : null,
             'map' => implode(',', $mapName),
             'ktr' => Storage::url($ktrName),
-            'ktr' => Storage::url($preAgreementName),
+            'pre_agreement' => Storage::url($preAgreementName),
+        ]);
+
+        //set project filters
+        ProjectFilter::create([
+            'id_project' => $project->id,
+            'wastewater' => isset($request['wastewater']) ? $request['wastewater'] : false,
+            'disposal_wastewater' => isset($request['disposal_wastewater']) ? $request['disposal_wastewater'] : false,
+            'utilization_wastewater' => isset($request['utilization_wastewater']) ? $request['utilization_wastewater']: false,
+            'high_pollution' => isset($request['high_pollution']) ? $request['high_pollution']: false,
+            'emission' => isset($request['emission']) ? $request['emission']: false,
+            'chimney' => isset($request['chimney']) ? $request['chimney']: false,
+            'genset' => isset($request['genset']) ? $request['genset']: false,
+            'high_emission' => isset($request['high_emission']) ? $request['high_emission']: false,
+            'b3' => isset($request['b3']) ? $request['b3']: false,
+            'collect_b3' => isset($request['collect_b3']) ? $request['collect_b3']: false,
+            'hoard_b3' => isset($request['hoard_b3']) ? $request['hoard_b3']: false,
+            'process_b3' => isset($request['process_b3']) ? $request['process_b3']: false,
+            'utilization_b3' => isset($request['utilization_b3']) ? $request['utilization_b3']: false,
+            'dumping_b3' => isset($request['dumping_b3']) ? $request['dumping_b3']: false,
+            'tps' => isset($request['tps']) ? $request['tps']: false,
+            'traffic' => isset($request['traffic']) ? $request['traffic']: false,
+            'low_traffic' => isset($request['low_traffic']) ? $request['low_traffic']: false,
+            'mid_traffic' => isset($request['mid_traffic']) ? $request['mid_traffic']: false,
+            'high_traffic' => isset($request['high_traffic']) ? $request['high_traffic']: false,
         ]);
 
         //create sub project
@@ -181,6 +208,9 @@ class ProjectController extends Controller
               'type' => $subPro->type,
               'biz_type' => $subPro->biz_type,
               'id_project' => $project->id,
+              'sector' => $subPro->sector,
+              'scale' => $subPro->scale,
+              'scale_unit' => $subPro->scale_unit,
             ]);
 
             foreach ($subPro->listSubProjectParams as $subProParam) {
@@ -364,6 +394,14 @@ class ProjectController extends Controller
                 $ktrName = null;
             }
 
+            //create Pre Agreement
+            $preAgreementName = '';
+            if ($request->file('fileKtr')) {
+                $filePreAgreement = $request->file('fileKtr');
+                $preAgreementName = 'project/preAgreement' . uniqid() . '.' . $filePreAgreement->extension();
+                $filePreAgreement->storePubliclyAs('public', $preAgreementName);
+            }
+
             //Update Project
             $project->biz_type = $params['biz_type'];
             $project->project_title = $params['project_title'];
@@ -389,6 +427,7 @@ class ProjectController extends Controller
             $project->id_lpjp = isset($params['id_lpjp']) ? $params['id_lpjp'] : null;
             $project->map = $name != null ? Storage::url($name) : $project->map;
             $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;
+            $project->pre_agreement = $preAgreementName != null ? Storage::url($preAgreementName) : $project->pre_agreement;
 
             $project->save();
         }

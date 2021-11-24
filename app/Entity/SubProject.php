@@ -15,6 +15,9 @@ class SubProject extends Model
         'type',
         'biz_type',
         'id_project',
+        'scale',
+        'scale_unit',
+        'sector',
     ];
 
     public function project()

@@ -81,7 +81,7 @@ export default {
     },
     async handleBlur(value){
       console.log(value.scale);
-      if (value.scale && value.scale > 1) {
+      if (value.scale && value.scale > 0) {
         console.log(value);
         console.log(this.kbli);
 
