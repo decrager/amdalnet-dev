@@ -8,11 +8,50 @@
       fit
       highlight-current-row
     >
+      <el-table-column align="center" label="Kegiatan Utama/Pendukung">
+        <template slot-scope="scope">
+          <el-select v-model="scope.row.type" filterable placeholder="Pilih" size="mini">
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="KBLI">
         <template slot-scope="scope">
           <el-select v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" @change="onChangeKbli(scope.row)">
             <el-option
               v-for="item in listKbli"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Sector">
+        <template slot-scope="scope">
+          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini">
+            <el-option
+              v-for="item in scope.row.listSector"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Jenis Rencana Kegiatan">
+        <template slot-scope="scope">
+          <el-select v-model="scope.row.biz_type" filterable placeholder="Pilih" size="mini" @change="onChangeFieldType(scope.row)">
+            <el-option
+              v-for="item in scope.row.listField"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -31,36 +70,10 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Jenis Rencana Kegiatan">
-        <template slot-scope="scope">
-          <el-select v-model="scope.row.biz_type" filterable placeholder="Pilih" size="mini" @change="onChangeFieldType(scope.row)">
-            <el-option
-              v-for="item in scope.row.listField"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="Skala Besaran">
         <template slot-scope="scope">
           <el-button type="primary" @click="handleClick(scope.row)">Masukkan</el-button>
           <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.kbli" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Kegiatan Utama/Pendukung">
-        <template slot-scope="scope">
-          <el-select v-model="scope.row.type" filterable placeholder="Pilih" size="mini">
-            <el-option
-              v-for="item in typeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
         </template>
       </el-table-column>
     </el-table>
@@ -110,6 +123,7 @@ export default {
       this.loading = true;
       await this.getBusinessByKbli(sproject);
       await this.getFieldByKbli(sproject);
+      await this.getSectorByKbli(sproject);
       this.refresh++;
       this.loading = false;
     },
@@ -133,6 +147,14 @@ export default {
       });
       sproject.listField = data.map((i) => {
         return { value: i.id, label: i.value };
+      });
+    },
+    async getSectorByKbli(sproject) {
+      const { data } = await kbliResource.list({
+        sectorsByKbli: sproject.kbli,
+      });
+      sproject.listSector = data.map((i) => {
+        return { value: i.value, label: i.value };
       });
     },
     handleClick(value){

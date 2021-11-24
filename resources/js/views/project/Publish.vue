@@ -80,14 +80,6 @@
               style="max-width: 100%"
             >
               <el-form-item prop="id_lpjp">
-                <!-- <el-autocomplete
-                  v-model="project.lpjp_name"
-                  class="inline-input"
-                  :fetch-suggestions="lpjpSearch"
-                  placeholder="Masukan"
-                  :trigger-on-focus="false"
-                  style="width: 100%"
-                /> -->
                 <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
                   <el-option
                     v-for="item in getLpjps"
@@ -580,9 +572,10 @@ export default {
         formData.append('fileMap[' + i + ']', file);
       }
 
+      console.log(this.project);
+
       // eslint-disable-next-line no-undef
       _.each(this.project, (value, key) => {
-        console.log(key);
         if (key === 'listSubProject'){
           formData.append(key, JSON.stringify(value));
         } else {

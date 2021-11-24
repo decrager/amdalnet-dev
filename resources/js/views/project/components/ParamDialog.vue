@@ -80,46 +80,49 @@ export default {
       this.$emit('handleCancelParam');
     },
     async handleBlur(value){
-      console.log(value);
-      console.log(this.kbli);
+      console.log(value.scale);
+      if (value.scale && value.scale > 1) {
+        console.log(value);
+        console.log(this.kbli);
 
-      // calculate result
-      const { data } = await kbliEnvParamResource.list({
-        kbli: this.kbli,
-        businessType: value.param,
-        unit: value.scale_unit,
-      });
-      const kbliEnvParams = data.map((item) => {
-        const items = item.condition.replace(/[\[\"\]]/g, '').split(',');
-        item.conditions = items.map((e) => value.scale + ' ' + e);
-        return item;
-      });
+        // calculate result
+        const { data } = await kbliEnvParamResource.list({
+          kbli: this.kbli,
+          businessType: value.param,
+          unit: value.scale_unit,
+        });
+        const kbliEnvParams = data.map((item) => {
+          const items = item.condition.replace(/[\[\"\]]/g, '').split(',');
+          item.conditions = items.map((e) => value.scale + ' ' + e);
+          return item;
+        });
 
-      console.log(kbliEnvParams);
+        console.log(kbliEnvParams);
 
-      // this.calculatedProjectDoc();
-      kbliEnvParams.forEach((item) => {
-        let tempStatus = true;
-        item.conditions.forEach((element) => {
-          if (this.checkIfTrue(element)) {
-            tempStatus = tempStatus && true;
-          } else {
-            tempStatus = tempStatus && false;
+        // this.calculatedProjectDoc();
+        kbliEnvParams.forEach((item) => {
+          let tempStatus = true;
+          item.conditions.forEach((element) => {
+            if (this.checkIfTrue(element)) {
+              tempStatus = tempStatus && true;
+            } else {
+              tempStatus = tempStatus && false;
+            }
+          });
+          if (tempStatus) {
+            value.result = item.doc_req;
+            value.result_risk = item.risk_level;
           }
         });
-        if (tempStatus) {
-          value.result = item.doc_req;
-          value.result_risk = item.risk_level;
+
+        // check for any condition that not in kbli param
+        if (!value.result) {
+          value.result = 'AMDAL';
+          value.result_risk = 'Tinggi';
         }
-      });
 
-      // check for any condition that not in kbli param
-      if (!value.result) {
-        value.result = 'AMDAL';
-        value.result_risk = 'Tinggi';
+        this.handleRefreshDialog();
       }
-
-      this.handleRefreshDialog();
     },
     checkIfTrue(item) {
       const [data1, operator, data2] = item.split(/\s+/);
