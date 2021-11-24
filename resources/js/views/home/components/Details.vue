@@ -94,7 +94,7 @@
                 <td colspan="2">Dampak Potensial</td>
               </tr>
               <tr class="bg-white-custom">
-                <td colspan="2" v-html="selectedAnnouncement.project.description" />
+                <td colspan="2" v-html="selectedAnnouncement.potential_impact" />
               </tr>
             </table>
           </el-col>
