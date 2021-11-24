@@ -4,12 +4,13 @@
       <template slot="title" class="head-accordion">
         <span class="title">PELINGKUPAN</span>
       </template>
+      <Pelingkupan v-if="activeName === 'pelingkupan'" />
     </el-collapse-item>
     <el-collapse-item name="matriks-identifikasi">
       <template slot="title" class="head-accordion">
         <span class="title">MATRIKS IDENTIFIKASI DAMPAK</span>
       </template>
-      <MatrikIdentifikasiDampak />
+      <MatrikIdentifikasiDampak v-if="activeName === 'matriks-identifikasi'" />
     </el-collapse-item>
     <el-collapse-item name="peta-batas">
       <template slot="title" class="head-accordion">
@@ -37,6 +38,7 @@
       <template slot="title" class="head-accordion">
         <span class="title">BAGAN ALIR PELINGKUPAN</span>
       </template>
+      <BaganAlir />
     </el-collapse-item>
     <el-collapse-item name="table-andal">
       <template slot="title" class="head-accordion">
@@ -57,6 +59,8 @@ import TableAndal from '@/views/penyusunan-andal/components/Table';
 import MatrikIdentifikasiDampak from '@/views/ukl-upl/components/MatrikIdentifikasiDampak.vue';
 import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
 import MatriksDampakPentingHipotetik from '@/views/ukl-upl/components/MatriksDampakPentingHipotetik.vue';
+import Pelingkupan from '@/views/ukl-upl/components/Pelingkupan.vue';
+import BaganAlir from '@/views/ukl-upl/components/BaganAlir.vue';
 
 export default {
   name: 'Andal',
@@ -65,6 +69,8 @@ export default {
     MatrikIdentifikasiDampak,
     MetodeStudi,
     MatriksDampakPentingHipotetik,
+    Pelingkupan,
+    BaganAlir,
   },
   data() {
     return {
