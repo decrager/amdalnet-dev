@@ -218,7 +218,7 @@
                       </ul>
                     </div>
                     <div style="padding-left:1rem">
-                      <el-rate v-model="ratings" style="font-size:3rem" @change="handleChange(ratings)" />
+                      <el-rate v-model="ratings" size="99" style="font-size:3rem" @change="handleChange(ratings)" />
                     </div>
                   </div>
                 </el-col>
@@ -347,6 +347,7 @@ export default {
       errorMessage: null,
       photo_filepath: null,
       ratings: null,
+      style: ['font-size: 50px'],
       url: '/images/avatar.png',
       urlMap: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -745,4 +746,7 @@ table.table__striped tr:nth-child(odd) {
 .tableDetail td{color: #3c3f3c; padding:0.5rem; width: 50%; border:0}
 .detailLokasi{background-color: #fff;padding: 0.5rem;}
 .mapsDetail{width: 100%; height: 20rem;}
+.el-rate__icon {
+  font-size: 70px !important;
+}
 </style>
