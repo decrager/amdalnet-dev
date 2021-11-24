@@ -49,6 +49,53 @@
                 </el-row>
               </el-col>
             </el-row>
+            <el-row type="flex" justify="end" :gutter="4">
+              <el-col :span="12">
+                <el-col :span="12" />
+              </el-col>
+              <el-col :span="12" :xs="24">
+                <el-col :span="12">
+                  <el-form-item label="Provinsi" prop="id_prov">
+                    <el-select
+                      v-model="currentProject.id_prov"
+                      placeholder="Pilih"
+                      style="width: 100%"
+                      @change="changeProvince($event)"
+                    >
+                      <el-option
+                        v-for="item in getProvinceOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="Kab / Kota" prop="id_district">
+                    <el-select
+                      v-model="currentProject.id_district"
+                      placeholder="Pilih"
+                      style="width: 100%"
+                    >
+                      <el-option
+                        v-for="item in getCityOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-col>
+            </el-row>
+            <el-row type="flex" justify="end">
+              <el-col :span="12">
+                <el-form-item label="Alamat" prop="address">
+                  <el-input v-model="currentProject.address" />
+                </el-form-item>
+              </el-col>
+            </el-row>
             <el-row type="flex" justify="end">
               <el-col :span="2">
                 <el-button size="medium" type="primary" @click="activeName = '2'">
@@ -480,53 +527,6 @@
             <div id="mapView" style="height: 400px; border: 1px solid red; border-radius: 5px;" />
           </el-col>
         </el-row>
-        <el-row type="flex" justify="end" :gutter="4">
-          <el-col :span="12">
-            <el-col :span="12" />
-          </el-col>
-          <el-col :span="12" :xs="24">
-            <el-col :span="12">
-              <el-form-item label="Provinsi" prop="id_prov">
-                <el-select
-                  v-model="currentProject.id_prov"
-                  placeholder="Pilih"
-                  style="width: 100%"
-                  @change="changeProvince($event)"
-                >
-                  <el-option
-                    v-for="item in getProvinceOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="Kab / Kota" prop="id_district">
-                <el-select
-                  v-model="currentProject.id_district"
-                  placeholder="Pilih"
-                  style="width: 100%"
-                >
-                  <el-option
-                    v-for="item in getCityOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-col>
-        </el-row>
-        <el-row type="flex" justify="end">
-          <el-col :span="12">
-            <el-form-item label="Alamat" prop="address">
-              <el-input v-model="currentProject.address" />
-            </el-form-item>
-          </el-col>
-        </el-row>
       </div>
     </el-form>
 
@@ -930,6 +930,7 @@ export default {
     handleSubmit() {
       this.currentProject.fileMap = this.fileMap;
       this.currentProject.fileKtr = this.fileKtr;
+      this.currentProject.filePreAgreement = this.filePreAgreement;
 
       this.$refs.currentProject.validate((valid) => {
         if (valid) {
