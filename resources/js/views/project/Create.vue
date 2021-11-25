@@ -231,12 +231,12 @@
                 </el-form-item>
 
                 <el-form-item
-                  v-if="currentProject.pre_agreement && currentProject.pre_agreement === 'Lainnya'"
-                  label="Unggah Persetujuan Investasi"
+                  v-if="currentProject.pre_agreement"
+                  :label="preeAgreementLabel"
                   prop="pre_agreement"
                 >
                   <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload">
-                  <el-tag type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi ke Kementrian Investasi</el-tag>
+                  <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi ke Kementrian Investasi</el-tag>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -388,7 +388,7 @@
             <el-row type="flex" justify="end">
               <el-col :span="5">
                 <el-button size="medium" @click="handleCancel()"> Batalkan </el-button>
-                <el-button size="medium" type="primary" @click="preProject = false"> Lanjutkan </el-button>
+                <el-button size="medium" type="primary" @click="handleSubmit"> Lanjutkan </el-button>
               </el-col>
             </el-row>
           </el-collapse-item>
@@ -558,6 +558,7 @@ export default {
   },
   data() {
     return {
+      preeAgreementLabel: '',
       preProject: true,
       activeName: '1',
       currentProject: {},
@@ -687,9 +688,9 @@ export default {
             message: 'Data Belum Diisi',
           },
         ],
-        field: [
-          { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
-        ],
+        // field: [
+        //   { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
+        // ],
         address: [
           { required: true, trigger: 'blur', message: 'Data Belum Diisi' },
         ],
@@ -1012,7 +1013,34 @@ export default {
 
     },
     changeProjectType(value) {
-
+      const temp = 'Upload Dokumen ';
+      if (value === 'Tambang'){
+        this.preeAgreementLabel = temp + 'Studi Kelayakan Tambang (FS)';
+      } else if (value === 'Pelabuhan Diluar Terminal Khusus'){
+        this.preeAgreementLabel = temp + 'Rencana Induk Pelabuhan';
+      } else if (value === 'Terminal Khusus'){
+        this.preeAgreementLabel = temp + 'Persetujuan lokasi';
+      } else if (value === 'Bandara'){
+        this.preeAgreementLabel = temp + 'Rencana Induk Bandara';
+      } else if (value === 'Ketenagalistrikan'){
+        this.preeAgreementLabel = temp + 'Rencana Umum Penyediaan Tenaga Listrik';
+      } else if (value === 'Jalan'){
+        this.preeAgreementLabel = temp + 'Persetujuan Trase';
+      } else if (value === 'Bendungan'){
+        this.preeAgreementLabel = temp + 'Studi Kelayakan Bendungan (FS)';
+      } else if (value === 'Kawasan Industri'){
+        this.preeAgreementLabel = temp + 'Studi Kelayakan Kawasan Industri';
+      } else if (value === 'Kawasan Ekonomi Khusus'){
+        this.preeAgreementLabel = temp + 'Studi Kelayakan Kawasan Ekonomi Khusus';
+      } else if (value === 'Kawasan Pelabuhan Bebas dan Perdagangan Bebas'){
+        this.preeAgreementLabel = temp + 'Studi Kelayakan Kawasan Pelabuhan Bebas dan Perdagangan Bebas';
+      } else if (value === 'Migas'){
+        this.preeAgreementLabel = temp + 'Persetujuan Investasi Migas';
+      } else if (value === 'Ketenaganukliran'){
+        this.preeAgreementLabel = temp + 'Studi Kelayakan Ketenaganukliran (FS)';
+      } else {
+        this.preeAgreementLabel = temp + 'Persetujuan Investasi';
+      }
     },
     async changeProject(value) {
       this.currentProject.project_title = value.nama_kegiatan;

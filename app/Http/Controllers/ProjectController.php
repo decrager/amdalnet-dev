@@ -106,7 +106,7 @@ class ProjectController extends Controller
             'id_prov' => 'required',
             'id_district' => 'required',
             'address' => 'required',
-            'field' => 'required',
+            // 'field' => 'required',
             'location_desc' => 'required',
             'risk_level' => 'required',
             'kbli' => 'required',
@@ -122,9 +122,9 @@ class ProjectController extends Controller
 
         //create fileKtr
         $preAgreementName = '';
-        if ($request->file('fileKtr')) {
-            $filePreAgreement = $request->file('fileKtr');
-            $preAgreementName = 'project/preAgreement' . uniqid() . '.' . $filePreAgreement->extension();
+        if ($request->file('filePreAgreement')) {
+            $filePreAgreement = $request->file('filePreAgreement');
+            $preAgreementName = 'project/preAgreement/' . uniqid() . '.' . $filePreAgreement->extension();
             $filePreAgreement->storePubliclyAs('public', $preAgreementName);
         }
 
@@ -159,7 +159,7 @@ class ProjectController extends Controller
             'id_prov' => $data['id_prov'],
             'id_district' => $data['id_district'],
             'address' => $data['address'],
-            'field' => $data['field'],
+            'field' => isset($request['field']) ? $request['field'] : null,
             'location_desc' => $data['location_desc'],
             'risk_level' => $data['risk_level'],
             // 'project_year' => $data['project_year'],
@@ -172,7 +172,8 @@ class ProjectController extends Controller
             'id_lpjp' => isset($request['id_lpjp']) ? $request['id_lpjp'] : null,
             'map' => implode(',', $mapName),
             'ktr' => Storage::url($ktrName),
-            'pre_agreement' => Storage::url($preAgreementName),
+            'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
+            'pre_agreement_file' => Storage::url($preAgreementName),
         ]);
 
         //set project filters

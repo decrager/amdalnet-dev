@@ -57,6 +57,13 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Route::post('workspace/template/import', 'WorkspaceController@importTemplate');
+Route::post('workspace/document/track', 'WorkspaceController@track');
+Route::post('workspace/document/upload', 'WorkspaceController@upload');
+Route::post('workspace/document/download', 'WorkspaceController@download');
+Route::post('workspace/document/convert', 'WorkspaceController@convert');
+Route::post('workspace/document/delete', 'WorkspaceController@delete');
+Route::post('workspace/document/assets', 'WorkspaceController@assets');
+Route::post('workspace/document/files', 'WorkspaceController@files');
 
 // Fake APIs
 Route::get('/table/list', function () {
@@ -219,3 +226,4 @@ Route::apiResource('scoping', 'ScopingController');
 Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
+Route::apiResource('manage-approach', 'ManageApproachController');

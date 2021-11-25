@@ -98,6 +98,7 @@ export default {
     formulatorTeam: 'Formulator Team',
     tuk: 'Examiner Team',
     editWorkspace: 'Edit Workspace',
+    projectWorkspace: 'Project workspace',
   },
   navbar: {
     logOut: 'Log Out',

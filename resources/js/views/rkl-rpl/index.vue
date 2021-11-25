@@ -2,12 +2,12 @@
   <div class="app-container">
     <el-card>
       <WorkFlow />
-      <el-tabs type="card">
-        <el-tab-pane label="Matriks RKL RPL">
-          <Matriks />
+      <el-tabs v-model="activeName" type="card">
+        <el-tab-pane label="Matriks RKL RPL" name="matriks">
+          <Matriks v-if="activeName === 'matriks'" />
         </el-tab-pane>
-        <el-tab-pane label="Dokumen RKL RPL">
-          <el-row :gutter="32">
+        <el-tab-pane label="Dokumen RKL RPL" name="dokumen">
+          <el-row v-if="activeName === 'dokumen'" :gutter="32">
             <!-- <el-col :sm="12" :md="7">
               <MapList />
             </el-col> -->
@@ -57,6 +57,7 @@ export default {
       userInfo: {
         roles: [],
       },
+      activeName: 'matriks',
     };
   },
   created() {

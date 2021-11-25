@@ -34,14 +34,25 @@ AMDAL
 - 
 
 Onlyoffice:
-- user integration
-- langguage
-- custom toolbar
-- protect
-
+- user integration -> ok
+- comment -> ok
+- review -> ok
+- langguage: id -> not ok
+- custom toolbar -> build source
+- protect -> still explore
+- templating -> still explore
+  - import 
+  - variabels
+  * candidate, tech:
+  - docbuilder
+  - phpoffice
+- Export
 
 
 sudo docker run -i -t -d -p 9000:80 --restart=always --name onlyoffice-document-server \
     -v /home/amdalnet/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data \
     -v /home/amdalnet/onlyoffice/DocumentServer/logs:/var/log/onlyoffice \
     onlyoffice/documentserver-de
+
+
+http://oo.mymac.net/doceditor.php?fileID=61943e88ad99a.docx&user=&action=edit&type=desktop

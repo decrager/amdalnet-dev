@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <el-button
+      v-if="!isAndal"
       type="success"
       size="small"
       icon="el-icon-check"
@@ -30,6 +31,11 @@ export default {
       data: [],
       idProject: 0,
     };
+  },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
   },
   mounted() {
     this.idProject = parseInt(this.$route.params && this.$route.params.id);

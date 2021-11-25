@@ -7,118 +7,6 @@
             <h1 style="color:#fff; margin-bottom:0">Informasi Rencana Kegiatan</h1>
           </el-col>
           <el-col :span="12">
-            <!-- <el-row>
-              <el-col :span="10">
-                <p>No. Re gistrasi</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.id_project" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Jenis Dokumen</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.required_doc" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Nama Kegiatan</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.project_title" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Bidang Usaha/Kegiatan</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.sector" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Skala/Besaran</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.scale_unit" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Alamat</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.address" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Kewenangan</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.authority" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Pemrakarsa</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.pic_name" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Penanggung Jawab</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.pic_name" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Alamat Pemrakarsa</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.cs_address" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>No Telepon Pemrakarsa</p>
-              </el-col>
-              <el-col :span="14">
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Email Pemrakarsa</p>
-              </el-col>
-              <el-col :span="14">
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <p>Provinsi/Kota</p>
-              </el-col>
-              <el-col :span="14">
-                <p v-html="selectedAnnouncement.project.province.name" />
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="24">
-                <p>Deskripsi Kegiatan</p>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="24">
-                <p v-html="selectedAnnouncement.project.description" />
-              </el-col>
-            </el-row> -->
             <table class="tableDetail tableDetail1" cellspacing="0" cellpadding="0" style="border:none">
               <tr>
                 <td style="width:40%">No. Re gistrasi</td>
@@ -180,12 +68,7 @@
               </tr>
             </table>
           </el-col>
-          <!-- <el-col :span="2"></el-col> -->
           <el-col :span="12">
-            <!-- <div class="detailLokasi">
-              <p style="color:rgb(60, 63, 60)">Lokasi</p>
-              <div class="mapsDetail"></div>
-            </div> -->
             <table class="tableDetail" cellspacing="0" cellpadding="0" style="border:none">
               <tr>
                 <td colspan="2" class="bg-white-custom">Lokasi</td>
@@ -205,73 +88,17 @@
               </tr>
             </table>
           </el-col>
-        </el-row>
-        <!-- <el-row :gutter="20">
-          <el-col :span="16">
-            <div class="wrapDetail">
-              <img src="https://placeimg.com/150/150/arch/grayscale" alt="">
-              <div class="wrapDetailRight">
-                <p style="margin-bottom: 1rem">{{ selectedAnnouncement.project_type }}</p>
-                <h4 class="fw-bold">{{ selectedAnnouncement.pic_name }}</h4>
-                <h4 class="fw-bold">{{ selectedAnnouncement.project ? selectedAnnouncement.project.address : '' }}, {{ selectedAnnouncement.project ? selectedAnnouncement.project.province.name : '' }}</h4>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="wrapDetailRightRow">
-              <el-button type="success" plain>{{ selectedAnnouncement.project ? selectedAnnouncement.project.required_doc : '' }}</el-button>
-              <h4 class="fw-bold">Reg No. {{ selectedAnnouncement.project ? selectedAnnouncement.project.id_project : '' }}</h4>
-              <h4 class="fw-bold">[{{ selectedAnnouncement.project ? selectedAnnouncement.project.project_type : '' }}]</h4>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <div style="padding-left: 2rem">
-              <h4 class="fw-bold">Pengumuman</h4>
-              <p>{{ formatDateStr(selectedAnnouncement.start_date) }} - {{ formatDateStr(selectedAnnouncement.end_date) }}</p>
-            </div>
-          </el-col>
-          <el-col :span="12">
-            <div style="padding-right: 2rem">
-              <el-button type="warning"><a :href="basePath+selectedAnnouncement.proof">Unduh bukti pengumuman</a></el-button>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="24">
-            <div style="padding-left: 2rem; margin-top: 2rem">
-              <p style="margin-bottom: 1rem" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
-              <h4 class="fw-bold">Dampak Potensi</h4>
-              <p style="margin-bottom: 1.5rem" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.potential_impact : ''" />
-            </div>
+            <table class="tableDetail" cellspacing="0" cellpadding="0" style="border:none; margin-top:1rem;">
+              <tr class="bg-blue-custom">
+                <td colspan="2">Dampak Potensial</td>
+              </tr>
+              <tr class="bg-white-custom">
+                <td colspan="2" v-html="selectedAnnouncement.potential_impact" />
+              </tr>
+            </table>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
-          <el-col :span="14">
-            <div style="padding-left: 2rem">
-              <div style="display: flex; margin-bottom: 1rem">
-                <h4 class="fw-bold" style="">Sifat Kegiatan:</h4>
-                <h4>&nbsp;{{ selectedAnnouncement.project ? selectedAnnouncement.project.project_type : '' }}</h4>
-              </div>
-              <h4 class="fw-bold">Project Location</h4>
-              <p style="margin-bottom: 1.5rem">{{ selectedAnnouncement.project_location }}</p>
-            </div>
-          </el-col>
-          <el-col :span="10">
-            <div style="padding-right: 2rem">
-              <div style="height: 400px; width: 100%; z-index: -1">
-                <div>
-                  <div id="mapView" />
-                </div>
-                <l-map :zoom="zoom" :center="center">
-                  <l-marker :lat-lng="center" />
-                  <l-tile-layer :url="urlMap" :attribution="attribution" />
-                </l-map>
-              </div>
-            </div>
-          </el-col>
-        </el-row> -->
       </div>
     </div>
     <div class="detailPengumuman">
@@ -303,33 +130,6 @@
                         <el-option label="Masyarakat Berkepentingan Lainya" value="4" />
                       </el-select>
                     </el-form-item>
-                    <!-- <div style="padding-left:2rem">
-                      <div>
-                        <el-radio
-                          v-model="form.responder_type_id"
-                          label="1"
-                        >
-                          <span style="color:white">Terkena Dampak Langsung</span></el-radio>
-                      </div>
-                      <div>
-                        <el-radio
-                          v-model="form.responder_type_id"
-                          label="2"
-                        ><span style="color:white">Pemerhati Lingkungan Hidup</span></el-radio>
-                      </div>
-                      <div>
-                        <el-radio
-                          v-model="form.responder_type_id"
-                          label="3"
-                        ><span style="color:white">LSM</span></el-radio>
-                      </div>
-                      <div>
-                        <el-radio
-                          v-model="form.responder_type_id"
-                          label="4"
-                        ><span style="color:white">Masyarakat Berkepentingan Lainya</span></el-radio>
-                      </div>
-                    </div> -->
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -418,7 +218,7 @@
                       </ul>
                     </div>
                     <div style="padding-left:1rem">
-                      <el-rate v-model="ratings" style="font-size:3rem" @change="handleChange(ratings)" />
+                      <el-rate v-model="ratings" @change="handleChange(ratings)" />
                     </div>
                   </div>
                 </el-col>
@@ -547,6 +347,7 @@ export default {
       errorMessage: null,
       photo_filepath: null,
       ratings: null,
+      style: ['font-size: 50px'],
       url: '/images/avatar.png',
       urlMap: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -562,11 +363,14 @@ export default {
       centerDialogVisible: false,
       checkList: [],
       radio: '',
+      selectedProject2: {},
     };
+  },
+  beforeUpdate() {
+    this.loadMap();
   },
   async created() {
     await this.getResponderType();
-    this.loadMap();
   },
   methods: {
     loadMap() {
@@ -925,8 +729,6 @@ table.table__striped tr:nth-child(odd) {
   padding:2rem;
 }
 .fz8{font-size: 0.8rem;}
-.el-rate__icon{font-size: 2.5rem !important;}
-.el-rate__icon.el-icon-star-off {font-size: 3rem;}
 #header {
     z-index: 99999;
 }
@@ -945,4 +747,5 @@ table.table__striped tr:nth-child(odd) {
 .tableDetail td{color: #3c3f3c; padding:0.5rem; width: 50%; border:0}
 .detailLokasi{background-color: #fff;padding: 0.5rem;}
 .mapsDetail{width: 100%; height: 20rem;}
+.el-rate__item i{font-size: 3rem;}
 </style>

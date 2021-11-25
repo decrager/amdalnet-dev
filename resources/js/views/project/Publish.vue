@@ -95,6 +95,10 @@
             label="No."
           />
           <el-table-column
+            prop="kbli"
+            label="KBLI"
+          />
+          <el-table-column
             prop="kegiatan"
             label="Kegiatan"
           />
@@ -106,10 +110,10 @@
             prop="skala"
             label="Skala Besaran"
           />
-          <el-table-column
+          <!-- <el-table-column
             prop="hasil"
             label="Hasil"
-          />
+          /> -->
         </el-table>
       </el-col>
       <div v-if="getFormulatedTeam === 'mandiri'">
@@ -197,7 +201,7 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: [{ value: 'mandiri', label: 'Mandiri' }, { value: 'lpjp', label: 'Lembaga Penyedia Jasa Penyusun' }],
+      teamOptions: [{ value: 'mandiri', label: 'Penyusun Perseorangan' }, { value: 'lpjp', label: 'Lembaga Penyedia Jasa Penyusun' }],
       teamToChooseOptions: null,
       kabkot: null,
       list: [],
@@ -220,17 +224,17 @@ export default {
     getLpjps(){
       return this.$store.getters.lpjps;
     },
-    getProjectField() {
-      const pfield = this.$store.getters.projectFieldOptions;
-      console.log(pfield);
-      return pfield.filter(e => e.value === this.project.field)[0].label;
-    },
+    // getProjectField() {
+    //   const pfield = this.$store.getters.projectFieldOptions;
+    //   console.log(pfield);
+    //   return pfield.filter(e => e.value === this.project.field)[0].label;
+    // },
   },
   async mounted() {
     console.log(this.project);
     // for step
     this.$store.dispatch('getStep', 1);
-    await this.getProjectFields();
+    // await this.getProjectFields();
     // await this.getKbliEnvParams();
     await this.getTeamOptions();
     await this.getInitiatorData();
@@ -251,6 +255,7 @@ export default {
       const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
         return {
           no: index + 1,
+          kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.sector,
           skala: e.scale + ' ' + e.scale_unit,
@@ -260,6 +265,7 @@ export default {
       const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
         return {
           no: index + 1,
+          kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.sector,
           skala: e.scale + ' ' + e.scale_unit,
@@ -272,14 +278,14 @@ export default {
       if (mainArr.length > 0){
         mainArr.unshift({
           no: 'A',
-          kegiatan: 'Kegiatan Utama',
+          kbli: 'Kegiatan Utama',
         });
       }
 
       if (suppArr.length > 0){
         suppArr.unshift({
           no: 'B',
-          kegiatan: 'Kegiatan Pendukung',
+          kbli: 'Kegiatan Pendukung',
         });
       }
 
@@ -289,7 +295,7 @@ export default {
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.scale) {
         if (columnIndex === 1) {
-          return [1, 4];
+          return [1, 5];
         } else if (columnIndex === 2) {
           return [0, 0];
         }
@@ -308,9 +314,9 @@ export default {
         ],
       ];
     },
-    async getProjectFields() {
-      await this.$store.dispatch('getProjectFields');
-    },
+    // async getProjectFields() {
+    //   await this.$store.dispatch('getProjectFields');
+    // },
     loadMap() {
       if (this.readonly === true) {
         const map = new Map({
@@ -729,7 +735,7 @@ export default {
         },
         {
           param: 'Bidang Usaha/Kegiatan',
-          value: this.getProjectField,
+          value: this.project.sector,
         },
         {
           param: 'Skala/Besaran',
