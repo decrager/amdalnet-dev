@@ -91,7 +91,7 @@ export default {
     addOfficeScript() {
       const officeScript = document.createElement('script');
       console.log('x', process.env.MIX_OFFICE_URL, process.env.MIX_ETHERPAD_URL);
-      officeScript.setAttribute('src', 'http://localhost:8008/web-apps/apps/api/documents/api.js');
+      officeScript.setAttribute('src', 'https://amdalnet.braindevs.com/oods/web-apps/apps/api/documents/api.js');
       document.head.appendChild(officeScript);
       officeScript.onload = () => {
         this.createOfficeEditor();
