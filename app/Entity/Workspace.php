@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\IOFactory;
 use App\Utils\Jwt;
 use App\Utils\Document;
+use Exception;
 
 class Workspace
 {
@@ -236,24 +237,25 @@ class Workspace
             $key = Document::GenerateRevisionId($downloadUri);
 
             try {
-                Log::info('Convert ' . $downloadUri . ' from ' . $downloadExt . ' to ' . $curExt);
+                Log::debug('Convert ' . $downloadUri . ' from ' . $downloadExt . ' to ' . $curExt);
                 $convertedUri;  // convert file and give url to a new file
                 $percent = Document::GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, FALSE, $convertedUri);
                 if (!empty($convertedUri)) {
                     $downloadUri = $convertedUri;
                 } else {
-                    Log::info("   Convert after save convertedUri is empty");
+                    Log::debug("   Convert after save convertedUri is empty");
                     $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
                     $newFileName = Document::GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);  // get the correct file name if it already exists
                 }
             } catch (Exception $e) {
                 Log::error("   Convert after save ".$e->getMessage());
                 $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
-                $newFileName = Docment::GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
+                $newFileName = Document::GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
             }
         }
 
         $saved = 1;
+        Log::debug('download from: ' . $downloadUri . ' from ' . $downloadExt . ' to ' . $curExt);
 
         if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
             $storagePath = Document::getStoragePath($newFileName, $userAddress);  // get the file path
@@ -263,6 +265,7 @@ class Workspace
             mkdir($verDir);  // if the path doesn't exist, create it
     
             rename(Document::getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);  // get the path to the previous file version and rename the storage path with it
+            Log::debug('put content: '. $storagePath);
             file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
     
             if ($changesData = file_get_contents($data["changesurl"])) {

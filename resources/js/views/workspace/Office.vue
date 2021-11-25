@@ -17,6 +17,10 @@ export default {
       type: Object,
       default: null,
     },
+    filename: {
+      type: String,
+      default: 'sample.docx',
+    },
   },
   data() {
     return {
@@ -87,7 +91,7 @@ export default {
     addOfficeScript() {
       const officeScript = document.createElement('script');
       console.log('x', process.env.MIX_OFFICE_URL, process.env.MIX_ETHERPAD_URL);
-      officeScript.setAttribute('src', 'https://amdalnet.braindevs.com/oods/web-apps/apps/api/documents/api.js');
+      officeScript.setAttribute('src', 'http://localhost:8008/web-apps/apps/api/documents/api.js');
       document.head.appendChild(officeScript);
       officeScript.onload = () => {
         this.createOfficeEditor();
@@ -97,7 +101,7 @@ export default {
     createOfficeEditor() {
       console.log('create office');
       workspaceResource
-        .getConfig(this.$route.params.id)
+        .getConfig(this.$route.params.id, this.filename)
         .then(resp => {
           console.log(resp);
           this.docEditor = new window.DocsAPI.DocEditor('placeholder', resp);

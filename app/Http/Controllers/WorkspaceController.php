@@ -72,7 +72,7 @@ class WorkspaceController extends Controller
         if ($request->file('file') !== null){
             //create file
             $file = $request->file('file');
-            $dir = 'workspace/template';
+            $dir = 'workspace';
             $path = $file->store($dir);
             $pathfile = Storage::path($path);
             // var_dump($path, $pathfile);
@@ -91,9 +91,12 @@ class WorkspaceController extends Controller
      */
     public function getConfig(Request $request, String $id) {
         $currentUser = Auth::user();
-        $officeUrl = env('MIX_OFFICE_URL'); 
-        $officeSecret = env('OFFICE_SECRET');
+        // $officeUrl = env('MIX_OFFICE_URL'); 
+        // $officeSecret = env('OFFICE_SECRET');
         $appUrl = env('APP_URL');
+        $callUrl = env('OFFICE_CALLBACK_URL');
+        $filename = $request->query('filename', 'sample.docx');
+        $dockey = md5($filename.$id);
         $config = [
             'width' => '100%',
             'height' => '100%',
@@ -101,10 +104,10 @@ class WorkspaceController extends Controller
             'documentType' => 'word',
             'document' => [
                 'fileType' => 'docx',
-                'key' => 'keyaaaa',
+                'key' => $dockey,
                 'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
                 // 'url' => $appUrl.'/workspace/document/download?fileName=61943e88ad99a.docx',
-                'url' => $appUrl.'/storage/workspace/61943e88ad99a.docx',
+                'url' => $callUrl.'/storage/workspace/'.$filename,
                 'permissions' => [
                     'fillForms' => true,
                     'edit' => true,
@@ -146,7 +149,7 @@ class WorkspaceController extends Controller
                         'url' => $appUrl.'/images/logo-amdal-white.png',
                     ],
                 ],
-                'callbackUrl' => $appUrl.'/workspace/document/track?filename=61943e88ad99a.docx',
+                'callbackUrl' => $callUrl.'/api/workspace/document/track?'.$filename,
             ],
         ];
         return response()->json($config);
@@ -164,10 +167,11 @@ class WorkspaceController extends Controller
         Log::debug('Track DOC: '. serialize($request->query()));
         $workspace = new Workspace();
         $result['error'] = 0;
-        $data = $request->json();
-        if ($data['error']) {
-            return $data;
+        $data = $request->json()->all();
+        if (isset($data['error'])) {
+            return response()->json($data);
         }
+        Log::debug('Track Data: '. json_encode($data));
 
         $status = $workspace->getTrackStatus($data['status']);
 
@@ -195,7 +199,7 @@ class WorkspaceController extends Controller
         }
 
         $result['status'] = 'success';
-        response()->json($result);
+        return response()->json($result);
     }
 
     /**

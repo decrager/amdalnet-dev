@@ -10,7 +10,8 @@ namespace App\Utils;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Jwt;
+use App\Utils\Jwt;
+use Exception;
 
 /**
  * Class Utils
@@ -50,7 +51,7 @@ final class Document
      *
      * @return The percentage of completion of conversion
      */
-    public static function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass) 
+    public static function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass = '') 
     {
         $converted_document_uri = "";
         $responceFromConvertService = self::SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass);
@@ -88,7 +89,7 @@ final class Document
      *
      * @return Document request result of conversion
      */
-    public static function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass) 
+    public static function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass = '') 
     {
         if (empty($from_extension))
         {
@@ -229,7 +230,7 @@ final class Document
      */
     public static function getStoragePath($fileName, $userAddress = NULL) {
         $conf_storage_path = env('OFFICE_STORAGE_PATH', '/var/www/storage/app/public/workspace');
-        $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $conf_storage_path), DIRECTORY_SEPARATOR);
+        $storagePath = rtrim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $conf_storage_path), DIRECTORY_SEPARATOR);
         $directory = $storagePath;
     
         if ($storagePath != "")
@@ -326,7 +327,7 @@ final class Document
     // get the path to the forcesaved file version
     public static function getForcesavePath($fileName, $userAddress, $create) {
         $conf_storage_path = env('OFFICE_STORAGE_PATH', '/var/www/storage/app/public/workspace');
-        $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $conf_storage_path), DIRECTORY_SEPARATOR);
+        $storagePath = rtrim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $conf_storage_path), DIRECTORY_SEPARATOR);
         // create the directory to this file version
         $directory = $storagePath . self::getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
 
@@ -363,7 +364,7 @@ final class Document
 
     public static function getVirtualPath($forDocumentServer) {
         $conf_storage_path = env('OFFICE_STORAGE_PATH', '/var/www/storage/app/public/workspace');
-        $storagePath = trim(str_replace(array('/','\\'), '/', $conf_storage_path), '/');
+        $storagePath = rtrim(str_replace(array('/','\\'), '/', $conf_storage_path), '/');
         $storagePath = $storagePath != "" ? $storagePath . '/' : "";
     
     
