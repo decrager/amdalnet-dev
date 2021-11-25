@@ -53,3 +53,6 @@ sudo docker run -i -t -d -p 9000:80 --restart=always --name onlyoffice-document-
     -v /home/amdalnet/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data \
     -v /home/amdalnet/onlyoffice/DocumentServer/logs:/var/log/onlyoffice \
     onlyoffice/documentserver-de
+
+
+http://oo.mymac.net/doceditor.php?fileID=61943e88ad99a.docx&user=&action=edit&type=desktop

@@ -149,7 +149,7 @@ class WorkspaceController extends Controller
                         'url' => $appUrl.'/images/logo-amdal-white.png',
                     ],
                 ],
-                'callbackUrl' => $callUrl.'/api/workspace/document/track?'.$filename,
+                'callbackUrl' => $callUrl.'/api/workspace/document/track?fileName='.$filename,
             ],
         ];
         return response()->json($config);
