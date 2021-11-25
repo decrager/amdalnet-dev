@@ -226,10 +226,10 @@
         </el-table-column>
         <el-table-column align="left" label="No. Registrasi" width="200">
           <template slot-scope="scope">
-            <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
-            <span>{{
+            <span>{{ Math.floor(Math.random() * (scope.$index + 1) * 1000000000) }}</span>
+          <!-- <span>{{
               scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
-            }}</span>
+            }}</span> -->
           </template>
         </el-table-column>
         <el-table-column align="left" label="Nama Kegiatan" min-width="200">
