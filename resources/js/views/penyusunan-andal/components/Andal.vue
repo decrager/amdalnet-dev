@@ -1,47 +1,52 @@
 <template>
-  <el-collapse v-model="activeName" accordion>
-    <el-collapse-item>
+  <el-collapse v-model="activeName" :accordion="true">
+    <el-collapse-item name="pelingkupan">
       <template slot="title" class="head-accordion">
         <span class="title">PELINGKUPAN</span>
       </template>
+      <Pelingkupan v-if="activeName === 'pelingkupan'" />
     </el-collapse-item>
-    <el-collapse-item>
+    <el-collapse-item name="matriks-identifikasi">
       <template slot="title" class="head-accordion">
         <span class="title">MATRIKS IDENTIFIKASI DAMPAK</span>
       </template>
+      <MatrikIdentifikasiDampak v-if="activeName === 'matriks-identifikasi'" />
     </el-collapse-item>
-    <el-collapse-item>
+    <el-collapse-item name="peta-batas">
       <template slot="title" class="head-accordion">
         <span class="title">PETA BATAS WILAYAH STUDI & PETA LAINNYA</span>
       </template>
     </el-collapse-item>
-    <el-collapse-item>
+    <el-collapse-item name="dampak-potensial">
       <template slot="title" class="head-accordion">
         <span class="title">DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
       </template>
     </el-collapse-item>
-    <el-collapse-item>
+    <el-collapse-item name="metode-studi">
       <template slot="title" class="head-accordion">
         <span class="title">METODE STUDI</span>
       </template>
+      <MetodeStudi v-if="activeName === 'metode-studi'" />
     </el-collapse-item>
-    <el-collapse-item>
+    <el-collapse-item name="matriks-dampak">
       <template slot="title" class="head-accordion">
         <span class="title">MATRIKS DAMPAK PENTING HIPOTETIK</span>
       </template>
+      <MatriksDampakPentingHipotetik v-if="activeName === 'matriks-dampak'" />
     </el-collapse-item>
-    <el-collapse-item>
+    <el-collapse-item name="bagan-alir-pelingkupan">
       <template slot="title" class="head-accordion">
         <span class="title">BAGAN ALIR PELINGKUPAN</span>
       </template>
+      <BaganAlir />
     </el-collapse-item>
-    <el-collapse-item name="tableAndal">
+    <el-collapse-item name="table-andal">
       <template slot="title" class="head-accordion">
         <span class="title">ANALISA DAMPAK LINGKUNGAN</span>
       </template>
-      <TableAndal />
+      <TableAndal v-if="activeName === 'table-andal'" />
     </el-collapse-item>
-    <el-collapse-item>
+    <el-collapse-item name="bagan-alir-dampak">
       <template slot="title" class="head-accordion">
         <span class="title">BAGAN ALIR DAMPAK PENTING</span>
       </template>
@@ -51,16 +56,46 @@
 
 <script>
 import TableAndal from '@/views/penyusunan-andal/components/Table';
+import MatrikIdentifikasiDampak from '@/views/ukl-upl/components/MatrikIdentifikasiDampak.vue';
+import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
+import MatriksDampakPentingHipotetik from '@/views/ukl-upl/components/MatriksDampakPentingHipotetik.vue';
+import Pelingkupan from '@/views/ukl-upl/components/Pelingkupan.vue';
+import BaganAlir from '@/views/ukl-upl/components/BaganAlir.vue';
 
 export default {
   name: 'Andal',
   components: {
     TableAndal,
+    MatrikIdentifikasiDampak,
+    MetodeStudi,
+    MatriksDampakPentingHipotetik,
+    Pelingkupan,
+    BaganAlir,
   },
   data() {
     return {
-      activeName: 'tableAndal',
+      activeName: '',
     };
+  },
+  methods: {
+    handleReloadVsaList(tab) {
+      // this.accordionKey = this.accordionKey + 1;
+      // if (tab === 'pelingkupan') {
+      //   this.activeName = '1';
+      // } else if (tab === 'matriks-identifikasi-dampak') {
+      //   this.activeName = '2';
+      // } else if (tab === 'peta-batas') {
+      //   this.activeName = '3';
+      // } else if (tab === 'dampak-penting') {
+      //   this.activeName = '4';
+      // } else if (tab === 'metode-studi') {
+      //   this.activeName = '5';
+      // } else if (tab === 'matriks-dph') {
+      //   this.activeName = '6';
+      // } else if (tab === 'bagan-alir') {
+      //   this.activeName = '7';
+      // }
+    },
   },
 };
 </script>

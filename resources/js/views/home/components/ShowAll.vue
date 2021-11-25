@@ -52,10 +52,6 @@
       </div>
     </div>
     <div v-if="showDetailFromAll">
-      <!-- <DetailsFromAll
-        :selected-announcement="selectedAnnouncement"
-        @handleCancelComponent="handleCancelComponent"
-      /> -->
       <Details
         :selected-announcement="selectedAnnouncement"
         :selected-project="selectedProject"
@@ -68,14 +64,12 @@
 <script>
 import axios from 'axios';
 import Pagination from '@/components/Pagination';
-// import DetailsFromAll from './DetailsFromAll';
 import Details from './Details';
 
 export default {
   name: 'ShowAll',
   components: {
     Pagination,
-    // DetailsFromAll,
     Details,
   },
   props: {

@@ -21,15 +21,15 @@
           </el-col>
         </el-row>
       </div> -->
-      <el-tabs type="card">
-        <el-tab-pane label="Formulir Kerangka Acuan">
-          <FormulirKA />
+      <el-tabs v-model="activeName" type="card">
+        <el-tab-pane label="Formulir Kerangka Acuan" name="formulir-ka">
+          <FormulirKA v-if="activeName === 'formulir-ka'" />
         </el-tab-pane>
-        <el-tab-pane label="Analisa Dampak Lingkungan">
-          <Andal />
+        <el-tab-pane label="Analisa Dampak Lingkungan" name="andal">
+          <Andal v-if="activeName === 'andal'" />
         </el-tab-pane>
-        <el-tab-pane label="Dokumen ANDAL">
-          <el-row :gutter="32">
+        <el-tab-pane label="Dokumen ANDAL" name="dokumen">
+          <el-row v-if="activeName === 'dokumen'" :gutter="32">
             <!-- <el-col :sm="12" :md="7">
               <MapList />
             </el-col> -->
@@ -84,6 +84,7 @@ export default {
       userInfo: {
         roles: [],
       },
+      activeName: 'formulir-ka',
     };
   },
   created() {

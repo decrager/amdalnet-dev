@@ -1,6 +1,7 @@
 <template>
   <el-tabs type="card">
     <el-button
+      v-if="!isAndal"
       type="success"
       size="small"
       icon="el-icon-check"
@@ -30,6 +31,11 @@ export default {
       idProject: 0,
       projectStages: [],
     };
+  },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
   },
   mounted() {
     this.getData();

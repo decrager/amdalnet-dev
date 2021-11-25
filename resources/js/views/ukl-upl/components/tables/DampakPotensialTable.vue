@@ -18,6 +18,7 @@
             <el-select
               v-model="scope.row.id_change_type"
               placeholder="Perubahan"
+              :disabled="isAndal"
             >
               <el-option
                 v-for="item of changeTypeOptions"
@@ -73,6 +74,11 @@ export default {
       changeTypeOptions: [],
       unitOptions: [],
     };
+  },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
   },
   mounted() {
     this.getData();

@@ -125,9 +125,7 @@ export default {
       axios.get('/api/announcements/' + this.selectedId)
         .then(response => {
           this.selectedAnnouncement = response.data;
-          console.log(response.data);
           this.selectedProject = response.data.project;
-          console.log(id);
         });
     },
     handleCancelComponent(e){
