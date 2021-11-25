@@ -1,15 +1,5 @@
 <template>
   <div style="font-size: 10pt;">
-    <el-button
-      v-if="!isAndal"
-      type="success"
-      size="small"
-      icon="el-icon-check"
-      style="margin-bottom: 10px;"
-      @click="handleSaveForm()"
-    >
-      Simpan Perubahan
-    </el-button>
     <table>
       <tr class="tr-header">
         <td v-for="comp of header[0]" :key="comp.id" :colspan="comp.colspan" :rowspan="comp.rowspan" align="center" class="td-header">
@@ -30,11 +20,8 @@
         </td>
         <td v-for="c of r.sub" :key="c.id" style="width: 100px;" align="center" class="td-data">
           <template v-if="c.exists">
-            <input v-model="c.checked" type="checkbox" :disabled="isAndal">
-            <span>DPH</span>
-          </template>
-          <template v-if="!c.exists">
-            <span>-</span>
+            <span v-if="c.checked">DPH</span>
+            <span v-if="!c.checked">DTPH</span>
           </template>
         </td>
       </tr>
@@ -73,28 +60,6 @@ export default {
     this.getData();
   },
   methods: {
-    handleSaveForm() {
-      impactIdtResource
-        .store({
-          checked: this.checked,
-          id_project: this.idProject,
-          save_dph: true,
-        })
-        .then((response) => {
-          var message = (response.code === 200) ? 'Matriks Identifikasi Dampak berhasil disimpan' : response.error;
-          var message_type = (response.code === 200) ? 'success' : 'error';
-          this.$message({
-            message: message,
-            type: message_type,
-            duration: 5 * 1000,
-          });
-          // reload accordion
-          this.$emit('handleReloadVsaList', 'bagan-alir');
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
     async getChecked() {
       const dataArray = [];
       var rIndex = 0;
