@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\ProjectMapAttachment;
 use Illuminate\Http\Request;
+use App\Http\Resources\ProjectMapAttachmentResource;
 
 class ProjectMapAttachmentController extends Controller
 {
@@ -12,8 +13,14 @@ class ProjectMapAttachmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $files = ProjectMapAttachment::all();
+        if($request->id_project){
+             $files = $files->where('id_project', $request->id_project);
+             return ProjectMapAttachmentResource::collection($files);
+        }
+        return ProjectMapAttachmentResource::collection($files);
         //
     }
 

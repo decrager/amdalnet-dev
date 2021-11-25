@@ -19,7 +19,7 @@ class CreateProjectMapAttachmentsTable extends Migration
             $table->foreign('id_project')->references('id')->on('projects');
             $table->enum('attachment_type', ['social','ecology','study']);
             $table->enum('file_type', ['SHP', 'PDF']);
-            $table->string('orignal_filename');
+            $table->string('original_filename');
             $table->string('stored_filename');
             $table->timestamps();
         });

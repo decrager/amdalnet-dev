@@ -3,6 +3,7 @@
 use App\Http\Controllers\BaganAlirController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\UklUplCommentController;
+use App\Http\Controllers\ProjectMapAttachmentController;
 use App\Http\Resources\UserResource;
 use App\Laravue\Acl;
 use App\Laravue\Faker;
@@ -219,3 +220,4 @@ Route::apiResource('scoping', 'ScopingController');
 Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
+Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
