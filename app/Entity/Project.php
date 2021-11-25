@@ -42,6 +42,7 @@ class Project extends Model
         'ktr',
         'id_lpjp',
         'pre_agreement',
+        'pre_agreement_file',
     ];
 
     public function team()
