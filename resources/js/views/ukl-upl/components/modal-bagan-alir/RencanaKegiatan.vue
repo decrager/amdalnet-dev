@@ -3,9 +3,17 @@
     <el-dialog
       title="Rencana Kegiatan"
       :close-on-click-modal="false"
-      :visible.sync="show"
+      :visible.sync="openRencanaKegiatan"
+      :modal-append-to-body="false"
+      :show-close="false"
+      width="20%"
     >
-      <span>This is a message</span>
+      <ul v-for="rencana in selectedRencanaKegiatan" :key="rencana.id">
+        <li>{{ rencana.name }}</li>
+      </ul>
+      <el-button type="danger" class="button-cancel" style="width:100%;" @click="closeDialog()">
+        Tutup
+      </el-button>
     </el-dialog>
   </div>
 </template>
@@ -19,16 +27,15 @@ export default {
       default: () => {
       },
     },
-    show: Boolean,
+    openRencanaKegiatan: Boolean,
   },
-  mounted() {
-    console.log('show: ' + this.selectedRencanaKegiatan);
+  methods: {
+    closeDialog() {
+      this.openRencanaKegiatan = false;
+    },
   },
 };
 </script>
 
 <style scoped>
-.modal__container {
-    background-color: aqua;
-}
 </style>
