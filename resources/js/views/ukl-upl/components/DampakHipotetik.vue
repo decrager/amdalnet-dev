@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+
     <el-button
       type="success"
       size="small"
@@ -9,7 +10,9 @@
     >
       Simpan Perubahan
     </el-button>
-    <table style="margin: 2em 0; border-collapse: collapse;">
+
+    <span style="float:right"><el-button icon="el-icon-refresh" round @click="refresh"><span v-show="isLoading === true">refreshing data...</span></el-button></span>
+    <table style="margin: 2em 0; border-collapse: collapse;clear:both;">
       <thead>
         <tr>
           <th colspan="3">Rencana Usaha dan/atau Kegiatan yang Berpotensi Menimbulkan Dampak Lingkungan</th>
@@ -38,10 +41,10 @@
             <td>
               <el-select v-model="valueA" placeholder="Select">
                 <el-option
-                  v-for="item in kejadian"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in changeType"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 />
               </el-select>
             </td>
@@ -52,60 +55,18 @@
               sebagai bagian dari rencana
               kegiatan</td>
             <td>
-              <div class="div-fka formA">
-                <p><strong>A. Besaran rencana Usaha dan/atau Kegiatan</strong> (yang
-                  menyebabkan dampak tersebut dan rencana pengelolaan
-                  lingkungan awal yang menjadi bagian rencana Usaha
-                  dan/atau Kegiatan untuk menanggulangi dampak)</p>
-                <el-input
-                  v-model="textAA"
-                  type="textarea"
-                  :rows="2"
-                  placeholder="Please input"
-                />
-              </div>
-              <div class="div-fka formA">
-                <p><strong>B. Kondisi rona lingkungan</strong> (yang ada termasuk kemampuan
-                  mendukung Usaha dan/atau Kegiatan tersebut atau tidak)</p>
-                <el-input
-                  v-model="textAB"
-                  type="textarea"
-                  :rows="2"
-                  placeholder="Please input"
-                />
-              </div>
-              <div class="div-fka formA">
-                <p><strong>C. Pengaruh rencana Usaha dan/atau Kegiatan</strong> (terhadap
-                  kondisi Usaha dan/atau Kegiatan lain di sekitar lokasi</p>
-                <el-input
-                  v-model="textAC"
-                  type="textarea"
-                  :rows="2"
-                  placeholder="Please input"
-                />
-              </div>
-              <div class="div-fka formA">
-                <p><strong>D. Intensitas perhatian masyarakat</strong> (terhadap rencana Usaha
-                  dan/atau Kegiatan, baik harapan, kekhawatiran,
-                  persetujuan
-                  atau penolakan terhadap rencana Usaha
-                  dan/atau Kegiatan)</p>
-                <el-input
-                  v-model="textAD"
-                  type="textarea"
-                  :rows="2"
-                  placeholder="Please input"
-                />
-              </div>
-              <div class="div-fka formA">
-                <p><strong>E. Kesimpulan</strong></p>
-                <el-input
-                  v-model="textAE"
-                  type="textarea"
-                  :rows="2"
-                  placeholder="Please input"
-                />
-              </div>
+
+              <template v-for="pie in pieParams">
+                <div :key="'pie_'+stage.id+'_'+pie.id" class="div-fka formA">
+                  <p><strong>{{ pie.name }}</strong> {{ pie.description }}</p>
+                  <el-input
+                    v-model="textAA"
+                    type="textarea"
+                    :rows="2"
+                    placeholder="Please input"
+                  />
+                </div>
+              </template>
             </td>
             <td>
               <el-select v-model="vDPHs" placeholder="Select">
@@ -127,10 +88,6 @@
             <td />
           </tr>
         </template>
-
-        <tr>
-          <td colspan="9" class="title">NORMAL</td>
-        </tr>
       </tbody>
     </table>
   </div>
@@ -139,7 +96,8 @@
 import Resource from '@/api/resource';
 const projectStageResource = new Resource('project-stages');
 const impactIdtResource = new Resource('impact-identifications');
-const varsParams = new Resource('impact-varsparams');
+const changeTypeResource = new Resource('change-types');
+const pieParamsResource = new Resource('pie-params');
 
 export default {
   name: 'DampakHipotetik',
@@ -151,7 +109,8 @@ export default {
       openedStage: null,
       changeType: [],
       pieParams: [],
-      varsParams: null,
+      pieInputMatrix: [],
+      isLoading: false,
     };
   },
   mounted() {
@@ -231,12 +190,14 @@ export default {
     },
     async getData() {
       console.log('starting getData at DampakHipotetik');
+      this.isLoading = true;
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
       const impactList = await impactIdtResource.list({
         id_project: this.idProject,
         join_tables: true,
       });
+
       /*  const pieList = await pieResource.List({
         id_project: this.idProject
       }); */
@@ -266,16 +227,17 @@ export default {
       var dataList = impactList.data;
       this.data = this.createDataArray(dataList, this.projectStages);
 
-      console.log(['end of getData at DampakHipotetik', this.data]);
-    },
-    async getVariablesParams(){
-      const sVarParams = await varsParams.list();
-      this.varsParams = sVarParams.data;
+      console.log(['end of getData at DampakHipotetik', dataList]);
 
-      if (this.varsParams) {
-        this.changeType = this.varsParams.changeType;
-        this.pieParams = this.pieParams;
-      }
+      const sChangeType = await changeTypeResource.list();
+      this.changeType = sChangeType.data;
+      const sPieParams = await pieParamsResource.list();
+      this.pieParams = sPieParams.data;
+      console.log(this.changeType);
+      this.isLoading = false;
+    },
+    refresh(){
+      this.getData();
     },
     showStage(index){
       this.openedStage = (this.openedStage === index) ? null : index;
@@ -283,3 +245,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  table td.title:hover {
+    background-color: #fafafa;
+    cursor: pointer;
+  }
+</style>
