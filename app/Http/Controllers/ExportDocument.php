@@ -10,12 +10,12 @@ use App\Entity\MeetingReport;
 use App\Entity\Project;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
 
 class ExportDocument extends Controller
 {
@@ -357,5 +357,17 @@ class ExportDocument extends Controller
         }
 
         return response()->download(storage_path('app/public/berita-acara/' . $save_file_name))->deleteFileAfterSend(false);
+    }
+
+    public function saveKADoc(Request $request)
+    {
+        $dokumenKa = '';
+        if ($request->file('dokumenKa')) {
+            $dokumenKa = $request->file('dokumenKa');
+            $docName = 'form-ka-' . $request->project_name . '.docx';
+            $dokumenKa->storePubliclyAs('formulir/', $docName);
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Uploaded successfully'], 200);
     }
 }
