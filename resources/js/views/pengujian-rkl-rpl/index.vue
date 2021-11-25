@@ -18,7 +18,7 @@
           <BeritaAcara v-if="activeName === 'beritaacara'" />
         </el-tab-pane>
         <el-tab-pane
-          v-else-if="isExaminer"
+          v-else-if="isExaminer || isFormulator"
           label="Uji Kelayakan"
           name="ujikelayakan"
         >
@@ -61,6 +61,9 @@ export default {
     isExaminer() {
       return this.userInfo.roles.includes('examiner');
     },
+    isFormulator() {
+      return this.userInfo.roles.includes('formulator');
+    },
   },
   async created() {
     this.userInfo = await this.$store.dispatch('user/getInfo');
@@ -70,6 +73,8 @@ export default {
     } else if (this.userInfo.roles.includes('examiner-administration')) {
       this.activeName = 'verifikasi';
     } else if (this.userInfo.roles.includes('examiner')) {
+      this.activeName = 'ujikelayakan';
+    } else if (this.userInfo.roles.includes('formulator')) {
       this.activeName = 'ujikelayakan';
     }
   },

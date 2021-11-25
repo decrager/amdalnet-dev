@@ -72,6 +72,7 @@ class FeasibilityTestController extends Controller
 
             $feasibility_detail->appropriateness = $data['detail'][$i]['appropriateness'];
             $feasibility_detail->notes = $data['detail'][$i]['notes'];
+            $feasibility_detail->expert_notes = $data['detail'][$i]['expert_notes'];
             $feasibility_detail->save();
         }
 
@@ -135,6 +136,7 @@ class FeasibilityTestController extends Controller
                     'description' => $d->eligibility->description,
                     'appropriateness' => $d->appropriateness,
                     'notes' => $d->notes,
+                    'expert_notes' => $d->expert_notes,
                     'type' => 'update'
                 ];
             }
@@ -154,6 +156,7 @@ class FeasibilityTestController extends Controller
                 'description' => $e->description,
                 'appropriateness' => null,
                 'notes' => null,
+                'expert_notes' => null,
                 'type' => 'new'
             ]; 
         }
@@ -177,6 +180,7 @@ class FeasibilityTestController extends Controller
                 'description' => $e->description,
                 'appropriateness' => null,
                 'notes' => null,
+                'expert_notes' => null,
                 'type' => 'new'
             ]; 
         }
