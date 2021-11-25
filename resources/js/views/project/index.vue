@@ -106,7 +106,7 @@
                 >
                   Publish
                 </el-button>
-                <el-button
+                <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
@@ -114,8 +114,8 @@
                   @click="handleEditForm(scope.row.id)"
                 >
                   Edit
-                </el-button>
-                <el-button
+                </el-button> -->
+                <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
@@ -123,8 +123,8 @@
                   @click="handleDelete(scope.row.id, scope.row.project_title)"
                 >
                   Delete
-                </el-button>
-                <el-button
+                </el-button> -->
+                <!-- <el-button
                   v-if="!isLpjp"
                   href="#"
                   type="text"
@@ -132,9 +132,9 @@
                   @click="handleViewForm(scope.row.id)"
                 >
                   View Details
-                </el-button>
+                </el-button> -->
                 <el-button
-                  v-if="isInitiator"
+                  v-if="scope.row.published && isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-view"
