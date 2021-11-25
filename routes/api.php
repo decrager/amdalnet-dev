@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChangeTypeController;
 use App\Http\Controllers\PieParamController;
+use App\Entity\ProjectMapAttachment;
 
 /*
 |--------------------------------------------------------------------------
@@ -225,3 +226,4 @@ Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('change-types', [ChangeTypeController::class, 'index']);
 Route::get('pie-params', [PieParamController::class, 'index']);
+Route::post('upload-map', [ProjectMapAttachment::class, 'post']);
