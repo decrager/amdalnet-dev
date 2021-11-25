@@ -388,7 +388,7 @@
             <el-row type="flex" justify="end">
               <el-col :span="5">
                 <el-button size="medium" @click="handleCancel()"> Batalkan </el-button>
-                <el-button size="medium" type="primary" @click="preProject = false"> Lanjutkan </el-button>
+                <el-button size="medium" type="primary" @click="handleSubmit"> Lanjutkan </el-button>
               </el-col>
             </el-row>
           </el-collapse-item>
@@ -688,9 +688,9 @@ export default {
             message: 'Data Belum Diisi',
           },
         ],
-        field: [
-          { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
-        ],
+        // field: [
+        //   { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
+        // ],
         address: [
           { required: true, trigger: 'blur', message: 'Data Belum Diisi' },
         ],
