@@ -243,11 +243,11 @@ final class Document
             }
         }
     
-        $directory = $directory . self::getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+        // $directory = $directory . self::getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
     
-        if (!file_exists($directory) && !is_dir($directory)) {
-            mkdir($directory);
-        } 
+        // if (!file_exists($directory) && !is_dir($directory)) {
+        //     mkdir($directory);
+        // } 
         Log::info("getStoragePath result: " . $directory . basename($fileName));
         return $directory . basename($fileName);
     }
@@ -329,7 +329,7 @@ final class Document
         $conf_storage_path = env('OFFICE_STORAGE_PATH', '/var/www/storage/app/public/workspace');
         $storagePath = rtrim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $conf_storage_path), DIRECTORY_SEPARATOR);
         // create the directory to this file version
-        $directory = $storagePath . self::getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+        $directory = $storagePath . DIRECTORY_SEPARATOR; // . self::getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
 
         if (!is_dir($directory)) return "";
 
@@ -368,7 +368,8 @@ final class Document
         $storagePath = $storagePath != "" ? $storagePath . '/' : "";
     
     
-        $virtPath = self::serverPath($forDocumentServer) . '/' . $storagePath . self::getCurUserHostAddress() . '/';
+        // $virtPath = self::serverPath($forDocumentServer) . '/' . $storagePath . self::getCurUserHostAddress() . '/';
+        $virtPath = self::serverPath($forDocumentServer) . '/' . $storagePath . '/';
         Log::debug("getVirtualPath virtPath: " . $virtPath);
         return $virtPath;
     }

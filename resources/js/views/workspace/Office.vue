@@ -100,8 +100,13 @@ export default {
 
     createOfficeEditor() {
       console.log('create office');
+      let filename = this.filename;
+      if (this.$route.params.filename) {
+        filename = this.$route.params.filename;
+      }
+
       workspaceResource
-        .getConfig(this.$route.params.id, this.filename)
+        .getConfig(this.$route.params.id, filename)
         .then(resp => {
           console.log(resp);
           this.docEditor = new window.DocsAPI.DocEditor('placeholder', resp);

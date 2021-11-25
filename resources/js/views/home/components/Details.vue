@@ -402,58 +402,61 @@ export default {
       map.add(baseGroupLayer);
 
       const mapGeojsonArray = [];
-      console.log(this.selectedProject);
       const splitMap = this.selectedProject.map.split(',');
-      console.log(splitMap);
-      shp(window.location.origin + this.selectedProject.map).then(data => {
-        if (data.length > 1) {
-          for (let i = 0; i < data.length; i++) {
-            const blob = new Blob([JSON.stringify(data[i])], {
+
+      for (let i = 0; i < splitMap.length; i++) {
+        shp(window.location.origin + '/storage/map/' + splitMap[i]).then(data => {
+          if (data.length > 1) {
+            for (let i = 0; i < data.length; i++) {
+              const blob = new Blob([JSON.stringify(data[i])], {
+                type: 'application/json',
+              });
+              const url = URL.createObjectURL(blob);
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: url,
+                outFields: ['*'],
+                title: 'Layers',
+              });
+              mapView.on('layerview-create', (event) => {
+                mapView.goTo({
+                  target: geojsonLayerArray.fullExtent,
+                });
+              });
+
+              mapGeojsonArray.push(geojsonLayerArray);
+            }
+
+            const kegiatanGroupLayer = new GroupLayer({
+              title: this.project.project_title,
+              visible: true,
+              visibilityMode: 'exclusive',
+              layers: mapGeojsonArray,
+              opacity: 0.75,
+            });
+
+            map.add(kegiatanGroupLayer);
+          } else {
+            const blob = new Blob([JSON.stringify(data)], {
               type: 'application/json',
             });
             const url = URL.createObjectURL(blob);
-            const geojsonLayerArray = new GeoJSONLayer({
+            const geojsonLayer = new GeoJSONLayer({
               url: url,
+              visible: true,
               outFields: ['*'],
-              title: 'Layers',
+              opacity: 0.75,
+              title: this.project.project_title,
             });
+
+            map.add(geojsonLayer);
             mapView.on('layerview-create', (event) => {
               mapView.goTo({
-                target: geojsonLayerArray.fullExtent,
+                target: geojsonLayer.fullExtent,
               });
             });
-            mapGeojsonArray.push(geojsonLayerArray);
           }
-          const kegiatanGroupLayer = new GroupLayer({
-            title: this.selectedProject.project_title,
-            visible: true,
-            visibilityMode: 'exclusive',
-            layers: mapGeojsonArray,
-            opacity: 0.75,
-          });
-
-          map.add(kegiatanGroupLayer);
-        } else {
-          const blob = new Blob([JSON.stringify(data)], {
-            type: 'application/json',
-          });
-          const url = URL.createObjectURL(blob);
-          const geojsonLayer = new GeoJSONLayer({
-            url: url,
-            visible: true,
-            outFields: ['*'],
-            opacity: 0.75,
-            title: this.selectedProject.project_title,
-          });
-
-          map.add(geojsonLayer);
-          mapView.on('layerview-create', (event) => {
-            mapView.goTo({
-              target: geojsonLayer.fullExtent,
-            });
-          });
-        }
-      });
+        });
+      }
 
       const mapView = new MapView({
         container: 'mapView',
@@ -521,14 +524,14 @@ export default {
         expandTooltip: 'Legend',
       });
 
-      const layersExpand = new Expand({
-        view: mapView,
-        content: layerList.domNode,
-        expandIconClass: 'esri-icon-layer-list',
-        expandTooltip: 'Layers',
-      });
+      // const layersExpand = new Expand({
+      //   view: mapView,
+      //   content: layerList.domNode,
+      //   expandIconClass: 'esri-icon-layer-list',
+      //   expandTooltip: 'Layers',
+      // });
       mapView.ui.add(legendExpand, 'bottom-left');
-      mapView.ui.add(layersExpand, 'top-right');
+      mapView.ui.add(layerList, 'top-right');
     },
     formatDateStr(date) {
       const today = new Date(date);
