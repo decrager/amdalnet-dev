@@ -122,9 +122,9 @@ class ProjectController extends Controller
 
         //create fileKtr
         $preAgreementName = '';
-        if ($request->file('fileKtr')) {
-            $filePreAgreement = $request->file('fileKtr');
-            $preAgreementName = 'project/preAgreement' . uniqid() . '.' . $filePreAgreement->extension();
+        if ($request->file('filePreAgreement')) {
+            $filePreAgreement = $request->file('filePreAgreement');
+            $preAgreementName = 'project/preAgreement/' . uniqid() . '.' . $filePreAgreement->extension();
             $filePreAgreement->storePubliclyAs('public', $preAgreementName);
         }
 
@@ -172,7 +172,8 @@ class ProjectController extends Controller
             'id_lpjp' => isset($request['id_lpjp']) ? $request['id_lpjp'] : null,
             'map' => implode(',', $mapName),
             'ktr' => Storage::url($ktrName),
-            'pre_agreement' => Storage::url($preAgreementName),
+            'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
+            'pre_agreement_file' => Storage::url($preAgreementName),
         ]);
 
         //set project filters
