@@ -56,3 +56,8 @@ sudo docker run -i -t -d -p 9000:80 --restart=always --name onlyoffice-document-
 
 
 http://oo.mymac.net/doceditor.php?fileID=61943e88ad99a.docx&user=&action=edit&type=desktop
+
+
+
+this.$router.push({ name: 'projectWorkspace', params: { id: 58, filename: 'sample.docx' }});
+
