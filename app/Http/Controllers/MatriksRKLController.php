@@ -11,6 +11,10 @@ use App\Entity\RklRplComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpWord\Element\TextRun;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class MatriksRKLController extends Controller
 {
@@ -22,6 +26,8 @@ class MatriksRKLController extends Controller
     public function index(Request $request)
     {
         if($request->docs) {
+            $templateProcessor = new TemplateProcessor('template_rkl_rpl.docx');
+
             $poinA = [];
             $poinB = [];
 
@@ -34,15 +40,46 @@ class MatriksRKLController extends Controller
                 $query->whereHas('envManagePlan');
             })->first();
 
-            if($isExist) {
-                $poinA = $this->getPoinA($stages, $request->idProject);
-                $poinB = $this->getPoinB($stages, $request->idProject);
+            $poinA = $this->getPoinA($stages, $request->idProject);
+            $poinB = $this->getPoinB($stages, $request->idProject);
+
+            $poinAp = $this->getPoinARpl($stages, $request->idProject);
+            $poinBp = $this->getPoinBRpl($stages, $request->idProject);
+
+            $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rkl', $poinA['a_pra_konstruksi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('a_konstruksi_rkl', $poinA['a_konstruksi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('a_operasi_rkl', $poinA['a_operasi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rkl', $poinA['a_pasca_operasi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rkl', $poinB['b_pra_konstruksi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('b_konstruksi_rkl', $poinB['b_konstruksi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('b_operasi_rkl', $poinB['b_operasi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rkl', $poinB['b_pasca_operasi_rkl']);
+
+            $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rpl', $poinAp['a_pra_konstruksi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('a_konstruksi_rpl', $poinAp['a_konstruksi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('a_operasi_rpl', $poinAp['a_operasi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rpl', $poinAp['a_pasca_operasi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rpl', $poinBp['b_pra_konstruksi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('b_konstruksi_rpl', $poinBp['b_konstruksi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('b_operasi_rpl', $poinBp['b_operasi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rpl', $poinBp['b_pasca_operasi_rpl']);
+
+            $save_file_name = $request->idProject .'-rkl-rpl' . '.docx'; 
+            if (!File::exists(storage_path('app/public/workspace/'))) {
+                File::makeDirectory(storage_path('app/public/workspace/'));
             }
 
-            return [
-                'poinA' => $poinA,
-                'poinB' => $poinB
-            ];
+            if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+                $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+            }
+            
+
+            return response()->json(['message' => 'success']);
+
+            // return [
+            //     'poinA' => $poinA,
+            //     'poinB' => $poinBp
+            // ];
 
             
         }
@@ -482,8 +519,9 @@ class MatriksRKLController extends Controller
 
     $idx = 0;
     foreach($stages as $s) {
-        $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
-        $results[$idx]['data'] = [];
+        // $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
+        // $results[$idx]['data'] = [];
+        $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
 
         $total = 0;
 
@@ -496,8 +534,8 @@ class MatriksRKLController extends Controller
                 $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
 
 
-                $results[$idx]['data'][] = [
-                    'no' => $total + 1,
+                $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
+                    'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl' => $total + 1,
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
@@ -547,8 +585,9 @@ class MatriksRKLController extends Controller
     
         $idx = 0;
         foreach($stages as $s) {
-            $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
-            $results[$idx]['data'] = [];
+            // $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
+            // $results[$idx]['data'] = [];
+            $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
     
             $total = 0;
     
@@ -560,8 +599,8 @@ class MatriksRKLController extends Controller
                     $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
                     $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
     
-                    $results[$idx]['data'][] = [
-                        'no' => $total + 1,
+                    $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
+                        'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'  => $total + 1,
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
@@ -579,5 +618,124 @@ class MatriksRKLController extends Controller
         }
     
         return $results;
+    }
+
+    private function getPoinARpl($stages, $id_project) {
+        $results = [];
+
+        $poinA = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
+            $q->whereHas('detail', function($query) {
+                $query->where('important_trait', '+P');
+            });
+        })->get();
+
+        $alphabet_list = 'A';
+
+        $idx = 0;
+        foreach($stages as $s) {
+            // $results[$idx]['stages'] =  $alphabet_list . '. ' . $s->name;
+            // $results[$idx]['data'] = [];
+            $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'] = [];
+
+            $total = 0;
+
+            foreach($poinA as $pA) {
+                if($pA->subProjectComponent->id_project_stage == $s->id || $pA->subProjectComponent->component->id_project_stage == $s->id) {
+                    $changeType = $pA->id_change_type ? $pA->changeType->name : '';
+                    // $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
+                    // $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
+                    $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
+                    $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+
+                    $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
+                        'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
+                        'id' => $pA->id,
+                        'name' => "$changeType $ronaAwal akibat $component",
+                        'type' => 'subtitle',
+                        'indicator' => $pA->envMonitorPlan->indicator,
+                        'impact_source' => $pA->envMonitorPlan->impact_source,
+                        'collection_method' => $pA->envMonitorPlan->collection_method,
+                        'location' => $pA->envMonitorPlan->location,
+                        'time_frequent' => $pA->envMonitorPlan->time_frequent,
+                        'executor' => $pA->envMonitorPlan->executor,
+                        'supervisor' => $pA->envMonitorPlan->supervisor,
+                        'report_recipient' => $pA->envMonitorPlan->report_recipient,
+                        'description' => $pA->envMonitorPlan->description,
+                    ];
+                    $total++;
+                }
+            }
+            $idx++;
+        }
+
+        return $results;
+    }
+
+    private function getPoinBRpl($stages, $id_project) {
+       $results = [];
+
+        //  =========== POIN B.1 ============= //
+       // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
+       $poinB1 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+       ->where([['id_project', $id_project],['is_managed', true]])->get();
+
+       //  =========== POIN B.2 ============= //
+       // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
+       $poinB2 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+           ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null]])->get();
+
+       // ============ POIN B.3 ============= //
+       // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
+       $poinB3 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+       ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
+           $q->whereDoesntHave('detail', function($query) {
+               $query->where('important_trait', '+P');
+           });
+       })->get();
+
+       $data_merge_1 = $poinB1->merge($poinB2);
+       $data_merge_final = $data_merge_1->merge($poinB3);
+
+       $alphabet_list = 'A';
+
+       $idx = 0;
+       foreach($stages as $s) {
+        //    $results[$idx]['stages'] =  $alphabet_list . '. ' . $s->name;
+        //    $results[$idx]['data'] = [];
+        $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'] = [];
+
+           $total = 0;
+
+           foreach($data_merge_final as $merge) {
+               if($merge->subProjectComponent->id_project_stage == $s->id || $merge->subProjectComponent->component->id_project_stage == $s->id) {
+                   $changeType = $merge->id_change_type ? $merge->changeType->name : '';
+                //    $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
+                //    $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
+                   $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
+                   $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+
+                   $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
+                        'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
+                       'id' => $merge->id,
+                       'name' => "$changeType $ronaAwal akibat $component",
+                       'type' => 'subtitle',
+                       'indicator' => $merge->envMonitorPlan->indicator,
+                       'impact_source' => $merge->envMonitorPlan->impact_source,
+                       'collection_method' => $merge->envMonitorPlan->collection_method,
+                       'location' => $merge->envMonitorPlan->location,
+                       'time_frequent' => $merge->envMonitorPlan->time_frequent,
+                       'executor' => $merge->envMonitorPlan->executor,
+                       'supervisor' => $merge->envMonitorPlan->supervisor,
+                       'report_recipient' => $merge->envMonitorPlan->report_recipient,
+                       'description' => $merge->envMonitorPlan->description,
+                   ];
+                   $total++;
+               }
+           }
+           $idx++;
+       }
+
+       return $results;
     }
 }

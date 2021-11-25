@@ -28,12 +28,12 @@
         <el-tab-pane label="Analisa Dampak Lingkungan" name="andal">
           <Andal v-if="activeName === 'andal'" />
         </el-tab-pane>
-        <el-tab-pane label="Dokumen ANDAL" name="dokumen">
-          <el-row v-if="activeName === 'dokumen'" :gutter="32">
-            <!-- <el-col :sm="12" :md="7">
+        <!-- <el-tab-pane label="Dokumen ANDAL" name="dokumen">
+          <el-row v-if="activeName === 'dokumen'" :gutter="32"> -->
+        <!-- <el-col :sm="12" :md="7">
               <MapList />
             </el-col> -->
-            <el-col :sm="24" :md="15">
+        <!-- <el-col :sm="24" :md="15">
               <DocsFrame />
             </el-col>
             <el-col :sm="24" :md="9">
@@ -50,7 +50,7 @@
               <Comment />
             </el-col>
           </el-row>
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
     </el-card>
   </div>
@@ -60,8 +60,8 @@
 import Andal from '@/views/penyusunan-andal/components/Andal';
 import FormulirKA from '@/views/penyusunan-andal/components/FormulirKA';
 // import MapList from '@/views/penyusunan-andal/components/MapList';
-import DocsFrame from '@/views/penyusunan-andal/components/DocsFrame';
-import Comment from '@/views/penyusunan-andal/components/Comment';
+// import DocsFrame from '@/views/penyusunan-andal/components/DocsFrame';
+// import Comment from '@/views/penyusunan-andal/components/Comment';
 import WorkFlow from '@/components/Workflow';
 
 export default {
@@ -69,8 +69,8 @@ export default {
   components: {
     Andal,
     // MapList,
-    DocsFrame,
-    Comment,
+    // DocsFrame,
+    // Comment,
     WorkFlow,
     FormulirKA,
   },

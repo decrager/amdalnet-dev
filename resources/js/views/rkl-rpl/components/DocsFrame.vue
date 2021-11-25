@@ -93,7 +93,15 @@ export default {
 
           rklResource
             .store(formData)
-            .then((response) => {})
+            .then((response) => {
+              this.$router.push({
+                name: 'projectWorkspace',
+                params: {
+                  id: this.$route.params.id,
+                  filename: `${this.$route.params.id}-rkl-rpl.docx`,
+                },
+              });
+            })
             .catch((error) => {
               console.log(error);
             });
