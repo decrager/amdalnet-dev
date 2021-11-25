@@ -1,191 +1,194 @@
 <template>
   <div>
-    <div id="bagan" class="card__wrapper">
-      <div class="card_first">
-        <el-card class="box-card" style="margin: 10px 0;">
-          <div @click="rencanaKegiatan()">
-            <span>Rencana Kegiatan</span>
-          </div>
-        </el-card>
-        <el-card class="box-card" style="margin: 10px 0;">
-          <div @click="kegiatanLain()">
-            <span>Kegiatan Lain</span>
-          </div>
-        </el-card>
+    <div id="bagan" class="main__wrapper">
+      <div class="card__wrapper">
+        <div class="card_first">
+          <el-card class="box-card" style="margin: 10px 0;">
+            <div slot="header" class="clearfix">
+              <span>Rencana Kegiatan</span>
+            </div>
+            <div v-for="rencana in data.rencana_kegiatan" :key="rencana.id" class="text item">
+              {{ rencana.name }}
+            </div>
+          </el-card>
+          <el-card class="box-card" style="margin: 10px 0;">
+            <div slot="header" class="clearfix">
+              <span>Kegiatan Lain</span>
+            </div>
+            <div v-for="rencana in data.kegiatan_lain" :key="rencana.id" class="text item">
+              {{ rencana.name }}
+            </div>
+          </el-card>
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span>Rona Lingkungan Hidup</span>
+            </div>
+            <div v-for="rencana in data.rona_awal" :key="rencana.id" class="text item">
+              {{ rencana.name }}
+            </div>
+          </el-card>
+          <el-card class="box-card" style="margin: 10px 0;">
+            <div slot="header" class="clearfix">
+              <span>Saran Tanggapan dan Pendapat Masyarakat</span>
+            </div>
+            <div v-for="rencana in data.feedback" :key="rencana.id" class="text item">
+              <span>Kekhawatiran :</span>
+              <ul>
+                <li>{{ rencana.concern }}</li>
+              </ul>
 
-        <el-card class="box-card" style="margin: 10px 0;">
-          <div @click="rona()">
-            <span>Rona Lingkungan Hidup</span>
-          </div>
-        </el-card>
+              <br>
+              <span>Harapan :</span>
+              <ul>
+                <li>{{ rencana.expectation }}</li>
+              </ul>
+            </div>
+          </el-card>
+          <div class="first_horizontal_line" />
+        </div>
 
-        <el-card class="box-card" style="margin: 10px 0;">
-          <div @click="feedback()">
-            <span>Saran Tanggapan dan Pendapat Masyarakat</span>
-          </div>
-        </el-card>
+        <div class="card_second">
+          <el-card class="box-card" style="margin: 10px 0;">
+            <div slot="header" class="clearfix">
+              <span>Identifikasi Dampak Potensial</span>
+            </div>
+            <div class="text item">
+              <ul>
+                <li>-</li>
+              </ul>
+            </div>
+          </el-card>
+        </div>
+
+        <div class="card_third">
+          <el-card class="box-card" style="margin: 10px 0;">
+            <div slot="header" class="clearfix">
+              <span>Dampak Potensial</span>
+            </div>
+            <div class="text item">
+              <p>Pra-konstruksi :</p>
+              <ul>
+                <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
+                <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
+              </ul>
+              <p>Konstruksi :</p>
+              <ul>
+                <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
+                <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
+              </ul>
+            </div>
+          </el-card>
+        </div>
+
+        <div class="card_fourth">
+          <el-card class="box-card" style="margin: 10px 0;">
+            <div slot="header" class="clearfix">
+              <span>Evaluasi Dampak Penting</span>
+            </div>
+            <div class="text item">
+              <ul>
+                <li>Besaran rencana Usaha dan/atau Kegiatan yang menyebabkan dampak tersebut dan rencana pengelolaan lingkungan awal yang menjadi bagian rencana Usaha dan/atau kegiatan untuk menanggulangi dampak</li>
+                <li>Kondisi rona lingkungan yang ada termasuk kemampuan mendukung Usaha dan/atau kegiatan tersebut atau tidak</li>
+              </ul>
+            </div>
+          </el-card>
+        </div>
+
+        <div class="card_fifth">
+          <el-card class="box-card" style="margin: 10px 0;">
+            <div slot="header" class="clearfix">
+              <span>Dampak Penting Hipotetik</span>
+            </div>
+            <div class="text item">
+              <p>Pra-konstruksi :</p>
+              <ul>
+                <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
+                <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
+              </ul>
+              <p>Konstruksi :</p>
+              <ul>
+                <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
+                <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
+              </ul>
+            </div>
+          </el-card>
+        </div>
       </div>
-
-      <div class="card_second">
-        <el-card class="box-card" style="margin: 10px 0;">
-          <span>Identifikasi Dampak Potensial</span>
-        </el-card>
-      </div>
-
-      <div class="card_third">
-        <el-card class="box-card" style="margin: 10px 0;">
-          <span>Dampak Potensial</span>
-        </el-card>
-      </div>
-
-      <div class="card_fourth">
-        <el-card class="box-card" style="margin: 10px 0;">
-          <span>Evaluasi Dampak Penting</span>
-        </el-card>
-      </div>
-
-      <div class="card_fifth">
-        <el-card class="box-card" style="margin: 10px 0;">
-          <span>Dampak Penting Hipotetik</span>
-        </el-card>
-      </div>
-
+      <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning" @click="download">Export PDF</el-button></el-col>
+      <div id="pdf" />
     </div>
-
-    <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning" @click="download">Export PDF</el-button></el-col>
-    <div id="pdf" />
-
-    <div v-if="showRencanaKegiatan">
-      <rencana-kegiatan
-        :selected-rencana-kegiatan="selectedRencanaKegiatan"
-        :open-rencana-kegiatan="showRencanaKegiatanDialog"
-      />
-    </div>
-
-    <div v-if="showKegiatanLain">
-      <kegiatan-lain
-        :selected-kegiatan-lain="selectedKegiatanLain"
-        :open-kegiatan-lain="showKegiatanLainDialog"
-      />
-    </div>
-
-    <div v-if="showRona">
-      <rona-lingkungan-hidup
-        :selected-rona="selectedRona"
-        :open-rona="showRonaDialog"
-      />
-    </div>
-
-    <div v-if="showFeedback">
-      <feedbacks
-        :selected-feedback="selectedFeedback"
-        :open-feedback="showFeedbackDialog"
-      />
-    </div>
-
   </div>
 </template>
 
 <script>
+// import go from 'gogogojsvue';
 import axios from 'axios';
 import * as html2canvas from 'html2canvas';
 import JsPDF from 'jspdf';
-import RencanaKegiatan from './modal-bagan-alir/RencanaKegiatan.vue';
-import KegiatanLain from './modal-bagan-alir/KegiatanLain.vue';
-import Feedbacks from './modal-bagan-alir/KegiatanLain.vue';
 
 export default {
-  components: {
-    RencanaKegiatan,
-    KegiatanLain,
-    Feedbacks,
-  },
   data() {
     return {
+      flowChart: null,
       projectId: this.$route.params && this.$route.params.id,
-      selectedRencanaKegiatan: {},
-      showRencanaKegiatanDialog: false,
-      showRencanaKegiatan: false,
-      selectedKegiatanLain: {},
-      showKegiatanLainDialog: false,
-      showKegiatanLain: false,
-      selectedRona: {},
-      showRonaDialog: false,
-      showRona: false,
-      selectedFeedback: {},
-      showFeedbackDialog: false,
-      showFeedback: false,
+      data: [],
     };
   },
+  created() {
+    this.getData();
+
+    html2canvas(document.querySelector('#bagan'), { imageTimeout: 1000, useCORS: true }).then(canvas => {
+      document.getElementById('pdf').appendChild(canvas);
+      const img = canvas.toDataURL('image/png');
+      const pdf = new JsPDF('landscape', 'mm', 'a3');
+      pdf.addImage(img, 'PNG', 5, 5, 410, 240);
+      document.getElementById('pdf').innerHTML = '';
+    });
+  },
   methods: {
-    async rencanaKegiatan() {
-      this.showRencanaKegiatan = true;
-      this.selectedRencanaKegiatan = {};
-      this.showRencanaKegiatanDialog = true;
-      await axios.get('/api/bagan-alir/' + this.projectId)
-        .then(response => {
-          this.selectedRencanaKegiatan = response.data.rencana_kegiatan;
-        });
-    },
-    async kegiatanLain() {
-      this.showKegiatanLain = true;
-      this.selectedKegiatanLain = {};
-      this.showKegiatanLainDialog = true;
-      await axios.get('/api/bagan-alir/' + this.projectId)
-        .then(response => {
-          this.selectedKegiatanLain = response.data.kegiatan_lain;
-        });
-    },
-    async rona() {
-      this.showRona = true;
-      this.selectedRona = {};
-      this.showRonaDialog = true;
-      await axios.get('/api/bagan-alir/' + this.projectId)
-        .then(response => {
-          this.selectedRona = response.data.rona_awal;
-        });
-    },
-    async feedback() {
-      this.showFeedback = true;
-      this.selectedFeedback = {};
-      this.showFeedbackDialog = true;
-      await axios.get('/api/bagan-alir/' + this.projectId)
-        .then(response => {
-          this.selectedFeedback = response.data.feedback;
+    getData() {
+      axios.get('api/bagan-alir/' + this.projectId)
+        .then((response) => {
+          this.data = response.data;
         });
     },
     download() {
       html2canvas(document.querySelector('#bagan'), { imageTimeout: 1000, useCORS: true }).then(canvas => {
+        document.getElementById('pdf').appendChild(canvas);
         const img = canvas.toDataURL('image/png');
         const pdf = new JsPDF('landscape', 'mm', 'a3');
-        pdf.addImage(img, 'PNG', 5, 5, 400, 95);
+        pdf.addImage(img, 'PNG', 5, 5, 410, 240);
         pdf.save('Bagan Alir Formulir KA.pdf');
         document.getElementById('pdf').innerHTML = '';
       });
+    },
+    handleCancelComponent(){
+      this.showRencanaKegiatan = false;
     },
   },
 };
 </script>
 
 <style>
-.flow__chart {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
+.main__wrapper {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
 }
 
 .card__wrapper {
     display: flex;
     flex-direction: row;
     column-gap: 50px;
-}
+    margin: 0;
+    padding: 0;
+    width: 1570px;
+    height: 1000px;
+    /* overflow-x: scroll;
+    overflow-y: scroll; */
 
-.card__wrapper .el-card{
-    background-color: #3FDC6B;
-    color: white;
-    cursor: pointer;
-    text-align: center
 }
 
 .card__wrapper .card_first {
@@ -196,16 +199,19 @@ export default {
     flex-direction: column;
 }
 
-.card__wrapper
+.card__wrapper .first_horizontal_line {
+  position: absolute;
+  top: 677px;
+  left: 370px;
+  width: 2px;
+  height: 44%;
+  background-color: #55BF73
+}
+/*
 .card_first::before{
   content: "";
-    position: absolute;
-    top: 550px;
-    left: 370px;
-    width: 2px;
-    height: 27.5%;
-    background-color: #3FDC6B
-}
+
+} */
 
 .card__wrapper ul li {
     z-index: 10;
@@ -220,7 +226,7 @@ export default {
     height: 2px;
     content: '';
     position: absolute;
-    background-color: #3FDC6B;
+    background-color: #55BF73;
     left: 18%;
     z-index: 1
 }
@@ -233,7 +239,7 @@ export default {
     height: 2px;
     content: '';
     position: absolute;
-    background-color: #3FDC6B;
+    background-color: #55BF73;
     left: 22%;
     z-index: 1;
     top: 705px;
@@ -255,25 +261,26 @@ export default {
     top: 705px;
     left: 530px;
     width: 2px;
-    height: 8%;
-    background-color: #3FDC6B
+    height: 22%;
+    background-color: #55BF73
 }
 
 .card__wrapper .card_third {
     flex: 1;
-    justify-content: center;
-    align-content: center;
+    justify-content: flex-start;
+    align-content: flex-start;
     display: flex;
     flex-direction: column;
+    margin-top: 50px;
 }
 
 .card__wrapper .card_fourth {
     flex: 1;
-    justify-content: center;
-    align-content: center;
+    justify-content: flex-end;
+    align-content: flex-end;
     display: flex;
     flex-direction: column;
-    margin-top: 150px;
+    margin-bottom: 100px;
 }
 
 .card__wrapper
@@ -283,24 +290,29 @@ export default {
     top: 705px;
     left: 1160px;
     width: 2px;
-    height: 8%;
-    background-color: #3FDC6B
+    height: 19%;
+    background-color: #55BF73
 }
 
 .card__wrapper .card_fifth {
     flex: 1;
-    justify-content: center;
-    align-content: center;
+    justify-content: flex-start;
+    align-content: flex-start;
     display: flex;
     flex-direction: column;
+    margin-top: 50px;
 }
 /* .card__wrapper {
     max-height: 800px;
 } */
 .card__wrapper .el-card .el-card__header {
-    background-color: #3FDC6B;
+    background-color: #55BF73;
     font-weight: bold;
     color: white;
+}
+.card__wrapper .el-card .el-card__body {
+    background-color: #55BF73;
+    color: white
 }
 
 /* @media screen and (max-width: 1280px) {
