@@ -1,134 +1,79 @@
 <template>
-  <div class="card__wrapper">
-    <div class="card_first">
-      <el-card class="box-card" style="margin: 10px 0;">
-        <div slot="header" class="clearfix">
-          <span>Rencana Kegiatan</span>
+  <div>
+    <div id="bagan" class="card__wrapper">
+      <div class="card_first">
+        <div @click="rencanaKegiatan">
+          <el-card class="box-card" style="margin: 10px 0;">
+            <span>Rencana Kegiatan</span>
+          </el-card>
         </div>
-        <div v-for="rencana in data.rencana_kegiatan" :key="rencana.id" class="text item">
-          {{ rencana.name }}
-        </div>
-      </el-card>
-      <el-card class="box-card" style="margin: 10px 0;">
-        <div slot="header" class="clearfix">
+        <el-card class="box-card" style="margin: 10px 0;">
           <span>Kegiatan Lain</span>
-        </div>
-        <div v-for="rencana in data.kegiatan_lain" :key="rencana.id" class="text item">
-          {{ rencana.name }}
-        </div>
-      </el-card>
-      <el-card class="box-card">
-        <div slot="header" class="clearfix">
+        </el-card>
+        <el-card class="box-card" style="margin: 10px 0;">
           <span>Rona Lingkungan Hidup</span>
-        </div>
-        <div v-for="rencana in data.rona_awal" :key="rencana.id" class="text item">
-          {{ rencana.name }}
-        </div>
-      </el-card>
-      <el-card class="box-card" style="margin: 10px 0;">
-        <div slot="header" class="clearfix">
+        </el-card>
+        <el-card class="box-card" style="margin: 10px 0;">
           <span>Saran Tanggapan dan Pendapat Masyarakat</span>
-        </div>
-        <div v-for="rencana in data.feedback" :key="rencana.id" class="text item">
-          <span>Kekhawatiran :</span>
-          <ul>
-            <li>{{ rencana.concern }}</li>
-          </ul>
+        </el-card>
+      </div>
 
-          <br>
-          <span>Harapan :</span>
-          <ul>
-            <li>{{ rencana.expectation }}</li>
-          </ul>
-        </div>
-      </el-card>
-    </div>
-
-    <div class="card_second">
-      <el-card class="box-card" style="margin: 10px 0;">
-        <div slot="header" class="clearfix">
+      <div class="card_second">
+        <el-card class="box-card" style="margin: 10px 0;">
           <span>Identifikasi Dampak Potensial</span>
-        </div>
-        <div class="text item">
-          <ul>
-            <li>-</li>
-          </ul>
-        </div>
-      </el-card>
-    </div>
+        </el-card>
+      </div>
 
-    <div class="card_third">
-      <el-card class="box-card" style="margin: 10px 0;">
-        <div slot="header" class="clearfix">
+      <div class="card_third">
+        <el-card class="box-card" style="margin: 10px 0;">
           <span>Dampak Potensial</span>
-        </div>
-        <div class="text item">
-          <p>Pra-konstruksi :</p>
-          <ul>
-            <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
-            <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
-          </ul>
-          <p>Konstruksi :</p>
-          <ul>
-            <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
-            <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
-          </ul>
-        </div>
-      </el-card>
-    </div>
+        </el-card>
+      </div>
 
-    <div class="card_fourth">
-      <el-card class="box-card" style="margin: 10px 0;">
-        <div slot="header" class="clearfix">
+      <div class="card_fourth">
+        <el-card class="box-card" style="margin: 10px 0;">
           <span>Evaluasi Dampak Penting</span>
-        </div>
-        <div class="text item">
-          <ul>
-            <li>Besaran rencana Usaha dan/atau Kegiatan yang menyebabkan dampak tersebut dan rencana pengelolaan lingkungan awal yang menjadi bagian rencana Usaha dan/atau kegiatan untuk menanggulangi dampak</li>
-            <li>Kondisi rona lingkungan yang ada termasuk kemampuan mendukung Usaha dan/atau kegiatan tersebut atau tidak</li>
-            <li>Pengaruh rencana Usaha dan/atau Kegiatan terhadap kondisi Usaha dan/atau kegiatan lain di sekitar lokasi</li>
-            <li>Intensitas perhatian masyarakat terhadap rencana Usaha dan/atau Kegiatan baik harapan, dan kekhawatiran persetujuan atau penolakan terhadap rencana Usaha  dan/atau Kegiatan  rencana Usaha dan/atau Kegiatan atau sebaliknya</li>
-          </ul>
-        </div>
-      </el-card>
+        </el-card>
+      </div>
+
+      <div class="card_fifth">
+        <el-card class="box-card" style="margin: 10px 0;">
+          <span>Dampak Penting Hipotetik</span>
+        </el-card>
+      </div>
+
+      <div v-show="showRencanaKegiatan">
+        <RencanaKegiatan
+          :selected-rencana-kegiatan="selectedRencanaKegiatan"
+          :show="showRencanaKegiatanDialog"
+        />
+      </div>
+
     </div>
 
-    <div class="card_fifth">
-      <el-card class="box-card" style="margin: 10px 0;">
-        <div slot="header" class="clearfix">
-          <span>Dampak Penting Hipotetik</span>
-        </div>
-        <div class="text item">
-          <p>Pra-konstruksi :</p>
-          <ul>
-            <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
-            <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
-          </ul>
-          <p>Konstruksi :</p>
-          <ul>
-            <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
-            <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
-          </ul>
-        </div>
-      </el-card>
-    </div>
+    <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning" @click="download">Export PDF</el-button></el-col>
+    <div id="pdf" />
   </div>
 </template>
 
 <script>
-// import go from 'gogogojsvue';
 import axios from 'axios';
+import * as html2canvas from 'html2canvas';
+import JsPDF from 'jspdf';
+import RencanaKegiatan from './modal-bagan-alir/RencanaKegiatan.vue';
 
 export default {
+  components: {
+    RencanaKegiatan,
+  },
   data() {
     return {
-      flowChart: null,
       projectId: this.$route.params && this.$route.params.id,
       data: [],
+      selectedRencanaKegiatan: {},
+      showRencanaKegiatanDialog: false,
+      showRencanaKegiatan: false,
     };
-  },
-  created() {
-    this.getData();
   },
   methods: {
     getData() {
@@ -136,6 +81,27 @@ export default {
         .then((response) => {
           this.data = response.data;
         });
+    },
+    rencanaKegiatan() {
+      this.selectedRencanaKegiatan = {};
+      this.showRencanaKegiatanDialog = true;
+      axios.get('/api/bagan-alir/' + this.projectId)
+        .then(response => {
+          this.selectedRencanaKegiatan = response.data.rencana_kegiatan;
+          console.log('rencana : ' + this.selectedRencanaKegiatan);
+        });
+    },
+    download() {
+      html2canvas(document.querySelector('#bagan'), { imageTimeout: 1000, useCORS: true }).then(canvas => {
+        const img = canvas.toDataURL('image/png');
+        const pdf = new JsPDF('landscape', 'mm', 'a3');
+        pdf.addImage(img, 'PNG', 5, 5, 400, 95);
+        pdf.save('Bagan Alir Formulir KA.pdf');
+        document.getElementById('pdf').innerHTML = '';
+      });
+    },
+    handleCancelComponent(){
+      this.showRencanaKegiatan = false;
     },
   },
 };
@@ -155,12 +121,62 @@ export default {
     column-gap: 50px;
 }
 
+.card__wrapper .el-card{
+    background-color: #3FDC6B;
+    color: white;
+    cursor: pointer;
+    text-align: center
+}
+
 .card__wrapper .card_first {
     flex: 1;
     justify-content: flex-start;
     align-content: flex-start;
     display: flex;
-    flex-direction: column
+    flex-direction: column;
+}
+
+.card__wrapper
+.card_first::before{
+  content: "";
+    position: absolute;
+    top: 550px;
+    left: 370px;
+    width: 2px;
+    height: 27.5%;
+    background-color: #3FDC6B
+}
+
+.card__wrapper ul li {
+    z-index: 10;
+    position: relative;
+}
+
+.card__wrapper
+.card_first
+.el-card
+.el-card__body::after {
+    width: 4%;
+    height: 2px;
+    content: '';
+    position: absolute;
+    background-color: #3FDC6B;
+    left: 18%;
+    z-index: 1
+}
+
+.card__wrapper
+.card_third
+.el-card
+.el-card__body::after {
+    width: 60%;
+    height: 2px;
+    content: '';
+    position: absolute;
+    background-color: #3FDC6B;
+    left: 22%;
+    z-index: 1;
+    top: 705px;
 }
 
 .card__wrapper .card_second {
@@ -168,33 +184,55 @@ export default {
     justify-content: center;
     align-content: center;
     display: flex;
-    flex-direction: column
+    flex-direction: column;
+    margin-top: 150px;
+}
+
+.card__wrapper
+.card_second::before{
+    content: "";
+    position: absolute;
+    top: 705px;
+    left: 530px;
+    width: 2px;
+    height: 8%;
+    background-color: #3FDC6B
 }
 
 .card__wrapper .card_third {
     flex: 1;
-    justify-content: flex-start;
-    align-content: flex-start;
+    justify-content: center;
+    align-content: center;
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
 }
 
 .card__wrapper .card_fourth {
     flex: 1;
-    justify-content: flex-end;
-    align-content: flex-end;
+    justify-content: center;
+    align-content: center;
     display: flex;
-    flex-direction: column
+    flex-direction: column;
+    margin-top: 150px;
+}
+
+.card__wrapper
+.card_fourth::before{
+    content: "";
+    position: absolute;
+    top: 705px;
+    left: 1160px;
+    width: 2px;
+    height: 8%;
+    background-color: #3FDC6B
 }
 
 .card__wrapper .card_fifth {
     flex: 1;
-    justify-content: flex-start;
-    align-content: flex-start;
+    justify-content: center;
+    align-content: center;
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
 }
 /* .card__wrapper {
     max-height: 800px;
@@ -204,8 +242,55 @@ export default {
     font-weight: bold;
     color: white;
 }
-.card__wrapper .el-card .el-card__body {
-    background-color: #55BF73;
-    color: white
-}
+
+/* @media screen and (max-width: 1280px) {
+  .card__wrapper .card_first .el-card {
+      font-weight: 8px;
+  }
+
+  .card__wrapper .card_second .el-card {
+      font-weight: 8px;
+  }
+
+  .card__wrapper .card_third .el-card {
+      font-weight: 8px;
+  }
+
+  .card__wrapper .card_fourth .el-card {
+      font-weight: 8px;
+  }
+
+  .card__wrapper .card_fifth .el-card {
+      font-weight: 8px;
+  }
+
+  .card__wrapper
+  .card_fourth::before{
+      display: none;
+  }
+
+  .card__wrapper
+  .card_second::before{
+      display: none;
+  }
+
+  .card__wrapper
+  .card_first
+  .el-card:nth-child(2)
+  .el-card__body:after {
+      display: none;
+  }
+
+  .card__wrapper
+  .card_first
+  .el-card
+  .el-card__body::after {
+      display: none;
+  }
+
+  .card__wrapper
+  .card_first::before{
+    display: none;
+  }
+} */
 </style>
