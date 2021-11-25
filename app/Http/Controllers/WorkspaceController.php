@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Entity\Workspace;
+use Illuminate\Support\Facades\Log;
 
 class WorkspaceController extends Controller
 {
@@ -71,7 +72,7 @@ class WorkspaceController extends Controller
         if ($request->file('file') !== null){
             //create file
             $file = $request->file('file');
-            $dir = 'workspace/template';
+            $dir = 'workspace';
             $path = $file->store($dir);
             $pathfile = Storage::path($path);
             // var_dump($path, $pathfile);
@@ -90,9 +91,12 @@ class WorkspaceController extends Controller
      */
     public function getConfig(Request $request, String $id) {
         $currentUser = Auth::user();
-        $officeUrl = env('MIX_OFFICE_URL'); 
-        $officeSecret = env('OFFICE_SECRET');
+        // $officeUrl = env('MIX_OFFICE_URL'); 
+        // $officeSecret = env('OFFICE_SECRET');
         $appUrl = env('APP_URL');
+        $callUrl = env('OFFICE_CALLBACK_URL');
+        $filename = $request->query('filename', 'sample.docx');
+        $dockey = md5($filename.$id);
         $config = [
             'width' => '100%',
             'height' => '100%',
@@ -100,9 +104,10 @@ class WorkspaceController extends Controller
             'documentType' => 'word',
             'document' => [
                 'fileType' => 'docx',
-                'key' => '-1472914638',
+                'key' => $dockey,
                 'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
-                'url' => $officeUrl.'/example/download?fileName=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=36.72.20.141__172.17.0.1',
+                // 'url' => $appUrl.'/workspace/document/download?fileName=61943e88ad99a.docx',
+                'url' => $callUrl.'/storage/workspace/'.$filename,
                 'permissions' => [
                     'fillForms' => true,
                     'edit' => true,
@@ -141,17 +146,17 @@ class WorkspaceController extends Controller
                     'logo' => [
                         'image' => $appUrl.'/images/logo-amdal-white.png',
                         'imageEmbedded' => $appUrl.'/images/logo-amdal-white.png',
-                        'url' => '',
+                        'url' => $appUrl.'/images/logo-amdal-white.png',
                     ],
                 ],
-                'callbackUrl' => $officeUrl.'/example/track?filename=UKL%20UPL%20SPBU%20-%20Edit%20Nafila_edit%20FM.docx&useraddress=36.72.20.141__172.17.0.1',
+                'callbackUrl' => $callUrl.'/api/workspace/document/track?'.$filename,
             ],
         ];
         return response()->json($config);
     }
 
     /**
-     * Track for workspace editor
+     * Track from workspace editor
      *
      * @param Request $request
      * @param String $id
@@ -159,8 +164,42 @@ class WorkspaceController extends Controller
      */
     public function track(Request $request)
     {
-        $result["error"] = 0;
-        // $data = $request->
+        Log::debug('Track DOC: '. serialize($request->query()));
+        $workspace = new Workspace();
+        $result['error'] = 0;
+        $data = $request->json()->all();
+        if (isset($data['error'])) {
+            return response()->json($data);
+        }
+        Log::debug('Track Data: '. json_encode($data));
+
+        $status = $workspace->getTrackStatus($data['status']);
+
+        $userAddress = $request->query('userAddress');
+        $fileName = basename($request->query('fileName'));
+
+        switch ($status) {
+            case 'Editing':  // status == 1
+                if ($data['actions'] && $data['actions'][0]['type'] == 0) {   // finished edit
+                    $user = $data['actions'][0]['userid'];  // the user who finished editing
+                    if (array_search($user, $data['users']) === FALSE) {
+                        $commandRequest = $workspace->commandRequest('forcesave', $data['key']);  // create a command request with the forcasave method
+                        Log::debug('CommandRequest forcesave: ' . serialize($commandRequest));
+                    }
+                }
+                break;
+            case "MustSave":  // status == 2
+            case "Corrupted":  // status == 3
+                $result = $workspace->processSave($data, $fileName, $userAddress);
+                break;
+            case "MustForceSave":  // status == 6
+            case "CorruptedForceSave":  // status == 7
+                $result = $workspace->processForceSave($data, $fileName, $userAddress);
+                break;
+        }
+
+        $result['status'] = 'success';
+        return response()->json($result);
     }
 
     /**
@@ -182,7 +221,8 @@ class WorkspaceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function download(Request $request)
-    {   
+    {
+
     }
 
     /**
@@ -204,6 +244,31 @@ class WorkspaceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function delete(Request $request)
-    {   
+    {
+
+    }
+
+    /**
+     * Files list files on workspace server
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function files(Request $request)
+    {
+        
+    }
+
+    /**
+     * Assets list files on workspace server
+     *
+     * @param Request $request
+     * @param String $id
+     * @return \Illuminate\Http\Response
+     */
+    public function assets(Request $request)
+    {
+        
     }
 }

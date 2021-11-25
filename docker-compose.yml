@@ -77,7 +77,7 @@ services:
   onlyoffice:
     image: onlyoffice/documentserver-de
     ports:
-      - "80:80"
+      - "8008:80"
 
     
 

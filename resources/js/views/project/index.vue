@@ -188,7 +188,7 @@
                   Uji KA
                 </el-button>
                 <el-button
-                  v-if="isAdmin || isSubtance || isExaminer"
+                  v-if="isAdmin || isSubtance || isExaminer || isFormulator"
                   href="#"
                   type="text"
                   icon="el-icon-document"

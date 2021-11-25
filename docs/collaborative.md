@@ -34,11 +34,19 @@ AMDAL
 - 
 
 Onlyoffice:
-- user integration
-- langguage
-- custom toolbar
-- protect
-
+- user integration -> ok
+- comment -> ok
+- review -> ok
+- langguage: id -> not ok
+- custom toolbar -> build source
+- protect -> still explore
+- templating -> still explore
+  - import 
+  - variabels
+  * candidate, tech:
+  - docbuilder
+  - phpoffice
+- Export
 
 
 sudo docker run -i -t -d -p 9000:80 --restart=always --name onlyoffice-document-server \
