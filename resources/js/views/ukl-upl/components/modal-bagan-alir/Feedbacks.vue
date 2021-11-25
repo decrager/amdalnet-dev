@@ -1,15 +1,17 @@
 <template>
   <div class="modal__container">
     <el-dialog
-      title="Rencana Kegiatan"
+      title="Saran Tanggapan dan Pendapat Masyarakat"
       :close-on-click-modal="false"
-      :visible.sync="openRencanaKegiatan"
+      :visible.sync="openFeedback"
       :modal-append-to-body="false"
-      :show-close="false"
       width="20%"
     >
-      <ul v-for="rencana in selectedRencanaKegiatan" :key="rencana.id">
-        <li>{{ rencana.name }}</li>
+      <ul v-for="feedback in selectedFeedback" :key="feedback.id">
+        <span>Kekhawatiran</span>
+        <li>{{ feedback.convern }}</li>
+        <span>Harapan</span>
+        <li>{{ feedback.expectation }}</li>
       </ul>
       <el-button type="danger" class="button-cancel" style="width:100%;" @click="closeDialog()">
         Tutup
@@ -20,14 +22,14 @@
 
 <script>
 export default {
-  name: 'RencanaKegiatan',
+  name: 'Feedbacks',
   props: {
-    selectedRencanaKegiatan: {
+    selectedFeedback: {
       type: Object,
       default: () => {
       },
     },
-    openRencanaKegiatan: Boolean,
+    openFeedback: Boolean,
   },
   methods: {
     closeDialog() {

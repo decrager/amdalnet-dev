@@ -2,19 +2,27 @@
   <div>
     <div id="bagan" class="card__wrapper">
       <div class="card_first">
-        <div @click="rencanaKegiatan">
-          <el-card class="box-card" style="margin: 10px 0;">
+        <el-card class="box-card" style="margin: 10px 0;">
+          <div @click="rencanaKegiatan()">
             <span>Rencana Kegiatan</span>
-          </el-card>
-        </div>
-        <el-card class="box-card" style="margin: 10px 0;">
-          <span>Kegiatan Lain</span>
+          </div>
         </el-card>
         <el-card class="box-card" style="margin: 10px 0;">
-          <span>Rona Lingkungan Hidup</span>
+          <div @click="kegiatanLain()">
+            <span>Kegiatan Lain</span>
+          </div>
         </el-card>
+
         <el-card class="box-card" style="margin: 10px 0;">
-          <span>Saran Tanggapan dan Pendapat Masyarakat</span>
+          <div @click="rona()">
+            <span>Rona Lingkungan Hidup</span>
+          </div>
+        </el-card>
+
+        <el-card class="box-card" style="margin: 10px 0;">
+          <div @click="feedback()">
+            <span>Saran Tanggapan dan Pendapat Masyarakat</span>
+          </div>
         </el-card>
       </div>
 
@@ -42,17 +50,39 @@
         </el-card>
       </div>
 
-      <div v-show="showRencanaKegiatan">
-        <RencanaKegiatan
-          :selected-rencana-kegiatan="selectedRencanaKegiatan"
-          :show="showRencanaKegiatanDialog"
-        />
-      </div>
-
     </div>
 
     <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning" @click="download">Export PDF</el-button></el-col>
     <div id="pdf" />
+
+    <div v-if="showRencanaKegiatan">
+      <rencana-kegiatan
+        :selected-rencana-kegiatan="selectedRencanaKegiatan"
+        :open-rencana-kegiatan="showRencanaKegiatanDialog"
+      />
+    </div>
+
+    <div v-if="showKegiatanLain">
+      <kegiatan-lain
+        :selected-kegiatan-lain="selectedKegiatanLain"
+        :open-kegiatan-lain="showKegiatanLainDialog"
+      />
+    </div>
+
+    <div v-if="showRona">
+      <rona-lingkungan-hidup
+        :selected-rona="selectedRona"
+        :open-rona="showRonaDialog"
+      />
+    </div>
+
+    <div v-if="showFeedback">
+      <feedbacks
+        :selected-feedback="selectedFeedback"
+        :open-feedback="showFeedbackDialog"
+      />
+    </div>
+
   </div>
 </template>
 
@@ -61,34 +91,67 @@ import axios from 'axios';
 import * as html2canvas from 'html2canvas';
 import JsPDF from 'jspdf';
 import RencanaKegiatan from './modal-bagan-alir/RencanaKegiatan.vue';
+import KegiatanLain from './modal-bagan-alir/KegiatanLain.vue';
+import Feedbacks from './modal-bagan-alir/KegiatanLain.vue';
 
 export default {
   components: {
     RencanaKegiatan,
+    KegiatanLain,
+    Feedbacks,
   },
   data() {
     return {
       projectId: this.$route.params && this.$route.params.id,
-      data: [],
       selectedRencanaKegiatan: {},
       showRencanaKegiatanDialog: false,
       showRencanaKegiatan: false,
+      selectedKegiatanLain: {},
+      showKegiatanLainDialog: false,
+      showKegiatanLain: false,
+      selectedRona: {},
+      showRonaDialog: false,
+      showRona: false,
+      selectedFeedback: {},
+      showFeedbackDialog: false,
+      showFeedback: false,
     };
   },
   methods: {
-    getData() {
-      axios.get('api/bagan-alir/' + this.projectId)
-        .then((response) => {
-          this.data = response.data;
-        });
-    },
-    rencanaKegiatan() {
+    async rencanaKegiatan() {
+      this.showRencanaKegiatan = true;
       this.selectedRencanaKegiatan = {};
       this.showRencanaKegiatanDialog = true;
-      axios.get('/api/bagan-alir/' + this.projectId)
+      await axios.get('/api/bagan-alir/' + this.projectId)
         .then(response => {
           this.selectedRencanaKegiatan = response.data.rencana_kegiatan;
-          console.log('rencana : ' + this.selectedRencanaKegiatan);
+        });
+    },
+    async kegiatanLain() {
+      this.showKegiatanLain = true;
+      this.selectedKegiatanLain = {};
+      this.showKegiatanLainDialog = true;
+      await axios.get('/api/bagan-alir/' + this.projectId)
+        .then(response => {
+          this.selectedKegiatanLain = response.data.kegiatan_lain;
+        });
+    },
+    async rona() {
+      this.showRona = true;
+      this.selectedRona = {};
+      this.showRonaDialog = true;
+      await axios.get('/api/bagan-alir/' + this.projectId)
+        .then(response => {
+          this.selectedRona = response.data.rona_awal;
+        });
+    },
+    async feedback() {
+      this.showFeedback = true;
+      this.selectedFeedback = {};
+      this.showFeedbackDialog = true;
+      await axios.get('/api/bagan-alir/' + this.projectId)
+        .then(response => {
+          this.selectedFeedback = response.data.feedback;
         });
     },
     download() {
@@ -99,9 +162,6 @@ export default {
         pdf.save('Bagan Alir Formulir KA.pdf');
         document.getElementById('pdf').innerHTML = '';
       });
-    },
-    handleCancelComponent(){
-      this.showRencanaKegiatan = false;
     },
   },
 };
