@@ -444,7 +444,7 @@ export default {
       currentProject.field = Number(currentProject.field);
       currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
 
-      // this.$router.push({
+      // this.$router.push({a
       //   name: 'createProject',
       //   params: { project: currentProject },
       // });
