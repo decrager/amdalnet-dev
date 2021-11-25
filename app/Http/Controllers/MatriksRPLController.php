@@ -439,7 +439,7 @@ class MatriksRPLController extends Controller
      private function getPoinA($stages, $id_project) {
          $results = [];
 
-         $poinA = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+         $poinA = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
          ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
              $q->whereHas('detail', function($query) {
                  $query->where('important_trait', '+P');
@@ -456,12 +456,12 @@ class MatriksRPLController extends Controller
              $total = 0;
  
              foreach($poinA as $pA) {
-                 if($pA->subProjectComponent->id_project_stage == $s->id || $pA->subProjectComponent->component->id_project_stage == $s->id) {
+                 if($pA->component->id_project_stage == $s->id || $pA->component->component->id_project_stage == $s->id) {
                      $changeType = $pA->id_change_type ? $pA->changeType->name : '';
-                    //  $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
-                    //  $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
-                     $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
-                     $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+                     $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
+                     $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
+                    //  $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
+                    //  $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
  
                      $results[$idx]['data'][] = [
                          'no' => $total + 1,
@@ -492,17 +492,17 @@ class MatriksRPLController extends Controller
 
          //  =========== POIN B.1 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-        $poinB1 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB1 = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_managed', true]])->get();
 
         //  =========== POIN B.2 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-        $poinB2 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB2 = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null]])->get();
 
         // ============ POIN B.3 ============= //
         // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
-        $poinB3 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB3 = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
             $q->whereDoesntHave('detail', function($query) {
                 $query->where('important_trait', '+P');
@@ -522,12 +522,12 @@ class MatriksRPLController extends Controller
             $total = 0;
 
             foreach($data_merge_final as $merge) {
-                if($merge->subProjectComponent->id_project_stage == $s->id || $merge->subProjectComponent->component->id_project_stage == $s->id) {
+                if($merge->component->id_project_stage == $s->id || $merge->component->component->id_project_stage == $s->id) {
                     $changeType = $merge->id_change_type ? $merge->changeType->name : '';
-                    // $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
-                    // $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
-                    $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                    $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                    $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
+                    $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
+                    // $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
+                    // $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
 
                     $results[$idx]['data'][] = [
                         'no' => $total + 1,
