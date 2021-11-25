@@ -10,6 +10,8 @@ use App\Laravue\Faker;
 use App\Laravue\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChangeTypeController;
+use App\Http\Controllers\PieParamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -221,3 +223,5 @@ Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
+Route::get('change-types', [ChangeTypeController::class, 'index']);
+Route::get('pie-params', [PieParamController::class, 'index']);

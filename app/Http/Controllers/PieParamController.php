@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\MasterPotentialImpactEvaluationParam;
 use Illuminate\Http\Request;
+use App\Http\Resources\PieParamResource;
 
 class PieParamController extends Controller
 {
@@ -14,7 +15,10 @@ class PieParamController extends Controller
      */
     public function index()
     {
-        //
+        $pieParam = MasterPotentialImpactEvaluationParam::all();
+        $pieParam->where('is_active', true);
+
+        return PieParamResource::collection($pieParam);
     }
 
     /**

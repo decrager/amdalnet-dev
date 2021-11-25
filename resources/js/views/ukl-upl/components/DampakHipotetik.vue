@@ -139,6 +139,7 @@
 import Resource from '@/api/resource';
 const projectStageResource = new Resource('project-stages');
 const impactIdtResource = new Resource('impact-identifications');
+const varsParams = new Resource('impact-varsparams');
 
 export default {
   name: 'DampakHipotetik',
@@ -148,11 +149,15 @@ export default {
       data: [],
       projectStages: [],
       openedStage: null,
+      changeType: [],
+      pieParams: [],
+      varsParams: null,
     };
   },
   mounted() {
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
     this.getData();
+    this.getVariablesParams();
   },
   methods: {
     handleSetData(data) {
@@ -261,8 +266,16 @@ export default {
       var dataList = impactList.data;
       this.data = this.createDataArray(dataList, this.projectStages);
 
-      console.log('end of getData at DampakHipotetik');
-      console.log(this.data);
+      console.log(['end of getData at DampakHipotetik', this.data]);
+    },
+    async getVariablesParams(){
+      const sVarParams = await varsParams.list();
+      this.varsParams = sVarParams.data;
+
+      if (this.varsParams) {
+        this.changeType = this.varsParams.changeType;
+        this.pieParams = this.pieParams;
+      }
     },
     showStage(index){
       this.openedStage = (this.openedStage === index) ? null : index;
