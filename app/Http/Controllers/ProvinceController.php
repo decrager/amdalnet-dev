@@ -47,7 +47,7 @@ class ProvinceController extends Controller
      */
     public function show(Province $province)
     {
-        //
+        return $province;
     }
 
     /**

@@ -1,5 +1,5 @@
 <template>
-  <div class="form-container" style="padding: 24px">
+  <div v-loading="fullLoading" class="form-container" style="padding: 24px">
     <workflow />
     <el-row>
       <el-col
@@ -21,7 +21,7 @@
         </div>
       </el-col>
     </el-row>
-    <el-row style="padding-top: 32px">
+    <el-row :gutter="4" style="padding-top: 32px">
       <el-col :span="12">
         <div><h3>Deskripsi Kegiatan</h3></div>
         <div v-html="project.description" />
@@ -29,6 +29,76 @@
       <el-col :span="12">
         <div><h3>Deskripsi Lokasi</h3></div>
         <div v-html="project.location_desc" />
+      </el-col>
+    </el-row>
+    <el-row :gutter="4">
+      <el-col :span="12">
+        <div>
+          <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+            <el-table-column
+              prop="no"
+              label="No."
+            />
+            <!-- <el-table-column
+              prop="kbli"
+              label="KBLI"
+            /> -->
+            <el-table-column
+              prop="kegiatan"
+              label="Kegiatan"
+            />
+            <el-table-column
+              prop="jenisKegiatan"
+              label="Jenis Kegiatan"
+            />
+            <el-table-column
+              prop="skala"
+              label="Skala Besaran"
+            />
+          <!-- <el-table-column
+            prop="hasil"
+            label="Hasil"
+          /> -->
+          </el-table>
+        </div>
+      </el-col>
+      <el-col :span="12">
+        <div>
+          <el-table :data="addressTableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+            <el-table-column
+              prop="no"
+              label="No."
+            />
+            <el-table-column
+              prop="province"
+              label="Provinsi"
+            />
+            <el-table-column
+              prop="city"
+              label="City"
+            />
+            <el-table-column
+              prop="address"
+              label="address"
+            />
+          <!-- <el-table-column
+            prop="kegiatan"
+            label="Kegiatan"
+          />
+          <el-table-column
+            prop="jenisKegiatan"
+            label="Jenis Kegiatan"
+          />
+          <el-table-column
+            prop="skala"
+            label="Skala Besaran"
+          /> -->
+          <!-- <el-table-column
+            prop="hasil"
+            label="Hasil"
+          /> -->
+          </el-table>
+        </div>
       </el-col>
     </el-row>
     <el-row :gutter="4">
@@ -88,34 +158,7 @@
             </el-form>
           </el-col></el-row>
       </el-col>
-      <el-col :span="12">
-        <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-          <el-table-column
-            prop="no"
-            label="No."
-          />
-          <el-table-column
-            prop="kbli"
-            label="KBLI"
-          />
-          <el-table-column
-            prop="kegiatan"
-            label="Kegiatan"
-          />
-          <el-table-column
-            prop="jenisKegiatan"
-            label="Jenis Kegiatan"
-          />
-          <el-table-column
-            prop="skala"
-            label="Skala Besaran"
-          />
-          <!-- <el-table-column
-            prop="hasil"
-            label="Hasil"
-          /> -->
-        </el-table>
-      </el-col>
+      <el-col :span="12" />
       <div v-if="getFormulatedTeam === 'mandiri'">
         <el-row style="padding-bottom: 16px">
           <h2>Tambah Penyusun</h2>
@@ -156,6 +199,7 @@ import ExpertTable from './components/expertTable.vue';
 
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
+const provinceResource = new Resource('provinces');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
 const supportDocResource = new Resource('support-docs');
@@ -215,6 +259,9 @@ export default {
       all: [],
       mapList: [],
       tableData: [],
+      addressTableData: [],
+      province: null,
+      fullLoading: false,
     };
   },
   computed: {
@@ -232,6 +279,7 @@ export default {
   },
   async mounted() {
     console.log(this.project);
+    this.fullLoading = true;
     // for step
     this.$store.dispatch('getStep', 1);
     // await this.getProjectFields();
@@ -248,9 +296,19 @@ export default {
 
     // data table for subproject
     this.setDataTables();
+    this.setAddressDataTables();
+    this.fullLoading = false;
     this.loadMap();
   },
   methods: {
+    setAddressDataTables(){
+      this.addressTableData.push({
+        no: '1',
+        province: this.province,
+        city: this.kabkot,
+        address: this.project.address,
+      });
+    },
     setDataTables(){
       const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
         return {
@@ -278,14 +336,14 @@ export default {
       if (mainArr.length > 0){
         mainArr.unshift({
           no: 'A',
-          kbli: 'Kegiatan Utama',
+          kegiatan: 'Kegiatan Utama',
         });
       }
 
       if (suppArr.length > 0){
         suppArr.unshift({
           no: 'B',
-          kbli: 'Kegiatan Pendukung',
+          kegiatan: 'Kegiatan Pendukung',
         });
       }
 
@@ -295,7 +353,7 @@ export default {
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.scale) {
         if (columnIndex === 1) {
-          return [1, 5];
+          return [1, 3];
         } else if (columnIndex === 2) {
           return [0, 0];
         }
@@ -526,6 +584,11 @@ export default {
       console.log(data);
       this.kabkot = data.name;
     },
+    async getProvince(id) {
+      const data = await provinceResource.get(id);
+      console.log(data);
+      this.province = data.name;
+    },
     calculatedProjectDoc() {
       this.kbliEnvParams.forEach((item) => {
         let tempStatus = true;
@@ -728,6 +791,7 @@ export default {
     },
     async updateList() {
       await this.getKabKotName(this.project.id_district);
+      await this.getProvince(this.project.id_prov);
       this.list = [
         {
           param: 'Nama Kegiatan',
