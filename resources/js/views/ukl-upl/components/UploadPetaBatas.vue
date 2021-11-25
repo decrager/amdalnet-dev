@@ -5,16 +5,7 @@
         <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
           <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
           <el-col :span="4" style="margin-left:1em;">
-            <el-upload
-              class="upload-demo"
-              drag
-
-              :on-error="handleUploadError"
-              :on-success="handleUploadSuccess"
-              :auto-upload="false"
-              :before-upload="handleUploadbefore"
-              :file-list="fileList"
-            >
+            <el-upload class="upload-demo">
               <el-button size="small" type="info">browse</el-button>
             </el-upload>
           </el-col>
@@ -115,6 +106,13 @@ export default {
 
       console.log('upload maps');
       console.log(files);
+      this.process(files);
+    },
+    process(files){
+      // const data = [];
+      files.map((pma) => {
+
+      });
     },
   },
 };
