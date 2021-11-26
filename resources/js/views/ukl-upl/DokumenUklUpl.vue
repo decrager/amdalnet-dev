@@ -3,12 +3,15 @@
     <el-card>
       <h2>Formulir Kerangka Acuan</h2>
       <div>
-        <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
-        <el-button type="primary" @click="exportDocx">Export to .DOCX</el-button>
+        <el-button v-if="showDocument === true" type="danger" icon="el-icon-download" @click="exportPdf">Export to .PDF</el-button>
+        <el-button v-if="!showDocument" type="primary" icon="el-icon-view" @click="showDocs">Lihat Dokumen</el-button>
+        <el-button v-if="showDocument" type="success" icon="el-icon-download" @click="exportDocx">Export to .DOCX</el-button>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16"><div class="grid-content bg-purple" />
-          <iframe :src="'https://docs.google.com/gview?url='+projects+'&embedded=true'" width="100%" height="723px" frameborder="1" />
+          <iframe v-show="showDocument" :src="'https://view.officeapps.live.com/op/embed.aspx?src='+projects" width="100%" height="723px" frameborder="0" />
+
+          <!-- <iframe v-show="showDocument" :src="'https://docs.google.com/gview?url=''&embedded=true'" width="100%" height="723px" frameborder="1" /> -->
         </el-col>
         <el-col :span="8"><div class="grid-content bg-purple" />
 
@@ -54,7 +57,6 @@ import { saveAs } from 'file-saver';
 export default {
   data() {
     return {
-      idProject: 0,
       projects: '',
       commentsData: [],
       comments: [],
@@ -65,10 +67,11 @@ export default {
       loading: false,
       projectId: this.$route.params && this.$route.params.id,
       metodeStudi: [],
+      showDocument: false,
+      docOutput: '',
     };
   },
   mounted() {
-    this.setProjectId;
     this.getDocument();
     this.getComment();
     this.getUserId();
@@ -80,82 +83,7 @@ export default {
     },
   },
   methods: {
-    formatDate(value) {
-      if (value) {
-        dayjs.locale('id');
-        return dayjs(String(value)).format('DD-MMMM-YYYY');
-      }
-    },
-    async getComment() {
-      this.loading = true;
-      await axios.get('api/ukl-upl-comment/' + this.projectId)
-        .then((response) => {
-          this.commentsData = response.data.data;
-          this.loading = false;
-          this.comments = 1;
-        });
-    },
-    getUserId() {
-      axios.get('api/user')
-        .then((response) => {
-          this.userId = response.data.data;
-        });
-    },
-    saveComment() {
-      const idProject = this.$route.params && this.$route.params.id;
-      if (this.message != null && this.message !== ' ') {
-        this.errorComment = null;
-        axios.post('api/ukl-upl-comment', {
-          id_project: parseInt(idProject),
-          id_user: this.userId.id,
-          comment: this.message,
-        }).then(res => {
-          if (res.data.status) {
-            this.commentsData.push({ 'name': this.userId.name, 'date': this.formatDate(new Date()), 'comment': this.message, 'avatar': this.commentsData.avatar || 'no-avatar.png' });
-            this.message = null;
-          }
-        });
-      } else {
-        this.errorComment = 'Please enter a comment to save';
-      }
-    },
-    getDocument() {
-      const id = this.$route.params && this.$route.params.id;
-      axios.get('api/projects/' + id)
-        .then((result) => {
-          this.projects = window.location.origin + '/storage/formulir/form-ka-' + result.data.project_title + '.docx';
-        });
-    },
-    setProjectId(){
-      const id = this.$route.params && this.$route.params.id;
-      this.idProject = id;
-    },
-    exportPdf() {
-      const id = this.$route.params && this.$route.params.id;
-      axios({
-        url: `form-ka/${id}/pdf`,
-        method: 'GET',
-        responseType: 'blob',
-      }).then((response) => {
-        const getHeaders = response.headers['content-disposition'].split('; ');
-        const getFileName = getHeaders[1].split('=');
-        const getName = getFileName[1].split('=');
-        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-        var fileLink = document.createElement('a');
-        fileLink.href = fileURL;
-        fileLink.setAttribute('download', `${getName}`);
-        document.body.appendChild(fileLink);
-        fileLink.click();
-      });
-    },
-    getDocContent() {
-      axios.get('api/ka-docx/' + this.projectId)
-        .then((response) => {
-          this.docContents = response.data;
-          // this.metodeStudi = response.data.metodeStudi;
-        });
-    },
-    exportDocx() {
+    generateDoc() {
       PizZipUtils.getBinaryContent(
         '/template_KA.docx',
         (error, content) => {
@@ -187,6 +115,7 @@ export default {
           const formData = new FormData();
           formData.append('dokumenKa', out);
           formData.append('project_name', this.docContents.data.project_title);
+          formData.append('id_project', this.projectId);
 
           axios.post('api/upload-ka-doc', formData, {
             headers: {
@@ -194,10 +123,87 @@ export default {
             },
           });
 
-          saveAs(out, 'form-ka-' + this.docContents.data.project_title + '.docx');
-          // console.log(save);
+          this.docOutput = out;
         }
       );
+    },
+    showDocs() {
+      this.showDocument = true;
+      this.generateDoc();
+    },
+    formatDate(value) {
+      if (value) {
+        dayjs.locale('id');
+        return dayjs(String(value)).format('DD-MMMM-YYYY');
+      }
+    },
+    async getComment() {
+      this.loading = true;
+      await axios.get('api/ukl-upl-comment/' + this.projectId)
+        .then((response) => {
+          this.commentsData = response.data.data;
+          this.loading = false;
+          this.comments = 1;
+        });
+    },
+    getUserId() {
+      axios.get('api/user')
+        .then((response) => {
+          this.userId = response.data.data;
+        });
+    },
+    saveComment() {
+      if (this.message != null && this.message !== ' ') {
+        this.errorComment = null;
+        axios.post('api/ukl-upl-comment', {
+          id_project: parseInt(this.projectId),
+          id_user: this.userId.id,
+          comment: this.message,
+        }).then(res => {
+          if (res.data.status) {
+            this.commentsData.push({ 'name': this.userId.name, 'date': this.formatDate(new Date()), 'comment': this.message, 'avatar': this.commentsData.avatar || 'no-avatar.png' });
+            this.message = null;
+          }
+        });
+      } else {
+        this.errorComment = 'Please enter a comment to save';
+      }
+    },
+    getDocContent() {
+      axios.get('api/ka-docx/' + this.projectId)
+        .then((response) => {
+          this.docContents = response.data;
+        });
+    },
+    getDocument() {
+      axios.get('api/get-document-ka/' + this.projectId)
+        .then((result) => {
+          this.projects = window.location.origin + '/storage/formulir/' + result.data.attachment;
+        });
+    },
+    exportPdf() {
+      axios({
+        url: `api/form-ka-pdf/${this.projectId}`,
+        method: 'GET',
+        responseType: 'blob',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }).then((response) => {
+        const getHeaders = response.headers['content-disposition'].split('; ');
+        const getFileName = getHeaders[1].split('=');
+        const getName = getFileName[1].split('=');
+        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        var fileLink = document.createElement('a');
+        fileLink.href = fileURL;
+        fileLink.setAttribute('download', `${getName}`);
+        document.body.appendChild(fileLink);
+        fileLink.click();
+      });
+    },
+    exportDocx() {
+      this.showDocument = true;
+      saveAs(this.docOutput, 'form-ka-' + this.docContents.data.project_title + '.docx');
     },
   },
 };
