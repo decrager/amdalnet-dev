@@ -67,7 +67,7 @@ export default {
   },
   computed: {
     isAndal() {
-      return this.$route.name === 'penyusunanAndal';
+      return true;
     },
   },
   mounted() {
