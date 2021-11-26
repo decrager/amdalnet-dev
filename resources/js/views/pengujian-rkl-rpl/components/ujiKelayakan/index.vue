@@ -94,11 +94,11 @@ export default {
   },
   computed: {
     isExaminer() {
-      return this.userInfo.roles.includes('examiner');
+      return this.$store.getters.roles.includes('examiner');
     },
   },
   async created() {
-    this.userInfo = await this.$store.dispatch('user/getInfo');
+    // this.userInfo = await this.$store.dispatch('user/getInfo');
     this.getFeasibility();
   },
   methods: {

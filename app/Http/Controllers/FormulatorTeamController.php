@@ -34,6 +34,16 @@ class FormulatorTeamController extends Controller
             $expert = new Collection(EnvironmentalExpert::where(DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%')->get());
             $result = $formulator->merge($expert);
             return $result;
+        } else if($request->type && $request->type == 'all'){
+            $formulator = new Collection(Formulator::where([
+                ['date_start', '<=', date('Y-m-d H:i:s')],['date_end', '>=', date('Y-m-d H:i:s')]
+            ])
+            ->orWhere([
+                ['date_start', null],['date_end', '>=', date('Y-m-d H:i:s')]
+            ])->get());
+            $expert = new Collection(EnvironmentalExpert::all());
+            $result = $formulator->merge($expert);
+            return $result;
         } else {
             return FormulatorResource::collection(FormulatorTeam::select('formulator_teams.*')->where(
                 function ($query) use ($request) {
