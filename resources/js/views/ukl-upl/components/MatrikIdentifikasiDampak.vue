@@ -29,7 +29,12 @@
           <span>{{ r.index }}. {{ r.name }}</span>
         </td>
         <td v-for="c of r.sub" :key="c.id" style="width: 100px;" align="center" class="td-data">
-          <input v-model="c.checked" type="checkbox" :disabled="isAndal">
+          <template v-if="c.checked">
+            <input v-model="c.checked" type="checkbox" :disabled="isAndal">
+          </template>
+          <template v-if="!c.checked">
+            <span>-</span>
+          </template>
         </td>
       </tr>
     </table>
@@ -59,7 +64,8 @@ export default {
   },
   computed: {
     isAndal() {
-      return this.$route.name === 'penyusunanAndal';
+      // always disable
+      return true;
     },
   },
   mounted() {
