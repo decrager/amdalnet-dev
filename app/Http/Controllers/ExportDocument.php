@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Component;
+use App\Entity\DocumentAttachment;
 use App\Entity\ExpertBankTeamMember;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactStudy;
@@ -110,70 +111,24 @@ class ExportDocument extends Controller
         ]);
     }
 
-    public function ExportKA($id)
+    public function ExportKAPdf(Request $request)
     {
-        if (Request::segment(3) == 'docx') {
-            $getData = DB::table('impact_studies')
-                ->select(
-                    'impact_studies.forecast_method',
-                    'impact_studies.required_information',
-                    'impact_studies.data_gathering_method',
-                    'impact_studies.analysis_method',
-                    'impact_studies.evaluation_method',
-                    'projects.project_title',
-                    'initiators.pic',
-                    'projects.description',
-                    'projects.location_desc'
-                )
-                ->leftJoin('impact_identifications', 'impact_studies.id_impact_identification', '=', 'impact_identifications.id')
-                ->leftJoin('projects', 'projects.id', '=', 'impact_identifications.id_project')
-                ->leftJoin('project_components', 'project_components.id', '=', 'impact_identifications.id_project_component')
-                ->leftJoin('project_rona_awals', 'project_rona_awals.id', '=', 'impact_identifications.id_project_rona_awal')
-                ->leftJoin('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
-                ->leftJoin('units', 'units.id', '=', 'impact_identifications.id_unit')
-                ->leftJoin('initiators', 'initiators.id', '=', 'projects.id_applicant')
-                ->where('projects.id', '=', $id)
-                ->first();
+        $getProject = DocumentAttachment::where('id_project', '=', $request->id_project)->where('type', '=', 'Formulir KA')->first();
 
-            $templateProcessor = new TemplateProcessor('template_KA.docx');
+        $domPdfPath = base_path('vendor/dompdf/dompdf');
+        Settings::setPdfRendererPath($domPdfPath);
+        Settings::setPdfRendererName('DomPDF');
 
-            $templateProcessor->setValue('project_title', $getData->project_title);
-            $templateProcessor->setValue('pic', $getData->pic);
-            $templateProcessor->setValue('description', htmlspecialchars($getData->description));
-            $templateProcessor->setValue('location_desc', htmlspecialchars($getData->location_desc));
-            $templateProcessor->setValue('required_information', $getData->required_information);
-            $templateProcessor->setValue('data_gathering_method', $getData->data_gathering_method);
-            $templateProcessor->setValue('analysis_method', $getData->analysis_method);
-            $templateProcessor->setValue('forecast_method', $getData->forecast_method);
-            $templateProcessor->setValue('evaluation_method', $getData->evaluation_method);
+        //Load word file
+        $Content = IOFactory::load(storage_path('app/public/formulir/' . $getProject->attachment));
 
-            $save_file_name = 'form-ka-' . $getData->project_title . ".docx";
-            if (!File::exists(storage_path('app/public/formulir/'))) {
-                File::makeDirectory(storage_path('app/public/formulir/'));
-                $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
-            }
-            // $templateProcessor->saveAs(storage_path('formulir/' . $save_file_name));
+        //Save it into PDF
+        $getName = explode('.', $getProject->attachment);
+        $PDFWriter = IOFactory::createWriter($Content, 'PDF');
 
-            return response()->download(storage_path('app/public/formulir/' . $save_file_name))->deleteFileAfterSend(false);
-        }
+        $PDFWriter->save(storage_path('app/public/formulir/' . $getName[0]) . '.pdf');
 
-        if (Request::segment(3) === 'pdf') {
-            $getProject = Project::where('id', '=', $id)->first();
-
-            $domPdfPath = base_path('vendor/dompdf/dompdf');
-            Settings::setPdfRendererPath($domPdfPath);
-            Settings::setPdfRendererName('DomPDF');
-
-            //Load word file
-            $Content = IOFactory::load(storage_path('app/public/formulir/form-ka-' . $getProject->project_title . '.docx'));
-
-            //Save it into PDF
-            $fileName = 'form-ka-' . $getProject->project_title . '.pdf';
-            $PDFWriter = IOFactory::createWriter($Content, 'PDF');
-
-            $PDFWriter->save(storage_path('app/public/formulir/' . $fileName));
-            return response()->download(storage_path('app/public/formulir/' . $fileName))->deleteFileAfterSend(false);
-        }
+        return response()->download(storage_path('app/public/formulir/' . $getName[0] . '.pdf'))->deleteFileAfterSend(false);
     }
 
     public function ExportUklUpl($id)
@@ -365,9 +320,32 @@ class ExportDocument extends Controller
         if ($request->file('dokumenKa')) {
             $dokumenKa = $request->file('dokumenKa');
             $docName = 'form-ka-' . $request->project_name . '.docx';
-            $dokumenKa->storePubliclyAs('formulir/', $docName);
+            $dokumenKa->storePubliclyAs('public/formulir/', $docName);
+
+            $getDocumentData = DocumentAttachment::where('attachment', '=', $docName)
+                ->where('type', '=', 'Formulir KA')
+                ->where('id_project', '=', $request->id_project)
+                ->first();
+
+            if (!$getDocumentData) {
+                DocumentAttachment::create([
+                    'id_project' => $request->id_project,
+                    'attachment' => $docName,
+                    'type' => 'Formulir KA'
+                ]);
+            }
+
+            DocumentAttachment::where('attachment', '=', $docName)
+                ->where('type', '=', 'Formulir KA')
+                ->where('id_project', '=', $request->id_project)
+                ->update(['updated_at' => now()]);
         }
 
         return response()->json(['status' => 'success', 'message' => 'Uploaded successfully'], 200);
+    }
+
+    public function getDocKA(Request $request)
+    {
+        return DocumentAttachment::where('id_project', '=', $request->id)->where('type', '=', 'Formulir KA')->first();
     }
 }
