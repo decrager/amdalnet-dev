@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\ProjectStage;
+use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Http\Resources\SubProjectComponentResource;
 use Illuminate\Http\Request;
@@ -19,13 +21,44 @@ class SubProjectComponentController extends Controller
         if (isset($params['id_project'])){
             $components = SubProjectComponent::select('sub_project_components.*',
                 'components.name AS name_master',
-                'components.id_project_stage AS id_project_stage_master')
+                'components.id_project_stage AS id_project_stage_master',
+                'sub_projects.type')
                 ->leftJoin('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
                 ->leftJoin('projects', 'sub_projects.id_project', '=', 'projects.id')
                 ->leftJoin('components', 'sub_project_components.id_component', '=', 'components.id')
                 ->where('sub_projects.id_project', $params['id_project'])
                 ->get();
-            return SubProjectComponentResource::collection($components);
+            if (isset($params['group']) && $params['group']) {
+                $ids = [4,1,2,3];
+                $stages = ProjectStage::select('project_stages.*')->get()->sortBy(function($model) use($ids) {
+                    return array_search($model->getKey(),$ids);
+                });
+                $data = [];
+                foreach ($stages as $stage) {
+                    $listUtama = [];
+                    $listPendukung = [];
+                    foreach ($components as $component) {
+                        if ($component->id_project_stage === $stage->id
+                            || $component->id_project_stage_master === $stage->id) {
+                            if ($component->type == 'utama') {
+                                array_push($listUtama, $component);
+                            } else if ($component->type == 'pendukung') {
+                                array_push($listUtama, $component);
+                            }
+                        }
+                    }
+                    array_push($data, [
+                        'project_stage' => $stage,
+                        'utama' => $listUtama,
+                        'pendukung' => $listPendukung,
+                    ]);
+                }
+                return [
+                    'data' => $data,
+                ];
+            } else {
+                return SubProjectComponentResource::collection($components);
+            }
         } else if (isset($params['id_sub_project'])){
             $id_sub_project = $params['id_sub_project'];
             

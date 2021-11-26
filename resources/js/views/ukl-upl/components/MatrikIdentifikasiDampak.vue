@@ -17,7 +17,12 @@
         </td>
       </tr>
       <tr class="tr-header">
-        <td v-for="comp of header[1]" :key="comp.id" style="width: 100px;" class="td-header">
+        <td v-for="kTitle of header[1]" :key="kTitle.id" :colspan="kTitle.colspan" style="width: 100px;" class="td-header">
+          <span><b>{{ kTitle.name }}</b></span>
+        </td>
+      </tr>
+      <tr class="tr-header">
+        <td v-for="comp of header[2]" :key="comp.id" style="width: 100px;" class="td-header">
           <span><b>{{ comp.name }}</b></span>
         </td>
       </tr>
@@ -183,23 +188,33 @@ export default {
     },
     sortComponents(comps) {
       const ordered = [];
-      var stageIds = [4, 1, 2, 3];
+      const types = ['utama', 'pendukung'];
+      const stageIds = [4, 1, 2, 3];
       stageIds.map((id) => {
-        comps.map((c) => {
-          if (c.id_project_stage === id){
-            ordered.push(c);
-          }
+        types.map((t) => {
+          comps.map((c) => {
+            if (c.id_project_stage === id && c.type === t){
+              ordered.push(c);
+            }
+          });
         });
       });
       return ordered;
     },
     async getData() {
-      const { data } = await prjStageResource.list({});
+      const { data } = await prjStageResource.list({
+        ordered: true,
+      });
       this.projectStages = data;
       // get components
       const listC = await subProjectComponentResource.list({
         id_project: this.idProject,
       });
+      const listCGrouped = await subProjectComponentResource.list({
+        id_project: this.idProject,
+        group: true,
+      });
+      this.componentsGrouped = listCGrouped.data;
       listC.data.map((c) => {
         if (c['name'] === null) {
           c['name'] = c['name_master'];
@@ -228,11 +243,12 @@ export default {
         id_project: this.idProject,
       });
       this.impacts = iList.data;
+      // data header tahap project
       const dataRow1 = [
         {
           id: 0,
           name: 'Komponen Lingkungan/Sumber Dampak',
-          rowspan: 2,
+          rowspan: 3,
         },
       ];
       this.projectStages.map((s) => {
@@ -246,8 +262,30 @@ export default {
         s['colspan'] = numComps;
         dataRow1.push(s);
       });
+      // data header kegiatan utama/pendukung
+      const kegiatanTitles = [];
+      let id = 1;
+      this.componentsGrouped.map((cg) => {
+        if (cg.utama.length > 0) {
+          kegiatanTitles.push({
+            id: id,
+            name: 'Kegiatan Utama',
+            colspan: cg.utama.length,
+          });
+          id++;
+        }
+        if (cg.pendukung.length > 0) {
+          kegiatanTitles.push({
+            id: id,
+            name: 'Kegiatan Pendukung',
+            colspan: cg.pendukung.length,
+          });
+          id++;
+        }
+      });
       this.header = [
         dataRow1,
+        kegiatanTitles,
         this.components,
       ];
       this.getChecked();
