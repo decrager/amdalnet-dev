@@ -39,8 +39,8 @@ class ImpactIdentificationController extends Controller
                 'ra.name AS rona_awal_name_master',
                 'pra.name AS rona_awal_name',
                 'ct.name AS change_type_name')
-                ->leftJoin('project_components AS pc', 'impact_identifications.id_project_component', '=', 'pc.id')
-                ->leftJoin('project_rona_awals AS pra', 'impact_identifications.id_project_rona_awal', '=', 'pra.id')
+                ->leftJoin('sub_project_components AS pc', 'impact_identifications.id_sub_project_component', '=', 'pc.id')
+                ->leftJoin('sub_project_rona_awals AS pra', 'impact_identifications.id_sub_project_rona_awal', '=', 'pra.id')
                 ->leftJoin('change_types AS ct', 'impact_identifications.id_change_type', '=', 'ct.id')
                 ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
                 ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
@@ -130,8 +130,8 @@ class ImpactIdentificationController extends Controller
                 } else {
                     DB::rollBack();
                     return response()->json(['code' => 500]);
-                }       
-            }     
+                }
+            }
         } else if (isset($params['study_data'])) {
             // save besran dampak
             DB::beginTransaction();
