@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\ProjectMapAttachment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use App\Http\Resources\ProjectMapAttachmentResource;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
@@ -65,7 +66,9 @@ class ProjectMapAttachmentController extends Controller
         if(!$map) {
             $map = new ProjectMapAttachment();
         } else {
-            unlink(storage_path().DIRECTORY_SEPARATOR.$map->stored_filename);
+            if (file_exists(storage_path().DIRECTORY_SEPARATOR.$map->stored_filename)){
+                unlink(storage_path().DIRECTORY_SEPARATOR.$map->stored_filename);
+            }
         }
 
         $map->id_project = $request->input('id_project');
@@ -76,14 +79,34 @@ class ProjectMapAttachmentController extends Controller
 
         if($file->move(storage_path(),$map->stored_filename)){
             $map->save();
-
+            return response("success", 200);
         }else {
-            return [
-                'message' => 'failed!'.storage_path(),
-            ];
+            return response("failed", 418);
         }
 
     }
+
+    /**
+     * get file
+     *
+     *
+     *
+     */
+    public function download($id)
+    {
+        // application/octet-stream
+
+        $map = ProjectMapAttachment::where('id',$id)->first();
+        if (!$map) return response('failed', 418);
+
+        $file = storage_path().DIRECTORY_SEPARATOR.$map->stored_filename;
+        if(!file_exists($file)) return response('File tidak ditemukan', 418);
+
+        $headers = ['Content-Type' =>  'application/octet-stream'];
+        return  Response::download($file, $map->original_filename, $headers, 'attachment');
+
+    }
+
 
     /**
      * Display the specified resource.

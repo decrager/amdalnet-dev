@@ -5,19 +5,26 @@
       <el-col :span="10" style="margin-right:1em;">
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP {{ petaEkologisSHP }}</legend>
+          <legend style="margin:0 2em;">Versi SHP
+            <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span @click="download(idPES)"><strong>{{ petaEkologisSHP }}</strong></span>
+              <!-- &nbsp;<i class="el-icon-delete"></i>-->
+            </div>
+          </legend>
           <form @submit.prevent="handleSubmit">
-            <input ref="peSHP" type="file" class="form-control-file" multiple @change="onChangeFiles(1)">
+            <input ref="peSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(1)">
             <button type="submit">Unggah</button>
           </form>
+
         </fieldset>
 
       </el-col>
       <el-col :span="10" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF {{ petaEkologisPDF }}</legend>
+          <legend style="margin:0 2em;">Versi PDF
+            <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span @click="download(idPEP)"><strong>{{ petaEkologisPDF }}</strong></span></div>
+          </legend>
           <form @submit.prevent="handleSubmit">
-            <input ref="pePDF" type="file" class="form-control-file" multiple @change="onChangeFiles(2)">
+            <input ref="pePDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(2)">
             <button type="submit">Unggah</button>
           </form>
         </fieldset>
@@ -27,10 +34,12 @@
     <el-form-item label="Peta Batas Sosial" :required="required">
       <el-col :span="10" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP {{ petaSosialSHP }}</legend>
+          <legend style="margin:0 2em;">Versi SHP
+            <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span @click="download(idPSS)"><strong>{{ petaSosialSHP }}</strong></span></div>
+          </legend>
 
           <form @submit.prevent="handleSubmit">
-            <input ref="psSHP" type="file" class="form-control-file" multiple @change="onChangeFiles(3)">
+            <input ref="psSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(3)">
             <button type="submit">Unggah</button>
           </form>
         </fieldset>
@@ -38,10 +47,12 @@
 
       <el-col :span="10" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF {{ petaSosialPDF }}</legend>
+          <legend style="margin:0 2em;">Versi PDF
+            <div v-if="petaSosialPDF != ''" class="current">tersimpan: <span @click="download(idPSP)"><strong>{{ petaSosialPDF }}</strong></span></div>
+          </legend>
 
           <form @submit.prevent="handleSubmit">
-            <input ref="psPDF" type="file" class="form-control-file" multiple @change="onChangeFiles(4)">
+            <input ref="psPDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(4)">
             <button type="submit">Unggah</button>
           </form>
         </fieldset>
@@ -51,10 +62,12 @@
     <el-form-item label="Peta Batas Wilayah Studi" :required="required">
       <el-col :span="10" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP {{ petaStudiSHP }}</legend>
+          <legend style="margin:0 2em;">Versi SHP
+            <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span @click="download(idPSuS)"><strong>{{ petaStudiSHP }}</strong></span></div>
+          </legend>
 
           <form @submit.prevent="handleSubmit">
-            <input ref="pwSHP" type="file" class="form-control-file" multiple @change="onChangeFiles(5)">
+            <input ref="pwSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(5)">
             <button type="submit">Unggah</button>
           </form>
         </fieldset>
@@ -62,10 +75,12 @@
 
       <el-col :span="10" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF {{ petaStudiPDF }}</legend>
+          <legend style="margin:0 2em;">Versi PDF
+            <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span @click="download(idPSuP)"><strong>{{ petaStudiPDF }}</strong></span></div>
+          </legend>
 
           <form @submit.prevent="handleSubmit">
-            <input ref="pwPDF" type="file" class="form-control-file" multiple @change="onChangeFiles(6)">
+            <input ref="pwPDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(6)">
             <button type="submit">Unggah</button>
           </form>
         </fieldset>
@@ -87,18 +102,24 @@
 
 </template>
 <style scoped>
- legend {line-height: 1.2em;}
+ legend {line-height: 1.5em; margin: .5em 0 2em;}
+ legend div.current {}
+ fieldset {
+   padding:1em;
+ }
 </style>
 <script>
 import Resource from '@/api/resource';
 import request from '@/utils/request';
 const uploadMaps = new Resource('project-map');
 const unggahMaps = new Resource('upload-map');
+// const unduhMaps = new Resource('download-map');
 
 export default {
   name: 'UploadPetaBatas',
   data() {
     return {
+      data: [],
       idProject: 0,
       currentMaps: [],
       petaEkologisPDF: '',
@@ -108,6 +129,12 @@ export default {
       petaSosialSHP: '',
       petaStudiSHP: '',
       files: '',
+      idPES: 0,
+      idPEP: 0,
+      idPSP: 0,
+      idPSS: 0,
+      idPSuP: 0,
+      idPSuS: 0,
       index: 0,
       param: [],
 
@@ -119,9 +146,11 @@ export default {
   },
   methods: {
     async getData(){
+      this.data = [];
       const files = await uploadMaps.list({
         id_project: this.idProject,
       });
+      this.data = files.data;
       this.process(files.data);
     },
     process(files){
@@ -131,52 +160,32 @@ export default {
           case 'ecology':
             if (e.file_type === 'SHP') {
               this.petaEkologisSHP = e.original_filename;
+              this.idPES = e.id;
             } else {
               this.petaEkologisPDF = e.original_filename;
+              this.idPEP = e.id;
             }
             break;
           case 'social':
             if (e.file_type === 'SHP') {
               this.petaSosialSHP = e.original_filename;
+              this.idPSS = e.id;
             } else {
               this.petaSosialPDF = e.original_filename;
+              this.idPSP = e.id;
             }
             break;
           case 'study':
             if (e.file_type === 'SHP') {
               this.petaStudiSHP = e.original_filename;
+              this.idPSuS = e.id;
             } else {
               this.petaStudiPDF = e.original_filename;
+              this.idPSuP = e.id;
             }
             break;
         }
       });
-    },
-    uploadForm(fName){
-      const myForm = document.getElementById(fName);
-      var formData = new FormData(myForm);
-      formData.append('id_project', this.idProject);
-      // console.log(formData);
-
-      /*
-      // add file to multipart
-      const formData = new FormData();
-      formData.append('file', file.raw);
-
-      userResource
-        .updateMultipart(this.user.id, formData)
-        .then(response => {
-          this.updating = false;
-          this.$message({
-            message: 'Berhasil Mengganti Gambar Profil',
-            type: 'success',
-            duration: 5 * 1000,
-          });
-        })
-        .catch(error => {
-          console.log(error);
-          this.updating = false;
-        });    */
     },
     handleSubmit(){
       console.log('submitting files....');
@@ -189,23 +198,62 @@ export default {
         formData.append(key, value);
       });
       /*
-  		for(var pair of formData.entries()) {
-    		console.log(pair[0]+ ', '+ pair[1]);
-   		}
+        for(var pair of formData.entries()) {
+          console.log(pair[0]+ ', '+ pair[1]);
+        }
 
-     request({
-        url: '/api/upload-map',
-        method: 'post',
-        data: formData,
-        //params: { _method: 'PUT' },
-      }).then((r) => console.log(r));*/
-      unggahMaps.store(formData).then(console.log);
+      request({
+          url: '/api/upload-map',
+          method: 'post',
+          data: formData,
+          //params: { _method: 'PUT' },
+        }).then((r) => console.log(r));*/
+      unggahMaps.store(formData).then((res) => {
+        console.log(res);
+        this.getData();
+        this.$message({
+          message: 'Berhasil menyimpan file ' + this.files[0].name,
+          type: 'success' });
+      });
 
       // console.log(res);
     },
     async doSubmit(load){
       console.log(load);
       return request(load);
+    },
+    download(id){
+      return;
+      /* const filename = this.data.find((e) => e.id === id);
+      unduhMaps.get(id)
+        .then((response) => {
+          console.log(response);
+
+          // const header = response.headers['content-disposition'].split('; ');
+          // const filename = header[1].split('=');
+
+          // console.log(header);
+
+          const blob = new Blob([response], { type: 'application/octet-stream' });
+          const url = window.URL.createObjectURL(blob);
+
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename.original_filename;
+          link.click();
+
+          const getHeaders = response.headers['content-disposition'].split('; ');
+          const getFileName = getHeaders[1].split('=');
+          const getName = getFileName[1].split('=');
+          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+          var fileLink = document.createElement('a');
+          fileLink.href = fileURL;
+          let newName = getName[0].slice(1);
+          newName = newName.slice(0, -1);
+          fileLink.setAttribute('download', `${newName}`);
+          document.body.appendChild(fileLink);
+          fileLink.click();
+        });*/
     },
     onChangeFiles(index){
       this.files = '';
@@ -250,10 +298,6 @@ export default {
           break;
         default:
       }
-    },
-    handleUpload(file, fileList, index){
-      // console.log([file, fileList, index]);
-
     },
   },
 };

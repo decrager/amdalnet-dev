@@ -234,5 +234,6 @@ Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('change-types', [ChangeTypeController::class, 'index']);
 Route::get('pie-params', [PieParamController::class, 'index']);
 Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
+Route::get('download-map/{id}', [ProjectMapAttachmentController::class, 'download']);
 Route::apiResource('manage-approach', 'ManageApproachController');
 Route::post('upload-ka-doc', [ExportDocument::class, 'saveKADoc']);
