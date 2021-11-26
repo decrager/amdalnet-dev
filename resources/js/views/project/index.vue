@@ -188,15 +188,16 @@
                   Uji KA
                 </el-button>
                 <el-button
-                  v-if="isAdmin || isSubtance || isExaminer || isFormulator"
+                  v-if="isAdmin || isSubtance || isExaminer"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleUjiRklRpl(scope.row)"
                 >
-                  Uji RKL/RPL
+                  Uji Kelayakan
                 </el-button>
                 <el-button
+                  v-if="isFormulator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -209,9 +210,18 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleWorkspace(scope.row)"
+                  @click="handleWorkspaceAndal(scope.row.id)"
                 >
-                  Workspace
+                  Workspace Andal
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceRKLRPL(scope.row.id)"
+                >
+                  Workspace RKL RPL
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -284,6 +294,8 @@ const projectResource = new Resource('projects');
 const announcementResource = new Resource('announcements');
 const lpjpResource = new Resource('lpjpsByEmail');
 const formulatorResource = new Resource('formulatorsByEmail');
+const andalComposingResource = new Resource('andal-composing');
+const rklResource = new Resource('matriks-rkl');
 
 export default {
   name: 'Project',
@@ -552,6 +564,34 @@ export default {
       const { data } = await districtResource.list({ idProv });
       this.cityOptions = data.map((i) => {
         return { value: i.id, label: i.name };
+      });
+    },
+    async handleWorkspaceAndal(idProject) {
+      await andalComposingResource.list({
+        docs: 'true',
+        idProject: idProject,
+      });
+
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: idProject,
+          filename: `${idProject}-andal.docx`,
+        },
+      });
+    },
+    async handleWorkspaceRKLRPL(idProject) {
+      await rklResource.list({
+        docs: 'true',
+        idProject: idProject,
+      });
+
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: idProject,
+          filename: `${idProject}-rkl-rpl.docx`,
+        },
       });
     },
   },

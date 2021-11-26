@@ -4,6 +4,7 @@ use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\LaravueController;
 use App\Http\Controllers\WebgisController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProjectMapAttachmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +26,9 @@ Route::get('form-ka/{id}/{doc}', [ExportDocument::class, 'ExportKA']);
 Route::get('berita-acara/{id}/{type}', [ExportDocument::class, 'ExportBA']);
 //Route::get('form-ka/{id}/pdf', [ExportDocument::class, 'ExportKA']);
 Route::post('upload-map', [WebgisController::class, 'store']);
+// Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 
 Route::group(['middleware' => 'web'], function () {
     Route::get(env('LARAVUE_PATH'), [LaravueController::class, 'index'])->where('any', '.*')->name('laravue');
 });
+

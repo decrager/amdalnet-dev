@@ -75,7 +75,7 @@ export default {
           value = 'pemrakarsa';
         } else if (value === 'formulator'){
           value = 'penyusun';
-        } else if (value === 'expert'){
+        } else if (value === 'examiner'){
           value = 'ahli';
         }
         return this.$options.filters.uppercaseFirst(value);
