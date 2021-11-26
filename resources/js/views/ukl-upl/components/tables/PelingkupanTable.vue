@@ -74,62 +74,79 @@
           <tr>
             <td>
               <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
-                <el-tag
-                  :key="comp.id"
-                  type="info"
-                  :closable="closable && !isAndal"
-                  @close="handleDeleteComponent(comp.id)"
-                  @click="handleViewRonaAwals(comp.id)"
-                >
-                  {{ comp.name }}
-                </el-tag>
-                <el-input v-model="comp.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :readonly="isAndal" />
+                <el-row>
+                  <el-button
+                    type="default"
+                    size="medium"
+                    class="button-medium"
+                  >
+                    <el-button
+                      v-if="!isAndal"
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-close"
+                      style="margin-left: 0px; margin-right: 10px;"
+                      class="button-action-mini"
+                      @click="handleDeleteComponent(comp.id)"
+                    />
+                    <span>{{ comp.name }}</span>
+                    <el-button
+                      v-if="!isAndal"
+                      type="success"
+                      size="mini"
+                      class="pull-right button-action-mini"
+                      icon="el-icon-caret-right"
+                      @click="handleViewRonaAwals(comp.id)"
+                    />
+                  </el-button>
+                </el-row>
+                <el-input v-model="comp.description_specific" size="mini" placeholder="Deskr. khusus" style="clear:both; display:block;margin-top:.5em;width:100%;" :disabled="true" />
               </div>
 
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddComponent()" />
+              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[0].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :readonly="isAndal" />
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
               </div>
 
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(1)" />
+              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(1)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[1].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :readonly="isAndal" />
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
               </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(2)" />
+              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(2)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[2].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :readonly="isAndal" />
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
               </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(3)" />
+              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(3)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[3].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :readonly="isAndal" />
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
               </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(4)" />
+              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(4)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[4].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :readonly="isAndal" />
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
               </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(5)" />
+              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(5)" />
             </td>
             <td>
               <div v-for="ra in subProjectRonaAwals[5].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :readonly="isAndal" />
+                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
               </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="handleAddRonaAwal(6)" />
+              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(6)" />
             </td>
           </tr>
         </tbody>
@@ -373,4 +390,14 @@ table th, table td {word-break: normal !important; padding:.5em; line-height:1.2
 table td { vertical-align: top !important;}
 table thead  {background-color:#6cc26f !important; color: white !important;}
 table td.title, table tr.title td, table.title td { text-align:left;}
+
+.button-action-mini {
+  margin-left: 20px;
+  padding: 1px 1px;
+}
+
+.button-medium {
+  padding: 5px 5px 5px 5px;
+}
+
 </style>
