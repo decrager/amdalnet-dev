@@ -5,17 +5,20 @@ namespace App\Http\Controllers;
 use App\Entity\AndalComment;
 use App\Entity\Comment;
 use App\Entity\EnvImpactAnalysis;
+use App\Entity\FormulatorTeam;
 use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImportantTrait;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
+use App\Entity\PublicConsultation;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class AndalComposingController extends Controller
 {
@@ -26,6 +29,10 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->formulir) {
+            return $this->formulirKa($request->idProject);
+        }
+
         if($request->docs) {
             return $this->dokumen($request->idProject);
         }
@@ -98,6 +105,23 @@ class AndalComposingController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->type == 'formulir') {
+            if(!File::exists(storage_path('app/public/formulir/' . $request->idProject . '-form-ka-andal.docx'))) {
+                return;
+            }
+
+            if($request->hasFile('docx')) {
+                //create file
+                $file = $request->file('docx');
+                $name = '/formulir/' . $request->idProject . '-form-ka-andal.docx';
+                $file->storePubliclyAs('public', $name);
+   
+                return response()->json(['message' => 'success']);
+           }
+
+           return;
+        }
+
         if($request->type == 'impact-comment') {
             $comment = new Comment();
             $comment->id_user = $request->id_user;
@@ -478,5 +502,88 @@ class AndalComposingController extends Controller
 
             return response()->json(['message' => 'success']);
 
+    }
+
+    private function formulirKa($id_project) {
+        $ids = [4,1,2,3];
+        $stages = ProjectStage::select('id', 'name')->get()->sortBy(function($model) use($ids) {
+            return array_search($model->getKey(),$ids);
+        });
+
+        $project = Project::findOrFail($id_project);
+        $results = [
+            'project_title' => $project->project_title,
+            'pic' => $project->initiator->pic,
+            'description' => $project->description,
+            'location_desc' => $project->location_desc
+        ];
+
+        $results['penyusun'] = [];
+        $formulator = FormulatorTeam::where('id_project', $id_project)->first();
+        if($formulator->member->first()) {
+            foreach($formulator->member as $f) {
+                $results['penyusun'][] = [
+                    'name' => $f->formulator->name,
+                    'position' => $f->position
+                ];
+            }
+        }
+
+        $publicConsultation = PublicConsultation::select('id', 'project_id', 'positive_feedback_summary', 'negative_feedback_summary')
+                                ->where('project_id', $id_project)->get();
+        
+        $results['positive'] = [];
+        $results['negative'] = [];
+
+        foreach($publicConsultation as $p) {
+            $results['positive'][] = ['val' => $p->positive_feedback_summary]; 
+            $results['negative'][] = ['val' => $p->negative_feedback_summary]; 
+        }
+
+        $im = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'potential_impact_evaluation', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+        ->where('id_project', $id_project)->get();
+
+        $total_ms = 0;
+        foreach($stages as $s) {
+            $total = 0;
+            $results[str_replace(' ', '_', strtolower($s->name))] = [];
+            foreach($im as $pA) {
+                if($pA->component->id_project_stage == $s->id || $pA->component->component->id_project_stage == $s->id) {
+                    $changeType = $pA->id_change_type ? $pA->changeType->name : '';
+                    $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
+                    $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
+                   //  $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
+                   //  $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+
+                    $results[str_replace(' ', '_', strtolower($s->name))][] = [
+                        'no' => $total + 1,
+                        'component_name' => "$changeType $ronaAwal akibat $component",
+                        'rencana' => $pA->initial_study_plan ?? '',
+                        'rona_lingkungan' => $ronaAwal,
+                        'dampak_potensial' => "$changeType $ronaAwal akibat $component",
+                        'evaluasi_dampak' => $pA->potential_impact_evaluation ?? '',
+                        'dph' => $pA->is_hypothetical_significant ? 'DPH' : 'DTPH',
+                        'batas_wilayah' => $pA->study_location ?? '',
+                        'batas_waktu' => $pA->study_length_year . ' tahun ' . $pA->study_length_month . ' bulan'
+                    ];
+
+                    if($pA->impactStudy) {
+                        $results['metode_studi'][] = [
+                            'no' => $total_ms + 1,
+                            'potential_impact_evaluation' => "$changeType $ronaAwal akibat $component",
+                            'required_information' => $pA->impactStudy->required_information ?? '',
+                            'data_gathering_method' => $pA->impactStudy->data_gathering_method ?? '',
+                            'analysis_method' =>  $pA->impactStudy->analysis_method ?? '',
+                            'forecast_method' => $pA->impactStudy->forecast_method ?? '',
+                            'evaluation_method' => $pA->impactStudy->evaluation_method ?? ''
+                        ];
+                        $total_ms++;
+                    }
+                    $total++;
+                }
+            }
+        }
+
+        return $results;
     }
 }
