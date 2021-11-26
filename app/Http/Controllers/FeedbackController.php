@@ -63,10 +63,15 @@ class FeedbackController extends Controller
         ]);
 
         if ($request->file('photo_filepath')) {
-            $name = uniqid() . '.' . $request->file('photo_filepath')->extension();
-            $nameWithPath = 'images/spt/' . uniqid() . '.' . $request->file('photo_filepath')->extension();
-            $request->file('photo_filepath')->move(public_path('images/spt/'), $name);
-            $validator['photo_filepath'] = $nameWithPath;
+            // $name = uniqid() . '.' . $request->file('photo_filepath')->extension();
+            // $nameWithPath = 'images/spt/' . uniqid() . '.' . $request->file('photo_filepath')->extension();
+            // $request->file('photo_filepath')->move(public_path('images/spt/'), $name);
+            // $validator['photo_filepath'] = $nameWithPath;
+
+            $file = $request->file('photo_filepath');
+            $name = 'spt/' . uniqid() . '.' . $file->extension();
+            $file->storePubliclyAs('public', $name);
+            $validator['photo_filepath'] = Storage::url($name);
         };
 
         DB::beginTransaction();

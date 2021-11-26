@@ -38,6 +38,7 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+      <el-button type="text" style="cursor: default; font-size: 18px; vertical-align: 15px; margin-right: 10px; color: white;">{{ getRole }}</el-button>
     </div>
   </div>
 </template>
@@ -68,6 +69,19 @@ export default {
       'device',
       'userId',
     ]),
+    getRole() {
+      const roles = this.$store.getters.roles.map(value => {
+        if (value === 'initiator'){
+          value = 'pemrakarsa';
+        } else if (value === 'formulator'){
+          value = 'penyusun';
+        } else if (value === 'examiner'){
+          value = 'ahli';
+        }
+        return this.$options.filters.uppercaseFirst(value);
+      });
+      return roles.join(' | ');
+    },
   },
   methods: {
     toggleSideBar() {

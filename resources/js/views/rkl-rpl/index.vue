@@ -2,16 +2,16 @@
   <div class="app-container">
     <el-card>
       <WorkFlow />
-      <el-tabs type="card">
-        <el-tab-pane label="Matriks RKL RPL">
-          <Matriks />
+      <el-tabs v-model="activeName" type="card">
+        <el-tab-pane label="Matriks RKL RPL" name="matriks">
+          <Matriks v-if="activeName === 'matriks'" />
         </el-tab-pane>
-        <el-tab-pane label="Dokumen RKL RPL">
-          <el-row :gutter="32">
-            <!-- <el-col :sm="12" :md="7">
+        <!-- <el-tab-pane label="Dokumen RKL RPL" name="dokumen">
+          <el-row v-if="activeName === 'dokumen'" :gutter="32"> -->
+        <!-- <el-col :sm="12" :md="7">
               <MapList />
             </el-col> -->
-            <el-col :sm="24" :md="15">
+        <!-- <el-col :sm="24" :md="15">
               <DocsFrame />
             </el-col>
             <el-col :sm="24" :md="9">
@@ -29,7 +29,7 @@
               <Comment />
             </el-col>
           </el-row>
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
     </el-card>
   </div>
@@ -38,8 +38,8 @@
 <script>
 import Matriks from '@/views/rkl-rpl/components/Matriks';
 // import MapList from '@/views/rkl-rpl/components/MapList';
-import DocsFrame from '@/views/rkl-rpl/components/DocsFrame';
-import Comment from '@/views/rkl-rpl/components/Comment';
+// import DocsFrame from '@/views/rkl-rpl/components/DocsFrame';
+// import Comment from '@/views/rkl-rpl/components/Comment';
 import WorkFlow from '@/components/Workflow';
 
 export default {
@@ -47,8 +47,8 @@ export default {
   components: {
     Matriks,
     // MapList,
-    DocsFrame,
-    Comment,
+    // DocsFrame,
+    // Comment,
     WorkFlow,
   },
   data() {
@@ -57,6 +57,7 @@ export default {
       userInfo: {
         roles: [],
       },
+      activeName: 'matriks',
     };
   },
   created() {

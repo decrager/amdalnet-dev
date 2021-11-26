@@ -45,6 +45,7 @@ class CreateProjectsTable extends Migration
             $table->string('required_doc')->nullable();
             $table->string('biz_type')->nullable();
             $table->string('pre_agreement')->nullable();
+            $table->string('pre_agreement_file')->nullable();
             $table->string('id_lpjp')->nullable();
 
             $table->timestamps();

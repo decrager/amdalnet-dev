@@ -18,6 +18,7 @@ class CreateFeasibilityTestDetailsTable extends Migration
             $table->integer('id_feasibility_test')->nullable();
             $table->string('appropriateness')->nullable();
             $table->text('notes')->nullable();
+            $table->text('expert_notes')->nullable();
             $table->timestamps();
         });
     }

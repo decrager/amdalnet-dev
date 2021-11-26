@@ -11,6 +11,11 @@ use App\Entity\ImportantTrait;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\Element\TextRun;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\TemplateProcessor;
+use Illuminate\Support\Facades\File;
 
 class AndalComposingController extends Controller
 {
@@ -21,6 +26,10 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->docs) {
+            return $this->dokumen($request->idProject);
+        }
+
         if($request->comment) {
             $comments = [];
             if($request->role == 'true') {
@@ -440,5 +449,34 @@ class AndalComposingController extends Controller
         }
            
         return $results;
+    }
+
+    private function dokumen($id_project) {
+        $project = Project::findOrFail($id_project);
+
+        $templateProcessor = new TemplateProcessor('template_andal.docx');
+
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('project_title_s', strtolower($project->project_title));
+        $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
+        $templateProcessor->setValue('district', ucwords(strtolower($project->district->name)));
+        $templateProcessor->setValue('province', ucwords(strtolower($project->province->name)));
+        $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->pic);
+        $templateProcessor->setValue('address', ucwords(strtolower($project->address)));
+        $templateProcessor->setValue('pemrakarsa_address', ucwords(strtolower($project->initiator->address)));
+        $templateProcessor->setValue('pemrakarsa_phone', ucwords(strtolower($project->initiator->phone)));
+
+        $save_file_name = $id_project .'-andal' . '.docx'; 
+            if (!File::exists(storage_path('app/public/workspace/'))) {
+                File::makeDirectory(storage_path('app/public/workspace/'));
+            }
+
+            if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+                $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+            }
+            
+
+            return response()->json(['message' => 'success']);
+
     }
 }

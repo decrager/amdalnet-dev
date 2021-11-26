@@ -57,7 +57,6 @@
         </el-collapse-item>
         <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
           <bagan-alir />
-          <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning">Export PDF</el-button></el-col>
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -148,6 +147,10 @@ export default {
 </script>
 
 <style>
+.bagan__alir {
+  display: none;
+}
+
 h2 {
   display:inline-block;
   margin-block-start: 0em;

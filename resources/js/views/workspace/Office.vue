@@ -17,6 +17,10 @@ export default {
       type: Object,
       default: null,
     },
+    filename: {
+      type: String,
+      default: 'sample.docx',
+    },
   },
   data() {
     return {
@@ -96,8 +100,13 @@ export default {
 
     createOfficeEditor() {
       console.log('create office');
+      let filename = this.filename;
+      if (this.$route.params.filename) {
+        filename = this.$route.params.filename;
+      }
+
       workspaceResource
-        .getConfig(this.$route.params.id)
+        .getConfig(this.$route.params.id, filename)
         .then(resp => {
           console.log(resp);
           this.docEditor = new window.DocsAPI.DocEditor('placeholder', resp);

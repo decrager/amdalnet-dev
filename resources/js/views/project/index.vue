@@ -106,7 +106,7 @@
                 >
                   Publish
                 </el-button>
-                <el-button
+                <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
@@ -114,8 +114,8 @@
                   @click="handleEditForm(scope.row.id)"
                 >
                   Edit
-                </el-button>
-                <el-button
+                </el-button> -->
+                <!-- <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
@@ -123,8 +123,8 @@
                   @click="handleDelete(scope.row.id, scope.row.project_title)"
                 >
                   Delete
-                </el-button>
-                <el-button
+                </el-button> -->
+                <!-- <el-button
                   v-if="!isLpjp"
                   href="#"
                   type="text"
@@ -132,9 +132,9 @@
                   @click="handleViewForm(scope.row.id)"
                 >
                   View Details
-                </el-button>
+                </el-button> -->
                 <el-button
-                  v-if="isInitiator"
+                  v-if="scope.row.published && isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -194,9 +194,10 @@
                   icon="el-icon-document"
                   @click="handleUjiRklRpl(scope.row)"
                 >
-                  Uji RKL/RPL
+                  Uji Kelayakan
                 </el-button>
                 <el-button
+                  v-if="isFormulator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -209,9 +210,18 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleWorkspace(scope.row)"
+                  @click="handleWorkspaceAndal(scope.row.id)"
                 >
-                  Workspace
+                  Workspace Andal
+                </el-button>
+                <el-button
+                  v-if="isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceRKLRPL(scope.row.id)"
+                >
+                  Workspace RKL RPL
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -226,10 +236,10 @@
         </el-table-column>
         <el-table-column align="left" label="No. Registrasi" width="200">
           <template slot-scope="scope">
-            <span>{{ scope.row.reg_no + '1233DD21123ASD' }}</span>
-            <span>{{
+            <span>{{ Math.floor(Math.random() * (scope.$index + 1) * 1000000000) }}</span>
+          <!-- <span>{{
               scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
-            }}</span>
+            }}</span> -->
           </template>
         </el-table-column>
         <el-table-column align="left" label="Nama Kegiatan" min-width="200">
@@ -284,6 +294,8 @@ const projectResource = new Resource('projects');
 const announcementResource = new Resource('announcements');
 const lpjpResource = new Resource('lpjpsByEmail');
 const formulatorResource = new Resource('formulatorsByEmail');
+const andalComposingResource = new Resource('andal-composing');
+const rklResource = new Resource('matriks-rkl');
 
 export default {
   name: 'Project',
@@ -444,7 +456,7 @@ export default {
       currentProject.field = Number(currentProject.field);
       currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
 
-      // this.$router.push({
+      // this.$router.push({a
       //   name: 'createProject',
       //   params: { project: currentProject },
       // });
@@ -552,6 +564,34 @@ export default {
       const { data } = await districtResource.list({ idProv });
       this.cityOptions = data.map((i) => {
         return { value: i.id, label: i.name };
+      });
+    },
+    async handleWorkspaceAndal(idProject) {
+      await andalComposingResource.list({
+        docs: 'true',
+        idProject: idProject,
+      });
+
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: idProject,
+          filename: `${idProject}-andal.docx`,
+        },
+      });
+    },
+    async handleWorkspaceRKLRPL(idProject) {
+      await rklResource.list({
+        docs: 'true',
+        idProject: idProject,
+      });
+
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: idProject,
+          filename: `${idProject}-rkl-rpl.docx`,
+        },
       });
     },
   },

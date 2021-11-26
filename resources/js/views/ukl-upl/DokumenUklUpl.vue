@@ -184,7 +184,18 @@ export default {
             mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
 
+          const formData = new FormData();
+          formData.append('dokumenKa', out);
+          formData.append('project_name', this.docContents.data.project_title);
+
+          axios.post('api/upload-ka-doc', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
           saveAs(out, 'form-ka-' + this.docContents.data.project_title + '.docx');
+          // console.log(save);
         }
       );
     },
