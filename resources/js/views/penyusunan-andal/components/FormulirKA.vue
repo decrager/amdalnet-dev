@@ -1,183 +1,146 @@
 <template>
-  <div>
-    <h2>Formulir Kerangka Acuan</h2>
-    <div>
-      <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
-      <el-button type="primary" @click="exportDocx">Export to .DOCX</el-button>
-    </div>
-    <el-row :gutter="20" style="margin-top: 20px">
-      <el-col :span="16">
-        <div class="grid-content bg-purple" />
-        <iframe
-          :src="
-            'https://docs.google.com/gview?url=' + projects + '&embedded=true'
-          "
-          width="100%"
-          height="723px"
-          frameborder="1"
-        />
-      </el-col>
-      <el-col :span="8">
-        <div class="grid-content bg-purple" />
-        <el-input
-          v-model="message"
-          type="textarea"
-          :rows="5"
-          placeholder="Tulis Masukan"
-        />
-        <div
-          style="
-            margin-top: 5px;
-            display: flex;
-            align-content: flex-end;
-            justify-content: end;
-          "
-        >
-          <el-button
-            type="primary"
-            icon="el-icon-s-promotion"
-            @click="saveComment"
-          >
-            Kirim
-          </el-button>
-        </div>
-        <div v-if="comments" style="margin-top: 10px">
-          <h3>Komentar Terbaru :</h3>
-          <IMG
-            v-if="loading"
-            src="images/loader.gif"
-            alt="Loading...."
-            class="loader"
+  <div class="app-container" style="padding: 24px">
+    <el-card>
+      <h2>Formulir Kerangka Acuan</h2>
+      <div>
+        <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
+        <el-button type="primary" @click="exportDocx">
+          Export to .DOCX
+        </el-button>
+      </div>
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="16">
+          <div class="grid-content bg-purple" />
+          <iframe
+            :src="
+              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
+            "
+            width="100%"
+            height="723px"
+            frameborder="1"
           />
-          <el-card
-            v-for="comment in commentsData"
-            :key="comment.id"
-            shadow="always"
-            style="margin-top: 10px"
-          >
-            <div class="heading__comment">
-              <div class="img__comment">
-                <IMG
-                  :src="comment.avatar"
-                  onerror="this.src='no-avatar.png'"
-                  alt="Avatar"
-                />
-              </div>
-              <div class="name__comment">
-                <span style="font-weight: bold">
-                  {{ comment.name }}
-                </span>
-                <BR />
-                <span>
-                  <i>{{ formatDate(comment.date) }}</i>
-                </span>
-              </div>
-            </div>
-            <p>{{ comment.comment }}</p>
-          </el-card>
-        </div>
-      </el-col>
-    </el-row>
+        </el-col>
+        <el-col :span="8">
+          <div class="grid-content bg-purple" />
+          <Comment />
+        </el-col>
+      </el-row>
+    </el-card>
   </div>
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const andalComposingResource = new Resource('andal-composing');
+import Comment from '@/views/penyusunan-andal/components/Comment';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
 
 export default {
-  name: 'FormulirKA',
+  components: {
+    Comment,
+  },
   data() {
     return {
       idProject: 0,
       projects: '',
-      commentsData: [],
-      comments: [],
-      message: null,
-      userId: 0,
-      errorComment: '',
-      docContents: [],
       loading: false,
       projectId: this.$route.params && this.$route.params.id,
-      metodeStudi: [],
+      metode_studi: [],
+      pra_konstruksi: [],
+      konstruksi: [],
+      operasi: [],
+      pasca_operasi: [],
+      project_title: '',
+      pic: '',
+      description: '',
+      location_desc: '',
+      positive: [],
+      negative: [],
+      penyusun: [],
     };
   },
-  mounted() {
-    this.setProjectId;
-    this.getDocument();
-    this.getComment();
-    this.getUserId();
-    this.getDocContent();
-  },
-  http: {
-    headers: {
-      'X-CSRF-TOKEN': window.csrf,
-    },
+  created() {
+    this.getData();
+    // this.getDocument();
   },
   methods: {
-    formatDate(value) {
-      if (value) {
-        dayjs.locale('id');
-        return dayjs(String(value)).format('DD-MMMM-YYYY');
-      }
-    },
-    async getComment() {
-      this.loading = true;
-      await axios
-        .get('api/ukl-upl-comment/' + this.projectId)
-        .then((response) => {
-          this.commentsData = response.data.data;
-          this.loading = false;
-          this.comments = 1;
-        });
-    },
-    getUserId() {
-      axios.get('api/user').then((response) => {
-        this.userId = response.data.data;
+    async getData() {
+      const data = await andalComposingResource.list({
+        idProject: this.$route.params.id,
+        formulir: 'true',
       });
+      this.metode_studi = data.metode_studi;
+      this.konstruksi = data.konstruksi;
+      this.pra_konstruksi = data.pra_konstruksi;
+      this.operasi = data.operasi;
+      this.pasca_operasi = data.pasca_operasi;
+      this.project_title = data.project_title;
+      this.pic = data.pic;
+      this.description = data.description;
+      this.location_desc = data.location_desc;
+      this.negative = data.negative;
+      this.positive = data.positive;
+      this.penyusun = data.penyusun;
     },
-    saveComment() {
-      const idProject = this.$route.params && this.$route.params.id;
-      if (this.message != null && this.message !== ' ') {
-        this.errorComment = null;
-        axios
-          .post('api/ukl-upl-comment', {
-            id_project: parseInt(idProject),
-            id_user: this.userId.id,
-            comment: this.message,
-          })
-          .then((res) => {
-            if (res.data.status) {
-              this.commentsData.push({
-                name: this.userId.name,
-                date: this.formatDate(new Date()),
-                comment: this.message,
-                avatar: this.commentsData.avatar || 'no-avatar.png',
-              });
-              this.message = null;
-            }
+    exportDocx() {
+      PizZipUtils.getBinaryContent(
+        '/template_ka_andal.docx',
+        (error, content) => {
+          if (error) {
+            throw error;
+          }
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
           });
-      } else {
-        this.errorComment = 'Please enter a comment to save';
-      }
+          doc.render({
+            metode_studi: this.metode_studi,
+            pra_konstruksi: this.pra_konstruksi,
+            konstruksi: this.konstruksi,
+            operasi: this.operasi,
+            pasca_operasi: this.pasca_operasi,
+            project_title: this.project_title,
+            pic: this.pic,
+            description: this.description,
+            location_desc: this.location_desc,
+            negative: this.negative,
+            positive: this.positive,
+            penyusun: this.penyusun,
+          });
+
+          const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType:
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          });
+
+          saveAs(out, this.$route.params.id + '-form-ka-andal.docx');
+
+          // const formData = new FormData();
+          // formData.append('docx', out);
+          // formData.append('type', 'formulir');
+          // formData.append('idProject', this.$route.params.id);
+
+          // andalComposingResource
+          //   .store(formData)
+          //   .then((response) => {})
+          //   .catch((error) => {
+          //     console.log(error);
+          //   });
+        }
+      );
     },
     getDocument() {
-      const id = this.$route.params && this.$route.params.id;
-      axios.get('api/projects/' + id).then((result) => {
-        this.projects =
-          window.location.origin +
-          '/storage/formulir/form-ka-' +
-          result.data.project_title +
-          '.docx';
-      });
-    },
-    setProjectId() {
-      const id = this.$route.params && this.$route.params.id;
-      this.idProject = id;
+      this.projects =
+        window.location.origin +
+        '/storage/formulir/' +
+        this.$route.params.id +
+        '-form-ka-andal.docx';
     },
     exportPdf() {
       const id = this.$route.params && this.$route.params.id;
@@ -195,43 +158,6 @@ export default {
         fileLink.setAttribute('download', `${getName}`);
         document.body.appendChild(fileLink);
         fileLink.click();
-      });
-    },
-    getDocContent() {
-      axios.get('api/ka-docx/' + this.projectId).then((response) => {
-        this.docContents = response.data;
-        // this.metodeStudi = response.data.metodeStudi;
-      });
-    },
-    exportDocx() {
-      PizZipUtils.getBinaryContent('/template_KA.docx', (error, content) => {
-        if (error) {
-          throw error;
-        }
-        const zip = new PizZip(content);
-        const doc = new Docxtemplater(zip, {
-          paragraphLoop: true,
-          linebreaks: true,
-        });
-        doc.render({
-          project_title: this.docContents.data.project_title,
-          pic: this.docContents.data.pic,
-          description: this.docContents.data.description,
-          location_desc: this.docContents.data.location_desc,
-          metode_studi: this.docContents.metode_studi,
-          pra_konstruksi: this.docContents.pra_konstruksi,
-          konstruksi: this.docContents.konstruksi,
-          operasi: this.docContents.operasi,
-          pasca_operasi: this.docContents.pasca_operasi,
-        });
-
-        const out = doc.getZip().generate({
-          type: 'blob',
-          mimeType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        });
-
-        saveAs(out, 'form-ka-' + this.docContents.data.project_title + '.docx');
       });
     },
   },

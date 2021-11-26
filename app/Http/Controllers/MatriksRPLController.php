@@ -540,12 +540,12 @@ class MatriksRPLController extends Controller
             $total = 0;
 
             foreach($data_merge_final as $merge) {
-                if($merge->component->id_project_stage == $s->id || $merge->component->component->id_project_stage == $s->id) {
+                if($merge->subProjectComponent->id_project_stage == $s->id || $merge->subProjectComponent->component->id_project_stage == $s->id) {
                     $changeType = $merge->id_change_type ? $merge->changeType->name : '';
-                    $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
-                    $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
-                    // $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                    // $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                    // $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
+                    // $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
+                    $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
+                    $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
 
                     $results[$idx]['data'][] = [
                         'no' => $total + 1,
