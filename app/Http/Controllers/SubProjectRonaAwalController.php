@@ -43,7 +43,6 @@ class SubProjectRonaAwalController extends Controller
                     $data[$id_component_type][] = $rona_awal;
                 }
                 $data_output = [];
-                $max_colspan = 0;
                 $dummyId = 99999999;
                 foreach ($component_types as $component_type) {
                     $id = $component_type['id'];
@@ -51,7 +50,6 @@ class SubProjectRonaAwalController extends Controller
                     if (array_key_exists($id, $data)) {
                         $count_data = count($data[$id]);
                     }
-                    $max_colspan += $count_data;
                     array_push($data_output, [
                         'id' => $dummyId,
                         'is_component_type' => true,
@@ -67,7 +65,6 @@ class SubProjectRonaAwalController extends Controller
                 }
                 return [
                     'data' => $data_output,
-                    'colspan' => $max_colspan,
                 ];
             } else {
                 return SubProjectRonaAwalResource::collection($rona_awals);

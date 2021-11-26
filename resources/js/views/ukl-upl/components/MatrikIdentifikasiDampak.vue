@@ -229,7 +229,7 @@ export default {
         with_component_type: true,
       });
       this.ronaAwals = listR.data;
-      this.colspan = listR.colspan;
+      this.colspan = this.components.length + 1;
 
       this.ronaAwals.map((r) => {
         if (r['name'] === null) {
@@ -266,6 +266,14 @@ export default {
       const kegiatanTitles = [];
       let id = 1;
       this.componentsGrouped.map((cg) => {
+        if (cg.utama.length === 0 && cg.pendukung.length === 0){
+          kegiatanTitles.push({
+            id: 99999999 + id,
+            name: 'Kegiatan Utama',
+            colspan: 1,
+          });
+          id++;
+        }
         if (cg.utama.length > 0) {
           kegiatanTitles.push({
             id: id,
