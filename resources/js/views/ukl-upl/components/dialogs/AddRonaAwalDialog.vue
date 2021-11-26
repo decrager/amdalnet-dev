@@ -90,11 +90,16 @@ const projectStageResource = new Resource('project-stages');
 const componentTypeResource = new Resource('component-types');
 const scopingResource = new Resource('scoping');
 const subProjectComponentResource = new Resource('sub-project-components');
+const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'AddRonaAwalDialog',
   props: {
     show: Boolean,
+    idProject: {
+      type: Number,
+      default: () => 0,
+    },
     idProjectStage: {
       type: Number,
       default: () => 0,
@@ -112,8 +117,8 @@ export default {
       default: () => 0,
     },
     subProjects: {
-      type: Array,
-      default: () => [],
+      type: Object,
+      default: () => {},
     },
     subProjectComponents: {
       type: Array,
@@ -134,7 +139,7 @@ export default {
     this.getData();
   },
   methods: {
-    submitRonaAwal() {
+    async submitRonaAwal() {
       this.ronaAwal.id_component_type = this.currentIdComponentType;
       this.ronaAwal.id_sub_project_component = this.currentIdSubProjectComponent;
       scopingResource
@@ -147,8 +152,28 @@ export default {
             type: 'success',
             duration: 5 * 1000,
           });
+          // save impact idt
+          this.saveImpactIdentification(response.data.id);
           // reload PelingkupanTable
           this.$emit('handleCloseAddRonaAwal', true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    async saveImpactIdentification(idSubProjectRonaAwal) {
+      impactIdtResource
+        .store({
+          id_project: this.idProject,
+          id_sub_project_component: this.currentIdSubProjectComponent,
+          id_sub_project_rona_awal: idSubProjectRonaAwal,
+        })
+        .then((response) => {
+          this.$message({
+            message: 'Dampak Lingkungan berhasil disimpan',
+            type: 'success',
+            duration: 5 * 1000,
+          });
         })
         .catch((error) => {
           console.log(error);

@@ -22,7 +22,7 @@
               size="mini"
               class="pull-right"
               icon="el-icon-caret-right"
-              @click="handleViewComponentRonaAwals(scope.row.id)"
+              @click="handleViewComponents(scope.row.id)"
             />
           </template>
         </el-table-column>
@@ -48,7 +48,7 @@
               size="mini"
               class="pull-right"
               icon="el-icon-caret-right"
-              @click="handleViewComponentRonaAwals(scope.row.id)"
+              @click="handleViewComponents(scope.row.id)"
             />
           </template>
         </el-table-column>
@@ -74,7 +74,15 @@
           <tr>
             <td>
               <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
-                <el-tag :key="comp.id" type="info" :closable="closable && !isAndal" @close="handleDeleteComponent(comp.id)">{{ comp.name }}</el-tag>
+                <el-tag
+                  :key="comp.id"
+                  type="info"
+                  :closable="closable && !isAndal"
+                  @close="handleDeleteComponent(comp.id)"
+                  @click="handleViewRonaAwals(comp.id)"
+                >
+                  {{ comp.name }}
+                </el-tag>
                 <el-input v-model="comp.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :readonly="isAndal" />
               </div>
 
@@ -142,6 +150,7 @@
       :key="ronaAwalDialogKey"
       :show="kLDialogueVisible"
       :sub-projects="subProjects"
+      :id-project="idProject"
       :id-project-stage="idProjectStage"
       :current-id-sub-project="currentIdSubProject"
       :current-id-sub-project-component="currentIdSubProjectComponent"
@@ -203,7 +212,7 @@ export default {
   methods: {
     reloadData() {
       this.getComponents(this.currentIdSubProject);
-      this.getRonaAwals(this.currentIdSubProject);
+      this.getRonaAwals(this.currentIdSubProjectComponent);
       // reload dialogs
       this.componentDialogKey = this.componentDialogKey + 1;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
@@ -266,10 +275,23 @@ export default {
           console.log(error);
         });
     },
-    handleViewComponentRonaAwals(idSubProject) {
+    async handleViewComponents(idSubProject) {
       this.currentIdSubProject = idSubProject;
       this.getComponents(idSubProject);
-      this.getRonaAwals(idSubProject);
+      const sp = await subProjectComponentResource.list({
+        id_sub_project: idSubProject,
+        id_project_stage: this.idProjectStage,
+      });
+      if (sp.data.length > 0){
+        this.getRonaAwals(sp.data[0].id);
+      }
+      // reload dialogs
+      this.componentDialogKey = this.componentDialogKey + 1;
+      this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
+    },
+    async handleViewRonaAwals(idSubProjectComponent) {
+      this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.getRonaAwals(idSubProjectComponent);
       // reload dialogs
       this.componentDialogKey = this.componentDialogKey + 1;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
@@ -286,11 +308,23 @@ export default {
         sub_project_type: 'pendukung',
       });
       this.subProjects.pendukung = subProjectPendukung.data;
+      // init rona awals array
+      for (let i = 0; i < 6; i++){
+        this.subProjectRonaAwals.push({
+          rona_awals: [],
+        });
+      }
       // get first sub project's components & rona_awals
       if (this.subProjects.utama.length > 0) {
         const firstSubProject = this.subProjects.utama[0];
         this.getComponents(firstSubProject.id);
-        this.getRonaAwals(firstSubProject.id);
+        const sp = await subProjectComponentResource.list({
+          id_sub_project: firstSubProject.id,
+          id_project_stage: this.idProjectStage,
+        });
+        if (sp.data.length > 0){
+          this.getRonaAwals(sp.data[0].id);
+        }
         this.currentIdSubProject = firstSubProject.id;
       }
     },
@@ -306,13 +340,15 @@ export default {
         }
       });
       this.subProjectComponents = components.data;
-      this.currentIdSubProjectComponent = this.subProjectComponents[0].id;
+      if (this.subProjectComponents.length > 0) {
+        this.currentIdSubProjectComponent = this.subProjectComponents[0].id;
+      }
     },
-    async getRonaAwals(idSubProject) {
+    async getRonaAwals(idSubProjectComponent) {
+      console.log('idSubProjectComponent=' + idSubProjectComponent);
       const ronaAwals = await scopingResource.list({
-        id_sub_project: idSubProject,
-        id_project_stage: this.idProjectStage,
         sub_project_rona_awals: true,
+        id_sub_project_component: idSubProjectComponent,
       });
       ronaAwals.data.map((ra) => {
         ra.rona_awals.map((r) => {
@@ -321,6 +357,7 @@ export default {
           }
         });
       });
+      console.log(ronaAwals.data);
       this.subProjectRonaAwals = ronaAwals.data;
     },
   },

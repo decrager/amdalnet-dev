@@ -201,7 +201,22 @@ class ImpactIdentificationController extends Controller
                     'code' => 500,
                     'error' => 'Some rows failed to update.',
                 ]);
-            }            
+            }
+        } else if (isset($params['id_project']) && isset($params['id_sub_project_component'])
+            && isset($params['id_sub_project_rona_awal'])) {
+            $validator = $request->validate([
+                'id_project' => 'required',
+                'id_sub_project_component' => 'required',
+                'id_sub_project_rona_awal' => 'required',
+            ]);
+            DB::beginTransaction();
+            $created = ImpactIdentification::create($validator);
+            if ($created){
+                DB::commit();
+                return $created;
+            } else {
+                DB::rollBack();
+            }
         } else {
             $validator = $request->validate([
                 'id_project' => 'required',

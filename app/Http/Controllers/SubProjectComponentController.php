@@ -27,11 +27,26 @@ class SubProjectComponentController extends Controller
                 ->get();
             return SubProjectComponentResource::collection($components);
         } else if (isset($params['id_sub_project'])){
-            $components = SubProjectComponent::select('sub_project_components.*')
-                ->where('id_sub_project', $params['id_sub_project'])
-                ->orderBy('id', 'asc')
-                ->get();
-            return SubProjectComponentResource::collection($components);
+            $id_sub_project = $params['id_sub_project'];
+            
+            if (isset($params['id_project_stage'])) {
+                $id_project_stage = $params['id_project_stage'];
+                $level1 = SubProjectComponent::with('component')
+                    ->where('id_sub_project', $id_sub_project)
+                    ->where('id_project_stage', $id_project_stage)
+                    ->get();
+                $nested = SubProjectComponent::with('component')->whereHas('component', function($q) use ($id_project_stage) {
+                        $q->where('id_project_stage', $id_project_stage);
+                    })->where('id_sub_project', $id_sub_project)->get();
+                $components = $level1->merge($nested);
+                return SubProjectComponentResource::collection($components);
+            } else {
+                $components = SubProjectComponent::select('sub_project_components.*')
+                    ->where('id_sub_project', $id_sub_project)
+                    ->orderBy('id', 'asc')
+                    ->get();
+                return SubProjectComponentResource::collection($components);
+            }
         } else {
             return SubProjectComponentResource::collection(SubProjectComponent::with('component')->get()); 
         }
@@ -66,7 +81,7 @@ class SubProjectComponentController extends Controller
      */
     public function show(SubProjectComponent $subProjectComponent)
     {
-        //
+        return $subProjectComponent;
     }
 
     /**

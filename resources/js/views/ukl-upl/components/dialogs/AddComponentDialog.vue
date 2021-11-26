@@ -77,8 +77,8 @@ export default {
       default: () => 0,
     },
     subProjects: {
-      type: Array,
-      default: () => [],
+      type: Object,
+      default: () => {},
     },
   },
   data() {
