@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\ProjectMapAttachment;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProjectMapAttachmentResource;
+use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
 class ProjectMapAttachmentController extends Controller
 {
@@ -53,7 +54,35 @@ class ProjectMapAttachmentController extends Controller
      */
     public function post(Request $request)
     {
-        return  [];
+
+
+        $file = $request->file('file');
+
+        $map = ProjectMapAttachment::where('id_project', $request->input('id_project'))
+           ->where('attachment_type', $request->input('attachment_type'))
+           ->where('file_type', $request->input('file_type'))->first();
+
+        if(!$map) {
+            $map = new ProjectMapAttachment();
+        } else {
+            unlink(storage_path().DIRECTORY_SEPARATOR.$map->stored_filename);
+        }
+
+        $map->id_project = $request->input('id_project');
+        $map->attachment_type = $request->input('attachment_type');
+        $map->file_type = $request->input('file_type');
+        $map->original_filename = $file->getClientOriginalName();
+        $map->stored_filename = time().'_'.$map->id_project.'_'.uniqid('projectmap').'.'.strtolower($map->file_type);
+
+        if($file->move(storage_path(),$map->stored_filename)){
+            $map->save();
+
+        }else {
+            return [
+                'message' => 'failed!'.storage_path(),
+            ];
+        }
+
     }
 
     /**

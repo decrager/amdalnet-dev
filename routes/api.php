@@ -226,4 +226,4 @@ Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('change-types', [ChangeTypeController::class, 'index']);
 Route::get('pie-params', [PieParamController::class, 'index']);
-Route::post('upload-map', [ProjectMapAttachment::class, 'post']);
+Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
