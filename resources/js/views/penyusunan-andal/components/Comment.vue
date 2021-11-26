@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-input
-      v-if="userInfo.roles.includes('examiner')"
+      v-if="isExaminer"
       v-model="comment"
       type="textarea"
       :rows="3"
       placeholder="Silahkan isi komentar"
     />
-    <div v-if="userInfo.roles.includes('examiner')" class="send-btn-container">
+    <div v-if="isExaminer" class="send-btn-container">
       <el-button
         :loading="loadingSubmit"
         type="primary"
@@ -51,6 +51,11 @@ export default {
       comments: [],
     };
   },
+  computed: {
+    isExaminer() {
+      return this.$store.getters.roles.includes('examiner');
+    },
+  },
   created() {
     this.getComments();
   },
@@ -61,7 +66,7 @@ export default {
         idProject: this.idProject,
         idUser: this.userInfo.id,
         comment: 'true',
-        role: this.userInfo.roles.includes('examiner') ? 'true' : 'false',
+        role: this.$store.getters.roles.includes('examiner') ? 'true' : 'false',
       });
       this.comments = data;
     },
