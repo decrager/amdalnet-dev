@@ -3,12 +3,16 @@
 use App\Http\Controllers\BaganAlirController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\UklUplCommentController;
+use App\Http\Controllers\ProjectMapAttachmentController;
 use App\Http\Resources\UserResource;
 use App\Laravue\Acl;
 use App\Laravue\Faker;
 use App\Laravue\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChangeTypeController;
+use App\Http\Controllers\PieParamController;
+use App\Entity\ProjectMapAttachment;
 
 /*
 |--------------------------------------------------------------------------
@@ -226,5 +230,9 @@ Route::apiResource('scoping', 'ScopingController');
 Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
+Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
+Route::get('change-types', [ChangeTypeController::class, 'index']);
+Route::get('pie-params', [PieParamController::class, 'index']);
+Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
 Route::apiResource('manage-approach', 'ManageApproachController');
 Route::post('upload-ka-doc', [ExportDocument::class, 'saveKADoc']);

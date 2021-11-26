@@ -78,4 +78,9 @@ class Project extends Model
     {
         return $this->hasMany(SubProject::class, 'id_project', 'id');
     }
+
+    public function mapFiles()
+    {
+        return $this->hasMany(ProjectMapAttachment::class, 'id_project', 'id');
+    }
 }

@@ -27,96 +27,22 @@
           />
         </el-collapse-item>
         <el-collapse-item name="3" title="PETA BATAS WILAYAH STUDI & PETA PENDUKUNG">
-          <el-form label-position="top" label-width="100px">
-            <el-form-item label="Peta Batas Ekologis" :required="required">
-              <el-col :span="6" style="margin-right:1em;">
-                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
-                  <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
-                  <el-col :span="4" style="margin-left:1em;">
-                    <el-upload>
-                      <el-button size="small" type="info">browse</el-button>
-                    </el-upload>
-                  </el-col>
-                </el-row>
-              </el-col>
+          <upload-peta-batas
+            @handleReloadVsaList="handleReloadVsaList"
+          />
 
-              <el-col :span="6" style="margin-right:1em;">
-                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
-                  <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
-                  <el-col :span="4" style="margin-left:1em;">
-                    <el-upload>
-                      <el-button size="small" type="info">browse</el-button>
-                    </el-upload>
-                  </el-col>
-                </el-row>
-              </el-col>
-            </el-form-item>
-            <el-form-item label="Peta Batas Sosial" :required="required">
-              <el-col :span="6" style="margin-right:1em;">
-                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
-                  <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
-                  <el-col :span="4" style="margin-left:1em;">
-                    <el-upload>
-                      <el-button size="small" type="info">browse</el-button>
-                    </el-upload>
-                  </el-col>
-                </el-row>
-              </el-col>
-
-              <el-col :span="6" style="margin-right:1em;">
-                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
-                  <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
-                  <el-col :span="4" style="margin-left:1em;">
-                    <el-upload>
-                      <el-button size="small" type="info">browse</el-button>
-                    </el-upload>
-                  </el-col>
-                </el-row>
-              </el-col>
-            </el-form-item>
-
-            <el-form-item label="Peta Batas Wilayah Studi" :required="required">
-              <el-col :span="6" style="margin-right:1em;">
-                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
-                  <el-col :span="17"><el-input placeholder="Versi SHP" /></el-col>
-                  <el-col :span="4" style="margin-left:1em;">
-                    <el-upload>
-                      <el-button size="small" type="info">browse</el-button>
-                    </el-upload>
-                  </el-col>
-                </el-row>
-              </el-col>
-
-              <el-col :span="6" style="margin-right:1em;">
-                <el-row :gutter="5" style="border:1px solid #aaaaaa; border-radius: 0.3em; width:100%; padding: .5em;">
-                  <el-col :span="17"><el-input placeholder="Versi PDF" /></el-col>
-                  <el-col :span="4" style="margin-left:1em;">
-                    <el-upload>
-                      <el-button size="small" type="info">browse</el-button>
-                    </el-upload>
-                  </el-col>
-                </el-row>
-              </el-col>
-            </el-form-item>
-
-            <el-row style="margin: 1em 0;">
-              <el-col :span="12">
-                <el-button size="medium" type="warning">Unggah Peta</el-button>
-              </el-col>
-              <el-col :span="12" style="text-align: right;">
-                <el-button size="medium" type="danger">Batal</el-button>
-                <el-button size="medium" type="primary">Simpan</el-button>
-              </el-col>
-            </el-row>
-          </el-form>
         </el-collapse-item>
         <el-collapse-item name="4" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+          <dampak-hipotetik
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+          <!--
           <dampak-potensial
             @handleReloadVsaList="handleReloadVsaList"
           />
           <dampak-penting-hipotetik
             @handleReloadVsaList="handleReloadVsaList"
-          />
+          />-->
         </el-collapse-item>
         <el-collapse-item name="5" title="METODE STUDI">
           <metode-studi
@@ -141,23 +67,23 @@
 import Pelingkupan from './components/Pelingkupan.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
 import MatriksDampakPentingHipotetik from './components/MatriksDampakPentingHipotetik.vue';
-import DampakPotensial from './components/DampakPotensial.vue';
-import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
+import DampakHipotetik from './components/DampakHipotetik.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
 import BaganAlir from './components/BaganAlir.vue';
+import UploadPetaBatas from './components/UploadPetaBatas.vue';
 
 export default {
   name: 'FormulirUklUpl',
   components: {
     Pelingkupan,
     MatrikIdentifikasiDampak,
-    DampakPotensial,
-    DampakPentingHipotetik,
+    DampakHipotetik,
     MetodeStudi,
     MatriksDampakPentingHipotetik,
     Workflow,
     BaganAlir,
+    UploadPetaBatas,
   },
   props: {
     data: {
