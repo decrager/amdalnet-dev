@@ -188,15 +188,16 @@
                   Uji KA
                 </el-button>
                 <el-button
-                  v-if="isAdmin || isSubtance || isExaminer || isFormulator"
+                  v-if="isAdmin || isSubtance || isExaminer"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleUjiRklRpl(scope.row)"
                 >
-                  Uji RKL/RPL
+                  Uji Kelayakan
                 </el-button>
                 <el-button
+                  v-if="isFormulator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
