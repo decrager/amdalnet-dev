@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div v-loading="isLoading === true" class="app-container">
 
     <el-button
       type="success"
@@ -11,7 +11,11 @@
       Simpan Perubahan
     </el-button>
 
-    <span style="float:right"><el-button icon="el-icon-refresh" round @click="refresh"><span v-show="isLoading === true">refreshing data...</span></el-button></span>
+    <span style="float:right">
+      <span v-show="!isLoading"><el-button icon="el-icon-refresh" round @click="refresh" /></span>
+      <span v-show="isLoading === true"><el-button icon="el-icon-loading"> Refreshing data...</el-button></span>
+
+    </span>
     <table style="margin: 2em 0; border-collapse: collapse;clear:both;">
       <thead>
         <tr>
@@ -118,7 +122,8 @@ export default {
   mounted() {
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
     this.isLoading = false;
-    // this.getData();
+    setTimeout(() => (this.isLoading = false), 3000);
+    this.getData();
   },
   methods: {
     handleSetData(data) {
@@ -282,6 +287,9 @@ export default {
 </script>
 
 <style scoped>
+  table td.title {
+    height: 200% !important;
+  }
   table td.title:hover {
     background-color: #fafafa;
     cursor: pointer;
