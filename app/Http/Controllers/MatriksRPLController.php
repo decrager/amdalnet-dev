@@ -10,6 +10,7 @@ use App\Entity\ImpactIdentification;
 use App\Entity\Institution;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class MatriksRPLController extends Controller
@@ -102,6 +103,23 @@ class MatriksRPLController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->map) {
+            if($request->hasFile('map_file')) {
+                //create file
+                $file = $request->file('map_file');
+                $name = '/map/' . uniqid() . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+      
+                $project = Project::findOrFail($request->idProject);
+                $project->map_rpl = Storage::url($name);
+                $project->save();
+   
+                return response()->json(['message' => 'success']);
+           }
+   
+           return response()->json(['message' => 'failed'], 404);
+        }
+
         if($request->type == 'impact-comment') {
             $comment = new Comment();
             $comment->id_user = $request->id_user;

@@ -1,18 +1,32 @@
 <template>
   <div>
-    <div class="filter-container">
-      <el-button
-        :loading="loadingSubmit"
-        class="filter-item"
-        type="primary"
+    <div
+      class="filter-container"
+      style="display: flex; justify-content: space-between"
+    >
+      <div>
+        <el-button
+          :loading="loadingSubmit"
+          class="filter-item"
+          type="primary"
+          style="font-size: 0.8rem"
+          @click="handleSubmit"
+        >
+          {{ 'Simpan Perubahan' }}
+        </el-button>
+        <span style="font-size: 0.8rem">
+          <em>{{ lastTime }}</em>
+        </span>
+      </div>
+      <el-upload
+        :loading="loadingMap"
+        class="filter-item upload-demo"
         style="font-size: 0.8rem"
-        @click="handleSubmit"
+        :auto-upload="false"
+        :on-change="handleUploadChange"
       >
-        {{ 'Simpan Perubahan' }}
-      </el-button>
-      <span style="font-size: 0.8rem">
-        <em>{{ lastTime }}</em>
-      </span>
+        Unggah Peta
+      </el-upload>
     </div>
     <el-table
       v-loading="loading"
@@ -308,6 +322,7 @@ export default {
       list: [],
       lastTime: null,
       loading: false,
+      loadingMap: false,
       loadingSubmit: false,
       loadingSubmitComment: false,
       idProject: this.$route.params.id,
@@ -373,6 +388,20 @@ export default {
       this.lastTime = await rplResource.list({
         lastTime: 'true',
         idProject: this.idProject,
+      });
+    },
+    async handleUploadChange(file, fileList) {
+      const formData = new FormData();
+      formData.append('idProject', this.idProject);
+      formData.append('map_file', file.raw);
+      formData.append('map', 'true');
+      this.loadingMap = true;
+      await rplResource.store(formData);
+      this.loadingMap = false;
+      this.$message({
+        message: 'Data is saved Successfully',
+        type: 'success',
+        duration: 5 * 1000,
       });
     },
     async handleSubmit() {
@@ -554,5 +583,12 @@ export default {
 .comment-header.reply,
 .comment-body.reply {
   background: #ceeccb;
+}
+.upload-demo {
+  font-size: 0.8rem;
+  background: #e2cd39;
+  padding: 8px;
+  color: white;
+  border-radius: 3px;
 }
 </style>
