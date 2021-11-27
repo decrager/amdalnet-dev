@@ -410,7 +410,8 @@
                       </td>
                     </tr>
                   </table>
-                  <el-tag v-if="currentProject.b3" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag>
+                  <el-tag v-if="currentProject.b3 && !currentProject.tps" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag>
+                  <!-- <el-tag v-if="currentProject.tps" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag> -->
                 </el-card>
               </el-col>
             </el-row>
