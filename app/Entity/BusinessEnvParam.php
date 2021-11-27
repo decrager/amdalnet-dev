@@ -19,6 +19,8 @@ class BusinessEnvParam extends Model
         'is_param_multisector',
     ];
 
+    public $timestamps = false;
+
     public function param(){
         return $this->hasOne(Param::class, 'id', 'id_param');
     }
