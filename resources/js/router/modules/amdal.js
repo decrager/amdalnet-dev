@@ -1,12 +1,12 @@
 import Layout from '@/layout';
 
-const uklUplRoutes = {
-  path: '/ukl-upl',
+const amdalRoutes = {
+  path: '/amdal',
   component: Layout,
-  redirect: '/ukl-upl',
+  redirect: '/amdal',
   alwaysShow: true,
   hidden: true,
-  meta: { title: 'UKL-UPL', icon: 'zip' },
+  meta: { title: 'AMDAL', icon: 'zip' },
   children: [
     {
       path: ':id(\\d+)/formulir',
@@ -32,4 +32,4 @@ const uklUplRoutes = {
   ],
 };
 
-export default uklUplRoutes;
+export default amdalRoutes;

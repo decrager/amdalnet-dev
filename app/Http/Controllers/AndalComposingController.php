@@ -29,8 +29,13 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->pdf) {
+            return $this->exportKAPDF($request->idProject);
+        }
+
         if($request->formulir) {
             return $this->formulirKa($request->idProject);
+            // return $this->formulirKaPhpWord($request->idProject);
         }
 
         if($request->docs) {
@@ -106,8 +111,8 @@ class AndalComposingController extends Controller
     public function store(Request $request)
     {
         if($request->type == 'formulir') {
-            if(!File::exists(storage_path('app/public/formulir/' . $request->idProject . '-form-ka-andal.docx'))) {
-                return;
+            if(File::exists(storage_path('app/public/formulir/' . $request->idProject . '-form-ka-andal.docx'))) {
+                File::delete(storage_path('app/public/formulir/' . $request->idProject . '-form-ka-andal.docx'));
             }
 
             if($request->hasFile('docx')) {
@@ -532,8 +537,9 @@ class AndalComposingController extends Controller
         ];
 
         $results['penyusun'] = [];
-        $formulator = FormulatorTeam::where('id_project', $id_project)->first();
-        if($formulator->member->first()) {
+        $formulator = FormulatorTeam::where('id_project', $id_project)->with('member')->first();
+        
+        if($formulator && $formulator->member) {
             foreach($formulator->member as $f) {
                 $results['penyusun'][] = [
                     'name' => $f->formulator->name,
@@ -549,11 +555,11 @@ class AndalComposingController extends Controller
         $results['negative'] = [];
 
         foreach($publicConsultation as $p) {
-            $results['positive'][] = ['val' => $p->positive_feedback_summary]; 
-            $results['negative'][] = ['val' => $p->negative_feedback_summary]; 
+            $results['positive'][] = ['val' => $p->positive_feedback_summary ?? '']; 
+            $results['negative'][] = ['val' => $p->negative_feedback_summary ?? '']; 
         }
 
-        $im = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'potential_impact_evaluation', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+        $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'potential_impact_evaluation', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
         ->where('id_project', $id_project)->get();
 
         $total_ms = 0;
@@ -572,10 +578,8 @@ class AndalComposingController extends Controller
                 } else {
                     continue;
                 }
-                
+
                 $changeType = $pA->id_change_type ? $pA->changeType->name : '';
-                $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
-                $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
                 //  $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
                 //  $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
 
@@ -610,17 +614,48 @@ class AndalComposingController extends Controller
         return $results;
     }
 
+    private function formulirKaPhpWord($id_project) {
+        $project = Project::findOrFail($id_project);
+        
+        $templateProcessor = new TemplateProcessor('template_ka_andal_2.docx');
+
+        $templateProcessor->setValue('project_title', $project->project_title);
+        $templateProcessor->setValue('pic', $project->initiator->name);
+        $templateProcessor->setValue('description', $project->description);
+        $templateProcessor->setValue('location_desc', $project->location_desc);
+        
+        $save_file_name = $id_project . '-ka-andal.docx';
+
+        if (!File::exists(storage_path('app/public/formulir/'))) {
+            File::makeDirectory(storage_path('app/public/formulir/'));
+        }
+
+        if (!File::exists(storage_path('app/public/formulir/' . $save_file_name))) {
+            $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
+        }
+        
+
+        return response()->download(storage_path('app/public/formulir/' . $save_file_name));
+
+    }
+
     private function getComponentRonaAwal($imp, $id_project_stage) {
         $component = null;
         $ronaAwal = null;
 
-        if($imp->subProjectComponent->id_project_stage == $id_project_stage) {
-            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-        } else if($imp->subProjectComponent->id_project_stage != null) {
-            if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
-                $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+        if($imp->subProjectComponent) {
+            if($imp->subProjectComponent->id_project_stage == $id_project_stage) {
+                if($imp->subProjectRonaAwal) {
+                    $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                    $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                }
+            } else if($imp->subProjectComponent->id_project_stage != null) {
+                if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
+                    if($imp->subProjectRonaAwal) {
+                        $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                        $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                    }
+                }
             }
         }
 
@@ -629,4 +664,20 @@ class AndalComposingController extends Controller
             'ronaAwal' => $ronaAwal
         ];
     }
+
+    private function exportKAPDF($idProject) {
+        $domPdfPath = base_path('vendor/dompdf/dompdf');
+        Settings::setPdfRendererPath($domPdfPath);
+        Settings::setPdfRendererName('DomPDF');
+
+        //Load word file
+        $Content = IOFactory::load(storage_path('app/public/formulir/' . $idProject . '-form-ka-andal.docx'));
+
+        //Save it into PDF
+        $PDFWriter = IOFactory::createWriter($Content, 'PDF');
+
+        $PDFWriter->save(storage_path('app/public/formulir/' . $idProject . '-form-ka-andal.pdf'));
+
+        return response()->download(storage_path('app/public/formulir/' . $idProject . '-form-ka-andal.pdf'))->deleteFileAfterSend(false);
+    } 
 }

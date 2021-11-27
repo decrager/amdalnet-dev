@@ -8,21 +8,23 @@
     <el-collapse v-model="activeName" accordion>
       <el-collapse-item name="1">
         <template slot="title">
-          <span class="title">PENDEKATAN PENGELOLAAN LINGKUNGAN</span>
+          <span class="title">PENDEKATAN PENGELOLAAN LINGKUNGAN HIDUP</span>
         </template>
         <ManageApproach v-if="activeName === '1'" />
       </el-collapse-item>
       <el-collapse-item name="2">
         <template slot="title">
           <span class="title">
-            MATRIKS RENCANA PENGELOLAAN LINGKUNGAN (RKL)
+            MATRIKS RENCANA PENGELOLAAN LINGKUNGAN HIDUP (RKL)
           </span>
         </template>
         <TableRKL v-if="activeName === '2'" />
       </el-collapse-item>
       <el-collapse-item name="3">
         <template slot="title">
-          <span class="title">MATRIKS RENCANA PEMANTAUAN LINGKUNGAN (RPL)</span>
+          <span class="title">
+            MATRIKS RENCANA PEMANTAUAN LINGKUNGAN HIDUP (RPL)
+          </span>
         </template>
         <TableRPL v-if="activeName === '3'" />
       </el-collapse-item>

@@ -38,49 +38,139 @@ class ExportDocument extends Controller
             ->where('projects.id', '=', $id)
             ->first();
 
-        $praKonstruksi = DB::table('project_components')
+        $praKonstruksi = DB::table('sub_project_components')
             ->select(
                 'project_stages.name as project_stages_name',
-                'components.name as component_name'
+                'components.name as component_name',
             )
-            ->selectRaw('ROW_NUMBER () OVER (ORDER BY project_components.id) as number')
-            ->leftJoin('components', 'components.id', '=', 'project_components.id_component')
-            ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
-            ->where('project_components.id_project', '=', $id)
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY sub_project_components.id) as number')
+            ->join('components', 'components.id', '=', 'sub_project_components.id_component')
+            ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
+            ->where('sub_projects.id_project', '=', $id)
             ->where('project_stages.name', '=', 'Pra Konstruksi')
             ->get();
 
-        $konstruksi = DB::table('project_components')
+        $konstruksi = DB::table('sub_project_components')
             ->select(
                 'project_stages.name as project_stages_name',
-                'components.name as component_name'
+                'components.name as component_name',
             )
-            ->selectRaw('ROW_NUMBER () OVER (ORDER BY project_components.id) as number')
-            ->leftJoin('components', 'components.id', '=', 'project_components.id_component')
-            ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
-            ->where('project_components.id_project', '=', $id)
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY sub_project_components.id) as number')
+            ->join('components', 'components.id', '=', 'sub_project_components.id_component')
+            ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
+            ->where('sub_projects.id_project', '=', $id)
             ->where('project_stages.name', '=', 'Konstruksi')
             ->get();
-        $operasi = DB::table('project_components')
+
+        $operasi = DB::table('sub_project_components')
             ->select(
                 'project_stages.name as project_stages_name',
-                'components.name as component_name'
+                'components.name as component_name',
             )
-            ->selectRaw('ROW_NUMBER () OVER (ORDER BY project_components.id) as number')
-            ->leftJoin('components', 'components.id', '=', 'project_components.id_component')
-            ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
-            ->where('project_components.id_project', '=', $id)
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY sub_project_components.id) as number')
+            ->join('components', 'components.id', '=', 'sub_project_components.id_component')
+            ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
+            ->where('sub_projects.id_project', '=', $id)
             ->where('project_stages.name', '=', 'Operasi')
             ->get();
-        $pascaOperasi = DB::table('project_components')
+
+        $pascaOperasi = DB::table('sub_project_components')
             ->select(
                 'project_stages.name as project_stages_name',
-                'components.name as component_name'
+                'components.name as component_name',
             )
-            ->selectRaw('ROW_NUMBER () OVER (ORDER BY project_components.id) as number')
-            ->leftJoin('components', 'components.id', '=', 'project_components.id_component')
-            ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
-            ->where('project_components.id_project', '=', $id)
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY sub_project_components.id) as number')
+            ->join('components', 'components.id', '=', 'sub_project_components.id_component')
+            ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
+            ->where('sub_projects.id_project', '=', $id)
+            ->where('project_stages.name', '=', 'Pasca Operasi')
+            ->get();
+
+        $praKonstruksiDetail = DB::table('sub_project_components')
+            ->select(
+                'impact_identifications.initial_study_plan',
+                'impact_identifications.potential_impact_evaluation',
+                'rona_awal.name as rona_awal_name',
+                'impact_identifications.study_location',
+                'impact_identifications.study_length_month',
+                'impact_identifications.study_length_year',
+                'change_types.name as change_type_name'
+            )
+            ->join('components', 'components.id', '=', 'sub_project_components.id_component')
+            ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
+            ->leftJoin('impact_identifications', 'impact_identifications.id_sub_project_component', '=', 'sub_project_components.id')
+            ->join('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_sub_project_rona_awal')
+            ->join('rona_awal', 'rona_awal.id', '=', 'sub_project_rona_awals.id_rona_awal')
+            ->join('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
+            ->where('sub_projects.id_project', '=', $id)
+            ->where('project_stages.name', '=', 'Pra Konstruksi')
+            ->get();
+
+        $konstruksiDetail = DB::table('sub_project_components')
+            ->select(
+                'impact_identifications.initial_study_plan',
+                'rona_awal.name as rona_awal_name',
+                'impact_identifications.potential_impact_evaluation',
+                'impact_identifications.study_location',
+                'impact_identifications.study_length_month',
+                'impact_identifications.study_length_year',
+                'change_types.name as change_type_name'
+            )
+            ->join('components', 'components.id', '=', 'sub_project_components.id_component')
+            ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
+            ->leftJoin('impact_identifications', 'impact_identifications.id_sub_project_component', '=', 'sub_project_components.id')
+            ->join('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_sub_project_rona_awal')
+            ->join('rona_awal', 'rona_awal.id', '=', 'sub_project_rona_awals.id_rona_awal')
+            ->join('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
+            ->where('sub_projects.id_project', '=', $id)
+            ->where('project_stages.name', '=', 'Konstruksi')
+            ->get();
+
+        $operasiDetail = DB::table('sub_project_components')
+            ->select(
+                'impact_identifications.initial_study_plan',
+                'rona_awal.name as rona_awal_name',
+                'impact_identifications.potential_impact_evaluation',
+                'impact_identifications.study_location',
+                'impact_identifications.study_length_month',
+                'impact_identifications.study_length_year',
+                'change_types.name as change_type_name'
+            )
+            ->join('components', 'components.id', '=', 'sub_project_components.id_component')
+            ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
+            ->leftJoin('impact_identifications', 'impact_identifications.id_sub_project_component', '=', 'sub_project_components.id')
+            ->join('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_sub_project_rona_awal')
+            ->join('rona_awal', 'rona_awal.id', '=', 'sub_project_rona_awals.id_rona_awal')
+            ->join('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
+            ->where('sub_projects.id_project', '=', $id)
+            ->where('project_stages.name', '=', 'Operasi')
+            ->get();
+
+        $pascaOperasiDetail = DB::table('sub_project_components')
+            ->select(
+                'impact_identifications.initial_study_plan',
+                'rona_awal.name as rona_awal_name',
+                'impact_identifications.potential_impact_evaluation',
+                'impact_identifications.study_location',
+                'impact_identifications.study_length_month',
+                'impact_identifications.study_length_year',
+                'change_types.name as change_type_name'
+            )
+            ->join('components', 'components.id', '=', 'sub_project_components.id_component')
+            ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+            ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
+            ->leftJoin('impact_identifications', 'impact_identifications.id_sub_project_component', '=', 'sub_project_components.id')
+            ->join('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_sub_project_rona_awal')
+            ->join('rona_awal', 'rona_awal.id', '=', 'sub_project_rona_awals.id_rona_awal')
+            ->join('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
+            ->where('sub_projects.id_project', '=', $id)
             ->where('project_stages.name', '=', 'Pasca Operasi')
             ->get();
 
@@ -105,9 +195,13 @@ class ExportDocument extends Controller
             'data' => $getInformation,
             'metode_studi' => $getMetodeStudi,
             'pra_konstruksi' => $praKonstruksi,
+            'pra_konstruksi_detail' => $praKonstruksiDetail,
             'konstruksi' => $konstruksi,
+            'konstruksi_detail' => $konstruksiDetail,
             'operasi' => $operasi,
-            'pasca_operasi' => $pascaOperasi
+            'operasi_detail' => $operasiDetail,
+            'pasca_operasi' => $pascaOperasi,
+            'pasca_operasi_detail' => $pascaOperasiDetail
         ]);
     }
 

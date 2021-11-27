@@ -3,8 +3,10 @@
     <el-card>
       <h2>Formulir Kerangka Acuan</h2>
       <div>
-        <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
-        <el-button type="primary" @click="exportDocx">
+        <el-button v-if="showDocument" type="danger" @click="exportPdf">
+          Export to .PDF
+        </el-button>
+        <el-button v-if="showDocument" type="primary" @click="downloadDocx">
           Export to .DOCX
         </el-button>
       </div>
@@ -12,9 +14,8 @@
         <el-col :span="16">
           <div class="grid-content bg-purple" />
           <iframe
-            :src="
-              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
-            "
+            v-if="showDocument"
+            :src="`https://view.officeapps.live.com/op/embed.aspx?src=projects&embedded=true`"
             width="100%"
             height="723px"
             frameborder="1"
@@ -61,6 +62,8 @@ export default {
       positive: [],
       negative: [],
       penyusun: [],
+      out: '',
+      showDocument: false,
     };
   },
   created() {
@@ -73,6 +76,7 @@ export default {
         idProject: this.$route.params.id,
         formulir: 'true',
       });
+      console.log(data);
       this.metode_studi = data.metode_studi;
       this.konstruksi = data.konstruksi;
       this.pra_konstruksi = data.pra_konstruksi;
@@ -85,6 +89,16 @@ export default {
       this.negative = data.negative;
       this.positive = data.positive;
       this.penyusun = data.penyusun;
+      this.exportDocx();
+    },
+    async exportDocxPhpWord() {
+      await andalComposingResource.list({
+        idProject: this.$route.params.id,
+        formulir: 'true',
+      });
+    },
+    downloadDocx() {
+      saveAs(this.out, this.$route.params.id + '-form-ka-andal.docx');
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
@@ -119,19 +133,21 @@ export default {
               'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
 
-          saveAs(out, this.$route.params.id + '-form-ka-andal.docx');
+          this.out = out;
 
-          // const formData = new FormData();
-          // formData.append('docx', out);
-          // formData.append('type', 'formulir');
-          // formData.append('idProject', this.$route.params.id);
+          const formData = new FormData();
+          formData.append('docx', out);
+          formData.append('type', 'formulir');
+          formData.append('idProject', this.$route.params.id);
 
-          // andalComposingResource
-          //   .store(formData)
-          //   .then((response) => {})
-          //   .catch((error) => {
-          //     console.log(error);
-          //   });
+          andalComposingResource
+            .store(formData)
+            .then((response) => {
+              this.showDocument = true;
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       );
     },
@@ -142,12 +158,15 @@ export default {
         this.$route.params.id +
         '-form-ka-andal.docx';
     },
-    exportPdf() {
-      const id = this.$route.params && this.$route.params.id;
+    async exportPdf() {
       axios({
-        url: `form-ka/${id}/pdf`,
+        url: `api/andal-composing`,
         method: 'GET',
         responseType: 'blob',
+        params: {
+          pdf: 'true',
+          idProject: this.$route.params.id,
+        },
       }).then((response) => {
         const getHeaders = response.headers['content-disposition'].split('; ');
         const getFileName = getHeaders[1].split('=');
