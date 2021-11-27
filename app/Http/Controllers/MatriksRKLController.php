@@ -26,7 +26,7 @@ class MatriksRKLController extends Controller
     public function index(Request $request)
     {
         if($request->docs) {
-            $templateProcessor = new TemplateProcessor('template_rkl_rpl.docx');
+            // $templateProcessor = new TemplateProcessor('template_rkl_rpl.docx');
 
             $poinA = [];
             $poinB = [];
@@ -40,46 +40,51 @@ class MatriksRKLController extends Controller
                 $query->whereHas('envManagePlan');
             })->first();
 
-            $poinA = $this->getPoinA($stages, $request->idProject);
-            $poinB = $this->getPoinB($stages, $request->idProject);
-
-            $poinAp = $this->getPoinARpl($stages, $request->idProject);
-            $poinBp = $this->getPoinBRpl($stages, $request->idProject);
-
-            $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rkl', $poinA['a_pra_konstruksi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('a_konstruksi_rkl', $poinA['a_konstruksi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('a_operasi_rkl', $poinA['a_operasi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rkl', $poinA['a_pasca_operasi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rkl', $poinB['b_pra_konstruksi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('b_konstruksi_rkl', $poinB['b_konstruksi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('b_operasi_rkl', $poinB['b_operasi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rkl', $poinB['b_pasca_operasi_rkl']);
-
-            $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rpl', $poinAp['a_pra_konstruksi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('a_konstruksi_rpl', $poinAp['a_konstruksi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('a_operasi_rpl', $poinAp['a_operasi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rpl', $poinAp['a_pasca_operasi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rpl', $poinBp['b_pra_konstruksi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('b_konstruksi_rpl', $poinBp['b_konstruksi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('b_operasi_rpl', $poinBp['b_operasi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rpl', $poinBp['b_pasca_operasi_rpl']);
-
-            $save_file_name = $request->idProject .'-rkl-rpl' . '.docx'; 
-            if (!File::exists(storage_path('app/public/workspace/'))) {
-                File::makeDirectory(storage_path('app/public/workspace/'));
+            if($isExist) {
+                $poinA = $this->getPoinA($stages, $request->idProject);
+                $poinB = $this->getPoinB($stages, $request->idProject);
             }
 
-            if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-                $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
-            }
+            // $poinA = $this->getPoinA($stages, $request->idProject);
+            // $poinB = $this->getPoinB($stages, $request->idProject);
+
+            // $poinAp = $this->getPoinARpl($stages, $request->idProject);
+            // $poinBp = $this->getPoinBRpl($stages, $request->idProject);
+
+            // $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rkl', $poinA['a_pra_konstruksi_rkl']);
+            // $templateProcessor->cloneRowAndSetValues('a_konstruksi_rkl', $poinA['a_konstruksi_rkl']);
+            // $templateProcessor->cloneRowAndSetValues('a_operasi_rkl', $poinA['a_operasi_rkl']);
+            // $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rkl', $poinA['a_pasca_operasi_rkl']);
+            // $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rkl', $poinB['b_pra_konstruksi_rkl']);
+            // $templateProcessor->cloneRowAndSetValues('b_konstruksi_rkl', $poinB['b_konstruksi_rkl']);
+            // $templateProcessor->cloneRowAndSetValues('b_operasi_rkl', $poinB['b_operasi_rkl']);
+            // $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rkl', $poinB['b_pasca_operasi_rkl']);
+
+            // $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rpl', $poinAp['a_pra_konstruksi_rpl']);
+            // $templateProcessor->cloneRowAndSetValues('a_konstruksi_rpl', $poinAp['a_konstruksi_rpl']);
+            // $templateProcessor->cloneRowAndSetValues('a_operasi_rpl', $poinAp['a_operasi_rpl']);
+            // $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rpl', $poinAp['a_pasca_operasi_rpl']);
+            // $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rpl', $poinBp['b_pra_konstruksi_rpl']);
+            // $templateProcessor->cloneRowAndSetValues('b_konstruksi_rpl', $poinBp['b_konstruksi_rpl']);
+            // $templateProcessor->cloneRowAndSetValues('b_operasi_rpl', $poinBp['b_operasi_rpl']);
+            // $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rpl', $poinBp['b_pasca_operasi_rpl']);
+
+            // $save_file_name = $request->idProject .'-rkl-rpl' . '.docx'; 
+            // if (!File::exists(storage_path('app/public/workspace/'))) {
+            //     File::makeDirectory(storage_path('app/public/workspace/'));
+            // }
+
+            // if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            //     $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+            // }
             
 
-            return response()->json(['message' => 'success']);
+            // return response()->json(['message' => 'success']);
 
-            // return [
-            //     'poinA' => $poinA,
-            //     'poinB' => $poinBp
-            // ];
+            return [
+                'poinA' => $poinA,
+                'poinB' => $poinB
+            ];
 
             
         }
@@ -548,9 +553,9 @@ class MatriksRKLController extends Controller
 
     $idx = 0;
     foreach($stages as $s) {
-        // $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
-        // $results[$idx]['data'] = [];
-        $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
+        $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
+        $results[$idx]['data'] = [];
+        // $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
 
         $total = 0;
 
@@ -570,8 +575,9 @@ class MatriksRKLController extends Controller
             $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
 
-            $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
+            $results[$idx]['data'][] = [
                 'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl' => $total + 1,
+                'no' => $total + 1,
                 'id' => $pA->id,
                 'name' => "$changeType $ronaAwal akibat $component",
                 'type' => 'subtitle',
@@ -620,9 +626,9 @@ class MatriksRKLController extends Controller
     
         $idx = 0;
         foreach($stages as $s) {
-            // $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
-            // $results[$idx]['data'] = [];
-            $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
+            $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
+            $results[$idx]['data'] = [];
+            // $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
     
             $total = 0;
     
@@ -639,12 +645,8 @@ class MatriksRKLController extends Controller
                     continue;
                 }
                 $changeType = $merge->id_change_type ? $merge->changeType->name : '';
-                // $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
-                // $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
-                $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
 
-                $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
+                $results[$idx]['data'][] = [
                     'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'  => $total + 1,
                     'id' => $merge->id,
                     'name' => "$changeType $ronaAwal akibat $component",
