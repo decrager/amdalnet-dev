@@ -76,6 +76,7 @@ export default {
     this.getComment();
     this.getUserId();
     this.getDocContent();
+    this.generateDoc();
   },
   http: {
     headers: {
@@ -105,6 +106,10 @@ export default {
             konstruksi: this.docContents.konstruksi,
             operasi: this.docContents.operasi,
             pasca_operasi: this.docContents.pasca_operasi,
+            pra_konstruksi_detail: this.docContents.pra_konstruksi_detail,
+            konstruksi_detail: this.docContents.konstruksi_detail,
+            operasi_detail: this.docContents.operasi_detail,
+            pasca_operasi_detail: this.docContents.pasca_operasi_detail,
           });
 
           const out = doc.getZip().generate({
