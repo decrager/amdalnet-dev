@@ -55,6 +55,11 @@ class Project extends Model
         return $this->hasMany(ImpactIdentification::class, 'id_project', 'id');
     }
 
+    public function address()
+    {
+        return $this->hasMany(ProjectAddress::class, 'id_project', 'id');
+    }
+
     public function testingMeeting()
     {
         return $this->hasMany(TestingMeeting::class, 'id_project', 'id');

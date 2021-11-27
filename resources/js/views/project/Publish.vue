@@ -64,17 +64,20 @@
       </el-col>
       <el-col :span="12">
         <div>
-          <el-table :data="addressTableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+          <el-table :data="project.address" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
             <el-table-column
-              prop="no"
               label="No."
-            />
+            >
+              <template slot-scope="scope">
+                {{ scope.$index + 1 }}
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="province"
+              prop="prov"
               label="Provinsi"
             />
             <el-table-column
-              prop="city"
+              prop="district"
               label="City"
             />
             <el-table-column
@@ -717,7 +720,7 @@ export default {
 
       // eslint-disable-next-line no-undef
       _.each(this.project, (value, key) => {
-        if (key === 'listSubProject'){
+        if (key === 'listSubProject' || key === 'address'){
           formData.append(key, JSON.stringify(value));
         } else {
           formData.append(key, value);
@@ -790,8 +793,9 @@ export default {
       });
     },
     async updateList() {
-      await this.getKabKotName(this.project.id_district);
-      await this.getProvince(this.project.id_prov);
+      console.log(this.project.address[0]);
+      // await this.getKabKotName(this.project.address[0].id_district);
+      // await this.getProvince(this.project.address[0].id_prov);
       this.list = [
         {
           param: 'Nama Kegiatan',
@@ -807,7 +811,7 @@ export default {
         },
         {
           param: 'Alamat',
-          value: this.project.address,
+          value: this.project.address[0].address,
         },
         {
           param: 'Pemrakarsa',
@@ -831,7 +835,7 @@ export default {
         },
         {
           param: 'Provinsi/Kota',
-          value: this.kabkot,
+          value: this.project.address[0].district,
         },
       ];
     },

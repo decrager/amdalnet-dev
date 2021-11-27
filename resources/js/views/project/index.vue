@@ -415,6 +415,7 @@ export default {
       const { data, total } = await projectResource.list(query);
       this.filtered = data;
       this.total = total;
+      console.log(this.filtered);
       this.listLoading = false;
     },
     handleCreate() {

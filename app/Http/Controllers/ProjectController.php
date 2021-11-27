@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Project;
+use App\Entity\ProjectAddress;
 use App\Entity\ProjectFilter;
 use App\Entity\SubProject;
 use App\Entity\SubProjectParam;
@@ -93,6 +94,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $request['listSubProject'] = json_decode($request['listSubProject']);
+        $request['address'] = json_decode($request['address']);
 
         // return $request['listSubProject'];
 
@@ -103,8 +105,8 @@ class ProjectController extends Controller
             'sector' => 'required',
             'description' => 'required',
             'id_applicant' => 'required',
-            'id_prov' => 'required',
-            'id_district' => 'required',
+            // 'id_prov' => 'required',
+            // 'id_district' => 'required',
             'address' => 'required',
             // 'field' => 'required',
             'location_desc' => 'required',
@@ -156,13 +158,13 @@ class ProjectController extends Controller
             'sector' => $data['sector'],
             'description' => $data['description'],
             'id_applicant' => $data['id_applicant'],
-            'id_prov' => $data['id_prov'],
-            'id_district' => $data['id_district'],
-            'address' => $data['address'],
+            // 'id_prov' => $data['id_prov'],
+            // 'id_district' => $data['id_district'],
+            // 'address' => $data['address'],
             'field' => isset($request['field']) ? $request['field'] : null,
             'location_desc' => $data['location_desc'],
             'risk_level' => $data['risk_level'],
-            // 'project_year' => $data['project_year'],
+            'project_year' => date('Y'),
             'id_formulator_team' => isset($request['id_formulator_team']) ? $request['id_formulator_team'] : null,
             'kbli' => $data['kbli'],
             'result_risk' => $data['result_risk'],
@@ -199,6 +201,16 @@ class ProjectController extends Controller
             'mid_traffic' => isset($request['mid_traffic']) ? $request['mid_traffic']: false,
             'high_traffic' => isset($request['high_traffic']) ? $request['high_traffic']: false,
         ]);
+
+        //create project address
+        foreach ($data['address'] as $add) {
+            ProjectAddress::create([
+                'id_project' => $project->id,
+                'prov' => isset($add->prov) ? $add->prov : null,
+                'district' => isset($add->district) ? $add->district : null,
+                'address' => isset($add->address) ? $add->address : null,
+            ]);
+        }
 
         //create sub project
         foreach ($data['listSubProject'] as $subPro) {

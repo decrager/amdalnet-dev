@@ -15,7 +15,7 @@ class CreateProjectAddressTable extends Migration
     {
         Schema::create('project_address', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_project')->unsigned();
+            $table->bigInteger('id_project')->unsigned();
             $table->string('prov')->nullable();
             $table->string('district')->nullable();
             $table->text('address')->nullable();

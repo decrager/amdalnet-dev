@@ -50,11 +50,66 @@
               </el-col>
             </el-row>
             <el-row type="flex" justify="end" :gutter="4">
-              <el-col :span="12">
+              <!-- <el-col :span="12">
                 <el-col :span="12" />
-              </el-col>
-              <el-col :span="12" :xs="24">
-                <el-col :span="12">
+              </el-col> -->
+              <el-col :span="24" :xs="24">
+                <el-form-item label="Alamat" prop="address">
+                  <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+                    <el-table-column label="No." width="40px">
+                      <template slot-scope="scope">
+                        {{ scope.$index + 1 }}
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column label="Provinsi" width="200px">
+                      <template slot-scope="scope">
+                        <el-select
+                          v-model="scope.row.prov"
+                          placeholder="Pilih"
+                          style="width: 100%"
+                          @change="changeProvince(scope.row)"
+                        >
+                          <el-option
+                            v-for="item in getProvinceOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          />
+                        </el-select>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column label="City" width="300px">
+                      <template slot-scope="scope">
+                        <el-select
+                          v-model="scope.row.district"
+                          placeholder="Pilih"
+                          style="width: 100%"
+                        >
+                          <el-option
+                            v-for="item in scope.row.districts"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          />
+                        </el-select>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column label="Alamat">
+                      <template slot-scope="scope">
+                        <el-input v-model="scope.row.address" />
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-button
+                    type="primary"
+                    @click="handleAddAddressTable"
+                  >+</el-button>
+                </el-form-item>
+
+                <!-- <el-col :span="12">
                   <el-form-item label="Provinsi" prop="id_prov">
                     <el-select
                       v-model="currentProject.id_prov"
@@ -87,13 +142,14 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
+              </el-col> -->
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
               <el-col :span="12">
-                <el-form-item label="Alamat" prop="address">
+                <!-- <el-form-item label="Alamat" prop="address">
                   <el-input v-model="currentProject.address" />
-                </el-form-item>
+                </el-form-item> -->
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
@@ -557,11 +613,21 @@ export default {
     SubProjectTable,
   },
   data() {
+    var validateAddress = (rule, value, callback) => {
+      if (value.length < 1) {
+        callback(new Error('Mohon Masukan 1 Alamat'));
+      }
+      callback();
+    };
+
     return {
+      refresh: 0,
       preeAgreementLabel: '',
       preProject: true,
       activeName: '1',
-      currentProject: {},
+      currentProject: {
+        address: [],
+      },
       listSupportTable: [],
       listSubProject: [],
       loadingSupportTable: false,
@@ -692,7 +758,7 @@ export default {
         //   { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
         // ],
         address: [
-          { required: true, trigger: 'blur', message: 'Data Belum Diisi' },
+          { validator: validateAddress, trigger: 'blur' },
         ],
         sector: [
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
@@ -1002,9 +1068,13 @@ export default {
         }
       });
     },
-    async changeProvince(value) {
+    async changeProvince(row) {
       // change all district by province
-      this.getDistricts(value);
+      console.log(row);
+      delete row.district;
+      await this.getDistricts(row.prov);
+      row.districts = this.$store.getters.cityOptions;
+      this.refresh++;
     },
     changeStudyApproach(value) {
 
@@ -1052,8 +1122,8 @@ export default {
       this.getSectorsByKbli(this.currentProject.kbli);
       this.getBusinessByKbli(this.currentProject.kbli);
     },
-    async getDistricts(idProv) {
-      await this.$store.dispatch('getDistricts', { idProv });
+    async getDistricts(prov) {
+      await this.$store.dispatch('getDistricts', { provName: prov });
     },
     async getSectors() {
       await this.$store.dispatch('getSectors', { sectors: true });
@@ -1084,6 +1154,9 @@ export default {
     },
     handleAddSubProjectTable() {
       this.listSubProject.push({});
+    },
+    handleAddAddressTable() {
+      this.currentProject.address.push({});
     },
     handleKbliSelect(item) {
       this.getSectorsByKbli(item.value);

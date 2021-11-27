@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\District;
+use App\Entity\Province;
 use App\Http\Resources\DistrictResource;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,13 @@ class DistrictController extends Controller
     {
         if($request->idProv != null){
           return DistrictResource::collection(District::where('id_prov', $request->idProv)->get());
+        } else if($request->provName != null) {
+            $province = Province::where('name', $request->provName)->first();
+
+            if($province) {
+                return DistrictResource::collection(District::where('id_prov', $province->id)->get());
+            }
+            return DistrictResource::collection(new District());
         } else {
           return DistrictResource::collection(District::all());
         }
