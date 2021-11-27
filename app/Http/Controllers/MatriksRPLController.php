@@ -295,56 +295,62 @@ class MatriksRPLController extends Controller
             $total = 0;
 
             foreach($data as $pA) {
-                if($pA->subProjectComponent->id_project_stage == $s->id || $pA->subProjectComponent->component->id_project_stage == $s->id) {
-                    $changeType = $pA->id_change_type ? $pA->changeType->name : '';
-                    // $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
-                    // $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
-                    $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
-                    $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+                $ronaAwal = '';
+                $component = '';
 
-                    $komen = Comment::where([['id_impact_identification', $pA->id], ['document_type', 'rpl'],['reply_to', null]])
-                            ->orderBY('id', 'DESC')->get();
-                
-                    $comments = [];
-                    foreach($komen as $c) {
-                        $comments[] = [
-                            'id' => $c->id,
-                            'id_impact_identification' => $c->id_impact_identification,
-                            'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                            'user' => $c->user->name,
-                            'is_checked' => $c->is_checked,
-                            'description' => $c->description,
-                            'column_type' => $c->column_type,
-                            'replies' => [
-                                'id' => $c->reply ? $c->reply->id : null,
-                                'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
-                                'description' => $c->reply ? $c->reply->description : null
-                            ]
-                        ];
-                    }
+                $data = $this->getComponentRonaAwal($pA, $s->id);
 
-                    $results[] = [
-                        'no' => $total + 1,
-                        'id' => $pA->id,
-                        'name' => "$changeType $ronaAwal akibat $component",
-                        'type' => 'subtitle',
-                        'indicator' => $type == 'new' ? null : $pA->envMonitorPlan->indicator,
-                        'impact_source' => $type == 'new' ? null : $pA->envMonitorPlan->impact_source,
-                        'collection_method' => $type == 'new' ? null : $pA->envMonitorPlan->collection_method,
-                        'location' => $type == 'new' ? null : $pA->envMonitorPlan->location,
-                        'time_frequent' => $type == 'new' ? null : $pA->envMonitorPlan->time_frequent,
-                        'executor' => $type == 'new' ? null : $pA->envMonitorPlan->executor,
-                        'supervisor' => $type == 'new' ? null : $pA->envMonitorPlan->supervisor,
-                        'report_recipient' => $type == 'new' ? null : $pA->envMonitorPlan->report_recipient,
-                        'description' => $type == 'new' ? null : $pA->envMonitorPlan->description,
-                        'comments' => $comments
-                    ];
-                    $results[] = [
-                        'id' => $pA->id,
-                        'type' => 'comments'
-                    ];
-                    $total++;
+                if($data['component'] && $data['ronaAwal']) {
+                    $ronaAwal = $data['ronaAwal'];   
+                    $component = $data['component'];   
+                } else {
+                    continue;
                 }
+
+                $changeType = $pA->id_change_type ? $pA->changeType->name : '';
+
+                $komen = Comment::where([['id_impact_identification', $pA->id], ['document_type', 'rpl'],['reply_to', null]])
+                        ->orderBY('id', 'DESC')->get();
+            
+                $comments = [];
+                foreach($komen as $c) {
+                    $comments[] = [
+                        'id' => $c->id,
+                        'id_impact_identification' => $c->id_impact_identification,
+                        'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                        'user' => $c->user->name,
+                        'is_checked' => $c->is_checked,
+                        'description' => $c->description,
+                        'column_type' => $c->column_type,
+                        'replies' => [
+                            'id' => $c->reply ? $c->reply->id : null,
+                            'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
+                            'description' => $c->reply ? $c->reply->description : null
+                        ]
+                    ];
+                }
+
+                $results[] = [
+                    'no' => $total + 1,
+                    'id' => $pA->id,
+                    'name' => "$changeType $ronaAwal akibat $component",
+                    'type' => 'subtitle',
+                    'indicator' => $type == 'new' ? null : $pA->envMonitorPlan->indicator,
+                    'impact_source' => $type == 'new' ? null : $pA->envMonitorPlan->impact_source,
+                    'collection_method' => $type == 'new' ? null : $pA->envMonitorPlan->collection_method,
+                    'location' => $type == 'new' ? null : $pA->envMonitorPlan->location,
+                    'time_frequent' => $type == 'new' ? null : $pA->envMonitorPlan->time_frequent,
+                    'executor' => $type == 'new' ? null : $pA->envMonitorPlan->executor,
+                    'supervisor' => $type == 'new' ? null : $pA->envMonitorPlan->supervisor,
+                    'report_recipient' => $type == 'new' ? null : $pA->envMonitorPlan->report_recipient,
+                    'description' => $type == 'new' ? null : $pA->envMonitorPlan->description,
+                    'comments' => $comments
+                ];
+                $results[] = [
+                    'id' => $pA->id,
+                    'type' => 'comments'
+                ];
+                $total++;
             }
 
             if($total == 0) {
@@ -392,56 +398,62 @@ class MatriksRPLController extends Controller
             $total = 0;
 
             foreach($data_merge_final as $merge) {
-                if($merge->subProjectComponent->id_project_stage == $s->id || $merge->subProjectComponent->component->id_project_stage == $s->id) {
-                    $changeType = $merge->id_change_type ? $merge->changeType->name : '';
-                    // $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
-                    // $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
-                    $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                    $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                $ronaAwal = '';
+                $component = '';
 
-                    $komen = Comment::where([['id_impact_identification', $merge->id], ['document_type', 'rpl'],['reply_to', null]])
-                            ->orderBY('id', 'DESC')->get();
-                
-                    $comments = [];
-                    foreach($komen as $c) {
-                        $comments[] = [
-                            'id' => $c->id,
-                            'id_impact_identification' => $c->id_impact_identification,
-                            'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                            'user' => $c->user->name,
-                            'is_checked' => $c->is_checked,
-                            'description' => $c->description,
-                            'column_type' => $c->column_type,
-                            'replies' => [
-                                'id' => $c->reply ? $c->reply->id : null,
-                                'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
-                                'description' => $c->reply ? $c->reply->description : null
-                            ]
-                        ];
-                    }
+                $data = $this->getComponentRonaAwal($merge, $s->id);
 
-                    $results[] = [
-                        'no' => $total + 1,
-                        'id' => $merge->id,
-                        'name' => "$changeType $ronaAwal akibat $component",
-                        'type' => 'subtitle',
-                        'indicator' => $type == 'new' ? null : $merge->envMonitorPlan->indicator,
-                        'impact_source' => $type == 'new' ? null : $merge->envMonitorPlan->impact_source,
-                        'collection_method' => $type == 'new' ? null : $merge->envMonitorPlan->collection_method,
-                        'location' => $type == 'new' ? null : $merge->envMonitorPlan->location,
-                        'time_frequent' => $type == 'new' ? null : $merge->envMonitorPlan->time_frequent,
-                        'executor' => $type == 'new' ? null : $merge->envMonitorPlan->executor,
-                        'supervisor' => $type == 'new' ? null : $merge->envMonitorPlan->supervisor,
-                        'report_recipient' => $type == 'new' ? null : $merge->envMonitorPlan->report_recipient,
-                        'description' => $type == 'new' ? null : $merge->envMonitorPlan->description,
-                        'comments' => $comments
-                    ];
-                    $results[] = [
-                        'id' => $merge->id,
-                        'type' => 'comments'
-                    ];
-                    $total++;
+                if($data['component'] && $data['ronaAwal']) {
+                    $ronaAwal = $data['ronaAwal'];   
+                    $component = $data['component'];   
+                } else {
+                    continue;
                 }
+
+                $changeType = $merge->id_change_type ? $merge->changeType->name : '';
+
+                $komen = Comment::where([['id_impact_identification', $merge->id], ['document_type', 'rpl'],['reply_to', null]])
+                        ->orderBY('id', 'DESC')->get();
+            
+                $comments = [];
+                foreach($komen as $c) {
+                    $comments[] = [
+                        'id' => $c->id,
+                        'id_impact_identification' => $c->id_impact_identification,
+                        'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                        'user' => $c->user->name,
+                        'is_checked' => $c->is_checked,
+                        'description' => $c->description,
+                        'column_type' => $c->column_type,
+                        'replies' => [
+                            'id' => $c->reply ? $c->reply->id : null,
+                            'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
+                            'description' => $c->reply ? $c->reply->description : null
+                        ]
+                    ];
+                }
+
+                $results[] = [
+                    'no' => $total + 1,
+                    'id' => $merge->id,
+                    'name' => "$changeType $ronaAwal akibat $component",
+                    'type' => 'subtitle',
+                    'indicator' => $type == 'new' ? null : $merge->envMonitorPlan->indicator,
+                    'impact_source' => $type == 'new' ? null : $merge->envMonitorPlan->impact_source,
+                    'collection_method' => $type == 'new' ? null : $merge->envMonitorPlan->collection_method,
+                    'location' => $type == 'new' ? null : $merge->envMonitorPlan->location,
+                    'time_frequent' => $type == 'new' ? null : $merge->envMonitorPlan->time_frequent,
+                    'executor' => $type == 'new' ? null : $merge->envMonitorPlan->executor,
+                    'supervisor' => $type == 'new' ? null : $merge->envMonitorPlan->supervisor,
+                    'report_recipient' => $type == 'new' ? null : $merge->envMonitorPlan->report_recipient,
+                    'description' => $type == 'new' ? null : $merge->envMonitorPlan->description,
+                    'comments' => $comments
+                ];
+                $results[] = [
+                    'id' => $merge->id,
+                    'type' => 'comments'
+                ];
+                $total++;
             }
 
             if($total == 0) {
@@ -474,30 +486,36 @@ class MatriksRPLController extends Controller
              $total = 0;
  
              foreach($poinA as $pA) {
-                 if($pA->component->id_project_stage == $s->id || $pA->component->component->id_project_stage == $s->id) {
-                     $changeType = $pA->id_change_type ? $pA->changeType->name : '';
-                     $ronaAwal =  $pA->ronaAwal->id_rona_awal ? $pA->ronaAwal->rona_awal->name : $pA->ronaAwal->name;
-                     $component = $pA->component->id_component ? $pA->component->component->name : $pA->component->name;
-                    //  $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
-                    //  $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
- 
-                     $results[$idx]['data'][] = [
-                         'no' => $total + 1,
-                         'id' => $pA->id,
-                         'name' => "$changeType $ronaAwal akibat $component",
-                         'type' => 'subtitle',
-                         'indicator' => $pA->envMonitorPlan->indicator,
-                         'impact_source' => $pA->envMonitorPlan->impact_source,
-                         'collection_method' => $pA->envMonitorPlan->collection_method,
-                         'location' => $pA->envMonitorPlan->location,
-                         'time_frequent' => $pA->envMonitorPlan->time_frequent,
-                         'executor' => $pA->envMonitorPlan->executor,
-                         'supervisor' => $pA->envMonitorPlan->supervisor,
-                         'report_recipient' => $pA->envMonitorPlan->report_recipient,
-                         'description' => $pA->envMonitorPlan->description,
-                     ];
-                     $total++;
-                 }
+                $ronaAwal = '';
+                $component = '';
+
+                $data = $this->getComponentRonaAwal($pA, $s->id);
+
+                if($data['component'] && $data['ronaAwal']) {
+                    $ronaAwal = $data['ronaAwal'];   
+                    $component = $data['component'];   
+                } else {
+                    continue;
+                }
+
+                $changeType = $pA->id_change_type ? $pA->changeType->name : '';
+
+                $results[$idx]['data'][] = [
+                    'no' => $total + 1,
+                    'id' => $pA->id,
+                    'name' => "$changeType $ronaAwal akibat $component",
+                    'type' => 'subtitle',
+                    'indicator' => $pA->envMonitorPlan->indicator,
+                    'impact_source' => $pA->envMonitorPlan->impact_source,
+                    'collection_method' => $pA->envMonitorPlan->collection_method,
+                    'location' => $pA->envMonitorPlan->location,
+                    'time_frequent' => $pA->envMonitorPlan->time_frequent,
+                    'executor' => $pA->envMonitorPlan->executor,
+                    'supervisor' => $pA->envMonitorPlan->supervisor,
+                    'report_recipient' => $pA->envMonitorPlan->report_recipient,
+                    'description' => $pA->envMonitorPlan->description,
+                ];
+                $total++;
              }
              $idx++;
          }
@@ -540,34 +558,60 @@ class MatriksRPLController extends Controller
             $total = 0;
 
             foreach($data_merge_final as $merge) {
-                if($merge->subProjectComponent->id_project_stage == $s->id || $merge->subProjectComponent->component->id_project_stage == $s->id) {
-                    $changeType = $merge->id_change_type ? $merge->changeType->name : '';
-                    // $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
-                    // $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
-                    $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                    $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                $ronaAwal = '';
+                $component = '';
 
-                    $results[$idx]['data'][] = [
-                        'no' => $total + 1,
-                        'id' => $merge->id,
-                        'name' => "$changeType $ronaAwal akibat $component",
-                        'type' => 'subtitle',
-                        'indicator' => $merge->envMonitorPlan->indicator,
-                        'impact_source' => $merge->envMonitorPlan->impact_source,
-                        'collection_method' => $merge->envMonitorPlan->collection_method,
-                        'location' => $merge->envMonitorPlan->location,
-                        'time_frequent' => $merge->envMonitorPlan->time_frequent,
-                        'executor' => $merge->envMonitorPlan->executor,
-                        'supervisor' => $merge->envMonitorPlan->supervisor,
-                        'report_recipient' => $merge->envMonitorPlan->report_recipient,
-                        'description' => $merge->envMonitorPlan->description,
-                    ];
-                    $total++;
+                $data = $this->getComponentRonaAwal($merge, $s->id);
+
+                if($data['component'] && $data['ronaAwal']) {
+                    $ronaAwal = $data['ronaAwal'];   
+                    $component = $data['component'];   
+                } else {
+                    continue;
                 }
+
+                $changeType = $merge->id_change_type ? $merge->changeType->name : '';
+
+                $results[$idx]['data'][] = [
+                    'no' => $total + 1,
+                    'id' => $merge->id,
+                    'name' => "$changeType $ronaAwal akibat $component",
+                    'type' => 'subtitle',
+                    'indicator' => $merge->envMonitorPlan->indicator,
+                    'impact_source' => $merge->envMonitorPlan->impact_source,
+                    'collection_method' => $merge->envMonitorPlan->collection_method,
+                    'location' => $merge->envMonitorPlan->location,
+                    'time_frequent' => $merge->envMonitorPlan->time_frequent,
+                    'executor' => $merge->envMonitorPlan->executor,
+                    'supervisor' => $merge->envMonitorPlan->supervisor,
+                    'report_recipient' => $merge->envMonitorPlan->report_recipient,
+                    'description' => $merge->envMonitorPlan->description,
+                ];
+                $total++;
             }
             $idx++;
         }
 
         return $results;
      }
+
+     private function getComponentRonaAwal($imp, $id_project_stage) {
+        $component = null;
+        $ronaAwal = null;
+
+        if($imp->subProjectComponent->id_project_stage == $id_project_stage) {
+            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+        } else if($imp->subProjectComponent->id_project_stage != null) {
+            if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
+                $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+            }
+        }
+
+        return [
+            'component' => $component,
+            'ronaAwal' => $ronaAwal
+        ];
+    }
 }
