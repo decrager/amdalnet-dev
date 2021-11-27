@@ -33,7 +33,7 @@
 <script>
 import Resource from '@/api/resource';
 const rklResource = new Resource('matriks-rkl');
-// const rplResource = new Resource('matriks-rpl');
+const rplResource = new Resource('matriks-rpl');
 import ManageApproach from '@/views/rkl-rpl/components/matriks-table/ManageApproach';
 import TableRKL from '@/views/rkl-rpl/components/matriks-table/TableRKL';
 import TableRPL from '@/views/rkl-rpl/components/matriks-table/TableRPL';
@@ -57,33 +57,33 @@ export default {
   methods: {
     async getData() {
       this.loadingWorkspace = true;
-      // const dataRKL = await rklResource.list({
-      //   docs: 'true',
-      //   idProject: this.$route.params.id,
-      // });
-      // const dataRPL = await rplResource.list({
-      //   docs: 'true',
-      //   idProject: this.$route.params.id,
-      // });
-      // this.rkl = dataRKL;
-      // this.rpl = dataRPL;
-      // this.exportDocx();
-      await rklResource.list({
+      const dataRKL = await rklResource.list({
         docs: 'true',
         idProject: this.$route.params.id,
       });
-
-      this.$router.push({
-        name: 'projectWorkspace',
-        params: {
-          id: this.$route.params.id,
-          filename: `${this.$route.params.id}-rkl-rpl.docx`,
-        },
+      const dataRPL = await rplResource.list({
+        docs: 'true',
+        idProject: this.$route.params.id,
       });
+      this.rkl = dataRKL;
+      this.rpl = dataRPL;
+      this.exportDocx();
+      // await rklResource.list({
+      //   docs: 'true',
+      //   idProject: this.$route.params.id,
+      // });
+
+      // this.$router.push({
+      //   name: 'projectWorkspace',
+      //   params: {
+      //     id: this.$route.params.id,
+      //     filename: `${this.$route.params.id}-rkl-rpl.docx`,
+      //   },
+      // });
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
-        '/template_rkl_rpl.docx',
+        '/template_rkl_rpl_2.docx',
         (error, content) => {
           if (error) {
             throw error;
