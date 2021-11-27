@@ -93,7 +93,7 @@
                     <i class="fa fa-times" />
                   </a>
                 </span>
-                <span class="description">{{ scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+                <span class="description">{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
                 </span>
               </div>
               <span class="action pull-right">
@@ -254,7 +254,7 @@
         </el-table-column>
         <el-table-column align="left" label="Lokasi" width="200">
           <template slot-scope="scope">
-            <span>{{ scope.row.district }}, {{ scope.row.province }}</span>
+            <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }}, {{ scope.row.address.length > 0 ? scope.row.address[0].province : scope.row.province }}</span>
           </template>
         </el-table-column>
         <el-table-column label="Tahap" class-name="status-col" width="100">
