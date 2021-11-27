@@ -12,8 +12,9 @@
         >
           <img
             v-if="user.avatar"
-            :src="user.avatar"
+            :src="user.avatar || 'no-avatar.png'"
             class="avatar"
+            @error="$event.target.src='no-avatar.png'"
           >
           <i v-else class="el-icon-plus avatar-uploader-icon" />
         </el-upload>
