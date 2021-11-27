@@ -20,7 +20,7 @@ import lpjpRoutes from './modules/lpjp';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
 // import paramRoutes from './modules/params';
-import uklUplRoutes from './modules/uklupl';
+import amdalRoutes from './modules/amdal';
 import initiatorRoutes from './modules/initiator';
 // import formulatorRoutes from './modules/formulator';
 import lukRoutes from './modules/luk';
@@ -236,7 +236,7 @@ export const asyncRoutes = [
   announcementRoutes,
   feedbackRoutes,
   // workspaceRoutes,
-  uklUplRoutes,
+  amdalRoutes,
   {
     path: '/spt',
     component: Layout,
