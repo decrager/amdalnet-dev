@@ -36,15 +36,18 @@ class MatriksRKLController extends Controller
                 return array_search($model->getKey(),$ids);
             });
 
-            $isExist = Project::where('id', $request->idProject)->whereHas('impactIdentifications', function($query) {
-                $query->whereHas('envManagePlan');
-            })->first();
+            $project = Project::findOrFail($request->idProject);
 
             $poinA = $this->getPoinA($stages, $request->idProject);
             $poinB = $this->getPoinB($stages, $request->idProject);
 
             $poinAp = $this->getPoinARpl($stages, $request->idProject);
             $poinBp = $this->getPoinBRpl($stages, $request->idProject);
+
+            $templateProcessor->setValue('project_title', $project->project_title);
+            $templateProcessor->setValue('district', $project->district->name);
+            $templateProcessor->setValue('province', $project->province->name);
+            $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
 
             $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rkl', $poinA['a_pra_konstruksi_rkl']);
             $templateProcessor->cloneRowAndSetValues('a_konstruksi_rkl', $poinA['a_konstruksi_rkl']);
