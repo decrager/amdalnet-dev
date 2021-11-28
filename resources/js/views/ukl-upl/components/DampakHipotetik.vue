@@ -35,16 +35,15 @@
           <th>Sumber Dampak</th>
         </tr>
       </thead>
-      <tbody>
-
-        <template v-for="stage in data">
-          <tr v-if="stage.is_stage == true" :key="'stage_'+ stage.id" :data-index="stage.project_stage_name">
-            <td colspan="9" class="title" @click="showStage(stage.id)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
-          </tr>
-          <template v-if="pieInputMatrix">
-            <tr v-show="openedStage === stage.id" :key="'hipotetik_' + stage.id" class="title" animated>
+      <template v-for="stage in data">
+        <tr :key="'stage_'+ stage.id_project_stage" :data-index="stage.project_stage_name">
+          <td colspan="9" class="title" @click="showStage(stage.id_project_stage)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
+        </tr>
+        <tbody v-show="openedStage === stage.id_project_stage" :key="'hipotetik_' + stage.id_project_stage">
+          <template v-for="impact in stage.impacts">
+            <tr :key="'impact_'+ impact.id" class="title" animated>
               <td>
-                <el-select v-model="valueA" placeholder="Select">
+                <el-select v-model="impact.id_change_type" placeholder="Select">
                   <el-option
                     v-for="item in changeType"
                     :key="item.id"
@@ -53,28 +52,25 @@
                   />
                 </el-select>
               </td>
-              <td>Kebisingan</td>
-              <td>akibat Mobilisasi Alat Berat</td>
-              <td>Pengelolaan Lingkungan yang
-                sudah direncanakan sejak awal
-                sebagai bagian dari rencana
-                kegiatan</td>
+              <td>{{ impact.rona_awal_name }}</td>
+              <td>{{ impact.component_name }}</td>
+              <td>{{ impact.initial_study_plan }}</td>
               <td>
-
-                <template v-for="pie in pieParams">
-                  <div :key="'pie_'+stage.id+'_'+pie.id" class="div-fka formA">
+                <template v-for="(pie, index) in pieParams">
+                  <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
                     <p><strong>{{ pie.name }}</strong> {{ pie.description }}</p>
                     <el-input
-                      v-model="textAA"
+                      v-model="impact.potential_impact_evaluation[index].text"
                       type="textarea"
-                      :rows="5"
+                      :rows="3"
                       placeholder="Please input"
+                      :value="impact.potential_impact_evaluation[index].text"
                     />
                   </div>
                 </template>
               </td>
               <td>
-                <el-select v-model="vDPHs" placeholder="Select">
+                <el-select v-model="impact.is_hypothetical_significant" placeholder="Select">
                   <el-option
                     v-for="item in dPHs"
                     :key="item.value"
@@ -83,18 +79,22 @@
                     :disabled="item.disabled"
                   />
                 </el-select>
+                <div v-show="!impact.is_hypothetical_significant" :key="'DTPH_'+impact.id" style="margin-top:0.6em;">
+                  <el-switch v-model="impact.is_managed" active-text="Dikelola" />
+                </div>
               </td>
-              <td />
+              <td>{{ impact.study_location }}</td>
               <td>
-                <p><el-input-number v-model="tahunA" :min="0" :max="10" size="mini" /> tahun</p>
-                <p><el-input-number v-model="bulanA" :min="0" :max="12" size="mini" /> bulan</p>
+                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
+                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="12" size="mini" /> bulan</p>
 
               </td>
               <td />
             </tr>
           </template>
-        </template>
-      </tbody>
+        </tbody>
+      </template>
+
     </table>
   </div>
 </template>
@@ -104,6 +104,7 @@ const projectStageResource = new Resource('project-stages');
 const impactIdtResource = new Resource('impact-identifications');
 const changeTypeResource = new Resource('change-types');
 const pieParamsResource = new Resource('pie-params');
+const pieEntriesResource = new Resource('pie-entries');
 
 export default {
   name: 'DampakHipotetik',
@@ -117,19 +118,27 @@ export default {
       pieParams: [],
       pieInputMatrix: [],
       isLoading: false,
+      dPHs: [
+        { label: 'DPH', value: true },
+        { label: 'DTPH', value: false },
+      ],
+      pies: [],
+      impIds: [],
     };
   },
   mounted() {
+    this.isLoading = true;
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
-    this.isLoading = false;
-    setTimeout(() => (this.isLoading = false), 3000);
-    this.getData();
+    setTimeout(() => (this.isLoading = false), 2000);
+    // this.getData();
   },
   methods: {
     handleSetData(data) {
       this.data = data;
+      console.log(data);
     },
     handleSaveForm() {
+      console.log('DampakHipotetik saving entries...', this.data);
       impactIdtResource
         .store({
           study_data: this.data,
@@ -157,6 +166,12 @@ export default {
       stageIds.map((id) => {
         const impacts = [];
         imps.map((imp) => {
+          if (this.pies){
+            imp.potential_impact_evaluation.map((pie) => {
+              pie.text = this.getPie(imp.id, pie.id_pie_param);
+              console.log(pie.text);
+            });
+          }
           if (imp.id_project_stage === id){
             impacts.push(imp);
           }
@@ -194,19 +209,20 @@ export default {
         dummyId++;
       });
 
-      const inputPieMatrix = [];
-      imps.map((d) => {
-        inputPieMatrix[d.id_impact_identification] = [];
-      });
+      console.log(['createArray', data]);
 
-      this.pieInputMatrix = inputPieMatrix;
-
-      return dataFlat;
+      return data;
     },
     async getData() {
       console.log('starting getData at DampakHipotetik');
       this.isLoading = true;
-      this.pieInputMatrix = [];
+
+      const sChangeType = await changeTypeResource.list();
+      this.changeType = sChangeType.data;
+      const sPieParams = await pieParamsResource.list();
+      this.pieParams = sPieParams.data;
+
+      const impIds = [];
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
       const impactList = await impactIdtResource.list({
@@ -214,9 +230,10 @@ export default {
         join_tables: true,
       });
 
-      const inputPieMatrix = [];
-
       impactList.data.map((imp) => {
+        if (!(impIds.find((e) => e === imp.id))) {
+          impIds.push(imp.id);
+        }
         if (imp.id_project_stage === null) {
           imp.id_project_stage = imp.id_project_stage_master;
         }
@@ -236,31 +253,29 @@ export default {
             analysis_method: null,
             evaluation_method: null,
           };
-
-          inputPieMatrix.push(
-            {
-              id_impact_identification: imp.id,
-              id_change_type: imp.id_change_type,
-              study_length_month: imp.study_length_month,
-              study_length_year: imp.study_length_year,
-            });
         }
+        imp.potential_impact_evaluation = [];
+
+        this.pieParams.forEach((e) => {
+          console.log('matrixing... ', e);
+          imp.potential_impact_evaluation.push({
+            id_impact_identification: imp.id,
+            id_pie_param: e.id,
+            text: null,
+          });
+        });
       });
-      var dataList = impactList.data;
-      this.pieInputMatrix = inputPieMatrix;
-
-      this.data = this.createDataArray(dataList, this.projectStages);
-
-      console.log(['end of getData at DampakHipotetik', dataList]);
-      console.log(['end of getData at DampakHipotetik', inputPieMatrix]);
-      console.log(['end of getData at DampakHipotetik', this.data]);
-
-      const sChangeType = await changeTypeResource.list();
-      this.changeType = sChangeType.data;
-      const sPieParams = await pieParamsResource.list();
-      this.pieParams = sPieParams.data;
-
       this.isLoading = false;
+
+      console.log(impIds);
+      const pies = await pieEntriesResource.list({
+        id_impact_identification: impIds,
+      });
+      this.pies = pies;
+      console.log('the pies', pies);
+
+      var dataList = impactList.data;
+      this.data = this.createDataArray(dataList, this.projectStages);
     },
     initPieMatrix(){
       this.pieInputMatrix.map((d) => {
@@ -278,6 +293,16 @@ export default {
     },
     refresh(){
       this.getData();
+    },
+    getPie(id, index){
+      console.log('getting pies', id, index);
+      const pie = this.pies.find((e) => ((e.id_impact_identification === id) &&
+        (e.id_pie_param === index)));
+      if (pie) {
+        console.log(pie.text);
+        return pie.text;
+      }
+      return '';
     },
     showStage(index){
       this.openedStage = (this.openedStage === index) ? null : index;
