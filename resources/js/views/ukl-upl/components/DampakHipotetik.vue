@@ -36,7 +36,7 @@
         </tr>
       </thead>
       <template v-for="stage in data">
-        <tr :key="'stage_'+ stage.id" :data-index="stage.project_stage_name">
+        <tr :key="'stage_'+ stage.id_project_stage" :data-index="stage.project_stage_name">
           <td colspan="9" class="title" @click="showStage(stage.id_project_stage)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
         </tr>
         <tbody v-show="openedStage === stage.id_project_stage" :key="'hipotetik_' + stage.id_project_stage">
@@ -60,14 +60,15 @@
                 kegiatan</td>
               <td>
 
-                <template v-for="pie in pieParams">
-                  <div :key="'pie_'+stage.id+'_'+pie.id" class="div-fka formA">
+                <template v-for="(pie, index) in pieParams">
+                  <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
                     <p><strong>{{ pie.name }}</strong> {{ pie.description }}</p>
                     <el-input
-                      v-model="textAA"
+                      v-model="impact.potential_impact_evaluation[index].text"
                       type="textarea"
                       :rows="5"
                       placeholder="Please input"
+                      :value="getPie(pie.id)"
                     />
                   </div>
                 </template>
@@ -107,6 +108,7 @@ const projectStageResource = new Resource('project-stages');
 const impactIdtResource = new Resource('impact-identifications');
 const changeTypeResource = new Resource('change-types');
 const pieParamsResource = new Resource('pie-params');
+// const pieEntriesResource = new Resource('pie-entries');
 
 export default {
   name: 'DampakHipotetik',
@@ -124,19 +126,22 @@ export default {
         { label: 'DPH', value: true },
         { label: 'DTPH', value: false },
       ],
+      pies: [],
     };
   },
   mounted() {
     this.isLoading = true;
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
-    setTimeout(() => (this.isLoading = false), 3000);
-    this.getData();
+    setTimeout(() => (this.isLoading = false), 2000);
+    // this.getData();
   },
   methods: {
     handleSetData(data) {
       this.data = data;
+      console.log(data);
     },
     handleSaveForm() {
+      console.log('DampakHipotetik saving entries...', this.data);
       impactIdtResource
         .store({
           study_data: this.data,
@@ -203,22 +208,18 @@ export default {
 
       console.log(['createArray', data]);
 
-      /* const inputPieMatrix = [];
-      imps.map((d) => {
-        inputPieMatrix[d.id_impact_identification] = [];
-      });
-
-      this.pieInputMatrix = inputPieMatrix;
-      console.log(dataFlat); */
-
-      // return dataFlat;
-
       return data;
     },
     async getData() {
       console.log('starting getData at DampakHipotetik');
       this.isLoading = true;
-      this.pieInputMatrix = [];
+
+      const sChangeType = await changeTypeResource.list();
+      this.changeType = sChangeType.data;
+      const sPieParams = await pieParamsResource.list();
+      this.pieParams = sPieParams.data;
+
+      const impIds = [];
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
       const impactList = await impactIdtResource.list({
@@ -226,9 +227,10 @@ export default {
         join_tables: true,
       });
 
-      const inputPieMatrix = [];
-
       impactList.data.map((imp) => {
+        if (!(impIds.find((e) => e === imp.id))) {
+          impIds.push(imp.id);
+        }
         if (imp.id_project_stage === null) {
           imp.id_project_stage = imp.id_project_stage_master;
         }
@@ -248,30 +250,22 @@ export default {
             analysis_method: null,
             evaluation_method: null,
           };
-
-          inputPieMatrix.push(
-            {
-              id_impact_identification: imp.id,
-              id_change_type: imp.id_change_type,
-              study_length_month: imp.study_length_month,
-              study_length_year: imp.study_length_year,
-            });
         }
+        imp.potential_impact_evaluation = [];
+        this.pieParams.forEach((e) => {
+          console.log('matrixing... ', e);
+          imp.potential_impact_evaluation.push({
+            id_impact_identification: imp.id,
+            id_pie_param: e.id,
+            text: null,
+          });
+        });
       });
+
+      console.log(impIds);
+
       var dataList = impactList.data;
-      this.pieInputMatrix = inputPieMatrix;
-
       this.data = this.createDataArray(dataList, this.projectStages);
-
-      // console.log(['end of getData at DampakHipotetik', dataList]);
-      // console.log(['end of getData at DampakHipotetik', inputPieMatrix]);
-      console.log(['end of getData at DampakHipotetik', this.data]);
-      console.log(['end of getData at DampakHipotetik', this.projectStages]);
-
-      const sChangeType = await changeTypeResource.list();
-      this.changeType = sChangeType.data;
-      const sPieParams = await pieParamsResource.list();
-      this.pieParams = sPieParams.data;
 
       this.isLoading = false;
     },
@@ -291,6 +285,14 @@ export default {
     },
     refresh(){
       this.getData();
+    },
+    getPie(index){
+      if (!this.pieEntries) {
+        return '';
+      }
+
+      const pie = this.pieEntries.find((e) => (e.id === index));
+      return pie.text;
     },
     showStage(index){
       this.openedStage = (this.openedStage === index) ? null : index;

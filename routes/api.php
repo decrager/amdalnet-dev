@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChangeTypeController;
 use App\Http\Controllers\PieParamController;
 use App\Entity\ProjectMapAttachment;
+use App\Http\Controllers\ImpactIdentificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -237,3 +238,4 @@ Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
 Route::get('download-map/{id}', [ProjectMapAttachmentController::class, 'download']);
 Route::apiResource('manage-approach', 'ManageApproachController');
 Route::post('upload-ka-doc', [ExportDocument::class, 'saveKADoc']);
+//Route::get('pie-entries', [ImpactIdentificationController::class, 'pieEntries']);
