@@ -35,16 +35,15 @@
           <th>Sumber Dampak</th>
         </tr>
       </thead>
-      <tbody>
-
-        <template v-for="stage in data">
-          <tr v-if="stage.is_stage == true" :key="'stage_'+ stage.id" :data-index="stage.project_stage_name">
-            <td colspan="9" class="title" @click="showStage(stage.id)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
-          </tr>
-          <template v-if="pieInputMatrix">
-            <tr v-show="openedStage === stage.id" :key="'hipotetik_' + stage.id" class="title" animated>
+      <template v-for="stage in data">
+        <tr :key="'stage_'+ stage.id" :data-index="stage.project_stage_name">
+          <td colspan="9" class="title" @click="showStage(stage.id_project_stage)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
+        </tr>
+        <tbody v-show="openedStage === stage.id_project_stage" :key="'hipotetik_' + stage.id_project_stage">
+          <template v-for="impact in stage.impacts">
+            <tr :key="'impact_'+ impact.id" class="title" animated>
               <td>
-                <el-select v-model="valueA" placeholder="Select">
+                <el-select v-model="impact.id_change_type" placeholder="Select">
                   <el-option
                     v-for="item in changeType"
                     :key="item.id"
@@ -74,7 +73,7 @@
                 </template>
               </td>
               <td>
-                <el-select v-model="vDPHs" placeholder="Select">
+                <el-select v-model="impact.is_hypothetical_significant" placeholder="Select">
                   <el-option
                     v-for="item in dPHs"
                     :key="item.value"
@@ -83,18 +82,22 @@
                     :disabled="item.disabled"
                   />
                 </el-select>
+                <div v-show="!impact.is_hypothetical_significant" :key="'DTPH_'+impact.id" style="margin-top:0.6em;">
+                  <el-switch v-model="impact.is_managed" active-text="Dikelola" />
+                </div>
               </td>
               <td />
               <td>
-                <p><el-input-number v-model="tahunA" :min="0" :max="10" size="mini" /> tahun</p>
-                <p><el-input-number v-model="bulanA" :min="0" :max="12" size="mini" /> bulan</p>
+                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
+                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="12" size="mini" /> bulan</p>
 
               </td>
               <td />
             </tr>
           </template>
-        </template>
-      </tbody>
+        </tbody>
+      </template>
+
     </table>
   </div>
 </template>
@@ -117,11 +120,15 @@ export default {
       pieParams: [],
       pieInputMatrix: [],
       isLoading: false,
+      dPHs: [
+        { label: 'DPH', value: true },
+        { label: 'DTPH', value: false },
+      ],
     };
   },
   mounted() {
+    this.isLoading = true;
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
-    this.isLoading = false;
     setTimeout(() => (this.isLoading = false), 3000);
     this.getData();
   },
@@ -194,14 +201,19 @@ export default {
         dummyId++;
       });
 
-      const inputPieMatrix = [];
+      console.log(['createArray', data]);
+
+      /* const inputPieMatrix = [];
       imps.map((d) => {
         inputPieMatrix[d.id_impact_identification] = [];
       });
 
       this.pieInputMatrix = inputPieMatrix;
+      console.log(dataFlat); */
 
-      return dataFlat;
+      // return dataFlat;
+
+      return data;
     },
     async getData() {
       console.log('starting getData at DampakHipotetik');
@@ -251,9 +263,10 @@ export default {
 
       this.data = this.createDataArray(dataList, this.projectStages);
 
-      console.log(['end of getData at DampakHipotetik', dataList]);
-      console.log(['end of getData at DampakHipotetik', inputPieMatrix]);
+      // console.log(['end of getData at DampakHipotetik', dataList]);
+      // console.log(['end of getData at DampakHipotetik', inputPieMatrix]);
       console.log(['end of getData at DampakHipotetik', this.data]);
+      console.log(['end of getData at DampakHipotetik', this.projectStages]);
 
       const sChangeType = await changeTypeResource.list();
       this.changeType = sChangeType.data;
@@ -281,6 +294,8 @@ export default {
     },
     showStage(index){
       this.openedStage = (this.openedStage === index) ? null : index;
+      console.log('showStage');
+      console.log(this.openedStage);
     },
   },
 };

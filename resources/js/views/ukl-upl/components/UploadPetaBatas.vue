@@ -213,7 +213,8 @@ export default {
         this.getData();
         this.$message({
           message: 'Berhasil menyimpan file ' + this.files[0].name,
-          type: 'success' });
+          type: 'success',
+        });
       });
 
       // console.log(res);
