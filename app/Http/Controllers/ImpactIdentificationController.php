@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactStudy;
 use App\Entity\ProjectRonaAwal;
+use App\Entity\PotentialImpactEvaluation;
 use App\Http\Resources\ImpactIdentificationResource;
 use Exception;
 use Illuminate\Http\Request;
@@ -138,49 +139,71 @@ class ImpactIdentificationController extends Controller
             $num_impacts = 0;
             $response = [];
             try {
-                foreach ($params['study_data'] as $impact) {
-                    if ($impact['id'] < 99999999) {
-                        //not dummy
-                        $num_impacts++;
-                        $row = ImpactIdentification::find($impact['id']);
-                        if ($row != null) {
-                            $row->id_unit = $impact['id_unit'];
-                            $row->id_change_type = $impact['id_change_type'];
-                            $row->nominal = $impact['nominal'];
-                            $row->potential_impact_evaluation = $impact['potential_impact_evaluation'];
-                            $row->is_hypothetical_significant = $impact['is_hypothetical_significant'];
-                            $row->initial_study_plan = $impact['initial_study_plan'];
-                            $row->study_location = $impact['study_location'];
-                            $row->study_length_year = $impact['study_length_year'];
-                            $row->study_length_month = $impact['study_length_month'];
-                            $row->save();
-                            // save impact_study
-                            $impact_study_saved = false;
-                            if (isset($impact['impact_study'])) {
-                                $study = ImpactStudy::select('impact_studies.*')
-                                    ->where('id_impact_identification', $impact['id'])
-                                    ->first();
-                                if ($study != null) {
-                                    $study->id_impact_identification = $impact['id'];
-                                    $study->forecast_method = $impact['impact_study']['forecast_method'];
-                                    $study->required_information = $impact['impact_study']['required_information'];
-                                    $study->data_gathering_method = $impact['impact_study']['data_gathering_method'];
-                                    $study->analysis_method = $impact['impact_study']['analysis_method'];
-                                    $study->evaluation_method = $impact['impact_study']['evaluation_method'];
-                                    $study->save();
-                                    $impact_study_saved = true;
-                                } else {
-                                    // create new
-                                    if (ImpactStudy::create($impact['impact_study'])){
+                foreach ($params['study_data'] as $study) {
+                    foreach($study['impacts'] as $impact){
+                        if ($impact['id'] < 99999999) {
+                            //not dummy
+                            $num_impacts++;
+                            $row = ImpactIdentification::find($impact['id']);
+                            if ($row != null) {
+                                $row->id_unit = $impact['id_unit'];
+                                $row->id_change_type = $impact['id_change_type'];
+                                $row->nominal = $impact['nominal'];
+                                $row->potential_impact_evaluation = $impact['potential_impact_evaluation'];
+                                $row->is_hypothetical_significant = $impact['is_hypothetical_significant'];
+                                $row->is_managed = $impact['is_managed'];
+                                $row->initial_study_plan = $impact['initial_study_plan'];
+                                $row->study_location = $impact['study_location'];
+                                $row->study_length_year = $impact['study_length_year'];
+                                $row->study_length_month = $impact['study_length_month'];
+                                $row->save();
+                                // save impact_study
+                                $impact_study_saved = false;
+
+                                if (isset($impact['impact_study'])) {
+                                    $study = ImpactStudy::select('impact_studies.*')
+                                        ->where('id_impact_identification', $impact['id'])
+                                        ->first();
+                                    if ($study != null) {
+                                        $study->id_impact_identification = $impact['id'];
+                                        $study->forecast_method = $impact['impact_study']['forecast_method'];
+                                        $study->required_information = $impact['impact_study']['required_information'];
+                                        $study->data_gathering_method = $impact['impact_study']['data_gathering_method'];
+                                        $study->analysis_method = $impact['impact_study']['analysis_method'];
+                                        $study->evaluation_method = $impact['impact_study']['evaluation_method'];
+                                        $study->save();
                                         $impact_study_saved = true;
+                                    } else {
+                                        // create new
+                                        if (ImpactStudy::create($impact['impact_study'])){
+                                            $impact_study_saved = true;
+                                        }
                                     }
                                 }
-                            }
-                            if ($impact_study_saved){
-                                array_push($response, new ImpactIdentificationResource($row));
+
+                                /** Potential Impact Evaluation */
+                                if(isset($impact['potential_impact_evaluation'])){
+                                    foreach($impact['potential_impact_evaluation'] as $pie){
+                                        $p = PotentialImpactEvaluation::where('id_impact_identification', $impact['id'])
+                                             ->where('id_pie_param', $pie['id_pie_param'])->first();
+
+                                        if (!$p) {
+                                            $p = new PotentialImpactEvaluation();
+                                            $p->id_impact_identification = $impact['id'];
+                                            $p->id_pie_param = $pie['id_pie_param'];
+                                        }
+                                        $p->text = $pie['text'];
+                                        $p->save();
+                                    }
+                                }
+
+                                if ($impact_study_saved){
+                                    array_push($response, new ImpactIdentificationResource($row));
+                                }
                             }
                         }
                     }
+
                 }
             } catch (Exception $e) {
                 DB::rollBack();
@@ -266,6 +289,21 @@ class ImpactIdentificationController extends Controller
     public function update(Request $request, ImpactIdentification $impactIdentification)
     {
         //
+    }
+
+    /**
+     * Get PIE entries
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function pieEntries(Request $request){
+        $pies = PotentialImpactEvaluation::whereIn('id_impact_identification', $request->id_impact_identification)
+        ->orderBy('id_impact_identification', 'ASC')
+        ->orderBy('id_pie_param', 'ASC')
+        ->get();
+             // ->where('id_pie_param' , $request->id_pie_param)->all();
+        return response($pies);
     }
 
     /**
