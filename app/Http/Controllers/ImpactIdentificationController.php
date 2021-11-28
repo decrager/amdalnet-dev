@@ -10,6 +10,7 @@ use App\Http\Resources\ImpactIdentificationResource;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Entity\ChangeType;
 
 class ImpactIdentificationController extends Controller
 {
@@ -147,7 +148,12 @@ class ImpactIdentificationController extends Controller
                             $row = ImpactIdentification::find($impact['id']);
                             if ($row != null) {
                                 $row->id_unit = $impact['id_unit'];
-                                $row->id_change_type = $impact['id_change_type'];
+                                if(is_string($impact['id_change_type'])){
+                                    $ctype = ChangeType::firstOrCreate(['name' => $impact['id_change_type']]);
+                                    $row->id_change_type = $ctype->id;
+                                } else {
+                                    $row->id_change_type = $impact['id_change_type'];
+                                }
                                 $row->nominal = $impact['nominal'];
                                 $row->potential_impact_evaluation = $impact['potential_impact_evaluation'];
                                 $row->is_hypothetical_significant = $impact['is_hypothetical_significant'];
