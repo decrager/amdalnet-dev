@@ -23,12 +23,22 @@ class BaganAlirController extends Controller
             ->where('sub_projects.type', '=', 'pendukung')
             ->get();
 
-        $getFeedback = DB::table('announcements')
-            ->select('feedbacks.concern', 'feedbacks.expectation')
+        $getFeedbackConcern = DB::table('announcements')
+            ->select('feedbacks.concern')
             ->leftJoin('feedbacks', 'feedbacks.announcement_id', '=', 'announcements.id')
             ->leftJoin('projects', 'projects.id', '=', 'announcements.project_id')
             ->where('projects.id', '=', $id)
+            ->whereNotNull('feedbacks.concern')
             ->get();
+
+        $getFeedbackExpectation = DB::table('announcements')
+            ->select('feedbacks.expectation')
+            ->leftJoin('feedbacks', 'feedbacks.announcement_id', '=', 'announcements.id')
+            ->leftJoin('projects', 'projects.id', '=', 'announcements.project_id')
+            ->where('projects.id', '=', $id)
+            ->whereNotNull('feedbacks.expectation')
+            ->get();
+
 
         $getRonaAwal = DB::table('sub_projects')
             ->select('rona_awal.name')
@@ -58,7 +68,8 @@ class BaganAlirController extends Controller
             'rencana_kegiatan' => $getRencanaKegiatan,
             'kegiatan_lain' => $getKegiatanLain,
             'rona_awal' => $getRonaAwal,
-            'feedback' => $getFeedback,
+            'feedback_concern' => $getFeedbackConcern,
+            'feedback_expectation' => $getFeedbackExpectation,
             'dampak_penting_hipotetik' => $getDampakPentingHipotetik,
         ]);
     }

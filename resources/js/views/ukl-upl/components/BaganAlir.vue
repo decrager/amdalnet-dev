@@ -1,119 +1,117 @@
 <template>
   <div>
-    <div id="bagan" class="main__wrapper">
-      <div class="card__wrapper">
-        <div class="card_first">
-          <el-card class="box-card" style="margin: 10px 0;">
-            <div slot="header" class="clearfix">
-              <span>Rencana Kegiatan</span>
-            </div>
-            <div v-for="rencana in data.rencana_kegiatan" :key="rencana.id" class="text item">
-              {{ rencana.name }}
-            </div>
-          </el-card>
-          <el-card class="box-card" style="margin: 10px 0;">
-            <div slot="header" class="clearfix">
-              <span>Kegiatan Lain</span>
-            </div>
-            <div v-for="rencana in data.kegiatan_lain" :key="rencana.id" class="text item">
-              {{ rencana.name }}
-            </div>
-          </el-card>
-          <el-card class="box-card">
-            <div slot="header" class="clearfix">
-              <span>Rona Lingkungan Hidup</span>
-            </div>
-            <div v-for="rencana in data.rona_awal" :key="rencana.id" class="text item">
-              {{ rencana.name }}
-            </div>
-          </el-card>
-          <el-card class="box-card" style="margin: 10px 0;">
-            <div slot="header" class="clearfix">
-              <span>Saran Tanggapan dan Pendapat Masyarakat</span>
-            </div>
-            <div v-for="rencana in data.feedback" :key="rencana.id" class="text item">
-              <span>Kekhawatiran :</span>
-              <ul>
-                <li>{{ rencana.concern }}</li>
-              </ul>
+    <div id="bagan" class="main__wrapper" style="overflow: auto">
+      <ol class="process_diagram">
+        <li>
+          <ul>
+            <li>
+              <div><span class="header__text">Rencana Kegiatan</span>
+                <hr>
+                <div v-for="rencana in data.rencana_kegiatan" :key="rencana.id" class="text item">
+                  <p>- {{ rencana.name }}</p>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <span class="header__text">Kegiatan Lain</span>
+                <hr>
+                <div v-for="rencana in data.kegiatan_lain" :key="rencana.id" class="text item">
+                  <p>- {{ rencana.name }}</p>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <span class="header__text">Rona Lingkungan Hidup</span>
+                <hr>
+                <div v-for="rencana in data.rona_awal" :key="rencana.id" class="text item">
+                  <p>- {{ rencana.name }}</p>
+                </div>
 
-              <br>
-              <span>Harapan :</span>
-              <ul>
-                <li>{{ rencana.expectation }}</li>
-              </ul>
+              </div>
+            </li>
+            <li>
+              <div>
+                <span class="header__text">Saran Tanggapan dan Pendapat Masyarakat</span>
+                <hr>
+                <p class="sub_text">Kekhawatiran : </p>
+                <div v-for="rencana in data.feedback_concern" :key="rencana.id" class="text item">
+                  <p>- {{ rencana.concern }}</p>
+                </div>
+                <p class="sub_text">Harapan : </p>
+                <div v-for="rencana in data.feedback_expectation" :key="rencana.id" class="text item">
+                  <p>- {{ rencana.expectation }}</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <ul>
+            <li class="bottom">
+              <div class="bottom_content">
+                <span class="header__text">Identifikasi Dampak Potensial</span>
+                <hr>
+                <p class="sub_text">Pra-konstruksi : </p>
+                <div>
+                  <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
+                  <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
+                </div>
+                <p class="sub_text">Konstruksi  : </p>
+                <div>
+                  <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
+                  <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <div>
+            <span class="header__text">Dampak Potensial</span>
+            <hr>
+            <p class="sub_text">Pra-konstruksi : </p>
+            <div>
+              <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
+              <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
             </div>
-          </el-card>
-          <div class="first_horizontal_line" />
-        </div>
-
-        <div class="card_second">
-          <el-card class="box-card" style="margin: 10px 0;">
-            <div slot="header" class="clearfix">
-              <span>Identifikasi Dampak Potensial</span>
+            <p class="sub_text">Konstruksi  : </p>
+            <div>
+              <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
+              <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
             </div>
-            <div class="text item">
-              <ul>
-                <li>-</li>
-              </ul>
+          </div>
+        </li>
+        <li>
+          <ul>
+            <li class="bottom">
+              <div class="bottom_content">
+                <span class="header__text">Evaluasi Dampak Penting</span>
+                <hr>
+                <p>- Besaran rencana Usaha dan/atau Kegiatan yang menyebabkan dampak tersebut dan rencana pengelolaan lingkungan awal yang menjadi bagian rencana Usaha dan/atau kegiatan untuk menanggulangi dampak</p>
+                <p>- Kondisi rona lingkungan yang ada termasuk kemampuan mendukung Usaha dan/atau kegiatan tersebut atau tidak</p>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <div>
+            <span class="header__text">Dampak Penting Hipotetik</span>
+            <hr>
+            <p class="sub_text">Pra-konstruksi : </p>
+            <div>
+              <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
+              <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
             </div>
-          </el-card>
-        </div>
-
-        <div class="card_third">
-          <el-card class="box-card" style="margin: 10px 0;">
-            <div slot="header" class="clearfix">
-              <span>Dampak Potensial</span>
+            <p class="sub_text">Konstruksi  : </p>
+            <div>
+              <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
+              <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
             </div>
-            <div class="text item">
-              <p>Pra-konstruksi :</p>
-              <ul>
-                <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
-                <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
-              </ul>
-              <p>Konstruksi :</p>
-              <ul>
-                <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
-                <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
-              </ul>
-            </div>
-          </el-card>
-        </div>
-
-        <div class="card_fourth">
-          <el-card class="box-card" style="margin: 10px 0;">
-            <div slot="header" class="clearfix">
-              <span>Evaluasi Dampak Penting</span>
-            </div>
-            <div class="text item">
-              <ul>
-                <li>Besaran rencana Usaha dan/atau Kegiatan yang menyebabkan dampak tersebut dan rencana pengelolaan lingkungan awal yang menjadi bagian rencana Usaha dan/atau kegiatan untuk menanggulangi dampak</li>
-                <li>Kondisi rona lingkungan yang ada termasuk kemampuan mendukung Usaha dan/atau kegiatan tersebut atau tidak</li>
-              </ul>
-            </div>
-          </el-card>
-        </div>
-
-        <div class="card_fifth">
-          <el-card class="box-card" style="margin: 10px 0;">
-            <div slot="header" class="clearfix">
-              <span>Dampak Penting Hipotetik</span>
-            </div>
-            <div class="text item">
-              <p>Pra-konstruksi :</p>
-              <ul>
-                <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
-                <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
-              </ul>
-              <p>Konstruksi :</p>
-              <ul>
-                <li>Peningkatan kebisingan akibat mobilisasi alat berat</li>
-                <li>Penurunan mata pencaharian akibat mobilitas pekerja</li>
-              </ul>
-            </div>
-          </el-card>
-        </div>
-      </div>
+          </div>
+        </li>
+      </ol>
       <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning" @click="download">Export PDF</el-button></el-col>
       <div id="pdf" />
     </div>
@@ -150,6 +148,7 @@ export default {
       axios.get('api/bagan-alir/' + this.projectId)
         .then((response) => {
           this.data = response.data;
+          console.log('concern: ' + this.data.feedback[0]);
         });
     },
     download() {
@@ -170,199 +169,251 @@ export default {
 </script>
 
 <style>
-.main__wrapper {
+/* All parameters */
+:root {
+  --linethick: 3px;
+  --linewidth: 1.8em;
+}
+
+.header__text {
+  font-size: 18px;
+  font-weight: 600;
   margin: 0;
+}
+
+.sub_text {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+hr {
+  border: .5px solid #099C4B
+}
+
+/* node style */
+.process_diagram li>div {
+  background-color: #55BF73;
+  color: white;
+  border-style: solid;
+  border-color: #55BF73;
+  border-radius: 5px;
+  text-align: left;
+}
+
+/* connecting lines between nodes */
+.process_diagram li:before,
+.process_diagram li:after,
+.process_diagram ul:before,
+.process_diagram ul:after,
+.process_diagram div:before,
+.process_diagram div:after {
+  border-style: solid;
+  border-color: #55BF73;
+}
+
+.process_diagram,
+.process_diagram ol,
+.process_diagram ul,
+.process_diagram li {
+  margin: 0 auto;
   padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
+  display: block;
+  list-style: none;
+  text-align: center;
+  vertical-align: middle;
 }
 
-.card__wrapper {
-    display: flex;
-    flex-direction: row;
-    column-gap: 50px;
-    margin: 0;
-    padding: 0;
-    width: 1570px;
-    height: 1000px;
-    /* overflow-x: scroll;
-    overflow-y: scroll; */
-
+.bottom__process {
+  margin-top: 10px;
+  padding: 0;
+  display: block;
+  list-style: none;
+  text-align: center;
+  vertical-align: bottom;
 }
 
-.card__wrapper .card_first {
-    flex: 1;
-    justify-content: flex-start;
-    align-content: flex-start;
-    display: flex;
-    flex-direction: column;
+.process_diagram li {
+  position: relative;
 }
 
-.card__wrapper .first_horizontal_line {
+.process_diagram,
+.process_diagram ol {
+  display: table;
+  width: 130%;
+  border-collapse: collapse;
+}
+
+.process_diagram>li,
+.process_diagram ol>li {
+  display: table-cell;
+}
+
+.process_diagram>li,
+.process_diagram ol>li,
+.process_diagram ul>li {
+  padding: .5em 0
+}
+
+/* a dash before and behind all uls */
+.process_diagram ul {
+  position: relative;
+  padding: 0 var(--linewidth);
+}
+
+.process_diagram ul:before,
+.process_diagram ul:after {
   position: absolute;
-  top: 677px;
-  left: 370px;
-  width: 2px;
-  height: 44%;
-  background-color: #55BF73
-}
-/*
-.card_first::before{
   content: "";
-
-} */
-
-.card__wrapper ul li {
-    z-index: 10;
-    position: relative;
+  top: 50%;
+  width: 100%;
+  display: block;
+  border-width: var(--linethick) 0 0;
 }
 
-.card__wrapper
-.card_first
-.el-card
-.el-card__body::after {
-    width: 4%;
-    height: 2px;
-    content: '';
-    position: absolute;
-    background-color: #55BF73;
-    left: 18%;
-    z-index: 1
+.process_diagram ul:before {
+  left: 0;
 }
 
-.card__wrapper
-.card_third
-.el-card
-.el-card__body::after {
-    width: 60%;
-    height: 2px;
-    content: '';
-    position: absolute;
-    background-color: #55BF73;
-    left: 22%;
-    z-index: 1;
-    top: 705px;
+.process_diagram ul:after {
+  right: 0;
 }
 
-.card__wrapper .card_second {
-    flex: 1;
-    justify-content: center;
-    align-content: center;
-    display: flex;
-    flex-direction: column;
-    margin-top: 150px;
+/* put connecting vertical lines */
+.process_diagram ul>li:after,
+.process_diagram ul>li:before {
+  position: absolute;
+  content: "";
+  top: 0;
+  bottom: 0;
+  width: var(--linewidth);
+  height: 100%;
+  display: block;
 }
 
-.card__wrapper
-.card_second::before{
-    content: "";
-    position: absolute;
-    top: 705px;
-    left: 530px;
-    width: 2px;
-    height: 22%;
-    background-color: #55BF73
+.process_diagram ul>li:before {
+  left: 0;
+  border-width: 0 0 0 var(--linethick);
 }
 
-.card__wrapper .card_third {
-    flex: 1;
-    justify-content: flex-start;
-    align-content: flex-start;
-    display: flex;
-    flex-direction: column;
-    margin-top: 50px;
+.process_diagram ul>li:after {
+  right: 0;
+  border-width: 0 var(--linethick) 0 0;
 }
 
-.card__wrapper .card_fourth {
-    flex: 1;
-    justify-content: flex-end;
-    align-content: flex-end;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 100px;
+/* correct length and position of dashes for first and last li-item in ul */
+.process_diagram ul>li:first-child:before,
+.process_diagram ul>li:first-child:after {
+  top: 50%;
+  bottom: auto;
+  height: 50%;
 }
 
-.card__wrapper
-.card_fourth::before{
-    content: "";
-    position: absolute;
-    top: 705px;
-    left: 1160px;
-    width: 2px;
-    height: 19%;
-    background-color: #55BF73
+.bottom:before {
+  /* top: 0; */
+  bottom: auto;
+  height: 40% !important;
+  left: 50% !important;
 }
 
-.card__wrapper .card_fifth {
-    flex: 1;
-    justify-content: flex-start;
-    align-content: flex-start;
-    display: flex;
-    flex-direction: column;
-    margin-top: 50px;
-}
-/* .card__wrapper {
-    max-height: 800px;
-} */
-.card__wrapper .el-card .el-card__header {
-    background-color: #55BF73;
-    font-weight: bold;
-    color: white;
-}
-.card__wrapper .el-card .el-card__body {
-    background-color: #55BF73;
-    color: white
+.bottom:after {
+  display: none !important;
 }
 
-/* @media screen and (max-width: 1280px) {
-  .card__wrapper .card_first .el-card {
-      font-weight: 8px;
-  }
+.bottom_content {
+  margin-top: 80% !important;
+  width: 400px !important;
+}
 
-  .card__wrapper .card_second .el-card {
-      font-weight: 8px;
-  }
+.bottom_content:before,
+.bottom_content:after {
+  display: none !important;
+}
 
-  .card__wrapper .card_third .el-card {
-      font-weight: 8px;
-  }
+.process_diagram ul>li:last-child:before,
+.process_diagram ul>li:last-child:after {
+  /* top: 0; */
+  bottom: auto;
+  height: 50%;
+}
 
-  .card__wrapper .card_fourth .el-card {
-      font-weight: 8px;
-  }
+/* put left and right dashes */
+.process_diagram li>div {
+  position: relative;
+  margin: 0 var(--linewidth);
+  padding: 1em;
+  border-width: var(--linethick);
+}
 
-  .card__wrapper .card_fifth .el-card {
-      font-weight: 8px;
-  }
+.process_diagram li>div:before,
+.process_diagram li>div:after {
+  content: "";
+  top: 50%;
+  width: var(--linewidth);
+  position: absolute;
+  border-width: var(--linethick) 0 0;
+  height: 50%;
+}
 
-  .card__wrapper
-  .card_fourth::before{
-      display: none;
-  }
+.process_diagram li>div:after {
+  right: calc(0em - var(--linewidth));
+  margin-right: calc(0px - var(--linethick));
+}
 
-  .card__wrapper
-  .card_second::before{
-      display: none;
-  }
+.process_diagram li>div:before {
+  left: calc(0em - var(--linewidth));
+  margin-left: calc(0px - var(--linethick));
+}
 
-  .card__wrapper
-  .card_first
-  .el-card:nth-child(2)
-  .el-card__body:after {
-      display: none;
-  }
+.process_diagram li:last-child>div:after,
+.process_diagram li:last-child>div:before {
+  top: 0;
+  border-width: 0 0 var(--linethick);
+}
 
-  .card__wrapper
-  .card_first
-  .el-card
-  .el-card__body::after {
-      display: none;
-  }
+/* remove dash for the very first/last nodes keeping margin and padding */
+.process_diagram>li:first-child>div:before,
+.process_diagram>li:first-child>ul:before,
+.process_diagram>li:first-child>ul>li:before,
+.process_diagram>li:first-child>ul>li>div:first-child:before,
+.process_diagram>li:first-child>ul>li>ol>li:first-child>div:before,
+.process_diagram>li:last-child>div:after,
+.process_diagram>li:last-child>ul:after {
+  border: 0;
+}
 
-  .card__wrapper
-  .card_first::before{
-    display: none;
-  }
-} */
+/* remove double dashes */
+ol.process_diagram>li>div:after,
+.process_diagram ol>li>div:after,
+ol.process_diagram>li>ul:after,
+.process_diagram ol>li>ul:after {
+  display: none
+}
+
+ol.process_diagram>li>div,
+.process_diagram ol>li>div {
+  margin-right: 0;
+}
+
+ol.process_diagram>li>ul,
+.process_diagram ol>li>ul {
+  padding-right: 0;
+}
+
+/* last dashes are not double and need to be recovered */
+ol.process_diagram>li:last-child>div:after,
+.process_diagram ol>li:last-child>div:after,
+ol.process_diagram>li:last-child>ul:after,
+.process_diagram ol>li:last-child>ul:after {
+  display: block;
+}
+
+ol.process_diagram>li:last-child>div,
+.process_diagram ol>li:last-child>div {
+  margin-right: var(--linewidth);
+}
+
+ol.process_diagram>li:last-child>ul,
+.process_diagram ol>li:last-child>ul {
+  padding-right: var(--linewidth);
+}
 </style>
