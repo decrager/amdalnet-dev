@@ -236,7 +236,7 @@
         </el-table-column>
         <el-table-column align="left" label="No. Registrasi" width="200">
           <template slot-scope="scope">
-            <span>{{ Math.floor(Math.random() * (scope.$index + 1) * 1000000000) }}</span>
+            <span>{{ scope.row.registration_no }}</span>
           <!-- <span>{{
               scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
             }}</span> -->

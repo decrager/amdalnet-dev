@@ -192,6 +192,7 @@ class ProjectController extends Controller
             'ktr' => Storage::url($ktrName),
             'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
             'pre_agreement_file' => Storage::url($preAgreementName),
+            'registration_no' => uniqid(),
         ]);
 
         //if mandiri create tim mandiri
