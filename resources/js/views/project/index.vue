@@ -509,7 +509,7 @@ export default {
     },
     handleKerangkaAcuan(project) {
       this.$router.push({
-        path: `/ukl-upl/${project.id}/formulir`,
+        path: `/amdal/${project.id}/formulir`,
       });
     },
     handleUjiKa(project) {

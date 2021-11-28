@@ -91,7 +91,7 @@ export default {
           type: 'error',
           duration: 5 * 1000,
         });
-        this.$router.push({ path: '/ukl-upl/' + idProject + '/formulir' });
+        this.$router.push({ path: '/amdal/' + idProject + '/formulir' });
       }
     },
     handleReloadVsaList(tab) {
