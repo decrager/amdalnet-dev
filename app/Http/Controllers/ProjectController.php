@@ -226,7 +226,9 @@ class ProjectController extends Controller
                             'name' => $formulaTeam->name,
                             'cv_file' => Storage::url($cvName),
                             'email' => $formulaTeam->email,
-                        ]);
+                            'expertise' => $formulaTeam->expertise,
+                            'membership_status' => 'TA',
+                            ]);
 
                         $formulaTeam->id = $new->id;
                     }
