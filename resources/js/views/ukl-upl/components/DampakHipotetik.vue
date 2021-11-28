@@ -55,6 +55,7 @@
                     v-for="item in changeType"
                     :key="item.id"
                     :label="item.name"
+                    :value="item.id"
                   />
                 </el-select>
               </td>
@@ -339,7 +340,7 @@ export default {
     height: 200% !important;
   }
   table td.title:hover {
-    background-color: #fafafa;
+    background-color: #acb;
     cursor: pointer;
   }
 </style>
