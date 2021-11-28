@@ -43,7 +43,7 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Upload Peta (File .ZIP)">
-                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" multiple @change="handleFileTapakProyekMapUpload">
+                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload">
                   </el-form-item>
                   <div id="mapView" style="height: 400px;" />
                 </el-row>
@@ -602,8 +602,12 @@ import Resource from '@/api/resource';
 import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
-import * as L from 'leaflet';
+// import * as L from 'leaflet';
 import shp from 'shpjs';
+import Map from '@arcgis/core/Map';
+import MapView from '@arcgis/core/views/MapView';
+import LayerList from '@arcgis/core/widgets/LayerList';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 
 export default {
   name: 'CreateProject',
@@ -967,31 +971,65 @@ export default {
       this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
-      var selectedFiles = e.target.files;
+      this.fileMap = this.$refs.fileMap.files[0];
 
-      const map = L.map('mapView');
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
+      const map = new Map({
+        basemap: 'topo',
+      });
 
-      for (let i = 0; i < selectedFiles.length; i++){
-        this.fileMap.push(selectedFiles[i]);
-      }
-
-      for (let i = 0; i < this.fileMap.length; i++){
-        const reader = new FileReader(); // instantiate a new file reader
-        reader.onload = (event) => {
-          const base = event.target.result;
-          shp(base).then(function(data) {
-            const geo = L.geoJSON(data).addTo(map);
-            console.log(geo);
-
-            map.fitBounds(geo.getBounds());
+      const fr = new FileReader();
+      fr.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
           });
-        };
 
-        reader.readAsArrayBuffer(this.fileMap[i]);
-      }
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              outline: {
+                color: 'red',
+              },
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const geojsonLayer = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Peta Tapak Proyek',
+            renderer: renderer,
+          });
+
+          map.add(geojsonLayer);
+          mapView.on('layerview-create', (event) => {
+            mapView.goTo({
+              target: geojsonLayer.fullExtent,
+            });
+          });
+        });
+      };
+      fr.readAsArrayBuffer(this.fileMap);
+
+      const mapView = new MapView({
+        container: 'mapView',
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 6,
+      });
+      this.$parent.mapView = mapView;
+
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      mapView.ui.add(layerList, 'top-right');
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });
