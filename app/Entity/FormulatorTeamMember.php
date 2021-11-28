@@ -9,6 +9,8 @@ class FormulatorTeamMember extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function formulator()
     {
         return $this->belongsTo(Formulator::class, 'id_formulator', 'id');

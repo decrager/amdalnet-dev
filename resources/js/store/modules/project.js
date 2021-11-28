@@ -41,6 +41,10 @@ const projects = {
         value: 'anggota',
         label: 'Anggota',
       },
+      {
+        value: 'ahli',
+        label: 'Tenaga Ahli',
+      },
     ],
     unitOptions: [],
     teamType: '',
@@ -104,7 +108,7 @@ const projects = {
     async getProvinces({ commit }) {
       const { data } = await provinceResource.list({});
       const option = data.map((i) => {
-        return { value: i.id, label: i.name };
+        return { value: i.name, label: i.name };
       });
       commit('SET_PROVINCE_OPTIONS', option);
     },
@@ -132,7 +136,7 @@ const projects = {
     async getDistricts({ commit }, payload) {
       const { data } = await districtResource.list(payload);
       const option = data.map((i) => {
-        return { value: i.id, label: i.name };
+        return { value: i.name, label: i.name };
       });
       commit('SET_CITY_OPTIONS', option);
     },
