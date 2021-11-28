@@ -68,6 +68,7 @@
                           v-model="scope.row.prov"
                           placeholder="Pilih"
                           style="width: 100%"
+                          filterable
                           @change="changeProvince(scope.row)"
                         >
                           <el-option
@@ -86,6 +87,7 @@
                           v-model="scope.row.district"
                           placeholder="Pilih"
                           style="width: 100%"
+                          filterable
                         >
                           <el-option
                             v-for="item in scope.row.districts"
