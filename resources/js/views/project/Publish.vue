@@ -84,22 +84,6 @@
               prop="address"
               label="address"
             />
-          <!-- <el-table-column
-            prop="kegiatan"
-            label="Kegiatan"
-          />
-          <el-table-column
-            prop="jenisKegiatan"
-            label="Jenis Kegiatan"
-          />
-          <el-table-column
-            prop="skala"
-            label="Skala Besaran"
-          /> -->
-          <!-- <el-table-column
-            prop="hasil"
-            label="Hasil"
-          /> -->
           </el-table>
         </div>
       </el-col>
@@ -174,7 +158,7 @@
             @click="handleAddFormulatorTable"
           >+</el-button>
         </el-row>
-        <el-row style="padding-bottom: 16px">
+        <!-- <el-row style="padding-bottom: 16px">
           <h2>Tambah Tenaga Ahli</h2>
           <expert-table
             :list="listExpertTeam"
@@ -184,7 +168,7 @@
             type="primary"
             @click="handleAddExpertTable"
           >+</el-button>
-        </el-row>
+        </el-row> -->
       </div>
 
     </el-row>
@@ -198,7 +182,7 @@
 <script>
 import Resource from '@/api/resource';
 import FormulatorTable from './components/formulatorTable.vue';
-import ExpertTable from './components/expertTable.vue';
+// import ExpertTable from './components/expertTable.vue';
 
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
@@ -228,7 +212,7 @@ import Workflow from '@/components/Workflow';
 
 export default {
   name: 'Publish',
-  components: { FormulatorTable, ExpertTable, Workflow },
+  components: { FormulatorTable, Workflow },
   props: {
     project: {
       type: Object,
@@ -704,12 +688,21 @@ export default {
         this.project.id_project = 1;
       }
 
-      if (this.getFormulatedTeam === 'mandiri') {
-        // await this.createTimPenyusun();
-      }
-
       // make form data because we got file
       const formData = new FormData();
+
+      // for formulator team mandiri
+      if (this.getFormulatedTeam === 'mandiri') {
+        formData.append('formulatorTeams', JSON.stringify(this.listFormulatorTeam));
+        for (var u = 0; u < this.listFormulatorTeam.length; u++){
+          formData.append('listFormulatorTeam[' + u + ']', this.listFormulatorTeam[u]);
+
+          if (this.listFormulatorTeam[u].fileDoc){
+            const formulatorFile = this.listFormulatorTeam[u].fileDoc;
+            formData.append('formulatorFiles[' + u + ']', formulatorFile);
+          }
+        }
+      }
 
       for (var i = 0; i < this.mapUpload.length; i++){
         const file = this.mapUpload[i];

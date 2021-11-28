@@ -56,7 +56,7 @@
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
                   <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-                    <el-table-column label="No." width="40px">
+                    <el-table-column label="No." width="80px">
                       <template slot-scope="scope">
                         {{ scope.$index + 1 }}
                       </template>

@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Formulator;
+use App\Entity\FormulatorTeam;
+use App\Entity\FormulatorTeamMember;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
 use App\Entity\ProjectFilter;
 use App\Entity\SubProject;
 use App\Entity\SubProjectParam;
 use App\Http\Resources\ProjectResource;
+use App\Laravue\Acl;
+use App\Laravue\Models\Role;
+use App\Laravue\Models\User;
 use App\MapProject;
 use DB;
 use Exception;
@@ -19,6 +25,7 @@ use Shapefile\Shapefile;
 use Shapefile\ShapefileReader;
 use VIPSoft\Unzip\Unzip;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 
 class ProjectController extends Controller
 {
@@ -95,7 +102,13 @@ class ProjectController extends Controller
     {
         $request['listSubProject'] = json_decode($request['listSubProject']);
         $request['address'] = json_decode($request['address']);
-
+        if(isset($request['formulatorTeams'])){
+            $request['formulatorTeams'] = json_decode($request['formulatorTeams']);
+        }
+        $formulatorFiles = $request->file('formulatorFiles');
+        
+        // return $formulatorFiles[2];
+        
         // return $request['listSubProject'];
 
         //validate request
@@ -148,6 +161,9 @@ class ProjectController extends Controller
             }
         }
 
+        DB::beginTransaction();
+
+        try {
         //create project
         $project = Project::create([
             // 'biz_type' => $data['biz_type'],
@@ -177,6 +193,54 @@ class ProjectController extends Controller
             'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
             'pre_agreement_file' => Storage::url($preAgreementName),
         ]);
+
+        //if mandiri create tim mandiri
+        if(isset($request['formulatorTeams'])){
+            //create team
+            $team = FormulatorTeam::create([
+                'id_project' => $project->id,
+                'id_team' => uniqid(),
+                'name' => 'Tim '.$project->project_title,
+            ]);
+            
+            foreach ($request['formulatorTeams'] as $key=>$formulaTeam) {
+
+                if(!isset($formulaTeam->id)){
+                    $cvName = '';
+                    if(array_key_exists($key, $formulatorFiles)){
+                        $cvName = '/penyusun/' . uniqid() . '.' . $formulatorFiles[$key]->extension();
+                        $formulatorFiles[$key]->storePubliclyAs('public', $cvName);
+                    }
+
+                    $email = $formulaTeam->email;
+                    $found = User::where('email', $email)->first();
+                    if (!$found) {
+                        $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                        $user = User::create([
+                            'name' => ucfirst($formulaTeam->name),
+                            'email' => $formulaTeam->email,
+                            'password' => Hash::make('amdalnet')
+                        ]);
+                        $user->syncRoles($formulatorRole);
+                    }
+
+                    $new = Formulator::create([
+                        'name' => $formulaTeam->name,
+                        'cv_file' => Storage::url($cvName),
+                        'email' => $formulaTeam->email,
+                    ]);
+
+                    $formulaTeam->id = $new->id;
+                }
+
+                FormulatorTeamMember::create([
+                    'id_formulator_team' => $team->id,
+                    'position' => ucfirst($formulaTeam->position),
+                    'id_formulator' => $formulaTeam->id,
+                ]);
+            }
+
+        }
 
         //set project filters
         ProjectFilter::create([
@@ -236,7 +300,15 @@ class ProjectController extends Controller
                 ]);
             }
         }
-          
+
+        DB::commit();
+        
+    } catch (Exception $e) {
+        DB::rollback();
+
+        return $e;
+    }
+
         return new ProjectResource($project);
 
         // $validator = Validator::make(

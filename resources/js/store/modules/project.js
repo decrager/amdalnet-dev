@@ -41,6 +41,10 @@ const projects = {
         value: 'anggota',
         label: 'Anggota',
       },
+      {
+        value: 'ahli',
+        label: 'Tenaga Ahli',
+      },
     ],
     unitOptions: [],
     teamType: '',
