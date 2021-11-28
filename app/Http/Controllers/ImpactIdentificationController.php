@@ -298,8 +298,10 @@ class ImpactIdentificationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function pieEntries(Request $request){
-        $pies = PotentialImpactEvaluation::where('id_impact_identification', $request->id_impact_identification)
-        ->orderBy('id_pie_param', 'ASC')->get();
+        $pies = PotentialImpactEvaluation::whereIn('id_impact_identification', $request->id_impact_identification)
+        ->orderBy('id_impact_identification', 'ASC')
+        ->orderBy('id_pie_param', 'ASC')
+        ->get();
              // ->where('id_pie_param' , $request->id_pie_param)->all();
         return response($pies);
     }

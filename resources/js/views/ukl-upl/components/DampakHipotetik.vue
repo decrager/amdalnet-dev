@@ -52,23 +52,19 @@
                   />
                 </el-select>
               </td>
-              <td>Kebisingan</td>
-              <td>akibat Mobilisasi Alat Berat</td>
-              <td>Pengelolaan Lingkungan yang
-                sudah direncanakan sejak awal
-                sebagai bagian dari rencana
-                kegiatan</td>
+              <td>{{ impact.rona_awal_name }}</td>
+              <td>{{ impact.component_name }}</td>
+              <td>{{ impact.initial_study_plan }}</td>
               <td>
-
                 <template v-for="(pie, index) in pieParams">
                   <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
                     <p><strong>{{ pie.name }}</strong> {{ pie.description }}</p>
                     <el-input
                       v-model="impact.potential_impact_evaluation[index].text"
                       type="textarea"
-                      :rows="5"
+                      :rows="3"
                       placeholder="Please input"
-                      :value="getPie(pie.id)"
+                      :value="impact.potential_impact_evaluation[index].text"
                     />
                   </div>
                 </template>
@@ -87,7 +83,7 @@
                   <el-switch v-model="impact.is_managed" active-text="Dikelola" />
                 </div>
               </td>
-              <td />
+              <td>{{ impact.study_location }}</td>
               <td>
                 <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
                 <p><el-input-number v-model="impact.study_length_month" :min="0" :max="12" size="mini" /> bulan</p>
@@ -108,7 +104,7 @@ const projectStageResource = new Resource('project-stages');
 const impactIdtResource = new Resource('impact-identifications');
 const changeTypeResource = new Resource('change-types');
 const pieParamsResource = new Resource('pie-params');
-// const pieEntriesResource = new Resource('pie-entries');
+const pieEntriesResource = new Resource('pie-entries');
 
 export default {
   name: 'DampakHipotetik',
@@ -127,6 +123,7 @@ export default {
         { label: 'DTPH', value: false },
       ],
       pies: [],
+      impIds: [],
     };
   },
   mounted() {
@@ -169,6 +166,12 @@ export default {
       stageIds.map((id) => {
         const impacts = [];
         imps.map((imp) => {
+          if (this.pies){
+            imp.potential_impact_evaluation.map((pie) => {
+              pie.text = this.getPie(imp.id, pie.id_pie_param);
+              console.log(pie.text);
+            });
+          }
           if (imp.id_project_stage === id){
             impacts.push(imp);
           }
@@ -252,6 +255,7 @@ export default {
           };
         }
         imp.potential_impact_evaluation = [];
+
         this.pieParams.forEach((e) => {
           console.log('matrixing... ', e);
           imp.potential_impact_evaluation.push({
@@ -261,13 +265,17 @@ export default {
           });
         });
       });
+      this.isLoading = false;
 
       console.log(impIds);
+      const pies = await pieEntriesResource.list({
+        id_impact_identification: impIds,
+      });
+      this.pies = pies;
+      console.log('the pies', pies);
 
       var dataList = impactList.data;
       this.data = this.createDataArray(dataList, this.projectStages);
-
-      this.isLoading = false;
     },
     initPieMatrix(){
       this.pieInputMatrix.map((d) => {
@@ -286,18 +294,18 @@ export default {
     refresh(){
       this.getData();
     },
-    getPie(index){
-      if (!this.pieEntries) {
-        return '';
+    getPie(id, index){
+      console.log('getting pies', id, index);
+      const pie = this.pies.find((e) => ((e.id_impact_identification === id) &&
+        (e.id_pie_param === index)));
+      if (pie) {
+        console.log(pie.text);
+        return pie.text;
       }
-
-      const pie = this.pieEntries.find((e) => (e.id === index));
-      return pie.text;
+      return '';
     },
     showStage(index){
       this.openedStage = (this.openedStage === index) ? null : index;
-      console.log('showStage');
-      console.log(this.openedStage);
     },
   },
 };
