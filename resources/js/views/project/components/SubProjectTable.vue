@@ -36,10 +36,10 @@
 
       <el-table-column align="center" label="Sector">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini">
+          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)">
             <el-option
               v-for="item in scope.row.listSector"
-              :key="item.value"
+              :key="item.label"
               :label="item.label"
               :value="item.value"
             />
@@ -73,7 +73,7 @@
       <el-table-column align="center" label="Skala Besaran">
         <template slot-scope="scope">
           <el-button type="primary" @click="handleClick(scope.row)">Input</el-button>
-          <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.kbli" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
+          <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.biz_type" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
         </template>
       </el-table-column>
     </el-table>
@@ -121,29 +121,35 @@ export default {
   methods: {
     async onChangeKbli(sproject){
       this.loading = true;
-      await this.getBusinessByKbli(sproject);
-      await this.getFieldByKbli(sproject);
+      // await this.getBusinessByKbli(sproject);
       await this.getSectorByKbli(sproject);
       this.refresh++;
       this.loading = false;
     },
-    async onChangeFieldType(value){
+    async onChangeSector(sproject){
       this.loading = true;
-      console.log(value);
+      await this.getFieldBySector(sproject);
+      this.refresh++;
       this.loading = false;
     },
-    async getBusinessByKbli(sproject) {
+    async onChangeFieldType(sproject){
+      this.loading = true;
+      await this.getBusinessByField(sproject);
+      console.log(sproject);
+      this.loading = false;
+    },
+    async getBusinessByField(sproject) {
       const { data } = await kbliEnvParamResource.list({
-        kbli: sproject.kbli,
+        fieldId: sproject.biz_type,
         businessType: true,
       });
       sproject.listSubProjectParams = data.map((i) => {
-        return { param: i.param, scale_unit: i.unit };
+        return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit };
       });
     },
-    async getFieldByKbli(sproject) {
+    async getFieldBySector(sproject) {
       const { data } = await kbliResource.list({
-        fieldByKbli: sproject.kbli,
+        fieldBySector: sproject.sector,
       });
       sproject.listField = data.map((i) => {
         return { value: i.id, label: i.value };
@@ -154,7 +160,7 @@ export default {
         sectorsByKbli: sproject.kbli,
       });
       sproject.listSector = data.map((i) => {
-        return { value: i.value, label: i.value };
+        return { value: i.id, label: i.value };
       });
     },
     handleClick(value){

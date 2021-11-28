@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Entity\BusinessEnvParam;
+use App\Entity\KbliEnvParam;
+use App\Http\Resources\BusinessEnvParamResource;
+use App\Http\Resources\KbliEnvParamResource;
 use Illuminate\Http\Request;
 
 class BusinessEnvParamController extends Controller
@@ -12,9 +15,19 @@ class BusinessEnvParamController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->businessType) {
+            if ($request->unit) {
+                if ($request->unit == 'true') {
+                    return BusinessEnvParamResource::collection(BusinessEnvParam::distinct()->where('business_id', $request->fieldId)->where('param', $request->businessType)->get(['unit']));
+                }
+
+                //get kbli env param by kbli_id, business_type and scale
+                return BusinessEnvParamResource::collection(BusinessEnvParam::where('business_id', $request->fieldId)->where('id_param', $request->businessType)->where('id_unit', $request->unit)->get());
+            }
+            return BusinessEnvParamResource::collection(BusinessEnvParam::select('business_env_params.id_param','business_env_params.id_unit','params.name as param', 'units.name as unit')->distinct()->where('business_id', $request->fieldId)->leftJoin('params', 'business_env_params.id_param', '=', 'params.id')->leftJoin('units', 'business_env_params.id_unit', '=', 'units.id')->get());
+        }
     }
 
     /**

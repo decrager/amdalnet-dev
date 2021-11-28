@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Business;
 use App\Http\Resources\BusinessResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BusinessController extends Controller
 {
@@ -20,23 +21,15 @@ class BusinessController extends Controller
           } else if ($request->sectorsByKbli) {
             $kbliName = $request->sectorsByKbli;
 
-            $kbli = DB::table('kblis')->where('value', $kbliName)->first();
+            $kbli = DB::table('business')->where('value', $kbliName)->first();
 
             if($kbli != null){
-                return BusinessResource::collection(Business::distinct()->where('description', 'sector')->where('parent_id', $kbli->id)->get(['value']));
+                return BusinessResource::collection(Business::distinct()->where('description', 'sector')->where('parent_id', $kbli->id)->get());
             } else {
                 return response()->json(['error' => 'kbli '+ $request->sectorsByKbli +' not found'], 404);
             }
-          } else if ($request->fieldByKbli) {
-            $kbliName = $request->fieldByKbli;
-
-            $kbli = DB::table('kblis')->where('value', $kbliName)->first();
-
-            if($kbli != null){
-                return BusinessResource::collection(Business::where('description', 'field')->where('parent_id', $kbli->id)->get(['id','value']));
-            } else {
-                return response()->json(['error' => 'kbli '+ $request->fieldByKbli +' not found'], 404);
-            }
+          } else if ($request->fieldBySector) {
+                return BusinessResource::collection(Business::where('description', 'field')->where('parent_id', $request->fieldBySector)->get(['id','value']));
           } else if ($request->kblis) {
             return BusinessResource::collection(Business::distinct()->where('description', 'kbli_code')->get(['value']));
           } else {

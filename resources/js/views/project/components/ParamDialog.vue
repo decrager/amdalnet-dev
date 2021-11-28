@@ -15,7 +15,7 @@
 
       <el-table-column>
         <template slot-scope="scope">
-          <el-checkbox v-model="scope.row.used" />
+          <el-checkbox v-model="scope.row.used" @change="handleUsedChange(scope.row)" />
         </template>
       </el-table-column>
 
@@ -83,6 +83,11 @@ export default {
     };
   },
   methods: {
+    handleUsedChange(value) {
+      delete value.scale;
+      delete value.result;
+      // this.handleRefreshDialog();
+    },
     handleCancelParam() {
       this.$emit('handleCancelParam');
     },
@@ -94,10 +99,11 @@ export default {
 
         // calculate result
         const { data } = await kbliEnvParamResource.list({
-          kbli: this.kbli,
-          businessType: value.param,
-          unit: value.scale_unit,
+          fieldId: this.kbli,
+          businessType: value.id_param,
+          unit: value.id_unit,
         });
+        console.log('1', data);
         const kbliEnvParams = data.map((item) => {
           const items = item.condition.replace(/[\[\"\]]/g, '').split(',');
           item.conditions = items.map((e) => value.scale + ' ' + e);

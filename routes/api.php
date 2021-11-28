@@ -179,8 +179,8 @@ Route::get('articles/{id}/pageviews', function ($id) {
 Route::apiResource('project-fields', 'ProjectFieldController');
 Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
-Route::apiResource('kblis', 'KbliController');
-Route::apiResource('kbli-env-params', 'KbliEnvParamController');
+Route::apiResource('kblis', 'BusinessController');
+Route::apiResource('kbli-env-params', 'BusinessEnvParamController');
 Route::apiResource('projects', 'ProjectController');
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
