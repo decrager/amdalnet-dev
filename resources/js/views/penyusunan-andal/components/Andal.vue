@@ -58,6 +58,7 @@
         <template slot="title" class="head-accordion">
           <span class="title">BAGAN ALIR DAMPAK PENTING</span>
         </template>
+        <bagan-alir-dampak />
       </el-collapse-item>
     </el-collapse>
   </div>
@@ -72,6 +73,7 @@ import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
 import MatriksDampakPentingHipotetik from '@/views/ukl-upl/components/MatriksDampakPentingHipotetik.vue';
 import Pelingkupan from '@/views/ukl-upl/components/Pelingkupan.vue';
 import BaganAlir from '@/views/ukl-upl/components/BaganAlir.vue';
+import BaganAlirDampak from '../components/BaganAlirDampak.vue';
 
 export default {
   name: 'Andal',
@@ -82,6 +84,7 @@ export default {
     MatriksDampakPentingHipotetik,
     Pelingkupan,
     BaganAlir,
+    BaganAlirDampak,
   },
   data() {
     return {

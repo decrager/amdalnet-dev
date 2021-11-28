@@ -3,12 +3,15 @@
     <el-card>
       <h2>Formulir Kerangka Acuan</h2>
       <div>
-        <el-button type="danger" @click="exportPdf">Export to .PDF</el-button>
-        <el-button type="primary" @click="exportDocx">Export to .DOCX</el-button>
+        <el-button v-if="showDocument === true" type="danger" icon="el-icon-download" @click="exportPdf">Export to .PDF</el-button>
+        <el-button v-if="!showDocument" type="primary" icon="el-icon-view" @click="showDocs">Lihat Dokumen</el-button>
+        <el-button v-if="showDocument" type="success" icon="el-icon-download" @click="exportDocx">Export to .DOCX</el-button>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16"><div class="grid-content bg-purple" />
-          <iframe :src="'https://docs.google.com/gview?url='+projects+'&embedded=true'" width="100%" height="723px" frameborder="1" />
+          <iframe v-show="showDocument" :src="'https://view.officeapps.live.com/op/embed.aspx?src='+projects" width="100%" height="723px" frameborder="0" />
+
+          <!-- <iframe v-show="showDocument" :src="'https://docs.google.com/gview?url=''&embedded=true'" width="100%" height="723px" frameborder="1" /> -->
         </el-col>
         <el-col :span="8"><div class="grid-content bg-purple" />
 
@@ -54,7 +57,6 @@ import { saveAs } from 'file-saver';
 export default {
   data() {
     return {
-      idProject: 0,
       projects: '',
       commentsData: [],
       comments: [],
@@ -65,14 +67,16 @@ export default {
       loading: false,
       projectId: this.$route.params && this.$route.params.id,
       metodeStudi: [],
+      showDocument: false,
+      docOutput: '',
     };
   },
   mounted() {
-    this.setProjectId;
     this.getDocument();
     this.getComment();
     this.getUserId();
     this.getDocContent();
+    this.generateDoc();
   },
   http: {
     headers: {
@@ -80,6 +84,58 @@ export default {
     },
   },
   methods: {
+    generateDoc() {
+      PizZipUtils.getBinaryContent(
+        '/template_KA.docx',
+        (error, content) => {
+          if (error) {
+            throw error;
+          }
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          doc.render({
+            project_title: this.docContents.data.project_title,
+            pic: this.docContents.data.pic,
+            description: this.docContents.data.description,
+            location_desc: this.docContents.data.location_desc,
+            metode_studi: this.docContents.metode_studi,
+            pra_konstruksi: this.docContents.pra_konstruksi,
+            konstruksi: this.docContents.konstruksi,
+            operasi: this.docContents.operasi,
+            pasca_operasi: this.docContents.pasca_operasi,
+            pra_konstruksi_detail: this.docContents.pra_konstruksi_detail,
+            konstruksi_detail: this.docContents.konstruksi_detail,
+            operasi_detail: this.docContents.operasi_detail,
+            pasca_operasi_detail: this.docContents.pasca_operasi_detail,
+          });
+
+          const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          });
+
+          const formData = new FormData();
+          formData.append('dokumenKa', out);
+          formData.append('project_name', this.docContents.data.project_title);
+          formData.append('id_project', this.projectId);
+
+          axios.post('api/upload-ka-doc', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          this.docOutput = out;
+        }
+      );
+    },
+    showDocs() {
+      this.showDocument = true;
+      this.generateDoc();
+    },
     formatDate(value) {
       if (value) {
         dayjs.locale('id');
@@ -102,11 +158,10 @@ export default {
         });
     },
     saveComment() {
-      const idProject = this.$route.params && this.$route.params.id;
       if (this.message != null && this.message !== ' ') {
         this.errorComment = null;
         axios.post('api/ukl-upl-comment', {
-          id_project: parseInt(idProject),
+          id_project: parseInt(this.projectId),
           id_user: this.userId.id,
           comment: this.message,
         }).then(res => {
@@ -119,23 +174,26 @@ export default {
         this.errorComment = 'Please enter a comment to save';
       }
     },
-    getDocument() {
-      const id = this.$route.params && this.$route.params.id;
-      axios.get('api/projects/' + id)
-        .then((result) => {
-          this.projects = window.location.origin + '/storage/formulir/form-ka-' + result.data.project_title + '.docx';
+    getDocContent() {
+      axios.get('api/ka-docx/' + this.projectId)
+        .then((response) => {
+          this.docContents = response.data;
         });
     },
-    setProjectId(){
-      const id = this.$route.params && this.$route.params.id;
-      this.idProject = id;
+    getDocument() {
+      axios.get('api/get-document-ka/' + this.projectId)
+        .then((result) => {
+          this.projects = window.location.origin + '/storage/formulir/' + result.data.attachment;
+        });
     },
     exportPdf() {
-      const id = this.$route.params && this.$route.params.id;
       axios({
-        url: `form-ka/${id}/pdf`,
+        url: `api/form-ka-pdf/${this.projectId}`,
         method: 'GET',
         responseType: 'blob',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
       }).then((response) => {
         const getHeaders = response.headers['content-disposition'].split('; ');
         const getFileName = getHeaders[1].split('=');
@@ -148,56 +206,9 @@ export default {
         fileLink.click();
       });
     },
-    getDocContent() {
-      axios.get('api/ka-docx/' + this.projectId)
-        .then((response) => {
-          this.docContents = response.data;
-          // this.metodeStudi = response.data.metodeStudi;
-        });
-    },
     exportDocx() {
-      PizZipUtils.getBinaryContent(
-        '/template_KA.docx',
-        (error, content) => {
-          if (error) {
-            throw error;
-          }
-          const zip = new PizZip(content);
-          const doc = new Docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true,
-          });
-          doc.render({
-            project_title: this.docContents.data.project_title,
-            pic: this.docContents.data.pic,
-            description: this.docContents.data.description,
-            location_desc: this.docContents.data.location_desc,
-            metode_studi: this.docContents.metode_studi,
-            pra_konstruksi: this.docContents.pra_konstruksi,
-            konstruksi: this.docContents.konstruksi,
-            operasi: this.docContents.operasi,
-            pasca_operasi: this.docContents.pasca_operasi,
-          });
-
-          const out = doc.getZip().generate({
-            type: 'blob',
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          });
-
-          const formData = new FormData();
-          formData.append('dokumenKa', out);
-          formData.append('project_name', this.docContents.data.project_title);
-
-          axios.post('api/upload-ka-doc', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-
-          saveAs(out, 'form-ka-' + this.docContents.data.project_title + '.docx');
-          // console.log(save);
-        }
-      );
+      this.showDocument = true;
+      saveAs(this.docOutput, 'form-ka-' + this.docContents.data.project_title + '.docx');
     },
   },
 };

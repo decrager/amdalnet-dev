@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Entity\EnvParam;
+use App\Entity\BusinessEnvParam;
 use Illuminate\Http\Request;
 
-class EnvParamController extends Controller
+class BusinessEnvParamController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +41,10 @@ class EnvParamController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Entity\EnvParam  $envParam
+     * @param  \App\Entity\BusinessEnvParam  $businessEnvParam
      * @return \Illuminate\Http\Response
      */
-    public function show(EnvParam $envParam)
+    public function show(BusinessEnvParam $businessEnvParam)
     {
         //
     }
@@ -52,10 +52,10 @@ class EnvParamController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Entity\EnvParam  $envParam
+     * @param  \App\Entity\BusinessEnvParam  $businessEnvParam
      * @return \Illuminate\Http\Response
      */
-    public function edit(EnvParam $envParam)
+    public function edit(BusinessEnvParam $businessEnvParam)
     {
         //
     }
@@ -64,10 +64,10 @@ class EnvParamController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Entity\EnvParam  $envParam
+     * @param  \App\Entity\BusinessEnvParam  $businessEnvParam
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, EnvParam $envParam)
+    public function update(Request $request, BusinessEnvParam $businessEnvParam)
     {
         //
     }
@@ -75,10 +75,10 @@ class EnvParamController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Entity\EnvParam  $envParam
+     * @param  \App\Entity\BusinessEnvParam  $businessEnvParam
      * @return \Illuminate\Http\Response
      */
-    public function destroy(EnvParam $envParam)
+    public function destroy(BusinessEnvParam $businessEnvParam)
     {
         //
     }

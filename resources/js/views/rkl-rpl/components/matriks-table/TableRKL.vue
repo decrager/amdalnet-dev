@@ -24,6 +24,7 @@
         style="font-size: 0.8rem"
         :auto-upload="false"
         :on-change="handleUploadChange"
+        action=""
       >
         Unggah Peta
       </el-upload>

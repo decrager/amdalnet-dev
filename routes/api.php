@@ -239,3 +239,5 @@ Route::get('download-map/{id}', [ProjectMapAttachmentController::class, 'downloa
 Route::apiResource('manage-approach', 'ManageApproachController');
 Route::post('upload-ka-doc', [ExportDocument::class, 'saveKADoc']);
 Route::get('pie-entries', [ImpactIdentificationController::class, 'pieEntries']);
+Route::get('get-document-ka/{id}', [ExportDocument::class, 'getDocKA']);
+Route::get('form-ka-pdf/{id}', [ExportDocument::class, 'ExportKAPdf']);
