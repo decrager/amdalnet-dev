@@ -145,11 +145,7 @@ class AndalComposingController extends Controller
                     'is_checked' => $comment->is_checked,
                     'description' => $comment->description,
                     'column_type' => $comment->column_type,
-                    'replies' => [
-                        'id' => null,
-                        'created_at' => null,
-                        'description' => null
-                ]
+                    'replies' => []
             ];
         }
 
@@ -343,26 +339,7 @@ class AndalComposingController extends Controller
                 // $ronaAwal = '';
                 // $component = '';
 
-                $komen = Comment::where([['id_impact_identification', $imp->id], ['document_type', 'andal'],['reply_to', null]])
-                        ->orderBY('id', 'DESC')->get();
-            
-                $comments = [];
-                foreach($komen as $c) {
-                    $comments[] = [
-                        'id' => $c->id,
-                        'id_impact_identification' => $c->id_impact_identification,
-                        'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                        'user' => $c->user->name,
-                        'is_checked' => $c->is_checked,
-                        'description' => $c->description,
-                        'column_type' => $c->column_type,
-                        'replies' => [
-                            'id' => $c->reply ? $c->reply->id : null,
-                            'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
-                            'description' => $c->reply ? $c->reply->description : null
-                        ]
-                    ];
-                }
+                $comments = $this->getComments($imp->id);
 
                 $results[] = [
                     'id' => $imp->id,
@@ -428,26 +405,7 @@ class AndalComposingController extends Controller
 
                 $changeType = $imp->id_change_type ? $imp->changeType->name : '';
 
-                $komen = Comment::where([['id_impact_identification', $imp->id], ['document_type', 'andal'],['reply_to', null]])
-                        ->orderBY('id', 'DESC')->get();
-            
-                $comments = [];
-                foreach($komen as $c) {
-                    $comments[] = [
-                        'id' => $c->id,
-                        'id_impact_identification' => $c->id_impact_identification,
-                        'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                        'user' => $c->user->name,
-                        'is_checked' => $c->is_checked,
-                        'description' => $c->description,
-                        'column_type' => $c->column_type,
-                        'replies' => [
-                            'id' => $c->reply ? $c->reply->id : null,
-                            'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
-                            'description' => $c->reply ? $c->reply->description : null
-                        ]
-                    ];
-                }
+                $comments = $this->getComments($imp->id);
 
                 $important_trait = [];
 
@@ -679,5 +637,38 @@ class AndalComposingController extends Controller
         $PDFWriter->save(storage_path('app/public/formulir/' . $idProject . '-form-ka-andal.pdf'));
 
         return response()->download(storage_path('app/public/formulir/' . $idProject . '-form-ka-andal.pdf'))->deleteFileAfterSend(false);
-    } 
+    }
+    
+    private function getComments($id) {
+        $komen = Comment::where([['id_impact_identification', $id], ['document_type', 'andal'],['reply_to', null]])
+                        ->orderBY('id', 'DESC')->get();
+            
+        $comments = [];
+        foreach($komen as $c) {
+            $replies = [];
+
+            if($c->reply) {
+                foreach($c->reply as $r) {
+                    $replies[] = [
+                        'id' => $r->id,
+                        'created_at' => $r->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                        'description' => $r->description
+                    ];
+                }
+            }
+
+            $comments[] = [
+                'id' => $c->id,
+                'id_impact_identification' => $c->id_impact_identification,
+                'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                'user' => $c->user->name,
+                'is_checked' => $c->is_checked,
+                'description' => $c->description,
+                'column_type' => $c->column_type,
+                'replies' => $replies
+            ];
+        }
+
+        return $comments;
+    }
 }

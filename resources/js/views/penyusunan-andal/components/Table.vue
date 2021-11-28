@@ -116,41 +116,26 @@
                   </div>
                   <div class="comment-body">{{ com.description }}</div>
                   <div
-                    v-if="
-                      list[scope.$index - 1].comments[index].replies.id !== null
-                    "
-                    class="comment-header reply"
+                    v-for="rep in list[scope.$index - 1].comments[index]
+                      .replies"
+                    :key="rep.id"
                   >
-                    <div>
-                      <p>Catatan Balasan Penyusun</p>
-                      <p>
-                        {{
-                          list[scope.$index - 1].comments[index].replies
-                            .created_at
-                        }}
-                      </p>
+                    <div class="comment-header reply">
+                      <div>
+                        <p>Catatan Balasan Penyusun</p>
+                        <p>
+                          {{ rep.created_at }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="comment-body reply">
+                      {{ rep.description }}
                     </div>
                   </div>
-                  <div
-                    v-if="
-                      list[scope.$index - 1].comments[index].replies.id !== null
-                    "
-                    class="comment-body reply"
-                  >
-                    {{
-                      list[scope.$index - 1].comments[index].replies.description
-                    }}
-                  </div>
-                  <div
-                    v-if="
-                      list[scope.$index - 1].comments[index].replies.id === null
-                    "
-                    class="comment-reply"
-                  >
+                  <div class="comment-reply">
                     <el-input
                       v-model="
-                        list[scope.$index - 1].comments[index].replies
-                          .description
+                        list[scope.$index - 1].comments[index].reply_desc
                       "
                       type="textarea"
                       :rows="2"
@@ -163,8 +148,7 @@
                         @click="
                           handleSubmitReply(
                             list[scope.$index - 1].comments[index].id,
-                            list[scope.$index - 1].comments[index].replies
-                              .description
+                            list[scope.$index - 1].comments[index].reply_desc
                           )
                         "
                       >
@@ -487,7 +471,10 @@ export default {
         (com) => com.id === id
       );
 
-      this.list[indexImpact].comments[indexComment].replies = newCommentReply;
+      this.list[indexImpact].comments[indexComment].replies.push(
+        newCommentReply
+      );
+      this.list[indexImpact].comments[indexComment].reply_desc = null;
     },
     async handleCheckedComment(id) {
       await andalComposingResource.store({
