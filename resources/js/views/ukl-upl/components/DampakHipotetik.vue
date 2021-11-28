@@ -52,8 +52,8 @@
                   />
                 </el-select>
               </td>
-              <td>{{ impact.rona_awal_name }}</td>
               <td>{{ impact.component_name }}</td>
+              <td>{{ impact.rona_awal_name }}</td>
               <td>{{ impact.initial_study_plan }}</td>
               <td>
                 <template v-for="(pie, index) in pieParams">
