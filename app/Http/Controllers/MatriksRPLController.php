@@ -138,11 +138,7 @@ class MatriksRPLController extends Controller
                     'is_checked' => $comment->is_checked,
                     'description' => $comment->description,
                     'column_type' => $comment->column_type,
-                    'replies' => [
-                        'id' => null,
-                        'created_at' => null,
-                        'description' => null
-                ]
+                    'replies' => []
             ];
         }
 
@@ -280,9 +276,9 @@ class MatriksRPLController extends Controller
         $results = $this->getLoopDataB($stages, $id_project, $results, $type);
  
         return $results;
-     }
+    }
 
-     private function getLoopData($stages, $data, $results, $type) {
+    private function getLoopData($stages, $data, $results, $type) {
         $alphabet_list = 'A';
 
         foreach($stages as $s) {
@@ -309,26 +305,7 @@ class MatriksRPLController extends Controller
 
                 $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
-                $komen = Comment::where([['id_impact_identification', $pA->id], ['document_type', 'rpl'],['reply_to', null]])
-                        ->orderBY('id', 'DESC')->get();
-            
-                $comments = [];
-                foreach($komen as $c) {
-                    $comments[] = [
-                        'id' => $c->id,
-                        'id_impact_identification' => $c->id_impact_identification,
-                        'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                        'user' => $c->user->name,
-                        'is_checked' => $c->is_checked,
-                        'description' => $c->description,
-                        'column_type' => $c->column_type,
-                        'replies' => [
-                            'id' => $c->reply ? $c->reply->id : null,
-                            'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
-                            'description' => $c->reply ? $c->reply->description : null
-                        ]
-                    ];
-                }
+                $comments = $this->getComments($pA->id);
 
                 $results[] = [
                     'no' => $total + 1,
@@ -361,9 +338,9 @@ class MatriksRPLController extends Controller
         }
 
         return $results;
-     }
+    }
 
-     private function getLoopDataB($stages, $id_project, $results, $type) {
+    private function getLoopDataB($stages, $id_project, $results, $type) {
          //  =========== POIN B.1 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
         $poinB1 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
@@ -412,26 +389,7 @@ class MatriksRPLController extends Controller
 
                 $changeType = $merge->id_change_type ? $merge->changeType->name : '';
 
-                $komen = Comment::where([['id_impact_identification', $merge->id], ['document_type', 'rpl'],['reply_to', null]])
-                        ->orderBY('id', 'DESC')->get();
-            
-                $comments = [];
-                foreach($komen as $c) {
-                    $comments[] = [
-                        'id' => $c->id,
-                        'id_impact_identification' => $c->id_impact_identification,
-                        'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                        'user' => $c->user->name,
-                        'is_checked' => $c->is_checked,
-                        'description' => $c->description,
-                        'column_type' => $c->column_type,
-                        'replies' => [
-                            'id' => $c->reply ? $c->reply->id : null,
-                            'created_at' => $c->reply ? $c->reply->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss') : null,
-                            'description' => $c->reply ? $c->reply->description : null
-                        ]
-                    ];
-                }
+                $comments = $this->getComments($merge->id);
 
                 $results[] = [
                     'no' => $total + 1,
@@ -464,9 +422,9 @@ class MatriksRPLController extends Controller
         }
 
         return $results;
-     }
+    }
 
-     private function getPoinA($stages, $id_project) {
+    private function getPoinA($stages, $id_project) {
          $results = [];
 
          $poinA = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
@@ -521,9 +479,9 @@ class MatriksRPLController extends Controller
          }
  
          return $results;
-     }
+    }
 
-     private function getPoinB($stages, $id_project) {
+    private function getPoinB($stages, $id_project) {
         $results = [];
 
          //  =========== POIN B.1 ============= //
@@ -593,9 +551,9 @@ class MatriksRPLController extends Controller
         }
 
         return $results;
-     }
+    }
 
-     private function getComponentRonaAwal($imp, $id_project_stage) {
+    private function getComponentRonaAwal($imp, $id_project_stage) {
         $component = null;
         $ronaAwal = null;
 
@@ -613,5 +571,38 @@ class MatriksRPLController extends Controller
             'component' => $component,
             'ronaAwal' => $ronaAwal
         ];
+    }
+
+    private function getComments($id) {
+        $komen = Comment::where([['id_impact_identification', $id], ['document_type', 'rpl'],['reply_to', null]])
+                        ->orderBY('id', 'DESC')->get();
+            
+        $comments = [];
+        foreach($komen as $c) {
+            $replies = [];
+
+            if($c->reply) {
+                foreach($c->reply as $r) {
+                    $replies[] = [
+                        'id' => $r->id,
+                        'created_at' => $r->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                        'description' => $r->description
+                    ];
+                }
+            }
+
+            $comments[] = [
+                'id' => $c->id,
+                'id_impact_identification' => $c->id_impact_identification,
+                'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
+                'user' => $c->user->name,
+                'is_checked' => $c->is_checked,
+                'description' => $c->description,
+                'column_type' => $c->column_type,
+                'replies' => $replies
+            ];
+        }
+
+        return $comments;
     }
 }
