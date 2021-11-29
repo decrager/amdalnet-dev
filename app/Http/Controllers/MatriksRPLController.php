@@ -77,7 +77,7 @@ class MatriksRPLController extends Controller
                 return array_search($model->getKey(),$ids);
             });
             
-            $project = Project::where('id', $request->idProject)->whereHas('impactIdentifications', function($query) {
+            $project = Project::where('id', $request->idProject)->whereHas('impactIdentificationsClone', function($query) {
                 $query->whereHas('envMonitorPlan');
             })->first();
 
