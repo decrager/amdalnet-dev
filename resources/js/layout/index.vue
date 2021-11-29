@@ -5,7 +5,7 @@
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
-        <!-- <tags-view v-if="needTagsView" /> -->
+        <tags-view v-if="needTagsView" hidden />
       </div>
       <app-main />
       <!-- right-panel v-if="showSettings">
@@ -17,6 +17,7 @@
 
 <script>
 // import RightPanel from '@/components/RightPanel';
+import TagsView from '@/layout/components/TagsView';
 import { Navbar, Sidebar, AppMain } from './components'; //, Settings
 import ResizeMixin from './mixin/resize-handler.js';
 import { mapState } from 'vuex';
@@ -29,7 +30,7 @@ export default {
     // RightPanel,
     // Settings,
     Sidebar,
-    // TagsView,
+    TagsView,
   },
   mixins: [ResizeMixin],
   computed: {

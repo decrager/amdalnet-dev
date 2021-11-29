@@ -22,7 +22,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang">
+                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang" prop="project_type">
                   <input ref="fileKtr" type="file" class="el-input__inner" @change="handleFileKtrUpload()">
                 </el-form-item>
               </el-col>
@@ -187,7 +187,9 @@
               </el-col>
             </el-row>
             <el-row>
-              <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+              <keep-alive>
+                <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+              </keep-alive>
               <el-button
                 type="primary"
                 @click="handleAddSubProjectTable"
@@ -625,6 +627,13 @@ export default {
       callback();
     };
 
+    // var validateFile = (rule, value, callback) => {
+    //   if (value.size > 1024 * 1024) {
+    //     callback(new Error('File Maximum 1 MB'));
+    //   }
+    //   callback();
+    // };
+
     return {
       refresh: 0,
       preeAgreementLabel: '',
@@ -787,36 +796,6 @@ export default {
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
         ],
       },
-      tableData: [
-        {
-          no: 'A',
-          kegiatan: 'Kegiatan Utama',
-          jenisKegiatan: '',
-          skala: '',
-          hasil: '',
-        },
-        {
-          no: '1',
-          kegiatan: 'Pabrik Pupuk',
-          jenisKegiatan: 'Industri ',
-          skala: '111',
-          hasil: 'aaaa',
-        },
-        {
-          no: 'B',
-          kegiatan: 'Kegiatan Pendukung',
-          jenisKegiatan: '',
-          skala: '',
-          hasil: '',
-        },
-        {
-          no: '2',
-          kegiatan: 'Pabrik Pupuk',
-          jenisKegiatan: 'Industri ',
-          skala: '111',
-          hasil: 'aaaa',
-        },
-      ],
     };
   },
   computed: {
@@ -849,6 +828,7 @@ export default {
     },
   },
   async created() {
+    console.log('created');
     // for step
     this.$store.dispatch('getStep', 0);
 
@@ -929,12 +909,12 @@ export default {
       });
     },
     calculateChoosenProject(){
-      console.log('project tanpa filter', this.currentProject);
+      // console.log('project tanpa filter', this.currentProject);
       const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
       const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
       const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
 
-      console.log('listAmdal', listMainProjectAmdal);
+      // console.log('listAmdal', listMainProjectAmdal);
       let choosenProject = '';
 
       if (listMainProjectAmdal.length !== 0){
@@ -945,7 +925,7 @@ export default {
         choosenProject = listMainProjectSppl[0];
       }
 
-      console.log('choosenProject', choosenProject);
+      // console.log('choosenProject', choosenProject);
 
       // add choosen project to current project
       this.currentProject.kbli = choosenProject.kbli;
@@ -1109,7 +1089,7 @@ export default {
     },
     async changeProvince(row) {
       // change all district by province
-      console.log(row);
+      // console.log(row);
       delete row.district;
       await this.getDistricts(row.prov);
       row.districts = this.$store.getters.cityOptions;
@@ -1194,7 +1174,9 @@ export default {
       this.listSupportTable.push({});
     },
     handleAddSubProjectTable() {
-      this.listSubProject.push({});
+      this.listSubProject.push({
+        isKbli: true,
+      });
     },
     handleAddAddressTable() {
       this.currentProject.address.push({});

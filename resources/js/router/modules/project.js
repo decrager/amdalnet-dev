@@ -36,7 +36,7 @@ const projectRoutes = {
       component: () => import('@/views/project/Create'),
       name: 'createProject',
       hidden: true,
-      meta: { title: 'addProject', icon: 'documentation', noCache: true },
+      meta: { title: 'addProject', icon: 'documentation' },
     },
     {
       path: 'publish',
@@ -46,7 +46,6 @@ const projectRoutes = {
       meta: {
         title: 'publishProject',
         icon: 'documentation',
-        noCache: true,
         breadcrumb: false,
       },
       props: true,

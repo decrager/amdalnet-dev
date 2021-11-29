@@ -286,6 +286,11 @@ export default {
     this.setAddressDataTables();
     this.fullLoading = false;
     this.loadMap();
+
+    document.addEventListener('backbutton', this.handleCancel, false);
+  },
+  beforeDestroy() {
+    document.removeEventListener('backbutton', this.handleCancel);
   },
   methods: {
     setAddressDataTables(){
