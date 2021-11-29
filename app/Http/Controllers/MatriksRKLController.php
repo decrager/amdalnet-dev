@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Comment;
 use App\Entity\EnvManagePlan;
 use App\Entity\ImpactIdentification;
+use App\Entity\ImpactIdentificationClone;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\RklRplComment;
@@ -328,7 +329,7 @@ class MatriksRKLController extends Controller
         $results = [];
 
         // ============== POIN A ============== //
-        $poinA = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
             $q->whereHas('detail', function($query) {
                 $query->where('important_trait', '+P');
@@ -417,17 +418,17 @@ class MatriksRKLController extends Controller
   private function getLoopDataB($stages, $id_project, $results, $type) {
     //  =========== POIN B.1 ============= //
     // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-    $poinB1 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+    $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where([['id_project', $id_project],['is_managed', true]])->get();
 
     //  =========== POIN B.2 ============= //
     // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-    $poinB2 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+    $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null]])->get();
 
     // ============ POIN B.3 ============= //
     // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
-    $poinB3 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+    $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
     ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
         $q->whereDoesntHave('detail', function($query) {
             $query->where('important_trait', '+P');
@@ -498,7 +499,7 @@ class MatriksRKLController extends Controller
   private function getPoinA($stages, $id_project) {
     $results = []; 
 
-    $poinA = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+    $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
     ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
         $q->whereHas('detail', function($query) {
             $query->where('important_trait', '+P');
@@ -557,17 +558,17 @@ class MatriksRKLController extends Controller
 
        //  =========== POIN B.1 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-        $poinB1 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where([['id_project', $id_project],['is_managed', true]])->get();
 
         //  =========== POIN B.2 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-        $poinB2 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
             ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null]])->get();
 
         // ============ POIN B.3 ============= //
         // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
-        $poinB3 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
             $q->whereDoesntHave('detail', function($query) {
                 $query->where('important_trait', '+P');
@@ -628,7 +629,7 @@ class MatriksRKLController extends Controller
     private function getPoinARpl($stages, $id_project) {
         $results = [];
 
-        $poinA = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
             $q->whereHas('detail', function($query) {
                 $query->where('important_trait', '+P');
@@ -687,17 +688,17 @@ class MatriksRKLController extends Controller
 
         //  =========== POIN B.1 ============= //
        // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-       $poinB1 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+       $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
        ->where([['id_project', $id_project],['is_managed', true]])->get();
 
        //  =========== POIN B.2 ============= //
        // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-       $poinB2 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+       $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
            ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null]])->get();
 
        // ============ POIN B.3 ============= //
        // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
-       $poinB3 = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+       $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
        ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
            $q->whereDoesntHave('detail', function($query) {
                $query->where('important_trait', '+P');

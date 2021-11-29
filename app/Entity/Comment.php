@@ -26,6 +26,6 @@ class Comment extends Model
 
     public function impactIdentification()
     {
-        return $this->belongsTo(ImpactIdentification::class, 'id_impact_identification', 'id');
+        return $this->belongsTo(ImpactIdentificationClone ::class, 'id_impact_identification', 'id');
     }
 }

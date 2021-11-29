@@ -56,6 +56,11 @@ class Project extends Model
     {
         return $this->hasMany(ImpactIdentification::class, 'id_project', 'id');
     }
+    
+    public function impactIdentificationsClone()
+    {
+        return $this->hasMany(ImpactIdentificationClone::class, 'id_project', 'id');
+    }
 
     public function address()
     {

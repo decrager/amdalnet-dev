@@ -8,6 +8,7 @@ use App\Entity\EnvImpactAnalysis;
 use App\Entity\FormulatorTeam;
 use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
+use App\Entity\ImpactIdentificationClone;
 use App\Entity\ImportantTrait;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
@@ -81,7 +82,7 @@ class AndalComposingController extends Controller
                 return array_search($model->getKey(),$ids);
             });
             
-            $project = Project::where('id', $request->idProject)->whereHas('impactIdentifications', function($query) {
+            $project = Project::where('id', $request->idProject)->whereHas('impactIdentificationsClone', function($query) {
                 $query->whereHas('envImpactAnalysis');
             })->first();
 
@@ -314,8 +315,7 @@ class AndalComposingController extends Controller
     private function getImpactNotifications($id_project, $stages) {
         $alphabet_list = 'A';
 
-        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project],['is_hypothetical_significant', true]])
-        ->whereHas('subProjectRonaAwal')->whereHas('subProjectComponent')->with(['subProjectRonaAwal', 'subProjectComponent'])->get();
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project],['is_hypothetical_significant', true]])->get();
 
         $important_trait = ImportantTrait::select('id', 'description')->get();
         $traits = [];
@@ -396,8 +396,7 @@ class AndalComposingController extends Controller
     private function getEnvImpactAnalysis($id_project, $stages) {
         $alphabet_list = 'A';
 
-        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
-                                        ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->get();
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')->where([['id_project', $id_project],['is_hypothetical_significant', true]])->get();
         $results = [];
 
         foreach($stages as $s) {
@@ -536,7 +535,7 @@ class AndalComposingController extends Controller
             $results['negative'][] = ['val' => $p->negative_feedback_summary ?? '']; 
         }
 
-        $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'potential_impact_evaluation', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'potential_impact_evaluation', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
         ->where('id_project', $id_project)->get();
 
         $total_ms = 0;

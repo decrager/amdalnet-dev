@@ -44,11 +44,15 @@
   </div>
 </template>
 <script>
+import Router from '@/router';
 import Resource from '@/api/resource';
 const prjStageResource = new Resource('project-stages');
 const subProjectComponentResource = new Resource('sub-project-components');
 const subProjectRonaAwalResource = new Resource('sub-project-rona-awals');
-const impactIdtResource = new Resource('impact-identifications');
+const impactIdtResource =
+  Router.name === 'penyusunanAndal'
+    ? new Resource('andal-clone')
+    : new Resource('impact-identifications');
 
 export default {
   name: 'MatrikDampakPentingHipotetik',

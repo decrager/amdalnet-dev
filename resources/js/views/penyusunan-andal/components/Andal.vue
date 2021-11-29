@@ -72,11 +72,11 @@ const andalComposingResource = new Resource('andal-composing');
 import TableAndal from '@/views/penyusunan-andal/components/Table';
 import MatrikIdentifikasiDampak from '@/views/ukl-upl/components/MatrikIdentifikasiDampak.vue';
 import UploadPetaBatas from '@/views/ukl-upl/components/UploadPetaBatas.vue';
-import DampakHipotetik from '@/views/ukl-upl/components/DampakHipotetik.vue';
+import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
 import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
 import MatriksDampakPentingHipotetik from '@/views/ukl-upl/components/MatriksDampakPentingHipotetik.vue';
 import Pelingkupan from '@/views/ukl-upl/components/Pelingkupan.vue';
-import BaganAlir from '@/views/ukl-upl/components/BaganAlir.vue';
+import BaganAlir from '@/views/penyusunan-andal/clone/BaganAlir.vue';
 import BaganAlirDampak from '../components/BaganAlirDampak.vue';
 
 export default {

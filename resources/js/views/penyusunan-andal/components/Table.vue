@@ -415,7 +415,7 @@ export default {
     },
     async handleSubmit() {
       this.loadingSubmit = true;
-      const sendForm = this.list.filter((com) => com.type !== 'title');
+      const sendForm = this.list.filter((com) => com.type === 'subtitle');
       const time = await andalComposingResource.store({
         analysis: sendForm,
         type: this.lastTime ? 'update' : 'new',

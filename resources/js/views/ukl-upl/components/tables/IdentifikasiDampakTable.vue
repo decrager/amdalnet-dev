@@ -7,12 +7,16 @@
 </template>
 
 <script>
+import Router from '@/router';
 import Resource from '@/api/resource';
 import DampakPotensialTable from './DampakPotensialTable.vue';
 import DampakPentingHipotetikTable from './DampakPentingHipotetikTable.vue';
 import MetodeStudiTable from './MetodeStudiTable.vue';
 const projectStageResource = new Resource('project-stages');
-const impactIdtResource = new Resource('impact-identifications');
+const impactIdtResource =
+  Router.name === 'penyusunanAndal'
+    ? new Resource('andal-clone')
+    : new Resource('impact-identifications');
 
 export default {
   name: 'IdentifikasiDampakTable',
