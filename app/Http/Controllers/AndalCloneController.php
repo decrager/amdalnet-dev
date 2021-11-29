@@ -42,13 +42,13 @@ class AndalCloneController extends Controller
             'ra.name AS rona_awal_name_master',
             'pra.name AS rona_awal_name',
             'ct.name AS change_type_name')
-            ->leftJoin('sub_project_components AS pc', 'impact_identifications.id_sub_project_component', '=', 'pc.id')
-            ->leftJoin('sub_project_rona_awals AS pra', 'impact_identifications.id_sub_project_rona_awal', '=', 'pra.id')
-            ->leftJoin('change_types AS ct', 'impact_identifications.id_change_type', '=', 'ct.id')
+            ->leftJoin('sub_project_components AS pc', 'impact_identification_clones.id_sub_project_component', '=', 'pc.id')
+            ->leftJoin('sub_project_rona_awals AS pra', 'impact_identification_clones.id_sub_project_rona_awal', '=', 'pra.id')
+            ->leftJoin('change_types AS ct', 'impact_identification_clones.id_change_type', '=', 'ct.id')
             ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
             ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
-            ->where('impact_identifications.id_project', $request->id_project)
-            ->orderBy('impact_identifications.id', 'asc')
+            ->where('impact_identification_clones.id_project', $request->id_project)
+            ->orderBy('impact_identification_clones.id', 'asc')
             ->get();
             return ImpactIdentificationCloneResource::collection($list);
         }
@@ -59,6 +59,7 @@ class AndalCloneController extends Controller
 
         if ($request->id_project){
             $list = ImpactIdentificationClone::where('id_project', $request->id_project)->get();
+            return ['data' => $list];
         }
     }
 

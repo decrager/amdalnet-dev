@@ -386,6 +386,47 @@ export default {
 </script>
 
 <style scoped>
+h2 {
+  display: inline-block;
+  margin-block-start: 0em;
+}
+
+.el-collapse-item__header {
+  /* background-color: #296d36; */
+  background-color: #1e5128;
+  padding-left: 10px;
+  font-size: large;
+  font-weight: bold;
+  color: rgb(196, 196, 196);
+}
+.el-collapse-item__content {
+  padding-top: 10px;
+}
+
+table th,
+table td {
+  word-break: normal !important;
+  padding: 0.5em;
+  line-height: 1.2em;
+  border: 1px solid #eee;
+}
+table td {
+  vertical-align: top !important;
+}
+table thead {
+  background-color: #6cc26f !important;
+  color: white !important;
+}
+table td.title,
+table tr.title td,
+table.title td {
+  text-align: left;
+}
+div.div-fka {
+  padding: 0.5em;
+  margin-bottom: 0.6em;
+  background-color: #fafafa;
+}
 table td.title {
   height: 200% !important;
 }
