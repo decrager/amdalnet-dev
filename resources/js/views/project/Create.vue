@@ -43,18 +43,73 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Upload Peta (File .ZIP)">
-                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" multiple @change="handleFileTapakProyekMapUpload">
+                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload">
                   </el-form-item>
                   <div id="mapView" style="height: 400px;" />
                 </el-row>
               </el-col>
             </el-row>
             <el-row type="flex" justify="end" :gutter="4">
-              <el-col :span="12">
+              <!-- <el-col :span="12">
                 <el-col :span="12" />
-              </el-col>
-              <el-col :span="12" :xs="24">
-                <el-col :span="12">
+              </el-col> -->
+              <el-col :span="24" :xs="24">
+                <el-form-item label="Alamat" prop="address">
+                  <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+                    <el-table-column label="No." width="80px">
+                      <template slot-scope="scope">
+                        {{ scope.$index + 1 }}
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column label="Provinsi" width="200px">
+                      <template slot-scope="scope">
+                        <el-select
+                          v-model="scope.row.prov"
+                          placeholder="Pilih"
+                          style="width: 100%"
+                          @change="changeProvince(scope.row)"
+                        >
+                          <el-option
+                            v-for="item in getProvinceOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          />
+                        </el-select>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column label="City" width="300px">
+                      <template slot-scope="scope">
+                        <el-select
+                          v-model="scope.row.district"
+                          placeholder="Pilih"
+                          style="width: 100%"
+                        >
+                          <el-option
+                            v-for="item in scope.row.districts"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          />
+                        </el-select>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column label="Alamat">
+                      <template slot-scope="scope">
+                        <el-input v-model="scope.row.address" />
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-button
+                    type="primary"
+                    @click="handleAddAddressTable"
+                  >+</el-button>
+                </el-form-item>
+
+                <!-- <el-col :span="12">
                   <el-form-item label="Provinsi" prop="id_prov">
                     <el-select
                       v-model="currentProject.id_prov"
@@ -87,13 +142,14 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
+              </el-col> -->
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
               <el-col :span="12">
-                <el-form-item label="Alamat" prop="address">
+                <!-- <el-form-item label="Alamat" prop="address">
                   <el-input v-model="currentProject.address" />
-                </el-form-item>
+                </el-form-item> -->
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
@@ -354,7 +410,8 @@
                       </td>
                     </tr>
                   </table>
-                  <el-tag v-if="currentProject.b3" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag>
+                  <el-tag v-if="currentProject.b3 && !currentProject.tps" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag>
+                  <!-- <el-tag v-if="currentProject.tps" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag> -->
                 </el-card>
               </el-col>
             </el-row>
@@ -545,8 +602,12 @@ import Resource from '@/api/resource';
 import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
-import * as L from 'leaflet';
+// import * as L from 'leaflet';
 import shp from 'shpjs';
+import Map from '@arcgis/core/Map';
+import MapView from '@arcgis/core/views/MapView';
+import LayerList from '@arcgis/core/widgets/LayerList';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 
 export default {
   name: 'CreateProject',
@@ -557,11 +618,21 @@ export default {
     SubProjectTable,
   },
   data() {
+    var validateAddress = (rule, value, callback) => {
+      if (value.length < 1) {
+        callback(new Error('Mohon Masukan 1 Alamat'));
+      }
+      callback();
+    };
+
     return {
+      refresh: 0,
       preeAgreementLabel: '',
       preProject: true,
       activeName: '1',
-      currentProject: {},
+      currentProject: {
+        address: [],
+      },
       listSupportTable: [],
       listSubProject: [],
       loadingSupportTable: false,
@@ -692,7 +763,7 @@ export default {
         //   { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
         // ],
         address: [
-          { required: true, trigger: 'blur', message: 'Data Belum Diisi' },
+          { validator: validateAddress, trigger: 'blur' },
         ],
         sector: [
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
@@ -900,31 +971,65 @@ export default {
       this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
-      var selectedFiles = e.target.files;
+      this.fileMap = this.$refs.fileMap.files[0];
 
-      const map = L.map('mapView');
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
+      const map = new Map({
+        basemap: 'topo',
+      });
 
-      for (let i = 0; i < selectedFiles.length; i++){
-        this.fileMap.push(selectedFiles[i]);
-      }
-
-      for (let i = 0; i < this.fileMap.length; i++){
-        const reader = new FileReader(); // instantiate a new file reader
-        reader.onload = (event) => {
-          const base = event.target.result;
-          shp(base).then(function(data) {
-            const geo = L.geoJSON(data).addTo(map);
-            console.log(geo);
-
-            map.fitBounds(geo.getBounds());
+      const fr = new FileReader();
+      fr.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
           });
-        };
 
-        reader.readAsArrayBuffer(this.fileMap[i]);
-      }
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              outline: {
+                color: 'red',
+              },
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const geojsonLayer = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Peta Tapak Proyek',
+            renderer: renderer,
+          });
+
+          map.add(geojsonLayer);
+          mapView.on('layerview-create', (event) => {
+            mapView.goTo({
+              target: geojsonLayer.fullExtent,
+            });
+          });
+        });
+      };
+      fr.readAsArrayBuffer(this.fileMap);
+
+      const mapView = new MapView({
+        container: 'mapView',
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 6,
+      });
+      this.$parent.mapView = mapView;
+
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      mapView.ui.add(layerList, 'top-right');
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });
@@ -1002,9 +1107,13 @@ export default {
         }
       });
     },
-    async changeProvince(value) {
+    async changeProvince(row) {
       // change all district by province
-      this.getDistricts(value);
+      console.log(row);
+      delete row.district;
+      await this.getDistricts(row.prov);
+      row.districts = this.$store.getters.cityOptions;
+      this.refresh++;
     },
     changeStudyApproach(value) {
 
@@ -1052,8 +1161,8 @@ export default {
       this.getSectorsByKbli(this.currentProject.kbli);
       this.getBusinessByKbli(this.currentProject.kbli);
     },
-    async getDistricts(idProv) {
-      await this.$store.dispatch('getDistricts', { idProv });
+    async getDistricts(prov) {
+      await this.$store.dispatch('getDistricts', { provName: prov });
     },
     async getSectors() {
       await this.$store.dispatch('getSectors', { sectors: true });
@@ -1084,6 +1193,9 @@ export default {
     },
     handleAddSubProjectTable() {
       this.listSubProject.push({});
+    },
+    handleAddAddressTable() {
+      this.currentProject.address.push({});
     },
     handleKbliSelect(item) {
       this.getSectorsByKbli(item.value);

@@ -64,39 +64,26 @@
       </el-col>
       <el-col :span="12">
         <div>
-          <el-table :data="addressTableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+          <el-table :data="project.address" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
             <el-table-column
-              prop="no"
               label="No."
-            />
+            >
+              <template slot-scope="scope">
+                {{ scope.$index + 1 }}
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="province"
+              prop="prov"
               label="Provinsi"
             />
             <el-table-column
-              prop="city"
+              prop="district"
               label="City"
             />
             <el-table-column
               prop="address"
               label="address"
             />
-          <!-- <el-table-column
-            prop="kegiatan"
-            label="Kegiatan"
-          />
-          <el-table-column
-            prop="jenisKegiatan"
-            label="Jenis Kegiatan"
-          />
-          <el-table-column
-            prop="skala"
-            label="Skala Besaran"
-          /> -->
-          <!-- <el-table-column
-            prop="hasil"
-            label="Hasil"
-          /> -->
           </el-table>
         </div>
       </el-col>
@@ -171,7 +158,7 @@
             @click="handleAddFormulatorTable"
           >+</el-button>
         </el-row>
-        <el-row style="padding-bottom: 16px">
+        <!-- <el-row style="padding-bottom: 16px">
           <h2>Tambah Tenaga Ahli</h2>
           <expert-table
             :list="listExpertTeam"
@@ -181,7 +168,7 @@
             type="primary"
             @click="handleAddExpertTable"
           >+</el-button>
-        </el-row>
+        </el-row> -->
       </div>
 
     </el-row>
@@ -195,7 +182,7 @@
 <script>
 import Resource from '@/api/resource';
 import FormulatorTable from './components/formulatorTable.vue';
-import ExpertTable from './components/expertTable.vue';
+// import ExpertTable from './components/expertTable.vue';
 
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
@@ -225,7 +212,7 @@ import Workflow from '@/components/Workflow';
 
 export default {
   name: 'Publish',
-  components: { FormulatorTable, ExpertTable, Workflow },
+  components: { FormulatorTable, Workflow },
   props: {
     project: {
       type: Object,
@@ -701,12 +688,21 @@ export default {
         this.project.id_project = 1;
       }
 
-      if (this.getFormulatedTeam === 'mandiri') {
-        // await this.createTimPenyusun();
-      }
-
       // make form data because we got file
       const formData = new FormData();
+
+      // for formulator team mandiri
+      if (this.getFormulatedTeam === 'mandiri') {
+        formData.append('formulatorTeams', JSON.stringify(this.listFormulatorTeam));
+        for (var u = 0; u < this.listFormulatorTeam.length; u++){
+          formData.append('listFormulatorTeam[' + u + ']', this.listFormulatorTeam[u]);
+
+          if (this.listFormulatorTeam[u].fileDoc){
+            const formulatorFile = this.listFormulatorTeam[u].fileDoc;
+            formData.append('formulatorFiles[' + u + ']', formulatorFile);
+          }
+        }
+      }
 
       for (var i = 0; i < this.mapUpload.length; i++){
         const file = this.mapUpload[i];
@@ -717,7 +713,7 @@ export default {
 
       // eslint-disable-next-line no-undef
       _.each(this.project, (value, key) => {
-        if (key === 'listSubProject'){
+        if (key === 'listSubProject' || key === 'address'){
           formData.append(key, JSON.stringify(value));
         } else {
           formData.append(key, value);
@@ -790,8 +786,9 @@ export default {
       });
     },
     async updateList() {
-      await this.getKabKotName(this.project.id_district);
-      await this.getProvince(this.project.id_prov);
+      console.log(this.project.address[0]);
+      // await this.getKabKotName(this.project.address[0].id_district);
+      // await this.getProvince(this.project.address[0].id_prov);
       this.list = [
         {
           param: 'Nama Kegiatan',
@@ -807,7 +804,7 @@ export default {
         },
         {
           param: 'Alamat',
-          value: this.project.address,
+          value: this.project.address[0].address,
         },
         {
           param: 'Pemrakarsa',
@@ -831,7 +828,7 @@ export default {
         },
         {
           param: 'Provinsi/Kota',
-          value: this.kabkot,
+          value: this.project.address[0].district,
         },
       ];
     },
