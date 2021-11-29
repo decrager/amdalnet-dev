@@ -72,7 +72,7 @@ export default {
     };
   },
   mounted() {
-    this.getDocument();
+    // this.getDocument();
     this.getComment();
     this.getUserId();
     this.getDocContent();
@@ -111,6 +111,8 @@ export default {
             operasi_detail: this.docContents.operasi_detail,
             pasca_operasi_detail: this.docContents.pasca_operasi_detail,
           });
+
+          this.projects = window.location.origin + '/storage/formulir/form-ka-' + this.docContents.data.project_title + '.docx';
 
           const out = doc.getZip().generate({
             type: 'blob',
@@ -180,12 +182,12 @@ export default {
           this.docContents = response.data;
         });
     },
-    getDocument() {
-      axios.get('api/get-document-ka/' + this.projectId)
-        .then((result) => {
-          this.projects = window.location.origin + '/storage/formulir/' + result.data.attachment;
-        });
-    },
+    // getDocument() {
+    //   axios.get('api/get-document-ka/' + this.projectId)
+    //     .then((result) => {
+    //       this.projects = window.location.origin + '/storage/formulir/' + result.data.attachment;
+    //     });
+    // },
     exportPdf() {
       axios({
         url: `api/form-ka-pdf/${this.projectId}`,
