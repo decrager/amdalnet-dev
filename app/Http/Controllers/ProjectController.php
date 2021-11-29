@@ -8,23 +8,19 @@ use App\Entity\FormulatorTeamMember;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
 use App\Entity\ProjectFilter;
+use App\Entity\ProjectMapAttachment;
 use App\Entity\SubProject;
 use App\Entity\SubProjectParam;
 use App\Http\Resources\ProjectResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
-use App\MapProject;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Shapefile\Shapefile;
-use Shapefile\ShapefileReader;
-use VIPSoft\Unzip\Unzip;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 
 class ProjectController extends Controller
@@ -152,11 +148,6 @@ class ProjectController extends Controller
         }
 
         //create file map
-        $mapName = '';
-        if ($files = $request->file('fileMap')) {
-            $mapName = 'map/' . uniqid() . '.' . $files->extension();
-            $files->storePubliclyAs('public/', $mapName);
-        }
 
         DB::beginTransaction();
 
@@ -185,12 +176,25 @@ class ProjectController extends Controller
                 // 'id_project' => $data['id_project'],
                 'type_formulator_team' => $data['type_formulator_team'],
                 'id_lpjp' => isset($request['id_lpjp']) ? $request['id_lpjp'] : null,
-                'map' => Storage::url($mapName),
+                'map' => '',
                 'ktr' => Storage::url($ktrName),
                 'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
                 'pre_agreement_file' => Storage::url($preAgreementName),
                 'registration_no' => uniqid(),
             ]);
+
+            $mapName = '';
+            if ($files = $request->file('fileMap')) {
+                $mapName = time() . '_' . $project->id . '-' . uniqid('projectmap') . '.' . strtolower($files->getExtension());
+                $files->storePubliclyAs('public/map/', $mapName);
+                ProjectMapAttachment::create([
+                    'id_project' => $project->id,
+                    'attachment_type' => 'tapak',
+                    'file_type' => 'SHP',
+                    'original_filename' => $files,
+                    'stored_filename' => $mapName
+                ]);
+            }
 
             //if mandiri create tim mandiri
             if (isset($request['formulatorTeams'])) {
@@ -228,7 +232,7 @@ class ProjectController extends Controller
                             'email' => $formulaTeam->email,
                             'expertise' => $formulaTeam->expertise,
                             'membership_status' => 'TA',
-                            ]);
+                        ]);
 
                         $formulaTeam->id = $new->id;
                     }
