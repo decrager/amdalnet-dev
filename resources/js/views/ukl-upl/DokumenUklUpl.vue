@@ -133,8 +133,8 @@ export default {
       );
     },
     showDocs() {
-      this.showDocument = true;
       this.generateDoc();
+      this.showDocument = true;
     },
     formatDate(value) {
       if (value) {
