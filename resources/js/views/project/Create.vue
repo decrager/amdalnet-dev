@@ -18,7 +18,9 @@
                   label="Nama Rencana Usaha/Kegiatan"
                   prop="project_title"
                 >
-                  <el-input v-model="currentProject.project_title" size="medium" />
+                  <keep-alive>
+                    <el-input v-model="currentProject.project_title" size="medium" />
+                  </keep-alive>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -594,6 +596,7 @@
       <el-button type="primary" @click="handleSubmit()"> Lanjutkan </el-button>
     </div>
   </div>
+
 </template>
 
 <script>
