@@ -43,7 +43,14 @@
           <template v-for="impact in stage.impacts">
             <tr :key="'impact_'+ impact.id" class="title" animated>
               <td>
-                <el-select v-model="impact.id_change_type" placeholder="Select">
+                <el-select
+                  v-model="impact.id_change_type"
+                  placeholder="Pilih"
+                  filterable
+                  allow-create
+                  clearable
+                  @change.native="handleOptionChange"
+                >
                   <el-option
                     v-for="item in changeType"
                     :key="item.id"
@@ -52,8 +59,8 @@
                   />
                 </el-select>
               </td>
-              <td>{{ impact.rona_awal_name }}</td>
               <td>{{ impact.component_name }}</td>
+              <td>{{ impact.rona_awal_name }}</td>
               <td>{{ impact.initial_study_plan }}</td>
               <td>
                 <template v-for="(pie, index) in pieParams">
@@ -79,8 +86,8 @@
                     :disabled="item.disabled"
                   />
                 </el-select>
-                <div v-show="!impact.is_hypothetical_significant" :key="'DTPH_'+impact.id" style="margin-top:0.6em;">
-                  <el-switch v-model="impact.is_managed" active-text="Dikelola" />
+                <div v-show="!impact.is_hypothetical_significant" :key="'DTPH_'+impact.id" style="margin:1em 0;">
+                  <el-switch v-model="impact.is_managed" active-text=" Dikelola" />
                 </div>
               </td>
               <td>{{ impact.study_location }}</td>
@@ -133,6 +140,21 @@ export default {
     // this.getData();
   },
   methods: {
+    handleOptionChange(option){
+      /*
+      if (typeof option === 'string' && option.length > 0) {
+        const changeTypeResource = new Resource('change-types');
+        changeTypeResource.store({
+          id: 0,
+          name: option,
+        }).then((res) => {
+          this.changeType.push(res.data);
+          this.$emit('input', res.data.id);
+        });
+        console.log(option);
+      }*/
+      console('handleOptionChange', event);
+    },
     handleSetData(data) {
       this.data = data;
       console.log(data);
@@ -217,10 +239,14 @@ export default {
       console.log('starting getData at DampakHipotetik');
       this.isLoading = true;
 
-      const sChangeType = await changeTypeResource.list();
-      this.changeType = sChangeType.data;
-      const sPieParams = await pieParamsResource.list();
-      this.pieParams = sPieParams.data;
+      await changeTypeResource.list({})
+        .then((res) => {
+          this.changeType = res.data;
+        });
+
+      await pieParamsResource.list({}).then((res) => {
+        this.pieParams = res.data;
+      });
 
       const impIds = [];
       const prjStageList = await projectStageResource.list({});
@@ -257,7 +283,6 @@ export default {
         imp.potential_impact_evaluation = [];
 
         this.pieParams.forEach((e) => {
-          console.log('matrixing... ', e);
           imp.potential_impact_evaluation.push({
             id_impact_identification: imp.id,
             id_pie_param: e.id,
@@ -272,7 +297,6 @@ export default {
         id_impact_identification: impIds,
       });
       this.pies = pies;
-      console.log('the pies', pies);
 
       var dataList = impactList.data;
       this.data = this.createDataArray(dataList, this.projectStages);
@@ -295,7 +319,6 @@ export default {
       this.getData();
     },
     getPie(id, index){
-      console.log('getting pies', id, index);
       const pie = this.pies.find((e) => ((e.id_impact_identification === id) &&
         (e.id_pie_param === index)));
       if (pie) {
@@ -305,6 +328,7 @@ export default {
       return '';
     },
     showStage(index){
+      console.log(index);
       this.openedStage = (this.openedStage === index) ? null : index;
     },
   },
@@ -316,7 +340,7 @@ export default {
     height: 200% !important;
   }
   table td.title:hover {
-    background-color: #fafafa;
+    background-color: #acb;
     cursor: pointer;
   }
 </style>

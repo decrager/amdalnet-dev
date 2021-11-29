@@ -75,7 +75,7 @@ class ProjectMapAttachmentController extends Controller
         $map->attachment_type = $request->input('attachment_type');
         $map->file_type = $request->input('file_type');
         $map->original_filename = $file->getClientOriginalName();
-        $map->stored_filename = time().'_'.$map->id_project.'_'.uniqid('projectmap').'.'.strtolower($map->file_type);
+        $map->stored_filename = time().'_'.$map->id_project.'_'.uniqid('projectmap').'.'.strtolower($file->getExtension());
 
         if($file->move(storage_path(),$map->stored_filename)){
             $map->save();
