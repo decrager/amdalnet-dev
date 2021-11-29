@@ -12,7 +12,6 @@ import DampakPotensialTable from './DampakPotensialTable.vue';
 import DampakPentingHipotetikTable from './DampakPentingHipotetikTable.vue';
 import MetodeStudiTable from './MetodeStudiTable.vue';
 const projectStageResource = new Resource('project-stages');
-const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'IdentifikasiDampakTable',
@@ -35,6 +34,11 @@ export default {
       isDampakPentingHipotetikTable: false,
       isMetodeStudiTable: false,
     };
+  },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
   },
   mounted() {
     this.getData();
@@ -95,6 +99,7 @@ export default {
       }
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
+      const impactIdtResource = this.isAndal ? new Resource('andal-clone') : new Resource('impact-identifications');
       const impactList = await impactIdtResource.list({
         id_project: this.idProject,
         join_tables: true,

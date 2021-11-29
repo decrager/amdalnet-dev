@@ -48,7 +48,6 @@ import Resource from '@/api/resource';
 const prjStageResource = new Resource('project-stages');
 const subProjectComponentResource = new Resource('sub-project-components');
 const subProjectRonaAwalResource = new Resource('sub-project-rona-awals');
-const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'MatrikDampakPentingHipotetik',
@@ -68,6 +67,9 @@ export default {
   computed: {
     isAndal() {
       return true;
+    },
+    andalClone() {
+      return this.$route.name === 'penyusunanAndal';
     },
   },
   mounted() {
@@ -174,6 +176,7 @@ export default {
           r['id_component_type'] = r['id_component_type_master'];
         }
       });
+      const impactIdtResource = this.andalClone ? new Resource('andal-clone') : new Resource('impact-identifications');
       const iList = await impactIdtResource.list({
         id_project: this.idProject,
       });

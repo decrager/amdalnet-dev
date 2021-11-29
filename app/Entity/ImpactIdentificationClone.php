@@ -2,15 +2,18 @@
 
 namespace App\Entity;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ImpactIdentification extends Model
+class ImpactIdentificationClone extends Model
 {
-    protected $table = 'impact_identifications';
+    use HasFactory;
+
+    protected $table = 'impact_identification_clones';
+
     protected $fillable = [
+        'id_impact_identification',
         'id_project',
-        'id_project_component',
-        'id_project_rona_awal',
         'id_change_type',
         'id_unit',
         'nominal',
@@ -26,14 +29,6 @@ class ImpactIdentification extends Model
 
     public function project(){
         return $this->belongsTo(Project::class, 'id_project');
-    }
-
-    public function component(){
-        return $this->belongsTo(ProjectComponent::class, 'id_project_component');
-    }
-
-    public function ronaAwal(){
-        return $this->belongsTo(ProjectRonaAwal::class, 'id_project_rona_awal');
     }
 
     public function subProjectComponent(){
@@ -68,7 +63,7 @@ class ImpactIdentification extends Model
     }
 
     public function impactStudy() {
-        return $this->hasOne(ImpactStudy::class, 'id_impact_identification', 'id');
+        return $this->hasOne(ImpactStudyClone::class, 'id_impact_identification_clone', 'id');
     }
 
     public function comments()
@@ -81,8 +76,8 @@ class ImpactIdentification extends Model
         return $this->hasMany(PotentialImpactEvaluation::class, 'id_impact_identification', 'id');
     }
 
-    public function clone()
+    public function real()
     {
-        return $this->hasOne(ImpactIdentificationClone::class, 'id_impact_identification', 'id');
+        return $this->belongsTo(ImpactIdentification::class, 'id_impact_identification', 'id');
     }
 }
