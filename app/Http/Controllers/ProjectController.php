@@ -183,15 +183,14 @@ class ProjectController extends Controller
                 'registration_no' => uniqid(),
             ]);
 
-            $mapName = '';
             if ($files = $request->file('fileMap')) {
-                $mapName = time() . '_' . $project->id . '-' . uniqid('projectmap') . '.' . strtolower($files->getExtension());
+                $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
                 $files->storePubliclyAs('public/map/', $mapName);
                 ProjectMapAttachment::create([
                     'id_project' => $project->id,
                     'attachment_type' => 'tapak',
                     'file_type' => 'SHP',
-                    'original_filename' => $files,
+                    'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName
                 ]);
             }
