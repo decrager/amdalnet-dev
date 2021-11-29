@@ -19,6 +19,7 @@ use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AndalComposingController extends Controller
 {
@@ -128,6 +129,16 @@ class AndalComposingController extends Controller
         }
 
         if($request->type == 'impact-comment') {
+            $data = $request->all();
+
+            Validator::make($data, [
+                'description' => 'required',
+                'column_type' => 'required'
+            ],[
+                'description.required' => 'Komentar wajib diisi',
+                'column_type.required' => 'Kolom wajib dipilih'
+            ])->validate();
+
             $comment = new Comment();
             $comment->id_user = $request->id_user;
             $comment->id_impact_identification = $request->id_impact_identification;
@@ -150,6 +161,14 @@ class AndalComposingController extends Controller
         }
 
         if($request->type == 'impact-comment-reply') {
+            $data = $request->all();
+
+            Validator::make($data, [
+                'description' => 'required',
+            ],[
+                'description.required' => 'Balasan wajib diisi',
+            ])->validate();
+
             $comment = new Comment();
             $comment->id_user = $request->id_user;
             $comment->id_impact_identification = $request->id_impact_identification;
