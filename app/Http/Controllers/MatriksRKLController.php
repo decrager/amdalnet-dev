@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Comment;
+use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\RklRplComment;
+use ErrorException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -126,7 +128,7 @@ class MatriksRKLController extends Controller
                 return array_search($model->getKey(),$ids);
             });
             
-            $project = Project::where('id', $request->idProject)->whereHas('impactIdentifications', function($query) {
+            $project = Project::where('id', $request->idProject)->whereHas('impactIdentificationsClone', function($query) {
                 $query->whereHas('envManagePlan');
             })->first();
 
@@ -371,11 +373,18 @@ class MatriksRKLController extends Controller
             $ronaAwal = '';
             $component = '';
 
-            $data = $this->getComponentRonaAwal($pA, $s->id);
+            // check stages
+            $id_stages = null;
 
-            if($data['component'] && $data['ronaAwal']) {
-                $ronaAwal = $data['ronaAwal'];   
-                $component = $data['component'];   
+            if($pA->subProjectComponent->id_project_stage) {
+                $id_stages = $pA->subProjectComponent->id_project_stage;
+            } else {
+                $id_stages = $pA->subProjectComponent->component->id_project_stage;
+            }
+
+            if($id_stages == $s->id) {
+                $ronaAwal = $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
+                $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
             } else {
                 continue;
             }
@@ -383,7 +392,6 @@ class MatriksRKLController extends Controller
             $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
            $comments = $this->getComments($pA->id);
-
 
             $results[] = [
                 'no' => $total + 1,
@@ -453,11 +461,18 @@ class MatriksRKLController extends Controller
             $ronaAwal = '';
             $component = '';
 
-            $data = $this->getComponentRonaAwal($merge, $s->id);
+            // check stages
+            $id_stages = null;
 
-            if($data['component'] && $data['ronaAwal']) {
-                $ronaAwal = $data['ronaAwal'];   
-                $component = $data['component'];   
+            if($merge->subProjectComponent->id_project_stage) {
+                $id_stages = $merge->subProjectComponent->id_project_stage;
+            } else {
+                $id_stages = $merge->subProjectComponent->component->id_project_stage;
+            }
+
+            if($id_stages == $s->id) {
+                $ronaAwal = $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
+                $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
             } else {
                 continue;
             }
@@ -760,14 +775,24 @@ class MatriksRKLController extends Controller
         $component = null;
         $ronaAwal = null;
 
-        if($imp->subProjectComponent->id_project_stage == $id_project_stage) {
-            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-        } else if($imp->subProjectComponent->id_project_stage != null) {
-            if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
-                $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+        try {
+            if($imp->subProjectComponent) {
+                if($imp->subProjectComponent->id_project_stage == $id_project_stage) {
+                    if($imp->subProjectRonaAwal) {
+                        $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                        $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                    }
+                } else if($imp->subProjectComponent->id_project_stage != null) {
+                    if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
+                        if($imp->subProjectRonaAwal) {
+                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        }
+                    }
+                }
             }
+        } catch(ErrorException $err) {
+            
         }
 
         return [

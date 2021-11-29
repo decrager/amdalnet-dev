@@ -345,11 +345,18 @@ class AndalComposingController extends Controller
                 $ronaAwal = '';
                 $component = '';
 
-                $data = $this->getComponentRonaAwal($imp, $s->id);
+                // check stages
+                $id_stages = null;
 
-                if($data['component'] && $data['ronaAwal']) {
-                    $ronaAwal = $data['ronaAwal'];   
-                    $component = $data['component'];   
+                if($imp->subProjectComponent->id_project_stage) {
+                    $id_stages = $imp->subProjectComponent->id_project_stage;
+                } else {
+                    $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                }
+
+                if($id_stages == $s->id) {
+                    $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                    $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
                 } else {
                     continue;
                 }
@@ -412,11 +419,18 @@ class AndalComposingController extends Controller
                 $ronaAwal = '';
                 $component = '';
 
-                $data = $this->getComponentRonaAwal($imp, $s->id);
+                // check stages
+                $id_stages = null;
 
-                if($data['component'] && $data['ronaAwal']) {
-                    $ronaAwal = $data['ronaAwal'];   
-                    $component = $data['component'];   
+                if($imp->subProjectComponent->id_project_stage) {
+                    $id_stages = $imp->subProjectComponent->id_project_stage;
+                } else {
+                    $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                }
+
+                if($id_stages == $s->id) {
+                    $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                    $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
                 } else {
                     continue;
                 }
