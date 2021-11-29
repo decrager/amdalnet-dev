@@ -315,17 +315,17 @@
                   <el-checkbox v-model="currentProject.wastewater" label="Air Limbah" @change="currentProject.nothing = false" />
                   <el-checkbox v-model="currentProject.emission" label="Emisi Gas Buang" @change="currentProject.nothing = false" />
                   <el-checkbox v-model="currentProject.b3" label="Limbah B3" @change="currentProject.nothing = false" />
-                  <el-checkbox v-model="currentProject.traffic" label="Gangguan Lalu Lintas" @change="currentProject.nothing = false" />
-                  <el-checkbox v-model="currentProject.nothing" label="Tidak Ada" @change="handleNothingTick" />
+                  <el-checkbox v-model="currentProject.traffics" label="Gangguan Lalu Lintas" @change="currentProject.nothing = false" />
+                  <!-- <el-checkbox v-model="currentProject.nothing" label="Tidak Ada" @change="handleNothingTick" /> -->
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 10px">
-              <el-col v-if="currentProject.wastewater" :span="12">
+              <el-col v-if="currentProject.wastewater" :span="18">
                 <el-card>
                   <table style="width: 100%; text-align: left;">
                     <tr>
-                      <th>Jenis Kegiatan</th>
+                      <th style="width: 350px">Jenis Kegiatan</th>
                       <th>Masuk Dalam Pencemaran Tinggi ?</th>
                     </tr>
                     <tr>
@@ -349,11 +349,11 @@
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 10px">
-              <el-col v-if="currentProject.emission" :span="12">
+              <el-col v-if="currentProject.emission" :span="18">
                 <el-card>
                   <table style="width: 100%; text-align: left;">
                     <tr>
-                      <th>Jenis Kegiatan</th>
+                      <th style="width: 350px">Jenis Kegiatan</th>
                       <th>Masuk Dalam Emisi Tinggi ?</th>
                     </tr>
                     <tr>
@@ -377,7 +377,7 @@
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 10px">
-              <el-col v-if="currentProject.b3" :span="12">
+              <el-col v-if="currentProject.b3" :span="18">
                 <el-card>
                   <table style="width: 100%; text-align: left;">
                     <tr>
@@ -412,13 +412,13 @@
                       </td>
                     </tr>
                   </table>
-                  <el-tag v-if="currentProject.b3 && !currentProject.tps" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag>
-                  <!-- <el-tag v-if="currentProject.tps" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Limbah B3</el-tag> -->
+                  <el-tag v-if="currentProject.collect_b3 || currentProject.process_b3 || currentProject.utilization_b3 || currentProject.hoard_b3 || currentProject.dumping_b3" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Limbah B3</el-tag>
+                  <el-tag v-if="currentProject.tps" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Rincian Teknis </b> Limbah B3</el-tag>
                 </el-card>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 10px">
-              <el-col v-if="currentProject.traffic" :span="12">
+              <el-col v-if="currentProject.traffics" :span="18">
                 <div>
                   <el-card>
                     <table style="width: 100%; text-align: left;">
@@ -427,19 +427,17 @@
                       </tr>
                       <tr>
                         <td>
-                          <div>
-                            <el-checkbox v-model="currentProject.low_traffic" label="Rendah" border />
-                          </div>
-                          <div>
-                            <el-checkbox v-model="currentProject.mid_traffic" style="margin-top: 5px" label="Sedang" border />
-                          </div>
-                          <div>
-                            <el-checkbox v-model="currentProject.high_traffic" style="margin-top: 5px" label="Tinggi" border />
-                          </div>
+                          <el-radio-group v-model="currentProject.traffic">
+                            <el-radio label="low">Rendah</el-radio>
+                            <el-radio label="middle">Sedang</el-radio>
+                            <el-radio label="high">Tinggi</el-radio>
+                          </el-radio-group>
                         </td>
                       </tr>
                     </table>
-                    <el-tag v-if="currentProject.high_traffic" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Gangguan Lalu Lintas</el-tag>
+                    <el-tag v-if="currentProject.traffic === 'low'" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Standar </b> Gangguan Lalu Lintas</el-tag>
+                    <el-tag v-else-if="currentProject.traffic === 'middle'" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Rekomendasi </b> Gangguan Lalu Lintas</el-tag>
+                    <el-tag v-else-if="currentProject.traffic === 'high'" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Kajian Teknis </b> Gangguan Lalu Lintas</el-tag>
                   </el-card>
                 </div>
               </el-col>
