@@ -741,11 +741,6 @@ export default {
         }
       }
 
-      for (var i = 0; i < this.mapUpload.length; i++){
-        const file = this.mapUpload[i];
-        formData.append('fileMap[' + i + ']', file);
-      }
-
       console.log(this.project);
 
       // eslint-disable-next-line no-undef
