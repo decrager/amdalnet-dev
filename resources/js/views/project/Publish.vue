@@ -207,8 +207,8 @@ import LayerList from '@arcgis/core/widgets/LayerList';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
-import L from 'leaflet';
 import Workflow from '@/components/Workflow';
+import axios from 'axios';
 
 export default {
   name: 'Publish',
@@ -223,8 +223,8 @@ export default {
       default: false,
     },
     mapUpload: {
-      type: Array,
-      default: () => [],
+      type: File,
+      default: () => null,
     },
   },
   data() {
@@ -251,6 +251,14 @@ export default {
       fullLoading: false,
     };
   },
+  beforeRouteLeave(to, from, next) {
+    if (from.name === 'publishProject' && to.name === 'createProject') {
+      next(false);
+      this.handleCancel();
+    } else {
+      next();
+    }
+  },
   computed: {
     getFormulatedTeam(){
       return this.$store.getters.teamType;
@@ -274,18 +282,17 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    // data table for subproject
+    this.setDataTables();
+    this.setAddressDataTables();
+    this.fullLoading = false;
+    this.loadMap();
     await this.$store.dispatch('getLpjp');
     await this.$store.dispatch('getFormulators', {
       page: 1,
       limit: 1000,
       active: '',
     });
-
-    // data table for subproject
-    this.setDataTables();
-    this.setAddressDataTables();
-    this.fullLoading = false;
-    this.loadMap();
   },
   methods: {
     setAddressDataTables(){
@@ -392,10 +399,11 @@ export default {
         map.add(baseGroupLayer);
 
         const mapGeojsonArray = [];
-        const splitMap = this.project.map.split(',');
 
-        for (let i = 0; i < splitMap.length; i++) {
-          shp(window.location.origin + '/storage/map/' + splitMap[i]).then(data => {
+        const getMapData = axios.get('api/map' + this.project.id);
+
+        for (let i = 0; i < getMapData.length; i++) {
+          shp(window.location.origin + '/storage/map/' + getMapData[i]).then(data => {
             if (data.length > 1) {
               for (let i = 0; i < data.length; i++) {
                 const blob = new Blob([JSON.stringify(data[i])], {
@@ -523,27 +531,63 @@ export default {
         mapView.ui.add(legendExpand, 'bottom-left');
         mapView.ui.add(layersExpand, 'top-right');
       } else {
-        console.log(this.mapUpload);
-        const map = L.map('mapView');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
+        const map = new Map({
+          basemap: 'topo',
+        });
 
-        for (let i = 0; i < this.mapUpload.length; i++){
-          const reader = new FileReader(); // instantiate a new file reader
-          reader.onload = (event) => {
-            const geo = L.geoJSON().addTo(map);
-            const base = event.target.result;
-            shp(base).then(function(data) {
-              const feature = geo.addData(data);
-              console.log(feature);
-
-              map.fitBounds(feature.getBounds());
+        const fr = new FileReader();
+        fr.onload = (event) => {
+          const base = event.target.result;
+          shp(base).then(function(data) {
+            const blob = new Blob([JSON.stringify(data)], {
+              type: 'application/json',
             });
-          };
 
-          reader.readAsArrayBuffer(this.mapUpload[i]);
-        }
+            const renderer = {
+              type: 'simple',
+              field: '*',
+              symbol: {
+                type: 'simple-fill',
+                outline: {
+                  color: 'red',
+                },
+              },
+            };
+            const url = URL.createObjectURL(blob);
+            const geojsonLayer = new GeoJSONLayer({
+              url: url,
+              visible: true,
+              outFields: ['*'],
+              opacity: 0.75,
+              title: 'Peta Tapak Proyek',
+              renderer: renderer,
+            });
+
+            map.add(geojsonLayer);
+            mapView.on('layerview-create', (event) => {
+              mapView.goTo({
+                target: geojsonLayer.fullExtent,
+              });
+            });
+          });
+        };
+        fr.readAsArrayBuffer(this.mapUpload);
+
+        const mapView = new MapView({
+          container: 'mapView',
+          map: map,
+          center: [115.287, -1.588],
+          zoom: 6,
+        });
+        this.$parent.mapView = mapView;
+
+        const layerList = new LayerList({
+          view: mapView,
+          container: document.createElement('div'),
+          listItemCreatedFunction: this.defineActions,
+        });
+
+        mapView.ui.add(layerList, 'top-right');
       }
     },
     handleAddExpertTable(){
@@ -702,11 +746,6 @@ export default {
             formData.append('formulatorFiles[' + u + ']', formulatorFile);
           }
         }
-      }
-
-      for (var i = 0; i < this.mapUpload.length; i++){
-        const file = this.mapUpload[i];
-        formData.append('fileMap[' + i + ']', file);
       }
 
       console.log(this.project);

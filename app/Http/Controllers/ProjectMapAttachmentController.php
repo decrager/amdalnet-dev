@@ -18,9 +18,9 @@ class ProjectMapAttachmentController extends Controller
     public function index(Request $request)
     {
         $files = ProjectMapAttachment::all();
-        if($request->id_project){
-             $files = $files->where('id_project', $request->id_project);
-             return ProjectMapAttachmentResource::collection($files);
+        if ($request->id_project) {
+            $files = $files->where('id_project', $request->id_project);
+            return ProjectMapAttachmentResource::collection($files);
         }
         return ProjectMapAttachmentResource::collection($files);
         //
@@ -47,7 +47,7 @@ class ProjectMapAttachmentController extends Controller
         //
     }
 
-   /**
+    /**
      * Upload Maps.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -60,14 +60,14 @@ class ProjectMapAttachmentController extends Controller
         $file = $request->file('file');
 
         $map = ProjectMapAttachment::where('id_project', $request->input('id_project'))
-           ->where('attachment_type', $request->input('attachment_type'))
-           ->where('file_type', $request->input('file_type'))->first();
+            ->where('attachment_type', $request->input('attachment_type'))
+            ->where('file_type', $request->input('file_type'))->first();
 
-        if(!$map) {
+        if (!$map) {
             $map = new ProjectMapAttachment();
         } else {
-            if (file_exists(storage_path().DIRECTORY_SEPARATOR.$map->stored_filename)){
-                unlink(storage_path().DIRECTORY_SEPARATOR.$map->stored_filename);
+            if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
+                unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
             }
         }
 
@@ -75,15 +75,14 @@ class ProjectMapAttachmentController extends Controller
         $map->attachment_type = $request->input('attachment_type');
         $map->file_type = $request->input('file_type');
         $map->original_filename = $file->getClientOriginalName();
-        $map->stored_filename = time().'_'.$map->id_project.'_'.uniqid('projectmap').'.'.strtolower($file->getExtension());
+        $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getExtension());
 
-        if($file->move(storage_path(),$map->stored_filename)){
+        if ($file->move(storage_path(), $map->stored_filename)) {
             $map->save();
             return response("success", 200);
-        }else {
+        } else {
             return response("failed", 418);
         }
-
     }
 
     /**
@@ -96,15 +95,14 @@ class ProjectMapAttachmentController extends Controller
     {
         // application/octet-stream
 
-        $map = ProjectMapAttachment::where('id',$id)->first();
+        $map = ProjectMapAttachment::where('id', $id)->first();
         if (!$map) return response('failed', 418);
 
-        $file = storage_path().DIRECTORY_SEPARATOR.$map->stored_filename;
-        if(!file_exists($file)) return response('File tidak ditemukan', 418);
+        $file = storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename;
+        if (!file_exists($file)) return response('File tidak ditemukan', 418);
 
         $headers = ['Content-Type' =>  'application/octet-stream'];
         return  Response::download($file, $map->original_filename, $headers, 'attachment');
-
     }
 
 
@@ -114,9 +112,11 @@ class ProjectMapAttachmentController extends Controller
      * @param  \App\Entity\ProjectMapAttachment  $projectMapAttachment
      * @return \Illuminate\Http\Response
      */
-    public function show(ProjectMapAttachment $projectMapAttachment)
+    public function show($id)
     {
-        //
+        return response()->json(
+            ProjectMapAttachment::where('id_project', '=', $id)->where('file_type', '=', 'SHP')->get()
+        );
     }
 
     /**

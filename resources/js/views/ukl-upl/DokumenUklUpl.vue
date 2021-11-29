@@ -9,9 +9,8 @@
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16"><div class="grid-content bg-purple" />
-          <iframe v-show="showDocument" :src="'https://view.officeapps.live.com/op/embed.aspx?src='+projects" width="100%" height="723px" frameborder="0" />
-
-          <!-- <iframe v-show="showDocument" :src="'https://docs.google.com/gview?url=''&embedded=true'" width="100%" height="723px" frameborder="1" /> -->
+          <!-- <iframe v-show="showDocument" :src="'https://view.officeapps.live.com/op/embed.aspx?src='+projects" width="100%" height="723px" frameborder="0" /> -->
+          <iframe v-show="showDocument" :src="'https://docs.google.com/gview?url='+projects+'&embedded=true'" width="100%" height="723px" frameborder="0" />
         </el-col>
         <el-col :span="8"><div class="grid-content bg-purple" />
 
@@ -72,7 +71,7 @@ export default {
     };
   },
   mounted() {
-    this.getDocument();
+    // this.getDocument();
     this.getComment();
     this.getUserId();
     this.getDocContent();
@@ -112,6 +111,8 @@ export default {
             pasca_operasi_detail: this.docContents.pasca_operasi_detail,
           });
 
+          this.projects = window.location.origin + '/storage/formulir/form-ka-' + this.docContents.data.project_title + '.docx';
+
           const out = doc.getZip().generate({
             type: 'blob',
             mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -133,8 +134,8 @@ export default {
       );
     },
     showDocs() {
-      this.showDocument = true;
       this.generateDoc();
+      this.showDocument = true;
     },
     formatDate(value) {
       if (value) {
@@ -180,12 +181,12 @@ export default {
           this.docContents = response.data;
         });
     },
-    getDocument() {
-      axios.get('api/get-document-ka/' + this.projectId)
-        .then((result) => {
-          this.projects = window.location.origin + '/storage/formulir/' + result.data.attachment;
-        });
-    },
+    // getDocument() {
+    //   axios.get('api/get-document-ka/' + this.projectId)
+    //     .then((result) => {
+    //       this.projects = window.location.origin + '/storage/formulir/' + result.data.attachment;
+    //     });
+    // },
     exportPdf() {
       axios({
         url: `api/form-ka-pdf/${this.projectId}`,

@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChangeTypeController;
 use App\Http\Controllers\PieParamController;
-use App\Entity\ProjectMapAttachment;
 use App\Http\Controllers\ImpactIdentificationController;
 
 /*
@@ -243,3 +242,4 @@ Route::post('change-types', [ChangeTypeController::class, 'addChangeType']);
 Route::get('get-document-ka/{id}', [ExportDocument::class, 'getDocKA']);
 Route::get('form-ka-pdf/{id}', [ExportDocument::class, 'ExportKAPdf']);
 Route::apiResource('andal-clone', 'AndalCloneController');
+Route::get('map/{id}', [ProjectMapAttachmentController::class, 'show']);
