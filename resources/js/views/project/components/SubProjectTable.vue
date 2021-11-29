@@ -77,10 +77,21 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Skala Besaran" width="100px">
+      <el-table-column align="center" label="Skala Besaran">
         <template slot-scope="scope">
           <el-button type="primary" @click="handleClick(scope.row)">Input</el-button>
           <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.biz_type ? scope.row.biz_type.toString() : scope.row.biz_type" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
+        </template>
+      </el-table-column>
+
+      <el-table-column width="60px">
+        <template slot-scope="scope">
+          <el-popconfirm
+            title="Hapus Kegiatan ?"
+            @confirm="list.splice(scope.$index,1)"
+          >
+            <el-button slot="reference" type="danger" icon="el-icon-close" />
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>

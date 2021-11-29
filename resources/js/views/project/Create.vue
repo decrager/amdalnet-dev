@@ -106,6 +106,17 @@
                         <el-input v-model="scope.row.address" />
                       </template>
                     </el-table-column>
+
+                    <el-table-column width="100px">
+                      <template slot-scope="scope">
+                        <el-popconfirm
+                          title="Hapus Alamat ?"
+                          @confirm="currentProject.address.splice(scope.$index,1)"
+                        >
+                          <el-button slot="reference" type="danger" icon="el-icon-close" />
+                        </el-popconfirm>
+                      </template>
+                    </el-table-column>
                   </el-table>
                   <el-button
                     type="primary"
@@ -846,11 +857,14 @@ export default {
 
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
-      this.fileName = this.getFileName(this.currentProject.map);
-      this.fileMap = this.getFileName(this.currentProject.map);
-      this.listSupportTable = await this.getListSupporttable(
-        this.currentProject.id
-      );
+      this.listSubProject = this.currentProject.listSubProject;
+      this.fileMap = this.currentProject.fileMap;
+      this.handleFileTapakProyekMapUpload('a');
+      // this.fileName = this.getFileName(this.currentProject.map);
+      // this.fileMap = this.getFileName(this.currentProject.map);
+      // this.listSupportTable = await this.getListSupporttable(
+      //   this.currentProject.id
+      // );
       this.getDistricts(this.currentProject.id_prov);
     }
     this.getAllData();
@@ -954,7 +968,11 @@ export default {
       this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
-      this.fileMap = this.$refs.fileMap.files[0];
+      console.log('map', this.fileMap);
+      if (this.$refs.fileMap.files[0]){
+        console.log(this.$refs.fileMap.files[0]);
+        this.fileMap = this.$refs.fileMap.files[0];
+      }
 
       const map = new Map({
         basemap: 'topo',
@@ -1177,9 +1195,7 @@ export default {
       this.listSupportTable.push({});
     },
     handleAddSubProjectTable() {
-      this.listSubProject.push({
-        isKbli: true,
-      });
+      this.listSubProject.push({});
     },
     handleAddAddressTable() {
       this.currentProject.address.push({});

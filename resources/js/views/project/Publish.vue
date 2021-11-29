@@ -223,8 +223,8 @@ export default {
       default: false,
     },
     mapUpload: {
-      type: Array,
-      default: () => [],
+      type: File,
+      default: () => null,
     },
   },
   data() {
@@ -251,6 +251,14 @@ export default {
       fullLoading: false,
     };
   },
+  beforeRouteLeave(to, from, next) {
+    if (from.name === 'publishProject' && to.name === 'createProject') {
+      next(false);
+      this.handleCancel();
+    } else {
+      next();
+    }
+  },
   computed: {
     getFormulatedTeam(){
       return this.$store.getters.teamType;
@@ -274,23 +282,17 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    // data table for subproject
+    this.setDataTables();
+    this.setAddressDataTables();
+    this.fullLoading = false;
+    this.loadMap();
     await this.$store.dispatch('getLpjp');
     await this.$store.dispatch('getFormulators', {
       page: 1,
       limit: 1000,
       active: '',
     });
-
-    // data table for subproject
-    this.setDataTables();
-    this.setAddressDataTables();
-    this.fullLoading = false;
-    this.loadMap();
-
-    document.addEventListener('backbutton', this.handleCancel, false);
-  },
-  beforeDestroy() {
-    document.removeEventListener('backbutton', this.handleCancel);
   },
   methods: {
     setAddressDataTables(){
