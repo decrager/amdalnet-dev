@@ -704,8 +704,8 @@ export default {
           label: 'Bendungan',
         },
         {
-          value: 'Pengelolaan Limbah B3 Jasa',
-          label: 'Pengelolaan Limbah B3 Jasa',
+          value: 'Pengelolaan Limbah B3',
+          label: 'Pengelolaan Limbah B3',
         },
         {
           value: 'Kawasan Industri',
@@ -1137,6 +1137,8 @@ export default {
         this.preeAgreementLabel = temp + 'Persetujuan Trase';
       } else if (value === 'Bendungan'){
         this.preeAgreementLabel = temp + 'Studi Kelayakan Bendungan (FS)';
+      } else if (value === 'Pengelolaan Limbah B3'){
+        this.preeAgreementLabel = temp + 'Persetujuan Teknis';
       } else if (value === 'Kawasan Industri'){
         this.preeAgreementLabel = temp + 'Studi Kelayakan Kawasan Industri';
       } else if (value === 'Kawasan Ekonomi Khusus'){
