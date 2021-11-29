@@ -21,13 +21,29 @@ class ChangeTypeController extends Controller
     }
 
     /**
+     * Restful API for adding new ChangeType.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function addChangeType(Request $request)
+    {
+
+        $ctype = ChangeType::firstOrCreate(['name' => $request->name]);
+        if(!$ctype) return response('cannot create new ChangeType', 418);
+
+        return response()->json([ 'code' => 200,'data' => $ctype ]);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+       //
     }
 
     /**
