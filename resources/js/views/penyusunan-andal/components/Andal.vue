@@ -24,11 +24,13 @@
         <template slot="title" class="head-accordion">
           <span class="title">PETA BATAS WILAYAH STUDI & PETA LAINNYA</span>
         </template>
+        <UploadPetaBatas />
       </el-collapse-item>
       <el-collapse-item name="dampak-potensial">
         <template slot="title" class="head-accordion">
           <span class="title">DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
         </template>
+        <DampakHipotetik />
       </el-collapse-item>
       <el-collapse-item name="metode-studi">
         <template slot="title" class="head-accordion">
@@ -58,6 +60,7 @@
         <template slot="title" class="head-accordion">
           <span class="title">BAGAN ALIR DAMPAK PENTING</span>
         </template>
+        <bagan-alir-dampak />
       </el-collapse-item>
     </el-collapse>
   </div>
@@ -68,20 +71,26 @@ import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 import TableAndal from '@/views/penyusunan-andal/components/Table';
 import MatrikIdentifikasiDampak from '@/views/ukl-upl/components/MatrikIdentifikasiDampak.vue';
+import UploadPetaBatas from '@/views/ukl-upl/components/UploadPetaBatas.vue';
+import DampakHipotetik from '@/views/ukl-upl/components/DampakHipotetik.vue';
 import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
 import MatriksDampakPentingHipotetik from '@/views/ukl-upl/components/MatriksDampakPentingHipotetik.vue';
 import Pelingkupan from '@/views/ukl-upl/components/Pelingkupan.vue';
 import BaganAlir from '@/views/ukl-upl/components/BaganAlir.vue';
+import BaganAlirDampak from '../components/BaganAlirDampak.vue';
 
 export default {
   name: 'Andal',
   components: {
     TableAndal,
     MatrikIdentifikasiDampak,
+    UploadPetaBatas,
+    DampakHipotetik,
     MetodeStudi,
     MatriksDampakPentingHipotetik,
     Pelingkupan,
     BaganAlir,
+    BaganAlirDampak,
   },
   data() {
     return {
@@ -105,24 +114,6 @@ export default {
         },
       });
     },
-    handleReloadVsaList(tab) {
-      // this.accordionKey = this.accordionKey + 1;
-      // if (tab === 'pelingkupan') {
-      //   this.activeName = '1';
-      // } else if (tab === 'matriks-identifikasi-dampak') {
-      //   this.activeName = '2';
-      // } else if (tab === 'peta-batas') {
-      //   this.activeName = '3';
-      // } else if (tab === 'dampak-penting') {
-      //   this.activeName = '4';
-      // } else if (tab === 'metode-studi') {
-      //   this.activeName = '5';
-      // } else if (tab === 'matriks-dph') {
-      //   this.activeName = '6';
-      // } else if (tab === 'bagan-alir') {
-      //   this.activeName = '7';
-      // }
-    },
   },
 };
 </script>
@@ -138,5 +129,8 @@ export default {
 }
 .el-collapse-item__content {
   padding-top: 10px;
+}
+.comment-header p {
+  font-weight: normal;
 }
 </style>

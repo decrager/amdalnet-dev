@@ -93,7 +93,7 @@
                     <i class="fa fa-times" />
                   </a>
                 </span>
-                <span class="description">{{ scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+                <span class="description">{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
                 </span>
               </div>
               <span class="action pull-right">
@@ -236,7 +236,7 @@
         </el-table-column>
         <el-table-column align="left" label="No. Registrasi" width="200">
           <template slot-scope="scope">
-            <span>{{ Math.floor(Math.random() * (scope.$index + 1) * 1000000000) }}</span>
+            <span>{{ scope.row.registration_no }}</span>
           <!-- <span>{{
               scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
             }}</span> -->
@@ -254,7 +254,7 @@
         </el-table-column>
         <el-table-column align="left" label="Lokasi" width="200">
           <template slot-scope="scope">
-            <span>{{ scope.row.district }}, {{ scope.row.province }}</span>
+            <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }}, {{ scope.row.address.length > 0 ? scope.row.address[0].province : scope.row.province }}</span>
           </template>
         </el-table-column>
         <el-table-column label="Tahap" class-name="status-col" width="100">
@@ -415,6 +415,7 @@ export default {
       const { data, total } = await projectResource.list(query);
       this.filtered = data;
       this.total = total;
+      console.log(this.filtered);
       this.listLoading = false;
     },
     handleCreate() {
@@ -508,7 +509,7 @@ export default {
     },
     handleKerangkaAcuan(project) {
       this.$router.push({
-        path: `/ukl-upl/${project.id}/formulir`,
+        path: `/amdal/${project.id}/formulir`,
       });
     },
     handleUjiKa(project) {

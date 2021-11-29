@@ -141,79 +141,107 @@ class ImpactIdentificationController extends Controller
             $response = [];
             try {
                 foreach ($params['study_data'] as $study) {
-                    foreach($study['impacts'] as $impact){
-                        if ($impact['id'] < 99999999) {
-                            //not dummy
-                            $num_impacts++;
-                            $row = ImpactIdentification::find($impact['id']);
-                            if ($row != null) {
-                                $row->id_unit = $impact['id_unit'];
-                                if(is_string($impact['id_change_type'])){
-                                    $ctype = ChangeType::firstOrCreate(['name' => $impact['id_change_type']]);
-                                    $row->id_change_type = $ctype->id;
-                                } else {
-                                    $row->id_change_type = $impact['id_change_type'];
-                                }
-                                $row->nominal = $impact['nominal'];
-                                $row->potential_impact_evaluation = $impact['potential_impact_evaluation'];
-                                $row->is_hypothetical_significant = $impact['is_hypothetical_significant'];
-                                $row->is_managed = $impact['is_managed'];
-                                $row->initial_study_plan = $impact['initial_study_plan'];
-                                $row->study_location = $impact['study_location'];
-                                $row->study_length_year = $impact['study_length_year'];
-                                $row->study_length_month = $impact['study_length_month'];
-                                $row->save();
-                                // save impact_study
-                                $impact_study_saved = false;
+                    if (array_key_exists('impacts', $study)) {
+                        foreach($study['impacts'] as $impact){
+                            if ($impact['id'] < 99999999) {
+                                //not dummy
+                                $num_impacts++;
+                                $row = ImpactIdentification::find($impact['id']);
+                                if ($row != null) {
+                                    $row->id_unit = $impact['id_unit'];
+									if(is_string($impact['id_change_type'])){
+										$ctype = ChangeType::firstOrCreate(['name' => $impact['id_change_type']]);
+										$row->id_change_type = $ctype->id;
+									} else {
+										$row->id_change_type = $impact['id_change_type'];
+									}
+                                    $row->nominal = $impact['nominal'];
+                                    $row->potential_impact_evaluation = $impact['potential_impact_evaluation'];
+                                    $row->is_hypothetical_significant = $impact['is_hypothetical_significant'];
+                                    $row->is_managed = $impact['is_managed'];
+                                    $row->initial_study_plan = $impact['initial_study_plan'];
+                                    $row->study_location = $impact['study_location'];
+                                    $row->study_length_year = $impact['study_length_year'];
+                                    $row->study_length_month = $impact['study_length_month'];
+                                    $row->save();
+                                    // save impact_study
+                                    $impact_study_saved = false;
 
-                                if (isset($impact['impact_study'])) {
-                                    $study = ImpactStudy::select('impact_studies.*')
-                                        ->where('id_impact_identification', $impact['id'])
-                                        ->first();
-                                    if ($study != null) {
-                                        $study->id_impact_identification = $impact['id'];
-                                        $study->forecast_method = $impact['impact_study']['forecast_method'];
-                                        $study->required_information = $impact['impact_study']['required_information'];
-                                        $study->data_gathering_method = $impact['impact_study']['data_gathering_method'];
-                                        $study->analysis_method = $impact['impact_study']['analysis_method'];
-                                        $study->evaluation_method = $impact['impact_study']['evaluation_method'];
-                                        $study->save();
-                                        $impact_study_saved = true;
-                                    } else {
-                                        // create new
-                                        if (ImpactStudy::create($impact['impact_study'])){
+                                    if (isset($impact['impact_study'])) {
+                                        $study = ImpactStudy::select('impact_studies.*')
+                                            ->where('id_impact_identification', $impact['id'])
+                                            ->first();
+                                        if ($study != null) {
+                                            $study->id_impact_identification = $impact['id'];
+                                            $study->forecast_method = $impact['impact_study']['forecast_method'];
+                                            $study->required_information = $impact['impact_study']['required_information'];
+                                            $study->data_gathering_method = $impact['impact_study']['data_gathering_method'];
+                                            $study->analysis_method = $impact['impact_study']['analysis_method'];
+                                            $study->evaluation_method = $impact['impact_study']['evaluation_method'];
+                                            $study->save();
                                             $impact_study_saved = true;
+                                        } else {
+                                            // create new
+                                            if (ImpactStudy::create($impact['impact_study'])){
+                                                $impact_study_saved = true;
+                                            }
                                         }
                                     }
-                                }
 
-                                /** Potential Impact Evaluation */
-                                if(isset($impact['potential_impact_evaluation'])){
-                                    foreach($impact['potential_impact_evaluation'] as $pie){
-                                        $p = PotentialImpactEvaluation::where('id_impact_identification', $impact['id'])
-                                             ->where('id_pie_param', $pie['id_pie_param'])->first();
+                                    /** Potential Impact Evaluation */
+                                    if(isset($impact['potential_impact_evaluation'])){
+                                        foreach($impact['potential_impact_evaluation'] as $pie){
+                                            $p = PotentialImpactEvaluation::where('id_impact_identification', $impact['id'])
+                                                ->where('id_pie_param', $pie['id_pie_param'])->first();
 
-                                        if (!$p) {
-                                            $p = new PotentialImpactEvaluation();
-                                            $p->id_impact_identification = $impact['id'];
-                                            $p->id_pie_param = $pie['id_pie_param'];
+                                            if (!$p) {
+                                                $p = new PotentialImpactEvaluation();
+                                                $p->id_impact_identification = $impact['id'];
+                                                $p->id_pie_param = $pie['id_pie_param'];
+                                            }
+                                            $p->text = $pie['text'];
+                                            $p->save();
                                         }
-                                        $p->text = $pie['text'];
-                                        $p->save();
                                     }
-                                }
 
-                                if ($impact_study_saved){
-                                    array_push($response, new ImpactIdentificationResource($row));
+                                    if ($impact_study_saved){
+                                        array_push($response, new ImpactIdentificationResource($row));
+                                    }
                                 }
                             }
                         }
-                    }
+                    } else {
+                        if ($study['id'] < 99999999) {
+                            $num_impacts++;
+                            $row = ImpactStudy::select('impact_studies.*')
+                                ->where('id_impact_identification', $study['id'])
+                                ->first();
+                            if ($row != null) {
+                                $row->id_impact_identification = $study['id'];
+                                $row->forecast_method = $study['impact_study']['forecast_method'];
+                                $row->required_information = $study['impact_study']['required_information'];
+                                $row->data_gathering_method = $study['impact_study']['data_gathering_method'];
+                                $row->analysis_method = $study['impact_study']['analysis_method'];
+                                $row->evaluation_method = $study['impact_study']['evaluation_method'];
+                                $row->save();
+                                $impact_study_saved = true;
+                            } else {
+                                // create new
+                                if (ImpactStudy::create($study['impact_study'])){
+                                    $impact_study_saved = true;
+                                }
+                            }
 
-                }
+                            if ($impact_study_saved){
+                                array_push($response, new ImpactIdentificationResource($row));
+                            }
+                        }
+                    }
+                 }
             } catch (Exception $e) {
                 DB::rollBack();
                 return response()->json([
+                    'status' => 500,
                     'code' => 500,
                     'error' => $e->getMessage(),
                 ]);
@@ -221,12 +249,14 @@ class ImpactIdentificationController extends Controller
             if (count($response) == $num_impacts) {
                 DB::commit();
                 return response()->json([
+                    'status' => 200,
                     'code' => 200,
                     'data' => $response,
                 ]);
             } else {
                 DB::rollBack();
                 return response()->json([
+                    'status' => 500,
                     'code' => 500,
                     'error' => 'Some rows failed to update.',
                 ]);
