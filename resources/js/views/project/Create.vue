@@ -25,7 +25,31 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang" prop="project_type">
-                  <input ref="fileKtr" type="file" class="el-input__inner" @change="handleFileKtrUpload()">
+                  <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
+                  <!-- <div
+                    style="
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    height: 36px;
+                  "
+                  >
+                    <el-button
+                      icon="el-icon-document-copy"
+                      type="primary"
+                      size="mini"
+                      style="margin-left: 15px"
+                      @click="checkKtrFile"
+                    >Upload</el-button>
+                    <span>{{ fileKtrName }}</span>
+                    <input
+                      id="ktrFile"
+                      type="file"
+                      style="display: none"
+                      @change="handleFileKtrUpload"
+                    >
+                  </div> -->
+
+                  <!-- <input ref="fileKtr" type="file" class="el-input__inner" @change="handleFileKtrUpload()"> -->
                 </el-form-item>
               </el-col>
             </el-row>
@@ -45,7 +69,8 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Upload Peta (File .ZIP)">
-                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload">
+                    <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
+                    <!-- <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload"> -->
                   </el-form-item>
                   <div id="mapView" style="height: 400px;" />
                 </el-row>
@@ -308,7 +333,8 @@
                   :label="preeAgreementLabel"
                   prop="pre_agreement"
                 >
-                  <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload">
+                  <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
+                  <classic-upload :name="filePreAgreementName" :fid="'filePreAgreement'" @handleFileUpload="handleFilePreAgreementUpload" />
                   <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi ke Kementrian Investasi</el-tag>
                 </el-form-item>
               </el-col>
@@ -613,6 +639,7 @@
 <script>
 // import Tinymce from '@/components/Tinymce';
 import Workflow from '@/components/Workflow';
+import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
 // import SupportTable from './components/SupportTable.vue';
 import SubProjectTable from './components/SubProjectTable.vue';
@@ -630,6 +657,7 @@ export default {
   components: {
     // Tinymce,
     // SupportTable,
+    ClassicUpload,
     Workflow,
     SubProjectTable,
   },
@@ -663,6 +691,9 @@ export default {
       fileName: 'No File Selected.',
       fileMap: [],
       isOss: true,
+      fileKtrName: 'No File Selected',
+      fileMapName: 'No File Selected',
+      filePreAgreementName: 'No File Selected',
       studyApproachOptions: [
         {
           value: 'Terpadu',
@@ -859,6 +890,11 @@ export default {
       this.currentProject = this.$route.params.project;
       this.listSubProject = this.currentProject.listSubProject;
       this.fileMap = this.currentProject.fileMap;
+      this.fileMapName = this.fileMap.name;
+      this.fileKtr = this.currentProject.fileKtr;
+      this.fileKtrName = this.fileKtr.name;
+      this.filePreAgreement = this.currentProject.filePreAgreement;
+      this.filePreAgreementName = this.currentProject.filePreAgreement.name;
       this.handleFileTapakProyekMapUpload('a');
       // this.fileName = this.getFileName(this.currentProject.map);
       // this.fileMap = this.getFileName(this.currentProject.map);
@@ -961,18 +997,30 @@ export default {
       this.calculateChoosenProject();
       this.activeName = '3';
     },
-    handleFileKtrUpload(){
-      this.fileKtr = this.$refs.fileKtr.files[0];
+    checkMapFile() {
+      document.querySelector('#ktrFile').click();
     },
-    handleFilePreAgreementUpload(){
-      this.filePreAgreement = this.$refs.filePreAgreement.files[0];
+    handleFileKtrUpload(e){
+      this.fileKtr = e.target.files[0];
+      this.fileKtrName = e.target.files[0].name;
+      console.log(this.fileKtr);
+    },
+    handleFilePreAgreementUpload(e){
+      this.filePreAgreement = e.target.files[0];
+      this.filePreAgreementName = e.target.files[0].name;
+      // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
       console.log('map', this.fileMap);
-      if (this.$refs.fileMap.files[0]){
-        console.log(this.$refs.fileMap.files[0]);
-        this.fileMap = this.$refs.fileMap.files[0];
+      if (e !== 'a'){
+        console.log(e.target.files[0]);
+        this.fileMap = e.target.files[0];
+        this.fileMapName = e.target.files[0].name;
       }
+      // if (this.$refs.fileMap.files[0]){
+      //   console.log(this.$refs.fileMap.files[0]);
+      //   this.fileMap = this.$refs.fileMap.files[0];
+      // }
 
       const map = new Map({
         basemap: 'topo',
@@ -1059,8 +1107,8 @@ export default {
         );
       };
     },
-    checkMapFile() {
-      document.querySelector('#mapFile').click();
+    checkKtrFile() {
+      document.querySelector('#ktrFile').click();
     },
     checkMapFileSure(e) {
       this.fileName = e.target.files[0].name;

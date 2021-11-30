@@ -46,6 +46,7 @@ const projectRoutes = {
       meta: {
         title: 'publishProject',
         icon: 'documentation',
+        noCache: true,
         breadcrumb: false,
       },
       props: true,
