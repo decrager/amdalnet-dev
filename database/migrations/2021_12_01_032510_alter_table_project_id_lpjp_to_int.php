@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterTableProjects extends Migration
+class AlterTableProjectIdLpjpToInt extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,8 @@ class AlterTableProjects extends Migration
     public function up()
     {
         // Schema::table('projects', function (Blueprint $table) {
-        //     $table->bigInteger('id_formulator_team')->nullable();
+        //     $table->bigInteger('id_formulator_team')->nullable()->change();
+        //     $table->bigInteger('id_lpjp')->nullable()->change();
         // });
     }
 
@@ -27,6 +28,7 @@ class AlterTableProjects extends Migration
     {
         // Schema::table('projects', function (Blueprint $table) {
         //     $table->dropColumn('id_formulator_team');
+        //     $table->dropColumn('id_lpjp');
         // });
     }
 }
