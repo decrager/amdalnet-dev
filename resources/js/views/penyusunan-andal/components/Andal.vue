@@ -108,13 +108,13 @@ export default {
       });
       this.loadingWorkspace = false;
 
-      // this.$router.push({
-      //   name: 'projectWorkspace',
-      //   params: {
-      //     id: this.$route.params.id,
-      //     filename: `${this.$route.params.id}-andal.docx`,
-      //   },
-      // });
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: this.$route.params.id,
+          filename: `${this.$route.params.id}-andal.docx`,
+        },
+      });
     },
   },
 };
