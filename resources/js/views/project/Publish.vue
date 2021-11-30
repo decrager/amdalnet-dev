@@ -173,7 +173,7 @@
 
     </el-row>
     <div slot="footer" class="dialog-footer">
-      <el-button :disabled="readonly" @click="handleCancel()"> Batal </el-button>
+      <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
       <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
     </div>
   </div>
@@ -253,8 +253,11 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     if (from.name === 'publishProject' && to.name === 'createProject') {
-      next(false);
-      this.handleCancel();
+      if (!to.params.project){
+        next(false);
+      } else {
+        next();
+      }
     } else {
       next();
     }
@@ -674,6 +677,7 @@ export default {
       this.calculatedProjectDoc();
     },
     handleCancel() {
+      // this.$router.back();
       this.$router.push({
         name: 'createProject',
         params: { project: this.project },
