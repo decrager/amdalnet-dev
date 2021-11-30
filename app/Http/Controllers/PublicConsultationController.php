@@ -57,6 +57,7 @@ class PublicConsultationController extends Controller
                 'doc_files' => 'required',
                 'doc_metadatas' => 'required',
                 'doc_berita_acara' => 'required',
+                'doc_berita_acara_2' => 'required',
                 'doc_daftar_hadir' => 'required',
                 'doc_pengumuman' => 'required',
                 'doc_undangan' => 'required',
