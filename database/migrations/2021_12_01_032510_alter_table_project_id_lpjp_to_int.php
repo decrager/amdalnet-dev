@@ -13,10 +13,10 @@ class AlterTableProjectIdLpjpToInt extends Migration
      */
     public function up()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->bigInteger('id_formulator_team')->nullable()->change();
-            $table->bigInteger('id_lpjp')->nullable()->change();
-        });
+        // Schema::table('projects', function (Blueprint $table) {
+        //     $table->bigInteger('id_formulator_team')->nullable()->change();
+        //     $table->bigInteger('id_lpjp')->nullable()->change();
+        // });
     }
 
     /**
@@ -26,9 +26,9 @@ class AlterTableProjectIdLpjpToInt extends Migration
      */
     public function down()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->dropColumn('id_formulator_team');
-            $table->dropColumn('id_lpjp');
-        });
+        // Schema::table('projects', function (Blueprint $table) {
+        //     $table->dropColumn('id_formulator_team');
+        //     $table->dropColumn('id_lpjp');
+        // });
     }
 }
