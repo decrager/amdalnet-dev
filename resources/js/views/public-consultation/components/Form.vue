@@ -38,7 +38,7 @@
       <el-row :gutter="4">
         <el-col :span="12" :xs="24">
           <el-form-item
-            label="Rangkuman Deskriptif Saran/Pendapat/Tanggapan Masyarakat yang Mendukung Usaha/Kegiatan"
+            label="Rangkuman Deskriptif atas Harapan Masyarakat"
             prop="positive_feedback_summary"
           >
             <tinymce
@@ -50,7 +50,7 @@
         </el-col>
         <el-col :span="12" :xs="24">
           <el-form-item
-            label="Rangkuman Deskriptif Saran/Pendapat/Tanggapan Masyarakat yang Menolak Usaha/Kegiatan"
+            label="Rangkuman Deskriptif atas Kekhawatiran Masyarakat"
             prop="negative_feedback_summary"
           >
             <tinymce
@@ -155,6 +155,24 @@
                 </el-upload>
               </el-col>
             </el-row>
+            <el-row>
+              <el-col :span="2" :xs="12">5.</el-col>
+              <el-col :span="5" :xs="12">Berita Acara</el-col>
+              <el-col :span="5" :xs="12">
+                <el-upload
+                  class="upload-demo"
+                  :auto-upload="false"
+                  :on-change="handleUploadBA2"
+                  action="#"
+                  :show-file-list="false"
+                >
+                  <el-button
+                    size="small"
+                    type="primary"
+                  >Upload</el-button>
+                </el-upload>
+              </el-col>
+            </el-row>
           </el-form-item>
         </el-col>
       </el-row>
@@ -191,6 +209,7 @@ const defaultForm = {
   doc_daftar_hadir: {},
   doc_pengumuman: {},
   doc_undangan: {},
+  doc_berita_acara_2: {},
 };
 
 export default {
@@ -237,6 +256,7 @@ export default {
       formData.append('doc_files', JSON.stringify(this.postForm.doc_files));
       formData.append('doc_metadatas', JSON.stringify(this.postForm.doc_metadatas));
       formData.append('doc_berita_acara', this.postForm.doc_berita_acara);
+      formData.append('doc_berita_acara_2', this.postForm.doc_berita_acara_2);
       formData.append('doc_daftar_hadir', this.postForm.doc_daftar_hadir);
       formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
       formData.append('doc_undangan', this.postForm.doc_undangan);
@@ -310,6 +330,11 @@ export default {
       this.postForm.doc_files.push(file);
       this.postForm.doc_metadatas.push(this.createDocJson('Undangan', file));
       this.postForm.doc_undangan = file.raw;
+    },
+    handleUploadBA2(file, fileList) {
+      this.postForm.doc_files.push(file);
+      this.postForm.doc_metadatas.push(this.createDocJson('Berita Acara 2', file));
+      this.postForm.doc_berita_acara_2 = file.raw;
     },
   },
 };
