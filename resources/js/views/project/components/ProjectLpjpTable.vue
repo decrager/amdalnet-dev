@@ -61,7 +61,7 @@
 
               <el-table-column>
                 <template>
-                  <el-button type="danger" title="Hapus Daftar Penyusun"><i class="ri-close-line" /></el-button>
+                  <el-button type="danger" title="Hapus Daftar Penyusun" size="mini"><i class="ri-close-line" /></el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -90,7 +90,18 @@
 
               <el-table-column label="Posisi">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.position }}</span>
+                  <el-select
+                    v-model="scope.row.position"
+                    placeholder="Pilih Jabatan"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in position"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
                 </template>
               </el-table-column>
 
@@ -102,16 +113,18 @@
 
               <el-table-column label="File">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.cv_file }}</span>
+                  <el-button v-if="scope.row.cv_file" size="mini" type="primary" @click="downloadCvTa(scope.row.cv_file)"><i class="ri-file-download-line" /></el-button>
+                  <el-button v-else size="mini" type="success">Upload CV</el-button>
                 </template>
               </el-table-column>
 
               <el-table-column>
                 <template>
-                  <el-button type="danger" title="Hapus Daftar Tenaga Ahli"><i class="ri-close-line" /></el-button>
+                  <el-button type="danger" title="Hapus Daftar Tenaga Ahli" size="mini"><i class="ri-close-line" /></el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <el-button type="warning" size="mini" style="float:right; margin: 10px 0;">Simpan</el-button>
           </div>
 
         </div>
@@ -195,6 +208,9 @@ export default {
     },
     handleDelete(num) {
       this.$emit('handleDelete', { num });
+    },
+    downloadCvTa(url) {
+      window.open(window.location.origin + url);
     },
   },
 };
