@@ -82,7 +82,8 @@ class Project extends Model
         return $this->belongsTo(District::class, 'id_district', 'id');
     }
 
-    public function province(){
+    public function province()
+    {
         return $this->hasOne(Province::class, 'id', 'id_prov');
     }
 
