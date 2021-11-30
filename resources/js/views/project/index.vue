@@ -233,7 +233,7 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator && scope.row.required_doc === 'SPPL'"
+                  v-if="isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -588,7 +588,7 @@ export default {
       console.log(project.listSubProject);
 
       PizZipUtils.getBinaryContent(
-        '/template_SPPL.docx',
+        '/template_sppl.docx',
         (error, content) => {
           if (error) {
             throw error;
