@@ -307,7 +307,7 @@ class ProjectController extends Controller
         } catch (Exception $e) {
             DB::rollback();
 
-            return $e;
+            throw new Exception('Gagal Membuat Kegiatan karena '.$e);
         }
 
         return new ProjectResource($project);

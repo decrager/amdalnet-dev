@@ -233,13 +233,13 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator"
+                  v-if="isInitiator && scope.row.required_doc === 'SPPL'"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleGenerateSPPL(scope.row)"
                 >
-                  unduh SPPL
+                  Unduh SPPL
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -338,7 +338,6 @@ export default {
         page: 1,
         limit: 10,
       },
-      initiator: {},
       provinceOptions: [],
       cityOptions: [],
       documentTypeOptions: [
@@ -383,7 +382,6 @@ export default {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
     }
-    this.initiator = await initiatorResource.list({ email: this.userInfo.email });
     // else if (this.userInfo.roles.includes('examiner-substance')) {
     //   const formulator = await formulatorResource.list({ email: this.userInfo.email });
     //   this.listQuery.formulatorId = formulator.id;
