@@ -32,6 +32,8 @@
             class="edit-input"
             size="mini"
             type="number"
+            step=".01"
+            min="0"
             :disabled="!scope.row.used"
             @blur="handleBlur(scope.row)"
           />
