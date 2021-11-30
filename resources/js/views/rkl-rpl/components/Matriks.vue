@@ -176,4 +176,7 @@ export default {
 .el-collapse-item__content {
   padding-top: 10px;
 }
+.comment-header p {
+  font-weight: normal;
+}
 </style>
