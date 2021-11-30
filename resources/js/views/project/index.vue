@@ -124,15 +124,15 @@
                 >
                   Delete
                 </el-button> -->
-                <!-- <el-button
+                <el-button
                   v-if="!isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-view"
                   @click="handleViewForm(scope.row.id)"
                 >
-                  View Details
-                </el-button> -->
+                  Lihat Detil Penapisan
+                </el-button>
                 <el-button
                   v-if="scope.row.published && isInitiator"
                   href="#"
@@ -413,7 +413,10 @@ export default {
     async getFiltered(query) {
       this.listLoading = true;
       const { data, total } = await projectResource.list(query);
-      this.filtered = data;
+      this.filtered = data.map(e => {
+        e.listSubProject = e.list_sub_project;
+        return e;
+      });
       this.total = total;
       console.log(this.filtered);
       this.listLoading = false;

@@ -36,7 +36,7 @@ class ProjectController extends Controller
             return Project::whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
-            return Project::with('address')->select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
+            return Project::with(['address','listSubProject'])->select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
                 return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
             })->where(
                 function ($query) use ($request) {
@@ -57,7 +57,7 @@ class ProjectController extends Controller
             )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')->orderBy('projects.id', 'DESC')->paginate($request->limit);
         }
 
-        return Project::with('address')->select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
+        return Project::with(['address','listSubProject'])->select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {

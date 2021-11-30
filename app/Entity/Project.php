@@ -67,6 +67,11 @@ class Project extends Model
         return $this->hasMany(ProjectAddress::class, 'id_project', 'id');
     }
 
+    public function listSubProject()
+    {
+        return $this->hasMany(SubProject::class, 'id_project', 'id');
+    }
+
     public function testingMeeting()
     {
         return $this->hasMany(TestingMeeting::class, 'id_project', 'id');
