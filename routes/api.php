@@ -241,4 +241,5 @@ Route::get('pie-entries', [ImpactIdentificationController::class, 'pieEntries'])
 Route::post('change-types', [ChangeTypeController::class, 'addChangeType']);
 Route::get('get-document-ka/{id}', [ExportDocument::class, 'getDocKA']);
 Route::get('form-ka-pdf/{id}', [ExportDocument::class, 'ExportKAPdf']);
+Route::apiResource('andal-clone', 'AndalCloneController');
 Route::get('map/{id}', [ProjectMapAttachmentController::class, 'show']);
