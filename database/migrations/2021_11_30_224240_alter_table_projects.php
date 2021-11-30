@@ -13,9 +13,9 @@ class AlterTableProjects extends Migration
      */
     public function up()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->bigInteger('id_formulator_team')->nullable();
-        });
+        // Schema::table('projects', function (Blueprint $table) {
+        //     $table->bigInteger('id_formulator_team')->nullable();
+        // });
     }
 
     /**
@@ -25,8 +25,8 @@ class AlterTableProjects extends Migration
      */
     public function down()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->dropColumn('id_formulator_team');
-        });
+        // Schema::table('projects', function (Blueprint $table) {
+        //     $table->dropColumn('id_formulator_team');
+        // });
     }
 }
