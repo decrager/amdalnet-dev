@@ -102,7 +102,7 @@
 import Resource from '@/api/resource';
 import ParamDialog from '@/views/project/components/ParamDialog.vue';
 const kbliEnvParamResource = new Resource('kbli-env-params');
-const kbliResource = new Resource('kblis');
+const kbliResource = new Resource('business');
 
 export default {
   name: 'SubProjectTable',

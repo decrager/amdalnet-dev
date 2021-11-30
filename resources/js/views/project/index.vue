@@ -223,6 +223,15 @@
                 >
                   Workspace RKL RPL
                 </el-button>
+                <el-button
+                  v-if="isInitiator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleGenerateSPPL(scope.row)"
+                >
+                  unduh SPPL
+                </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
               <span v-html="scope.row.description" />
@@ -287,6 +296,10 @@
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import AnnouncementDialog from './components/AnnouncementDialog.vue';
+import Docxtemplater from 'docxtemplater';
+import PizZip from 'pizzip';
+import PizZipUtils from 'pizzip/utils/index.js';
+import { saveAs } from 'file-saver';
 const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -296,6 +309,7 @@ const lpjpResource = new Resource('lpjpsByEmail');
 const formulatorResource = new Resource('formulatorsByEmail');
 const andalComposingResource = new Resource('andal-composing');
 const rklResource = new Resource('matriks-rkl');
+const kbliResource = new Resource('business');
 
 export default {
   name: 'Project',
@@ -307,6 +321,7 @@ export default {
         roles: [],
       },
       filtered: [],
+      initiator: {},
       announcement: {},
       show: false,
       total: 0,
@@ -353,6 +368,7 @@ export default {
     } else if (this.userInfo.roles.includes('initiator')) {
       const initiator = await initiatorResource.list({ email: this.userInfo.email });
       this.listQuery.initiatorId = initiator.id;
+      this.initiator = initiator;
     } else if (this.userInfo.roles.includes('formulator')) {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
@@ -524,6 +540,49 @@ export default {
       this.$router.push({
         path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
       });
+    },
+    async handleGenerateSPPL(project) {
+      console.log(project);
+
+      project.listSubProject = project.listSubProject.map((e, i) => {
+        const { value } = kbliResource.get(e.biz_type);
+        e.biz = value;
+        e.address = project.address[i] ? project.address[i].address : null;
+        e.number = i + 1;
+        return e;
+      });
+
+      console.log(project.listSubProject);
+
+      PizZipUtils.getBinaryContent(
+        '/template_SPPL.docx',
+        (error, content) => {
+          if (error) {
+            throw error;
+          }
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          doc.render({
+            initator_name: this.initiator.name,
+            nib: this.initiator.nib ? this.initiator.nib : 'Belum Terdaftar',
+            initiator_address: this.initiator.address,
+            phone: this.initiator.phone,
+            sub_projects: project.listSubProject,
+            pic: this.initiator.pic,
+          });
+
+          const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          });
+
+          saveAs(out, 'SPPL-' + project.project_title + '.docx');
+          // this.docOutput = out;
+        }
+      );
     },
     handleAndal(project) {
       this.$router.push({
