@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Business;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
@@ -280,6 +281,7 @@ class ProjectController extends Controller
 
             //create sub project
             foreach ($data['listSubProject'] as $subPro) {
+                $business = Business::find($subPro->biz_type);
                 $createdSubPro = SubProject::create([
                     'kbli' => $subPro->kbli,
                     'name' => $subPro->name,
@@ -290,6 +292,7 @@ class ProjectController extends Controller
                     'sector' => $subPro->sector,
                     'scale' => $subPro->scale,
                     'scale_unit' => $subPro->scale_unit,
+                    'biz_name' => isset($business) ? $business->value : null,
                 ]);
 
                 foreach ($subPro->listSubProjectParams as $subProParam) {

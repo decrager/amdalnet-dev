@@ -318,7 +318,7 @@ const lpjpResource = new Resource('lpjpsByEmail');
 const formulatorResource = new Resource('formulatorsByEmail');
 const andalComposingResource = new Resource('andal-composing');
 const rklResource = new Resource('matriks-rkl');
-const kbliResource = new Resource('business');
+// const kbliResource = new Resource('business');
 
 export default {
   name: 'Project',
@@ -391,6 +391,14 @@ export default {
     console.log(this.userInfo);
   },
   methods: {
+    toTitleCase(str) {
+      return str.replace(
+        /\w\S*/g,
+        function(txt) {
+          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+      );
+    },
     handleSubmitAnnouncement(fileProof){
       // this.announcement.fileProof = fileProof;
       console.log(this.announcement);
@@ -572,9 +580,7 @@ export default {
       console.log(project);
 
       project.listSubProject = project.listSubProject.map((e, i) => {
-        const { value } = kbliResource.get(e.biz_type);
-        e.biz = value;
-        e.address = project.address[i] ? project.address[i].address : null;
+        e.address = project.address[i] ? this.toTitleCase(project.address[i].address + ' ' + project.address[i].district + ' ' + project.address[i].prov) : null;
         e.number = i + 1;
         return e;
       });
