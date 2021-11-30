@@ -274,7 +274,7 @@ class Workspace
                 file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);
             }
     
-            $histData = $data["changeshistory"];
+            $histData = isset($data["changeshistory"]) ? $data["changeshistory"]:'';
             if (empty($histData)) {
                 $histData = json_encode($data["history"], JSON_PRETTY_PRINT);
             }
