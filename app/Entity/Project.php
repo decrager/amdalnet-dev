@@ -62,6 +62,11 @@ class Project extends Model
         return $this->hasMany(ProjectAddress::class, 'id_project', 'id');
     }
 
+    public function lpjp()
+    {
+        return $this->hasMany(Lpjp::class, 'id_project', 'id');
+    }
+
     public function testingMeeting()
     {
         return $this->hasMany(TestingMeeting::class, 'id_project', 'id');
@@ -72,7 +77,8 @@ class Project extends Model
         return $this->belongsTo(District::class, 'id_district', 'id');
     }
 
-    public function province(){
+    public function province()
+    {
         return $this->hasOne(Province::class, 'id', 'id_prov');
     }
 

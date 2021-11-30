@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\FormulatorTeam;
 use App\Http\Controllers\BaganAlirController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\UklUplCommentController;
@@ -11,8 +12,10 @@ use App\Laravue\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChangeTypeController;
+use App\Http\Controllers\FormulatorTeamController;
 use App\Http\Controllers\PieParamController;
 use App\Http\Controllers\ImpactIdentificationController;
+use App\Http\Controllers\LpjpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -242,3 +245,5 @@ Route::post('change-types', [ChangeTypeController::class, 'addChangeType']);
 Route::get('get-document-ka/{id}', [ExportDocument::class, 'getDocKA']);
 Route::get('form-ka-pdf/{id}', [ExportDocument::class, 'ExportKAPdf']);
 Route::get('map/{id}', [ProjectMapAttachmentController::class, 'show']);
+Route::get('lpjp-teams', [LpjpController::class, 'getFormulator']);
+Route::get('form-teams', [FormulatorTeamController::class, 'getAll']);

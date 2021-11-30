@@ -52,6 +52,19 @@ const projectRoutes = {
       props: true,
     },
     {
+      path: 'penyusun/:id',
+      component: () => import('@/views/project/TimPenyusun'),
+      name: 'timPenyusun',
+      hidden: true,
+      meta: {
+        title: 'timPenyusun',
+        icon: 'documentation',
+        noCache: true,
+        breadcrumb: false,
+      },
+      props: true,
+    },
+    {
       path: 'workspace/:id(\\d+)',
       component: () => import('@/views/workspace/Edit'),
       name: 'editWorkspace',

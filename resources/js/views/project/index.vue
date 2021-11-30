@@ -101,6 +101,15 @@
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
+                  icon="el-icon-user"
+                  @click="handleTimPenyusunForm(scope.row.id)"
+                >
+                  Tim Penyusun
+                </el-button>
+                <el-button
+                  v-if="!scope.row.published && isInitiator"
+                  type="text"
+                  href="#"
                   icon="el-icon-tickets"
                   @click="handlePublishForm(scope.row.id)"
                 >
@@ -465,6 +474,15 @@ export default {
         name: 'publishProject',
         params: { project: currentProject, readonly: true },
       });
+    },
+    handleTimPenyusunForm(id) {
+      const currentProject = this.filtered.find((item) => item.id === id);
+      console.log(currentProject);
+      this.$router.push({
+        name: 'timPenyusun',
+        params: { project: currentProject, readonly: true, id: currentProject.id },
+      });
+      // this.$router.push('penyusun/' + currentProject.id);
     },
     handlePublishForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
