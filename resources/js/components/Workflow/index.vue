@@ -5,13 +5,14 @@
     align-center
     style="margin-bottom: 20px"
   >
-    <el-step title="1" description="Rencana Usaha Kegiatan" icon="el-icon-edit" />
-    <el-step title="2" description="Hasil Penapisan" icon="el-icon-edit" />
-    <el-step title="3" description="SPT dari Masyarakat" icon="el-icon-edit" />
-    <el-step title="4" description="Formulir UKL UPL" />
-    <el-step title="5" description="Matriks UKL UPL" />
-    <el-step title="6" description="Dokumen UKL UPL" />
-    <el-step title="7" description="Surat Keputusan" />
+    <el-step title="Rencana Usaha Kegiatan" />
+    <el-step title="Hasil Penapisan" />
+    <el-step title="SPT dari Masyarakat" />
+    <el-step title="Formulir KA" />
+    <el-step title="Penyusunan ANDAL" />
+    <el-step title="Penyusunan RKL RPL" />
+    <el-step title="Pengujian" />
+    <el-step title="Surat Keputusan" />
   </el-steps>
 </template>
 

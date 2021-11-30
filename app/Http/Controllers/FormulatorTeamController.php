@@ -6,6 +6,7 @@ use App\Entity\EnvironmentalExpert;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
+use App\Entity\Project;
 use App\Http\Resources\FormulatorResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -21,20 +22,34 @@ class FormulatorTeamController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->type && $request->type == 'search') {
+        if ($request->type && $request->type == 'search') {
             $formulator = new Collection(Formulator::where([
                 [DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%'],
-                ['date_start', '<=', date('Y-m-d H:i:s')],['date_end', '>=', date('Y-m-d H:i:s')]
+                ['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]
             ])
-            ->orWhere([
-                [DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%'],
-                ['date_start', null],['date_end', '>=', date('Y-m-d H:i:s')]
-            ])->get());
+                ->orWhere([
+                    [DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%'],
+                    ['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]
+                ])->get());
             $expert = new Collection(EnvironmentalExpert::where(DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%')->get());
             $result = $formulator->merge($expert);
             return $result;
+        } else if ($request->type && $request->type == 'all') {
+            $formulator = new Collection(Formulator::where([
+                ['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]
+            ])
+                ->orWhere([
+                    ['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]
+                ])->get());
+            $expert = new Collection(EnvironmentalExpert::all());
+            $result = $formulator->merge($expert);
+            return $result;
         } else {
-            return FormulatorResource::collection(FormulatorTeam::all());
+            return FormulatorResource::collection(FormulatorTeam::select('formulator_teams.*')->where(
+                function ($query) use ($request) {
+                    return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
+                }
+            )->leftJoin('projects', 'projects.id', '=', 'formulator_teams.id_project')->paginate($request->limit));
         }
     }
 
@@ -56,8 +71,8 @@ class FormulatorTeamController extends Controller
      */
     public function store(Request $request)
     {
-         //validate request
-         $validator = Validator::make(
+        //validate request
+        $validator = Validator::make(
             $request->all(),
             [
                 'members'  => 'required'
@@ -82,11 +97,11 @@ class FormulatorTeamController extends Controller
 
 
             // create team members
-            for($i = 0; $i < count($params['members']); $i++) {
+            for ($i = 0; $i < count($params['members']); $i++) {
                 $teamMember = new FormulatorTeamMember();
                 $teamMember->id_formulator_team = $team->id;
                 $teamMember->position = $params['members'][$i]['position'];
-                if($params['members'][$i]['type'] == 'expert') {
+                if ($params['members'][$i]['type'] == 'expert') {
                     $teamMember->id_expert = $params['members'][$i]['id'];
                 } else {
                     $teamMember->id_formulator = $params['members'][$i]['id'];
@@ -94,7 +109,7 @@ class FormulatorTeamController extends Controller
                 $teamMember->save();
             }
 
-            if(!$team->id) {
+            if (!$team->id) {
                 DB::rollback();
             } else {
                 DB::commit();
@@ -147,5 +162,11 @@ class FormulatorTeamController extends Controller
     public function destroy(FormulatorTeam $formulatorTeam)
     {
         //
+    }
+
+    public function getAll()
+    {
+        $getData = DB::table('formulator_teams')->get();
+        return response()->json($getData);
     }
 }

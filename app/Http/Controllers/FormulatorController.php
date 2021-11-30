@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Entity\Formulator;
 use App\Http\Resources\FormulatorResource;
+use App\Laravue\Acl;
+use App\Laravue\Models\Role;
+use App\Laravue\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use DB;
+use Illuminate\Support\Facades\Hash;
 
 class FormulatorController extends Controller
 {
@@ -48,19 +53,19 @@ class FormulatorController extends Controller
     public function store(Request $request)
     {
         //validate request
-
         $validator = Validator::make(
             $request->all(),
             [
                 'name'              => 'required',
                 'expertise'         => 'required',
-                'cert_no'           => 'required',
-                'date_start'        => 'required',
-                'date_end'          => 'required',
-                'reg_no'            => 'required',
-                'id_institution'    => 'required',
-                'membership_status' => 'required',
-                'id_lsp'            => 'required',
+                // 'cert_no'           => 'required',
+                // 'date_start'        => 'required',
+                // 'date_end'          => 'required',
+                // 'reg_no'            => 'required',
+                // 'id_institution'    => 'required',
+                // 'membership_status' => 'required',
+                // 'id_lsp'            => 'required',
+                'email'             => 'required',
             ]
         );
 
@@ -69,30 +74,55 @@ class FormulatorController extends Controller
         } else {
             $params = $request->all();
 
-            //create file cv
-            $fileCv = $request->file('cv_penyusun');
-            $cvName = '/penyusun/' . uniqid() . '.' . $fileCv->extension();
-            $fileCv->storePubliclyAs('public', $cvName);
+            DB::beginTransaction();
 
-            //create file sertifikat
-            $fileSertifikat = $request->file('file_sertifikat');
-            $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
-            $fileCv->storePubliclyAs('public', $fileSertifikatName);
+            if($request->file('cv_penyusun') !== null){
+                //create file cv
+                $fileCv = $request->file('cv_penyusun');
+                $cvName = '/penyusun/' . uniqid() . '.' . $fileCv->extension();
+                $fileCv->storePubliclyAs('public', $cvName);
+            }
+
+            if($request->file('file_sertifikat') !== null){
+                //create file sertifikat
+                $fileSertifikat = $request->file('file_sertifikat');
+                $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
+                $fileCv->storePubliclyAs('public', $fileSertifikatName);
+            }
+
+            $email = $request->get('email');
+            $found = User::where('email', $email)->first();
+            if (!$found) {
+                $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                $user = User::create([
+                    'name' => ucfirst($params['name']),
+                    'email' => $params['email'],
+                    'password' => Hash::make('amdalnet')
+                ]);
+                $user->syncRoles($formulatorRole);
+            }
 
             //create Penyusun
             $formulator = Formulator::create([
                 'name'              => $params['name'],
                 'expertise'         => $params['expertise'],
-                'cert_no'           => $params['cert_no'],
-                'date_start'        => $params['date_start'],
-                'date_end'          => $params['date_end'],
-                'cert_file'         => Storage::url($fileSertifikatName),
-                'cv_file'           => Storage::url($cvName),
-                'reg_no'            => $params['reg_no'],
-                'id_institution'    => $params['id_institution'],
-                'membership_status' => $params['membership_status'],
-                'id_lsp'            => $params['id_lsp'],
+                'cert_no'           => isset($params['cert_no'])  ? $params['cert_no'] : null,
+                'date_start'        => isset($params['date_start']) ? $params['date_start'] : null,
+                'date_end'          => isset($params['date_end']) ? $params['date_end'] : null,
+                'cert_file'         => isset($fileSertifikatName) ? Storage::url($fileSertifikatName) : null,
+                'cv_file'           => isset($cvName) ? Storage::url($cvName) : null,
+                'reg_no'            => isset($params['reg_no']) ? $params['reg_no'] : null,
+                'id_institution'    => isset($params['id_institution']) ? $params['id_institution'] : null,
+                'membership_status' => isset($params['membership_status']) ? $params['membership_status'] : null,
+                'id_lsp'            => isset($params['id_lsp']) ? $params['id_lsp'] : null,
+                'email'             => $params['email'],
             ]);
+
+            if (!$formulator) {
+                DB::rollback();
+            } else {
+                DB::commit();
+            }
 
             return new FormulatorResource($formulator);
         }
@@ -106,7 +136,21 @@ class FormulatorController extends Controller
      */
     public function show(Formulator $formulator)
     {
-        //
+        return $formulator;
+    }
+
+    public function showByEmail(Request $request)
+    { 
+        If($request->email){
+            $formulator = Formulator::where('email', $request->email)->first();
+            
+            if($formulator) {
+                return $formulator;
+            } else {
+                return response()->json(null, 200);
+
+            }
+        }
     }
 
     /**
@@ -145,6 +189,7 @@ class FormulatorController extends Controller
                 'id_institution'    => 'required',
                 'membership_status' => 'required',
                 'id_lsp'            => 'required',
+                'email'             => 'required',
             ]
         );
 
@@ -178,6 +223,8 @@ class FormulatorController extends Controller
             $formulator->id_institution = $params['id_institution'];
             $formulator->membership_status = $params['membership_status'];
             $formulator->id_lsp = $params['id_lsp'];
+            $formulator->email = $params['email'];
+            $formulator->nip = $params['nip'] ? $params['nip'] : null;
             $formulator->save();
         }
 

@@ -19,7 +19,7 @@ const announcementRoutes = {
       component: () => import('@/views/announcement/View'),
       name: 'ViewAnnouncement',
       hidden: true,
-      meta: { title: 'View Announcement', icon: 'documentation' },
+      meta: { title: 'Daftar Kegiatan', icon: 'documentation' },
     },
   ],
 };

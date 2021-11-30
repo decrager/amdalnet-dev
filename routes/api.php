@@ -1,12 +1,21 @@
 <?php
 
+use App\Entity\FormulatorTeam;
+use App\Http\Controllers\BaganAlirController;
 use App\Http\Controllers\ExportDocument;
+use App\Http\Controllers\UklUplCommentController;
+use App\Http\Controllers\ProjectMapAttachmentController;
 use App\Http\Resources\UserResource;
 use App\Laravue\Acl;
 use App\Laravue\Faker;
 use App\Laravue\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChangeTypeController;
+use App\Http\Controllers\FormulatorTeamController;
+use App\Http\Controllers\PieParamController;
+use App\Http\Controllers\ImpactIdentificationController;
+use App\Http\Controllers\LpjpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::apiResource('home', 'HomeController');
 Route::apiResource('webgis', 'WebgisController');
 
@@ -47,6 +57,20 @@ Route::namespace('Api')->group(function () {
         Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
     });
 });
+
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('workspace/session/init', 'WorkspaceController@sessionInit');
+    Route::get('workspace/config/{id}', 'WorkspaceController@getConfig');
+});
+
+Route::post('workspace/template/import', 'WorkspaceController@importTemplate');
+Route::post('workspace/document/track', 'WorkspaceController@track');
+Route::post('workspace/document/upload', 'WorkspaceController@upload');
+Route::post('workspace/document/download', 'WorkspaceController@download');
+Route::post('workspace/document/convert', 'WorkspaceController@convert');
+Route::post('workspace/document/delete', 'WorkspaceController@delete');
+Route::post('workspace/document/assets', 'WorkspaceController@assets');
+Route::post('workspace/document/files', 'WorkspaceController@files');
 
 // Fake APIs
 Route::get('/table/list', function () {
@@ -157,8 +181,8 @@ Route::get('articles/{id}/pageviews', function ($id) {
 Route::apiResource('project-fields', 'ProjectFieldController');
 Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
-Route::apiResource('kblis', 'KbliController');
-Route::apiResource('kbli-env-params', 'KbliEnvParamController');
+Route::apiResource('kblis', 'BusinessController');
+Route::apiResource('kbli-env-params', 'BusinessEnvParamController');
 Route::apiResource('projects', 'ProjectController');
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
@@ -179,6 +203,9 @@ Route::apiResource('sops', 'SopController');
 Route::apiResource('component-types', 'ComponentTypeController');
 Route::apiResource('app-params', 'AppParamController');
 Route::get('initiatorsByEmail', 'InitiatorController@showByEmail');
+Route::get('formulatorsByEmail', 'FormulatorController@showByEmail');
+Route::get('lpjpsByEmail', 'LpjpController@showByEmail');
+Route::get('expertByEmail', 'ExpertBankController@showByEmail');
 Route::apiResource('impact-identifications', 'ImpactIdentificationController');
 Route::apiResource('env-params', 'EnvParamController');
 Route::apiResource('params', 'ParamController');
@@ -189,3 +216,34 @@ Route::apiResource('change-types', 'ChangeTypeController');
 Route::apiResource('institutions', 'InstitutionController');
 Route::apiResource('andal-composing', 'AndalComposingController');
 Route::apiResource('matriks-rkl', 'MatriksRKLController');
+Route::apiResource('matriks-rpl', 'MatriksRPLController');
+Route::apiResource('testing-verification', 'TestingVerificationController');
+Route::apiResource('testing-meeting', 'TestingMeetingController');
+Route::apiResource('meeting-report', 'MeetingReportController');
+Route::apiResource('test-verif-rkl-rpl', 'TestVerifRKLRPLController');
+Route::apiResource('test-meet-rkl-rpl', 'TestMeetRKLRPLController');
+Route::apiResource('meet-report-rkl-rpl', 'MeetReportRKLRPLController');
+Route::apiResource('feasibility-test', 'FeasibilityTestController');
+Route::apiResource('skkl', 'SKKLController');
+Route::apiResource('impact-studies', 'ImpactStudyController');
+Route::get('ukl-upl-comment/{id}', [UklUplCommentController::class, 'index']);
+Route::post('ukl-upl-comment', [UklUplCommentController::class, 'store']);
+Route::get('ka-docx/{id}', [ExportDocument::class, 'KADocx']);
+Route::apiResource('scoping', 'ScopingController');
+Route::apiResource('sub-project-components', 'SubProjectComponentController');
+Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
+Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
+Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
+Route::get('change-types', [ChangeTypeController::class, 'index']);
+Route::get('pie-params', [PieParamController::class, 'index']);
+Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
+Route::get('download-map/{id}', [ProjectMapAttachmentController::class, 'download']);
+Route::apiResource('manage-approach', 'ManageApproachController');
+Route::post('upload-ka-doc', [ExportDocument::class, 'saveKADoc']);
+Route::get('pie-entries', [ImpactIdentificationController::class, 'pieEntries']);
+Route::post('change-types', [ChangeTypeController::class, 'addChangeType']);
+Route::get('get-document-ka/{id}', [ExportDocument::class, 'getDocKA']);
+Route::get('form-ka-pdf/{id}', [ExportDocument::class, 'ExportKAPdf']);
+Route::get('map/{id}', [ProjectMapAttachmentController::class, 'show']);
+Route::get('lpjp-teams', [LpjpController::class, 'getFormulator']);
+Route::get('form-teams', [FormulatorTeamController::class, 'getAll']);

@@ -64,6 +64,20 @@ services:
       - "POSTGRES_PASSWORD=etherpad"
       - "POSTGRES_USER=etherpad"
       - "POSTGRES_DB=etherpad"
+  
+  # collabora:
+  #   image: collabora/code
+  #   ports:
+  #     - "9980:9980"
+  #   environment:
+  #     # - "domain=rise.mymac.net"
+  #     - "username=admin"
+  #     - "password=S3cRet"
+
+  onlyoffice:
+    image: onlyoffice/documentserver-de
+    ports:
+      - "8008:80"
 
     
 

@@ -13,9 +13,17 @@ class ProjectStageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return ProjectStageResource::collection(ProjectStage::all());
+        if ($request->ordered) {
+            $ids = [4,1,2,3];
+            $stages = ProjectStage::select('project_stages.*')->get()->sortBy(function($model) use($ids) {
+                return array_search($model->getKey(),$ids);
+            });
+            return ProjectStageResource::collection($stages);
+        } else {
+            return ProjectStageResource::collection(ProjectStage::all());
+        }
     }
 
     /**

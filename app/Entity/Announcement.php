@@ -20,7 +20,7 @@ class Announcement extends Model
         'start_date',
         'end_date',
         'project_id',
-        'project_result',
+        'project_result'
     ];
 
     public function feedbacks()
@@ -28,7 +28,8 @@ class Announcement extends Model
         return $this->hasMany(Feedback::class);
     }
 
-    public function project(){
-        return $this->hasOne(Project::class, 'id', 'project_id');
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 }

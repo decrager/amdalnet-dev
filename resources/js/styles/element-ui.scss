@@ -80,3 +80,38 @@
     display: block
   }
 }
+
+
+//collapse
+.el-collapse-item__header {
+	padding-left: 1.5em !important;
+	border-radius: 0.5em 0.5em 0 0 !important;
+	background-color: #39773b !important;
+	color: white !important;
+	font-size:1em !important;
+	font-weight: bold !important;
+	text-transform: uppercase;
+}
+.is-active .el-collapse-item__header{
+	background-color: #6cc26f !important;
+}
+.el-collapse-item__content {
+	padding: 3em 2em 3.5em;
+}
+
+
+// table
+.el-table thead {
+	color: #333333 !important;
+}
+
+.el-table .cell { word-break: normal !important;}
+
+  table.el-table__header {
+      background-color: #6cc26f !important;
+  }
+.el-table thead.is-group th.el-table__cell {
+      background-color: #6cc26f !important;
+      color: white !important;
+      text-align: center !important;
+}

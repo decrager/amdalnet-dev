@@ -6,8 +6,9 @@
         <el-col :sm="12" :md="12">
           <el-form-item label="Tanggal Rapat">
             <el-date-picker
-              v-model="invitation.tanggalRapat"
+              v-model="meetings.meeting_date"
               type="date"
+              value-format="yyyy-MM-dd"
               placeholder="Pilih tanggal"
               style="width: 100%"
             />
@@ -15,60 +16,75 @@
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Pemrakarsa">
-            <el-input v-model="invitation.Pemrakarsa" />
+            <el-select
+              v-model="meetings.id_initiator"
+              placeholder="Pilih Tim"
+              style="width: 100%"
+              :disabled="true"
+            >
+              <el-option
+                v-for="item in pemrakarsa"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Waktu Rapat">
             <el-time-picker
-              v-model="invitation.waktuRapat"
+              v-model="meetings.meeting_time"
               placeholder="Waktu Rapat"
               format="HH:mm"
+              value-format="HH:mm"
               style="width: 100%"
             />
           </el-form-item>
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Penanggung Jawab">
-            <el-input v-model="invitation.penanggungJawab" />
+            <el-input v-model="meetings.person_responsible" readonly />
           </el-form-item>
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Tempat Rapat">
-            <el-input v-model="invitation.tempatRapat" />
+            <el-input v-model="meetings.location" />
           </el-form-item>
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Jabatan">
-            <el-input v-model="invitation.jabatan" />
+            <el-input v-model="meetings.position" />
           </el-form-item>
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Tim Uji Kelayakan">
             <el-select
-              v-model="invitation.timUjiKelayakan"
+              v-model="meetings.expert_bank_team_id"
               placeholder="Pilih Tim"
               style="width: 100%"
+              @change="handleChangeTimUji"
             >
               <el-option
                 v-for="item in timUjiKelayakan"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               />
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :sm="12" :md="12">
           <el-form-item label="Nama Usaha/Kegiatan">
-            <el-input v-model="invitation.namaUsaha" />
+            <el-input v-model="meetings.project_name" readonly />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <h5>Daftar Undangan</h5>
     <el-table
-      :data="daftarUndangan"
+      v-loading="loadingTuk"
+      :data="meetings.invitations"
       fit
       highlight-current-row
       :header-cell-style="{ background: '#3AB06F', color: 'white' }"
@@ -81,9 +97,11 @@
 
       <el-table-column label="Peran">
         <template slot-scope="scope">
+          <span v-if="scope.row.type == 'tuk'">{{ scope.row.role }} TUK</span>
           <el-select
-            v-model="scope.row.peran"
-            placeholder="Pilih Kelengkapan"
+            v-else
+            v-model="scope.row.role"
+            placeholder="Pilih Peran"
             style="width: 100%"
           >
             <el-option
@@ -98,13 +116,15 @@
 
       <el-table-column label="Nama Anggota">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.namaAnggota" />
+          <span v-if="scope.row.type == 'tuk'">{{ scope.row.name }} TUK</span>
+          <el-input v-else v-model="scope.row.name" />
         </template>
       </el-table-column>
 
       <el-table-column label="E-mail">
         <template slot-scope="scope">
-          <span>{{ scope.row.email }}</span>
+          <span v-if="scope.row.type == 'tuk'">{{ scope.row.email }}</span>
+          <el-input v-else v-model="scope.row.email" />
         </template>
       </el-table-column>
     </el-table>
@@ -115,66 +135,65 @@
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const undanganRapatResource = new Resource('testing-meeting');
+
 export default {
   name: 'UndanganRapat',
+  props: {
+    meetings: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data() {
     return {
-      invitation: {
-        waktuRapat: new Date(),
-      },
-      timUjiKelayakan: [
-        {
-          label: 'TUK Pusat 1',
-          value: 1,
-        },
-        {
-          label: 'TUK Pusat 2',
-          value: 2,
-        },
-      ],
-      daftarUndangan: [
-        {
-          peran: 'Ketua TUK',
-          namaAnggota: 'Ketua TUK',
-          email: 'ketuatuk@gmail.com',
-        },
-        {
-          peran: 'Sekretaris TUK',
-          namaAnggota: 'Sekretaris TUK',
-          email: 'sekretaristuk@gmail.com',
-        },
-        {
-          peran: 'Anggota TUK',
-          namaAnggota: 'Anggota TUK',
-          email: 'anggotatuk@gmail.com',
-        },
-      ],
+      timUjiKelayakan: [],
+      pemrakarsa: [],
       peran: [
         {
-          label: 'Ketua TUK',
-          value: 'Ketua TUK',
-        },
-        {
-          label: 'Sekretaris TUK',
-          value: 'Sekretaris TUK',
-        },
-        {
-          label: 'Anggota TUK',
-          value: 'Anggota TUK',
-        },
-        {
           label: 'Tenaga Ahli',
+          value: 'Tenaga Ahli',
+        },
+        {
+          label: 'Masyarakat',
           value: 'Masyarakat',
         },
       ],
+      loadingTuk: false,
     };
   },
+  created() {
+    this.getTimUjiKelayakan();
+    this.getPemrakarsa();
+  },
   methods: {
+    async getTimUjiKelayakan() {
+      const data = await undanganRapatResource.list({
+        expert_bank_team: 'true',
+      });
+      this.timUjiKelayakan = data;
+    },
+    async getPemrakarsa() {
+      const data = await undanganRapatResource.list({ pemrakarsa: 'true' });
+      this.pemrakarsa = data;
+    },
+    async handleChangeTimUji(val) {
+      this.loadingTuk = true;
+      const data = await undanganRapatResource.list({
+        tuk_member: 'true',
+        tuk_id: val,
+      });
+      this.meetings.invitations = data;
+      this.loadingTuk = false;
+    },
     addTableRow() {
-      this.daftarUndangan.push({
-        peran: '',
-        namaAnggota: '',
-        email: '',
+      this.meetings.invitations.push({
+        id: null,
+        role: null,
+        name: null,
+        email: null,
+        type: 'other',
       });
     },
   },

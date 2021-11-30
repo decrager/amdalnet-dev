@@ -3,13 +3,22 @@
     <split-pane split="vertical" :min-percent="20" :default-percent="30" @resize="resize">
       <template slot="paneL">
         <div class="left-container">
-          <!-- <el-button
-            type="primary"
-            icon="el-icon-plus"
-            @click="addNode"
+          <el-upload
+            class="avatar-uploader"
+            action="#"
+            :show-file-list="false"
+            :on-change="handleTemplateUploadChange"
+            :before-upload="beforeTemplateUpload"
+            :auto-upload="false"
           >
-            {{ $t('addNode') }}
-          </el-button> -->
+            <el-button
+              type="primary"
+              icon="el-icon-upload"
+              :loading="loading"
+            >
+              {{ $t('uploadTemplate') }}
+            </el-button>
+          </el-upload>
           <vue-tree-list
             :model="data"
             default-tree-node-name="new node"
@@ -70,6 +79,9 @@
 <script>
 import { VueTreeList, Tree, TreeNode } from 'vue-tree-list';
 import SplitPane from 'vue-splitpane';
+import WorkspaceResource from '@/api/workspace';
+
+const workspaceResource = new WorkspaceResource();
 
 export default {
   components: {
@@ -85,7 +97,10 @@ export default {
   data() {
     return {
       newTree: {},
+      etherpadUrl: '',
       selectedTreeId: 1,
+      sessionID: null,
+      loading: false,
       data: new Tree([
         {
           name: 'Kata Pengantar',
@@ -173,12 +188,17 @@ export default {
   computed: {
     padSrc() {
       console.log('src:', process.env.MIX_EHTERPAD_URL, this.selectedTreeId);
-      return process.env.MIX_EHTERPAD_URL + this.selectedTreeId;
+      if (this.sessionID) {
+        return process.env.MIX_EHTERPAD_URL + '/auth_session?sessionID=' + this.sessionID + '&padName=' + this.selectedTreeId;
+      }
+      return '';
     },
   },
   async mounted() {
     console.log('props:', this.$route.params.id, this.project, process.env.MIX_BASE_API);
-    console.log(process.env.MIX_EHTERPAD_URL);
+    // console.log(process.env.MIX_EHTERPAD_URL);
+    this.etherpadUrl = process.env.MIX_EHTERPAD_URL;
+    this.etherpadAuth();
   },
   methods: {
     resize() {
@@ -233,6 +253,54 @@ export default {
 
       vm.newTree = _dfs(vm.data);
     },
+
+    handleTemplateUploadChange(file, fileList) {
+      // add file to multipart
+      this.loading = true;
+      const formData = new FormData();
+      formData.append('file', file.raw);
+
+      workspaceResource
+        .importTemplate(formData)
+        .then(response => {
+          console.log(response);
+          this.data = new Tree(response);
+          console.log(this.data);
+          this.$message({
+            message: 'Berhasil Load Template',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          this.loading = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.loading = false;
+        });
+    },
+
+    beforeTemplateUpload(file) {
+      console.log('file', file.type);
+      // const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      // if (!isJPG) {
+      //   this.$message.error('Avatar picture must be JPG format!');
+      // }
+      // if (!isLt2M) {
+      //   this.$message.error('Avatar picture size can not exceed 2MB!');
+      // }
+      return isLt2M;
+    },
+
+    etherpadAuth() {
+      workspaceResource
+        .sessionInit()
+        .then(response => {
+          console.log(response, response.data.sessionID);
+          this.sessionID = response.data.sessionID;
+        });
+    },
   },
 };
 </script>
@@ -250,23 +318,27 @@ export default {
     }
     .vtl-node {
       .vtl-node-content {
-        padding: 0 5px;
+        padding: 0 3px;
+      }
+      .vtl-node-main {
+        font-size: 14px;
       }
     }
   }
 </style>
 
-<style scoped>
+<style scoped lang="scss">
   iframe {
     height: calc(100vh - 94px);
   }
   .left-container {
-    background-color: #F38181;
+    /* background-color: #F38181; */
     height: 100%;
+    overflow: scroll;
   }
 
   .right-container {
-    background-color: #FCE38A;
+    /* background-color: #FCE38A; */
     height: 100%;
   }
 

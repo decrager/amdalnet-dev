@@ -20,6 +20,7 @@ class Formulator extends Model
         'id_institution',
         'membership_status',
         'id_lsp',
+        'email',
     ];
 
     public function teamMember()
