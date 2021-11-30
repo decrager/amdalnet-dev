@@ -14,9 +14,9 @@ class AlterTableProjectMapAttachment extends Migration
      */
     public function up()
     {
-        DB::transaction(function () {
-            DB::statement('ALTER TABLE project_map_attachments ADD CONSTRAINT project_map_attachment_check CHECK (attachment_type::TEXT = ANY (ARRAY[\'tapak\'::CHARACTER VARYING, \'social\'::CHARACTER VARYING, \'ecology\'::CHARACTER VARYING, \'study\'::CHARACTER VARYING]::TEXT[]))');
-        });
+        // DB::transaction(function () {
+        //     DB::statement('ALTER TABLE project_map_attachments ADD CONSTRAINT project_map_attachment_check CHECK (attachment_type::TEXT = ANY (ARRAY[\'tapak\'::CHARACTER VARYING, \'social\'::CHARACTER VARYING, \'ecology\'::CHARACTER VARYING, \'study\'::CHARACTER VARYING]::TEXT[]))');
+        // });
     }
 
     /**
