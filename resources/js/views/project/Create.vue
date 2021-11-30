@@ -24,8 +24,32 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang">
-                  <input ref="fileKtr" type="file" class="el-input__inner" @change="handleFileKtrUpload()">
+                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang" prop="project_type">
+                  <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
+                  <!-- <div
+                    style="
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    height: 36px;
+                  "
+                  >
+                    <el-button
+                      icon="el-icon-document-copy"
+                      type="primary"
+                      size="mini"
+                      style="margin-left: 15px"
+                      @click="checkKtrFile"
+                    >Upload</el-button>
+                    <span>{{ fileKtrName }}</span>
+                    <input
+                      id="ktrFile"
+                      type="file"
+                      style="display: none"
+                      @change="handleFileKtrUpload"
+                    >
+                  </div> -->
+
+                  <!-- <input ref="fileKtr" type="file" class="el-input__inner" @change="handleFileKtrUpload()"> -->
                 </el-form-item>
               </el-col>
             </el-row>
@@ -45,7 +69,8 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Upload Peta (File .ZIP)">
-                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload">
+                    <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
+                    <!-- <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload"> -->
                   </el-form-item>
                   <div id="mapView" style="height: 400px;" />
                 </el-row>
@@ -104,6 +129,17 @@
                     <el-table-column label="Alamat">
                       <template slot-scope="scope">
                         <el-input v-model="scope.row.address" />
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column width="100px">
+                      <template slot-scope="scope">
+                        <el-popconfirm
+                          title="Hapus Alamat ?"
+                          @confirm="currentProject.address.splice(scope.$index,1)"
+                        >
+                          <el-button slot="reference" type="danger" icon="el-icon-close" />
+                        </el-popconfirm>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -189,7 +225,9 @@
               </el-col>
             </el-row>
             <el-row>
-              <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+              <keep-alive>
+                <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+              </keep-alive>
               <el-button
                 type="primary"
                 @click="handleAddSubProjectTable"
@@ -295,7 +333,8 @@
                   :label="preeAgreementLabel"
                   prop="pre_agreement"
                 >
-                  <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload">
+                  <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
+                  <classic-upload :name="filePreAgreementName" :fid="'filePreAgreement'" @handleFileUpload="handleFilePreAgreementUpload" />
                   <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi ke Kementrian Investasi</el-tag>
                 </el-form-item>
               </el-col>
@@ -600,6 +639,7 @@
 <script>
 // import Tinymce from '@/components/Tinymce';
 import Workflow from '@/components/Workflow';
+import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
 // import SupportTable from './components/SupportTable.vue';
 import SubProjectTable from './components/SubProjectTable.vue';
@@ -617,6 +657,7 @@ export default {
   components: {
     // Tinymce,
     // SupportTable,
+    ClassicUpload,
     Workflow,
     SubProjectTable,
   },
@@ -627,6 +668,13 @@ export default {
       }
       callback();
     };
+
+    // var validateFile = (rule, value, callback) => {
+    //   if (value.size > 1024 * 1024) {
+    //     callback(new Error('File Maximum 1 MB'));
+    //   }
+    //   callback();
+    // };
 
     return {
       refresh: 0,
@@ -643,6 +691,9 @@ export default {
       fileName: 'No File Selected.',
       fileMap: [],
       isOss: true,
+      fileKtrName: 'No File Selected',
+      fileMapName: 'No File Selected',
+      filePreAgreementName: 'No File Selected',
       studyApproachOptions: [
         {
           value: 'Terpadu',
@@ -790,36 +841,6 @@ export default {
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
         ],
       },
-      tableData: [
-        {
-          no: 'A',
-          kegiatan: 'Kegiatan Utama',
-          jenisKegiatan: '',
-          skala: '',
-          hasil: '',
-        },
-        {
-          no: '1',
-          kegiatan: 'Pabrik Pupuk',
-          jenisKegiatan: 'Industri ',
-          skala: '111',
-          hasil: 'aaaa',
-        },
-        {
-          no: 'B',
-          kegiatan: 'Kegiatan Pendukung',
-          jenisKegiatan: '',
-          skala: '',
-          hasil: '',
-        },
-        {
-          no: '2',
-          kegiatan: 'Pabrik Pupuk',
-          jenisKegiatan: 'Industri ',
-          skala: '111',
-          hasil: 'aaaa',
-        },
-      ],
     };
   },
   computed: {
@@ -852,6 +873,7 @@ export default {
     },
   },
   async created() {
+    console.log('created');
     // for step
     this.$store.dispatch('getStep', 0);
 
@@ -866,11 +888,19 @@ export default {
 
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
-      this.fileName = this.getFileName(this.currentProject.map);
-      this.fileMap = this.getFileName(this.currentProject.map);
-      this.listSupportTable = await this.getListSupporttable(
-        this.currentProject.id
-      );
+      this.listSubProject = this.currentProject.listSubProject;
+      this.fileMap = this.currentProject.fileMap;
+      this.fileMapName = this.fileMap.name;
+      this.fileKtr = this.currentProject.fileKtr;
+      this.fileKtrName = this.fileKtr.name;
+      this.filePreAgreement = this.currentProject.filePreAgreement;
+      this.filePreAgreementName = this.currentProject.filePreAgreement.name;
+      this.handleFileTapakProyekMapUpload('a');
+      // this.fileName = this.getFileName(this.currentProject.map);
+      // this.fileMap = this.getFileName(this.currentProject.map);
+      // this.listSupportTable = await this.getListSupporttable(
+      //   this.currentProject.id
+      // );
       this.getDistricts(this.currentProject.id_prov);
     }
     this.getAllData();
@@ -932,12 +962,12 @@ export default {
       });
     },
     calculateChoosenProject(){
-      console.log('project tanpa filter', this.currentProject);
+      // console.log('project tanpa filter', this.currentProject);
       const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
       const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
       const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
 
-      console.log('listAmdal', listMainProjectAmdal);
+      // console.log('listAmdal', listMainProjectAmdal);
       let choosenProject = '';
 
       if (listMainProjectAmdal.length !== 0){
@@ -948,7 +978,7 @@ export default {
         choosenProject = listMainProjectSppl[0];
       }
 
-      console.log('choosenProject', choosenProject);
+      // console.log('choosenProject', choosenProject);
 
       // add choosen project to current project
       this.currentProject.kbli = choosenProject.kbli;
@@ -967,14 +997,30 @@ export default {
       this.calculateChoosenProject();
       this.activeName = '3';
     },
-    handleFileKtrUpload(){
-      this.fileKtr = this.$refs.fileKtr.files[0];
+    checkMapFile() {
+      document.querySelector('#ktrFile').click();
     },
-    handleFilePreAgreementUpload(){
-      this.filePreAgreement = this.$refs.filePreAgreement.files[0];
+    handleFileKtrUpload(e){
+      this.fileKtr = e.target.files[0];
+      this.fileKtrName = e.target.files[0].name;
+      console.log(this.fileKtr);
+    },
+    handleFilePreAgreementUpload(e){
+      this.filePreAgreement = e.target.files[0];
+      this.filePreAgreementName = e.target.files[0].name;
+      // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
-      this.fileMap = this.$refs.fileMap.files[0];
+      console.log('map', this.fileMap);
+      if (e !== 'a'){
+        console.log(e.target.files[0]);
+        this.fileMap = e.target.files[0];
+        this.fileMapName = e.target.files[0].name;
+      }
+      // if (this.$refs.fileMap.files[0]){
+      //   console.log(this.$refs.fileMap.files[0]);
+      //   this.fileMap = this.$refs.fileMap.files[0];
+      // }
 
       const map = new Map({
         basemap: 'topo',
@@ -1061,8 +1107,8 @@ export default {
         );
       };
     },
-    checkMapFile() {
-      document.querySelector('#mapFile').click();
+    checkKtrFile() {
+      document.querySelector('#ktrFile').click();
     },
     checkMapFileSure(e) {
       this.fileName = e.target.files[0].name;
@@ -1112,7 +1158,7 @@ export default {
     },
     async changeProvince(row) {
       // change all district by province
-      console.log(row);
+      // console.log(row);
       delete row.district;
       await this.getDistricts(row.prov);
       row.districts = this.$store.getters.cityOptions;

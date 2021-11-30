@@ -56,15 +56,20 @@ class Project extends Model
     {
         return $this->hasMany(ImpactIdentification::class, 'id_project', 'id');
     }
+    
+    public function impactIdentificationsClone()
+    {
+        return $this->hasMany(ImpactIdentificationClone::class, 'id_project', 'id');
+    }
 
     public function address()
     {
         return $this->hasMany(ProjectAddress::class, 'id_project', 'id');
     }
 
-    public function lpjp()
+    public function listSubProject()
     {
-        return $this->hasMany(Lpjp::class, 'id_project', 'id');
+        return $this->hasMany(SubProject::class, 'id_project', 'id');
     }
 
     public function testingMeeting()

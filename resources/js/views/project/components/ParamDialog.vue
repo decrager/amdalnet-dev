@@ -7,7 +7,7 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="No.">
+      <el-table-column label="No." width="60px">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
         </template>
@@ -49,6 +49,12 @@
           {{ scope.row.result }}
         </template>
       </el-table-column>
+
+      <el-table-column label="Tipe Amdal">
+        <template slot-scope="scope">
+          {{ scope.row.amdal_type }}
+        </template>
+      </el-table-column>
     </el-table>
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleCancelParam"> Tutup </el-button>
@@ -86,6 +92,7 @@ export default {
     handleUsedChange(value) {
       delete value.scale;
       delete value.result;
+      delete value.amdal_type;
       // this.handleRefreshDialog();
     },
     handleCancelParam() {
@@ -125,6 +132,7 @@ export default {
           if (tempStatus) {
             value.result = item.doc_req;
             value.result_risk = item.risk_level;
+            value.amdal_type = item.amdal_type;
           }
         });
 

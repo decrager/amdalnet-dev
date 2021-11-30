@@ -13,7 +13,7 @@ class EnvImpactAnalysis extends Model
 
     public function impactIdentification()
     {
-        return $this->belongsTo(ImpactIdentification::class, 'id_impact_identifications', 'id');
+        return $this->belongsTo(ImpactIdentificationClone::class, 'id_impact_identifications', 'id');
     }
 
     public function detail()

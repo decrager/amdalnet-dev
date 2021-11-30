@@ -173,7 +173,7 @@
 
     </el-row>
     <div slot="footer" class="dialog-footer">
-      <el-button :disabled="readonly" @click="handleCancel()"> Batal </el-button>
+      <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
       <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
     </div>
   </div>
@@ -223,8 +223,8 @@ export default {
       default: false,
     },
     mapUpload: {
-      type: Array,
-      default: () => [],
+      type: File,
+      default: () => null,
     },
   },
   data() {
@@ -251,6 +251,17 @@ export default {
       fullLoading: false,
     };
   },
+  beforeRouteLeave(to, from, next) {
+    if (from.name === 'publishProject' && to.name === 'createProject') {
+      if (!to.params.project){
+        next(false);
+      } else {
+        next();
+      }
+    } else {
+      next();
+    }
+  },
   computed: {
     getFormulatedTeam(){
       return this.$store.getters.teamType;
@@ -274,18 +285,17 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    // data table for subproject
+    this.setDataTables();
+    this.setAddressDataTables();
+    this.fullLoading = false;
+    this.loadMap();
     await this.$store.dispatch('getLpjp');
     await this.$store.dispatch('getFormulators', {
       page: 1,
       limit: 1000,
       active: '',
     });
-
-    // data table for subproject
-    this.setDataTables();
-    this.setAddressDataTables();
-    this.fullLoading = false;
-    this.loadMap();
   },
   methods: {
     setAddressDataTables(){
@@ -667,6 +677,7 @@ export default {
       this.calculatedProjectDoc();
     },
     handleCancel() {
+      // this.$router.back();
       this.$router.push({
         name: 'createProject',
         params: { project: this.project },

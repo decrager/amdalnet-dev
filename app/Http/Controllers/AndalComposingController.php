@@ -8,10 +8,13 @@ use App\Entity\EnvImpactAnalysis;
 use App\Entity\FormulatorTeam;
 use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
+use App\Entity\ImpactIdentificationClone;
 use App\Entity\ImportantTrait;
+use App\Entity\Lpjp;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\PublicConsultation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
@@ -81,7 +84,7 @@ class AndalComposingController extends Controller
                 return array_search($model->getKey(),$ids);
             });
             
-            $project = Project::where('id', $request->idProject)->whereHas('impactIdentifications', function($query) {
+            $project = Project::where('id', $request->idProject)->whereHas('impactIdentificationsClone', function($query) {
                 $query->whereHas('envImpactAnalysis');
             })->first();
 
@@ -314,8 +317,7 @@ class AndalComposingController extends Controller
     private function getImpactNotifications($id_project, $stages) {
         $alphabet_list = 'A';
 
-        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project],['is_hypothetical_significant', true]])
-        ->whereHas('subProjectRonaAwal')->whereHas('subProjectComponent')->with(['subProjectRonaAwal', 'subProjectComponent'])->get();
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project],['is_hypothetical_significant', true]])->get();
 
         $important_trait = ImportantTrait::select('id', 'description')->get();
         $traits = [];
@@ -345,11 +347,22 @@ class AndalComposingController extends Controller
                 $ronaAwal = '';
                 $component = '';
 
-                $data = $this->getComponentRonaAwal($imp, $s->id);
+                // check stages
+                $id_stages = null;
 
-                if($data['component'] && $data['ronaAwal']) {
-                    $ronaAwal = $data['ronaAwal'];   
-                    $component = $data['component'];   
+                if($imp->subProjectComponent->id_project_stage) {
+                    $id_stages = $imp->subProjectComponent->id_project_stage;
+                } else {
+                    $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                }
+
+                if($id_stages == $s->id) {
+                    if($imp->subProjectRonaAwal) {
+                        $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                        $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                    } else {
+                        continue;
+                    }
                 } else {
                     continue;
                 }
@@ -396,8 +409,7 @@ class AndalComposingController extends Controller
     private function getEnvImpactAnalysis($id_project, $stages) {
         $alphabet_list = 'A';
 
-        $impactIdentifications = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
-                                        ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->get();
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')->where([['id_project', $id_project],['is_hypothetical_significant', true]])->get();
         $results = [];
 
         foreach($stages as $s) {
@@ -413,11 +425,22 @@ class AndalComposingController extends Controller
                 $ronaAwal = '';
                 $component = '';
 
-                $data = $this->getComponentRonaAwal($imp, $s->id);
+                // check stages
+                $id_stages = null;
 
-                if($data['component'] && $data['ronaAwal']) {
-                    $ronaAwal = $data['ronaAwal'];   
-                    $component = $data['component'];   
+                if($imp->subProjectComponent->id_project_stage) {
+                    $id_stages = $imp->subProjectComponent->id_project_stage;
+                } else {
+                    $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                }
+
+                if($id_stages == $s->id) {
+                    if($imp->subProjectRonaAwal) {
+                        $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                        $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                    } else {
+                        continue;
+                    }
                 } else {
                     continue;
                 }
@@ -471,7 +494,146 @@ class AndalComposingController extends Controller
     }
 
     private function dokumen($id_project) {
+        Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
+
+        // ======== TIM PENYUSUN AMDAL ========= //
+        $formulator = [];
+
+        $formulator_team = FormulatorTeam::where('id_project', $id_project)->first();
+        if($formulator_team) {
+            $total = 1;
+            foreach($formulator_team->member as $m) {
+                $formulator[] = [
+                    'tim_penyusun' => $total,
+                    'name' => $m->formulator->name,
+                    'position' => $m->position,
+                    'cert_type' => $m->formulator->membership_status,
+                    'reg_no' => $m->formulator->reg_no,
+                    'cert_expire' => Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_end)->isoFormat('D MMMM Y'),
+                    'expertise' => $m->formulator->expertise
+                ];
+
+                $total++;
+            }
+        }
+
+        // ========= LPJP ============= //
+        $lpjp = [
+            'name' => '',
+            'address' => '',
+            'reg_no' => '',
+            'date_start' => '',
+            'date_end' => '',
+            'period' => '',
+            'telephone' => '',
+            'faksimili' => '',
+            'pic' => '',
+            'position' => ''
+        ];
+        $lpjp_data = Lpjp::where('id', $project->id_lpjp)->first();
+        if($lpjp_data) {
+            $date_start = Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_start);
+            $date_end =  Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_start);
+            $lpjp = [
+                'name' => $lpjp_data->name,
+                'address' => $lpjp_data->address . ', ' . $lpjp_data->district->name . ', Provinsi ' .$lpjp_data->province->name,
+                'reg_no' => $lpjp_data->reg_no,
+                'date_start' => $date_start->isoFormat('D MMMM Y'),
+                'date_end' => $date_end->isoFormat('D MMMM Y'),
+                'period' => 'period',
+                'telephone' => $lpjp_data->phone_no,
+                'faksimili' => '',
+                'pic' => $lpjp_data->pic,
+                'position' => ''
+            ];
+        }
+
+        // ============== KA ============= //
+        $ids = [4,1,2,3];
+        $stages = ProjectStage::select('id', 'name')->get()->sortBy(function($model) use($ids) {
+            return array_search($model->getKey(),$ids);
+        });
+        $impact_identification = ImpactIdentificationClone::where('id_project', $id_project)->get();
+   
+        $pk = [];
+        $k = [];
+        $o = [];
+        $po = [];
+
+        foreach($stages as $s) {
+            $total = 1;
+            foreach($impact_identification as $imp) {
+                $ronaAwal = '';
+                $component = '';
+
+               // check stages
+               $id_stages = null;
+
+               if($imp->subProjectComponent->id_project_stage) {
+                   $id_stages = $imp->subProjectComponent->id_project_stage;
+               } else {
+                   $id_stages = $imp->subProjectComponent->component->id_project_stage;
+               }
+
+               if($id_stages == $s->id) {
+                   if($imp->subProjectRonaAwal) {
+                       $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                       $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                   } else {
+                       continue;
+                   }
+               } else {
+                   continue;
+               }
+
+
+                if($s->name == 'Pra Konstruksi') {
+                    $pk[] = [
+                        'ka_pk' => $total,
+                        'ka_pk_component' => $component,
+                        'ka_pk_plan' => $imp->initial_study_plan,
+                        'ka_pk_rona_awal' => $ronaAwal,
+                        'ka_pk_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
+                        'ka_pk_study_location' => $imp->study_location,
+                        'ka_pk_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                    ];
+                } else if($s->name == 'Konstruksi') {
+                    $k[] = [
+                        'ka_k' => $total,
+                        'ka_k_component' => $component,
+                        'ka_k_plan' => $imp->initial_study_plan,
+                        'ka_k_rona_awal' => $ronaAwal,
+                        'ka_k_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
+                        'ka_k_study_location' => $imp->study_location,
+                        'ka_k_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                    ];
+                } else if($s->name == 'Operasi') {
+                    $o[] = [
+                        'ka_o' => $total,
+                        'ka_o_component' => $component,
+                        'ka_o_plan' => $imp->initial_study_plan,
+                        'ka_o_rona_awal' => $ronaAwal,
+                        'ka_o_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
+                        'ka_o_study_location' => $imp->study_location,
+                        'ka_o_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                    ];
+                } else if($s->name == 'Pasca Operasi') {
+                    $po[] = [
+                        'ka_po' => $total,
+                        'ka_po_component' => $component,
+                        'ka_po_plan' => $imp->initial_study_plan,
+                        'ka_po_rona_awal' => $ronaAwal,
+                        'ka_po_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
+                        'ka_po_study_location' => $imp->study_location,
+                        'ka_po_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                    ];
+                }
+
+                $total++;
+            }
+        }
+
 
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
@@ -484,18 +646,36 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('address', ucwords(strtolower($project->address)));
         $templateProcessor->setValue('pemrakarsa_address', ucwords(strtolower($project->initiator->address)));
         $templateProcessor->setValue('pemrakarsa_phone', ucwords(strtolower($project->initiator->phone)));
+        $templateProcessor->setValue('date_small', Carbon::now()->isoFormat('MMMM Y'));
+        $templateProcessor->setValue('lpjp_name', $lpjp['name']);
+        $templateProcessor->setValue('lpjp_address', $lpjp['address']);
+        $templateProcessor->setValue('lpjp_reg_no', $lpjp['reg_no']);
+        $templateProcessor->setValue('lpjp_date_start', $lpjp['date_start']);
+        $templateProcessor->setValue('lpjp_date_end', $lpjp['date_end']);
+        $templateProcessor->setValue('lpjp_period', $lpjp['period']);
+        $templateProcessor->setValue('lpjp_telephone', $lpjp['telephone']);
+        $templateProcessor->setValue('lpjp_faksimili', $lpjp['faksimili']);
+        $templateProcessor->setValue('lpjp_pic', $lpjp['pic']);
+        $templateProcessor->setValue('lpjp_position', $lpjp['position']);
+        $templateProcessor->cloneRowAndSetValues('tim_penyusun', $formulator);
+        $templateProcessor->cloneRowAndSetValues('ka_pk', $pk);
+        $templateProcessor->cloneRowAndSetValues('ka_k', $k);
+        $templateProcessor->cloneRowAndSetValues('ka_o', $o);
+        $templateProcessor->cloneRowAndSetValues('ka_po', $po);
 
         $save_file_name = $id_project .'-andal' . '.docx'; 
-            if (!File::exists(storage_path('app/public/workspace/'))) {
-                File::makeDirectory(storage_path('app/public/workspace/'));
-            }
+        // if (!File::exists(storage_path('app/public/workspace/'))) {
+        //     File::makeDirectory(storage_path('app/public/workspace/'));
+        // }
 
-            if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-                $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
-            }
-            
+        // if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        //     $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        // }
 
-            return response()->json(['message' => 'success']);
+        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        
+
+        return response()->json(['message' => 'success']);
 
     }
 
@@ -536,7 +716,7 @@ class AndalComposingController extends Controller
             $results['negative'][] = ['val' => $p->negative_feedback_summary ?? '']; 
         }
 
-        $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'potential_impact_evaluation', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'potential_impact_evaluation', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
         ->where('id_project', $id_project)->get();
 
         $total_ms = 0;
