@@ -142,13 +142,13 @@
             <h4 class="fw-bold" style="margin-bottom:0">Berikan rating Anda untuk Rencana Usaha/Kegiatan ini</h4>
             <div style="display: flex;align-items: center;">
               <div>
-                <p class="fw-bold">1 = Sangat Tidak Setuju</p>
+                <p class="fw-bold">1 = Tidak Relevan</p>
               </div>
               <div style="margin:0 1rem">
                 <el-rate v-model="ratingCreate" />
               </div>
               <div>
-                <p class="fw-bold">5  = Sangat Setuju</p>
+                <p class="fw-bold">5  = Relevan</p>
               </div>
             </div>
           </el-col>

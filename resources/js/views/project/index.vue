@@ -314,6 +314,7 @@ export default {
         page: 1,
         limit: 10,
       },
+      initiator: {},
       provinceOptions: [],
       cityOptions: [],
       documentTypeOptions: [
@@ -357,6 +358,7 @@ export default {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
     }
+    this.initiator = await initiatorResource.list({ email: this.userInfo.email });
     // else if (this.userInfo.roles.includes('examiner-substance')) {
     //   const formulator = await formulatorResource.list({ email: this.userInfo.email });
     //   this.listQuery.formulatorId = formulator.id;
@@ -471,7 +473,16 @@ export default {
     },
     handlePublishForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
+      const subProject = currentProject.list_sub_project.map(curr => {
+        return {
+          name: curr.name,
+          scale: curr.scale + ' ' + curr.scale_unit,
+        };
+      });
       console.log(currentProject);
+      this.announcement.sub_project = subProject;
+      this.announcement.pic_name = this.initiator.pic;
+      this.announcement.pic_address = this.initiator.address;
       this.announcement.project_id = currentProject.id;
       this.announcement.project_result = currentProject.required_doc;
       this.announcement.project_type = currentProject.project_title;
