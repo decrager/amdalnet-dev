@@ -20,6 +20,15 @@
             height="723px"
             frameborder="1"
           />
+          <iframe
+            v-show="showDocument"
+            :src="
+              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
+            "
+            width="100%"
+            height="723px"
+            frameborder="0"
+          />
         </el-col>
         <el-col :span="8">
           <div class="grid-content bg-purple" />
@@ -127,13 +136,17 @@ export default {
             penyusun: this.penyusun,
           });
 
+          this.projects =
+            window.location.origin +
+            '/storage/formulir/' +
+            this.$route.params.id +
+            '-form-ka-andal.docx';
+
           const out = doc.getZip().generate({
             type: 'blob',
             mimeType:
               'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
-
-          this.out = out;
 
           const formData = new FormData();
           formData.append('docx', out);
@@ -148,6 +161,8 @@ export default {
             .catch((error) => {
               console.log(error);
             });
+
+          this.out = out;
         }
       );
     },
