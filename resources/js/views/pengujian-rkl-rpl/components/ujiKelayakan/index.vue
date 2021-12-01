@@ -48,11 +48,11 @@
         </template>
       </el-table-column> -->
 
-      <el-table-column align="center" label="Rekomendasi Penyusun">
+      <!-- <el-table-column align="center" label="Rekomendasi Penyusun">
         <template slot-scope="scope">
           <el-input v-model="scope.row.notes" type="textarea" :rows="2" :disabled="isExaminer" />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="Rekomendasi Ahli">
         <template slot-scope="scope">
           <el-input v-model="scope.row.expert_notes" type="textarea" :rows="2" :disabled="!isExaminer" />
