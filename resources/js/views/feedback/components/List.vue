@@ -3,6 +3,7 @@
     <div class="filter-container">
       <el-row type="flex" class="row-bg" justify="space-between">
         <el-button
+          v-if="!isExaminer"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -126,7 +127,13 @@ export default {
       identityDialogImg: '',
       showIdDialog: false,
       showFeedback: false,
+      userInfo: {},
     };
+  },
+  computed: {
+    isExaminer() {
+      return this.$store.getters.roles.includes('examiner');
+    },
   },
   mounted() {
     this.relevantChoices = [

@@ -241,6 +241,7 @@ export const asyncRoutes = [
     path: '/spt',
     component: Layout,
     meta: { title: 'SPT', icon: 'dashboard', noCache: true },
+    hidden: true,
     children: [
       {
         path: '/spt',
