@@ -101,6 +101,15 @@
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
+                  icon="el-icon-user"
+                  @click="handleTimPenyusunForm(scope.row.id)"
+                >
+                  Tim Penyusun
+                </el-button>
+                <el-button
+                  v-if="!scope.row.published && isInitiator"
+                  type="text"
+                  href="#"
                   icon="el-icon-tickets"
                   @click="handlePublishForm(scope.row.id)"
                 >
@@ -223,6 +232,15 @@
                 >
                   Workspace RKL RPL
                 </el-button>
+                <el-button
+                  v-if="isInitiator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleGenerateSPPL(scope.row)"
+                >
+                  Unduh SPPL
+                </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
               <span v-html="scope.row.description" />
@@ -287,6 +305,10 @@
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import AnnouncementDialog from './components/AnnouncementDialog.vue';
+import Docxtemplater from 'docxtemplater';
+import PizZip from 'pizzip';
+import PizZipUtils from 'pizzip/utils/index.js';
+import { saveAs } from 'file-saver';
 const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -296,6 +318,7 @@ const lpjpResource = new Resource('lpjpsByEmail');
 const formulatorResource = new Resource('formulatorsByEmail');
 const andalComposingResource = new Resource('andal-composing');
 const rklResource = new Resource('matriks-rkl');
+// const kbliResource = new Resource('business');
 
 export default {
   name: 'Project',
@@ -307,6 +330,7 @@ export default {
         roles: [],
       },
       filtered: [],
+      initiator: {},
       announcement: {},
       show: false,
       total: 0,
@@ -314,7 +338,6 @@ export default {
         page: 1,
         limit: 10,
       },
-      initiator: {},
       provinceOptions: [],
       cityOptions: [],
       documentTypeOptions: [
@@ -354,11 +377,11 @@ export default {
     } else if (this.userInfo.roles.includes('initiator')) {
       const initiator = await initiatorResource.list({ email: this.userInfo.email });
       this.listQuery.initiatorId = initiator.id;
+      this.initiator = initiator;
     } else if (this.userInfo.roles.includes('formulator')) {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
     }
-    this.initiator = await initiatorResource.list({ email: this.userInfo.email });
     // else if (this.userInfo.roles.includes('examiner-substance')) {
     //   const formulator = await formulatorResource.list({ email: this.userInfo.email });
     //   this.listQuery.formulatorId = formulator.id;
@@ -368,6 +391,14 @@ export default {
     console.log(this.userInfo);
   },
   methods: {
+    toTitleCase(str) {
+      return str.replace(
+        /\w\S*/g,
+        function(txt) {
+          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+      );
+    },
     handleSubmitAnnouncement(fileProof){
       // this.announcement.fileProof = fileProof;
       console.log(this.announcement);
@@ -471,6 +502,15 @@ export default {
         params: { project: currentProject, readonly: true },
       });
     },
+    handleTimPenyusunForm(id) {
+      const currentProject = this.filtered.find((item) => item.id === id);
+      console.log(currentProject);
+      this.$router.push({
+        name: 'timPenyusun',
+        params: { project: currentProject, readonly: true, id: currentProject.id },
+      });
+      // this.$router.push('penyusun/' + currentProject.id);
+    },
     handlePublishForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
       const subProject = currentProject.list_sub_project.map(curr => {
@@ -535,6 +575,47 @@ export default {
       this.$router.push({
         path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
       });
+    },
+    async handleGenerateSPPL(project) {
+      console.log(project);
+
+      project.listSubProject = project.listSubProject.map((e, i) => {
+        e.address = project.address[i] ? this.toTitleCase(project.address[i].address + ' ' + project.address[i].district + ' ' + project.address[i].prov) : '';
+        e.number = i + 1;
+        return e;
+      });
+
+      console.log(project.listSubProject);
+
+      PizZipUtils.getBinaryContent(
+        '/template_sppl.docx',
+        (error, content) => {
+          if (error) {
+            throw error;
+          }
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          doc.render({
+            initator_name: this.initiator.name,
+            nib: this.initiator.nib ? this.initiator.nib : 'Belum Terdaftar',
+            initiator_address: this.initiator.address,
+            phone: this.initiator.phone,
+            sub_projects: project.listSubProject,
+            pic: this.initiator.pic,
+          });
+
+          const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          });
+
+          saveAs(out, 'SPPL-' + project.project_title + '.docx');
+          // this.docOutput = out;
+        }
+      );
     },
     handleAndal(project) {
       this.$router.push({

@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\FormulatorTeam;
 use App\Http\Controllers\BaganAlirController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\UklUplCommentController;
@@ -11,8 +12,10 @@ use App\Laravue\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChangeTypeController;
+use App\Http\Controllers\FormulatorTeamController;
 use App\Http\Controllers\PieParamController;
 use App\Http\Controllers\ImpactIdentificationController;
+use App\Http\Controllers\LpjpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -178,7 +181,7 @@ Route::get('articles/{id}/pageviews', function ($id) {
 Route::apiResource('project-fields', 'ProjectFieldController');
 Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
-Route::apiResource('kblis', 'BusinessController');
+Route::apiResource('business', 'BusinessController');
 Route::apiResource('kbli-env-params', 'BusinessEnvParamController');
 Route::apiResource('projects', 'ProjectController');
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
@@ -234,6 +237,7 @@ Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('change-types', [ChangeTypeController::class, 'index']);
 Route::get('pie-params', [PieParamController::class, 'index']);
 Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
+Route::post('upload-maps', [ProjectMapAttachmentController::class, 'store']);
 Route::get('download-map/{id}', [ProjectMapAttachmentController::class, 'download']);
 Route::apiResource('manage-approach', 'ManageApproachController');
 Route::post('upload-ka-doc', [ExportDocument::class, 'saveKADoc']);
@@ -244,3 +248,5 @@ Route::get('form-ka-pdf/{id}', [ExportDocument::class, 'ExportKAPdf']);
 Route::apiResource('andal-clone', 'AndalCloneController');
 Route::get('map/{id}', [ProjectMapAttachmentController::class, 'show']);
 Route::apiResource('public-spt', 'PublicSPTController');
+Route::get('lpjp-teams', [LpjpController::class, 'getFormulator']);
+Route::get('form-teams', [FormulatorTeamController::class, 'getAll']);

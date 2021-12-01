@@ -189,7 +189,7 @@ const districtResource = new Resource('districts');
 const provinceResource = new Resource('provinces');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
-const supportDocResource = new Resource('support-docs');
+// const supportDocResource = new Resource('support-docs');
 const initiatorResource = new Resource('initiatorsByEmail');
 const formulatorResource = new Resource('formulators');
 const formulatorTeamsResource = new Resource('formulator-teams');
@@ -770,8 +770,8 @@ export default {
           if (this.project.id !== undefined) {
             // update
             projectResource.updateMultipart(this.project.id, formData).then(response => {
-              const { data } = response;
-              this.saveSupportDocs(data.id);
+              // const { data } = response;
+              // this.saveSupportDocs(data.id);
               this.$message({
                 type: 'success',
                 message: 'Project info has been updated successfully',
@@ -786,9 +786,9 @@ export default {
               .store(formData)
               .then((response) => {
                 // save supportdocs
-                const { data } = response;
+                // const { data } = response;
 
-                this.saveSupportDocs(data.id);
+                // this.saveSupportDocs(data.id);
                 // this.createTeam(data.id);
                 this.$message({
                   message:
@@ -810,24 +810,24 @@ export default {
         }
       });
     },
-    async saveSupportDocs(id_project){
-      this.project.listSupportDoc.forEach(element => {
-        element.id_project = id_project;
+    // async saveSupportDocs(id_project){
+    //   this.project.listSupportDoc.forEach(element => {
+    //     element.id_project = id_project;
 
-        // make form data because we got file
-        const formData = new FormData();
+    //     // make form data because we got file
+    //     const formData = new FormData();
 
-        // eslint-disable-next-line no-undef
-        _.each(element, (value, key) => {
-          formData.append(key, value);
-        });
-        if (element.id === undefined){
-          supportDocResource.store(formData);
-        } else {
-          supportDocResource.updateMultipart(element.id, formData);
-        }
-      });
-    },
+    //     // eslint-disable-next-line no-undef
+    //     _.each(element, (value, key) => {
+    //       formData.append(key, value);
+    //     });
+    //     if (element.id === undefined){
+    //       supportDocResource.store(formData);
+    //     } else {
+    //       supportDocResource.updateMultipart(element.id, formData);
+    //     }
+    //   });
+    // },
     async updateList() {
       console.log(this.project.address[0]);
       // await this.getKabKotName(this.project.address[0].id_district);
