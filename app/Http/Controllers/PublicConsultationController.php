@@ -56,9 +56,8 @@ class PublicConsultationController extends Controller
                 'negative_feedback_summary' => 'required',
                 'doc_files' => 'required',
                 'doc_metadatas' => 'required',
-                'doc_berita_acara' => 'required',
-                'doc_berita_acara_2' => 'required',
-                'doc_daftar_hadir' => 'required',
+                'doc_ba_pelaksanaan' => 'required',
+                'doc_ba_penunjukan_wakil_masyarakat' => 'required',
                 'doc_pengumuman' => 'required',
                 'doc_undangan' => 'required',
             ]

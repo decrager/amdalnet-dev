@@ -247,5 +247,6 @@ Route::get('get-document-ka/{id}', [ExportDocument::class, 'getDocKA']);
 Route::get('form-ka-pdf/{id}', [ExportDocument::class, 'ExportKAPdf']);
 Route::apiResource('andal-clone', 'AndalCloneController');
 Route::get('map/{id}', [ProjectMapAttachmentController::class, 'show']);
+Route::apiResource('public-spt', 'PublicSPTController');
 Route::get('lpjp-teams', [LpjpController::class, 'getFormulator']);
 Route::get('form-teams', [FormulatorTeamController::class, 'getAll']);
