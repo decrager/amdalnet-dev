@@ -113,7 +113,6 @@
                   v-model="project.type_formulator_team"
                   placeholder="Pilih"
                   :disabled="readonly"
-                  @change="onFormulatorTypeChange($event)"
                 >
                   <el-option
                     v-for="item in teamOptions"
@@ -124,8 +123,9 @@
                 </el-select>
               </el-form-item>
             </el-form>
-          </el-col></el-row>
-        <el-row v-if="getFormulatedTeam === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
+          </el-col>
+        </el-row>
+        <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
           <el-col :span="12">
             <el-form
               ref="project"
@@ -146,7 +146,9 @@
           </el-col></el-row>
       </el-col>
       <el-col :span="12" />
-      <div v-if="getFormulatedTeam === 'mandiri'">
+    </el-row>
+    <el-row>
+      <div v-if="project.type_formulator_team === 'mandiri'">
         <el-row style="padding-bottom: 16px">
           <h2>Tambah Penyusun</h2>
           <formulator-table
@@ -170,7 +172,6 @@
           >+</el-button>
         </el-row> -->
       </div>
-
     </el-row>
     <div slot="footer" class="dialog-footer">
       <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
@@ -312,7 +313,7 @@ export default {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
-          jenisKegiatan: e.sector,
+          jenisKegiatan: e.biz_name,
           skala: e.scale + ' ' + e.scale_unit,
           hasil: e.result,
         };
@@ -322,7 +323,7 @@ export default {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
-          jenisKegiatan: e.sector,
+          jenisKegiatan: e.biz_name,
           skala: e.scale + ' ' + e.scale_unit,
           hasil: e.result,
         };
@@ -765,50 +766,52 @@ export default {
 
       console.log('project yang disubmit', formData);
 
-      this.$refs.project.validate(valid => {
-        if (valid) {
-          if (this.project.id !== undefined) {
-            // update
-            projectResource.updateMultipart(this.project.id, formData).then(response => {
-              // const { data } = response;
-              // this.saveSupportDocs(data.id);
-              this.$message({
-                type: 'success',
-                message: 'Project info has been updated successfully',
-                duration: 5 * 1000,
-              });
-              this.$router.push('/project');
-            }).catch(error => {
-              console.log(error);
+      // this.$refs.project.validate(valid => {
+      if (this.project.type_formulator_team) {
+        if (this.project.id !== undefined) {
+          // update
+          projectResource.updateMultipart(this.project.id, formData).then(response => {
+            // const { data } = response;
+            // this.saveSupportDocs(data.id);
+            this.$message({
+              type: 'success',
+              message: 'Project info has been updated successfully',
+              duration: 5 * 1000,
             });
-          } else {
-            projectResource
-              .store(formData)
-              .then((response) => {
-                // save supportdocs
-                // const { data } = response;
+            this.$router.push('/project');
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          projectResource
+            .store(formData)
+            .then((response) => {
+              // save supportdocs
+              // const { data } = response;
 
-                // this.saveSupportDocs(data.id);
-                // this.createTeam(data.id);
-                this.$message({
-                  message:
+              // this.saveSupportDocs(data.id);
+              // this.createTeam(data.id);
+              this.$message({
+                message:
                     'New Project ' +
                     this.project.project_title +
                     ' has been created successfully.',
-                  type: 'success',
-                  duration: 5 * 1000,
-                });
-                this.$router.push('/project');
-              })
-              .catch((error) => {
-                console.log(error);
+                type: 'success',
+                duration: 5 * 1000,
               });
-          }
-        } else {
-          console.log('error submit!!');
-          return false;
+              this.$router.push('/project');
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
-      });
+      } else {
+        console.log('error submit!!');
+        this.$alert('Mohon Pilih tim Penyusun', 'Title', {
+          confirmButtonText: 'OK',
+        });
+      }
+      // });
     },
     // async saveSupportDocs(id_project){
     //   this.project.listSupportDoc.forEach(element => {
@@ -839,7 +842,7 @@ export default {
         },
         {
           param: 'Bidang Usaha/Kegiatan',
-          value: this.project.sector,
+          value: this.project.listSubProject[0].biz_name,
         },
         {
           param: 'Skala/Besaran',

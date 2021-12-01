@@ -25,6 +25,9 @@ class BusinessEnvParamController extends Controller
 
                 //get kbli env param by kbli_id, business_type and scale
                 return BusinessEnvParamResource::collection(BusinessEnvParam::where('business_id', $request->fieldId)->where('id_param', $request->businessType)->where('id_unit', $request->unit)->get());
+            } else if (isset($request->unit) && $request->unit == 0){
+                //get kbli env param by kbli_id, business_type and scale
+                return BusinessEnvParamResource::collection(BusinessEnvParam::where('business_id', $request->fieldId)->where('id_param', $request->businessType)->where('id_unit', $request->unit)->get());
             }
             return BusinessEnvParamResource::collection(BusinessEnvParam::select('business_env_params.id_param','business_env_params.id_unit','params.name as param', 'units.name as unit')->distinct()->where('business_id', $request->fieldId)->leftJoin('params', 'business_env_params.id_param', '=', 'params.id')->leftJoin('units', 'business_env_params.id_unit', '=', 'units.id')->get());
         }
