@@ -580,7 +580,7 @@ export default {
       console.log(project);
 
       project.listSubProject = project.listSubProject.map((e, i) => {
-        e.address = project.address[i] ? this.toTitleCase(project.address[i].address + ' ' + project.address[i].district + ' ' + project.address[i].prov) : null;
+        e.address = project.address[i] ? this.toTitleCase(project.address[i].address + ' ' + project.address[i].district + ' ' + project.address[i].prov) : '';
         e.number = i + 1;
         return e;
       });
