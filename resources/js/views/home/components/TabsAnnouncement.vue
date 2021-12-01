@@ -115,18 +115,19 @@ export default {
         return dayjs(String(value)).format('DD MMMM YYYY');
       }
     },
-    openDetails(id, param) {
+    async openDetails(id, param) {
       this.showDetails = true;
       this.showTabs = false;
       this.selectedId = id;
       this.selectedAnnouncement = {};
       this.selectedProject = {};
-      this.showDetailsDialog = true;
-      axios.get('/api/announcements/' + this.selectedId)
+      await axios.get('/api/announcements/' + this.selectedId)
         .then(response => {
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
         });
+      console.log(this.selectedAnnouncement);
+      this.showDetailsDialog = true;
     },
     handleCancelComponent(e){
       if (e === 'TABS'){

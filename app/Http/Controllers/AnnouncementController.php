@@ -146,7 +146,8 @@ class AnnouncementController extends Controller
     {
         return Announcement::with([
             'project',
-            'project.province'
+            'project.province',
+            'project.address',
         ])->get()->where('id', '=', $announcement->id)->first();
     }
 
