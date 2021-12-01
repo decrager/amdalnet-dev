@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <el-card>
+    <el-card v-loading="loading">
       <h2>Formulir Kerangka Acuan</h2>
       <div>
         <el-button v-if="showDocument" type="danger" @click="exportPdf">
@@ -81,6 +81,7 @@ export default {
   },
   methods: {
     async getData() {
+      this.loading = true;
       const data = await andalComposingResource.list({
         idProject: this.$route.params.id,
         formulir: 'true',
@@ -156,6 +157,7 @@ export default {
                 '/storage/formulir/' +
                 this.$route.params.id +
                 '-form-ka-andal.docx';
+              this.loading = false;
             })
             .catch((error) => {
               console.log(error);
