@@ -53,7 +53,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="left" label="Keahlian">
+    <el-table-column align="left" label="Email">
       <template slot-scope="scope">
         <div v-if="scope.row.position != 'ahli'">{{ scope.row.email }}</div>
         <el-input v-else v-model="scope.row.email" />
