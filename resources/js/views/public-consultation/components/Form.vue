@@ -255,8 +255,8 @@ export default {
       formData.append('negative_feedback_summary', this.postForm.negative_feedback_summary);
       formData.append('doc_files', JSON.stringify(this.postForm.doc_files));
       formData.append('doc_metadatas', JSON.stringify(this.postForm.doc_metadatas));
-      formData.append('doc_ba_pelaksanaan', this.postForm.doc_ba_pelaksanaan);
-      formData.append('doc_ba_penunjukan_wakil_masyarakat', this.postForm.doc_ba_penunjukan_wakil_masyarakat);
+      formData.append('doc_berita_acara_pelaksanaan', this.postForm.doc_ba_pelaksanaan);
+      formData.append('doc_berita_acara_penunjukan_wakil_masyarakat', this.postForm.doc_ba_penunjukan_wakil_masyarakat);
       formData.append('doc_daftar_hadir', this.postForm.doc_daftar_hadir);
       formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
       formData.append('doc_undangan', this.postForm.doc_undangan);
