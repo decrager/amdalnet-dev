@@ -669,7 +669,9 @@ class AndalComposingController extends Controller
             File::makeDirectory(storage_path('app/public/workspace/'));
         }
 
-        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        }
         
 
         return response()->json(['message' => 'success']);

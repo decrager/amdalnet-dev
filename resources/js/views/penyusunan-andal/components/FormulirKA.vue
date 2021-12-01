@@ -136,12 +136,6 @@ export default {
             penyusun: this.penyusun,
           });
 
-          this.projects =
-            window.location.origin +
-            '/storage/formulir/' +
-            this.$route.params.id +
-            '-form-ka-andal.docx';
-
           const out = doc.getZip().generate({
             type: 'blob',
             mimeType:
@@ -157,6 +151,11 @@ export default {
             .store(formData)
             .then((response) => {
               this.showDocument = true;
+              this.projects =
+                window.location.origin +
+                '/storage/formulir/' +
+                this.$route.params.id +
+                '-form-ka-andal.docx';
             })
             .catch((error) => {
               console.log(error);
