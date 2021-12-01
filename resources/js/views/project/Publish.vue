@@ -295,7 +295,7 @@ export default {
     await this.$store.dispatch('getFormulators', {
       page: 1,
       limit: 1000,
-      active: '',
+      active: 'true',
     });
   },
   methods: {
@@ -741,7 +741,7 @@ export default {
       const formData = new FormData();
 
       // for formulator team mandiri
-      if (this.getFormulatedTeam === 'mandiri') {
+      if (this.project.type_formulator_team === 'mandiri') {
         formData.append('formulatorTeams', JSON.stringify(this.listFormulatorTeam));
         for (var u = 0; u < this.listFormulatorTeam.length; u++){
           formData.append('listFormulatorTeam[' + u + ']', this.listFormulatorTeam[u]);
