@@ -9,8 +9,8 @@
           <el-col :span="12">
             <table class="tableDetail tableDetail1" cellspacing="0" cellpadding="0" style="border:none">
               <tr>
-                <td style="width:40%">No. Re gistrasi</td>
-                <td v-html="selectedAnnouncement.project.id_project" />
+                <td style="width:40%">No. Registrasi</td>
+                <td v-html="selectedAnnouncement.project.registration_no" />
               </tr>
               <tr>
                 <td style="width:40%">Jenis Dokumen</td>
@@ -30,7 +30,7 @@
               </tr>
               <tr>
                 <td style="width:40%">Alamat</td>
-                <td v-html="selectedAnnouncement.project.address" />
+                <td v-html="selectedAnnouncement.project.address[0].address" />
               </tr>
               <tr>
                 <td style="width:40%">Kewenangan</td>
@@ -58,7 +58,7 @@
               </tr>
               <tr>
                 <td style="width:40%">Provinsi/Kota</td>
-                <td v-html="selectedAnnouncement.project.province.name" />
+                <td v-html="selectedAnnouncement.project.address[0].prov + '/' + selectedAnnouncement.project.address[0].district" />
               </tr>
               <tr>
                 <td colspan="2">Deskripsi Kegiatan</td>
@@ -313,7 +313,7 @@ export default {
     // showDetails: Boolean,
     selectedAnnouncement: {
       type: Object,
-      default: () => {},
+      default: () => null,
     },
     selectedProject: {
       type: Object,
