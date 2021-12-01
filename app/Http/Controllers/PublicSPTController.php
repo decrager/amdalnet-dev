@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\PublicSPT;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PublicSPTController extends Controller
 {
@@ -36,7 +37,7 @@ class PublicSPTController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->formData;
+        $data = $request->all();
         
         \Validator::make($data, [
             'name' => 'required',
