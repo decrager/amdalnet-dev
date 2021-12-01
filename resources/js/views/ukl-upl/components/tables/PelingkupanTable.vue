@@ -17,7 +17,6 @@
           <template slot-scope="scope">
             <span>{{ scope.row.name }}</span>
             <el-button
-              v-if="!isAndal"
               type="success"
               size="mini"
               class="pull-right"
@@ -43,7 +42,6 @@
           <template slot-scope="scope">
             <span>{{ scope.row.name }}</span>
             <el-button
-              v-if="!isAndal"
               type="success"
               size="mini"
               class="pull-right"
@@ -91,7 +89,6 @@
                     />
                     <span>{{ comp.name }}</span>
                     <el-button
-                      v-if="!isAndal"
                       type="success"
                       size="mini"
                       class="pull-right button-action-mini"
