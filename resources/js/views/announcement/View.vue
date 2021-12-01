@@ -30,23 +30,29 @@ export default {
       showCreateFeedback: false,
       showFeedbackList: false,
       showPublicConsultation: false,
+      userInfo: {},
     };
   },
-  mounted() {
+  created() {
     this.setData();
     this.$store.dispatch('getStep', 2);
   },
   methods: {
     async setData(){
-      const user = await this.$store.dispatch('user/getInfo');
-      fetchInitiatorByEmail(user.email)
+      this.userInfo = await this.$store.dispatch('user/getInfo');
+      fetchInitiatorByEmail(this.userInfo.email)
         .then(response => {
-          if (response.data.length > 0 || user.email === 'admin@laravue.dev') {
+          if (response.data.length > 0 || this.userInfo.email === 'admin@laravue.dev') {
             this.showFeedbackList = true;
             this.showPublicConsultation = true;
           } else {
             // this.showProjectDetail = true;
             this.showCreateFeedback = true;
+          }
+          if (this.userInfo.roles.includes('examiner')) {
+            this.showFeedbackList = true;
+            this.showPublicConsultation = false;
+            this.showCreateFeedback = false;
           }
         })
         .catch(err => {

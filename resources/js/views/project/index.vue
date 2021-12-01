@@ -143,7 +143,7 @@
                   Lihat Detil Penapisan
                 </el-button>
                 <el-button
-                  v-if="scope.row.published && isInitiator"
+                  v-if="(scope.row.published && (isInitiator || isExaminer))"
                   href="#"
                   type="text"
                   icon="el-icon-view"
