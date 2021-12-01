@@ -80,12 +80,12 @@
           <el-form-item label="Dokumen Pendukung" prop="docs">
             <el-row :gutter="4">
               <el-col :span="2" :xs="12">No.</el-col>
-              <el-col :span="5" :xs="12">Tipe Dokumen</el-col>
+              <el-col :span="12" :xs="12">Tipe Dokumen</el-col>
               <el-col :span="5" :xs="12">File</el-col>
             </el-row>
             <el-row>
               <el-col :span="2" :xs="12">1.</el-col>
-              <el-col :span="5" :xs="12">Berita Acara</el-col>
+              <el-col :span="12" :xs="12">Berita Acara Pelaksanaan</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
                   class="upload-demo"
@@ -103,7 +103,25 @@
             </el-row>
             <el-row>
               <el-col :span="2" :xs="12">2.</el-col>
-              <el-col :span="5" :xs="12">Daftar Hadir</el-col>
+              <el-col :span="12" :xs="12">Berita Acara Penunjukan Wakil Masyarakat</el-col>
+              <el-col :span="5" :xs="12">
+                <el-upload
+                  class="upload-demo"
+                  :auto-upload="false"
+                  :on-change="handleUploadBA2"
+                  action="#"
+                  :show-file-list="false"
+                >
+                  <el-button
+                    size="small"
+                    type="primary"
+                  >Upload</el-button>
+                </el-upload>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2" :xs="12">3.</el-col>
+              <el-col :span="12" :xs="12">Daftar Hadir</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
                   class="upload-demo"
@@ -120,8 +138,8 @@
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="2" :xs="12">3.</el-col>
-              <el-col :span="5" :xs="12">Pengumuman</el-col>
+              <el-col :span="2" :xs="12">4.</el-col>
+              <el-col :span="12" :xs="12">Pengumuman</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
                   class="upload-demo"
@@ -138,31 +156,13 @@
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="2" :xs="12">4.</el-col>
-              <el-col :span="5" :xs="12">Undangan</el-col>
+              <el-col :span="2" :xs="12">5.</el-col>
+              <el-col :span="12" :xs="12">Undangan</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadU"
-                  action="#"
-                  :show-file-list="false"
-                >
-                  <el-button
-                    size="small"
-                    type="primary"
-                  >Upload</el-button>
-                </el-upload>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="2" :xs="12">5.</el-col>
-              <el-col :span="5" :xs="12">Berita Acara</el-col>
-              <el-col :span="5" :xs="12">
-                <el-upload
-                  class="upload-demo"
-                  :auto-upload="false"
-                  :on-change="handleUploadBA2"
                   action="#"
                   :show-file-list="false"
                 >
@@ -205,11 +205,11 @@ const defaultForm = {
   negative_feedback_summary: '',
   doc_files: [],
   doc_metadatas: [],
-  doc_berita_acara: {},
   doc_daftar_hadir: {},
   doc_pengumuman: {},
   doc_undangan: {},
-  doc_berita_acara_2: {},
+  doc_ba_pelaksanaan: {},
+  doc_ba_penunjukan_wakil_masyarakat: {},
 };
 
 export default {
@@ -255,8 +255,8 @@ export default {
       formData.append('negative_feedback_summary', this.postForm.negative_feedback_summary);
       formData.append('doc_files', JSON.stringify(this.postForm.doc_files));
       formData.append('doc_metadatas', JSON.stringify(this.postForm.doc_metadatas));
-      formData.append('doc_berita_acara', this.postForm.doc_berita_acara);
-      formData.append('doc_berita_acara_2', this.postForm.doc_berita_acara_2);
+      formData.append('doc_ba_pelaksanaan', this.postForm.doc_ba_pelaksanaan);
+      formData.append('doc_ba_penunjukan_wakil_masyarakat', this.postForm.doc_ba_penunjukan_wakil_masyarakat);
       formData.append('doc_daftar_hadir', this.postForm.doc_daftar_hadir);
       formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
       formData.append('doc_undangan', this.postForm.doc_undangan);
@@ -313,8 +313,13 @@ export default {
     },
     handleUploadBA(file, fileList) {
       this.postForm.doc_files.push(file);
-      this.postForm.doc_metadatas.push(this.createDocJson('Berita Acara', file));
-      this.postForm.doc_berita_acara = file.raw;
+      this.postForm.doc_metadatas.push(this.createDocJson('Berita Acara Pelaksanaan', file));
+      this.postForm.doc_ba_pelaksanaan = file.raw;
+    },
+    handleUploadBA2(file, fileList) {
+      this.postForm.doc_files.push(file);
+      this.postForm.doc_metadatas.push(this.createDocJson('Berita Acara Penunjukan Wakil Masyarakat', file));
+      this.postForm.doc_ba_penunjukan_wakil_masyarakat = file.raw;
     },
     handleUploadDH(file, fileList) {
       this.postForm.doc_files.push(file);
@@ -330,11 +335,6 @@ export default {
       this.postForm.doc_files.push(file);
       this.postForm.doc_metadatas.push(this.createDocJson('Undangan', file));
       this.postForm.doc_undangan = file.raw;
-    },
-    handleUploadBA2(file, fileList) {
-      this.postForm.doc_files.push(file);
-      this.postForm.doc_metadatas.push(this.createDocJson('Berita Acara 2', file));
-      this.postForm.doc_berita_acara_2 = file.raw;
     },
   },
 };
