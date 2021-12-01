@@ -43,6 +43,10 @@
             <p class="pl"><strong>NIK : </strong> <span>{{ props.row.nik }}</span></p>
             <p class="pl"><strong>Email : </strong> <span>{{ props.row.email }}</span></p>
             <p class="pl"><strong>No. Telepon : </strong> <span>{{ props.row.phone }}</span></p>
+            <div class="pl">
+              <p><strong>Foto : </strong></p>
+              <img v-if="props.row.photo" :src="props.row.photo" style="width:300px;">
+            </div>
           </template>
         </el-table-column>
         <el-table-column
@@ -251,9 +255,7 @@ export default {
       formData.append('relevance', this.formData.relevance);
 
       try {
-        await publicSptResource.store({
-          formData: this.formData,
-        });
+        await publicSptResource.store(formData);
         this.outerVisible = false;
         this.formData = {};
       } catch (error) {
