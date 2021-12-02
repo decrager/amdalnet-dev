@@ -128,20 +128,10 @@ import Resource from '@/api/resource';
 import request from '@/utils/request';
 
 // Map-related
-/* import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import shp from 'shpjs';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import Home from '@arcgis/core/widgets/Home';
-import Compass from '@arcgis/core/widgets/Compass';
-import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
-import Attribution from '@arcgis/core/widgets/Attribution';
-import Expand from '@arcgis/core/widgets/Expand';
-import Legend from '@arcgis/core/widgets/Legend';
-import LayerList from '@arcgis/core/widgets/LayerList';
-import GroupLayer from '@arcgis/core/layers/GroupLayer';
-import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';*/
-import shp from 'shpjs';
-import L from 'leaflet';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 
 // import pdf from 'vue-pdf';
 
@@ -361,29 +351,58 @@ export default {
         // return this.loadPDF(id + 1);
       }
 
-      const map = L.map('map' + (id + 1));
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
+      const map = new Map({
+        basemap: 'topo',
+      });
 
-      const reader = new FileReader(); // instantiate a new file reader
+      const reader = new FileReader();
       reader.onload = (event) => {
         const base = event.target.result;
         shp(base).then(function(data) {
-          const geo = L.geoJSON(data).addTo(map);
-          console.log(geo);
-          map.fitBounds(geo.getBounds());
-        });
-      };
-      console.log();
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
 
-      reader.readAsArrayBuffer(this.files[id][0]);
-    },
-    showMap(id){
-      this.visible[id] = true;
-      this.isVisible = true;
-      console.log('showing Map...', this.visible);
-      document.getElementById('map' + id).style.display = 'block';
+          const url = URL.createObjectURL(blob);
+          const geojsonLayer = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+          });
+
+          map.add(geojsonLayer);
+          mapView.on('layerview-create', (event) => {
+            mapView.goTo({
+              target: geojsonLayer.fullExtent,
+            });
+          });
+        });
+
+        // const map = L.map('map' + id);
+        // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        // }).addTo(map);
+
+      // const reader = new FileReader(); // instantiate a new file reader
+      // reader.onload = (event) => {
+      //   const base = event.target.result;
+      //   shp(base).then(function(data) {
+      //     const geo = L.geoJSON(data).addTo(map);
+      //     console.log(geo);
+      //     map.fitBounds(geo.getBounds());
+      //   });
+      // };
+      };
+      reader.readAsArrayBuffer(this.files[0]);
+
+      const mapView = new MapView({
+        container: 'map' + id,
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 4,
+      });
+      this.$parent.mapView = mapView;
     },
 
   },

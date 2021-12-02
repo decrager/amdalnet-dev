@@ -11,7 +11,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class FormulatorController extends Controller
@@ -25,9 +25,9 @@ class FormulatorController extends Controller
     {
         return FormulatorResource::collection(
             Formulator::where(function ($query) use ($request) {
-                if($request->active) {
-                    return $query->where([['date_start', '<=', date('Y-m-d H:i:s')],['date_end', '>=', date('Y-m-d H:i:s')]])
-                            ->orWhere([['date_start', null],['date_end', '>=', date('Y-m-d H:i:s')]]);
+                if ($request->active) {
+                    return $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+                        ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
                 }
                 return '';
             })->orderBy('id', 'DESC')->paginate($request->limit)->appends(['active' => $request->active])
@@ -76,14 +76,14 @@ class FormulatorController extends Controller
 
             DB::beginTransaction();
 
-            if($request->file('cv_penyusun') !== null){
+            if ($request->file('cv_penyusun') !== null) {
                 //create file cv
                 $fileCv = $request->file('cv_penyusun');
                 $cvName = '/penyusun/' . uniqid() . '.' . $fileCv->extension();
                 $fileCv->storePubliclyAs('public', $cvName);
             }
 
-            if($request->file('file_sertifikat') !== null){
+            if ($request->file('file_sertifikat') !== null) {
                 //create file sertifikat
                 $fileSertifikat = $request->file('file_sertifikat');
                 $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
@@ -140,15 +140,14 @@ class FormulatorController extends Controller
     }
 
     public function showByEmail(Request $request)
-    { 
-        If($request->email){
+    {
+        if ($request->email) {
             $formulator = Formulator::where('email', $request->email)->first();
-            
-            if($formulator) {
+
+            if ($formulator) {
                 return $formulator;
             } else {
                 return response()->json(null, 200);
-
             }
         }
     }
@@ -198,7 +197,7 @@ class FormulatorController extends Controller
         } else {
             $params = $request->all();
 
-            if($request->file('cv_penyusun') !== null){
+            if ($request->file('cv_penyusun') !== null) {
                 //create file cv
                 $fileCv = $request->file('cv_penyusun');
                 $cvName = '/penyusun/' . uniqid() . '.' . $fileCv->extension();
@@ -206,7 +205,7 @@ class FormulatorController extends Controller
                 $formulator->cv_file = Storage::url($cvName);
             }
 
-            if($request->file('file_sertifikat') !== null){
+            if ($request->file('file_sertifikat') !== null) {
                 //create file sertifikat
                 $fileSertifikat = $request->file('file_sertifikat');
                 $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
@@ -240,5 +239,14 @@ class FormulatorController extends Controller
     public function destroy(Formulator $formulator)
     {
         //
+    }
+
+    public function getFormulatorName()
+    {
+        $getData = DB::table('formulators')
+            ->select('formulators.id', 'formulators.name')
+            ->get();
+
+        return response()->json($getData);
     }
 }

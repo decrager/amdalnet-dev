@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\ProjectMapAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ProjectMapAttachmentResource;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
@@ -177,5 +178,16 @@ class ProjectMapAttachmentController extends Controller
     public function destroy(ProjectMapAttachment $projectMapAttachment)
     {
         //
+    }
+
+    public function getProjectMap()
+    {
+        $getProjectMap = DB::table('project_map_attachments')
+            ->select('project_map_attachments.id_project', 'projects.project_title', 'project_map_attachments.attachment_type', 'project_map_attachments.stored_filename')
+            ->leftJoin('projects', 'projects.id', '=', 'project_map_attachments.id_project')
+            ->where('project_map_attachments.file_type', '=', 'SHP')
+            ->get();
+
+        return response()->json($getProjectMap);
     }
 }
