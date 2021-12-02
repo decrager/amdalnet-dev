@@ -27,14 +27,6 @@
             <input ref="pePDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(2)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
-          <!-- <div class="map-wrapper" style="width:100%;"><pdf id="map2" src="https://www.orimi.com/pdf-test.pdf"></pdf></div> -->
-          <!-- <embed
-    v-if="embedSrc"
-    type="application/pdf"
-    :src="embedSrc"
-    width="100%"
-    style="max-height: 50rem; min-height: 20rem"
-/> -->
         </fieldset>
       </el-col>
     </el-form-item>
@@ -101,6 +93,7 @@
     <el-row style="text-align:right;">
       <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
     </el-row>
+
     <!--
     <el-row style="margin: 1em 0;">
       <el-col :span="12">
@@ -115,10 +108,8 @@
 
 </template>
 <style scoped>
-@import url('../../../../../node_modules/leaflet/dist/leaflet.css');
-
  legend {line-height: 1.5em; margin: .5em 0 2em;}
- div.map-wrapper { display:none; height: 400px;}
+ div.map-wrapper { height: 400px;}
  fieldset {
    padding:1em;
  }
@@ -132,23 +123,18 @@ import shp from 'shpjs';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
-
-// import pdf from 'vue-pdf';
+import LayerList from '@arcgis/core/widgets/LayerList';
 
 const uploadMaps = new Resource('project-map');
-const unggahMaps = new Resource('upload-maps');
+const unggahMaps = new Resource('upload-map');
 // const unduhMaps = new Resource('download-map');
 
 export default {
   name: 'UploadPetaBatas',
-  components: {
-    // pdf,
-  },
   data() {
     return {
       data: [],
       idProject: 0,
-      embedSrc: '',
       currentMaps: [],
       petaEkologisPDF: '',
       petaSosialPDF: '',
@@ -166,8 +152,8 @@ export default {
       index: 0,
       param: [],
       required: true,
-      isVisible: false,
-      visible: [false, false, false, false, false, false, false],
+      // isVisible: false,
+      // visible: [false, false, false, false, false, false, false],
     };
   },
   mounted() {
@@ -243,7 +229,7 @@ export default {
       });
     },
     async doSubmit(load){
-      console.log(load);
+      // console.log(load);
       return request(load);
     },
     download(id){
@@ -336,19 +322,14 @@ export default {
           break;
         default:
       }
-      this.showMap(idx);
+      // this.showMap(idx);
       console.log('handling on change', this.param);
       this.loadMap(index);
-    },
-    loadPDF(id){
-      const obj = document.getElementById('map' + id);
-      obj.src = URL.createObjectURL(this.files[id][0]);
-      console.log('loading PDF', obj);
     },
     loadMap(id){
       const index = [1, 3, 5];
       if (index.indexOf(id + 1) < 0) {
-        // return this.loadPDF(id + 1);
+        return;
       }
 
       const map = new Map({
@@ -368,6 +349,7 @@ export default {
             url: url,
             visible: true,
             outFields: ['*'],
+            title: 'Layer',
             opacity: 0.75,
           });
 
@@ -378,33 +360,31 @@ export default {
             });
           });
         });
-
-        // const map = L.map('map' + id);
-        // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        // }).addTo(map);
-
-      // const reader = new FileReader(); // instantiate a new file reader
-      // reader.onload = (event) => {
-      //   const base = event.target.result;
-      //   shp(base).then(function(data) {
-      //     const geo = L.geoJSON(data).addTo(map);
-      //     console.log(geo);
-      //     map.fitBounds(geo.getBounds());
-      //   });
-      // };
       };
-      reader.readAsArrayBuffer(this.files[0]);
+      reader.readAsArrayBuffer(this.files[id][0]);
 
       const mapView = new MapView({
-        container: 'map' + id,
+        container: 'map' + (id + 1),
         map: map,
         center: [115.287, -1.588],
         zoom: 4,
       });
       this.$parent.mapView = mapView;
-    },
 
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      mapView.ui.add(layerList, 'top-right');
+    },
+    showMap(id){
+      this.visible[id] = true;
+      this.isVisible = true;
+      console.log('showing Map...', this.visible);
+      document.getElementById('map' + id).style.display = 'block';
+    },
   },
 };
 </script>
