@@ -32,7 +32,7 @@
           <img alt="" src="/images/list.svg">
         </el-col>
         <el-col :xs="24" :sm="18" style="padding-top:1rem">
-          <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project.province.name }}</h3>
+          <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project.province ? amdal.project.province.name : '' }}</h3>
           <h3 class="fw-bold to mt-2-5">{{ amdal.pic_name }}</h3>
           <p class="tw">Pengumuman : {{ formatDateStr(amdal.start_date) }} | {{ amdal.feedbacks_count }} Tanggapan</p>
         </el-col>
