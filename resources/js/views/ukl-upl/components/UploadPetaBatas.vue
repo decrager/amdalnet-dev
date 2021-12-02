@@ -70,7 +70,7 @@
     </el-form-item>
 
     <el-form-item label="Peta Batas Wilayah Studi" :required="required">
-      <el-col :span="10" style="margin-right:1em;">
+      <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi SHP
             <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span @click="download(idPSuS)"><strong>{{ petaStudiSHP }}</strong></span></div>
@@ -358,7 +358,7 @@ export default {
     loadMap(id){
       const index = [1, 3, 5];
       if (index.indexOf(id + 1) < 0) {
-        return this.loadPDF(id + 1);
+        // return this.loadPDF(id + 1);
       }
 
       const map = L.map('map' + (id + 1));
@@ -375,8 +375,9 @@ export default {
           map.fitBounds(geo.getBounds());
         });
       };
+      console.log();
 
-      reader.readAsArrayBuffer(this.files[index][0]);
+      reader.readAsArrayBuffer(this.files[id][0]);
     },
     showMap(id){
       this.visible[id] = true;
