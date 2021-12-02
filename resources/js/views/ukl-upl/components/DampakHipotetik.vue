@@ -340,7 +340,7 @@ export default {
     height: 200% !important;
   }
   table td.title:hover {
-    background-color: #acb;
+    background-color: #efefef;
     cursor: pointer;
   }
 </style>
