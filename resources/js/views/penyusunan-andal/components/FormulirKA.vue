@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <el-card>
+    <el-card v-loading="loading">
       <h2>Formulir Kerangka Acuan</h2>
       <div>
         <el-button v-if="showDocument" type="danger" @click="exportPdf">
@@ -13,15 +13,15 @@
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16">
           <div class="grid-content bg-purple" />
-          <iframe
+          <!-- <iframe
             v-if="showDocument"
             :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projectId}-form-ka-andal&embedded=true`"
             width="100%"
             height="723px"
             frameborder="1"
-          />
+          /> -->
           <iframe
-            v-show="showDocument"
+            v-if="showDocument"
             :src="
               'https://docs.google.com/gview?url=' + projects + '&embedded=true'
             "
@@ -81,6 +81,7 @@ export default {
   },
   methods: {
     async getData() {
+      this.loading = true;
       const data = await andalComposingResource.list({
         idProject: this.$route.params.id,
         formulir: 'true',
@@ -136,12 +137,6 @@ export default {
             penyusun: this.penyusun,
           });
 
-          this.projects =
-            window.location.origin +
-            '/storage/formulir/' +
-            this.$route.params.id +
-            '-form-ka-andal.docx';
-
           const out = doc.getZip().generate({
             type: 'blob',
             mimeType:
@@ -157,6 +152,12 @@ export default {
             .store(formData)
             .then((response) => {
               this.showDocument = true;
+              this.projects =
+                window.location.origin +
+                '/storage/formulir/' +
+                this.$route.params.id +
+                '-form-ka-andal.docx';
+              this.loading = false;
             })
             .catch((error) => {
               console.log(error);

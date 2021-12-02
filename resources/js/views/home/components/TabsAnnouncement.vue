@@ -60,13 +60,11 @@
           :selected-announcement="selectedAnnouncement"
           :selected-project="selectedProject"
           @handleCancelComponent="handleCancelComponent"
-          @handleSetTabs="handleSetTabs"
         />
       </div>
     </div>
-    <div>
+    <div v-if="showAllTabs">
       <ShowAll
-        :show-all-tabs="showAllTabs"
         @handleCancle="handleCancle"
       />
     </div>
@@ -115,18 +113,19 @@ export default {
         return dayjs(String(value)).format('DD MMMM YYYY');
       }
     },
-    openDetails(id, param) {
+    async openDetails(id, param) {
       this.showDetails = true;
       this.showTabs = false;
       this.selectedId = id;
       this.selectedAnnouncement = {};
       this.selectedProject = {};
-      this.showDetailsDialog = true;
-      axios.get('/api/announcements/' + this.selectedId)
+      await axios.get('/api/announcements/' + this.selectedId)
         .then(response => {
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
         });
+      console.log(this.selectedAnnouncement);
+      this.showDetailsDialog = true;
     },
     handleCancelComponent(e){
       if (e === 'TABS'){
@@ -134,10 +133,10 @@ export default {
         this.showTabs = true;
       }
     },
-    handleSetTabs(){
-      this.showDetails = false;
-      this.showTabs = true;
-    },
+    // handleSetTabs(){
+    //   this.showDetails = false;
+    //   this.showTabs = true;
+    // },
     openAll(type){
       this.showTopTabs = false;
       this.showAllTabs = true;

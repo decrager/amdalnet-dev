@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Business;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
@@ -280,8 +281,10 @@ class ProjectController extends Controller
 
             //create sub project
             foreach ($data['listSubProject'] as $subPro) {
+                $business = Business::find($subPro->biz_type);
+                $sector = Business::find($subPro->sector);
                 $createdSubPro = SubProject::create([
-                    'kbli' => $subPro->kbli,
+                    'kbli' => isset($subPro->kbli) ? $subPro->kbli : 'Non KBLI',
                     'name' => $subPro->name,
                     'result' => $subPro->result,
                     'type' => $subPro->type,
@@ -289,14 +292,16 @@ class ProjectController extends Controller
                     'id_project' => $project->id,
                     'sector' => $subPro->sector,
                     'scale' => $subPro->scale,
-                    'scale_unit' => $subPro->scale_unit,
+                    'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
+                    'biz_name' => isset($business) ? $business->value : null,
+                    'sector_name' => isset($sector) ? $sector->value : null,
                 ]);
 
                 foreach ($subPro->listSubProjectParams as $subProParam) {
                     SubProjectParam::create([
                         'param' => $subProParam->param,
                         'scale' => $subProParam->scale,
-                        'scale_unit' => $subProParam->scale_unit,
+                        'scale_unit' => isset($subProParam->scale_unit) ? $subProParam->scale_unit : '',
                         'result' => $subProParam->result,
                         'id_sub_project' => $createdSubPro->id,
                     ]);
@@ -307,7 +312,7 @@ class ProjectController extends Controller
         } catch (Exception $e) {
             DB::rollback();
 
-            return $e;
+            throw new Exception('Gagal Membuat Kegiatan karena '.$e);
         }
 
         return new ProjectResource($project);

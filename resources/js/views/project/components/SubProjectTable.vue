@@ -56,14 +56,16 @@
 
       <el-table-column align="center" label="Jenis Rencana Kegiatan">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.biz_type" filterable placeholder="Pilih" size="mini" @change="onChangeFieldType(scope.row)">
-            <el-option
-              v-for="item in scope.row.listField"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+          <el-tooltip :key="refresh" class="item" effect="dark" :content="scope.row.biz_name || 'Pilih'" placement="bottom">
+            <el-select v-model="scope.row.biz_type" filterable placeholder="Pilih" size="mini" @change="onChangeFieldType(scope.row)">
+              <el-option
+                v-for="item in scope.row.listField"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-tooltip>
         </template>
       </el-table-column>
 
@@ -102,7 +104,7 @@
 import Resource from '@/api/resource';
 import ParamDialog from '@/views/project/components/ParamDialog.vue';
 const kbliEnvParamResource = new Resource('kbli-env-params');
-const kbliResource = new Resource('kblis');
+const kbliResource = new Resource('business');
 
 export default {
   name: 'SubProjectTable',
@@ -162,9 +164,13 @@ export default {
     },
     async onChangeFieldType(sproject){
       this.loading = true;
+      const { value } = await kbliResource.get(sproject.biz_type);
+      sproject.biz_name = value;
+      console.log(sproject.biz_name);
       await this.getBusinessByField(sproject);
       console.log(sproject);
       this.loading = false;
+      this.refresh++;
     },
     async getBusinessByField(sproject) {
       const { data } = await kbliEnvParamResource.list({

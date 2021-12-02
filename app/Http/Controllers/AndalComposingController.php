@@ -664,15 +664,14 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneRowAndSetValues('ka_po', $po);
 
         $save_file_name = $id_project .'-andal' . '.docx'; 
-        // if (!File::exists(storage_path('app/public/workspace/'))) {
-        //     File::makeDirectory(storage_path('app/public/workspace/'));
-        // }
+        
+        if (!File::exists(storage_path('app/public/workspace/'))) {
+            File::makeDirectory(storage_path('app/public/workspace/'));
+        }
 
-        // if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-        //     $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
-        // }
-
-        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        }
         
 
         return response()->json(['message' => 'success']);

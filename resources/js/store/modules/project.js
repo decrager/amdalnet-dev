@@ -2,7 +2,7 @@ import Resource from '@/api/resource';
 const projectFieldResource = new Resource('project-fields');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
-const kbliResource = new Resource('kblis');
+const kbliResource = new Resource('business');
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const ossProjectResource = new Resource('oss-projects');
 const lpjpResource = new Resource('lpjp');

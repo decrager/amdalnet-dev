@@ -56,9 +56,8 @@ class PublicConsultationController extends Controller
                 'negative_feedback_summary' => 'required',
                 'doc_files' => 'required',
                 'doc_metadatas' => 'required',
-                'doc_berita_acara' => 'required',
-                'doc_berita_acara_2' => 'required',
-                'doc_daftar_hadir' => 'required',
+                'doc_berita_acara_pelaksanaan' => 'required',
+                'doc_berita_acara_penunjukan_wakil_masyarakat' => 'required',
                 'doc_pengumuman' => 'required',
                 'doc_undangan' => 'required',
             ]
@@ -125,6 +124,7 @@ class PublicConsultationController extends Controller
                         $file_field_name = sprintf('doc_%s', 
                                             str_replace(' ', '_', strtolower($metadata->doc_type)));
                         $file = $request->file($file_field_name);
+
                         $filename = uniqid() . '.' . $file->extension();
                         // create subfolder: ba/dh/p/u
                         $exp = explode(' ', $metadata->doc_type);

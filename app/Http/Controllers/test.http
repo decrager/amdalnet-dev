@@ -16,7 +16,7 @@ GET http://localhost:8000/api/districts/12
 ###
 GET http://localhost:8000/api/kblis?sectors=true
 ###
-GET http://localhost:8000/api/kblis?kblis=true
+GET http://localhost:8000/api/business/2
 ###
 GET http://localhost:8000/api/kblis?sectorsByKbli=41011
 ###

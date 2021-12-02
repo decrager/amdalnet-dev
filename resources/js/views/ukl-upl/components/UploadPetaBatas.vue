@@ -12,7 +12,7 @@
           </legend>
           <form @submit.prevent="handleSubmit">
             <input ref="peSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(1)">
-            <button type="submit">Unggah</button>
+            <!-- <button type="submit">Unggah</button> -->
           </form>
           <div id="map1" class="map-wrapper" />
         </fieldset>
@@ -25,8 +25,16 @@
           </legend>
           <form @submit.prevent="handleSubmit">
             <input ref="pePDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(2)">
-            <button type="submit">Unggah</button>
+            <!-- <button type="submit">Unggah</button> -->
           </form>
+          <!-- <div class="map-wrapper" style="width:100%;"><pdf id="map2" src="https://www.orimi.com/pdf-test.pdf"></pdf></div> -->
+          <!-- <embed
+    v-if="embedSrc"
+    type="application/pdf"
+    :src="embedSrc"
+    width="100%"
+    style="max-height: 50rem; min-height: 20rem"
+/> -->
         </fieldset>
       </el-col>
     </el-form-item>
@@ -40,7 +48,7 @@
 
           <form @submit.prevent="handleSubmit">
             <input ref="psSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(3)">
-            <button type="submit">Unggah</button>
+            <!-- <button type="submit">Unggah</button> -->
           </form>
           <div id="map3" class="map-wrapper" />
         </fieldset>
@@ -55,14 +63,14 @@
 
           <form @submit.prevent="handleSubmit">
             <input ref="psPDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(4)">
-            <button type="submit">Unggah</button>
+            <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
       </el-col>
     </el-form-item>
 
     <el-form-item label="Peta Batas Wilayah Studi" :required="required">
-      <el-col :span="10" style="margin-right:1em;">
+      <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi SHP
             <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span @click="download(idPSuS)"><strong>{{ petaStudiSHP }}</strong></span></div>
@@ -70,13 +78,13 @@
 
           <form @submit.prevent="handleSubmit">
             <input ref="pwSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(5)">
-            <button type="submit">Unggah</button>
+            <!-- <button type="submit">Unggah</button> -->
           </form>
           <div id="map5" class="map-wrapper" />
         </fieldset>
       </el-col>
 
-      <el-col :span="10" style="margin-right:1em;">
+      <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
             <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span @click="download(idPSuP)"><strong>{{ petaStudiPDF }}</strong></span></div>
@@ -84,13 +92,15 @@
 
           <form @submit.prevent="handleSubmit">
             <input ref="pwPDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(6)">
-            <button type="submit">Unggah</button>
+            <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
       </el-col>
 
     </el-form-item>
-
+    <el-row style="text-align:right;">
+      <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
+    </el-row>
     <!--
     <el-row style="margin: 1em 0;">
       <el-col :span="12">
@@ -108,7 +118,7 @@
 @import url('../../../../../node_modules/leaflet/dist/leaflet.css');
 
  legend {line-height: 1.5em; margin: .5em 0 2em;}
- div.map-wrapper { height: 400px;}
+ div.map-wrapper { display:none; height: 400px;}
  fieldset {
    padding:1em;
  }
@@ -123,16 +133,22 @@ import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 
+// import pdf from 'vue-pdf';
+
 const uploadMaps = new Resource('project-map');
-const unggahMaps = new Resource('upload-map');
+const unggahMaps = new Resource('upload-maps');
 // const unduhMaps = new Resource('download-map');
 
 export default {
   name: 'UploadPetaBatas',
+  components: {
+    // pdf,
+  },
   data() {
     return {
       data: [],
       idProject: 0,
+      embedSrc: '',
       currentMaps: [],
       petaEkologisPDF: '',
       petaSosialPDF: '',
@@ -140,7 +156,7 @@ export default {
       petaEkologisSHP: '',
       petaSosialSHP: '',
       petaStudiSHP: '',
-      files: '',
+      files: [],
       idPES: 0,
       idPEP: 0,
       idPSP: 0,
@@ -149,7 +165,9 @@ export default {
       idPSuS: 0,
       index: 0,
       param: [],
-
+      required: true,
+      isVisible: false,
+      visible: [false, false, false, false, false, false, false],
     };
   },
   mounted() {
@@ -166,7 +184,7 @@ export default {
       this.process(files.data);
     },
     process(files){
-      console.log(files);
+      // console.log(files);
       files.forEach((e) => {
         switch (e.attachment_type){
           case 'ecology':
@@ -201,20 +219,25 @@ export default {
     },
     handleSubmit(){
       console.log('submitting files....');
-      console.log(this.files, this.param);
 
       const formData = new FormData();
       formData.append('id_project', this.idProject);
-      formData.append('file', this.files[0]);
-      Object.entries(this.param).forEach(([key, value]) => {
-        formData.append(key, value);
+
+      this.files.forEach((e, i) => {
+        formData.append('files[]', e[0]);
+        formData.append('params[]', JSON.stringify(this.param[i]));
       });
+
+      /* Object.entries(this.param).forEach(([key, value]) => {
+        formData.append(key, value);
+      }); */
+      console.log(formData);
 
       unggahMaps.store(formData).then((res) => {
         console.log(res);
         this.getData();
         this.$message({
-          message: 'Berhasil menyimpan file ' + this.files[0].name,
+          message: 'Berhasil menyimpan file ', //  + this.files[0].name,
           type: 'success',
         });
       });
@@ -256,55 +279,76 @@ export default {
           fileLink.click();
         });*/
     },
-    onChangeFiles(index){
-      this.files = '';
-      this.index = index;
-      this.param = [];
-      switch (this.index) {
+    onChangeFiles(idx){
+      const index = idx - 1;
+      switch (idx) {
         case 1: // ekologis SHP
-          this.files = this.$refs.peSHP.files;
-          this.param['attachment_type'] = 'ecology';
-          this.param['file_type'] = 'SHP';
+          this.files[index] = this.$refs.peSHP.files;
+          this.param[index] = {
+            attachment_type: 'ecology',
+            file_type: 'SHP',
+          };
+
+          // this.param[index]['file_type'] = 'SHP';
           break;
         case 2:
           // ekologis PDF
-          this.files = this.$refs.pePDF.files;
-          this.param['attachment_type'] = 'ecology';
-          this.param['file_type'] = 'PDF';
+          this.files[index] = this.$refs.pePDF.files;
+          this.param[index] = {
+            attachment_type: 'ecology',
+            file_type: 'PDF',
+          };
+          // this.param[index]['file_type'] = 'PDF';
+          // this.embedSrc = window.URL.createObjectURL(this.$refs.pePDF.files[0]);
           break;
         case 3:
-          this.files = this.$refs.psSHP.files;
-          this.param['attachment_type'] = 'social';
-          this.param['file_type'] = 'SHP';
+          this.files[index] = this.$refs.psSHP.files;
+          this.param[index] = {
+            attachment_type: 'social',
+            file_type: 'SHP',
+          };
           // sosial SHP
           break;
         case 4:
-          this.files = this.$refs.psPDF.files;
-          this.param['attachment_type'] = 'social';
-          this.param['file_type'] = 'PDF';
+          this.files[index] = this.$refs.psPDF.files;
+          this.param[index] = {
+            attachment_type: 'social',
+            file_type: 'PDF',
+          };
 
           // sosial PDF
           break;
         case 5:
-          this.files = this.$refs.pwSHP.files;
-          this.param['attachment_type'] = 'study';
-          this.param['file_type'] = 'SHP';
+          this.files[index] = this.$refs.pwSHP.files;
+          this.param[index] = {
+            attachment_type: 'study',
+            file_type: 'SHP',
+          };
           // studi SHP
           break;
         case 6:
-          this.files = this.$refs.pwPDF.files;
-          this.param['attachment_type'] = 'study';
-          this.param['file_type'] = 'PDF';
+          this.files[index] = this.$refs.pwPDF.files;
+          this.param[index] = {
+            attachment_type: 'study',
+            file_type: 'PDF',
+          };
           // studi PDF
           break;
         default:
       }
+      this.showMap(idx);
+      console.log('handling on change', this.param);
       this.loadMap(index);
+    },
+    loadPDF(id){
+      const obj = document.getElementById('map' + id);
+      obj.src = URL.createObjectURL(this.files[id][0]);
+      console.log('loading PDF', obj);
     },
     loadMap(id){
       const index = [1, 3, 5];
-      if (index.indexOf(id) < 0) {
-        return;
+      if (index.indexOf(id + 1) < 0) {
+        // return this.loadPDF(id + 1);
       }
 
       const map = new Map({
@@ -360,6 +404,7 @@ export default {
       });
       this.$parent.mapView = mapView;
     },
+
   },
 };
 </script>

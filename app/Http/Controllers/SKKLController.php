@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\EnvImpactAnalysis;
+use App\Entity\EnvManagePlan;
+use App\Entity\EnvMonitorPlan;
 use App\Entity\MeetingReport;
 use App\Entity\Project;
 use App\Entity\ProjectSkkl;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class SKKLController extends Controller
 {
@@ -192,27 +197,83 @@ class SKKLController extends Controller
 
     private function getDocument($idProject) {
         $skkl = ProjectSkkl::where('id_project', $idProject)->first();
+        $project = Project::findOrFail($idProject);
+        $location = $project->address . ' ' . ucwords(strtolower($project->district->name)) . ', Provinsi ' . $project->province->name;
+
+        // PHPWord
+        $templateProcessor = new TemplateProcessor('template_skkl.docx');
+        $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
+        $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
+        $templateProcessor->setValue('project_title', $project->project_title);
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('project_type', $project->project_type);
+        $templateProcessor->setValue('pic', $project->initiator->name);
+        $templateProcessor->setValue('pic_position', '');
+        $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
+        $templateProcessor->setValue('location', $location);
+
+        $save_file_name = $idProject .'-skkl' . '.docx';
+        if (!File::exists(storage_path('app/public/skkl/'))) {
+            File::makeDirectory(storage_path('app/public/skkl/'));
+        }
+
+        $templateProcessor->saveAs(storage_path('app/public/skkl/' . $save_file_name));
+
+        // Date
+        $andalDate = '';
+        $andal = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($idProject) {
+           $q->where('id_project', $idProject); 
+        })->orderBy('updated_at', 'desc')->first();
+        if($andal) {
+            $andalDate = $andal->updated_at->locale('id')->isoFormat('D MMMM Y');
+        }
+
+        $rklDate = '';
+        $rkl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
+            $q->where('id_project', $idProject); 
+         })->orderBy('updated_at', 'desc')->first();
+         if($rkl) {
+             $rklDate = $rkl->updated_at;
+         }
+
+        $rplDate = '';
+        $rpl = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($idProject) {
+            $q->where('id_project', $idProject); 
+         })->orderBy('updated_at', 'desc')->first();
+         if($rpl) {
+            $rplDate = $rpl->updated_at;
+        }
+
+        $rklRplDate = '';
+        if($rklDate == '') {
+            $rklRplDate = $rplDate;
+        } else if ($rplDate == '') {
+            $rklRplDate = $rklDate;
+        } else {
+            $rklRplDate = $rklDate > $rplDate ? $rklDate->locale('id')->isoFormat('D MMMM Y') : $rplDate->locale('id')->isoFormat('D MMMM Y');
+        }
+ 
 
         return [ 
                 [
                     'name' => 'Persetujuan Lingkungan SKKL',
-                    'file' => $skkl ? $skkl->file : null,
-                    'updated_at' => $skkl ? date('d F Y', strtotime($skkl->updated_at)) : '-'
+                    'file' => Storage::url('skkl/' . $save_file_name),
+                    'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
                 ],
                 [
                     'name' => 'Dokumen KA',
-                    'file' => '/ukl-upl/'.$idProject.'/docx',
-                    'updated_at' => date('d F Y', strtotime(Project::findOrFail($idProject)->updated_at))
+                    'file' => Storage::url('formulir/' . $idProject . '-form-ka-andal.docx'),
+                    'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
                 ],
                 [
                     'name' => 'Dokumen ANDAL',
-                    'file' => null,
-                    'updated_at' => '-'
+                    'file' =>  Storage::url('workspace/' . $idProject . '-andal.docx'),
+                    'updated_at' => $andalDate
                 ],
                 [
                     'name' => 'Dokumen RKL RPL',
-                    'file' => null,
-                    'updated_at' => '-'
+                    'file' => Storage::url('workspace/' .  $idProject . '-rkl-rpl.docx'),
+                    'updated_at' => $rklRplDate
                 ]
             ];
     }
