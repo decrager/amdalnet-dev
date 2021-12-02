@@ -45,33 +45,35 @@
           <el-input v-model="form.expectation" type="textarea" autocomplete="off" />
         </el-form-item>
         <el-form-item label="Berikan rating Anda untuk Rencana Usaha/Kegiatan ini">
-          <span>1 = Sangat tidak Setuju/Mendukung</span>
+          <span style="display: block;">1 = Sangat tidak Setuju/Mendukung</span>
+          <span style="display: block;">5 = Sangat Setuju/Mendukung</span>
           <el-rate
             v-model="form.rating"
             :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
             :max="5"
             style="margin-top:8px;"
           />
-          <span>5 = Sangat Setuju/Mendukung</span>
         </el-form-item>
+        <el-form-item style="margin-top: 10px">
+          <el-button
+            type="danger"
+            size="mini"
+            icon="el-icon-circle-close"
+            @click="closeDialog()"
+          >
+            Tutup
+          </el-button>
 
-        <el-button
-          type="danger"
-          size="mini"
-          icon="el-icon-circle-close"
-          @click="closeDialog()"
-        >
-          Tutup
-        </el-button>
+          <el-button
+            type="submit"
+            size="mini"
+            icon="el-icon-s-claim"
+            @click="saveFeedback()"
+          >
+            Simpan
+          </el-button>
 
-        <el-button
-          type="submit"
-          size="mini"
-          icon="el-icon-s-claim"
-          @click="saveFeedback()"
-        >
-          Simpan
-        </el-button>
+        </el-form-item>
       </el-form>
     </form>
   </el-dialog>
