@@ -136,7 +136,7 @@
               <el-row :gutter="20">
                 <el-col :span="12">
                   <el-form-item>
-                    <div class="text-white fw-bold">Nik</div>
+                    <div class="text-white fw-bold">NIK</div>
                     <el-input v-model="form.id_card_number" placeholder="Nik" />
                   </el-form-item>
                 </el-col>
@@ -210,11 +210,8 @@
                   <div style="display:flex">
                     <div>
                       <ul>
-                        <li class="fz8">1 Bintang : Sangat tidak setuju</li>
-                        <li class="fz8">2 Bintang : Tidak setuju</li>
-                        <li class="fz8">3 Bintang : Netral</li>
-                        <li class="fz8">4 Bintang : Setuju</li>
-                        <li class="fz8">5 Bintang : Sangat Setuju</li>
+                        <li class="fz8">1 Bintang : Khawatir</li>
+                        <li class="fz8">5 Bintang :  Harapan</li>
                       </ul>
                     </div>
                     <div style="padding-left:1rem">
