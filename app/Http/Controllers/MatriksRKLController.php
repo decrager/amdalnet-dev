@@ -383,8 +383,12 @@ class MatriksRKLController extends Controller
             }
 
             if($id_stages == $s->id) {
-                $ronaAwal = $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
-                $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+                if($pA->subProjectRonaAwal) {
+                    $ronaAwal = $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
+                    $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+                } else {
+                    continue;
+                }
             } else {
                 continue;
             }
@@ -471,8 +475,12 @@ class MatriksRKLController extends Controller
             }
 
             if($id_stages == $s->id) {
-                $ronaAwal = $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                if($merge->subProjectRonaAwal) {
+                    $ronaAwal = $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
+                    $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                } else {
+                    continue;
+                }
             } else {
                 continue;
             }
