@@ -533,8 +533,8 @@ class AndalComposingController extends Controller
         ];
         $lpjp_data = Lpjp::where('id', $project->id_lpjp)->first();
         if($lpjp_data) {
-            $date_start = Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_start);
-            $date_end =  Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_start);
+            $date_start = Carbon::createFromFormat('Y-m-d H:i:s', $lpjp_data->date_start);
+            $date_end =  Carbon::createFromFormat('Y-m-d H:i:s', $lpjp_data->date_start);
             $lpjp = [
                 'name' => $lpjp_data->name,
                 'address' => $lpjp_data->address . ', ' . $lpjp_data->district->name . ', Provinsi ' .$lpjp_data->province->name,
@@ -634,16 +634,25 @@ class AndalComposingController extends Controller
             }
         }
 
+        // ============ PROJECT ADDRESS ============ //
+        $project_address = '';
+        $project_district = '';
+        $project_province = '';
+        if($project->address) {
+            $project_address = $project->address->first()->address;
+            $project_district = $project->address->first()->district;
+            $project_province = $project->address->first()->prov;
+        }
 
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('project_title_s', strtolower($project->project_title));
         $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
-        $templateProcessor->setValue('district', ucwords(strtolower($project->district->name)));
-        $templateProcessor->setValue('province', ucwords(strtolower($project->province->name)));
+        $templateProcessor->setValue('district', ucwords(strtolower($project_district)));
+        $templateProcessor->setValue('province', ucwords(strtolower($project_province)));
         $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->pic);
-        $templateProcessor->setValue('address', ucwords(strtolower($project->address)));
+        $templateProcessor->setValue('address', ucwords(strtolower($project_address)));
         $templateProcessor->setValue('pemrakarsa_address', ucwords(strtolower($project->initiator->address)));
         $templateProcessor->setValue('pemrakarsa_phone', ucwords(strtolower($project->initiator->phone)));
         $templateProcessor->setValue('date_small', Carbon::now()->isoFormat('MMMM Y'));
