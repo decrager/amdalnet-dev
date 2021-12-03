@@ -64,7 +64,6 @@
                 <template v-for="(pie, index) in pieParams">
                   <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
                     <el-popover
-                      v-if="(pie.description != null) && (pie.description != '')"
                       placement="top-start"
                       width="350"
                       trigger="hover"
