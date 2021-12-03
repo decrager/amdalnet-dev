@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="isLoading === true" class="app-container">
+  <div v-loading="isLoading" class="app-container">
 
     <el-button
       type="success"
@@ -16,8 +16,70 @@
       <span v-show="isLoading === true"><el-button icon="el-icon-loading"> Refreshing data...</el-button></span>
 
     </span>
+
     <table style="margin: 2em 0; border-collapse: collapse;clear:both;">
+
+      <!-- based on mockup received on Thu, 2 Dec 2021 -->
       <thead>
+        <tr>
+          <th colspan="2">Rencana Usaha dan/atau Kegiatan yang Berpotensi Menimbulkan Dampak Lingkungan</th>
+          <th>Pengelolaan yang sudah direncanakan</th>
+          <th>Komponen Rona yang Terkena Dampak</th>
+          <th>Dampak Potensial</th>
+          <th>Evaluasi Dampak Potensial</th>
+          <th>Dampak Penting Hipotetik</th>
+          <th>Wilayah Studi</th>
+          <th>Batas Waktu Kajian</th>
+        </tr>
+      </thead>
+      <template v-for="stage in data">
+        <tr :key="'stage_'+ stage.id_project_stage" :data-index="stage.project_stage_name">
+          <td colspan="9" class="title" @click="showStage(stage.id_project_stage)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
+        </tr>
+        <tbody v-show="openedStage === stage.id_project_stage" :key="'hipotetik_' + stage.id_project_stage">
+          <template v-for="(impact, idx) in stage.impacts">
+            <tr :key="'impact_'+ impact.id" class="title" animated>
+              <!-- -->
+              <td style="width:30px;">{{ (idx + 1) }}.</td>
+              <td />
+              <!-- -->
+              <td />
+              <!-- -->
+              <td>{{ impact.rona_awal_name }}</td>
+              <td />
+              <td>
+                <template v-for="(pie, index) in pieParams">
+                  <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
+                    <el-popover
+                      placement="top-start"
+                      width="350"
+                      trigger="hover"
+                    >
+                      <p style="word-break: normal !important;">{{ pie.description }}</p>
+                      <p slot="reference" :key="'po_'+ pie.id + '_'+ impact.id"><strong>{{ pie.name }}</strong></p>
+                    </el-popover>
+                    <el-input
+                      v-model="impact.potential_impact_evaluation[index].text"
+                      type="textarea"
+                      :rows="3"
+                      placeholder="Please input"
+                      :value="impact.potential_impact_evaluation[index].text"
+                    />
+                  </div>
+                </template>
+              </td>
+              <td />
+              <td />
+              <td>
+                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
+                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" /> bulan</p>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </template>
+
+      <!-- <thead>
         <tr>
           <th colspan="3">Rencana Usaha dan/atau Kegiatan yang Berpotensi Menimbulkan Dampak Lingkungan</th>
           <th style="font-size:80%" rowspan="2">Pengelolaan Lingkungan yang sudah
@@ -100,8 +162,7 @@
             </tr>
           </template>
         </tbody>
-      </template>
-
+      </template> -->
     </table>
   </div>
 </template>
@@ -342,5 +403,13 @@ export default {
   table td.title:hover {
     background-color: #efefef;
     cursor: pointer;
+  }
+  td .el-input-number--mini {
+    width: 100px;
+
+  }
+ .el-tooltip__popper {
+    max-width: 300px;
+    line-height: 150%;
   }
 </style>
