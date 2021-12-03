@@ -70,7 +70,7 @@
                       trigger="hover"
                     >
                       <p style="word-break: break-word !important; text-align:left !important;">{{ pie.description }}</p>
-                      <p slot="reference" :key="'po_'+ pie.id + '_'+ impact.id" style="font-weight:bold; cursor: pointer;"><strong>{{ pie.name }}</strong></p>
+                      <p slot="reference" :key="'po_'+ pie.id + '_'+ impact.id" style="font-weight:bold; cursor: pointer;">{{ pie.name }}</p>
                     </el-popover>
                     <el-input
                       v-model="impact.potential_impact_evaluation[index].text"
