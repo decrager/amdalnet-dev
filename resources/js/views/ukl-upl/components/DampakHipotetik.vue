@@ -40,7 +40,7 @@
             <tr :key="'impact_'+ impact.id" class="title" animated>
               <td style="width:30px;">{{ (idx + 1) }}.</td>
               <td>{{ impact.component_name }}</td>
-              <td />
+              <td>{{ impact.initial_study_plan }}</td>
               <td>{{ impact.rona_awal_name }}</td>
               <td>
                 <el-select
@@ -58,6 +58,7 @@
                     :value="item.id"
                   />
                 </el-select>
+                <p>{{ impact.rona_awal_name }} akibat {{ impact.component_name }}</p>
               </td>
               <td>
                 <template v-for="(pie, index) in pieParams">
@@ -221,6 +222,7 @@ export default {
     };
   },
   mounted() {
+    this.data = [];
     this.isLoading = true;
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
     setTimeout(() => (this.isLoading = false), 2000);
@@ -329,6 +331,7 @@ export default {
     },
     async getData() {
       console.log('starting getData at DampakHipotetik');
+      this.data = [];
       this.isLoading = true;
 
       await changeTypeResource.list({})
