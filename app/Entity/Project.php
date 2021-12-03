@@ -101,4 +101,9 @@ class Project extends Model
     {
         return $this->hasMany(ProjectMapAttachment::class, 'id_project', 'id');
     }
+
+    public function feasibilityTest()
+    {
+        return $this->hasOne(FeasibilityTest::class, 'id_project', 'id');
+    }
 }

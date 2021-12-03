@@ -127,6 +127,8 @@ class SKKLController extends Controller
         $beritaAcara = MeetingReport::where('id_project', $idProject)->first();
 
         $project = Project::findOrFail($idProject);
+        $district = $project->district ? $project->district->name : '';
+        $province = $project->province ? $project->province->name : '';
         $data[] = [
             'title' => 'Nama Kegiatan',
             'description' => $project->project_title,
@@ -165,7 +167,7 @@ class SKKLController extends Controller
         ];
         $data[] = [
             'title' => 'Provinsi/Kota',
-            'description' => $project->province->name . '/' . $project->district->name
+            'description' => $province . '/' . $district
         ];
         $data[] = [
             'title' => 'Deskripsi Kegiatan',
@@ -198,7 +200,9 @@ class SKKLController extends Controller
     private function getDocument($idProject) {
         $skkl = ProjectSkkl::where('id_project', $idProject)->first();
         $project = Project::findOrFail($idProject);
-        $location = $project->address . ' ' . ucwords(strtolower($project->district->name)) . ', Provinsi ' . $project->province->name;
+        $district = $project->district ? $project->district->name : '';
+        $province = $project->province ? $project->province->name : '';
+        $location = $project->address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
 
         // PHPWord
         $templateProcessor = new TemplateProcessor('template_skkl.docx');
