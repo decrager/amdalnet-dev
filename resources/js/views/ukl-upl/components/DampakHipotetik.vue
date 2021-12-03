@@ -25,7 +25,7 @@
           <th>Pengelolaan yang sudah direncanakan</th>
           <th>Komponen Rona yang Terkena Dampak</th>
           <th>Dampak Potensial</th>
-          <th>Evaluasi Dampak Potensial</th>
+          <th style="width:20%;">Evaluasi Dampak Potensial</th>
           <th>Dampak Penting Hipotetik</th>
           <th>Wilayah Studi</th>
           <th>Batas Waktu Kajian</th>
@@ -57,7 +57,7 @@
                   />
                 </el-select>
                 <template v-if="impact.id_change_type === 0">
-                  <el-input v-model="impact.change_type_name" />
+                  <el-input v-model="impact.change_type_name" placeholder="Please input text..." />
                 </template>
                 <p>{{ impact.rona_awal_name }} akibat {{ impact.component_name }}</p>
               </td>
