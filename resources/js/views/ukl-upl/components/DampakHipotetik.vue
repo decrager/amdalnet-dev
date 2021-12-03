@@ -18,7 +18,6 @@
     </span>
 
     <table style="margin: 2em 0; border-collapse: collapse;clear:both;">
-
       <!-- based on mockup received on Thu, 2 Dec 2021 -->
       <thead>
         <tr>
@@ -39,37 +38,63 @@
         <tbody v-show="openedStage === stage.id_project_stage" :key="'hipotetik_' + stage.id_project_stage">
           <template v-for="(impact, idx) in stage.impacts">
             <tr :key="'impact_'+ impact.id" class="title" animated>
-              <!-- -->
               <td style="width:30px;">{{ (idx + 1) }}.</td>
+              <td>{{ impact.component_name }}</td>
               <td />
-              <!-- -->
-              <td />
-              <!-- -->
               <td>{{ impact.rona_awal_name }}</td>
-              <td />
+              <td>
+                <el-select
+                  v-model="impact.id_change_type"
+                  placeholder="Pilih"
+                  filterable
+                  allow-create
+                  clearable
+                  @change.native="handleOptionChange"
+                >
+                  <el-option
+                    v-for="item in changeType"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+              </td>
               <td>
                 <template v-for="(pie, index) in pieParams">
                   <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
                     <el-popover
+                      v-if="(pie.description != null) && (pie.description != '')"
                       placement="top-start"
                       width="350"
                       trigger="hover"
                     >
-                      <p style="word-break: normal !important;">{{ pie.description }}</p>
-                      <p slot="reference" :key="'po_'+ pie.id + '_'+ impact.id"><strong>{{ pie.name }}</strong></p>
+                      <p style="word-break: break-word !important; text-align:left !important;">{{ pie.description }}</p>
+                      <p slot="reference" :key="'po_'+ pie.id + '_'+ impact.id" style="font-weight:bold; cursor: pointer;"><strong>{{ pie.name }}</strong></p>
                     </el-popover>
                     <el-input
                       v-model="impact.potential_impact_evaluation[index].text"
                       type="textarea"
                       :rows="3"
-                      placeholder="Please input"
                       :value="impact.potential_impact_evaluation[index].text"
                     />
                   </div>
                 </template>
               </td>
-              <td />
-              <td />
+              <td>
+                <el-select v-model="impact.is_hypothetical_significant" placeholder="Select">
+                  <el-option
+                    v-for="item in dPHs"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="item.disabled"
+                  />
+                </el-select>
+                <div v-show="!impact.is_hypothetical_significant" :key="'DTPH_'+impact.id" style="margin:1em 0;">
+                  <el-switch v-model="impact.is_managed" active-text=" Dikelola" />
+                </div>
+              </td>
+              <td>{{ impact.study_location }}</td>
               <td>
                 <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
                 <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" /> bulan</p>
@@ -78,8 +103,8 @@
           </template>
         </tbody>
       </template>
-
-      <!-- <thead>
+      <!--
+        <thead>
         <tr>
           <th colspan="3">Rencana Usaha dan/atau Kegiatan yang Berpotensi Menimbulkan Dampak Lingkungan</th>
           <th style="font-size:80%" rowspan="2">Pengelolaan Lingkungan yang sudah
@@ -162,7 +187,8 @@
             </tr>
           </template>
         </tbody>
-      </template> -->
+      </template>
+      -->
     </table>
   </div>
 </template>
@@ -214,7 +240,7 @@ export default {
         });
         console.log(option);
       }*/
-      console('handleOptionChange', event);
+      console('handleOptionChange', option);
     },
     handleSetData(data) {
       this.data = data;
@@ -239,6 +265,11 @@ export default {
           }
         })
         .catch((error) => {
+          this.$message({
+            message: error.message,
+            type: 'error',
+            duration: 5 * 1000,
+          });
           console.log(error);
         });
     },
@@ -303,6 +334,10 @@ export default {
       await changeTypeResource.list({})
         .then((res) => {
           this.changeType = res.data;
+          this.changeType.push({
+            name: 'Lainnya',
+            id: 0,
+          });
         });
 
       await pieParamsResource.list({}).then((res) => {
@@ -351,7 +386,6 @@ export default {
           });
         });
       });
-      this.isLoading = false;
 
       console.log(impIds);
       const pies = await pieEntriesResource.list({
@@ -361,6 +395,8 @@ export default {
 
       var dataList = impactList.data;
       this.data = this.createDataArray(dataList, this.projectStages);
+      this.isLoading = false;
+      console.log('end getData...', this.data);
     },
     initPieMatrix(){
       this.pieInputMatrix.map((d) => {
@@ -391,6 +427,14 @@ export default {
     showStage(index){
       console.log(index);
       this.openedStage = (this.openedStage === index) ? null : index;
+    },
+    inPrimaryType(val){
+      const ctype = this.changeType.find((c) => (c.id === val));
+      console.log('in primary type', ctype);
+      if (ctype){
+        return true;
+      }
+      return false;
     },
   },
 };
