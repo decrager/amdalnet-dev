@@ -11,7 +11,7 @@
           <div>
             <h3>Daftar Penyusun</h3>
             <el-table
-              :data="jumlahAnggota"
+              :data="jumlahAnggotas"
               fit
               style="width: 100%"
               highlight-current-row
@@ -55,7 +55,8 @@
 
               <el-table-column label="File">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.cv_file }}</span>
+                  <el-button v-if="scope.row.cv_file" size="mini" type="primary" @click="downloadCvTa(scope.row.cv_file)"><i class="ri-file-download-line" /></el-button>
+                  <el-button v-else size="mini" type="success">Upload CV</el-button>
                 </template>
               </el-table-column>
 
@@ -166,6 +167,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    selectedMember: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -186,6 +191,11 @@ export default {
       curUser: this.$store.getters.userId,
       curUserName: this.$store.getters.name,
     };
+  },
+  computed: {
+    jumlahAnggotas() {
+      return this.$store.state.jumlahAnggota;
+    },
   },
   mounted() {
     this.getProjects();

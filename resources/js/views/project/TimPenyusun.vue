@@ -23,7 +23,7 @@
             <el-form-item>
               <el-row :gutter="32">
                 <el-col :sm="12" :md="20">
-                  <el-select v-model="selectedMember" filterable placeholder="Lembaga Tim LPJP" style="width: 100%">
+                  <el-select v-model="selectedMember" filterable placeholder="Lembaga Tim LPJP" style="width: 100%" @change="getLpjpId()">
                     <el-option
                       v-for="member in lpjp"
                       :key="member.id"
@@ -36,7 +36,7 @@
                   <el-button
                     type="primary"
                     icon="el-icon-plus"
-                    @click.prevent="handleAdd"
+                    @click.prevent="handleAdd()"
                   >
                     Tambah
                   </el-button>
@@ -47,7 +47,9 @@
         </el-row>
       </el-form>
       <h4>Daftar Kegiatan</h4>
-      <project-lpjp-table />
+      <project-lpjp-table
+        :selected-member="idLpjp"
+      />
 
     </el-card>
   </div>
@@ -62,12 +64,18 @@ export default {
     ProjectLpjpTable,
 
   },
+  props: {
+
+  },
   data() {
     return {
       selectedFormulatorTeams: null,
       selectedMember: null,
       formulatorTeams: [],
       lpjp: [],
+      idLpjp: 0,
+      members: [],
+      formulators: [],
     };
   },
   created() {
@@ -81,12 +89,33 @@ export default {
         });
     },
     getLpjp() {
-      axios.get('api/lpjp', {
-        params: { id: this.formulatorTeams },
-      })
+      axios.get('api/formulators-all')
         .then((response) => {
           this.lpjp = response.data;
-        }).bind(this);
+        });
+    },
+    getLpjpId() {
+      axios.get('api/lpjp', {
+        params: {
+          id: this.selectedMember,
+        },
+      })
+        .then((response) => {
+          this.members = response.data;
+        });
+    },
+    handleAdd() {
+      axios.get('api/formulators/' + this.selectedMember)
+        .then((response) => {
+          this.formulators = response.data;
+          this.$store.dispatch('addPenyusunToTable', {
+            name: this.formulators.name,
+            expertise: this.formulators.expertise,
+            reg_no: this.formulators.reg_no,
+            membership_status: this.formulators.membership_status,
+            cv_file: this.formulators.cv_file,
+          });
+        });
     },
   },
 };

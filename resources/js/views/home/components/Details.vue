@@ -10,43 +10,43 @@
             <table class="tableDetail tableDetail1" cellspacing="0" cellpadding="0" style="border:none">
               <tr>
                 <td style="width:40%">No. Registrasi</td>
-                <td v-html="selectedAnnouncement.project.registration_no" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.registration_no : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Jenis Dokumen</td>
-                <td v-html="selectedAnnouncement.project.required_doc" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.required_doc : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Nama Kegiatan</td>
-                <td v-html="selectedAnnouncement.project.project_title" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.project_title : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Bidang Usaha/Kegiatan</td>
-                <td v-html="selectedAnnouncement.project.sector" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.sector : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Skala/Besaran</td>
-                <td v-html="selectedAnnouncement.project.scale_unit" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.scale_unit : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat</td>
-                <td v-html="selectedAnnouncement.project.address[0].address" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.address[0].address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Kewenangan</td>
-                <td v-html="selectedAnnouncement.project.authority" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.authority : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.pic_name" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.pic_name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Penanggung Jawab</td>
-                <td v-html="selectedAnnouncement.pic_name" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.pic_name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.cs_address" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.cs_address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">No Telepon Pemrakarsa</td>
@@ -58,13 +58,13 @@
               </tr>
               <tr>
                 <td style="width:40%">Provinsi/Kota</td>
-                <td v-html="selectedAnnouncement.project.address[0].prov + '/' + selectedAnnouncement.project.address[0].district" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.address[0].prov + '/' + selectedAnnouncement.project.address[0].district : ''" />
               </tr>
               <tr>
                 <td colspan="2">Deskripsi Kegiatan</td>
               </tr>
               <tr>
-                <td colspan="2" v-html="selectedAnnouncement.project.description" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
               </tr>
             </table>
           </el-col>
@@ -84,7 +84,7 @@
                 <td colspan="2">Deskripsi Kegiatan</td>
               </tr>
               <tr class="bg-white-custom">
-                <td colspan="2" v-html="selectedAnnouncement.project.description" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
               </tr>
             </table>
           </el-col>
@@ -589,7 +589,7 @@ export default {
             message: 'Successfully create a feedback',
             duration: 5 * 1000,
           });
-          this.$emit('handleSetTabs');
+          // this.$emit('handleSetTabs');
           this.getAnnouncement();
         })
         .catch((error) => {
