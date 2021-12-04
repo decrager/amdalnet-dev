@@ -48,7 +48,7 @@
         <el-input v-model="component.description_specific" />
       </el-form-item>
       <el-form-item label="Besaran">
-        <el-input v-model="component.description_specific" type="textarea" :rows="2" />
+        <el-input v-model="component.besaran" type="textarea" :rows="2" />
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
