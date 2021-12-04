@@ -75,6 +75,7 @@
             v-model="scope.row.name"
             class="edit-input"
             size="mini"
+            maxlength="200"
           />
         </template>
       </el-table-column>
