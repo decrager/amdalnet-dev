@@ -20,8 +20,12 @@ class PublicConsultationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        if($request->idProject) {
+            return PublicConsultation::where('project_id', $request->idProject)->first();
+        }
+
         return PublicConsultationResource::collection(PublicConsultation::all());
     }
 
@@ -56,8 +60,8 @@ class PublicConsultationController extends Controller
                 'negative_feedback_summary' => 'required',
                 'doc_files' => 'required',
                 'doc_metadatas' => 'required',
-                'doc_ba_pelaksanaan' => 'required',
-                'doc_ba_penunjukan_wakil_masyarakat' => 'required',
+                'doc_berita_acara_pelaksanaan' => 'required',
+                'doc_berita_acara_penunjukan_wakil_masyarakat' => 'required',
                 'doc_pengumuman' => 'required',
                 'doc_undangan' => 'required',
             ]
@@ -75,16 +79,28 @@ class PublicConsultationController extends Controller
                 return response()->json(['errors' => 'Invalid event_data'], 400);
             }
             DB::beginTransaction();
-            $parent = PublicConsultation::create([
-                'announcement_id' => $validated['announcement_id'],
-                'project_id' => $validated['project_id'],
-                'event_date' => $validated['event_date'],
-                'participant' => $validated['participant'],
-                'location' => $validated['location'],
-                'address' => $validated['address'],
-                'positive_feedback_summary' => $validated['positive_feedback_summary'],
-                'negative_feedback_summary' => $validated['negative_feedback_summary'],
-            ]);
+            if($request->data_type == 'new') {
+                $parent = PublicConsultation::create([
+                    'announcement_id' => $validated['announcement_id'],
+                    'project_id' => $validated['project_id'],
+                    'event_date' => $validated['event_date'],
+                    'participant' => $validated['participant'],
+                    'location' => $validated['location'],
+                    'address' => $validated['address'],
+                    'positive_feedback_summary' => $validated['positive_feedback_summary'],
+                    'negative_feedback_summary' => $validated['negative_feedback_summary'],
+                ]);
+            } else {
+                $parent = PublicConsultation::findOrFail($request->all()['id']);
+                $parent->announcement_id = $validated['announcement_id'];
+                $parent->event_date = $validated['event_date'];
+                $parent->participant = $validated['participant'];
+                $parent->location = $validated['location'];
+                $parent->address = $validated['address'];
+                $parent->positive_feedback_summary = $validated['positive_feedback_summary'];
+                $parent->negative_feedback_summary = $validated['negative_feedback_summary'];
+                $parent->save();
+            }
 
             $metadatas = null;
             $doc_files = null;
@@ -124,6 +140,7 @@ class PublicConsultationController extends Controller
                         $file_field_name = sprintf('doc_%s', 
                                             str_replace(' ', '_', strtolower($metadata->doc_type)));
                         $file = $request->file($file_field_name);
+
                         $filename = uniqid() . '.' . $file->extension();
                         // create subfolder: ba/dh/p/u
                         $exp = explode(' ', $metadata->doc_type);

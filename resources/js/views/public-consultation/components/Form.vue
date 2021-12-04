@@ -193,8 +193,10 @@ import _ from 'lodash';
 
 const announcementResource = new Resource('announcements');
 const projectResource = new Resource('projects');
+const publicConsultations = new Resource('public-consultations');
 
 const defaultForm = {
+  id: null,
   announcement_id: 0,
   project_id: 0,
   event_date: '',
@@ -222,6 +224,9 @@ export default {
       currentProject: {},
     };
   },
+  created() {
+    this.getPublicConsultation();
+  },
   mounted() {
     const annId = this.$route.params && this.$route.params.id;
     this.postForm.announcement_id = annId;
@@ -229,6 +234,17 @@ export default {
     this.getProjectDetail(annId);
   },
   methods: {
+    async getPublicConsultation() {
+      const data = await publicConsultations.list({ idProject: this.$route.params.id });
+      this.postForm.id = data.id;
+      this.postForm.announcement_id = data.announcement_id;
+      this.postForm.event_date = data.event_date;
+      this.postForm.participant = data.participant;
+      this.postForm.location = data.location;
+      this.postForm.address = data.address;
+      this.postForm.positive_feedback_summary = data.positive_feedback_summary;
+      this.postForm.negative_feedback_summary = data.negative_feedback_summary;
+    },
     async getProjectDetail(annId) {
       const data = await announcementResource.get(annId);
       this.postForm.project_id = data.project_id;
@@ -245,6 +261,8 @@ export default {
     async handleSubmit() {
       const headers = { 'Content-Type': 'multipart/form-data' };
       const formData = new FormData();
+      formData.append('id', this.postForm.id);
+      formData.append('data_type', this.postForm.id === undefined ? 'new' : 'update');
       formData.append('announcement_id', this.postForm.announcement_id);
       formData.append('project_id', this.postForm.project_id);
       formData.append('event_date', this.postForm.event_date.toISOString());
@@ -255,8 +273,8 @@ export default {
       formData.append('negative_feedback_summary', this.postForm.negative_feedback_summary);
       formData.append('doc_files', JSON.stringify(this.postForm.doc_files));
       formData.append('doc_metadatas', JSON.stringify(this.postForm.doc_metadatas));
-      formData.append('doc_ba_pelaksanaan', this.postForm.doc_ba_pelaksanaan);
-      formData.append('doc_ba_penunjukan_wakil_masyarakat', this.postForm.doc_ba_penunjukan_wakil_masyarakat);
+      formData.append('doc_berita_acara_pelaksanaan', this.postForm.doc_ba_pelaksanaan);
+      formData.append('doc_berita_acara_penunjukan_wakil_masyarakat', this.postForm.doc_ba_penunjukan_wakil_masyarakat);
       formData.append('doc_daftar_hadir', this.postForm.doc_daftar_hadir);
       formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
       formData.append('doc_undangan', this.postForm.doc_undangan);
@@ -286,6 +304,7 @@ export default {
             type: msg_type,
             duration: 5 * 1000,
           });
+          this.getPublicConsultation();
         })
         .catch(error => {
           console.log(error.message);

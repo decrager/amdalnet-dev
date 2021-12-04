@@ -21,4 +21,8 @@ class PublicConsultation extends Model
     public function docs(){
         return $this->hasMany(PublicConsultationDoc::class, 'public_consultation_id', 'id');
     }
+
+    public function getEventDateAttribute($event) {
+        return $event ? date('Y-m-d', strtotime($event)) : '';
+    }
 }

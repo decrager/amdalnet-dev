@@ -314,7 +314,7 @@ export default {
           kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.biz_name,
-          skala: e.scale + ' ' + e.scale_unit,
+          skala: e.scale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
@@ -324,7 +324,7 @@ export default {
           kbli: e.kbli,
           kegiatan: e.name,
           jenisKegiatan: e.biz_name,
-          skala: e.scale + ' ' + e.scale_unit,
+          skala: e.scale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });

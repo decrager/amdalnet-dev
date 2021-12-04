@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showAllTabs" style="margin-top:2rem;">
+  <div style="margin-top:2rem;">
     <div v-if="showFromAll" style="margin-top:2rem;">
       <el-form ref="form">
         <el-row :gutter="20">
@@ -32,7 +32,7 @@
           <img alt="" src="/images/list.svg">
         </el-col>
         <el-col :xs="24" :sm="18" style="padding-top:1rem">
-          <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project.province.name }}</h3>
+          <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }}</h3>
           <h3 class="fw-bold to mt-2-5">{{ amdal.pic_name }}</h3>
           <p class="tw">Pengumuman : {{ formatDateStr(amdal.start_date) }} | {{ amdal.feedbacks_count }} Tanggapan</p>
         </el-col>
@@ -56,7 +56,6 @@
         :selected-announcement="selectedAnnouncement"
         :selected-project="selectedProject"
         @handleCancelComponent="handleCancelComponent"
-        @handleSetTabs="handleSetTabs"
       />
     </div>
   </div>
@@ -71,9 +70,6 @@ export default {
   components: {
     Pagination,
     Details,
-  },
-  props: {
-    showAllTabs: Boolean,
   },
   data() {
     return {
@@ -95,6 +91,7 @@ export default {
       showDetailFromAll: false,
       showFromAll: true,
       selectedAnnouncement: {},
+      selectedProject: {},
     };
   },
   created() {
@@ -135,6 +132,7 @@ export default {
       axios.get('/api/announcements/' + id)
         .then(response => {
           this.selectedAnnouncement = response.data;
+          this.selectedProject = response.data.project;
           this.showDetailFromAll = true;
           this.showFromAll = false;
         });
