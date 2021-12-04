@@ -184,6 +184,10 @@ export default {
       document.querySelector('#proofFile').click();
     },
     checkProfFileSure(){
+      if (document.querySelector('#proofFile').files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
       this.fileName = document.querySelector('#proofFile').files[0].name;
       this.fileProof = document.querySelector('#proofFile').files[0];
       this.announcement.fileProof = this.fileProof;

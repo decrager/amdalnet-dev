@@ -24,32 +24,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang" prop="project_type">
+                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 1MB)" prop="project_type">
                   <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
-                  <!-- <div
-                    style="
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    height: 36px;
-                  "
-                  >
-                    <el-button
-                      icon="el-icon-document-copy"
-                      type="primary"
-                      size="mini"
-                      style="margin-left: 15px"
-                      @click="checkKtrFile"
-                    >Upload</el-button>
-                    <span>{{ fileKtrName }}</span>
-                    <input
-                      id="ktrFile"
-                      type="file"
-                      style="display: none"
-                      @change="handleFileKtrUpload"
-                    >
-                  </div> -->
-
-                  <!-- <input ref="fileKtr" type="file" class="el-input__inner" @change="handleFileKtrUpload()"> -->
                 </el-form-item>
               </el-col>
             </el-row>
@@ -68,7 +44,7 @@
               </el-col>
               <el-col :span="12">
                 <el-row>
-                  <el-form-item label="Upload Peta (File .ZIP)">
+                  <el-form-item label="Upload Peta (File .ZIP Max 1MB)">
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
                     <!-- <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload"> -->
                   </el-form-item>
@@ -330,7 +306,7 @@
 
                 <el-form-item
                   v-if="currentProject.pre_agreement"
-                  :label="preeAgreementLabel"
+                  :label="preeAgreementLabel + ' Max 1MB'"
                   prop="pre_agreement"
                 >
                   <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
@@ -1000,17 +976,36 @@ export default {
     checkMapFile() {
       document.querySelector('#ktrFile').click();
     },
+    showFileAlert(){
+      this.$alert('File Yang Diupload Melebihi 1 MB', {
+        confirmButtonText: 'OK',
+      });
+    },
     handleFileKtrUpload(e){
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
       this.fileKtr = e.target.files[0];
       this.fileKtrName = e.target.files[0].name;
       console.log(this.fileKtr);
     },
     handleFilePreAgreementUpload(e){
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
       this.filePreAgreement = e.target.files[0];
       this.filePreAgreementName = e.target.files[0].name;
       // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
       console.log('map', this.fileMap);
       if (e !== 'a'){
         console.log(e.target.files[0]);
