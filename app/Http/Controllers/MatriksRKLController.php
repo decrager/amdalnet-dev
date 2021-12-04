@@ -41,6 +41,14 @@ class MatriksRKLController extends Controller
 
             $project = Project::findOrFail($request->idProject);
 
+            // ========= PROJECT ADDRESS ========== //
+            $project_district = '';
+            $project_province = '';
+            if($project->address && $project->address->first()) {
+                $project_district = $project->address->first()->district;
+                $project_province = $project->address->first()->province;
+            }
+
             $poinA = $this->getPoinA($stages, $request->idProject);
             $poinB = $this->getPoinB($stages, $request->idProject);
 
@@ -48,8 +56,8 @@ class MatriksRKLController extends Controller
             $poinBp = $this->getPoinBRpl($stages, $request->idProject);
 
             $templateProcessor->setValue('project_title', $project->project_title);
-            $templateProcessor->setValue('district', $project->district->name);
-            $templateProcessor->setValue('province', $project->province->name);
+            $templateProcessor->setValue('district', $project_district);
+            $templateProcessor->setValue('province', $project_province);
             $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
 
             $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rkl', $poinA['a_pra_konstruksi_rkl']);

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
 use App\Entity\ImpactIdentification;
+use App\Entity\ImpactIdentificationClone;
 use App\Entity\ProjectStage;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
+use Illuminate\Http\Request;
 use Exception;
 
 class MatriksDampakController extends Controller
@@ -67,7 +69,7 @@ class MatriksDampakController extends Controller
         return $data;
     }
 
-    public function getTableDph($id)
+    public function getTableDph(Request $request, $id)
     {
         $data = [];
         $rona_mapping = $this->getRonaMapping($id);
@@ -105,9 +107,18 @@ class MatriksDampakController extends Controller
                             if (strtolower($cr->component_name) == strtolower($component->name)
                             && strtolower($cr->rona_awal_name) == strtolower($ra['name'])) {
                                 // check if DPH
-                                $dph = ImpactIdentification::select('is_hypothetical_significant')
-                                    ->where('id_sub_project_rona_awal', $cr->id)
-                                    ->first();
+                                // select is_hypothetical_significant 
+                                // from impact_identifications ii where id_sub_project_rona_awal
+                                $dph = null;
+                                if($request->isAndal === 'true') {
+                                    $dph = ImpactIdentificationClone::select('is_hypothetical_significant')
+                                        ->where('id_sub_project_rona_awal', $cr->id)
+                                        ->first();
+                                } else {
+                                    $dph = ImpactIdentification::select('is_hypothetical_significant')
+                                        ->where('id_sub_project_rona_awal', $cr->id)
+                                        ->first();
+                                }
                                 if ($dph->is_hypothetical_significant) {
                                     $ctype[$k] = 'DPH';
                                 } else if (!$dph->is_hypothetical_significant){
