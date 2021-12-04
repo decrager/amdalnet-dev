@@ -15,7 +15,8 @@ class SubProjectComponent extends Model
         'id_project_stage',
         'description_common',
         'description_specific',
-        'besaran',
+        'definition',
+        'unit',
     ];
 
     public function subProject()
