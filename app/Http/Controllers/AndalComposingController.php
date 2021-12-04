@@ -510,7 +510,7 @@ class AndalComposingController extends Controller
                     'position' => $m->position,
                     'cert_type' => $m->formulator->membership_status,
                     'reg_no' => $m->formulator->reg_no,
-                    'cert_expire' => Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_end)->isoFormat('D MMMM Y'),
+                    'cert_expire' => $m->formulator->date_end ? Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_end)->isoFormat('D MMMM Y') : '',
                     'expertise' => $m->formulator->expertise
                 ];
 
@@ -533,8 +533,8 @@ class AndalComposingController extends Controller
         ];
         $lpjp_data = Lpjp::where('id', $project->id_lpjp)->first();
         if($lpjp_data) {
-            $date_start = Carbon::createFromFormat('Y-m-d H:i:s', $lpjp_data->date_start);
-            $date_end =  Carbon::createFromFormat('Y-m-d H:i:s', $lpjp_data->date_start);
+            $date_start = $lpjp_data->date_start ? Carbon::createFromFormat('Y-m-d H:i:s', $lpjp_data->date_start) : '';
+            $date_end = $lpjp_data->date_end ? Carbon::createFromFormat('Y-m-d H:i:s', $lpjp_data->date_end) : '';
             $lpjp = [
                 'name' => $lpjp_data->name,
                 'address' => $lpjp_data->address . ', ' . $lpjp_data->district->name . ', Provinsi ' .$lpjp_data->province->name,
@@ -638,11 +638,11 @@ class AndalComposingController extends Controller
         $project_address = '';
         $project_district = '';
         $project_province = '';
-        if($project->address) {
-            $project_address = $project->address->first()->address;
-            $project_district = $project->address->first()->district;
-            $project_province = $project->address->first()->prov;
-        }
+        // if($project->address) {
+        //     $project_address = $project->address->first()->address;
+        //     $project_district = $project->address->first()->district;
+        //     $project_province = $project->address->first()->prov;
+        // }
 
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
