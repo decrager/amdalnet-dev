@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="isLoading === true" class="app-container">
+  <div v-loading="isLoading" class="app-container">
 
     <el-button
       type="success"
@@ -16,23 +16,19 @@
       <span v-show="isLoading === true"><el-button icon="el-icon-loading"> Refreshing data...</el-button></span>
 
     </span>
+
     <table style="margin: 2em 0; border-collapse: collapse;clear:both;">
+      <!-- based on mockup received on Thu, 2 Dec 2021 -->
       <thead>
         <tr>
-          <th colspan="3">Rencana Usaha dan/atau Kegiatan yang Berpotensi Menimbulkan Dampak Lingkungan</th>
-          <th style="font-size:80%" rowspan="2">Pengelolaan Lingkungan yang sudah
-            direncanakan sejak awal sebagai bagian
-            dari rencana kegiatan</th>
-          <th rowspan="2">Evaluasi Dampak Potensial</th>
-          <th rowspan="2">Dampak Penting Hipotetik</th>
-          <th rowspan="2">Wilayah Studi</th>
-          <th rowspan="2">Batas Waktu Kajian</th>
-          <th rowspan="2">Kesimpulan</th>
-        </tr>
-        <tr>
-          <th>Komponen Dampak</th>
-          <th>Komponen Lingkungan</th>
-          <th>Sumber Dampak</th>
+          <th colspan="2">Rencana Usaha dan/atau Kegiatan yang Berpotensi Menimbulkan Dampak Lingkungan</th>
+          <th>Pengelolaan yang sudah direncanakan</th>
+          <th>Komponen Rona yang Terkena Dampak</th>
+          <th>Dampak Potensial</th>
+          <th style="width:20%;">Evaluasi Dampak Potensial</th>
+          <th>Dampak Penting Hipotetik</th>
+          <th>Wilayah Studi</th>
+          <th>Batas Waktu Kajian</th>
         </tr>
       </thead>
       <template v-for="stage in data">
@@ -40,14 +36,16 @@
           <td colspan="9" class="title" @click="showStage(stage.id_project_stage)"><strong>{{ stage.index }}. {{ stage.project_stage_name }}</strong></td>
         </tr>
         <tbody v-show="openedStage === stage.id_project_stage" :key="'hipotetik_' + stage.id_project_stage">
-          <template v-for="impact in stage.impacts">
+          <template v-for="(impact, idx) in stage.impacts">
             <tr :key="'impact_'+ impact.id" class="title" animated>
+              <td style="width:30px;">{{ (idx + 1) }}.</td>
+              <td>{{ impact.component_name }}</td>
+              <td>{{ impact.initial_study_plan }}</td>
+              <td>{{ impact.rona_awal_name }}</td>
               <td>
                 <el-select
                   v-model="impact.id_change_type"
                   placeholder="Pilih"
-                  filterable
-                  allow-create
                   clearable
                   @change.native="handleOptionChange"
                 >
@@ -58,19 +56,26 @@
                     :value="item.id"
                   />
                 </el-select>
+                <template v-if="impact.id_change_type === 0">
+                  <el-input v-model="impact.change_type_name" placeholder="Please input text..." />
+                </template>
+                <p>{{ impact.rona_awal_name }} akibat {{ impact.component_name }}</p>
               </td>
-              <td>{{ impact.component_name }}</td>
-              <td>{{ impact.rona_awal_name }}</td>
-              <td>{{ impact.initial_study_plan }}</td>
               <td>
                 <template v-for="(pie, index) in pieParams">
                   <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
-                    <p><strong>{{ pie.name }}</strong> {{ pie.description }}</p>
+                    <el-popover
+                      placement="top-start"
+                      width="350"
+                      trigger="hover"
+                    >
+                      <p style="word-break: break-word !important; text-align:left !important;">{{ pie.description }}</p>
+                      <p slot="reference" :key="'po_'+ pie.id + '_'+ impact.id" style="font-weight:bold; cursor: pointer;">{{ pie.name }}</p>
+                    </el-popover>
                     <el-input
                       v-model="impact.potential_impact_evaluation[index].text"
                       type="textarea"
                       :rows="3"
-                      placeholder="Please input"
                       :value="impact.potential_impact_evaluation[index].text"
                     />
                   </div>
@@ -93,15 +98,12 @@
               <td>{{ impact.study_location }}</td>
               <td>
                 <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
-                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="12" size="mini" /> bulan</p>
-
+                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" /> bulan</p>
               </td>
-              <td />
             </tr>
           </template>
         </tbody>
       </template>
-
     </table>
   </div>
 </template>
@@ -134,9 +136,11 @@ export default {
     };
   },
   mounted() {
+    this.data = [];
     this.isLoading = true;
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
     setTimeout(() => (this.isLoading = false), 2000);
+    this.getParams();
     // this.getData();
   },
   methods: {
@@ -153,7 +157,7 @@ export default {
         });
         console.log(option);
       }*/
-      console('handleOptionChange', event);
+      console('handleOptionChange', option);
     },
     handleSetData(data) {
       this.data = data;
@@ -178,6 +182,11 @@ export default {
           }
         })
         .catch((error) => {
+          this.$message({
+            message: error.message,
+            type: 'error',
+            duration: 5 * 1000,
+          });
           console.log(error);
         });
     },
@@ -235,19 +244,27 @@ export default {
 
       return data;
     },
-    async getData() {
-      console.log('starting getData at DampakHipotetik');
-      this.isLoading = true;
-
+    async getParams() {
       await changeTypeResource.list({})
         .then((res) => {
           this.changeType = res.data;
+          this.changeType.push({
+            name: 'Lainnya',
+            id: 0,
+          });
         });
 
       await pieParamsResource.list({}).then((res) => {
         this.pieParams = res.data;
       });
-
+    },
+    async getData() {
+      console.log('starting getData at DampakHipotetik');
+      this.data = [];
+      this.isLoading = true;
+      if ((this.changeType.length === 0) || (this.pieParams.length === 0)) {
+        this.getParams();
+      }
       const impIds = [];
       const prjStageList = await projectStageResource.list({});
       this.projectStages = prjStageList.data;
@@ -260,6 +277,7 @@ export default {
         if (!(impIds.find((e) => e === imp.id))) {
           impIds.push(imp.id);
         }
+
         if (imp.id_project_stage === null) {
           imp.id_project_stage = imp.id_project_stage_master;
         }
@@ -289,10 +307,17 @@ export default {
             text: null,
           });
         });
+        // manipulate id_change_type
+        if (this.changeType){
+          if (imp.id_change_type !== null){
+            if (!this.isPrimaryType(imp.id_change_type)){
+              imp.id_change_type = 0;
+            }
+          }
+        }
       });
-      this.isLoading = false;
 
-      console.log(impIds);
+      // console.log(impIds);
       const pies = await pieEntriesResource.list({
         id_impact_identification: impIds,
       });
@@ -300,20 +325,8 @@ export default {
 
       var dataList = impactList.data;
       this.data = this.createDataArray(dataList, this.projectStages);
-    },
-    initPieMatrix(){
-      this.pieInputMatrix.map((d) => {
-        // const matrix = [];
-        this.pieParams.map((e) => {
-          this.pieInputMatrix[d].push({
-            id_pie_param: e.id,
-            text: null,
-            change_type: null,
-          });
-        });
-      });
-      console.log('pie matrix');
-      console.log(this.pieInputMatrix);
+      this.isLoading = false;
+      console.log('end getData...', this.data);
     },
     refresh(){
       this.getData();
@@ -322,14 +335,23 @@ export default {
       const pie = this.pies.find((e) => ((e.id_impact_identification === id) &&
         (e.id_pie_param === index)));
       if (pie) {
-        console.log(pie.text);
         return pie.text;
       }
       return '';
     },
     showStage(index){
-      console.log(index);
       this.openedStage = (this.openedStage === index) ? null : index;
+    },
+    isPrimaryType(val){
+      if (!this.changeType) {
+        return true;
+      }
+
+      const ctype = this.changeType.find((c) => (c.id === val));
+      if (ctype){
+        return true;
+      }
+      return false;
     },
   },
 };
@@ -340,7 +362,15 @@ export default {
     height: 200% !important;
   }
   table td.title:hover {
-    background-color: #acb;
+    background-color: #efefef;
     cursor: pointer;
+  }
+  td .el-input-number--mini {
+    width: 100px;
+
+  }
+ .el-tooltip__popper {
+    max-width: 300px;
+    line-height: 150%;
   }
 </style>

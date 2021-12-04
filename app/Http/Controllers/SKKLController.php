@@ -127,6 +127,8 @@ class SKKLController extends Controller
         $beritaAcara = MeetingReport::where('id_project', $idProject)->first();
 
         $project = Project::findOrFail($idProject);
+        $district = $project->district ? $project->district->name : '';
+        $province = $project->province ? $project->province->name : '';
         $data[] = [
             'title' => 'Nama Kegiatan',
             'description' => $project->project_title,
@@ -165,7 +167,7 @@ class SKKLController extends Controller
         ];
         $data[] = [
             'title' => 'Provinsi/Kota',
-            'description' => $project->province->name . '/' . $project->district->name
+            'description' => $province . '/' . $district
         ];
         $data[] = [
             'title' => 'Deskripsi Kegiatan',
@@ -198,7 +200,9 @@ class SKKLController extends Controller
     private function getDocument($idProject) {
         $skkl = ProjectSkkl::where('id_project', $idProject)->first();
         $project = Project::findOrFail($idProject);
-        $location = $project->address . ' ' . ucwords(strtolower($project->district->name)) . ', Provinsi ' . $project->province->name;
+        $district = $project->district ? $project->district->name : '';
+        $province = $project->province ? $project->province->name : '';
+        $location = $project->address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
 
         // PHPWord
         $templateProcessor = new TemplateProcessor('template_skkl.docx');
@@ -220,16 +224,39 @@ class SKKLController extends Controller
         $templateProcessor->saveAs(storage_path('app/public/skkl/' . $save_file_name));
 
         // Date
-        $andalDate = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($idProject) {
+        $andalDate = '';
+        $andal = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($idProject) {
            $q->where('id_project', $idProject); 
-        })->orderBy('updated_at', 'desc')->first()->updated_at;
-        $rklDate = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
+        })->orderBy('updated_at', 'desc')->first();
+        if($andal) {
+            $andalDate = $andal->updated_at->locale('id')->isoFormat('D MMMM Y');
+        }
+
+        $rklDate = '';
+        $rkl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
             $q->where('id_project', $idProject); 
-         })->orderBy('updated_at', 'desc')->first()->updated_at;
-        $rplDate = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($idProject) {
+         })->orderBy('updated_at', 'desc')->first();
+         if($rkl) {
+             $rklDate = $rkl->updated_at;
+         }
+
+        $rplDate = '';
+        $rpl = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($idProject) {
             $q->where('id_project', $idProject); 
-         })->orderBy('updated_at', 'desc')->first()->updated_at;
-        $rklRplDate = $rklDate > $rplDate ? $rklDate : $rplDate;
+         })->orderBy('updated_at', 'desc')->first();
+         if($rpl) {
+            $rplDate = $rpl->updated_at;
+        }
+
+        $rklRplDate = '';
+        if($rklDate == '') {
+            $rklRplDate = $rplDate;
+        } else if ($rplDate == '') {
+            $rklRplDate = $rklDate;
+        } else {
+            $rklRplDate = $rklDate > $rplDate ? $rklDate->locale('id')->isoFormat('D MMMM Y') : $rplDate->locale('id')->isoFormat('D MMMM Y');
+        }
+ 
 
         return [ 
                 [
@@ -245,12 +272,12 @@ class SKKLController extends Controller
                 [
                     'name' => 'Dokumen ANDAL',
                     'file' =>  Storage::url('workspace/' . $idProject . '-andal.docx'),
-                    'updated_at' => $andalDate->locale('id')->isoFormat('D MMMM Y')
+                    'updated_at' => $andalDate
                 ],
                 [
                     'name' => 'Dokumen RKL RPL',
                     'file' => Storage::url('workspace/' .  $idProject . '-rkl-rpl.docx'),
-                    'updated_at' => $rklRplDate->locale('id')->isoFormat('D MMMM Y')
+                    'updated_at' => $rklRplDate
                 ]
             ];
     }

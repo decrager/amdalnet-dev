@@ -10,43 +10,43 @@
             <table class="tableDetail tableDetail1" cellspacing="0" cellpadding="0" style="border:none">
               <tr>
                 <td style="width:40%">No. Registrasi</td>
-                <td v-html="selectedAnnouncement.project.registration_no" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.registration_no : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Jenis Dokumen</td>
-                <td v-html="selectedAnnouncement.project.required_doc" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.required_doc : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Nama Kegiatan</td>
-                <td v-html="selectedAnnouncement.project.project_title" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.project_title : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Bidang Usaha/Kegiatan</td>
-                <td v-html="selectedAnnouncement.project.sector" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.sector : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Skala/Besaran</td>
-                <td v-html="selectedAnnouncement.project.scale_unit" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.scale_unit : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat</td>
-                <td v-html="selectedAnnouncement.project.address[0].address" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.address[0].address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Kewenangan</td>
-                <td v-html="selectedAnnouncement.project.authority" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.authority : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.pic_name" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.pic_name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Penanggung Jawab</td>
-                <td v-html="selectedAnnouncement.pic_name" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.pic_name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.cs_address" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.cs_address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">No Telepon Pemrakarsa</td>
@@ -58,13 +58,13 @@
               </tr>
               <tr>
                 <td style="width:40%">Provinsi/Kota</td>
-                <td v-html="selectedAnnouncement.project.address[0].prov + '/' + selectedAnnouncement.project.address[0].district" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.address[0].prov + '/' + selectedAnnouncement.project.address[0].district : ''" />
               </tr>
               <tr>
                 <td colspan="2">Deskripsi Kegiatan</td>
               </tr>
               <tr>
-                <td colspan="2" v-html="selectedAnnouncement.project.description" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
               </tr>
             </table>
           </el-col>
@@ -84,7 +84,7 @@
                 <td colspan="2">Deskripsi Kegiatan</td>
               </tr>
               <tr class="bg-white-custom">
-                <td colspan="2" v-html="selectedAnnouncement.project.description" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
               </tr>
             </table>
           </el-col>
@@ -136,7 +136,7 @@
               <el-row :gutter="20">
                 <el-col :span="12">
                   <el-form-item>
-                    <div class="text-white fw-bold">Nik</div>
+                    <div class="text-white fw-bold">NIK</div>
                     <el-input v-model="form.id_card_number" placeholder="Nik" />
                   </el-form-item>
                 </el-col>
@@ -210,11 +210,8 @@
                   <div style="display:flex">
                     <div>
                       <ul>
-                        <li class="fz8">1 Bintang : Sangat tidak setuju</li>
-                        <li class="fz8">2 Bintang : Tidak setuju</li>
-                        <li class="fz8">3 Bintang : Netral</li>
-                        <li class="fz8">4 Bintang : Setuju</li>
-                        <li class="fz8">5 Bintang : Sangat Setuju</li>
+                        <li class="fz8">1 Bintang : Khawatir</li>
+                        <li class="fz8">5 Bintang :  Harapan</li>
                       </ul>
                     </div>
                     <div style="padding-left:1rem">
@@ -252,14 +249,23 @@
             <el-checkbox-group v-model="form.comunityType">
               <el-checkbox label="Kelompok Masyarakat Rentan" />
               <el-checkbox label="Kelompok Masyarakat Adat" />
-              <el-checkbox label="Kelompok Ke s etaraan Gender" />
+              <el-checkbox label="Kelompok Ke setaraan Gender" />
             </el-checkbox-group>
             <template>
               <el-radio v-model="form.comunityGender" label="1">Laki - laki</el-radio>
               <el-radio v-model="form.comunityGender" label="2">Perempuan</el-radio>
             </template>
+            <template>
+              <el-alert
+                v-show="warningDialog"
+                title="Silahkan Di Isi Salah Satu"
+                type="warning"
+                show-icon
+              />
+
+            </template>
             <span slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="centerDialogVisible = false">Simpan</el-button>
+              <el-button type="primary" @click="handleCloseModal()">Simpan</el-button>
             </span>
           </el-dialog>
         </el-form>
@@ -340,7 +346,7 @@ export default {
         peran: '',
         envyCondition: null,
         localImpact: null,
-        comunityType: ['Kelompok Masyarakat Rentan', 'Kelompok Masyarakat Adat', 'Kelompok Ke setaraan Gender'],
+        comunityType: [],
         comunityGender: null,
       },
       responders: [],
@@ -361,6 +367,7 @@ export default {
         iconAnchor: [22, 94],
       }),
       centerDialogVisible: false,
+      warningDialog: false,
       checkList: [],
       radio: '',
       selectedProject2: {},
@@ -592,7 +599,7 @@ export default {
             message: 'Successfully create a feedback',
             duration: 5 * 1000,
           });
-          this.$emit('handleSetTabs');
+          // this.$emit('handleSetTabs');
           this.getAnnouncement();
         })
         .catch((error) => {
@@ -615,6 +622,15 @@ export default {
     handleChangeModal(){
       if (this.form.peran === '1'){
         this.centerDialogVisible = true;
+      }
+    },
+    handleCloseModal(){
+      if (this.form.comunityType.length === 0 && this.form.comunityGender === null) {
+        this.warningDialog = true;
+        this.centerDialogVisible = true;
+      } else {
+        this.warningDialog = false;
+        this.centerDialogVisible = false;
       }
     },
   },

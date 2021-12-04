@@ -22,7 +22,7 @@
           />
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
-          <matrik-identifikasi-dampak
+          <matriks-identifikasi-dampak-table
             @handleReloadVsaList="handleReloadVsaList"
           />
         </el-collapse-item>
@@ -65,7 +65,8 @@
 
 <script>
 import Pelingkupan from './components/Pelingkupan.vue';
-import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
+// import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
+import MatriksIdentifikasiDampakTable from './components/tables/MatriksIdentifikasiDampakTable.vue';
 import MatriksDampakPentingHipotetik from './components/MatriksDampakPentingHipotetik.vue';
 import DampakHipotetik from './components/DampakHipotetik.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
@@ -77,7 +78,7 @@ export default {
   name: 'FormulirUklUpl',
   components: {
     Pelingkupan,
-    MatrikIdentifikasiDampak,
+    MatriksIdentifikasiDampakTable,
     DampakHipotetik,
     MetodeStudi,
     MatriksDampakPentingHipotetik,

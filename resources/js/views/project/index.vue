@@ -205,7 +205,7 @@
                 >
                   Uji Kelayakan
                 </el-button>
-                <el-button
+                <!-- <el-button
                   v-if="isFormulator"
                   href="#"
                   type="text"
@@ -213,7 +213,7 @@
                   @click="handleFlowChart(scope.row)"
                 >
                   Bagan Alir
-                </el-button>
+                </el-button> -->
                 <el-button
                   v-if="isFormulator"
                   href="#"
@@ -240,6 +240,15 @@
                   @click="handleGenerateSPPL(scope.row)"
                 >
                   Unduh SPPL
+                </el-button>
+                <el-button
+                  v-if="scope.row.feasibility_test"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleFeasibilityTest(scope.row.id)"
+                >
+                  SKKL
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -574,6 +583,11 @@ export default {
     handleUjiRklRpl(project) {
       this.$router.push({
         path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
+      });
+    },
+    handleFeasibilityTest(id) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${id}/skkl`,
       });
     },
     async handleGenerateSPPL(project) {
