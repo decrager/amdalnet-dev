@@ -124,10 +124,12 @@
                     <div class="text-white fw-bold">Peran</div>
                     <el-form-item label="">
                       <el-select v-model="form.peran" placeholder="Pilih Peran" @change="handleChangeModal">
-                        <el-option label="Masyarakat Terkena Dampak Langsung" value="1" />
-                        <el-option label="Pemerhati Lingkungan Hidup" value="2" />
-                        <el-option label="LSM" value="3" />
-                        <el-option label="Masyarakat Berkepentingan Lainya" value="4" />
+                        <el-option
+                          v-for="item in responders"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        />
                       </el-select>
                     </el-form-item>
                   </el-form-item>
@@ -618,7 +620,7 @@ export default {
       this.$emit('handleCancelComponent', 'TABS');
     },
     handleChangeModal(){
-      if (this.form.peran === '1'){
+      if (this.form.peran === 1){
         this.centerDialogVisible = true;
       }
     },
