@@ -281,7 +281,7 @@
         </el-table-column>
         <el-table-column align="left" label="Lokasi" width="200">
           <template slot-scope="scope">
-            <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }}, {{ scope.row.address.length > 0 ? scope.row.address[0].province : scope.row.province }}</span>
+            <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district+'/ '+scope.row.address[0].prov : '' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="Tahap" class-name="status-col" width="100">

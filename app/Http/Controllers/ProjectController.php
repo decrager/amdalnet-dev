@@ -37,17 +37,9 @@ class ProjectController extends Controller
             return Project::with('feasibilityTest')->whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
-            return Project::with(['address','listSubProject', 'feasibilityTest'])->select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
+            return Project::with(['address','listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
                 return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
             })->where(
-                function ($query) use ($request) {
-                    return $request->id_prov ? $query->where('projects.id_prov', $request->id_prov) : '';
-                }
-            )->where(
-                function ($query) use ($request) {
-                    return $request->id_district ? $query->where('projects.id_district', $request->id_district) : '';
-                }
-            )->where(
                 function ($query) use ($request) {
                     return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
                 }
@@ -55,20 +47,12 @@ class ProjectController extends Controller
                 function ($query) use ($request) {
                     return $request->formulatorId ? $query->where('formulators.id', $request->formulatorId) : '';
                 }
-            )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')->orderBy('projects.id', 'DESC')->paginate($request->limit);
+            )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')->orderBy('projects.id', 'DESC')->paginate($request->limit);
         }
 
-        return Project::with(['address','listSubProject', 'feasibilityTest'])->select('projects.*', 'provinces.name as province', 'districts.name as district', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
+        return Project::with(['address','listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
-            function ($query) use ($request) {
-                return $request->id_prov ? $query->where('projects.id_prov', $request->id_prov) : '';
-            }
-        )->where(
-            function ($query) use ($request) {
-                return $request->id_district ? $query->where('projects.id_district', $request->id_district) : '';
-            }
-        )->where(
             function ($query) use ($request) {
                 return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
             }
@@ -76,7 +60,7 @@ class ProjectController extends Controller
             function ($query) use ($request) {
                 return $request->initiatorId ? $query->where('projects.id_applicant', $request->initiatorId) : '';
             }
-        )->leftJoin('provinces', 'projects.id_prov', '=', 'provinces.id')->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('districts', 'projects.id_district', '=', 'districts.id')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
+        )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
     }
 
     /**
@@ -447,9 +431,9 @@ class ProjectController extends Controller
                 'sector' => 'required',
                 'description' => 'required',
                 'id_applicant' => 'required',
-                'id_prov' => 'required',
-                'id_district' => 'required',
-                'address' => 'required',
+                // 'id_prov' => 'required',
+                // 'id_district' => 'required',
+                // 'address' => 'required',
                 'field' => 'required',
                 'location_desc' => 'required',
                 'risk_level' => 'required',
@@ -502,9 +486,9 @@ class ProjectController extends Controller
             $project->sector = $params['sector'];
             $project->description = $params['description'];
             $project->id_applicant = $params['id_applicant'];
-            $project->id_prov = $params['id_prov'];
-            $project->id_district = $params['id_district'];
-            $project->address = $params['address'];
+            // $project->id_prov = $params['id_prov'];
+            // $project->id_district = $params['id_district'];
+            // $project->address = $params['address'];
             $project->field = $params['field'];
             $project->location_desc = $params['location_desc'];
             $project->risk_level = $params['risk_level'];
