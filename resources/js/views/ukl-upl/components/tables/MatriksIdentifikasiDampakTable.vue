@@ -6,7 +6,11 @@
     >
       <el-table-column prop="component_name" label="Komponen Kegiatan" align="left" />
       <el-table-column v-for="ct in component_types" :key="ct" :label="ct" prop="component_types" align="center">
-        <el-table-column v-for="r in ronaAwalListFiltered(ct)" :key="r.key" :label="r.name" :prop="JSON.stringify({ct, property: r.key})" align="center" :formatter="cellFormatter" />
+        <el-table-column v-for="r in ronaAwalListFiltered(ct)" :key="r.key" :label="r.name" :prop="JSON.stringify({ct, property: r.key})" align="center">
+          <template slot-scope="scope">
+            {{ cellFormatter(scope.row, scope.column) }}
+          </template>
+        </el-table-column>
       </el-table-column>
     </el-table>
   </div>
