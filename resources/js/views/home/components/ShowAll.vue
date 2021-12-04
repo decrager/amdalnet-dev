@@ -44,6 +44,7 @@
       <div class="block" style="text-align:right">
         <pagination
           v-show="total > 0"
+          :auto-scroll="false"
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"

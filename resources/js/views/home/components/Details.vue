@@ -249,14 +249,23 @@
             <el-checkbox-group v-model="form.comunityType">
               <el-checkbox label="Kelompok Masyarakat Rentan" />
               <el-checkbox label="Kelompok Masyarakat Adat" />
-              <el-checkbox label="Kelompok Ke s etaraan Gender" />
+              <el-checkbox label="Kelompok Ke setaraan Gender" />
             </el-checkbox-group>
             <template>
               <el-radio v-model="form.comunityGender" label="1">Laki - laki</el-radio>
               <el-radio v-model="form.comunityGender" label="2">Perempuan</el-radio>
             </template>
+            <template>
+              <el-alert
+                v-show="warningDialog"
+                title="Silahkan Di Isi Salah Satu"
+                type="warning"
+                show-icon
+              />
+
+            </template>
             <span slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="centerDialogVisible = false">Simpan</el-button>
+              <el-button type="primary" @click="handleCloseModal()">Simpan</el-button>
             </span>
           </el-dialog>
         </el-form>
@@ -337,7 +346,7 @@ export default {
         peran: '',
         envyCondition: null,
         localImpact: null,
-        comunityType: ['Kelompok Masyarakat Rentan', 'Kelompok Masyarakat Adat', 'Kelompok Ke setaraan Gender'],
+        comunityType: [],
         comunityGender: null,
       },
       responders: [],
@@ -358,6 +367,7 @@ export default {
         iconAnchor: [22, 94],
       }),
       centerDialogVisible: false,
+      warningDialog: false,
       checkList: [],
       radio: '',
       selectedProject2: {},
@@ -612,6 +622,15 @@ export default {
     handleChangeModal(){
       if (this.form.peran === '1'){
         this.centerDialogVisible = true;
+      }
+    },
+    handleCloseModal(){
+      if (this.form.comunityType.length === 0 && this.form.comunityGender === null) {
+        this.warningDialog = true;
+        this.centerDialogVisible = true;
+      } else {
+        this.warningDialog = false;
+        this.centerDialogVisible = false;
       }
     },
   },
