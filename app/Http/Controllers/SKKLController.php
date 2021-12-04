@@ -127,8 +127,16 @@ class SKKLController extends Controller
         $beritaAcara = MeetingReport::where('id_project', $idProject)->first();
 
         $project = Project::findOrFail($idProject);
-        $district = $project->district ? $project->district->name : '';
-        $province = $project->province ? $project->province->name : '';
+
+        // ========= PROJECT ADDRESS =========== //
+        $district = '';
+        $province = '';
+        $address = '';
+        if($project->address && $project->address->first()) {
+            $district = $project->address->first()->district;
+            $province = $project->address->first()->province;
+            $address = $project->address->first()->address;
+        }
         $data[] = [
             'title' => 'Nama Kegiatan',
             'description' => $project->project_title,
@@ -143,7 +151,7 @@ class SKKLController extends Controller
         ];
         $data[] = [
             'title' => 'Alamat',
-            'description' => $project->address
+            'description' => $address
         ];
         $data[] = [
             'title' => 'Pemrakarsa',
@@ -200,9 +208,15 @@ class SKKLController extends Controller
     private function getDocument($idProject) {
         $skkl = ProjectSkkl::where('id_project', $idProject)->first();
         $project = Project::findOrFail($idProject);
-        $district = $project->district ? $project->district->name : '';
-        $province = $project->province ? $project->province->name : '';
-        $location = $project->address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
+
+        // ============== PROJECT ADDRESS =============== //
+        $location = '';
+        if($project->address & $project->address->first()) {
+            $district = $project->address->first()->district;
+            $province = $project->address->first()->province;
+            $address = $project->address->fist()->address;
+            $location = $address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
+        }
 
         // PHPWord
         $templateProcessor = new TemplateProcessor('template_skkl.docx');

@@ -58,11 +58,12 @@ export default {
     },
     async getData() {
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
+      const isAndal = this.$route.name === 'penyusunanAndal' ? 'true' : 'false';
       await axios.get('api/matriks-dampak/rona-mapping/' + this.idProject)
         .then(response => {
           this.ronaMapping = response.data;
         });
-      await axios.get('api/matriks-dampak/table-dph/' + this.idProject)
+      await axios.get('api/matriks-dampak/table-dph/' + this.idProject + '?isAndal=' + isAndal)
         .then(response => {
           this.data = response.data;
           const ctypes = {};

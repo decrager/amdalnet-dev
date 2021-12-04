@@ -638,11 +638,11 @@ class AndalComposingController extends Controller
         $project_address = '';
         $project_district = '';
         $project_province = '';
-        // if($project->address) {
-        //     $project_address = $project->address->first()->address;
-        //     $project_district = $project->address->first()->district;
-        //     $project_province = $project->address->first()->prov;
-        // }
+        if($project->address && $project->address->first()) {
+            $project_address = $project->address->first()->address;
+            $project_district = $project->address->first()->district;
+            $project_province = $project->address->first()->prov;
+        }
 
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
