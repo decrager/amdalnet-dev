@@ -58,7 +58,7 @@ export default {
             duration: 5 * 1000,
           });
           if (response.code === 200) {
-            this.$emit('handleReloadVsaList', 'matriks-dph');
+            this.$emit('handleEnableSubmitForm');
           }
         })
         .catch((error) => {
