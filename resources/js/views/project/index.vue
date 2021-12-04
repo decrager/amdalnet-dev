@@ -599,7 +599,7 @@ export default {
         return e;
       });
 
-      console.log(project.listSubProject);
+      console.log(project.address[0].district);
 
       PizZipUtils.getBinaryContent(
         '/template_sppl.docx',
@@ -619,6 +619,8 @@ export default {
             phone: this.initiator.phone,
             sub_projects: project.listSubProject,
             pic: this.initiator.pic,
+            city: project.address[0].district,
+            publish_date: project.created_at.substring(0, 10),
           });
 
           const out = doc.getZip().generate({
