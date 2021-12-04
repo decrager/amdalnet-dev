@@ -31,7 +31,6 @@ export default {
   },
   methods: {
     ronaAwalListFiltered(component_type) {
-      console.log(this.ronaMapping[component_type]);
       return this.ronaMapping[component_type];
     },
     cellFormatter(row, col) {
@@ -61,12 +60,10 @@ export default {
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       await axios.get('api/matriks-dampak/rona-mapping/' + this.idProject)
         .then(response => {
-          console.log(response);
           this.ronaMapping = response.data;
         });
       await axios.get('api/matriks-dampak/table/' + this.idProject)
         .then(response => {
-          console.log(response);
           this.data = response.data;
           const ctypes = {};
           this.data.forEach(row => {
