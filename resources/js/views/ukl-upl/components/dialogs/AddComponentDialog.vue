@@ -38,9 +38,6 @@
       <el-form-item label="Komponen Kegiatan">
         <el-input v-model="component.name" />
       </el-form-item>
-      <el-form-item label="Definisi">
-        <el-input v-model="component.definition" />
-      </el-form-item>
       <el-form-item label="Umum">
         <el-input
           v-model="component.description_common"
