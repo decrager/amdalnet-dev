@@ -17,7 +17,6 @@ class MatriksDampakController extends Controller
      */
     public function getTable($id)
     {
-        $components = $this->getComponents($id);
         $data = [];
         $rona_awals = $this->getRonaAwals($id);
         $rona_mapping = $this->getRonaMapping($id);
@@ -29,7 +28,7 @@ class MatriksDampakController extends Controller
                 $ra->id_component_type = $ra->id_component_type_master;
             }
         }
-        
+
         $components_by_stage = $this->getComponentsGroupByStage($id);
         foreach ($components_by_stage as $cstage) {
             $index = 1;
