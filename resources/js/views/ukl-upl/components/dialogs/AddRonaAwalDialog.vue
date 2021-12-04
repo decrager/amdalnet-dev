@@ -76,6 +76,9 @@
       <el-form-item label="Khusus">
         <el-input v-model="ronaAwal.description_specific" />
       </el-form-item>
+      <el-form-item label="Besaran">
+        <el-input v-model="ronaAwal.unit" type="textarea" :rows="2" />
+      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button type="info" @click="handleClose">Batal</el-button>

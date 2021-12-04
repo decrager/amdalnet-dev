@@ -11,10 +11,9 @@
             </div>
           </legend>
           <form @submit.prevent="handleSubmit">
-            <input ref="peSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(1)">
+            <input ref="peSHP" type="file" class="form-control-file" @change="uploadMap">
             <!-- <button type="submit">Unggah</button> -->
           </form>
-          <div id="map1" class="map-wrapper" />
         </fieldset>
 
       </el-col>
@@ -39,10 +38,9 @@
           </legend>
 
           <form @submit.prevent="handleSubmit">
-            <input ref="psSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(3)">
+            <input ref="psSHP" type="file" class="form-control-file" @change="uploadMap">
             <!-- <button type="submit">Unggah</button> -->
           </form>
-          <div id="map3" class="map-wrapper" />
         </fieldset>
 
       </el-col>
@@ -69,10 +67,9 @@
           </legend>
 
           <form @submit.prevent="handleSubmit">
-            <input ref="pwSHP" type="file" class="form-control-file" multiple accept="x-gis/x-shapefile" @change="onChangeFiles(5)">
+            <input ref="pwSHP" type="file" class="form-control-file" @change="uploadMap">
             <!-- <button type="submit">Unggah</button> -->
           </form>
-          <div id="map5" class="map-wrapper" />
         </fieldset>
       </el-col>
 
@@ -90,6 +87,8 @@
       </el-col>
 
     </el-form-item>
+    <div id="mapView" class="map-wrapper" />
+
     <el-row style="text-align:right;">
       <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
     </el-row>
@@ -123,6 +122,7 @@ import shp from 'shpjs';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
 
 const uploadMaps = new Resource('project-map');
@@ -152,6 +152,8 @@ export default {
       index: 0,
       param: [],
       required: true,
+      fileMap: [],
+      mapGeojsonArray: [],
       // isVisible: false,
       // visible: [false, false, false, false, false, false, false],
     };
@@ -326,48 +328,155 @@ export default {
       console.log('handling on change', this.param);
       this.loadMap(index);
     },
-    loadMap(id){
-      const index = [1, 3, 5];
-      if (index.indexOf(id + 1) < 0) {
-        return;
-      }
+    defineActions(event) {
+      const item = event.item;
 
+      item.actionsSections = [
+        [
+          {
+            title: 'Go to full extent',
+            className: 'esri-icon-zoom-in-magnifying-glass',
+            id: 'full-extent',
+          },
+        ],
+      ];
+    },
+    uploadMap(){
       const map = new Map({
         basemap: 'topo',
       });
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
+      //  Map Ekologis
+      const mapBatasEkologis = this.$refs.peSHP.files[0];
+      const readerEkologis = new FileReader();
+      readerEkologis.onload = (event) => {
         const base = event.target.result;
         shp(base).then(function(data) {
+          console.log('map: ' + data);
+
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
           });
 
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              outline: {
+                color: 'red',
+              },
+            },
+          };
           const url = URL.createObjectURL(blob);
-          const geojsonLayer = new GeoJSONLayer({
+          const layerEkologis = new GeoJSONLayer({
             url: url,
             visible: true,
             outFields: ['*'],
-            title: 'Layer',
             opacity: 0.75,
+            title: 'Layer Batas Ekologis',
+            renderer: renderer,
           });
 
-          map.add(geojsonLayer);
+          map.add(layerEkologis);
           mapView.on('layerview-create', (event) => {
             mapView.goTo({
-              target: geojsonLayer.fullExtent,
+              target: layerEkologis.fullExtent,
             });
           });
         });
       };
-      reader.readAsArrayBuffer(this.files[id][0]);
+      readerEkologis.readAsArrayBuffer(mapBatasEkologis);
+
+      //  Map Batas Sosial
+      const mapBatasSosial = this.$refs.psSHP.files[0];
+      const readerSosial = new FileReader();
+      readerSosial.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          console.log('map: ' + data);
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              outline: {
+                color: 'blue',
+              },
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerBatasSosial = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Batas Sosial',
+            renderer: renderer,
+          });
+
+          map.add(layerBatasSosial);
+          mapView.on('layerview-create', (event) => {
+            mapView.goTo({
+              target: layerBatasSosial.fullExtent,
+            });
+          });
+        });
+      };
+      readerSosial.readAsArrayBuffer(mapBatasSosial);
+
+      //  Map Batas Wilayah Studi
+      const mapBatasWilayahStudi = this.$refs.pwSHP.files[0];
+      const readerWilayahStudi = new FileReader();
+      readerWilayahStudi.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          console.log('map: ' + data);
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              outline: {
+                color: 'green',
+              },
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerWilayahStudi = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Batas Wilayah Studi',
+            renderer: renderer,
+          });
+
+          map.add(layerWilayahStudi);
+          mapView.on('layerview-create', (event) => {
+            mapView.goTo({
+              target: layerWilayahStudi.fullExtent,
+            });
+          });
+        });
+      };
+      readerWilayahStudi.readAsArrayBuffer(mapBatasWilayahStudi);
 
       const mapView = new MapView({
-        container: 'map' + (id + 1),
+        container: 'mapView',
         map: map,
         center: [115.287, -1.588],
-        zoom: 4,
+        zoom: 6,
       });
       this.$parent.mapView = mapView;
 
@@ -377,7 +486,22 @@ export default {
         listItemCreatedFunction: this.defineActions,
       });
 
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
+        }
+      });
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+
       mapView.ui.add(layerList, 'top-right');
+      mapView.ui.add(legend, 'bottom-left');
     },
     showMap(id){
       this.visible[id] = true;

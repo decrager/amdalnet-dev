@@ -15,6 +15,8 @@ class SubProjectRonaAwal extends Model
         'id_component_type',
         'description_common',
         'description_specific',
+        'definisi',
+        'unit',
     ];
 
     public function subProjectComponent()

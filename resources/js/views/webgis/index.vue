@@ -16,6 +16,7 @@ import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
+import Search from '@arcgis/core/widgets/Search';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
@@ -34,6 +35,7 @@ export default {
       mapView: null,
       selectedFeedback: {},
       showIdDialog: false,
+      mapGeojsonArray: [],
     };
   },
   mounted: function() {
@@ -216,24 +218,21 @@ export default {
 
       map.add(rtrPulau);
 
-      const mapGeojson = [];
-      const mapGeojsonArray = [];
       axios.get('api/maps')
         .then(response => {
           const projects = response.data;
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].stored_filename) {
               shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                if (data.length > 1) {
-                  for (let i = 0; i < data.length; i++) {
-                    const getProjectDetails = {
-                      title: 'Details',
-                      id: 'get-details',
-                      image: 'information-24-f.svg',
-                    };
-                    const arrayJsonTemplate = {
-                      title: projects[i].project_title + ' (' + projects[i].project_year + ').',
-                      content: '<table style="border-collapse: collapse !important">' +
+                for (let i = 0; i < data.length; i++) {
+                  const getProjectDetails = {
+                    title: 'Details',
+                    id: 'get-details',
+                    image: 'information-24-f.svg',
+                  };
+                  const arrayJsonTemplate = {
+                    title: projects[i].project_title + ' (' + projects[i].project_year + ').',
+                    content: '<table style="border-collapse: collapse !important">' +
                             '<thead>' +
                               '<tr style="margin: 5px 0;">' +
                                 '<td style="width: 35%">KBLI Code</td>' +
@@ -272,57 +271,36 @@ export default {
                               '</tr>' +
                             '</thead>' +
                           '</table>',
-                      actions: [getProjectDetails],
-                    };
+                    actions: [getProjectDetails],
+                  };
 
-                    const blob = new Blob([JSON.stringify(data[i])], {
-                      type: 'application/json',
-                    });
-                    const url = URL.createObjectURL(blob);
-                    if (projects[1].attachment_type === 'tapak'){
-                      const renderertapak = {
-                        type: 'simple',
-                        field: '*',
-                        symbol: {
-                          type: 'simple-fill',
-                          outline: {
-                            color: 'red',
-                          },
-                        },
-                      };
-                      const geojsonLayerArray = new GeoJSONLayer({
-                        url: url,
-                        outFields: ['*'],
-                        title: projects[1].project_title,
-                        popupTemplate: arrayJsonTemplate,
-                        renderer: renderertapak,
-                      });
-                      mapGeojsonArray.push(geojsonLayerArray);
-                    }
-                  }
-                  const kegiatanGroupLayer = new GroupLayer({
-                    title: projects[1].project_title,
-                    visible: false,
-                    visibilityMode: 'exclusive',
-                    layers: mapGeojsonArray,
-                    opacity: 0.90,
-                  });
-
-                  map.add(kegiatanGroupLayer);
-                } else {
-                  const blob = new Blob([JSON.stringify(data)], {
+                  const blob = new Blob([JSON.stringify(data[i])], {
                     type: 'application/json',
                   });
                   const url = URL.createObjectURL(blob);
-                  const geojsonLayer = new GeoJSONLayer({
+
+                  const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
-                    visible: false,
                     outFields: ['*'],
-                    title: projects[i].project_title,
+                    title: projects[1].project_title,
+                    popupTemplate: arrayJsonTemplate,
                   });
-                  mapGeojson.push(geojsonLayer);
-                  map.addMany(mapGeojson);
+                  this.mapGeojsonArray.push(geojsonLayerArray);
                 }
+                console.log('kegiatangroup: ' + this.mapGeojsonArray);
+
+                // mapGeojsonArray.forEach(layerGeojson => {
+                //   const kegiatanGroupLayer = new GroupLayer({
+                //     title: 'Layer Kegiatan',
+                //     visible: false,
+                //     layers: layerGeojson,
+                //     opacity: 0.90,
+                //   });
+
+                //   console.log('kegiatangroup: ' + kegiatanGroupLayer);
+
+                //   map.add(kegiatanGroupLayer);
+                // });
               });
             }
           }
@@ -338,6 +316,16 @@ export default {
       // Map widgets
       const home = new Home({
         view: mapView,
+      });
+
+      const searchWidget = new Search({
+        view: mapView,
+      });
+      // Adds the search widget below other elements in
+      // the top left corner of the view
+      mapView.ui.add(searchWidget, {
+        position: 'top-right',
+        index: 2,
       });
 
       mapView.popup.on('trigger-action', (event) => {
