@@ -78,56 +78,6 @@ export default {
           this.setMaxColspan();
         });
     },
-    getDataDummy(){
-      this.ronaMapping = {
-        'Geofisik Kimia': [
-          { key: 'kualitas_udara', name: 'Kualitas Udara' },
-          { key: 'geologi', name: 'Geologi' },
-        ],
-        'Biologi': [
-          { key: 'flora', name: 'Flora' },
-          { key: 'fauna', name: 'Fauna' },
-        ],
-      };
-      this.data = [{
-        type: 'stage',
-        component_name: 'Pra Konstruksi',
-        component_types: [],
-      }, {
-        type: 'component',
-        component_name: '1. Pembebasan Lahan',
-        component_types: [
-          {
-            id: 1,
-            name: 'Geofisik Kimia',
-            kualitas_udara: 'v',
-            geologi: ' ',
-          },
-          {
-            id: 2,
-            name: 'Biologi',
-            flora: ' ',
-            fauna: 'v',
-          }],
-      }, {
-        type: 'component',
-        component_name: '2. Penerimaan Tenaga Kerja',
-        component_types: [
-          {
-            id: 3,
-            name: 'Geofisik Kimia',
-            kualitas_udara: 'v',
-            geologi: 'v',
-          },
-          {
-            id: 4,
-            name: 'Biologi',
-            flora: ' ',
-            fauna: ' ',
-          }],
-      }];
-      this.setMaxColspan();
-    },
   },
 };
 </script>
