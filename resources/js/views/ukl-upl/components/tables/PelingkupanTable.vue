@@ -195,6 +195,10 @@ export default {
       type: Number,
       default: () => 0,
     },
+    currentIdSubProject: {
+      type: Number,
+      default: () => 0,
+    },
   },
   data() {
     return {
@@ -217,7 +221,6 @@ export default {
         { rona_awals: [] },
         { rona_awals: [] },
       ],
-      currentIdSubProject: 0,
       currentIdSubProjectComponent: 0,
       currentIdComponentType: 0,
     };
@@ -297,7 +300,7 @@ export default {
         });
     },
     async handleViewComponents(idSubProject) {
-      this.currentIdSubProject = idSubProject;
+      this.$emit('handleCurrentIdSubProject', idSubProject);
       this.getComponents(idSubProject);
       this.subProjectComponents = [];
       const sp = await subProjectComponentResource.list({
@@ -357,10 +360,12 @@ export default {
         if (sp.data.length > 0){
           this.getRonaAwals(sp.data[0].id);
         }
-        this.currentIdSubProject = firstSubProject.id;
+        this.$emit('handleCurrentIdSubProject', firstSubProject.id);
+        this.componentDialogKey = this.componentDialogKey + 1;
       }
     },
     async getComponents(idSubProject) {
+      this.componentDialogKey = this.componentDialogKey + 1;
       const components = await scopingResource.list({
         id_sub_project: idSubProject,
         id_project_stage: this.idProjectStage,
