@@ -14,6 +14,7 @@
       </el-row>
     </div>
     <el-table
+      :key="showFeedback"
       v-loading="loading"
       :data="feedbacks"
       fit
@@ -179,6 +180,7 @@ export default {
     handleCloseFeedbackDialog(){
       this.showFeedback = false;
       this.showIdDialog = false;
+      this.getFeedbacks();
     },
     handleCloseIdentityDialog(){
       this.showFeedback = false;
