@@ -253,5 +253,6 @@ Route::apiResource('public-spt', 'PublicSPTController');
 Route::get('lpjp-teams', [LpjpController::class, 'getFormulator']);
 Route::get('form-teams', [FormulatorTeamController::class, 'getAll']);
 Route::get('matriks-dampak/table/{id}', [MatriksDampakController::class, 'getTable']);
+Route::get('matriks-dampak/table-dph/{id}', [MatriksDampakController::class, 'getTableDph']);
 Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 'getRonaMapping']);
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);

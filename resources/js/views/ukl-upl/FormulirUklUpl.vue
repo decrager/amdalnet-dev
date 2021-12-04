@@ -22,9 +22,7 @@
           />
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
-          <matriks-identifikasi-dampak-table
-            @handleReloadVsaList="handleReloadVsaList"
-          />
+          <matriks-identifikasi-dampak-table />
         </el-collapse-item>
         <el-collapse-item name="3" title="PETA BATAS WILAYAH STUDI & PETA PENDUKUNG">
           <upload-peta-batas
@@ -51,9 +49,7 @@
           />
         </el-collapse-item>
         <el-collapse-item title="Matriks Dampak Penting Hipotetik" name="6">
-          <matriks-dampak-penting-hipotetik
-            @handleReloadVsaList="handleReloadVsaList"
-          />
+          <MatriksDPHTable />
         </el-collapse-item>
         <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
           <bagan-alir />
@@ -65,9 +61,8 @@
 
 <script>
 import Pelingkupan from './components/Pelingkupan.vue';
-// import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
 import MatriksIdentifikasiDampakTable from './components/tables/MatriksIdentifikasiDampakTable.vue';
-import MatriksDampakPentingHipotetik from './components/MatriksDampakPentingHipotetik.vue';
+import MatriksDPHTable from './components/tables/MatriksDPHTable.vue';
 import DampakHipotetik from './components/DampakHipotetik.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
@@ -81,7 +76,7 @@ export default {
     MatriksIdentifikasiDampakTable,
     DampakHipotetik,
     MetodeStudi,
-    MatriksDampakPentingHipotetik,
+    MatriksDPHTable,
     Workflow,
     BaganAlir,
     UploadPetaBatas,
