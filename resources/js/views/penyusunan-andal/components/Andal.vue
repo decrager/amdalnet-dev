@@ -16,7 +16,7 @@
         <template slot="title" class="head-accordion">
           <span class="title">MATRIKS IDENTIFIKASI DAMPAK</span>
         </template>
-        <MatrikIdentifikasiDampak
+        <MatriksIdentifikasiDampakTable
           v-if="activeName === 'matriks-identifikasi'"
         />
       </el-collapse-item>
@@ -43,7 +43,7 @@
         <template slot="title" class="head-accordion">
           <span class="title">MATRIKS DAMPAK PENTING HIPOTETIK</span>
         </template>
-        <MatriksDampakPentingHipotetik v-if="activeName === 'matriks-dampak'" />
+        <MatriksDPHTable v-if="activeName === 'matriks-dampak'" />
       </el-collapse-item>
       <el-collapse-item name="bagan-alir-pelingkupan">
         <template slot="title" class="head-accordion">
@@ -71,11 +71,11 @@
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 import TableAndal from '@/views/penyusunan-andal/components/Table';
-import MatrikIdentifikasiDampak from '@/views/ukl-upl/components/MatrikIdentifikasiDampak.vue';
+import MatriksIdentifikasiDampakTable from '@/views/ukl-upl/components/tables/MatriksIdentifikasiDampakTable.vue';
 // import UploadPetaBatas from '@/views/ukl-upl/components/UploadPetaBatas.vue';
 import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
 import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
-import MatriksDampakPentingHipotetik from '@/views/ukl-upl/components/MatriksDampakPentingHipotetik.vue';
+import MatriksDPHTable from '@/views/ukl-upl/components/tables/MatriksDPHTable.vue';
 import Pelingkupan from '@/views/ukl-upl/components/Pelingkupan.vue';
 import BaganAlir from '@/views/penyusunan-andal/clone/BaganAlir.vue';
 import BaganAlirDampak from '../components/BaganAlirDampak.vue';
@@ -84,11 +84,11 @@ export default {
   name: 'Andal',
   components: {
     TableAndal,
-    MatrikIdentifikasiDampak,
+    MatriksIdentifikasiDampakTable,
     // UploadPetaBatas,
     DampakHipotetik,
     MetodeStudi,
-    MatriksDampakPentingHipotetik,
+    MatriksDPHTable,
     Pelingkupan,
     BaganAlir,
     BaganAlirDampak,

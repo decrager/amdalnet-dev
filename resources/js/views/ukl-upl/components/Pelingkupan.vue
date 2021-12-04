@@ -13,6 +13,8 @@
       <pelingkupan-table
         :id-project="idProject"
         :id-project-stage="s.id"
+        :current-id-sub-project="currentIdSubProject"
+        @handleCurrentIdSubProject="handleCurrentIdSubProject"
       />
     </el-tab-pane>
   </el-tabs>
@@ -30,6 +32,7 @@ export default {
     return {
       idProject: 0,
       projectStages: [],
+      currentIdSubProject: 0,
     };
   },
   computed: {
@@ -43,6 +46,9 @@ export default {
   methods: {
     handleSaveForm() {
       this.$emit('handleReloadVsaList', 'matriks-identifikasi-dampak');
+    },
+    handleCurrentIdSubProject(id) {
+      this.currentIdSubProject = id;
     },
     async getData() {
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
