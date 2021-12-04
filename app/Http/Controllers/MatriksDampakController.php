@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
 use App\Entity\ImpactIdentification;
+use App\Entity\ImpactIdentificationClone;
 use App\Entity\ProjectStage;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
+use Illuminate\Http\Request;
 use Exception;
 
 class MatriksDampakController extends Controller
@@ -76,7 +78,7 @@ class MatriksDampakController extends Controller
         return $data;
     }
 
-    public function getTableDph($id)
+    public function getTableDph(Request $request, $id)
     {
         $data = [];
         $rona_awals = $this->getRonaAwals($id);
@@ -125,9 +127,16 @@ class MatriksDampakController extends Controller
                                 // check if DPH
                                 // select is_hypothetical_significant 
                                 // from impact_identifications ii where id_sub_project_rona_awal
-                                $dph = ImpactIdentification::select('is_hypothetical_significant')
-                                    ->where('id_sub_project_rona_awal', $cr->id)
-                                    ->first();
+                                $dph = null;
+                                if($request->isAndal === 'true') {
+                                    $dph = ImpactIdentificationClone::select('is_hypothetical_significant')
+                                        ->where('id_sub_project_rona_awal', $cr->id)
+                                        ->first();
+                                } else {
+                                    $dph = ImpactIdentification::select('is_hypothetical_significant')
+                                        ->where('id_sub_project_rona_awal', $cr->id)
+                                        ->first();
+                                }
                                 if ($dph->is_hypothetical_significant) {
                                     $ctype[$k] = 'DPH';
                                 } else if (!$dph->is_hypothetical_significant){
