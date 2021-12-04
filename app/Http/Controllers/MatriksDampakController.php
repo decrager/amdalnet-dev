@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
+use App\Entity\ImpactIdentification;
 use App\Entity\ProjectStage;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
@@ -62,6 +63,76 @@ class MatriksDampakController extends Controller
                             if (strtolower($cr->component_name) == strtolower($component->name)
                             && strtolower($cr->rona_awal_name) == strtolower($ra['name'])) {
                                 $ctype[$k] = 'v';
+                            }
+                        }
+                    }
+                    array_push($ctypes, $ctype);
+                }
+                $item['component_types'] = $ctypes;
+                array_push($data, $item);
+                $index++;
+            }
+        }
+        return $data;
+    }
+
+    public function getTableDph($id)
+    {
+        $data = [];
+        $rona_awals = $this->getRonaAwals($id);
+        $rona_mapping = $this->getRonaMapping($id);
+        foreach ($rona_awals as $ra) {
+            if ($ra->name == null) {
+                $ra->name = $ra->name_master;
+            }
+            if ($ra->id_component_type == null) {
+                $ra->id_component_type = $ra->id_component_type_master;
+            }
+        }
+
+        $components_by_stage = $this->getComponentsGroupByStage($id);
+        $component_ronas = SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
+            ->select('spra.id', 'spc.name AS component_name', 'spra.name AS rona_awal_name')
+            ->leftJoin('sub_project_components AS spc', 'spra.id_sub_project_component', '=', 'spc.id')
+            ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
+            ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
+            ->where('sp.id_project', $id)
+            ->get();
+
+        foreach ($components_by_stage as $cstage) {
+            $index = 1;
+            $item = [];
+            $item['type'] = 'stage';
+            $item['component_name'] = $cstage['project_stage_name'];
+            $item['component_types'] = [];
+            array_push($data, $item);
+            foreach ($cstage['components'] as $component) {
+                $item['type'] = 'component';
+                $item['component_name'] = $index . '. ' . $component->name;
+                $ctypes = [];
+                foreach ($rona_mapping as $key => $rm) {
+                    $ctype_master = ComponentType::where('name', $key)->first();
+                    $ctype = [
+                        'id' => $ctype_master->id, // find ctype id
+                        'name' => $key,
+                    ];
+                    foreach ($rona_mapping[$key] as $ra) {
+                        $k = $ra['key'];
+                        $ctype[$k] = ' ';
+                        foreach ($component_ronas as $cr) {
+                            if (strtolower($cr->component_name) == strtolower($component->name)
+                            && strtolower($cr->rona_awal_name) == strtolower($ra['name'])) {
+                                // check if DPH
+                                // select is_hypothetical_significant 
+                                // from impact_identifications ii where id_sub_project_rona_awal
+                                $dph = ImpactIdentification::select('is_hypothetical_significant')
+                                    ->where('id_sub_project_rona_awal', $cr->id)
+                                    ->first();
+                                if ($dph->is_hypothetical_significant) {
+                                    $ctype[$k] = 'DPH';
+                                } else if (!$dph->is_hypothetical_significant){
+                                    $ctype[$k] = 'DTPH';
+                                }
                             }
                         }
                     }

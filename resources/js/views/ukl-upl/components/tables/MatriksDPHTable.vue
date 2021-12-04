@@ -16,7 +16,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'MatriksIdentifikasiDampakTable',
+  name: 'MatriksDPHTable',
   data() {
     return {
       idProject: 0,
@@ -62,7 +62,7 @@ export default {
         .then(response => {
           this.ronaMapping = response.data;
         });
-      await axios.get('api/matriks-dampak/table/' + this.idProject)
+      await axios.get('api/matriks-dampak/table-dph/' + this.idProject)
         .then(response => {
           this.data = response.data;
           const ctypes = {};
