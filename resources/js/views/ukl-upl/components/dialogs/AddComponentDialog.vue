@@ -38,9 +38,6 @@
       <el-form-item label="Komponen Kegiatan">
         <el-input v-model="component.name" />
       </el-form-item>
-      <el-form-item label="Definisi">
-        <el-input v-model="component.definition" />
-      </el-form-item>
       <el-form-item label="Umum">
         <el-input
           v-model="component.description_common"
@@ -49,6 +46,9 @@
       </el-form-item>
       <el-form-item label="Khusus">
         <el-input v-model="component.description_specific" />
+      </el-form-item>
+      <el-form-item label="Besaran">
+        <el-input v-model="component.besaran" type="textarea" :rows="2" />
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">

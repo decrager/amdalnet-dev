@@ -21,16 +21,7 @@ class MatriksDampakController extends Controller
     public function getTable($id)
     {
         $data = [];
-        $rona_awals = $this->getRonaAwals($id);
         $rona_mapping = $this->getRonaMapping($id);
-        foreach ($rona_awals as $ra) {
-            if ($ra->name == null) {
-                $ra->name = $ra->name_master;
-            }
-            if ($ra->id_component_type == null) {
-                $ra->id_component_type = $ra->id_component_type_master;
-            }
-        }
 
         $components_by_stage = $this->getComponentsGroupByStage($id);
         $component_ronas = SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
@@ -50,7 +41,7 @@ class MatriksDampakController extends Controller
             array_push($data, $item);
             foreach ($cstage['components'] as $component) {
                 $item['type'] = 'component';
-                $item['component_name'] = $index . '. ' . $component->name;
+                $item['component_name'] = $index . '. ' . ucfirst($component->name);
                 $ctypes = [];
                 foreach ($rona_mapping as $key => $rm) {
                     $ctype_master = ComponentType::where('name', $key)->first();
@@ -81,16 +72,7 @@ class MatriksDampakController extends Controller
     public function getTableDph(Request $request, $id)
     {
         $data = [];
-        $rona_awals = $this->getRonaAwals($id);
         $rona_mapping = $this->getRonaMapping($id);
-        foreach ($rona_awals as $ra) {
-            if ($ra->name == null) {
-                $ra->name = $ra->name_master;
-            }
-            if ($ra->id_component_type == null) {
-                $ra->id_component_type = $ra->id_component_type_master;
-            }
-        }
 
         $components_by_stage = $this->getComponentsGroupByStage($id);
         $component_ronas = SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
@@ -110,7 +92,7 @@ class MatriksDampakController extends Controller
             array_push($data, $item);
             foreach ($cstage['components'] as $component) {
                 $item['type'] = 'component';
-                $item['component_name'] = $index . '. ' . $component->name;
+                $item['component_name'] = $index . '. ' . ucfirst($component->name);
                 $ctypes = [];
                 foreach ($rona_mapping as $key => $rm) {
                     $ctype_master = ComponentType::where('name', $key)->first();
@@ -169,10 +151,10 @@ class MatriksDampakController extends Controller
                     if ($ra->id_component_type == $ctype->id
                         || $ra->id_component_type_master == $ctype->id) {
                         $ra_key = preg_replace('/[^a-zA-Z0-9_.]/', '_', strtolower($ra->name));
-                        if (!in_array($ra->name, $ra_names)) {
+                        if (!in_array(strtolower($ra->name), $ra_names)) {
                             array_push($ra_list, [
                                 'key' => $ra_key,
-                                'name' => $ra->name,
+                                'name' => ucfirst($ra->name),
                                 'id' => $ra->id,
                             ]);
                         }
@@ -191,8 +173,8 @@ class MatriksDampakController extends Controller
 
     private function getRonaAwals($id) {
         return SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
-            ->select('spra.id','spra.name','spra.id_component_type',
-                'ra.name AS name_master', 'ra.id_component_type AS id_component_type_master')
+            ->selectRaw('spra.id, lower(spra.name) as name,spra.id_component_type,
+                ra.name AS name_master, ra.id_component_type AS id_component_type_master')
             ->leftJoin('sub_project_components AS spc', 'spra.id_sub_project_component', '=', 'spc.id')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
@@ -227,7 +209,7 @@ class MatriksDampakController extends Controller
 
     private function getComponents($id) {
         return SubProjectComponent::from('sub_project_components AS spc')
-            ->select('spc.name', 'spc.id_project_stage', 'c.id_project_stage AS id_project_stage_master')
+            ->selectRaw('lower(spc.name) as name, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
             ->where('sp.id_project', $id)
