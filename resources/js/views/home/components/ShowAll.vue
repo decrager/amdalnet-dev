@@ -57,6 +57,7 @@
         :selected-announcement="selectedAnnouncement"
         :selected-project="selectedProject"
         @handleCancelComponent="handleCancelComponent"
+        @handleSetTabs="handleSetTabs"
       />
     </div>
   </div>
@@ -148,6 +149,11 @@ export default {
       this.getAll(this.form.sort);
     },
     handleCancelComponent(){
+      this.showDetailFromAll = false;
+      this.showFromAll = true;
+    },
+    handleSetTabs(e){
+      console.log(e, 'ketu');
       this.showDetailFromAll = false;
       this.showFromAll = true;
     },

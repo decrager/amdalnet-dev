@@ -1011,7 +1011,6 @@ export default {
       // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
-      console.log('map', this.fileMap);
       if (e !== 'a'){
         console.log(e.target.files[0]);
         this.fileMap = e.target.files[0];
