@@ -373,11 +373,9 @@ export default {
       selectedProject2: {},
     };
   },
-  beforeUpdate() {
-    this.loadMap();
-  },
   async created() {
     await this.getResponderType();
+    await this.loadMap();
   },
   methods: {
     loadMap() {
@@ -599,7 +597,7 @@ export default {
             message: 'Successfully create a feedback',
             duration: 5 * 1000,
           });
-          // this.$emit('handleSetTabs');
+          this.$emit('handleSetTabs', 'TABS');
           this.getAnnouncement();
         })
         .catch((error) => {

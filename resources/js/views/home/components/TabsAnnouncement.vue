@@ -60,6 +60,7 @@
           :selected-announcement="selectedAnnouncement"
           :selected-project="selectedProject"
           @handleCancelComponent="handleCancelComponent"
+          @handleSetTabs="handleSetTabs"
         />
       </div>
     </div>
@@ -133,10 +134,12 @@ export default {
         this.showTabs = true;
       }
     },
-    // handleSetTabs(){
-    //   this.showDetails = false;
-    //   this.showTabs = true;
-    // },
+    handleSetTabs(e){
+      if (e === 'TABS'){
+        this.showDetails = false;
+        this.showTabs = true;
+      }
+    },
     openAll(type){
       this.showTopTabs = false;
       this.showAllTabs = true;
