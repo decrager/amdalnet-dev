@@ -67,7 +67,7 @@ import Resource from '@/api/resource';
 import FeedbackList from '@/views/feedback/components/List.vue';
 import PublicConsultationForm from '@/views/public-consultation/components/Form.vue';
 const announcementResource = new Resource('announcements');
-const districtResource = new Resource('districts');
+// const districtResource = new Resource('districts');
 
 export default {
   name: 'AnnouncementDetail',
@@ -92,8 +92,8 @@ export default {
   methods: {
     async getAnnouncement() {
       const data = await announcementResource.get(this.id);
-      const district = await districtResource.get(data.project.id_district);
-      data.district = district;
+      // const district = await districtResource.get(data.project.id_district);
+      // data.district = district;
       this.announcement = data;
       this.announcementDetails = [
         {
@@ -134,7 +134,7 @@ export default {
         },
         {
           param: 'Provinsi/Kota',
-          value: data.district.name,
+          value: data.district,
         },
       ];
     },

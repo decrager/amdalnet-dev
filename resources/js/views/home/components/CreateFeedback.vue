@@ -2,16 +2,16 @@
   <el-dialog :title="'Berikan Tanggapan Baru'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
     <form enctype="multipart/form-data" @submit.prevent="saveFeedback">
       <input v-model="announcementId" type="hidden">
-      <el-form :model="form" style="max-width: 100%" label-position="top">
+      <el-form ref="feedForm" :model="form" style="max-width: 100%" label-position="top" :rules="rules">
         <el-form-item label="Nama">
           <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
 
         <div class="input__wrapper">
-          <el-form-item label="No. Telepon / Handphone">
+          <el-form-item label="No. Telepon / Handphone" prop="phone">
             <el-input v-model="form.phone" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="Email">
+          <el-form-item label="Email" prop="email">
             <el-input v-model="form.email" autocomplete="off" />
           </el-form-item>
         </div>
@@ -113,6 +113,14 @@ export default {
       responders: [],
       errorMessage: null,
       photo_filepath: null,
+      rules: {
+        phone: [
+          { required: true, pattern: /\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{4})\D*/, message: 'Masukan Data Yang Sesuai', trigger: 'blur' },
+        ],
+        email: [
+          { required: true, pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, message: 'Masukan Data Yang Sesuai', trigger: 'blur' },
+        ],
+      },
     };
   },
   async created() {
@@ -140,33 +148,41 @@ export default {
       this.photo_filepath = this.$refs.file.files[0];
     },
     async saveFeedback() {
-      const formData = new FormData();
-      formData.append('photo_filepath', this.photo_filepath);
-      formData.append('name', this.form.name);
-      formData.append('id_card_number', this.form.id_card_number);
-      formData.append('phone', this.form.phone);
-      formData.append('email', this.form.email);
-      formData.append('responder_type_id', this.form.responder_type_id);
-      formData.append('concern', this.form.concern);
-      formData.append('expectation', this.form.expectation);
-      formData.append('rating', this.form.rating);
-      formData.append('announcement_id', this.announcementId);
+      // validasi dulu
+      this.$refs.feedForm.validate((valid) => {
+        if (valid) {
+          const formData = new FormData();
+          formData.append('photo_filepath', this.photo_filepath);
+          formData.append('name', this.form.name);
+          formData.append('id_card_number', this.form.id_card_number);
+          formData.append('phone', this.form.phone);
+          formData.append('email', this.form.email);
+          formData.append('responder_type_id', this.form.responder_type_id);
+          formData.append('concern', this.form.concern);
+          formData.append('expectation', this.form.expectation);
+          formData.append('rating', this.form.rating);
+          formData.append('announcement_id', this.announcementId);
 
-      _.each(this.formData, (value, key) => {
-        formData.append(key, value);
+          _.each(this.formData, (value, key) => {
+            formData.append(key, value);
+          });
+
+          const headers = { 'Content-Type': 'multipart/form-data' };
+          axios
+            .post('api/feedbacks', formData, { headers })
+            .then(() => {
+              this.closeDialog();
+              this.getAnnouncement();
+            })
+            .catch(error => {
+              this.errorMessage = error.message;
+              console.error('There was an error!', error);
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
       });
-
-      const headers = { 'Content-Type': 'multipart/form-data' };
-      await axios
-        .post('api/feedbacks', formData, { headers })
-        .then(() => {
-          this.closeDialog();
-          this.getAnnouncement();
-        })
-        .catch(error => {
-          this.errorMessage = error.message;
-          console.error('There was an error!', error);
-        });
     },
 
   },
