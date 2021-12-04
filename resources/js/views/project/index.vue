@@ -97,7 +97,7 @@
                 </span>
               </div>
               <span class="action pull-right">
-                <!-- <el-button
+                <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
                   href="#"
@@ -105,7 +105,7 @@
                   @click="handleTimPenyusunForm(scope.row.id)"
                 >
                   Tim Penyusun
-                </el-button> -->
+                </el-button>
                 <el-button
                   v-if="!scope.row.published && isInitiator"
                   type="text"
