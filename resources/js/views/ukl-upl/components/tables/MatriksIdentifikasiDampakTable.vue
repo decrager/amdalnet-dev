@@ -4,7 +4,16 @@
       :data="data"
       :span-method="arraySpanMethod"
     >
-      <el-table-column prop="component_name" label="Komponen Kegiatan" align="left" />
+      <el-table-column prop="component_name" label="Komponen Kegiatan" align="left">
+        <template slot-scope="scope">
+          <template v-if="scope.row.type == 'stage'">
+            <b>{{ scope.row.component_name }}</b>
+          </template>
+          <template v-if="scope.row.type == 'component'">
+            {{ scope.row.component_name }}
+          </template>
+        </template>
+      </el-table-column>
       <el-table-column v-for="ct in component_types" :key="ct" :label="ct" prop="component_types" align="center">
         <el-table-column v-for="r in ronaAwalListFiltered(ct)" :key="r.key" :label="r.name" :prop="JSON.stringify({ct, property: r.key})" align="center">
           <template slot-scope="scope">
