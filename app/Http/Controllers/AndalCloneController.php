@@ -25,6 +25,7 @@ class AndalCloneController extends Controller
         }
 
         if($request->pies) {
+            if(!$request->id_impact_identification) return response(array(), 200);
             $pies = PotentialImpactEvalClone::whereIn('id_impact_identification_clone', $request->id_impact_identification)
             ->orderBy('id_impact_identification_clone', 'ASC')
             ->orderBy('id_pie_param', 'ASC')
@@ -98,12 +99,20 @@ class AndalCloneController extends Controller
 
                                  if ($row != null) {
                                      $row->id_unit = $impact['id_unit'];
-                                     if(is_string($impact['id_change_type'])){
-                                         $ctype = ChangeType::firstOrCreate(['name' => $impact['id_change_type']]);
-                                         $row->id_change_type = $ctype->id;
-                                     } else {
-                                         $row->id_change_type = $impact['id_change_type'];
-                                     }
+                                    //  if(is_string($impact['id_change_type'])){
+                                    //      $ctype = ChangeType::firstOrCreate(['name' => $impact['id_change_type']]);
+                                    //      $row->id_change_type = $ctype->id;
+                                    //  } else {
+                                    //      $row->id_change_type = $impact['id_change_type'];
+                                    //  }
+                                     if (($impact['id_change_type'] == 0) &&
+                                        (($impact['change_type_name'] != null) &&
+                                         (trim($impact['change_type_name']) != ""))){
+                                        $ctype = ChangeType::firstOrCreate(['name' => trim($impact['change_type_name'])]);
+										$row->id_change_type = $ctype->id;
+                                    } else {
+                                        $row->id_change_type = $impact['id_change_type'];
+                                    }
                                      $row->nominal = $impact['nominal'];
                                      $row->potential_impact_evaluation = $impact['potential_impact_evaluation'];
                                      $row->is_hypothetical_significant = $impact['is_hypothetical_significant'];
