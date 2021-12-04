@@ -30,6 +30,14 @@ class MatriksDampakController extends Controller
         }
 
         $components_by_stage = $this->getComponentsGroupByStage($id);
+        $component_ronas = SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
+            ->select('spra.id', 'spc.name AS component_name', 'spra.name AS rona_awal_name')
+            ->leftJoin('sub_project_components AS spc', 'spra.id_sub_project_component', '=', 'spc.id')
+            ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
+            ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
+            ->where('sp.id_project', $id)
+            ->get();
+
         foreach ($components_by_stage as $cstage) {
             $index = 1;
             $item = [];
@@ -49,10 +57,12 @@ class MatriksDampakController extends Controller
                     ];
                     foreach ($rona_mapping[$key] as $ra) {
                         $k = $ra['key'];
-                        if ($this->checkIfRonaAwalChecked($id, $component->name, $ra['name'])){
-                            $ctype[$k] = 'v';
-                        } else {
-                            $ctype[$k] = ' ';
+                        $ctype[$k] = ' ';
+                        foreach ($component_ronas as $cr) {
+                            if (strtolower($cr->component_name) == strtolower($component->name)
+                            && strtolower($cr->rona_awal_name) == strtolower($ra['name'])) {
+                                $ctype[$k] = 'v';
+                            }
                         }
                     }
                     array_push($ctypes, $ctype);
@@ -74,15 +84,19 @@ class MatriksDampakController extends Controller
             foreach ($all_component_types as $ctype){
                 $key = $ctype->name;
                 $ra_list = [];
+                $ra_names = [];
                 foreach ($rona_awals as $ra) {
                     if ($ra->id_component_type == $ctype->id
                         || $ra->id_component_type_master == $ctype->id) {
                         $ra_key = preg_replace('/[^a-zA-Z0-9_.]/', '_', strtolower($ra->name));
-                        array_push($ra_list, [
-                            'key' => $ra_key,
-                            'name' => $ra->name,
-                            'id' => $ra->id,
-                        ]);
+                        if (!in_array($ra->name, $ra_names)) {
+                            array_push($ra_list, [
+                                'key' => $ra_key,
+                                'name' => $ra->name,
+                                'id' => $ra->id,
+                            ]);
+                        }
+                        array_push($ra_names, $ra->name);
                     }
                 }
                 if (count($ra_list) > 0){
@@ -105,19 +119,6 @@ class MatriksDampakController extends Controller
             ->where('sp.id_project', $id)
             ->orderBy('spra.id', 'asc')
             ->get();
-    }
-
-    private function checkIfRonaAwalChecked($id, $component_name, $rona_awal_name) {
-        $found = SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
-            ->select('spra.id', 'spc.name AS component_name', 'spra.name AS rona_awal_name')
-            ->leftJoin('sub_project_components AS spc', 'spra.id_sub_project_component', '=', 'spc.id')
-            ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
-            ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
-            ->where('sp.id_project', $id)
-            ->where('spc.name', $component_name)
-            ->where('spra.name', $rona_awal_name)
-            ->first();
-        return $found != null;
     }
 
     private function getComponentsGroupByStage($id) {
