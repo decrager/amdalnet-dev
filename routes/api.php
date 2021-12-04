@@ -17,6 +17,7 @@ use App\Http\Controllers\FormulatorTeamController;
 use App\Http\Controllers\PieParamController;
 use App\Http\Controllers\ImpactIdentificationController;
 use App\Http\Controllers\LpjpController;
+use App\Http\Controllers\MatriksDampakController;
 
 /*
 |--------------------------------------------------------------------------
@@ -208,7 +209,6 @@ Route::get('formulatorsByEmail', 'FormulatorController@showByEmail');
 Route::get('lpjpsByEmail', 'LpjpController@showByEmail');
 Route::get('expertByEmail', 'ExpertBankController@showByEmail');
 Route::apiResource('impact-identifications', 'ImpactIdentificationController');
-Route::apiResource('env-params', 'EnvParamController');
 Route::apiResource('params', 'ParamController');
 Route::apiResource('units', 'UnitController');
 Route::apiResource('project-components', 'ProjectComponentController');
@@ -252,4 +252,6 @@ Route::get('maps', [ProjectMapAttachmentController::class, 'getProjectMap']);
 Route::apiResource('public-spt', 'PublicSPTController');
 Route::get('lpjp-teams', [LpjpController::class, 'getFormulator']);
 Route::get('form-teams', [FormulatorTeamController::class, 'getAll']);
+Route::get('matriks-dampak/table/{id}', [MatriksDampakController::class, 'getTable']);
+Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 'getRonaMapping']);
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
