@@ -69,7 +69,7 @@
             style="margin-bottom: 6px;"
           />
         </el-form-item>
-        <el-form-item ref="fileProofUpload" label="Bukti Pengumuman" prop="fileProof">
+        <el-form-item ref="fileProofUpload" label="Bukti Pengumuman (Max 1MB)" prop="fileProof">
           <el-col :span="24"><div
             style="
                     border: 1px solid #ccc;
