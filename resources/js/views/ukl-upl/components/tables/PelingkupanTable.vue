@@ -209,7 +209,14 @@ export default {
         pendukung: [],
       },
       subProjectComponents: [],
-      subProjectRonaAwals: [],
+      subProjectRonaAwals: [
+        { rona_awals: [] },
+        { rona_awals: [] },
+        { rona_awals: [] },
+        { rona_awals: [] },
+        { rona_awals: [] },
+        { rona_awals: [] },
+      ],
       currentIdSubProject: 0,
       currentIdSubProjectComponent: 0,
       currentIdComponentType: 0,
@@ -292,13 +299,24 @@ export default {
     async handleViewComponents(idSubProject) {
       this.currentIdSubProject = idSubProject;
       this.getComponents(idSubProject);
+      this.subProjectComponents = [];
       const sp = await subProjectComponentResource.list({
         id_sub_project: idSubProject,
         id_project_stage: this.idProjectStage,
       });
+      this.subProjectRonaAwals = [
+        { rona_awals: [] },
+        { rona_awals: [] },
+        { rona_awals: [] },
+        { rona_awals: [] },
+        { rona_awals: [] },
+        { rona_awals: [] },
+      ];
       if (sp.data.length > 0){
         this.getRonaAwals(sp.data[0].id);
       }
+      // reload table
+      this.tableKey = this.tableKey + 1;
       // reload dialogs
       this.componentDialogKey = this.componentDialogKey + 1;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
@@ -359,7 +377,6 @@ export default {
       }
     },
     async getRonaAwals(idSubProjectComponent) {
-      console.log('idSubProjectComponent=' + idSubProjectComponent);
       const ronaAwals = await scopingResource.list({
         sub_project_rona_awals: true,
         id_sub_project_component: idSubProjectComponent,
@@ -371,7 +388,6 @@ export default {
           }
         });
       });
-      console.log(ronaAwals.data);
       this.subProjectRonaAwals = ronaAwals.data;
     },
   },
