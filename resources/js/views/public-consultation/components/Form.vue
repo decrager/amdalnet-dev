@@ -237,7 +237,7 @@ export default {
     async getPublicConsultation() {
       const data = await publicConsultations.list({ idProject: this.$route.params.id });
       this.postForm.id = data.id;
-      this.postForm.announcement_id = data.announcement_id;
+      // this.postForm.announcement_id = data.announcement_id;
       this.postForm.event_date = data.event_date;
       this.postForm.participant = data.participant;
       this.postForm.location = data.location;
