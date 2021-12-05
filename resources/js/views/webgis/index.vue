@@ -288,8 +288,9 @@ export default {
                     popupTemplate: arrayJsonTemplate,
                   });
                   mapGeojsonArray.push(geojsonLayerArray);
+                  map.add(mapGeojsonArray);
+                  console.log('kegiatangroup: ' + mapGeojsonArray);
                 }
-                console.log('kegiatangroup: ' + mapGeojsonArray);
 
                 // mapGeojsonArray.forEach(layerGeojson => {
                 //   const kegiatanGroupLayer = new GroupLayer({
