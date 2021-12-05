@@ -221,7 +221,7 @@ export default {
       formData.append('members', JSON.stringify(this.members));
       formData.append('membersAhli', JSON.stringify(this.membersAhli));
       formData.append('idProject', this.$route.params.id);
-      formData.append('team_type', this.teamType);
+      formData.append('team_type', 'lpjp');
       formData.append('deletedPenyusun', JSON.stringify(this.deletedPenyusun));
       formData.append('deletedAhli', JSON.stringify(this.deletedAhli));
       let num = 0;
