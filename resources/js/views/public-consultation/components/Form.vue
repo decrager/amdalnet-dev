@@ -88,6 +88,8 @@
               <el-col :span="12" :xs="12">Berita Acara Pelaksanaan</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
+
+                  v-if="!baPelDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadBA"
@@ -99,6 +101,11 @@
                     type="primary"
                   >Upload</el-button>
                 </el-upload>
+                <el-button
+                  v-else
+                  size="small"
+                  type="primary"
+                >Done</el-button>
               </el-col>
             </el-row>
             <el-row>
@@ -106,6 +113,7 @@
               <el-col :span="12" :xs="12">Berita Acara Penunjukan Wakil Masyarakat</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
+                  v-if="!baPenWakDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadBA2"
@@ -117,6 +125,11 @@
                     type="primary"
                   >Upload</el-button>
                 </el-upload>
+                <el-button
+                  v-else
+                  size="small"
+                  type="primary"
+                >Done</el-button>
               </el-col>
             </el-row>
             <el-row>
@@ -124,6 +137,7 @@
               <el-col :span="12" :xs="12">Daftar Hadir</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
+                  v-if="!daftarHadirDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadDH"
@@ -135,6 +149,11 @@
                     type="primary"
                   >Upload</el-button>
                 </el-upload>
+                <el-button
+                  v-else
+                  size="small"
+                  type="primary"
+                >Done</el-button>
               </el-col>
             </el-row>
             <el-row>
@@ -142,6 +161,7 @@
               <el-col :span="12" :xs="12">Pengumuman</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
+                  v-if="!pengumumanDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadP"
@@ -153,6 +173,11 @@
                     type="primary"
                   >Upload</el-button>
                 </el-upload>
+                <el-button
+                  v-else
+                  size="small"
+                  type="primary"
+                >Done</el-button>
               </el-col>
             </el-row>
             <el-row>
@@ -160,6 +185,7 @@
               <el-col :span="12" :xs="12">Undangan</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
+                  v-if="!undanganDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadU"
@@ -171,6 +197,11 @@
                     type="primary"
                   >Upload</el-button>
                 </el-upload>
+                <el-button
+                  v-else
+                  size="small"
+                  type="primary"
+                >Done</el-button>
               </el-col>
             </el-row>
           </el-form-item>
@@ -222,6 +253,11 @@ export default {
       postForm: Object.assign({}, defaultForm),
       userId: 0,
       currentProject: {},
+      baPelDone: false,
+      baPenWakDone: false,
+      daftarHadirDone: false,
+      pengumumanDone: false,
+      undanganDone: false,
     };
   },
   created() {
@@ -334,26 +370,31 @@ export default {
       this.postForm.doc_files.push(file);
       this.postForm.doc_metadatas.push(this.createDocJson('Berita Acara Pelaksanaan', file));
       this.postForm.doc_ba_pelaksanaan = file.raw;
+      this.baPelDone = true;
     },
     handleUploadBA2(file, fileList) {
       this.postForm.doc_files.push(file);
       this.postForm.doc_metadatas.push(this.createDocJson('Berita Acara Penunjukan Wakil Masyarakat', file));
       this.postForm.doc_ba_penunjukan_wakil_masyarakat = file.raw;
+      this.baPenWakDone = true;
     },
     handleUploadDH(file, fileList) {
       this.postForm.doc_files.push(file);
       this.postForm.doc_metadatas.push(this.createDocJson('Daftar Hadir', file));
       this.postForm.doc_daftar_hadir = file.raw;
+      this.daftarHadirDone = true;
     },
     handleUploadP(file, fileList) {
       this.postForm.doc_files.push(file);
       this.postForm.doc_metadatas.push(this.createDocJson('Pengumuman', file));
       this.postForm.doc_pengumuman = file.raw;
+      this.pengumumanDone = true;
     },
     handleUploadU(file, fileList) {
       this.postForm.doc_files.push(file);
       this.postForm.doc_metadatas.push(this.createDocJson('Undangan', file));
       this.postForm.doc_undangan = file.raw;
+      this.undanganDone = true;
     },
   },
 };
