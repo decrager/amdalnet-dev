@@ -40,7 +40,12 @@
             <tr :key="'impact_'+ impact.id" class="title" animated>
               <td style="width:30px;">{{ (idx + 1) }}.</td>
               <td>{{ impact.component_name }}</td>
-              <td>{{ impact.initial_study_plan }}</td>
+              <td><el-input
+                v-model="impact.initial_study_plan"
+                type="textarea"
+                :rows="3"
+                :value="impact.initial_study_plan"
+              /></td>
               <td>{{ impact.rona_awal_name }}</td>
               <td>
                 <el-select
@@ -95,7 +100,14 @@
                   <el-switch v-model="impact.is_managed" active-text=" Dikelola" />
                 </div>
               </td>
-              <td>{{ impact.study_location }}</td>
+              <td>
+                <el-input
+                  v-model="impact.study_location"
+                  type="textarea"
+                  :rows="3"
+                  :value="impact.study_location"
+                />
+              </td>
               <td>
                 <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
                 <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" /> bulan</p>
@@ -136,6 +148,7 @@ export default {
     };
   },
   mounted() {
+    console.log('getting ids', this.$route.params && this.$route.params.id);
     this.data = [];
     this.isLoading = true;
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
