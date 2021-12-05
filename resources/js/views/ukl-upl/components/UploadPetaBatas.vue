@@ -116,6 +116,7 @@
 <script>
 import Resource from '@/api/resource';
 import request from '@/utils/request';
+import axios from 'axios';
 
 // Map-related
 import shp from 'shpjs';
@@ -363,8 +364,10 @@ export default {
             field: '*',
             symbol: {
               type: 'simple-fill',
+              color: [0, 0, 0, 0.0],
               outline: {
                 color: 'red',
+                width: 2,
               },
             },
           };
@@ -405,8 +408,10 @@ export default {
             field: '*',
             symbol: {
               type: 'simple-fill',
+              color: [0, 0, 0, 0.0],
               outline: {
                 color: 'blue',
+                width: 2,
               },
             },
           };
@@ -447,8 +452,10 @@ export default {
             field: '*',
             symbol: {
               type: 'simple-fill',
+              color: [0, 0, 0, 0.0],
               outline: {
                 color: 'green',
+                width: 2,
               },
             },
           };
@@ -472,11 +479,56 @@ export default {
       };
       readerWilayahStudi.readAsArrayBuffer(mapBatasWilayahStudi);
 
+      // Map Tapak
+      const projId = this.$route.params && this.$route.params.id;
+      console.log(projId);
+      axios.get('api/map/' + projId)
+        .then(response => {
+          const projects = response.data;
+          for (let i = 0; i < projects.length; i++) {
+            if (projects[i].stored_filename) {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + projId).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: '#964B00',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Tapak',
+                    renderer: rendererTapak,
+                  });
+                  mapView.on('layerview-create', (event) => {
+                    mapView.goTo({
+                      target: geojsonLayerArray.fullExtent,
+                    });
+                  });
+                  map.add(geojsonLayerArray);
+                });
+              });
+            }
+          }
+        });
+
       const mapView = new MapView({
         container: 'mapView',
         map: map,
         center: [115.287, -1.588],
-        zoom: 6,
+        zoom: 5,
       });
       this.$parent.mapView = mapView;
 
