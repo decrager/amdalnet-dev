@@ -35,7 +35,7 @@ export default {
       mapView: null,
       selectedFeedback: {},
       showIdDialog: false,
-      mapGeojsonArray: [],
+      // mapGeojsonArray: [],
     };
   },
   mounted: function() {
@@ -218,9 +218,11 @@ export default {
 
       map.add(rtrPulau);
 
+      const mapGeojsonArray = [];
       axios.get('api/maps')
         .then(response => {
           const projects = response.data;
+          console.log(projects);
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].stored_filename) {
               shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
@@ -285,9 +287,9 @@ export default {
                     title: projects[1].project_title,
                     popupTemplate: arrayJsonTemplate,
                   });
-                  this.mapGeojsonArray.push(geojsonLayerArray);
+                  mapGeojsonArray.push(geojsonLayerArray);
                 }
-                console.log('kegiatangroup: ' + this.mapGeojsonArray);
+                console.log('kegiatangroup: ' + mapGeojsonArray);
 
                 // mapGeojsonArray.forEach(layerGeojson => {
                 //   const kegiatanGroupLayer = new GroupLayer({
