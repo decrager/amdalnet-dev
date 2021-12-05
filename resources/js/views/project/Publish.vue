@@ -197,17 +197,12 @@ const initiatorResource = new Resource('initiators');
 // const formulatorResource = new Resource('formulators');
 const formulatorTeamsResource = new Resource('formulator-teams');
 
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import Home from '@arcgis/core/widgets/Home';
-import Compass from '@arcgis/core/widgets/Compass';
-import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
-import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import Workflow from '@/components/Workflow';
@@ -381,86 +376,34 @@ export default {
           basemap: 'topo',
         });
 
-        const batasProv = new MapImageLayer({
-          url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
-          sublayers: [{
-            id: 0,
-            title: 'Batas Provinsi',
-          }],
-        });
-
-        const graticuleGrid = new MapImageLayer({
-          url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
-        });
-
-        map.addMany([batasProv, graticuleGrid]);
-
-        const baseGroupLayer = new GroupLayer({
-          title: 'Base Layer',
-          visible: true,
-          layers: [batasProv, graticuleGrid],
-          opacity: 0.90,
-        });
-
-        map.add(baseGroupLayer);
-
-        const mapGeojsonArray = [];
-
-        const getMapData = axios.get('api/map' + this.project.id);
-
-        for (let i = 0; i < getMapData.length; i++) {
-          shp(window.location.origin + '/storage/map/' + getMapData[i]).then(data => {
-            if (data.length > 1) {
-              for (let i = 0; i < data.length; i++) {
-                const blob = new Blob([JSON.stringify(data[i])], {
-                  type: 'application/json',
-                });
-                const url = URL.createObjectURL(blob);
-                const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
-                  outFields: ['*'],
-                  title: 'Layers',
-                });
-                mapView.on('layerview-create', (event) => {
-                  mapView.goTo({
-                    target: geojsonLayerArray.fullExtent,
+        axios.get('api/map/' + this.project.id)
+          .then(response => {
+            const projects = response.data;
+            for (let i = 0; i < projects.length; i++) {
+              if (projects[i].stored_filename) {
+                shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                  const blob = new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  axios.get('api/projects/' + this.project.id).then((response) => {
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: response.data.project_title,
+                    });
+                    mapView.on('layerview-create', (event) => {
+                      mapView.goTo({
+                        target: geojsonLayerArray.fullExtent,
+                      });
+                    });
+                    map.add(geojsonLayerArray);
                   });
                 });
-
-                mapGeojsonArray.push(geojsonLayerArray);
               }
-
-              const kegiatanGroupLayer = new GroupLayer({
-                title: this.project.project_title,
-                visible: true,
-                visibilityMode: 'exclusive',
-                layers: mapGeojsonArray,
-                opacity: 0.75,
-              });
-
-              map.add(kegiatanGroupLayer);
-            } else {
-              const blob = new Blob([JSON.stringify(data)], {
-                type: 'application/json',
-              });
-              const url = URL.createObjectURL(blob);
-              const geojsonLayer = new GeoJSONLayer({
-                url: url,
-                visible: true,
-                outFields: ['*'],
-                opacity: 0.75,
-                title: this.project.project_title,
-              });
-
-              map.add(geojsonLayer);
-              mapView.on('layerview-create', (event) => {
-                mapView.goTo({
-                  target: geojsonLayer.fullExtent,
-                });
-              });
             }
           });
-        }
 
         const mapView = new MapView({
           container: 'mapView',
@@ -470,33 +413,6 @@ export default {
         });
         this.$parent.mapView = mapView;
 
-        const home = new Home({
-          view: mapView,
-        });
-
-        mapView.popup.on('trigger-action', (event) => {
-          if (event.action.id === 'get-details') {
-            console.log('tbd');
-          }
-        });
-
-        mapView.ui.add(home, 'top-left');
-        const compass = new Compass({
-          view: mapView,
-        });
-        mapView.ui.add(compass, 'top-left');
-        const basemapToggle = new BasemapToggle({
-          view: mapView,
-          container: document.createElement('div'),
-          secondBasemap: 'satellite',
-        });
-        const expandBasemapToggler = new Expand({
-          view: mapView,
-          name: 'basemap',
-          content: basemapToggle.domNode,
-          expandIconClass: 'esri-icon-basemap',
-        });
-        mapView.ui.add(expandBasemapToggler, 'top-left');
         const attribution = new Attribution({
           view: mapView,
         });
@@ -528,14 +444,8 @@ export default {
           expandTooltip: 'Legend',
         });
 
-        const layersExpand = new Expand({
-          view: mapView,
-          content: layerList.domNode,
-          expandIconClass: 'esri-icon-layer-list',
-          expandTooltip: 'Layers',
-        });
         mapView.ui.add(legendExpand, 'bottom-left');
-        mapView.ui.add(layersExpand, 'top-right');
+        mapView.ui.add(layerList, 'top-right');
       } else {
         const map = new Map({
           basemap: 'topo',
