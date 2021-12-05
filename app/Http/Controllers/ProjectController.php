@@ -108,7 +108,7 @@ class ProjectController extends Controller
             'kbli' => 'required',
             'result_risk' => 'required',
             'required_doc' => 'required',
-            'type_formulator_team' => 'required',
+            // 'type_formulator_team' => 'required',
             'listSubProject' => 'required',
             'scale' => 'required',
             'scale_unit' => 'required',
@@ -159,7 +159,7 @@ class ProjectController extends Controller
                 'result_risk' => $data['result_risk'],
                 'required_doc' => $data['required_doc'],
                 // 'id_project' => $data['id_project'],
-                'type_formulator_team' => $data['type_formulator_team'],
+                // 'type_formulator_team' => $data['type_formulator_team'],
                 'id_lpjp' => isset($request['id_lpjp']) ? $request['id_lpjp'] : null,
                 'map' => '',
                 'ktr' => Storage::url($ktrName),
@@ -442,7 +442,7 @@ class ProjectController extends Controller
                 'kbli' => 'required',
                 'result_risk' => 'required',
                 'required_doc' => 'required',
-                'type_formulator_team' => 'required',
+                // 'type_formulator_team' => 'required',
             ]
         );
 
@@ -498,7 +498,7 @@ class ProjectController extends Controller
             $project->result_risk = $params['result_risk'];
             $project->required_doc = $params['required_doc'];
             $project->id_project = $params['id_project'];
-            $project->type_formulator_team = $params['type_formulator_team'];
+            // $project->type_formulator_team = $params['type_formulator_team'];
             $project->id_lpjp = isset($params['id_lpjp']) ? $params['id_lpjp'] : null;
             $project->map = $name != null ? Storage::url($name) : $project->map;
             $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;

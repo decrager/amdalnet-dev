@@ -99,7 +99,7 @@
           <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
           <el-col :span="12">Pusat</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
+        <!-- <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
           <el-col :span="12">
             <el-form
               ref="project"
@@ -124,7 +124,7 @@
               </el-form-item>
             </el-form>
           </el-col>
-        </el-row>
+        </el-row> -->
         <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
           <el-col :span="12">
             <el-form
@@ -194,7 +194,7 @@ const projectResource = new Resource('projects');
 // const supportDocResource = new Resource('support-docs');
 const initiatorByEmailResource = new Resource('initiatorsByEmail');
 const initiatorResource = new Resource('initiators');
-const formulatorResource = new Resource('formulators');
+// const formulatorResource = new Resource('formulators');
 const formulatorTeamsResource = new Resource('formulator-teams');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
@@ -690,35 +690,35 @@ export default {
         params: { project: this.project },
       });
     },
-    async createTimPenyusun(){
-      // insert all tim ahli
-      const listAhli = [];
+    // async createTimPenyusun(){
+    //   // insert all tim ahli
+    //   const listAhli = [];
 
-      await this.listExpertTeam.forEach(element => {
-        // make form data because we got file
-        const formData = new FormData();
+    //   await this.listExpertTeam.forEach(element => {
+    //     // make form data because we got file
+    //     const formData = new FormData();
 
-        // eslint-disable-next-line no-undef
-        _.each(element, (value, key) => {
-          formData.append(key, value);
-        });
+    //     // eslint-disable-next-line no-undef
+    //     _.each(element, (value, key) => {
+    //       formData.append(key, value);
+    //     });
 
-        // adding TA for membership_status
-        formData.append('membership_status', 'TA');
+    //     // adding TA for membership_status
+    //     formData.append('membership_status', 'TA');
 
-        formulatorResource
-          .store(formData)
-          .then((response) => {
-            this.element = {};
-            listAhli.push(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      });
+    //     formulatorResource
+    //       .store(formData)
+    //       .then((response) => {
+    //         this.element = {};
+    //         listAhli.push(response);
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    //   });
 
-      this.all = [...listAhli, this.listFormulatorTeam];
-    },
+    //   this.all = [...listAhli, this.listFormulatorTeam];
+    // },
     async createTeam(id){
       console.log('list tim ahli yang dibuat', this.all);
       // create tim using all list
@@ -774,52 +774,52 @@ export default {
       console.log('project yang disubmit', formData);
 
       // this.$refs.project.validate(valid => {
-      if (this.project.type_formulator_team) {
-        if (this.project.id !== undefined) {
-          // update
-          projectResource.updateMultipart(this.project.id, formData).then(response => {
-            // const { data } = response;
-            // this.saveSupportDocs(data.id);
-            this.$message({
-              type: 'success',
-              message: 'Project info has been updated successfully',
-              duration: 5 * 1000,
-            });
-            this.fullLoading = false;
-            this.$router.push('/project');
-          }).catch(error => {
-            console.log(error);
+      // if (this.project.type_formulator_team) {
+      if (this.project.id !== undefined) {
+        // update
+        projectResource.updateMultipart(this.project.id, formData).then(response => {
+          // const { data } = response;
+          // this.saveSupportDocs(data.id);
+          this.$message({
+            type: 'success',
+            message: 'Project info has been updated successfully',
+            duration: 5 * 1000,
           });
-        } else {
-          projectResource
-            .store(formData)
-            .then((response) => {
-              // save supportdocs
-              // const { data } = response;
+          this.fullLoading = false;
+          this.$router.push('/project');
+        }).catch(error => {
+          console.log(error);
+        });
+      } else {
+        projectResource
+          .store(formData)
+          .then((response) => {
+            // save supportdocs
+            // const { data } = response;
 
-              // this.saveSupportDocs(data.id);
-              // this.createTeam(data.id);
-              this.$message({
-                message:
+            // this.saveSupportDocs(data.id);
+            // this.createTeam(data.id);
+            this.$message({
+              message:
                     'New Project ' +
                     this.project.project_title +
                     ' has been created successfully.',
-                type: 'success',
-                duration: 5 * 1000,
-              });
-              this.$router.push('/project');
-            })
-            .catch((error) => {
-              this.fullLoading = false;
-              console.log(error);
+              type: 'success',
+              duration: 5 * 1000,
             });
-        }
-      } else {
-        console.log('error submit!!');
-        this.$alert('Mohon Pilih tim Penyusun', 'Title', {
-          confirmButtonText: 'OK',
-        });
+            this.$router.push('/project');
+          })
+          .catch((error) => {
+            this.fullLoading = false;
+            console.log(error);
+          });
       }
+      // } else {
+      //   console.log('error submit!!');
+      //   this.$alert('Mohon Pilih tim Penyusun', 'Title', {
+      //     confirmButtonText: 'OK',
+      //   });
+      // }
       // });
     },
     // async saveSupportDocs(id_project){
