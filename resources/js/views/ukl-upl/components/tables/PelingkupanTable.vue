@@ -62,7 +62,7 @@
           <tr>
             <th>Geofisika Kimia</th>
             <th>Biologi</th>
-            <th>Sosial Budaya</th>
+            <th>Sosial Ekonomi Budaya</th>
             <th>Kesehatan Masyarakat</th>
             <th>Kegiatan Lain Sekitar</th>
             <th>Lainnya</th>

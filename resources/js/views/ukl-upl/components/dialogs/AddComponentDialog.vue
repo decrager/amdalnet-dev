@@ -38,14 +38,8 @@
       <el-form-item label="Komponen Kegiatan">
         <el-input v-model="component.name" />
       </el-form-item>
-      <el-form-item label="Umum">
-        <el-input
-          v-model="component.description_common"
-          :disabled="disableDescCommon"
-        />
-      </el-form-item>
-      <el-form-item label="Khusus">
-        <el-input v-model="component.description_specific" />
+      <el-form-item :label="deskripsiKhusus()">
+        <el-input v-model="component.description_specific" type="textarea" :rows="2" />
       </el-form-item>
       <el-form-item label="Besaran">
         <el-input v-model="component.unit" type="textarea" :rows="2" />
@@ -85,6 +79,7 @@ export default {
     return {
       component: {},
       subProjectsArray: [],
+      currentSubProjectName: '',
       projectStages: [],
       disableDescCommon: false,
     };
@@ -93,6 +88,13 @@ export default {
     this.getData();
   },
   methods: {
+    deskripsiKhusus() {
+      if (this.component.name === undefined || this.component.name === ''){
+        return 'Deskripsi Khusus';
+      } else {
+        return 'Deskripsi Khusus ' + this.component.name + ' terkait ' + this.currentSubProjectName;
+      }
+    },
     submitComponent() {
       this.component.id_project_stage = this.idProjectStage;
       this.component.id_sub_project = this.currentIdSubProject;
@@ -128,6 +130,13 @@ export default {
       this.subProjects.pendukung.map((p) => {
         this.subProjectsArray.push(p);
       });
+
+      this.subProjectsArray.map((s) => {
+        if (s.id === this.currentIdSubProject) {
+          this.currentSubProjectName = s.name;
+        }
+      });
+
       // common desc
       const comps = await subProjectComponentResource.list({
         id_sub_project: this.currentIdSubProject,

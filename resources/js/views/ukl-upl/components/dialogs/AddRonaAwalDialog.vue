@@ -38,6 +38,7 @@
         <el-select
           v-model="currentIdSubProjectComponent"
           placeholder="Pilih Komponen Kegiatan"
+          :disabled="true"
         >
           <el-option
             v-for="item of subProjectComponentsArray"
@@ -64,19 +65,10 @@
       <el-form-item label="Rona Lingkungan">
         <el-input v-model="ronaAwal.name" />
       </el-form-item>
-      <el-form-item label="Definisi">
-        <el-input v-model="ronaAwal.definition" />
+      <el-form-item :label="deskripsiKhusus()">
+        <el-input v-model="ronaAwal.description_specific" type="textarea" :rows="2" />
       </el-form-item>
-      <el-form-item label="Umum">
-        <el-input
-          v-model="ronaAwal.description_common"
-          :disabled="disableDescCommon"
-        />
-      </el-form-item>
-      <el-form-item label="Khusus">
-        <el-input v-model="ronaAwal.description_specific" />
-      </el-form-item>
-      <el-form-item label="Besaran">
+      <el-form-item label="Besaran Dampak">
         <el-input v-model="ronaAwal.unit" type="textarea" :rows="2" />
       </el-form-item>
     </el-form>
@@ -133,6 +125,7 @@ export default {
       ronaAwal: {},
       subProjectsArray: [],
       subProjectComponentsArray: [],
+      currentSubProjectComponentName: '',
       projectStages: [],
       componentTypes: [],
       disableDescCommon: false,
@@ -142,6 +135,13 @@ export default {
     this.getData();
   },
   methods: {
+    deskripsiKhusus() {
+      if (this.ronaAwal.name === undefined || this.ronaAwal.name === ''){
+        return 'Deskripsi Khusus';
+      } else {
+        return 'Deskripsi Khusus ' + this.ronaAwal.name + ' terkait ' + this.currentSubProjectComponentName;
+      }
+    },
     async submitRonaAwal() {
       this.ronaAwal.id_component_type = this.currentIdComponentType;
       this.ronaAwal.id_sub_project_component = this.currentIdSubProjectComponent;
@@ -203,6 +203,11 @@ export default {
           c.name = c.component.name;
         }
         this.subProjectComponentsArray.push(c);
+      });
+      this.subProjectComponentsArray.map((c) => {
+        if (c.id === this.currentIdSubProjectComponent) {
+          this.currentSubProjectComponentName = c.name;
+        }
       });
       // common desc
       const comps = await subProjectComponentResource.list({
