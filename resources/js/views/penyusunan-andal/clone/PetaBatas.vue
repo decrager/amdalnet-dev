@@ -1,0 +1,427 @@
+<template>
+  <el-form label-position="top" label-width="100px">
+    <div id="mapView" class="map-wrapper" />
+
+    <!--
+    <el-row style="margin: 1em 0;">
+      <el-col :span="12">
+        <el-button size="medium" type="warning">Unggah Peta</el-button>
+      </el-col>
+      <el-col :span="12" style="text-align: right;">
+        <el-button size="medium" type="danger">Batal</el-button>
+        <el-button size="medium" type="primary">Simpan</el-button>
+      </el-col>
+    </el-row> -->
+  </el-form>
+</template>
+<style scoped>
+legend {
+  line-height: 1.5em;
+  margin: 0.5em 0 2em;
+}
+div.map-wrapper {
+  height: 400px;
+}
+fieldset {
+  padding: 1em;
+}
+</style>
+<script>
+import Resource from '@/api/resource';
+import request from '@/utils/request';
+
+// Map-related
+import shp from 'shpjs';
+import Map from '@arcgis/core/Map';
+import MapView from '@arcgis/core/views/MapView';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import Legend from '@arcgis/core/widgets/Legend';
+import LayerList from '@arcgis/core/widgets/LayerList';
+
+const uploadMaps = new Resource('project-map');
+const unggahMaps = new Resource('upload-map');
+// const unduhMaps = new Resource('download-map');
+
+export default {
+  name: 'UploadPetaBatas',
+  data() {
+    return {
+      data: [],
+      idProject: 0,
+      currentMaps: [],
+      petaEkologisPDF: '',
+      petaSosialPDF: '',
+      petaStudiPDF: '',
+      petaEkologisSHP: '',
+      petaSosialSHP: '',
+      petaStudiSHP: '',
+      files: [],
+      idPES: 0,
+      idPEP: 0,
+      idPSP: 0,
+      idPSS: 0,
+      idPSuP: 0,
+      idPSuS: 0,
+      index: 0,
+      param: [],
+      required: true,
+      fileMap: [],
+      mapGeojsonArray: [],
+      // isVisible: false,
+      // visible: [false, false, false, false, false, false, false],
+    };
+  },
+  mounted() {
+    this.idProject = parseInt(this.$route.params && this.$route.params.id);
+    this.getData();
+  },
+  methods: {
+    async getData() {
+      this.data = [];
+      const files = await uploadMaps.list({
+        id_project: this.idProject,
+      });
+      this.data = files.data;
+      this.process(files.data);
+    },
+    process(files) {
+      // console.log(files);
+      files.forEach((e) => {
+        switch (e.attachment_type) {
+          case 'ecology':
+            if (e.file_type === 'SHP') {
+              this.petaEkologisSHP = e.original_filename;
+              this.idPES = e.id;
+            } else {
+              this.petaEkologisPDF = e.original_filename;
+              this.idPEP = e.id;
+            }
+            break;
+          case 'social':
+            if (e.file_type === 'SHP') {
+              this.petaSosialSHP = e.original_filename;
+              this.idPSS = e.id;
+            } else {
+              this.petaSosialPDF = e.original_filename;
+              this.idPSP = e.id;
+            }
+            break;
+          case 'study':
+            if (e.file_type === 'SHP') {
+              this.petaStudiSHP = e.original_filename;
+              this.idPSuS = e.id;
+            } else {
+              this.petaStudiPDF = e.original_filename;
+              this.idPSuP = e.id;
+            }
+            break;
+        }
+      });
+    },
+    handleSubmit() {
+      console.log('submitting files....');
+
+      const formData = new FormData();
+      formData.append('id_project', this.idProject);
+
+      this.files.forEach((e, i) => {
+        formData.append('files[]', e[0]);
+        formData.append('params[]', JSON.stringify(this.param[i]));
+      });
+
+      /* Object.entries(this.param).forEach(([key, value]) => {
+        formData.append(key, value);
+      }); */
+      console.log(formData);
+
+      unggahMaps.store(formData).then((res) => {
+        console.log(res);
+        this.getData();
+        this.$message({
+          message: 'Berhasil menyimpan file ', //  + this.files[0].name,
+          type: 'success',
+        });
+      });
+    },
+    async doSubmit(load) {
+      // console.log(load);
+      return request(load);
+    },
+    download(id) {
+      return;
+      /* const filename = this.data.find((e) => e.id === id);
+      unduhMaps.get(id)
+        .then((response) => {
+          console.log(response);
+
+          // const header = response.headers['content-disposition'].split('; ');
+          // const filename = header[1].split('=');
+
+          // console.log(header);
+
+          const blob = new Blob([response], { type: 'application/octet-stream' });
+          const url = window.URL.createObjectURL(blob);
+
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename.original_filename;
+          link.click();
+
+          const getHeaders = response.headers['content-disposition'].split('; ');
+          const getFileName = getHeaders[1].split('=');
+          const getName = getFileName[1].split('=');
+          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+          var fileLink = document.createElement('a');
+          fileLink.href = fileURL;
+          let newName = getName[0].slice(1);
+          newName = newName.slice(0, -1);
+          fileLink.setAttribute('download', `${newName}`);
+          document.body.appendChild(fileLink);
+          fileLink.click();
+        });*/
+    },
+    onChangeFiles(idx) {
+      const index = idx - 1;
+      switch (idx) {
+        case 1: // ekologis SHP
+          this.files[index] = this.$refs.peSHP.files;
+          this.param[index] = {
+            attachment_type: 'ecology',
+            file_type: 'SHP',
+          };
+
+          // this.param[index]['file_type'] = 'SHP';
+          break;
+        case 2:
+          // ekologis PDF
+          this.files[index] = this.$refs.pePDF.files;
+          this.param[index] = {
+            attachment_type: 'ecology',
+            file_type: 'PDF',
+          };
+          // this.param[index]['file_type'] = 'PDF';
+          // this.embedSrc = window.URL.createObjectURL(this.$refs.pePDF.files[0]);
+          break;
+        case 3:
+          this.files[index] = this.$refs.psSHP.files;
+          this.param[index] = {
+            attachment_type: 'social',
+            file_type: 'SHP',
+          };
+          // sosial SHP
+          break;
+        case 4:
+          this.files[index] = this.$refs.psPDF.files;
+          this.param[index] = {
+            attachment_type: 'social',
+            file_type: 'PDF',
+          };
+
+          // sosial PDF
+          break;
+        case 5:
+          this.files[index] = this.$refs.pwSHP.files;
+          this.param[index] = {
+            attachment_type: 'study',
+            file_type: 'SHP',
+          };
+          // studi SHP
+          break;
+        case 6:
+          this.files[index] = this.$refs.pwPDF.files;
+          this.param[index] = {
+            attachment_type: 'study',
+            file_type: 'PDF',
+          };
+          // studi PDF
+          break;
+        default:
+      }
+      // this.showMap(idx);
+      console.log('handling on change', this.param);
+      this.loadMap(index);
+    },
+    defineActions(event) {
+      const item = event.item;
+
+      item.actionsSections = [
+        [
+          {
+            title: 'Go to full extent',
+            className: 'esri-icon-zoom-in-magnifying-glass',
+            id: 'full-extent',
+          },
+        ],
+      ];
+    },
+    uploadMap() {
+      const map = new Map({
+        basemap: 'topo',
+      });
+
+      //  Map Ekologis
+      const mapBatasEkologis = this.$refs.peSHP.files[0];
+      const readerEkologis = new FileReader();
+      readerEkologis.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then((data) => {
+          console.log('map: ' + data);
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              outline: {
+                color: 'red',
+              },
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerEkologis = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Batas Ekologis',
+            renderer: renderer,
+          });
+
+          map.add(layerEkologis);
+          mapView.on('layerview-create', (event) => {
+            mapView.goTo({
+              target: layerEkologis.fullExtent,
+            });
+          });
+        });
+      };
+      readerEkologis.readAsArrayBuffer(mapBatasEkologis);
+
+      //  Map Batas Sosial
+      const mapBatasSosial = this.$refs.psSHP.files[0];
+      const readerSosial = new FileReader();
+      readerSosial.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then((data) => {
+          console.log('map: ' + data);
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              outline: {
+                color: 'blue',
+              },
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerBatasSosial = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Batas Sosial',
+            renderer: renderer,
+          });
+
+          map.add(layerBatasSosial);
+          mapView.on('layerview-create', (event) => {
+            mapView.goTo({
+              target: layerBatasSosial.fullExtent,
+            });
+          });
+        });
+      };
+      readerSosial.readAsArrayBuffer(mapBatasSosial);
+
+      //  Map Batas Wilayah Studi
+      const mapBatasWilayahStudi = this.$refs.pwSHP.files[0];
+      const readerWilayahStudi = new FileReader();
+      readerWilayahStudi.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then((data) => {
+          console.log('map: ' + data);
+
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              outline: {
+                color: 'green',
+              },
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerWilayahStudi = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Batas Wilayah Studi',
+            renderer: renderer,
+          });
+
+          map.add(layerWilayahStudi);
+          mapView.on('layerview-create', (event) => {
+            mapView.goTo({
+              target: layerWilayahStudi.fullExtent,
+            });
+          });
+        });
+      };
+      readerWilayahStudi.readAsArrayBuffer(mapBatasWilayahStudi);
+
+      const mapView = new MapView({
+        container: 'mapView',
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 6,
+      });
+      this.$parent.mapView = mapView;
+
+      const layerList = new LayerList({
+        view: mapView,
+        container: document.createElement('div'),
+        listItemCreatedFunction: this.defineActions,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
+        }
+      });
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+
+      mapView.ui.add(layerList, 'top-right');
+      mapView.ui.add(legend, 'bottom-left');
+    },
+    showMap(id) {
+      this.visible[id] = true;
+      this.isVisible = true;
+      console.log('showing Map...', this.visible);
+      document.getElementById('map' + id).style.display = 'block';
+    },
+  },
+};
+</script>

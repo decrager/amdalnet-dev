@@ -40,7 +40,12 @@
             <tr :key="'impact_'+ impact.id" class="title" animated>
               <td style="width:30px;">{{ (idx + 1) }}.</td>
               <td>{{ impact.component_name }}</td>
-              <td>{{ impact.initial_study_plan }}</td>
+              <td><el-input
+                v-model="impact.initial_study_plan"
+                type="textarea"
+                :rows="3"
+                :value="impact.initial_study_plan"
+              /></td>
               <td>{{ impact.rona_awal_name }}</td>
               <td>
                 <el-select
@@ -95,7 +100,14 @@
                   <el-switch v-model="impact.is_managed" active-text=" Dikelola" />
                 </div>
               </td>
-              <td>{{ impact.study_location }}</td>
+              <td>
+                <el-input
+                  v-model="impact.study_location"
+                  type="textarea"
+                  :rows="3"
+                  :value="impact.study_location"
+                />
+              </td>
               <td>
                 <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
                 <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" /> bulan</p>
@@ -358,6 +370,15 @@ export default {
 </script>
 
 <style scoped>
+table th, table td {word-break: normal !important; padding:.5em; line-height:1.2em; border: 1px solid #eee;}
+table td { vertical-align: top !important;}
+table thead  {background-color:#6cc26f !important; color: white !important;}
+table td.title, table tr.title td, table.title td { text-align:left;}
+div.div-fka {
+  padding: 0.5em;
+  margin-bottom: 0.6em;
+  background-color: #fafafa;
+}
   table td.title {
     height: 200% !important;
   }

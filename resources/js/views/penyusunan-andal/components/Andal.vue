@@ -24,8 +24,7 @@
         <template slot="title" class="head-accordion">
           <span class="title">PETA BATAS WILAYAH STUDI & PETA LAINNYA</span>
         </template>
-        <!-- <UploadPetaBatas /> -->
-        <h3>Peta Batas</h3>
+        <PetaBatas />
       </el-collapse-item>
       <el-collapse-item name="dampak-potensial">
         <template slot="title" class="head-accordion">
@@ -72,7 +71,7 @@ import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 import TableAndal from '@/views/penyusunan-andal/components/Table';
 import MatriksIdentifikasiDampakTable from '@/views/ukl-upl/components/tables/MatriksIdentifikasiDampakTable.vue';
-// import UploadPetaBatas from '@/views/ukl-upl/components/UploadPetaBatas.vue';
+import PetaBatas from '@/views/penyusunan-andal/clone/Petabatas.vue';
 import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
 import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
 import MatriksDPHTable from '@/views/ukl-upl/components/tables/MatriksDPHTable.vue';
@@ -85,7 +84,7 @@ export default {
   components: {
     TableAndal,
     MatriksIdentifikasiDampakTable,
-    // UploadPetaBatas,
+    PetaBatas,
     DampakHipotetik,
     MetodeStudi,
     MatriksDPHTable,
