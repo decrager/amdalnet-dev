@@ -218,93 +218,87 @@ export default {
 
       map.add(rtrPulau);
 
-      const mapGeojsonArray = [];
+      // const mapGeojsonArray = [];
       axios.get('api/maps')
         .then(response => {
           const projects = response.data;
-          console.log(projects);
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].stored_filename) {
               shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                for (let i = 0; i < data.length; i++) {
-                  const getProjectDetails = {
-                    title: 'Details',
-                    id: 'get-details',
-                    image: 'information-24-f.svg',
-                  };
-                  const getProjectInfo = axios.get('api/projects/' + projects[i].id_project);
-                  const arrayJsonTemplate = {
-                    title: getProjectInfo.project_title + ' (' + getProjectInfo.project_year + ').',
-                    content: '<table style="border-collapse: collapse !important">' +
-                            '<thead>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">KBLI Code</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.kbli + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Pemrakarsa</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.applicant + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Provinsi</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.province + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Kota</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.district + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Alamat</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.address + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Deskripsi</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.description + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Skala</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.scale + ' ' + getProjectInfo.scale_unit + '</td>' +
-                              '</tr>' +
-                            '</thead>' +
-                          '</table>',
-                    actions: [getProjectDetails],
-                  };
+                // const getProjectDetails = {
+                //   title: 'Details',
+                //   id: 'get-details',
+                //   image: 'information-24-f.svg',
+                // };
 
-                  const blob = new Blob([JSON.stringify(data[i])], {
-                    type: 'application/json',
-                  });
-                  const url = URL.createObjectURL(blob);
+                // const arrayJsonTemplate = {
+                //   title: getProjectInfo.project_title + ' (' + getProjectInfo.project_year + ').',
+                //   content: '<table style="border-collapse: collapse !important">' +
+                //           '<thead>' +
+                //             '<tr style="margin: 5px 0;">' +
+                //               '<td style="width: 35%">KBLI Code</td>' +
+                //               '<td> : </td>' +
+                //               '<td>' + getProjectInfo.kbli + '</td>' +
+                //             '</tr>' +
+                //             '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                //               '<td style="width: 35%">Pemrakarsa</td>' +
+                //               '<td> : </td>' +
+                //               '<td>' + getProjectInfo.applicant + '</td>' +
+                //             '</tr>' +
+                //             '<tr style="margin: 5px 0;">' +
+                //               '<td style="width: 35%">Provinsi</td>' +
+                //               '<td> : </td>' +
+                //               '<td>' + getProjectInfo.province + '</td>' +
+                //             '</tr>' +
+                //             '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                //               '<td style="width: 35%">Kota</td>' +
+                //               '<td> : </td>' +
+                //               '<td>' + getProjectInfo.district + '</td>' +
+                //             '</tr>' +
+                //             '<tr style="margin: 5px 0;">' +
+                //               '<td style="width: 35%">Alamat</td>' +
+                //               '<td> : </td>' +
+                //               '<td>' + getProjectInfo.address + '</td>' +
+                //             '</tr>' +
+                //             '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                //               '<td style="width: 35%">Deskripsi</td>' +
+                //               '<td> : </td>' +
+                //               '<td>' + getProjectInfo.description + '</td>' +
+                //             '</tr>' +
+                //             '<tr style="margin: 5px 0;">' +
+                //               '<td style="width: 35%">Skala</td>' +
+                //               '<td> : </td>' +
+                //               '<td>' + getProjectInfo.scale + ' ' + getProjectInfo.scale_unit + '</td>' +
+                //             '</tr>' +
+                //           '</thead>' +
+                //         '</table>',
+                //   actions: [getProjectDetails],
+                // };
 
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + projects[i].id_project).then((response) => {
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
-                    title: projects[1].project_title,
-                    popupTemplate: arrayJsonTemplate,
+                    visible: false,
+                    title: response.data.project_title,
+                    // popupTemplate: arrayJsonTemplate,
                   });
                   map.add(geojsonLayerArray);
-                  mapGeojsonArray.push(geojsonLayerArray);
-                  console.log('kegiatangroup: ' + mapGeojsonArray);
-                }
+                  // mapGeojsonArray.push(geojsonLayerArray);
+                  // console.log(mapGeojsonArray);
+                  // const kegiatanGroupLayer = new GroupLayer({
+                  //   title: 'Layer Kegiatan',
+                  //   visible: false,
+                  //   layers: mapGeojsonArray,
+                  //   opacity: 0.90,
+                  // });
 
-                // mapGeojsonArray.forEach(layerGeojson => {
-                //   const kegiatanGroupLayer = new GroupLayer({
-                //     title: 'Layer Kegiatan',
-                //     visible: false,
-                //     layers: layerGeojson,
-                //     opacity: 0.90,
-                //   });
-
-                //   console.log('kegiatangroup: ' + kegiatanGroupLayer);
-
-                //   map.add(kegiatanGroupLayer);
-                // });
+                  // map.add(kegiatanGroupLayer);
+                });
               });
             }
           }
