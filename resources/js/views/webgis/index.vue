@@ -232,44 +232,45 @@ export default {
                     id: 'get-details',
                     image: 'information-24-f.svg',
                   };
+                  const getProjectInfo = axios.get('api/projects/' + projects[i].id_project);
                   const arrayJsonTemplate = {
-                    title: projects[i].project_title + ' (' + projects[i].project_year + ').',
+                    title: getProjectInfo.project_title + ' (' + getProjectInfo.project_year + ').',
                     content: '<table style="border-collapse: collapse !important">' +
                             '<thead>' +
                               '<tr style="margin: 5px 0;">' +
                                 '<td style="width: 35%">KBLI Code</td>' +
                                 '<td> : </td>' +
-                                '<td>' + projects[i].kbli + '</td>' +
+                                '<td>' + getProjectInfo.kbli + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
                                 '<td style="width: 35%">Pemrakarsa</td>' +
                                 '<td> : </td>' +
-                                '<td>' + projects[i].applicant + '</td>' +
+                                '<td>' + getProjectInfo.applicant + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0;">' +
                                 '<td style="width: 35%">Provinsi</td>' +
                                 '<td> : </td>' +
-                                '<td>' + projects[i].province + '</td>' +
+                                '<td>' + getProjectInfo.province + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
                                 '<td style="width: 35%">Kota</td>' +
                                 '<td> : </td>' +
-                                '<td>' + projects[i].district + '</td>' +
+                                '<td>' + getProjectInfo.district + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0;">' +
                                 '<td style="width: 35%">Alamat</td>' +
                                 '<td> : </td>' +
-                                '<td>' + projects[i].address + '</td>' +
+                                '<td>' + getProjectInfo.address + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
                                 '<td style="width: 35%">Deskripsi</td>' +
                                 '<td> : </td>' +
-                                '<td>' + projects[i].description + '</td>' +
+                                '<td>' + getProjectInfo.description + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0;">' +
                                 '<td style="width: 35%">Skala</td>' +
                                 '<td> : </td>' +
-                                '<td>' + projects[i].scale + ' ' + projects[i].scale_unit + '</td>' +
+                                '<td>' + getProjectInfo.scale + ' ' + getProjectInfo.scale_unit + '</td>' +
                               '</tr>' +
                             '</thead>' +
                           '</table>',
@@ -287,8 +288,8 @@ export default {
                     title: projects[1].project_title,
                     popupTemplate: arrayJsonTemplate,
                   });
+                  map.add(geojsonLayerArray);
                   mapGeojsonArray.push(geojsonLayerArray);
-                  map.add(mapGeojsonArray);
                   console.log('kegiatangroup: ' + mapGeojsonArray);
                 }
 
