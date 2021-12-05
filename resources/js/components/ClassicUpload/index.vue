@@ -7,7 +7,11 @@
       style="margin-left: 15px"
       @click="checkFile"
     >Upload</el-button>
-    <span>{{ name }}</span>
+    <el-tooltip :content="getContent" placement="top">
+      <span>
+        {{ name }}
+      </span>
+    </el-tooltip>
     <input
       :id="fid"
       type="file"
@@ -32,6 +36,11 @@ export default {
   },
   data() {
     return {};
+  },
+  computed: {
+    getContent(){
+      return this.name === 'No File Choosen' ? 'Mohon Unggah Data Anda' : 'Data Anda Sudah Diunggah';
+    },
   },
   methods: {
     handleFileUpload(e){
