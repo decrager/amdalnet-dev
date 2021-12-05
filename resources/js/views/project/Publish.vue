@@ -192,7 +192,8 @@ const provinceResource = new Resource('provinces');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
 // const supportDocResource = new Resource('support-docs');
-const initiatorResource = new Resource('initiatorsByEmail');
+const initiatorByEmailResource = new Resource('initiatorsByEmail');
+const initiatorResource = new Resource('initiators');
 const formulatorResource = new Resource('formulators');
 const formulatorTeamsResource = new Resource('formulator-teams');
 
@@ -606,8 +607,12 @@ export default {
       console.log(this.$store.getters.teamType);
     },
     async getInitiatorData(){
-      const data = await this.$store.dispatch('user/getInfo');
-      this.project.initiatorData = await initiatorResource.list({ email: data.email });
+      if (this.project.id_applicant){
+        this.project.initiatorData = await initiatorResource.get(this.project.id_applicant);
+      } else {
+        const data = await this.$store.dispatch('user/getInfo');
+        this.project.initiatorData = await initiatorByEmailResource.list({ email: data.email });
+      }
     },
     async getTeamOptions() {
       const { data } = await formulatorTeamResource.list({});
