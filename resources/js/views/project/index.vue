@@ -644,10 +644,8 @@ export default {
       });
     },
     handleLpjpTeam(project) {
-      console.log(project);
       this.$router.push({
-        name: 'listLpjpTeam',
-        params: { project: project },
+        path: `/lpjp-team/${project.id}/daftar-anggota`,
       });
     },
     handleViewSpt(id) {

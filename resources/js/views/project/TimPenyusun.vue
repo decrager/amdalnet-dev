@@ -16,6 +16,7 @@
                 filterable
                 placeholder="Pilih Tim Penyusun"
                 style="width: 100%"
+                :disabled="isTeamExist"
               >
                 <el-option
                   v-for="team in timPenyusun"
@@ -55,12 +56,13 @@
             </el-form-item>
             <el-form-item v-if="teamType === 'lpjp'">
               <el-row :gutter="32">
-                <el-col :sm="12" :md="20">
+                <el-col :sm="12" :md="isTeamExist ? 24 : 20">
                   <el-select
-                    v-model="selectedMember"
+                    v-model="selectedLPJP"
                     filterable
                     placeholder="Lembaga Tim LPJP"
                     style="width: 100%"
+                    :disabled="isTeamExist"
                   >
                     <el-option
                       v-for="member in lpjp"
@@ -72,11 +74,11 @@
                 </el-col>
                 <el-col :sm="12" :md="2">
                   <el-button
+                    v-if="!isTeamExist"
                     type="primary"
-                    icon="el-icon-plus"
-                    @click.prevent="handleAddAhli"
+                    @click.prevent="handleSaveLPJP"
                   >
-                    Tambah
+                    Simpan
                   </el-button>
                 </el-col>
               </el-row>
@@ -85,7 +87,12 @@
         </el-row>
       </el-form>
       <h4>Daftar Penyusun</h4>
-      <TimPenyusunTable :list="members" />
+      <TimPenyusunTable
+        :loading="loadingTimPenyusun"
+        :list="members"
+        :teamtype="teamType"
+        @handleDelete="handleDeletePenyusun($event)"
+      />
       <div style="display: flex; align-items: center">
         <h4>Daftar Tim Ahli</h4>
         <div style="margin-left: 2rem">
@@ -100,12 +107,23 @@
           </el-button>
         </div>
       </div>
-      <TimAhliTable :list="membersAhli" />
+      <TimAhliTable
+        :loading="loadingTimAhli"
+        :list="membersAhli"
+        :teamtype="teamType"
+        @handleDelete="handleDeleteAhli($event)"
+      />
       <div
         v-if="teamType === 'mandiri'"
         style="text-align: right; margin-top: 12px"
       >
-        <el-button type="warning"> Simpan </el-button>
+        <el-button
+          :loading="loadingSubmit"
+          type="warning"
+          @click="handleSubmit"
+        >
+          Simpan
+        </el-button>
       </div>
       <!-- <project-lpjp-table :selected-member="idLpjp" /> -->
     </el-card>
@@ -129,16 +147,23 @@ export default {
   props: {},
   data() {
     return {
-      teamType: null,
+      teamType: '',
       teamName: null,
       selectedFormulatorTeams: null,
       selectedMember: null,
+      selectedLPJP: null,
       formulatorTeams: [],
       formulatorMember: [],
       searchResult: '',
       lpjp: [],
+      loadingTimPenyusun: false,
+      loadingTimAhli: false,
+      loadingSubmit: false,
       idLpjp: 0,
       members: [],
+      isTeamExist: false,
+      deletedPenyusun: [],
+      deletedAhli: [],
       membersAhli: [],
       formulators: [],
       timPenyusun: [
@@ -156,13 +181,39 @@ export default {
   created() {
     this.getProjectName();
     this.getLpjp();
+    this.getTimPenyusun();
+    this.getTimAhli();
   },
   methods: {
+    async getTimPenyusun() {
+      this.loadingTimPenyusun = true;
+      const timPenyusun = await formulatorTeamsResource.list({
+        type: 'tim-penyusun',
+        idProject: this.$route.params.id,
+      });
+      this.members = timPenyusun;
+      this.loadingTimPenyusun = false;
+    },
+    async getTimAhli() {
+      this.loadingTimAhli = true;
+      const timPenyusun = await formulatorTeamsResource.list({
+        type: 'tim-ahli',
+        idProject: this.$route.params.id,
+      });
+      this.membersAhli = timPenyusun;
+      this.loadingTimAhli = false;
+    },
     async getProjectName() {
-      this.teamName = await formulatorTeamsResource.list({
+      const data = await formulatorTeamsResource.list({
         type: 'project',
         idProject: this.$route.params.id,
       });
+      this.teamName = data.name;
+      if (data.type_team) {
+        this.teamType = data.type_team;
+        this.isTeamExist = true;
+        this.selectedLPJP = data.id_lpjp;
+      }
     },
     async querySearch(queryString, cb) {
       const results = await formulatorTeamsResource.list({
@@ -191,6 +242,14 @@ export default {
     async getLpjp() {
       this.lpjp = await formulatorTeamsResource.list({ type: 'lpjp' });
     },
+    async handleSaveLPJP() {
+      await formulatorTeamsResource.store({
+        idProject: this.$route.params.id,
+        lpjp: this.selectedLPJP,
+        type: 'lpjp',
+      });
+      this.isTeamExist = true;
+    },
     handleSelect(item) {
       this.selectedMember = item;
     },
@@ -215,6 +274,47 @@ export default {
         cv: null,
       };
       this.membersAhli.push(newAhli);
+    },
+    async handleSubmit() {
+      const formData = new FormData();
+      formData.append('members', JSON.stringify(this.members));
+      formData.append('membersAhli', JSON.stringify(this.membersAhli));
+      formData.append('idProject', this.$route.params.id);
+      formData.append('team_type', this.teamType);
+      formData.append('deletedPenyusun', JSON.stringify(this.deletedPenyusun));
+      formData.append('deletedAhli', JSON.stringify(this.deletedAhli));
+      let num = 0;
+      this.membersAhli.map((mem) => {
+        formData.append(`file-${num}`, mem.cv);
+        num++;
+      });
+      this.loadingSubmit = true;
+      await formulatorTeamsResource.store(formData);
+      this.isTeamExist = true;
+      this.loadingSubmit = false;
+      this.$message({
+        message: 'Data sukses disimpan',
+        type: 'success',
+        duration: 5 * 1000,
+      });
+      this.getTimPenyusun();
+      this.getTimAhli();
+    },
+    handleDeletePenyusun({ typeMember, num }) {
+      if (typeMember === 'update') {
+        const idx = this.members.findIndex((mem) => mem.num === num);
+        this.deletedPenyusun.push(this.members[idx].id);
+      }
+      const oldData = [...this.members];
+      this.members = oldData.filter((old) => old.num !== num);
+    },
+    handleDeleteAhli({ typeMember, num }) {
+      if (typeMember === 'update') {
+        const idx = this.membersAhli.findIndex((mem) => mem.num === num);
+        this.deletedAhli.push(this.membersAhli[idx].id);
+      }
+      const oldData = [...this.membersAhli];
+      this.membersAhli = oldData.filter((old) => old.num !== num);
     },
   },
 };
