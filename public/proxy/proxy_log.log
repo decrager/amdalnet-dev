@@ -2807,3 +2807,80 @@
 12-03-21 16:25:21 | Using session token
 12-03-21 16:25:23 | Ok to proxy
 12-03-21 16:25:23 | Proxy complete
+ 
+12-05-21 10:41:00 | GET detected
+12-05-21 10:41:00 | Resource using ArcGIS Server security
+12-05-21 10:41:00 | Got token endpoint
+12-05-21 10:41:00 | Adding token to session
+12-05-21 10:41:00 | Ok to proxy
+12-05-21 10:41:00 | Proxy complete
+ 
+12-05-21 10:41:00 | GET detected
+12-05-21 10:41:00 | Resource using ArcGIS Server security
+12-05-21 10:41:01 | Got token endpoint
+12-05-21 10:41:01 | Adding token to session
+12-05-21 10:41:01 | Ok to proxy
+12-05-21 10:41:01 | Proxy complete
+ 
+12-05-21 10:41:01 | GET detected
+12-05-21 10:41:01 | Resource using ArcGIS Server security
+12-05-21 10:41:01 | Got token endpoint
+12-05-21 10:41:01 | Adding token to session
+12-05-21 10:41:01 | Ok to proxy
+12-05-21 10:41:01 | Proxy complete
+ 
+12-05-21 10:41:01 | GET detected
+12-05-21 10:41:01 | Resource using ArcGIS Server security
+12-05-21 10:41:02 | Got token endpoint
+12-05-21 10:41:02 | Adding token to session
+12-05-21 10:41:02 | Ok to proxy
+12-05-21 10:41:02 | Proxy complete
+ 
+12-05-21 10:41:02 | GET detected
+12-05-21 10:41:02 | Resource using ArcGIS Server security
+12-05-21 10:41:02 | Got token endpoint
+12-05-21 10:41:03 | Adding token to session
+12-05-21 10:41:03 | Ok to proxy
+12-05-21 10:41:03 | Proxy complete
+ 
+12-05-21 10:41:03 | GET detected
+12-05-21 10:41:03 | Resource using ArcGIS Server security
+12-05-21 10:41:03 | Got token endpoint
+12-05-21 10:41:03 | Adding token to session
+12-05-21 10:41:03 | Ok to proxy
+12-05-21 10:41:03 | Proxy complete
+ 
+12-05-21 10:41:03 | GET detected
+12-05-21 10:41:03 | Resource using ArcGIS Server security
+12-05-21 10:41:03 | Got token endpoint
+12-05-21 10:41:04 | Adding token to session
+12-05-21 10:41:04 | Ok to proxy
+12-05-21 10:41:04 | Proxy complete
+ 
+12-05-21 10:41:04 | GET detected
+12-05-21 10:41:04 | Resource using ArcGIS Server security
+12-05-21 10:41:04 | Got token endpoint
+12-05-21 10:41:06 | Adding token to session
+12-05-21 10:41:06 | Ok to proxy
+12-05-21 10:41:06 | Proxy complete
+ 
+12-05-21 10:41:06 | GET detected
+12-05-21 10:41:06 | Resource using ArcGIS Server security
+12-05-21 10:41:06 | Got token endpoint
+12-05-21 10:41:06 | Adding token to session
+12-05-21 10:41:07 | Ok to proxy
+12-05-21 10:41:07 | Proxy complete
+ 
+12-05-21 10:41:07 | GET detected
+12-05-21 10:41:07 | Resource using ArcGIS Server security
+12-05-21 10:41:08 | Got token endpoint
+12-05-21 10:41:08 | Adding token to session
+12-05-21 10:41:08 | Ok to proxy
+12-05-21 10:41:08 | Proxy complete
+ 
+12-05-21 10:41:08 | GET detected
+12-05-21 10:41:08 | Resource using ArcGIS Server security
+12-05-21 10:41:08 | Got token endpoint
+12-05-21 10:41:08 | Adding token to session
+12-05-21 10:41:08 | Ok to proxy
+12-05-21 10:41:08 | Proxy complete

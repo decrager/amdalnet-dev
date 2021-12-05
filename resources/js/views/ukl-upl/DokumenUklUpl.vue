@@ -181,12 +181,6 @@ export default {
           this.docContents = response.data;
         });
     },
-    // getDocument() {
-    //   axios.get('api/get-document-ka/' + this.projectId)
-    //     .then((result) => {
-    //       this.projects = window.location.origin + '/storage/formulir/' + result.data.attachment;
-    //     });
-    // },
     exportPdf() {
       axios({
         url: `api/form-ka-pdf/${this.projectId}`,
