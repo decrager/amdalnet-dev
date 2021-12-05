@@ -16,7 +16,6 @@ import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
-import Search from '@arcgis/core/widgets/Search';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
@@ -35,7 +34,7 @@ export default {
       mapView: null,
       selectedFeedback: {},
       showIdDialog: false,
-      // mapGeojsonArray: [],
+      mapGeojsonArray: [],
     };
   },
   mounted: function() {
@@ -225,61 +224,12 @@ export default {
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].stored_filename) {
               shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                // const getProjectDetails = {
-                //   title: 'Details',
-                //   id: 'get-details',
-                //   image: 'information-24-f.svg',
-                // };
-
-                // const arrayJsonTemplate = {
-                //   title: getProjectInfo.project_title + ' (' + getProjectInfo.project_year + ').',
-                //   content: '<table style="border-collapse: collapse !important">' +
-                //           '<thead>' +
-                //             '<tr style="margin: 5px 0;">' +
-                //               '<td style="width: 35%">KBLI Code</td>' +
-                //               '<td> : </td>' +
-                //               '<td>' + getProjectInfo.kbli + '</td>' +
-                //             '</tr>' +
-                //             '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                //               '<td style="width: 35%">Pemrakarsa</td>' +
-                //               '<td> : </td>' +
-                //               '<td>' + getProjectInfo.applicant + '</td>' +
-                //             '</tr>' +
-                //             '<tr style="margin: 5px 0;">' +
-                //               '<td style="width: 35%">Provinsi</td>' +
-                //               '<td> : </td>' +
-                //               '<td>' + getProjectInfo.province + '</td>' +
-                //             '</tr>' +
-                //             '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                //               '<td style="width: 35%">Kota</td>' +
-                //               '<td> : </td>' +
-                //               '<td>' + getProjectInfo.district + '</td>' +
-                //             '</tr>' +
-                //             '<tr style="margin: 5px 0;">' +
-                //               '<td style="width: 35%">Alamat</td>' +
-                //               '<td> : </td>' +
-                //               '<td>' + getProjectInfo.address + '</td>' +
-                //             '</tr>' +
-                //             '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                //               '<td style="width: 35%">Deskripsi</td>' +
-                //               '<td> : </td>' +
-                //               '<td>' + getProjectInfo.description + '</td>' +
-                //             '</tr>' +
-                //             '<tr style="margin: 5px 0;">' +
-                //               '<td style="width: 35%">Skala</td>' +
-                //               '<td> : </td>' +
-                //               '<td>' + getProjectInfo.scale + ' ' + getProjectInfo.scale_unit + '</td>' +
-                //             '</tr>' +
-                //           '</thead>' +
-                //         '</table>',
-                //   actions: [getProjectDetails],
-                // };
-
                 const blob = new Blob([JSON.stringify(data)], {
                   type: 'application/json',
                 });
                 const url = URL.createObjectURL(blob);
                 axios.get('api/projects/' + projects[i].id_project).then((response) => {
+                  console.log('a');
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
@@ -287,17 +237,23 @@ export default {
                     title: response.data.project_title,
                     // popupTemplate: arrayJsonTemplate,
                   });
-                  map.add(geojsonLayerArray);
-                  // mapGeojsonArray.push(geojsonLayerArray);
-                  // console.log(mapGeojsonArray);
-                  // const kegiatanGroupLayer = new GroupLayer({
-                  //   title: 'Layer Kegiatan',
-                  //   visible: false,
-                  //   layers: mapGeojsonArray,
-                  //   opacity: 0.90,
-                  // });
+                  // map.add(geojsonLayerArray);
+                  // console.log(geojsonLayerArray);
 
-                  // map.add(kegiatanGroupLayer);
+                  this.mapGeojsonArray.push(geojsonLayerArray);
+
+                  // last loop
+                  if (i === projects.length - 1){
+                    console.log(this.mapGeojsonArray);
+                    const kegiatanGroupLayer = new GroupLayer({
+                      title: 'LAYER KEGIATAN',
+                      visible: false,
+                      layers: this.mapGeojsonArray,
+                      opacity: 0.90,
+                    });
+
+                    map.add(kegiatanGroupLayer);
+                  }
                 });
               });
             }
@@ -381,16 +337,6 @@ export default {
         view: mapView,
       });
 
-      const searchWidget = new Search({
-        view: mapView,
-      });
-      // Adds the search widget below other elements in
-      // the top left corner of the view
-      mapView.ui.add(searchWidget, {
-        position: 'top-right',
-        index: 2,
-      });
-
       mapView.popup.on('trigger-action', (event) => {
         if (event.action.id === 'get-details') {
           console.log('tbd');
@@ -439,7 +385,7 @@ export default {
       });
 
       mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
+      mapView.ui.add(legend, 'top-right');
     },
   },
 };

@@ -44,11 +44,11 @@
               </el-col>
               <el-col :span="12">
                 <el-row>
-                  <el-form-item label="Upload Peta (File .ZIP Max 1MB)">
+                  <el-form-item label="Upload Peta Tapak (File .ZIP Max 1MB)">
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
                     <!-- <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload"> -->
                   </el-form-item>
-                  <div id="mapView" style="height: 400px;" />
+                  <div id="mapView" style="height: 600px;" />
                 </el-row>
               </el-col>
             </el-row>
@@ -621,12 +621,17 @@ import Resource from '@/api/resource';
 import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
-// import * as L from 'leaflet';
-import shp from 'shpjs';
+
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
+import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import shp from 'shpjs';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
+import * as urlUtils from '@arcgis/core/core/urlUtils';
+import Expand from '@arcgis/core/widgets/Expand';
 
 export default {
   name: 'CreateProject',
@@ -1021,6 +1026,221 @@ export default {
         basemap: 'topo',
       });
 
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://gistaru.atrbpn.go.id/',
+      });
+
+      const featureLayer = new MapImageLayer({
+        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            title: 'Layer Kawasan Hutan',
+            popupTemplate: {
+              title: 'Kawasan Hutan',
+            },
+          },
+        ],
+        imageTransparency: true,
+      });
+
+      const batasProv = new MapImageLayer({
+        url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
+        sublayers: [{
+          id: 0,
+          title: 'Batas Provinsi',
+        }],
+      });
+
+      const graticuleGrid = new MapImageLayer({
+        url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
+      });
+
+      const ekoregion = new MapImageLayer({
+        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
+        visible: false,
+        sublayers: [
+          {
+            id: 1,
+            visible: false,
+            visibility: 'exclusive',
+            title: 'Ekoregion Laut',
+          }, {
+            id: 0,
+            visible: false,
+            visibility: 'exclusive',
+            title: 'Ekoregion Darat',
+          },
+        ],
+      });
+
+      const ppib = new MapImageLayer({
+        url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
+        visible: false,
+      });
+
+      const tutupanLahan = new MapImageLayer({
+        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
+        visible: false,
+      });
+      map.addMany([featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid]);
+
+      const baseGroupLayer = new GroupLayer({
+        title: 'Base Layer',
+        visible: true,
+        layers: [featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid],
+        opacity: 0.90,
+      });
+
+      map.add(baseGroupLayer);
+
+      const gistaruLayer = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+      map.add(gistaruLayer);
+
+      const perbatasanPapua = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_PERBATASAN_PAPUA/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const acehSumut = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KPN_ACEH_SUMUT/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const kalSul = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KALIMANTAN_SULAWESI_PERPRES/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const bandung = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KAWASAN_PERKOTAAN_CEKUNGAN_BANDUNG/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const jabodetabek = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_JABODETABEKPUNJUR/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const borobudur = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_BOROBUDUR/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const bbk = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_BBK/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const kedungSepur = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KEDUNGSEPUR/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      const toba = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_TOBA/MapServer',
+        imageTransparency: true,
+        visible: false,
+      });
+
+      map.addMany([perbatasanPapua, bandung, jabodetabek, acehSumut, kalSul, borobudur, bbk, kedungSepur, toba]);
+
+      const ksnGroupLayer = new GroupLayer({
+        title: 'Layer Kawasan Strategis Nasional (KSN)',
+        visible: false,
+        layers: [perbatasanPapua, bandung, jabodetabek, acehSumut, kalSul, borobudur, bbk, kedungSepur, toba],
+        opacity: 0.90,
+      });
+
+      map.add(ksnGroupLayer);
+
+      const rtrPulau = new MapImageLayer({
+        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/001_RTR_PULAU/_RTR_PULAU_INDONESIA/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      map.add(rtrPulau);
+
+      const penutupanLahan2020 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const kawasanHutanB = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const indikatifPPTPKH = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/Indikatif_PPTPKH/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const piapsRevisi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIAPS_Revisi_VI/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const pippib2021Periode2 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const arKabKota = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/ADMINISTRASI_AR_KABKOTA_50K_2018/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const batasKabupaten = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Kabupaten_Kota_50K/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const batasProvinsi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Provinsi_Indonesia/MapServerr',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const sigapLayer = new GroupLayer({
+        title: 'SIGAP KLHK',
+        visible: false,
+        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2, arKabKota, batasKabupaten, batasProvinsi],
+        opacity: 0.90,
+      });
+
+      map.add(sigapLayer);
+
       const fr = new FileReader();
       fr.onload = (event) => {
         const base = event.target.result;
@@ -1063,9 +1283,21 @@ export default {
         container: 'mapView',
         map: map,
         center: [115.287, -1.588],
-        zoom: 6,
+        zoom: 4,
       });
       this.$parent.mapView = mapView;
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+
+      const legendListExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap', // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+        expandTooltip: 'Layer Legend', // optional, defaults to "Expand" for English locale
+        view: mapView,
+        content: legend,
+      });
 
       const layerList = new LayerList({
         view: mapView,
@@ -1073,7 +1305,24 @@ export default {
         listItemCreatedFunction: this.defineActions,
       });
 
-      mapView.ui.add(layerList, 'top-right');
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layers', // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+        expandTooltip: 'Daftar Layer', // optional, defaults to "Expand" for English locale
+        view: mapView,
+        content: layerList,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
+        }
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendListExpand, 'top-right');
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });
