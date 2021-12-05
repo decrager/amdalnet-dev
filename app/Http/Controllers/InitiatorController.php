@@ -106,7 +106,7 @@ class InitiatorController extends Controller
      */
     public function show(Initiator $initiator)
     {
-        //
+        return $initiator;
     }
 
     public function showByEmail(Request $request)
