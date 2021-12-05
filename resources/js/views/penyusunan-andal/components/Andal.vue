@@ -71,7 +71,7 @@ import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 import TableAndal from '@/views/penyusunan-andal/components/Table';
 import MatriksIdentifikasiDampakTable from '@/views/ukl-upl/components/tables/MatriksIdentifikasiDampakTable.vue';
-import PetaBatas from '@/views/penyusunan-andal/clone/Petabatas.vue';
+import PetaBatas from '@/views/penyusunan-andal/clone/PetaBatas.vue';
 import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
 import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
 import MatriksDPHTable from '@/views/ukl-upl/components/tables/MatriksDPHTable.vue';
