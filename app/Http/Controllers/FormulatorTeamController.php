@@ -6,6 +6,7 @@ use App\Entity\EnvironmentalExpert;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
+use App\Entity\Lpjp;
 use App\Entity\Project;
 use App\Http\Resources\FormulatorResource;
 use Illuminate\Http\Request;
@@ -22,6 +23,16 @@ class FormulatorTeamController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->type && $request->type == 'project') {
+            $project = Project::findOrFail($request->idProject);
+            return 'Tim Penyusun ' . $project->project_title;
+        }
+
+        if($request->type && $request->type == 'lpjp') {
+            $lpjp = Lpjp::where([['date_start', '<=', date('Y-m-d H:i:s')],['date_end', '>=', date('Y-m-d H:i:s')]])->get();
+            return $lpjp;
+        }
+
         if ($request->type && $request->type == 'search') {
             $formulator = new Collection(Formulator::where([
                 [DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%'],
@@ -31,9 +42,9 @@ class FormulatorTeamController extends Controller
                     [DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%'],
                     ['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]
                 ])->get());
-            $expert = new Collection(EnvironmentalExpert::where(DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%')->get());
-            $result = $formulator->merge($expert);
-            return $result;
+            // $expert = new Collection(EnvironmentalExpert::where(DB::raw('lower(name)'), 'LIKE', '%' . strtolower($request->search) . '%')->get());
+            // $result = $formulator->merge($expert);
+            return $formulator;
         } else if ($request->type && $request->type == 'all') {
             $formulator = new Collection(Formulator::where([
                 ['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]
