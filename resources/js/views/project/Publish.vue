@@ -176,7 +176,7 @@
     </el-row>
     <div slot="footer" class="dialog-footer">
       <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
-      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
+      <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
     </div>
   </div>
 </template>
@@ -737,6 +737,7 @@ export default {
         });
     },
     async handleSubmit() {
+      this.fullLoading = true;
       this.project.id_applicant = this.project.initiatorData.id ? this.project.initiatorData.id : 0;
 
       if (!this.project.id_project){
@@ -784,6 +785,7 @@ export default {
               message: 'Project info has been updated successfully',
               duration: 5 * 1000,
             });
+            this.fullLoading = false;
             this.$router.push('/project');
           }).catch(error => {
             console.log(error);
@@ -808,6 +810,7 @@ export default {
               this.$router.push('/project');
             })
             .catch((error) => {
+              this.fullLoading = false;
               console.log(error);
             });
         }
