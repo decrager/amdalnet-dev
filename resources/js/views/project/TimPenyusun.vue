@@ -75,6 +75,7 @@
                 <el-col :sm="12" :md="2">
                   <el-button
                     v-if="!isTeamExist"
+                    :loading="loadingLpjp"
                     type="primary"
                     @click.prevent="handleSaveLPJP"
                   >
@@ -159,6 +160,7 @@ export default {
       loadingTimPenyusun: false,
       loadingTimAhli: false,
       loadingSubmit: false,
+      loadingLpjp: false,
       idLpjp: 0,
       members: [],
       isTeamExist: false,
@@ -243,12 +245,19 @@ export default {
       this.lpjp = await formulatorTeamsResource.list({ type: 'lpjp' });
     },
     async handleSaveLPJP() {
+      this.loadingLpjp = true;
       await formulatorTeamsResource.store({
         idProject: this.$route.params.id,
         lpjp: this.selectedLPJP,
         type: 'lpjp',
       });
+      this.loadingLpjp = false;
       this.isTeamExist = true;
+      this.$message({
+        message: 'Data sukses disimpan',
+        type: 'success',
+        duration: 5 * 1000,
+      });
     },
     handleSelect(item) {
       this.selectedMember = item;
