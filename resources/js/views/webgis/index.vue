@@ -304,6 +304,71 @@ export default {
           }
         });
 
+      const penutupanLahan2020 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const kawasanHutanB = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const indikatifPPTPKH = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/Indikatif_PPTPKH/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const piapsRevisi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIAPS_Revisi_VI/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const pippib2021Periode2 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const arKabKota = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/ADMINISTRASI_AR_KABKOTA_50K_2018/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const batasKabupaten = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Kabupaten_Kota_50K/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const batasProvinsi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Provinsi_Indonesia/MapServerr',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const sigapLayer = new GroupLayer({
+        title: 'SIGAP KLHK',
+        visible: false,
+        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2, arKabKota, batasKabupaten, batasProvinsi],
+        opacity: 0.90,
+      });
+
+      map.add(sigapLayer);
+
       const mapView = new MapView({
         container: 'mapViewDiv',
         map: map,

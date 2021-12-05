@@ -4925,3 +4925,118 @@
 12-05-21 12:33:28 | Using session token
 12-05-21 12:33:28 | Ok to proxy
 12-05-21 12:33:28 | Proxy complete
+ 
+12-05-21 13:22:56 | GET detected
+12-05-21 13:22:56 | Using session token
+12-05-21 13:22:56 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+12-05-21 13:22:56 | Retry attempt 1 of 3
+12-05-21 13:22:56 | Resource using ArcGIS Server security
+12-05-21 13:23:02 | Got token endpoint
+12-05-21 13:23:02 | Adding token to session
+12-05-21 13:23:02 | Using session token
+12-05-21 13:23:02 | Ok to proxy
+12-05-21 13:23:02 | Proxy complete
+ 
+12-05-21 13:23:03 | GET detected
+12-05-21 13:23:03 | Using session token
+12-05-21 13:23:03 | Ok to proxy
+12-05-21 13:23:03 | Proxy complete
+ 
+12-05-21 13:23:03 | GET detected
+12-05-21 13:23:03 | Using session token
+12-05-21 13:23:03 | Ok to proxy
+12-05-21 13:23:03 | Proxy complete
+ 
+12-05-21 13:23:03 | GET detected
+12-05-21 13:23:03 | Using session token
+12-05-21 13:23:03 | Ok to proxy
+12-05-21 13:23:03 | Proxy complete
+ 
+12-05-21 13:23:03 | GET detected
+12-05-21 13:23:03 | Using session token
+12-05-21 13:23:03 | Ok to proxy
+12-05-21 13:23:03 | Proxy complete
+ 
+12-05-21 13:23:03 | GET detected
+12-05-21 13:23:03 | Using session token
+12-05-21 13:23:03 | Ok to proxy
+12-05-21 13:23:03 | Proxy complete
+ 
+12-05-21 13:23:03 | GET detected
+12-05-21 13:23:03 | Using session token
+12-05-21 13:23:03 | Ok to proxy
+12-05-21 13:23:03 | Proxy complete
+ 
+12-05-21 13:23:03 | GET detected
+12-05-21 13:23:03 | Using session token
+12-05-21 13:23:04 | Ok to proxy
+12-05-21 13:23:04 | Proxy complete
+ 
+12-05-21 13:23:04 | GET detected
+12-05-21 13:23:04 | Using session token
+12-05-21 13:23:04 | Ok to proxy
+12-05-21 13:23:04 | Proxy complete
+ 
+12-05-21 13:23:04 | GET detected
+12-05-21 13:23:04 | Using session token
+12-05-21 13:23:04 | Ok to proxy
+12-05-21 13:23:04 | Proxy complete
+ 
+12-05-21 13:23:04 | GET detected
+12-05-21 13:23:04 | Using session token
+12-05-21 13:23:04 | Ok to proxy
+ 
+12-05-21 13:23:11 | GET detected
+12-05-21 13:23:11 | Using session token
+12-05-21 13:23:11 | Ok to proxy
+12-05-21 13:23:11 | Proxy complete
+ 
+12-05-21 13:23:11 | GET detected
+12-05-21 13:23:11 | Using session token
+12-05-21 13:23:11 | Ok to proxy
+12-05-21 13:23:11 | Proxy complete
+ 
+12-05-21 13:23:11 | GET detected
+12-05-21 13:23:11 | Using session token
+12-05-21 13:23:11 | Ok to proxy
+12-05-21 13:23:11 | Proxy complete
+ 
+12-05-21 13:23:11 | GET detected
+12-05-21 13:23:11 | Using session token
+12-05-21 13:23:11 | Ok to proxy
+12-05-21 13:23:11 | Proxy complete
+ 
+12-05-21 13:23:11 | GET detected
+12-05-21 13:23:11 | Using session token
+12-05-21 13:23:11 | Ok to proxy
+12-05-21 13:23:11 | Proxy complete
+ 
+12-05-21 13:23:11 | GET detected
+12-05-21 13:23:11 | Using session token
+12-05-21 13:23:12 | Ok to proxy
+12-05-21 13:23:12 | Proxy complete
+ 
+12-05-21 13:23:12 | GET detected
+12-05-21 13:23:12 | Using session token
+12-05-21 13:23:12 | Ok to proxy
+12-05-21 13:23:12 | Proxy complete
+ 
+12-05-21 13:23:12 | GET detected
+12-05-21 13:23:12 | Using session token
+12-05-21 13:23:12 | Ok to proxy
+12-05-21 13:23:12 | Proxy complete
+ 
+12-05-21 13:23:12 | GET detected
+12-05-21 13:23:12 | Using session token
+12-05-21 13:23:12 | Ok to proxy
+12-05-21 13:23:12 | Proxy complete
+ 
+12-05-21 13:23:12 | GET detected
+12-05-21 13:23:12 | Using session token
+12-05-21 13:23:12 | Ok to proxy
+12-05-21 13:23:12 | Proxy complete
+ 
+12-05-21 13:23:12 | GET detected
+12-05-21 13:23:12 | Using session token
+12-05-21 13:23:12 | Ok to proxy
+12-05-21 13:23:12 | Proxy complete
