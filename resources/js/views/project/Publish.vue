@@ -99,7 +99,7 @@
           <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
           <el-col :span="12">Pusat</el-col></el-row>
-        <!-- <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
+        <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
           <el-col :span="12">
             <el-form
               ref="project"
@@ -124,8 +124,8 @@
               </el-form-item>
             </el-form>
           </el-col>
-        </el-row> -->
-        <!-- <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
+        </el-row>
+        <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
           <el-col :span="12">
             <el-form
               ref="project"
@@ -144,7 +144,7 @@
               </el-form-item>
             </el-form>
           </el-col>
-        </el-row> -->
+        </el-row>
       </el-col>
       <el-col :span="12" />
     </el-row>
