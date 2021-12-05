@@ -1,5 +1,6 @@
 <template>
   <el-table
+    v-loading="loading"
     :data="list"
     fit
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
@@ -31,6 +32,7 @@
     <el-table-column label="Jabatan">
       <template slot-scope="scope">
         <el-select
+          v-if="teamtype === 'mandiri'"
           v-model="scope.row.position"
           placeholder="Pilih Jabatan"
           style="width: 100%"
@@ -42,6 +44,7 @@
             :value="item.value"
           />
         </el-select>
+        <span v-else>{{ scope.row.position }}</span>
       </template>
     </el-table-column>
 
@@ -65,14 +68,19 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="" width="80px" align="center">
+    <el-table-column
+      v-if="teamtype === 'mandiri'"
+      label=""
+      width="80px"
+      align="center"
+    >
       <template slot-scope="scope">
         <el-button
           type="danger"
           size="mini"
           href="#"
           icon="el-icon-close"
-          @click.prevent="handleDelete(scope.row.num)"
+          @click.prevent="handleDelete(scope.row.type, scope.row.num)"
         />
       </template>
     </el-table-column>
@@ -86,6 +94,11 @@ export default {
     list: {
       type: Array,
       default: () => [],
+    },
+    loading: Boolean,
+    teamtype: {
+      type: String,
+      default: () => '',
     },
   },
   data() {
@@ -106,8 +119,8 @@ export default {
     download(url) {
       window.open(url, '_blank').focus();
     },
-    handleDelete(num) {
-      this.$emit('handleDelete', { num });
+    handleDelete(typeMember, num) {
+      this.$emit('handleDelete', { typeMember, num });
     },
   },
 };

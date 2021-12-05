@@ -3,7 +3,6 @@
     v-loading="loading"
     :data="list"
     fit
-    highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
     <el-table-column label="No." width="54px">
@@ -15,16 +14,18 @@
     <el-table-column label="Nama">
       <template slot-scope="scope">
         <el-input
+          v-if="teamtype === 'mandiri'"
           v-model="list[scope.$index].name"
           placeholder="Nama Tenaga Ahli"
         />
-        <!-- <span v-else>{{ scope.row.name }}</span> -->
+        <span v-else>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
     <el-table-column label="Posisi">
       <template slot-scope="scope">
         <el-select
+          v-if="teamtype === 'mandiri'"
           v-model="list[scope.$index].status"
           placeholder="Posisi"
           style="width: 100%"
@@ -36,33 +37,45 @@
             :value="item.value"
           />
         </el-select>
-        <!-- <span v-else>{{ scope.row.status }}</span> -->
+        <span v-else>{{ scope.row.status }}</span>
       </template>
     </el-table-column>
 
     <el-table-column label="Keahlian">
       <template slot-scope="scope">
         <el-input
+          v-if="teamtype === 'mandiri'"
           v-model="list[scope.$index].expertise"
           placeholder="Keahlian"
         />
-        <!-- <span v-else>{{ scope.row.expertise }}</span> -->
+        <span v-else>{{ scope.row.expertise }}</span>
       </template>
     </el-table-column>
 
     <el-table-column label="File">
       <template slot-scope="scope">
         <el-upload
+          v-if="teamtype === 'mandiri'"
           class="upload-demo"
           :auto-upload="false"
           :on-change="handleUploadChange"
           action="#"
           :show-file-list="false"
         >
-          <el-button size="small" type="primary"> Click to upload </el-button>
-          <span style="padding-left: 10px">{{ fileName }}</span>
+          <el-button
+            type="text"
+            size="medium"
+            icon="el-icon-upload"
+            @click="fileNum = scope.row.num"
+          >
+            Upload
+          </el-button>
+          <span v-if="teamtype === 'mandiri'" style="padding-left: 10px">{{
+            list[scope.$index].file_name
+          }}</span>
         </el-upload>
         <el-button
+          v-if="scope.row.cv && scope.row.type === 'update'"
           type="text"
           size="medium"
           icon="el-icon-download"
@@ -74,14 +87,14 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="" width="80px">
+    <el-table-column v-if="teamtype === 'mandiri'" label="" width="80px">
       <template slot-scope="scope">
         <el-button
           type="danger"
           size="mini"
           href="#"
           icon="el-icon-close"
-          @click.prevent="handleDelete(scope.row.id, scope.row.name)"
+          @click.prevent="handleDelete(scope.row.type, scope.row.num)"
         />
       </template>
     </el-table-column>
@@ -90,7 +103,7 @@
 
 <script>
 export default {
-  name: 'TeamMemberTable',
+  name: 'TeamAhliTable',
   props: {
     list: {
       type: Array,
@@ -104,6 +117,10 @@ export default {
     limit: {
       type: Number,
       default: () => 10,
+    },
+    teamtype: {
+      type: String,
+      default: () => '',
     },
   },
   data() {
@@ -122,6 +139,7 @@ export default {
       ],
       fileUpload: null,
       fileName: null,
+      fileNum: null,
     };
   },
   methods: {
@@ -133,22 +151,14 @@ export default {
       this.currentExpert = Array.from(this.list).find((exp) => exp.id === id);
       this.currentExpert.cv = null;
     },
-    handleDelete(id, name) {
-      this.$emit('handleDelete', { id, name });
+    handleDelete(typeMember, num) {
+      this.$emit('handleDelete', { typeMember, num });
     },
     handleUploadChange(file, fileList) {
-      this.fileName = file.name;
       this.fileUpload = file.raw;
-    },
-    handleUpdate() {
-      this.currentExpert.cv = this.fileUpload;
-      this.$emit('handleUpdate', this.currentExpert);
-      this.editId = null;
-      this.currentExpert = {};
-    },
-    handleCancel() {
-      this.editId = null;
-      this.currentExpert = {};
+      const idx = this.list.findIndex((lis) => lis.num === this.fileNum);
+      this.list[idx].cv = file.raw;
+      this.list[idx].file_name = file.name;
     },
   },
 };
