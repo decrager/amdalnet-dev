@@ -128,10 +128,7 @@ export default {
       });
       var dataList = impactList.data;
       if (this.table === 'metode-studi'){
-        const dph = dataList.filter(imp => imp.is_hypothetical_significant);
-        const dtphDikelola = dataList.filter(imp => !imp.is_hypothetical_significant && imp.is_managed);
-        // include dtph dikelola
-        dataList = dph.concat(dtphDikelola);
+        dataList = dataList.filter(imp => imp.is_hypothetical_significant || (!imp.is_hypothetical_significant && imp.is_managed));
       }
       this.data = this.createDataArray(dataList, this.projectStages);
       this.$emit('handleSetData', this.data);
