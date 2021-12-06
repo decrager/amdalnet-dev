@@ -250,7 +250,6 @@ export default {
       this.compositionError = false;
       const ketua = this.members.filter((mem) => mem.position === 'Ketua');
       const anggota = this.members.filter((mem) => mem.position === 'Anggota');
-      console.log(ketua, anggota);
 
       if (ketua.length === 1 && anggota.length === 2) {
         this.handleSubmit();
