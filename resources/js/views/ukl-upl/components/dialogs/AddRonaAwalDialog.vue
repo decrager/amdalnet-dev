@@ -146,9 +146,9 @@ export default {
   methods: {
     deskripsiKhusus() {
       if (this.ronaAwal.name === undefined || this.ronaAwal.name === ''){
-        return 'Deskripsi Khusus';
+        return 'Deskripsi';
       } else {
-        return 'Deskripsi Khusus ' + this.ronaAwal.name + ' terkait ' + this.currentSubProjectComponentName;
+        return 'Deskripsi ' + this.ronaAwal.name + ' terkait ' + this.currentSubProjectComponentName;
       }
     },
     searchRonaAwal(queryString, cb) {

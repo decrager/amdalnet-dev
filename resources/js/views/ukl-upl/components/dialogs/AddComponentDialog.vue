@@ -99,9 +99,9 @@ export default {
   methods: {
     deskripsiKhusus() {
       if (this.component.name === undefined || this.component.name === ''){
-        return 'Deskripsi Khusus';
+        return 'Deskripsi';
       } else {
-        return 'Deskripsi Khusus ' + this.component.name + ' terkait ' + this.currentSubProjectName;
+        return 'Deskripsi ' + this.component.name + ' terkait ' + this.currentSubProjectName;
       }
     },
     searchComponent(queryString, cb) {
