@@ -45,7 +45,6 @@ class ProjectMapAttachmentController extends Controller
      */
     public function store(Request $request)
     {
-        return storage_path();
         if ($request['files']) {
             $id_project = $request['id_project'];
             $params = $request['params'];
@@ -67,7 +66,7 @@ class ProjectMapAttachmentController extends Controller
                 $map->original_filename = $file->getClientOriginalName();
                 $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
 
-                if ($file->move(storage_path(), $map->stored_filename)) {
+                if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
                     $map->save();
                 }
             }
@@ -83,34 +82,7 @@ class ProjectMapAttachmentController extends Controller
      */
     public function post(Request $request)
     {
-        $file = $request->file('file');
-
-        dd($file);
-
-        $map = ProjectMapAttachment::where('id_project', $request->input('id_project'))
-            ->where('attachment_type', $request->input('attachment_type'))
-            ->where('file_type', $request->input('file_type'))->first();
-
-        if (!$map) {
-            $map = new ProjectMapAttachment();
-        } else {
-            if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
-                unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
-            }
-        }
-
-        $map->id_project = $request->input('id_project');
-        $map->attachment_type = $request->input('attachment_type');
-        $map->file_type = $request->input('file_type');
-        $map->original_filename = $file->getClientOriginalName();
-        $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getExtension());
-
-        if ($file->move(storage_path(), $map->stored_filename)) {
-            $map->save();
-            return response("success", 200);
-        } else {
-            return response("failed", 418);
-        }
+        return;
     }
 
     /**
