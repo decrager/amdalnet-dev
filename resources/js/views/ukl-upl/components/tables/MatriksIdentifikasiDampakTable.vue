@@ -17,7 +17,9 @@
       <el-table-column v-for="ct in component_types" :key="ct" :label="ct" prop="component_types" align="center">
         <el-table-column v-for="r in ronaAwalListFiltered(ct)" :key="r.key" :label="r.name" :prop="JSON.stringify({ct, property: r.key})" align="center">
           <template slot-scope="scope">
-            {{ cellFormatter(scope.row, scope.column) }}
+            <template v-if="cellFormatter(scope.row, scope.column) === 'v'">
+              <img src="images/check-green.jpeg" class="icon-check">
+            </template>
           </template>
         </el-table-column>
       </el-table-column>
@@ -91,3 +93,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.icon-check {
+  width: 25px;
+  height: 25px;
+}
+</style>
