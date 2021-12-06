@@ -24,6 +24,11 @@ class FormulatorTeamController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->type && $request->type == 'formulator') {
+            return Formulator::select('id', 'name', 'expertise', 'cv_file', 'reg_no', 'membership_status')
+                                ->where('membership_status', '!=', 'TA')->orderBy('name')->get();
+        }
+
         if($request->type && $request->type == 'project') {
             $project = Project::findOrFail($request->idProject);
             return [

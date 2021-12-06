@@ -32,16 +32,19 @@
             <el-form-item v-if="teamType === 'mandiri'">
               <el-row :gutter="32">
                 <el-col :sm="12" :md="20">
-                  <el-autocomplete
-                    v-model="searchResult"
-                    class="inline-input"
-                    :fetch-suggestions="querySearch"
-                    placeholder="Please Input"
-                    :trigger-on-focus="false"
-                    :debounce="1000"
+                  <el-select
+                    v-model="selectedMember"
+                    filterable
+                    placeholder="Pilih Penyusun"
                     style="width: 100%"
-                    @select="handleSelect"
-                  />
+                  >
+                    <el-option
+                      v-for="item in formulators"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    />
+                  </el-select>
                 </el-col>
                 <el-col :sm="12" :md="2">
                   <el-button
@@ -181,12 +184,18 @@ export default {
     };
   },
   created() {
+    this.getFormulators();
     this.getProjectName();
     this.getLpjp();
     this.getTimPenyusun();
     this.getTimAhli();
   },
   methods: {
+    async getFormulators() {
+      this.formulators = await formulatorTeamsResource.list({
+        type: 'formulator',
+      });
+    },
     async getTimPenyusun() {
       this.loadingTimPenyusun = true;
       const timPenyusun = await formulatorTeamsResource.list({
@@ -263,10 +272,26 @@ export default {
       this.selectedMember = item;
     },
     handleAdd() {
-      if (this.selectedMember.id) {
-        this.members.push(this.selectedMember);
-        this.selectedMember = {};
-        this.searchResult = '';
+      if (this.selectedMember) {
+        const member = this.formulators.find(
+          (form) => form.id === this.selectedMember
+        );
+        this.members.push({
+          num:
+            this.members.length === 0
+              ? 1
+              : this.members[this.members.length - 1].num + 1,
+          value: member.name,
+          name: member.name,
+          id: member.id,
+          type: 'new',
+          position: 'Anggota',
+          expertise: member.expertise,
+          file: member.cv ? member.cv : member.cv_file,
+          reg_no: member.reg_no,
+          membership_status: member.membership_status,
+        });
+        this.selectedMember = null;
       }
     },
     handleAddAhli() {
