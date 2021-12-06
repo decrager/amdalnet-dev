@@ -271,7 +271,9 @@
 
       <el-table-column label="Hasil Evaluasi Dampak">
         <template slot-scope="scope">
-          <span v-if="scope.row.component != undefined">Dampak Penting</span>
+          <span v-if="scope.row.component != undefined">{{
+            dampakPentingConclusion(scope.row.important_trait)
+          }}</span>
           <el-select
             v-if="scope.row.component != undefined"
             v-model="scope.row.impact_eval_result"
@@ -524,6 +526,20 @@ export default {
       } else {
         document.querySelector(`.comment-${id}`).classList.add('comment-hide');
       }
+    },
+    dampakPentingConclusion(importantTrait) {
+      if (importantTrait.length > 0) {
+        const dampakPenting = importantTrait.filter((im) => {
+          return im.important_trait === '+P' || im.important_trait === '-P';
+        });
+        if (dampakPenting.length > 0) {
+          return 'Dampak Penting';
+        } else {
+          return 'Dampak Tidak Penting';
+        }
+      }
+
+      return '';
     },
     // showFormTanggapan(id) {
     //   this.selectedTanggapanid = id;
