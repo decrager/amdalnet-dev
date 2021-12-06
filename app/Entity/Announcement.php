@@ -20,7 +20,8 @@ class Announcement extends Model
         'start_date',
         'end_date',
         'project_id',
-        'project_result'
+        'project_result',
+        'id_applicant',
     ];
 
     public function feedbacks()
@@ -31,5 +32,10 @@ class Announcement extends Model
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
+    public function initiator()
+    {
+        return $this->belongsTo(Initiator::class, 'id_applicant', 'id');
     }
 }
