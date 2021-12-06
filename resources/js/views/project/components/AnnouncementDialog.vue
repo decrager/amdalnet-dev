@@ -165,6 +165,9 @@ export default {
       },
     };
   },
+  mounted(){
+    console.log(this.announcement);
+  },
   methods: {
     handleSubmitAnnouncement() {
       this.$refs.announcement.validate(valid => {

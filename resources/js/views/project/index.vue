@@ -538,6 +538,7 @@ export default {
       this.announcement.project_scale =
         currentProject.scale + ' ' + currentProject.scale_unit;
       this.announcement.project_location = currentProject.address;
+      this.announcement.id_applicant = currentProject.id_applicant;
       this.show = true;
     },
     handleDelete(id, nama) {

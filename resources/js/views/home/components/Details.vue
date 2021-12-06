@@ -22,11 +22,11 @@
               </tr>
               <tr>
                 <td style="width:40%">Bidang Usaha/Kegiatan</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.sector : ''" />
+                <td v-html="selectedAnnouncement.project ? sector_name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Skala/Besaran</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.scale_unit : ''" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.scale +' '+ selectedAnnouncement.project.scale_unit : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat</td>
@@ -34,27 +34,27 @@
               </tr>
               <tr>
                 <td style="width:40%">Kewenangan</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.authority : ''" />
+                <td v-html="selectedAnnouncement.project && selectedAnnouncement.project.authority ? selectedAnnouncement.project.authority : 'Pusat'" />
               </tr>
               <tr>
                 <td style="width:40%">Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.pic_name : ''" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Penanggung Jawab</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.pic_name : ''" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.pic : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.cs_address : ''" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">No Telepon Pemrakarsa</td>
-                <td />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.phone : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Email Pemrakarsa</td>
-                <td />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.email : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Provinsi/Kota</td>
@@ -293,6 +293,7 @@
 </template>
 <script>
 import axios from 'axios';
+import Resource from '@/api/resource';
 import _ from 'lodash';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
@@ -301,6 +302,7 @@ import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
+const kbliResource = new Resource('business');
 // import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 
 export default {
@@ -352,13 +354,19 @@ export default {
       checkList: [],
       radio: '',
       selectedProject2: {},
+      sector_name: '',
     };
   },
   async created() {
     await this.getResponderType();
     await this.loadMap();
+    await this.loadBusiness();
   },
   methods: {
+    async loadBusiness(){
+      const business = await kbliResource.get(this.selectedAnnouncement.project.sector);
+      this.sector_name = business.value;
+    },
     loadMap() {
       const map = new Map({
         basemap: 'topo',
