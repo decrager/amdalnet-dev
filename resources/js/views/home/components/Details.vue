@@ -34,27 +34,27 @@
               </tr>
               <tr>
                 <td style="width:40%">Kewenangan</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.authority : ''" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.authority : 'Pusat'" />
               </tr>
               <tr>
                 <td style="width:40%">Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.pic_name : ''" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Penanggung Jawab</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.pic_name : ''" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.pic : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.cs_address : ''" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">No Telepon Pemrakarsa</td>
-                <td />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.phone : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Email Pemrakarsa</td>
-                <td />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.email : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Provinsi/Kota</td>
