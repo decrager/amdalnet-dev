@@ -13,7 +13,7 @@
 
 <script>
 const logo = require('@/assets/logo-amdal-white.png').default;
-const logo2 = require('@/assets/logo.png').default;
+const logo2 = require('@/assets/logo2.png').default;
 
 export default {
   name: 'SidebarLogo',

@@ -122,6 +122,7 @@ export default {
       this.selectedProject = {};
       await axios.get('/api/announcements/' + this.selectedId)
         .then(response => {
+          console.log(response.data);
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
         });
