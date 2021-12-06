@@ -35,8 +35,14 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="Komponen Kegiatan">
-        <el-input v-model="component.name" />
+      <el-form-item label="Komponen Kegiatan" prop="name">
+        <el-autocomplete
+          v-model="component.name"
+          class="inline-input"
+          :fetch-suggestions="searchComponent"
+          placeholder="Nama Komponen"
+          @select="handleSelectComponent"
+        />
       </el-form-item>
       <el-form-item :label="deskripsiKhusus()">
         <el-input v-model="component.description_specific" type="textarea" :rows="2" />
@@ -54,6 +60,7 @@
 
 <script>
 import Resource from '@/api/resource';
+const componentResource = new Resource('components');
 const projectStageResource = new Resource('project-stages');
 const scopingResource = new Resource('scoping');
 const subProjectComponentResource = new Resource('sub-project-components');
@@ -78,6 +85,7 @@ export default {
   data() {
     return {
       component: {},
+      componentList: [],
       subProjectsArray: [],
       currentSubProjectName: '',
       projectStages: [],
@@ -93,6 +101,22 @@ export default {
         return 'Deskripsi Khusus';
       } else {
         return 'Deskripsi Khusus ' + this.component.name + ' terkait ' + this.currentSubProjectName;
+      }
+    },
+    searchComponent(queryString, cb) {
+      var componentList = this.componentList;
+      var results = queryString ? componentList.filter(this.createFilter(queryString)) : componentList;
+      cb(results);
+    },
+    createFilter(queryString) {
+      return (cmp) => {
+        return (cmp.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+      };
+    },
+    handleSelectComponent(component) {
+      const selected = this.componentList.filter(cmp => cmp.value === component.value);
+      if (selected.length > 0) {
+        this.component['id_component'] = selected[0].id;
       }
     },
     submitComponent() {
@@ -124,6 +148,17 @@ export default {
         ordered: true,
       });
       this.projectStages = ps.data;
+      const compMaster = await componentResource.list({
+        all: true,
+      });
+      const cmpList = [];
+      compMaster.data.forEach(cmp => {
+        cmpList.push({
+          id: cmp.id,
+          value: cmp.name,
+        });
+      });
+      this.componentList = cmpList;
       this.subProjects.utama.map((u) => {
         this.subProjectsArray.push(u);
       });
