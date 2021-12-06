@@ -254,7 +254,13 @@ export default {
       if (ketua.length === 1 && anggota.length >= 2) {
         this.handleSubmit();
       } else {
-        this.compositionError = true;
+        this.$alert(
+          'Tim Penyusun harus terdiri dari 1 Ketua dan minimal 2 Anggota',
+          '',
+          {
+            center: true,
+          }
+        );
       }
     },
     async handleSubmit() {
