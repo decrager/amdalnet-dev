@@ -84,7 +84,7 @@
                       </template>
                     </el-table-column>
 
-                    <el-table-column label="City" width="300px">
+                    <el-table-column label="Kota/Kabupaten" width="300px">
                       <template slot-scope="scope">
                         <el-select
                           v-model="scope.row.district"
