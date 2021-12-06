@@ -32,7 +32,9 @@
     <el-table-column label="Jabatan">
       <template slot-scope="scope">
         <el-select
-          v-if="teamtype === 'mandiri'"
+          v-if="
+            teamtype === 'mandiri' && scope.row.membership_status !== 'ATPA'
+          "
           v-model="scope.row.position"
           placeholder="Pilih Jabatan"
           style="width: 100%"

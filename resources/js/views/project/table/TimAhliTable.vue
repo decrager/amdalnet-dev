@@ -13,11 +13,20 @@
 
     <el-table-column label="Nama">
       <template slot-scope="scope">
-        <el-input
+        <el-select
           v-if="teamtype === 'mandiri'"
           v-model="list[scope.$index].name"
+          filterable
           placeholder="Nama Tenaga Ahli"
-        />
+          style="width: 100%"
+        >
+          <el-option
+            v-for="item in ahli"
+            :key="item.value"
+            :label="item.value"
+            :value="item.value"
+          />
+        </el-select>
         <span v-else>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
@@ -43,11 +52,20 @@
 
     <el-table-column label="Keahlian">
       <template slot-scope="scope">
-        <el-input
+        <el-select
           v-if="teamtype === 'mandiri'"
           v-model="list[scope.$index].expertise"
+          filterable
           placeholder="Keahlian"
-        />
+          style="width: 100%"
+        >
+          <el-option
+            v-for="item in keahlian"
+            :key="item.value"
+            :label="item.value"
+            :value="item.value"
+          />
+        </el-select>
         <span v-else>{{ scope.row.expertise }}</span>
       </template>
     </el-table-column>
@@ -140,6 +158,70 @@ export default {
       fileUpload: null,
       fileName: null,
       fileNum: null,
+      ahli: [
+        {
+          value: 'Prof. Dr. Ir. Arief Sabdo Yuwono, M.Sc',
+        },
+        {
+          value: 'Nanik Irawati, M.Si',
+        },
+        {
+          value: 'Selamet Kusdaryanto, SP, M.Si',
+        },
+        {
+          value: 'Berry Lira Rafiu S.Hut',
+        },
+        {
+          value: 'Rudi Sudarjat, S.Si',
+        },
+        {
+          value: 'Dian Anggraini, M.Si',
+        },
+        {
+          value: 'Wanasherpa, M.T',
+        },
+        {
+          value: 'Dhama Susanthi, M.Si',
+        },
+        {
+          value: 'Arif Nurcahyanto, S.Pi',
+        },
+        {
+          value: 'Ria Andriani, M.Si.',
+        },
+      ],
+      keahlian: [
+        {
+          value: 'Kualitas Udara',
+        },
+        {
+          value: 'Kualitas Air',
+        },
+        {
+          value: 'Fisika Kimia Perairan',
+        },
+        {
+          value: 'Tanah dan Hidrologi',
+        },
+        {
+          value: 'Flora Fauna',
+        },
+        {
+          value: 'GIS/Mapping',
+        },
+        {
+          value: 'Perencanaan Tata Ruang',
+        },
+        {
+          value: 'Geologi',
+        },
+        {
+          value: 'Biologi Teresterial',
+        },
+        {
+          value: 'Biologi Perairan',
+        },
+      ],
     };
   },
   methods: {

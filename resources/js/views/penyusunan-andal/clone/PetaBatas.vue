@@ -1,97 +1,6 @@
 <template>
   <el-form label-position="top" label-width="100px">
-    <!-- ekologis -->
-    <el-form-item label="Peta Batas Ekologis" :required="required">
-      <el-col :span="11" style="margin-right:1em;">
-
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span @click="download(idPES)"><strong>{{ petaEkologisSHP }}</strong></span>
-              <!-- &nbsp;<i class="el-icon-delete"></i>-->
-            </div>
-          </legend>
-          <form @submit.prevent="handleSubmit">
-            <input ref="peSHP" type="file" class="form-control-file" @change="uploadMap">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-
-      </el-col>
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span @click="download(idPEP)"><strong>{{ petaEkologisPDF }}</strong></span></div>
-          </legend>
-          <form @submit.prevent="handleSubmit">
-            <input ref="pePDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(2)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-    </el-form-item>
-
-    <el-form-item label="Peta Batas Sosial" :required="required">
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span @click="download(idPSS)"><strong>{{ petaSosialSHP }}</strong></span></div>
-          </legend>
-
-          <form @submit.prevent="handleSubmit">
-            <input ref="psSHP" type="file" class="form-control-file" @change="uploadMap">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-
-      </el-col>
-
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaSosialPDF != ''" class="current">tersimpan: <span @click="download(idPSP)"><strong>{{ petaSosialPDF }}</strong></span></div>
-          </legend>
-
-          <form @submit.prevent="handleSubmit">
-            <input ref="psPDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(4)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-    </el-form-item>
-
-    <el-form-item label="Peta Batas Wilayah Studi" :required="required">
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span @click="download(idPSuS)"><strong>{{ petaStudiSHP }}</strong></span></div>
-          </legend>
-
-          <form @submit.prevent="handleSubmit">
-            <input ref="pwSHP" type="file" class="form-control-file" @change="uploadMap">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span @click="download(idPSuP)"><strong>{{ petaStudiPDF }}</strong></span></div>
-          </legend>
-
-          <form @submit.prevent="handleSubmit">
-            <input ref="pwPDF" type="file" class="form-control-file" multiple accept="application/pdf" @change="onChangeFiles(6)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-
-    </el-form-item>
     <div id="mapView" class="map-wrapper" />
-
-    <el-row style="text-align:right;">
-      <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
-    </el-row>
 
     <!--
     <el-row style="margin: 1em 0;">
@@ -104,19 +13,22 @@
       </el-col>
     </el-row> -->
   </el-form>
-
 </template>
 <style scoped>
- legend {line-height: 1.5em; margin: .5em 0 2em;}
- div.map-wrapper { height: 400px;}
- fieldset {
-   padding:1em;
- }
+legend {
+  line-height: 1.5em;
+  margin: 0.5em 0 2em;
+}
+div.map-wrapper {
+  height: 400px;
+}
+fieldset {
+  padding: 1em;
+}
 </style>
 <script>
 import Resource from '@/api/resource';
 import request from '@/utils/request';
-import axios from 'axios';
 
 // Map-related
 import shp from 'shpjs';
@@ -164,7 +76,7 @@ export default {
     this.getData();
   },
   methods: {
-    async getData(){
+    async getData() {
       this.data = [];
       const files = await uploadMaps.list({
         id_project: this.idProject,
@@ -172,10 +84,10 @@ export default {
       this.data = files.data;
       this.process(files.data);
     },
-    process(files){
+    process(files) {
       // console.log(files);
       files.forEach((e) => {
-        switch (e.attachment_type){
+        switch (e.attachment_type) {
           case 'ecology':
             if (e.file_type === 'SHP') {
               this.petaEkologisSHP = e.original_filename;
@@ -206,7 +118,7 @@ export default {
         }
       });
     },
-    handleSubmit(){
+    handleSubmit() {
       console.log('submitting files....');
 
       const formData = new FormData();
@@ -231,11 +143,11 @@ export default {
         });
       });
     },
-    async doSubmit(load){
+    async doSubmit(load) {
       // console.log(load);
       return request(load);
     },
-    download(id){
+    download(id) {
       return;
       /* const filename = this.data.find((e) => e.id === id);
       unduhMaps.get(id)
@@ -268,7 +180,7 @@ export default {
           fileLink.click();
         });*/
     },
-    onChangeFiles(idx){
+    onChangeFiles(idx) {
       const index = idx - 1;
       switch (idx) {
         case 1: // ekologis SHP
@@ -342,7 +254,7 @@ export default {
         ],
       ];
     },
-    uploadMap(){
+    uploadMap() {
       const map = new Map({
         basemap: 'topo',
       });
@@ -352,7 +264,7 @@ export default {
       const readerEkologis = new FileReader();
       readerEkologis.onload = (event) => {
         const base = event.target.result;
-        shp(base).then(function(data) {
+        shp(base).then((data) => {
           console.log('map: ' + data);
 
           const blob = new Blob([JSON.stringify(data)], {
@@ -364,10 +276,8 @@ export default {
             field: '*',
             symbol: {
               type: 'simple-fill',
-              color: [0, 0, 0, 0.0],
               outline: {
                 color: 'red',
-                width: 2,
               },
             },
           };
@@ -396,7 +306,7 @@ export default {
       const readerSosial = new FileReader();
       readerSosial.onload = (event) => {
         const base = event.target.result;
-        shp(base).then(function(data) {
+        shp(base).then((data) => {
           console.log('map: ' + data);
 
           const blob = new Blob([JSON.stringify(data)], {
@@ -408,10 +318,8 @@ export default {
             field: '*',
             symbol: {
               type: 'simple-fill',
-              color: [0, 0, 0, 0.0],
               outline: {
                 color: 'blue',
-                width: 2,
               },
             },
           };
@@ -440,7 +348,7 @@ export default {
       const readerWilayahStudi = new FileReader();
       readerWilayahStudi.onload = (event) => {
         const base = event.target.result;
-        shp(base).then(function(data) {
+        shp(base).then((data) => {
           console.log('map: ' + data);
 
           const blob = new Blob([JSON.stringify(data)], {
@@ -452,10 +360,8 @@ export default {
             field: '*',
             symbol: {
               type: 'simple-fill',
-              color: [0, 0, 0, 0.0],
               outline: {
                 color: 'green',
-                width: 2,
               },
             },
           };
@@ -479,56 +385,11 @@ export default {
       };
       readerWilayahStudi.readAsArrayBuffer(mapBatasWilayahStudi);
 
-      // Map Tapak
-      const projId = this.$route.params && this.$route.params.id;
-      console.log(projId);
-      axios.get('api/map/' + projId)
-        .then(response => {
-          const projects = response.data;
-          for (let i = 0; i < projects.length; i++) {
-            if (projects[i].stored_filename) {
-              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                const blob = new Blob([JSON.stringify(data)], {
-                  type: 'application/json',
-                });
-                const url = URL.createObjectURL(blob);
-                axios.get('api/projects/' + projId).then((response) => {
-                  const rendererTapak = {
-                    type: 'simple',
-                    field: '*',
-                    symbol: {
-                      type: 'simple-fill',
-                      color: [0, 0, 0, 0.0],
-                      outline: {
-                        color: '#964B00',
-                        width: 2,
-                      },
-                    },
-                  };
-                  const geojsonLayerArray = new GeoJSONLayer({
-                    url: url,
-                    outFields: ['*'],
-                    visible: true,
-                    title: 'Layer Tapak',
-                    renderer: rendererTapak,
-                  });
-                  mapView.on('layerview-create', (event) => {
-                    mapView.goTo({
-                      target: geojsonLayerArray.fullExtent,
-                    });
-                  });
-                  map.add(geojsonLayerArray);
-                });
-              });
-            }
-          }
-        });
-
       const mapView = new MapView({
         container: 'mapView',
         map: map,
         center: [115.287, -1.588],
-        zoom: 5,
+        zoom: 6,
       });
       this.$parent.mapView = mapView;
 
@@ -555,7 +416,7 @@ export default {
       mapView.ui.add(layerList, 'top-right');
       mapView.ui.add(legend, 'bottom-left');
     },
-    showMap(id){
+    showMap(id) {
       this.visible[id] = true;
       this.isVisible = true;
       console.log('showing Map...', this.visible);

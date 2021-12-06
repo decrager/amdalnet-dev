@@ -16,7 +16,6 @@ import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
-import Search from '@arcgis/core/widgets/Search';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
@@ -35,7 +34,7 @@ export default {
       mapView: null,
       selectedFeedback: {},
       showIdDialog: false,
-      // mapGeojsonArray: [],
+      mapGeojsonArray: [],
     };
   },
   mounted: function() {
@@ -218,97 +217,113 @@ export default {
 
       map.add(rtrPulau);
 
-      const mapGeojsonArray = [];
+      // const mapGeojsonArray = [];
       axios.get('api/maps')
         .then(response => {
           const projects = response.data;
-          console.log(projects);
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].stored_filename) {
               shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                for (let i = 0; i < data.length; i++) {
-                  const getProjectDetails = {
-                    title: 'Details',
-                    id: 'get-details',
-                    image: 'information-24-f.svg',
-                  };
-                  const getProjectInfo = axios.get('api/projects/' + projects[i].id_project);
-                  const arrayJsonTemplate = {
-                    title: getProjectInfo.project_title + ' (' + getProjectInfo.project_year + ').',
-                    content: '<table style="border-collapse: collapse !important">' +
-                            '<thead>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">KBLI Code</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.kbli + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Pemrakarsa</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.applicant + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Provinsi</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.province + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Kota</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.district + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Alamat</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.address + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Deskripsi</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.description + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Skala</td>' +
-                                '<td> : </td>' +
-                                '<td>' + getProjectInfo.scale + ' ' + getProjectInfo.scale_unit + '</td>' +
-                              '</tr>' +
-                            '</thead>' +
-                          '</table>',
-                    actions: [getProjectDetails],
-                  };
-
-                  const blob = new Blob([JSON.stringify(data[i])], {
-                    type: 'application/json',
-                  });
-                  const url = URL.createObjectURL(blob);
-
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + projects[i].id_project).then((response) => {
+                  console.log('a');
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
-                    title: projects[1].project_title,
-                    popupTemplate: arrayJsonTemplate,
+                    visible: false,
+                    title: response.data.project_title,
+                    // popupTemplate: arrayJsonTemplate,
                   });
-                  map.add(geojsonLayerArray);
-                  mapGeojsonArray.push(geojsonLayerArray);
-                  console.log('kegiatangroup: ' + mapGeojsonArray);
-                }
+                  // map.add(geojsonLayerArray);
+                  // console.log(geojsonLayerArray);
 
-                // mapGeojsonArray.forEach(layerGeojson => {
-                //   const kegiatanGroupLayer = new GroupLayer({
-                //     title: 'Layer Kegiatan',
-                //     visible: false,
-                //     layers: layerGeojson,
-                //     opacity: 0.90,
-                //   });
+                  this.mapGeojsonArray.push(geojsonLayerArray);
 
-                //   console.log('kegiatangroup: ' + kegiatanGroupLayer);
+                  // last loop
+                  if (i === projects.length - 1){
+                    console.log(this.mapGeojsonArray);
+                    const kegiatanGroupLayer = new GroupLayer({
+                      title: 'LAYER KEGIATAN',
+                      visible: false,
+                      layers: this.mapGeojsonArray,
+                      opacity: 0.90,
+                    });
 
-                //   map.add(kegiatanGroupLayer);
-                // });
+                    map.add(kegiatanGroupLayer);
+                  }
+                });
               });
             }
           }
         });
+
+      const penutupanLahan2020 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const kawasanHutanB = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const indikatifPPTPKH = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/Indikatif_PPTPKH/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const piapsRevisi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIAPS_Revisi_VI/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const pippib2021Periode2 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const arKabKota = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/ADMINISTRASI_AR_KABKOTA_50K_2018/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const batasKabupaten = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Kabupaten_Kota_50K/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const batasProvinsi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Provinsi_Indonesia/MapServerr',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const sigapLayer = new GroupLayer({
+        title: 'SIGAP KLHK',
+        visible: false,
+        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2, arKabKota, batasKabupaten, batasProvinsi],
+        opacity: 0.90,
+      });
+
+      map.add(sigapLayer);
 
       const mapView = new MapView({
         container: 'mapViewDiv',
@@ -320,16 +335,6 @@ export default {
       // Map widgets
       const home = new Home({
         view: mapView,
-      });
-
-      const searchWidget = new Search({
-        view: mapView,
-      });
-      // Adds the search widget below other elements in
-      // the top left corner of the view
-      mapView.ui.add(searchWidget, {
-        position: 'top-right',
-        index: 2,
       });
 
       mapView.popup.on('trigger-action', (event) => {
@@ -380,7 +385,7 @@ export default {
       });
 
       mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
+      mapView.ui.add(legend, 'top-right');
     },
   },
 };
