@@ -32,16 +32,19 @@
             <el-form-item v-if="teamType === 'mandiri'">
               <el-row :gutter="32">
                 <el-col :sm="12" :md="20">
-                  <el-autocomplete
-                    v-model="searchResult"
-                    class="inline-input"
-                    :fetch-suggestions="querySearch"
-                    placeholder="Please Input"
-                    :trigger-on-focus="false"
-                    :debounce="1000"
+                  <el-select
+                    v-model="selectedMember"
+                    filterable
+                    placeholder="Pilih Penyusun"
                     style="width: 100%"
-                    @select="handleSelect"
-                  />
+                  >
+                    <el-option
+                      v-for="item in formulators"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    />
+                  </el-select>
                 </el-col>
                 <el-col :sm="12" :md="2">
                   <el-button
@@ -88,6 +91,14 @@
         </el-row>
       </el-form>
       <h4>Daftar Penyusun</h4>
+      <el-alert
+        v-if="compositionError"
+        title="Tim Penyusun harus terdiri dari 1 Ketua dan 2 Anggota"
+        type="error"
+        effect="dark"
+        :closable="false"
+        style="margin-bottom: 10px"
+      />
       <TimPenyusunTable
         :loading="loadingTimPenyusun"
         :list="members"
@@ -118,11 +129,7 @@
         v-if="teamType === 'mandiri'"
         style="text-align: right; margin-top: 12px"
       >
-        <el-button
-          :loading="loadingSubmit"
-          type="warning"
-          @click="handleSubmit"
-        >
+        <el-button :loading="loadingSubmit" type="warning" @click="checkSubmit">
           Simpan
         </el-button>
       </div>
@@ -168,6 +175,7 @@ export default {
       deletedAhli: [],
       membersAhli: [],
       formulators: [],
+      compositionError: false,
       timPenyusun: [
         {
           label: 'LPJP',
@@ -181,12 +189,18 @@ export default {
     };
   },
   created() {
+    this.getFormulators();
     this.getProjectName();
     this.getLpjp();
     this.getTimPenyusun();
     this.getTimAhli();
   },
   methods: {
+    async getFormulators() {
+      this.formulators = await formulatorTeamsResource.list({
+        type: 'formulator',
+      });
+    },
     async getTimPenyusun() {
       this.loadingTimPenyusun = true;
       const timPenyusun = await formulatorTeamsResource.list({
@@ -263,10 +277,26 @@ export default {
       this.selectedMember = item;
     },
     handleAdd() {
-      if (this.selectedMember.id) {
-        this.members.push(this.selectedMember);
-        this.selectedMember = {};
-        this.searchResult = '';
+      if (this.selectedMember) {
+        const member = this.formulators.find(
+          (form) => form.id === this.selectedMember
+        );
+        this.members.push({
+          num:
+            this.members.length === 0
+              ? 1
+              : this.members[this.members.length - 1].num + 1,
+          value: member.name,
+          name: member.name,
+          id: member.id,
+          type: 'new',
+          position: 'Anggota',
+          expertise: member.expertise,
+          file: member.cv ? member.cv : member.cv_file,
+          reg_no: member.reg_no,
+          membership_status: member.membership_status,
+        });
+        this.selectedMember = null;
       }
     },
     handleAddAhli() {
@@ -283,6 +313,18 @@ export default {
         cv: null,
       };
       this.membersAhli.push(newAhli);
+    },
+    checkSubmit() {
+      this.compositionError = false;
+      const ketua = this.members.filter((mem) => mem.position === 'Ketua');
+      const anggota = this.members.filter((mem) => mem.position === 'Anggota');
+      console.log(ketua, anggota);
+
+      if (ketua.length === 1 && anggota.length === 2) {
+        this.handleSubmit();
+      } else {
+        this.compositionError = true;
+      }
     },
     async handleSubmit() {
       const formData = new FormData();
