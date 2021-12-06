@@ -91,6 +91,14 @@
         </el-row>
       </el-form>
       <h4>Daftar Penyusun</h4>
+      <el-alert
+        v-if="compositionError"
+        title="Tim Penyusun harus terdiri dari 1 Ketua dan 2 Anggota"
+        type="error"
+        effect="dark"
+        :closable="false"
+        style="margin-bottom: 10px"
+      />
       <TimPenyusunTable
         :loading="loadingTimPenyusun"
         :list="members"
@@ -121,11 +129,7 @@
         v-if="teamType === 'mandiri'"
         style="text-align: right; margin-top: 12px"
       >
-        <el-button
-          :loading="loadingSubmit"
-          type="warning"
-          @click="handleSubmit"
-        >
+        <el-button :loading="loadingSubmit" type="warning" @click="checkSubmit">
           Simpan
         </el-button>
       </div>
@@ -171,6 +175,7 @@ export default {
       deletedAhli: [],
       membersAhli: [],
       formulators: [],
+      compositionError: false,
       timPenyusun: [
         {
           label: 'LPJP',
@@ -308,6 +313,18 @@ export default {
         cv: null,
       };
       this.membersAhli.push(newAhli);
+    },
+    checkSubmit() {
+      this.compositionError = false;
+      const ketua = this.members.filter((mem) => mem.position === 'Ketua');
+      const anggota = this.members.filter((mem) => mem.position === 'Anggota');
+      console.log(ketua, anggota);
+
+      if (ketua.length === 1 && anggota.length === 2) {
+        this.handleSubmit();
+      } else {
+        this.compositionError = true;
+      }
     },
     async handleSubmit() {
       const formData = new FormData();
