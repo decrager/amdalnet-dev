@@ -41,6 +41,7 @@
           class="inline-input"
           :fetch-suggestions="searchComponent"
           placeholder="Nama Komponen"
+          :trigger-on-focus="false"
           @select="handleSelectComponent"
         />
       </el-form-item>

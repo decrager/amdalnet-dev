@@ -68,6 +68,7 @@
           class="inline-input"
           :fetch-suggestions="searchRonaAwal"
           placeholder="Nama Rona Lingkungan"
+          :trigger-on-focus="false"
           @select="handleSelectRonaAwal"
         />
       </el-form-item>
