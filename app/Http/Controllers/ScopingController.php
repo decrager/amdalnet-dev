@@ -114,7 +114,7 @@ class ScopingController extends Controller
         } else if ($request->rona_awal) {
             $params = $request->all();
             $rona_awal = $params['rona_awal'];
-            if (isset($rona_awal['id_rona_awal']) && $rona_awal['id_component_type'] != null) {
+            if (isset($rona_awal['id_rona_awal']) && $rona_awal['id_rona_awal'] != null) {
                 $rona_awal['name'] = null;
                 $rona_awal['id_component_type'] = null;
             }
