@@ -215,7 +215,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -224,7 +224,7 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
                   href="#"
                   type="text"
                   icon="el-icon-document"
