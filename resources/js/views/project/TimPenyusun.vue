@@ -93,7 +93,7 @@
       <h4>Daftar Penyusun</h4>
       <el-alert
         v-if="compositionError"
-        title="Tim Penyusun harus terdiri dari 1 Ketua dan 2 Anggota"
+        title="Tim Penyusun harus terdiri dari 1 Ketua dan minimal 2 Anggota"
         type="error"
         effect="dark"
         :closable="false"
@@ -319,10 +319,16 @@ export default {
       const ketua = this.members.filter((mem) => mem.position === 'Ketua');
       const anggota = this.members.filter((mem) => mem.position === 'Anggota');
 
-      if (ketua.length === 1 && anggota.length === 2) {
+      if (ketua.length === 1 && anggota.length >= 2) {
         this.handleSubmit();
       } else {
-        this.compositionError = true;
+        this.$alert(
+          'Tim Penyusun harus terdiri dari 1 Ketua dan minimal 2 Anggota',
+          '',
+          {
+            center: true,
+          }
+        );
       }
     },
     async handleSubmit() {

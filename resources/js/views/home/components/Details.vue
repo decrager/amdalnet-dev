@@ -69,14 +69,14 @@
             </table>
           </el-col>
           <el-col :span="12">
-            <table class="tableDetail" cellspacing="0" cellpadding="0" style="border:none">
+            <table class="tableDetail" cellspacing="0" cellpadding="0" style="border:none; width: 100%">
               <tr>
                 <td colspan="2" class="bg-white-custom">Lokasi</td>
               </tr>
               <tr class="bg-white-custom">
                 <td colspan="2">
                   <div class="detailLokasi">
-                    <div id="mapView" />
+                    <div id="mapView" style="width: 100%" />
                   </div>
                 </td>
               </tr>
@@ -297,9 +297,8 @@ import Resource from '@/api/resource';
 import _ from 'lodash';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
-import Expand from '@arcgis/core/widgets/Expand';
+// import Expand from '@arcgis/core/widgets/Expand';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 const kbliResource = new Resource('business');
@@ -359,8 +358,10 @@ export default {
   },
   async created() {
     await this.getResponderType();
-    await this.loadMap();
     await this.loadBusiness();
+  },
+  mounted() {
+    this.loadMap();
   },
   methods: {
     async loadBusiness(){
@@ -376,21 +377,38 @@ export default {
         .then(response => {
           const projects = response.data;
           for (let i = 0; i < projects.length; i++) {
-            if (projects[i].stored_filename) {
+            if (projects[i].attachment_type === 'tapak') {
               shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                for (let i = 0; i < data.length; i++) {
-                  const blob = new Blob([JSON.stringify(data[i])], {
-                    type: 'application/json',
-                  });
-                  const url = URL.createObjectURL(blob);
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
 
-                  const geojsonLayerArray = new GeoJSONLayer({
-                    url: url,
-                    outFields: ['*'],
-                    title: projects[1].project_title,
+                const renderer = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'simple-fill',
+                    color: [0, 0, 0, 0.0],
+                    outline: {
+                      color: 'red',
+                      width: 2,
+                    },
+                  },
+                };
+
+                const geojsonLayer = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  title: 'Peta Tapak',
+                  renderer: renderer,
+                });
+                map.add(geojsonLayer);
+                mapView.on('layerview-create', (event) => {
+                  mapView.goTo({
+                    target: geojsonLayer.fullExtent,
                   });
-                  this.mapGeojsonArray.push(geojsonLayerArray);
-                }
+                });
               });
             }
           }
@@ -403,18 +421,6 @@ export default {
         zoom: 4,
       });
 
-      const basemapToggle = new BasemapToggle({
-        view: mapView,
-        container: document.createElement('div'),
-        secondBasemap: 'satellite',
-      });
-      const expandBasemapToggler = new Expand({
-        view: mapView,
-        name: 'basemap',
-        content: basemapToggle.domNode,
-        expandIconClass: 'esri-icon-basemap',
-      });
-      mapView.ui.add(expandBasemapToggler, 'top-left');
       const attribution = new Attribution({
         view: mapView,
       });

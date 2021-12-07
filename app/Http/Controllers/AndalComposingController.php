@@ -350,22 +350,27 @@ class AndalComposingController extends Controller
                 // check stages
                 $id_stages = null;
 
-                if($imp->subProjectComponent->id_project_stage) {
-                    $id_stages = $imp->subProjectComponent->id_project_stage;
-                } else {
-                    $id_stages = $imp->subProjectComponent->component->id_project_stage;
-                }
-
-                if($id_stages == $s->id) {
-                    if($imp->subProjectRonaAwal) {
-                        $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                        $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                if($imp->subProjectComponent) {
+                    if($imp->subProjectComponent->id_project_stage) {
+                        $id_stages = $imp->subProjectComponent->id_project_stage;
+                    } else {
+                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                    }
+    
+                    if($id_stages == $s->id) {
+                        if($imp->subProjectRonaAwal) {
+                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        } else {
+                            continue;
+                        }
                     } else {
                         continue;
-                    }
+                    } 
                 } else {
                     continue;
                 }
+
 
                 $changeType = $imp->id_change_type ? $imp->changeType->name : '';
                 // $ronaAwal = '';
@@ -428,16 +433,20 @@ class AndalComposingController extends Controller
                 // check stages
                 $id_stages = null;
 
-                if($imp->subProjectComponent->id_project_stage) {
-                    $id_stages = $imp->subProjectComponent->id_project_stage;
-                } else {
-                    $id_stages = $imp->subProjectComponent->component->id_project_stage;
-                }
-
-                if($id_stages == $s->id) {
-                    if($imp->subProjectRonaAwal) {
-                        $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                        $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                if($imp->subProjectComponent) {
+                    if($imp->subProjectComponent->id_project_stage) {
+                        $id_stages = $imp->subProjectComponent->id_project_stage;
+                    } else {
+                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                    }
+    
+                    if($id_stages == $s->id) {
+                        if($imp->subProjectRonaAwal) {
+                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        } else {
+                            continue;
+                        }
                     } else {
                         continue;
                     }
@@ -570,16 +579,20 @@ class AndalComposingController extends Controller
                // check stages
                $id_stages = null;
 
-               if($imp->subProjectComponent->id_project_stage) {
-                   $id_stages = $imp->subProjectComponent->id_project_stage;
-               } else {
-                   $id_stages = $imp->subProjectComponent->component->id_project_stage;
-               }
-
-               if($id_stages == $s->id) {
-                   if($imp->subProjectRonaAwal) {
-                       $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                       $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+               if($imp->subProjectComponent) {
+                   if($imp->subProjectComponent->id_project_stage) {
+                       $id_stages = $imp->subProjectComponent->id_project_stage;
+                   } else {
+                       $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                   }
+    
+                   if($id_stages == $s->id) {
+                       if($imp->subProjectRonaAwal) {
+                           $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                           $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                       } else {
+                           continue;
+                       }
                    } else {
                        continue;
                    }

@@ -211,11 +211,13 @@ class SKKLController extends Controller
 
         // ============== PROJECT ADDRESS =============== //
         $location = '';
-        if($project->address & $project->address->first()) {
-            $district = $project->address->first()->district;
-            $province = $project->address->first()->province;
-            $address = $project->address->fist()->address;
-            $location = $address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
+        if($project->address) {
+            if($project->address->first()) {
+                $district = $project->address->first()->district;
+                $province = $project->address->first()->province;
+                $address = $project->address->fist()->address;
+                $location = $address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
+            }
         }
 
         // PHPWord

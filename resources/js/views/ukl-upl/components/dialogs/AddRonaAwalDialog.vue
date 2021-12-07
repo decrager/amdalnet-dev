@@ -63,7 +63,14 @@
         </el-select>
       </el-form-item>
       <el-form-item label="Rona Lingkungan">
-        <el-input v-model="ronaAwal.name" />
+        <el-autocomplete
+          v-model="ronaAwal.name"
+          class="inline-input"
+          :fetch-suggestions="searchRonaAwal"
+          placeholder="Nama Rona Lingkungan"
+          :trigger-on-focus="false"
+          @select="handleSelectRonaAwal"
+        />
       </el-form-item>
       <el-form-item :label="deskripsiKhusus()">
         <el-input v-model="ronaAwal.description_specific" type="textarea" :rows="2" />
@@ -81,6 +88,7 @@
 
 <script>
 import Resource from '@/api/resource';
+const ronaAwalResource = new Resource('rona-awals');
 const projectStageResource = new Resource('project-stages');
 const componentTypeResource = new Resource('component-types');
 const scopingResource = new Resource('scoping');
@@ -123,6 +131,7 @@ export default {
   data() {
     return {
       ronaAwal: {},
+      ronaAwalList: [],
       subProjectsArray: [],
       subProjectComponentsArray: [],
       currentSubProjectComponentName: '',
@@ -137,9 +146,25 @@ export default {
   methods: {
     deskripsiKhusus() {
       if (this.ronaAwal.name === undefined || this.ronaAwal.name === ''){
-        return 'Deskripsi Khusus';
+        return 'Deskripsi';
       } else {
-        return 'Deskripsi Khusus ' + this.ronaAwal.name + ' terkait ' + this.currentSubProjectComponentName;
+        return 'Deskripsi ' + this.ronaAwal.name + ' terkait ' + this.currentSubProjectComponentName;
+      }
+    },
+    searchRonaAwal(queryString, cb) {
+      var ronaAwalList = this.ronaAwalList;
+      var results = queryString ? ronaAwalList.filter(this.createFilter(queryString)) : ronaAwalList;
+      cb(results);
+    },
+    createFilter(queryString) {
+      return (ra) => {
+        return (ra.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+      };
+    },
+    handleSelectRonaAwal(ronaAwal) {
+      const selected = this.ronaAwalList.filter(ra => ra.value === ronaAwal.value);
+      if (selected.length > 0) {
+        this.ronaAwal['id_rona_awal'] = selected[0].id;
       }
     },
     async submitRonaAwal() {
@@ -188,6 +213,17 @@ export default {
     async getData() {
       const { data } = await componentTypeResource.list({});
       this.componentTypes = data;
+      const ronaAwals = await ronaAwalResource.list({
+        all: true,
+      });
+      const raList = [];
+      ronaAwals.data.forEach(ra => {
+        raList.push({
+          id: ra.id,
+          value: ra.name,
+        });
+      });
+      this.ronaAwalList = raList;
       const ps = await projectStageResource.list({
         ordered: true,
       });

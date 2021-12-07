@@ -6,7 +6,7 @@
           <el-tab-pane class="tabsCustom" label="AMDAL">
             <div v-for="amdal in amdals.data" :key="amdal.id" class="announce__box__wrapper">
               <div class="announce__box__icon">
-                <img alt="" src="/images/list.svg">
+                <img alt="" src="/images/list.png">
               </div>
               <div class="announce__box__desc">
                 <p class="announce__box__desc__content">{{ amdal.project_type }}</p>

@@ -25,7 +25,7 @@
           <th>Pengelolaan yang sudah direncanakan</th>
           <th>Komponen Rona yang Terkena Dampak</th>
           <th>Dampak Potensial</th>
-          <th style="width:20%;">Evaluasi Dampak Potensial</th>
+          <th style="width:18%;">Evaluasi Dampak Potensial</th>
           <th>Dampak Penting Hipotetik</th>
           <th>Wilayah Studi</th>
           <th>Batas Waktu Kajian</th>
@@ -96,7 +96,7 @@
                     :disabled="item.disabled"
                   />
                 </el-select>
-                <div v-show="!impact.is_hypothetical_significant" :key="'DTPH_'+impact.id" style="margin:1em 0;">
+                <div v-show="impact.is_hypothetical_significant === false" :key="'DTPH_'+impact.id" style="margin:1em 0;">
                   <el-switch v-model="impact.is_managed" active-text=" Dikelola" />
                 </div>
               </td>

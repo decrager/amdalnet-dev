@@ -380,7 +380,7 @@ export default {
           .then(response => {
             const projects = response.data;
             for (let i = 0; i < projects.length; i++) {
-              if (projects[i].stored_filename) {
+              if (projects[i].attachment_type === 'tapak') {
                 shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
                   const blob = new Blob([JSON.stringify(data)], {
                     type: 'application/json',
@@ -391,7 +391,7 @@ export default {
                       url: url,
                       outFields: ['*'],
                       visible: true,
-                      title: response.data.project_title,
+                      title: 'Peta Tapak',
                     });
                     mapView.on('layerview-create', (event) => {
                       mapView.goTo({

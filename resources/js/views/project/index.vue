@@ -98,7 +98,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="!scope.row.published && isInitiator"
+                  v-if="isInitiator"
                   type="text"
                   href="#"
                   icon="el-icon-user"
