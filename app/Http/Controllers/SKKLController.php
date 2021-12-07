@@ -215,7 +215,7 @@ class SKKLController extends Controller
             if($project->address->first()) {
                 $district = $project->address->first()->district;
                 $province = $project->address->first()->province;
-                $address = $project->address->fist()->address;
+                $address = $project->address->first()->address;
                 $location = $address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
             }
         }

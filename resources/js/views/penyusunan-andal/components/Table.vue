@@ -57,7 +57,7 @@
           >
             <h4>MASUKAN/SARAN PERBAIKAN</h4>
             <div class="comment-list">
-              <div class="comment-card">
+              <div v-if="isSubstance || isExaminer" class="comment-card">
                 <el-card style="margin-bottom: 10px">
                   <div class="comment-body" style="padding-top: 20px">
                     <el-select
@@ -104,6 +104,7 @@
                       <p>{{ com.created_at }}</p>
                     </div>
                     <el-checkbox
+                      v-if="isFormulator"
                       v-model="
                         list[scope.$index - 1].comments[index].is_checked
                       "
@@ -132,7 +133,7 @@
                       {{ rep.description }}
                     </div>
                   </div>
-                  <div class="comment-reply">
+                  <div v-if="isFormulator" class="comment-reply">
                     <el-input
                       v-model="
                         list[scope.$index - 1].comments[index].reply_desc
