@@ -384,16 +384,20 @@ class MatriksRKLController extends Controller
             // check stages
             $id_stages = null;
 
-            if($pA->subProjectComponent->id_project_stage) {
-                $id_stages = $pA->subProjectComponent->id_project_stage;
-            } else {
-                $id_stages = $pA->subProjectComponent->component->id_project_stage;
-            }
-
-            if($id_stages == $s->id) {
-                if($pA->subProjectRonaAwal) {
-                    $ronaAwal = $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
-                    $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+            if($pA->subProjectComponent) {
+                if($pA->subProjectComponent->id_project_stage) {
+                    $id_stages = $pA->subProjectComponent->id_project_stage;
+                } else {
+                    $id_stages = $pA->subProjectComponent->component->id_project_stage;
+                }
+    
+                if($id_stages == $s->id) {
+                    if($pA->subProjectRonaAwal) {
+                        $ronaAwal = $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
+                        $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+                    } else {
+                        continue;
+                    }
                 } else {
                     continue;
                 }
@@ -476,16 +480,20 @@ class MatriksRKLController extends Controller
             // check stages
             $id_stages = null;
 
-            if($merge->subProjectComponent->id_project_stage) {
-                $id_stages = $merge->subProjectComponent->id_project_stage;
-            } else {
-                $id_stages = $merge->subProjectComponent->component->id_project_stage;
-            }
-
-            if($id_stages == $s->id) {
-                if($merge->subProjectRonaAwal) {
-                    $ronaAwal = $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                    $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+            if($merge->subProjectComponent) {
+                if($merge->subProjectComponent->id_project_stage) {
+                    $id_stages = $merge->subProjectComponent->id_project_stage;
+                } else {
+                    $id_stages = $merge->subProjectComponent->component->id_project_stage;
+                }
+    
+                if($id_stages == $s->id) {
+                    if($merge->subProjectRonaAwal) {
+                        $ronaAwal = $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
+                        $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                    } else {
+                        continue;
+                    }
                 } else {
                     continue;
                 }

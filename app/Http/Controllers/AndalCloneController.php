@@ -266,10 +266,14 @@ class AndalCloneController extends Controller
     }
 
     private function checkExist($id) {
-        $impact_identification = ImpactIdentificationClone::where('id_project', $id)->first();
-        if(!$impact_identification) {
-            $old_impact = ImpactIdentification::where('id_project', $id)->get();
-            foreach($old_impact as $o) {
+        $old_impact = ImpactIdentification::where('id_project', $id)->get();
+        foreach($old_impact as $o) {
+            $imp = ImpactIdentificationClone::where('id_impact_identification', $o->id)->first();
+            if($imp) {
+                $imp->id_sub_project_component = $o->id_sub_project_component;
+                $imp->id_sub_project_rona_awal = $o->id_sub_project_rona_awal;
+                $imp->save();
+            } else {
                 $imp = new ImpactIdentificationClone();
                 $imp->id_impact_identification = $o->id;
                 $imp->id_project = $o->id_project;
@@ -296,7 +300,7 @@ class AndalCloneController extends Controller
                     $study->evaluation_method = $o->impactStudy->evaluation_method;
                     $study->save();
                 }
-
+    
                 if($o->potentialImpactEvaluation) {
                     foreach($o->potentialImpactEvaluation as $p) {
                         $potential = new PotentialImpactEvalClone();
