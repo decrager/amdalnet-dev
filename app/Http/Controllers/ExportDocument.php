@@ -93,7 +93,7 @@ class ExportDocument extends Controller
         $praKonstruksiDetail = DB::table('sub_project_components')
             ->select(
                 'impact_identifications.initial_study_plan',
-                'impact_identifications.potential_impact_evaluation',
+                'potential_impact_evaluations.text',
                 'rona_awal.name as rona_awal_name',
                 'impact_identifications.study_location',
                 'impact_identifications.study_length_month',
@@ -107,6 +107,7 @@ class ExportDocument extends Controller
             ->join('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_sub_project_rona_awal')
             ->join('rona_awal', 'rona_awal.id', '=', 'sub_project_rona_awals.id_rona_awal')
             ->join('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
+            ->join('potential_impact_evaluations', 'potential_impact_evaluations.id_impact_identification', '=', 'impact_identifications.id')
             ->where('sub_projects.id_project', '=', $id)
             ->where('project_stages.name', '=', 'Pra Konstruksi')
             ->get();
@@ -115,7 +116,7 @@ class ExportDocument extends Controller
             ->select(
                 'impact_identifications.initial_study_plan',
                 'rona_awal.name as rona_awal_name',
-                'impact_identifications.potential_impact_evaluation',
+                'potential_impact_evaluations.text',
                 'impact_identifications.study_location',
                 'impact_identifications.study_length_month',
                 'impact_identifications.study_length_year',
@@ -125,6 +126,7 @@ class ExportDocument extends Controller
             ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
             ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
             ->leftJoin('impact_identifications', 'impact_identifications.id_sub_project_component', '=', 'sub_project_components.id')
+            ->leftJoin('potential_impact_evaluations', 'potential_impact_evaluations.id_impact_identification', '=', 'impact_identifications.id')
             ->join('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_sub_project_rona_awal')
             ->join('rona_awal', 'rona_awal.id', '=', 'sub_project_rona_awals.id_rona_awal')
             ->join('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
@@ -136,7 +138,7 @@ class ExportDocument extends Controller
             ->select(
                 'impact_identifications.initial_study_plan',
                 'rona_awal.name as rona_awal_name',
-                'impact_identifications.potential_impact_evaluation',
+                'potential_impact_evaluations.text',
                 'impact_identifications.study_location',
                 'impact_identifications.study_length_month',
                 'impact_identifications.study_length_year',
@@ -146,6 +148,7 @@ class ExportDocument extends Controller
             ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
             ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
             ->leftJoin('impact_identifications', 'impact_identifications.id_sub_project_component', '=', 'sub_project_components.id')
+            ->leftJoin('potential_impact_evaluations', 'potential_impact_evaluations.id_impact_identification', '=', 'impact_identifications.id')
             ->join('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_sub_project_rona_awal')
             ->join('rona_awal', 'rona_awal.id', '=', 'sub_project_rona_awals.id_rona_awal')
             ->join('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
@@ -157,7 +160,7 @@ class ExportDocument extends Controller
             ->select(
                 'impact_identifications.initial_study_plan',
                 'rona_awal.name as rona_awal_name',
-                'impact_identifications.potential_impact_evaluation',
+                'potential_impact_evaluations.text',
                 'impact_identifications.study_location',
                 'impact_identifications.study_length_month',
                 'impact_identifications.study_length_year',
@@ -167,6 +170,7 @@ class ExportDocument extends Controller
             ->join('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
             ->join('sub_projects', 'sub_project_components.id_sub_project', '=', 'sub_projects.id')
             ->leftJoin('impact_identifications', 'impact_identifications.id_sub_project_component', '=', 'sub_project_components.id')
+            ->leftJoin('potential_impact_evaluations', 'potential_impact_evaluations.id_impact_identification', '=', 'impact_identifications.id')
             ->join('sub_project_rona_awals', 'sub_project_rona_awals.id', '=', 'impact_identifications.id_sub_project_rona_awal')
             ->join('rona_awal', 'rona_awal.id', '=', 'sub_project_rona_awals.id_rona_awal')
             ->join('change_types', 'change_types.id', '=', 'impact_identifications.id_change_type')
@@ -181,11 +185,12 @@ class ExportDocument extends Controller
                 'impact_studies.data_gathering_method',
                 'impact_studies.analysis_method',
                 'impact_studies.evaluation_method',
-                'impact_identifications.potential_impact_evaluation',
+                'potential_impact_evaluations.text',
                 'impact_identifications.is_hypothetical_significant'
             )
             ->selectRaw('ROW_NUMBER () OVER (ORDER BY impact_studies.id) as number')
             ->leftJoin('impact_identifications', 'impact_studies.id_impact_identification', '=', 'impact_identifications.id')
+            ->leftJoin('potential_impact_evaluations', 'potential_impact_evaluations.id_impact_identification', '=', 'impact_identifications.id')
             ->leftJoin('projects', 'projects.id', '=', 'impact_identifications.id_project')
             ->where('projects.id', '=', $id)
             ->where('impact_identifications.is_hypothetical_significant', '=', 'true')
