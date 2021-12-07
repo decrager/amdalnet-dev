@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\AndalComment;
 use App\Entity\Comment;
 use App\Entity\EnvImpactAnalysis;
+use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
@@ -736,10 +737,13 @@ class AndalComposingController extends Controller
         
         if($formulator && $formulator->member) {
             foreach($formulator->member as $f) {
-                $results['penyusun'][] = [
-                    'name' => $f->formulator->name,
-                    'position' => $f->position
-                ];
+                $formulator_data = Formulator::find($f->id_formulator);
+                if($formulator_data) {
+                    $results['penyusun'][] = [
+                        'name' => $formulator_data->name,
+                        'position' => $f->position
+                    ];
+                }
             }
         }
 
