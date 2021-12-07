@@ -170,7 +170,7 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isFormulator || isExaminer || isAdmin || isSubstance"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -179,7 +179,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isFormulator || isExaminer || isAdmin || isSubstance"
                   href="#"
                   type="text"
                   icon="el-icon-document"
