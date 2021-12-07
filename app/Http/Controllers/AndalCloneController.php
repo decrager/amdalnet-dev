@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\ChangeType;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\ImpactStudyClone;
