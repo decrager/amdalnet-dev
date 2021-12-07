@@ -513,14 +513,31 @@ class AndalComposingController extends Controller
         if($formulator_team) {
             $total = 1;
             foreach($formulator_team->member as $m) {
+                $formulatorName = '';
+                $formulatorStatus = '';
+                $formulatorRegNo = '';
+                $formulatorExpired = '';
+                $formulatorExpertise = '';
+
+                if($m->formulator){
+                    $formulatorName = $m->formulator->name;
+                    $formulatorStatus = $m->formulator->membership_status;
+                    $formulatorRegNo = $m->formulator->reg_no;
+                    $formulatorExpired =$m->formulator->date_end ? Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_end)->isoFormat('D MMMM Y') : '';
+                    $formulatorExpertise = $m->formulator->expertise;
+                } else if($m->expert){
+                    $formulatorName = $m->expert->name;
+                    $formulatorStatus = $m->expert->status;
+                    $formulatorExpertise = $m->expert->expertise;
+                }
                 $formulator[] = [
                     'tim_penyusun' => $total,
-                    'name' => $m->formulator->name,
+                    'name' => $formulatorName,
                     'position' => $m->position,
-                    'cert_type' => $m->formulator->membership_status,
-                    'reg_no' => $m->formulator->reg_no,
-                    'cert_expire' => $m->formulator->date_end ? Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_end)->isoFormat('D MMMM Y') : '',
-                    'expertise' => $m->formulator->expertise
+                    'cert_type' => $formulatorStatus,
+                    'reg_no' => $formulatorRegNo,
+                    'cert_expire' => $formulatorExpired,
+                    'expertise' => $formulatorExpertise,
                 ];
 
                 $total++;
