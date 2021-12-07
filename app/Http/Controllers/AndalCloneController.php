@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\ChangeType;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\ImpactStudyClone;
@@ -129,7 +130,7 @@ class AndalCloneController extends Controller
                                          $study = ImpactStudyClone::where('id_impact_identification_clone', $impact['id'])
                                              ->first();
                                          if ($study != null) {
-                                             $study->id_impact_identification = $impact['id'];
+                                             $study->id_impact_identification_clone = $impact['id'];
                                              $study->forecast_method = $impact['impact_study']['forecast_method'];
                                              $study->required_information = $impact['impact_study']['required_information'];
                                              $study->data_gathering_method = $impact['impact_study']['data_gathering_method'];
@@ -153,7 +154,7 @@ class AndalCloneController extends Controller
  
                                              if (!$p) {
                                                  $p = new PotentialImpactEvalClone();
-                                                 $p->id_impact_identification = $impact['id'];
+                                                 $p->id_impact_identification_clone = $impact['id'];
                                                  $p->id_pie_param = $pie['id_pie_param'];
                                              }
                                              $p->text = $pie['text'];
@@ -173,7 +174,7 @@ class AndalCloneController extends Controller
                              $row = ImpactStudyClone::where('id_impact_identification_clone', $study['id'])
                                  ->first();
                              if ($row != null) {
-                                 $row->id_impact_identification = $study['id'];
+                                 $row->id_impact_identification_clone = $study['id'];
                                  $row->forecast_method = $study['impact_study']['forecast_method'];
                                  $row->required_information = $study['impact_study']['required_information'];
                                  $row->data_gathering_method = $study['impact_study']['data_gathering_method'];
@@ -356,14 +357,14 @@ class AndalCloneController extends Controller
             ->where('projects.id', '=', $id)
             ->get();
 
-        $getDampakPentingHipotetik = DB::table('impact_studies')
+        $getDampakPentingHipotetik = DB::table('impact_study_clones')
             ->select(
                 'project_stages.name',
                 'impact_identification_clones.potential_impact_evaluation',
                 'impact_identification_clones.is_hypothetical_significant'
             )
-            ->selectRaw('ROW_NUMBER () OVER (ORDER BY impact_studies.id) as number')
-            ->leftJoin('impact_identification_clones', 'impact_studies.id_impact_identification', '=', 'impact_identification_clones.id')
+            ->selectRaw('ROW_NUMBER () OVER (ORDER BY impact_study_clones.id) as number')
+            ->leftJoin('impact_identification_clones', 'impact_study_clones.id_impact_identification_clone', '=', 'impact_identification_clones.id')
             ->leftJoin('sub_project_components', 'sub_project_components.id', '=', 'impact_identification_clones.id_sub_project_component')
             ->leftJoin('project_stages', 'project_stages.id', '=', 'sub_project_components.id_project_stage')
             ->leftJoin('projects', 'projects.id', '=', 'impact_identification_clones.id_project')
