@@ -44,9 +44,11 @@ class MatriksRKLController extends Controller
             // ========= PROJECT ADDRESS ========== //
             $project_district = '';
             $project_province = '';
-            if($project->address && $project->address->first()) {
-                $project_district = $project->address->first()->district;
-                $project_province = $project->address->first()->province;
+            if($project->address) {
+                if($project->address->first()) {
+                    $project_district = $project->address->first()->district;
+                    $project_province = $project->address->first()->province;
+                }
             }
 
             $poinA = $this->getPoinA($stages, $request->idProject);
