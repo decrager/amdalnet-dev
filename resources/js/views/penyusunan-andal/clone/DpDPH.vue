@@ -284,6 +284,8 @@ export default {
         join_tables: 'true',
       });
 
+      console.log(impactList.data);
+
       impactList.data.map((imp) => {
         if (!(impIds.find((e) => e === imp.id))) {
           impIds.push(imp.id);
@@ -301,7 +303,7 @@ export default {
         if (imp.impact_study === null) {
           imp.impact_study = {
             id: null,
-            id_impact_identification: imp.id,
+            id_impact_identification_clone: imp.id,
             forecast_method: null,
             required_information: null,
             data_gathering_method: null,
@@ -313,7 +315,7 @@ export default {
 
         this.pieParams.forEach((e) => {
           imp.potential_impact_evaluation.push({
-            id_impact_identification: imp.id,
+            id_impact_identification_clone: imp.id,
             id_pie_param: e.id,
             text: null,
           });
@@ -344,7 +346,7 @@ export default {
       this.getData();
     },
     getPie(id, index){
-      const pie = this.pies.find((e) => ((e.id_impact_identification === id) &&
+      const pie = this.pies.find((e) => ((e.id_impact_identification_clone === id) &&
         (e.id_pie_param === index)));
       if (pie) {
         return pie.text;
