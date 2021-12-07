@@ -226,8 +226,7 @@ export default {
       });
       this.teamName = data.name;
       if (data.type_team) {
-        // this.teamType = data.type_team;
-        this.teamType = 'mandiri';
+        this.teamType = data.type_team;
         this.isTeamExist = true;
         this.selectedLPJP = data.id_lpjp;
       }
