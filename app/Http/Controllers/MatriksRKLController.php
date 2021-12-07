@@ -572,20 +572,23 @@ class MatriksRKLController extends Controller
 
             $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
-
-            $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
-                'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl' => $total + 1,
-                'id' => $pA->id,
-                'name' => "$changeType $ronaAwal akibat $component",
-                'type' => 'subtitle',
-                'impact_source' => $pA->envManagePlan->impact_source,
-                'success_indicator' => $pA->envManagePlan->success_indicator,
-                'form' => $pA->envManagePlan->form,
-                'location' => $pA->envManagePlan->location,
-                'period' => $pA->envManagePlan->period,
-                'institution' => $pA->envManagePlan->institution,
-            ];
-            $total++;
+            if($pA->envManagerPlan) {
+                $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
+                    'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl' => $total + 1,
+                    'id' => $pA->id,
+                    'name' => "$changeType $ronaAwal akibat $component",
+                    'type' => 'subtitle',
+                    'impact_source' => $pA->envManagePlan->impact_source,
+                    'success_indicator' => $pA->envManagePlan->success_indicator,
+                    'form' => $pA->envManagePlan->form,
+                    'location' => $pA->envManagePlan->location,
+                    'period' => $pA->envManagePlan->period,
+                    'institution' => $pA->envManagePlan->institution,
+                ];
+                $total++;
+            } else {
+                continue;
+            }
         }
         $idx++;
     }
@@ -647,18 +650,22 @@ class MatriksRKLController extends Controller
                 $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
                 $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
 
-                $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
-                    'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'  => $total + 1,
-                    'id' => $merge->id,
-                    'name' => "$changeType $ronaAwal akibat $component",
-                    'type' => 'subtitle',
-                    'impact_source' => $merge->envManagePlan->impact_source,
-                    'success_indicator' => $merge->envManagePlan->success_indicator,
-                    'form' => $merge->envManagePlan->form,
-                    'location' => $merge->envManagePlan->location,
-                    'period' => $merge->envManagePlan->period,
-                    'institution' => $merge->envManagePlan->institution,
-                ];
+                if($merge->envManagerPlan) {
+                    $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
+                        'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'  => $total + 1,
+                        'id' => $merge->id,
+                        'name' => "$changeType $ronaAwal akibat $component",
+                        'type' => 'subtitle',
+                        'impact_source' => $merge->envManagePlan->impact_source,
+                        'success_indicator' => $merge->envManagePlan->success_indicator,
+                        'form' => $merge->envManagePlan->form,
+                        'location' => $merge->envManagePlan->location,
+                        'period' => $merge->envManagePlan->period,
+                        'institution' => $merge->envManagePlan->institution,
+                    ];
+                } else {
+                    continue;
+                }
                 $total++;
             }
             $idx++;
@@ -701,21 +708,25 @@ class MatriksRKLController extends Controller
                 }
                 $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
-                $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
-                    'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
-                    'id' => $pA->id,
-                    'name' => "$changeType $ronaAwal akibat $component",
-                    'type' => 'subtitle',
-                    'indicator' => $pA->envMonitorPlan->indicator,
-                    'impact_source' => $pA->envMonitorPlan->impact_source,
-                    'collection_method' => $pA->envMonitorPlan->collection_method,
-                    'location' => $pA->envMonitorPlan->location,
-                    'time_frequent' => $pA->envMonitorPlan->time_frequent,
-                    'executor' => $pA->envMonitorPlan->executor,
-                    'supervisor' => $pA->envMonitorPlan->supervisor,
-                    'report_recipient' => $pA->envMonitorPlan->report_recipient,
-                    'description' => $pA->envMonitorPlan->description,
-                ];
+                if($pA->envMonitorPlan) {
+                    $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
+                        'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
+                        'id' => $pA->id,
+                        'name' => "$changeType $ronaAwal akibat $component",
+                        'type' => 'subtitle',
+                        'indicator' => $pA->envMonitorPlan->indicator,
+                        'impact_source' => $pA->envMonitorPlan->impact_source,
+                        'collection_method' => $pA->envMonitorPlan->collection_method,
+                        'location' => $pA->envMonitorPlan->location,
+                        'time_frequent' => $pA->envMonitorPlan->time_frequent,
+                        'executor' => $pA->envMonitorPlan->executor,
+                        'supervisor' => $pA->envMonitorPlan->supervisor,
+                        'report_recipient' => $pA->envMonitorPlan->report_recipient,
+                        'description' => $pA->envMonitorPlan->description,
+                    ];
+                } else {
+                    continue;
+                }
                 $total++;
             }
             $idx++;
@@ -774,21 +785,25 @@ class MatriksRKLController extends Controller
                 
                 $changeType = $merge->id_change_type ? $merge->changeType->name : '';
 
-                $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
-                    'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
-                    'id' => $merge->id,
-                    'name' => "$changeType $ronaAwal akibat $component",
-                    'type' => 'subtitle',
-                    'indicator' => $merge->envMonitorPlan->indicator,
-                    'impact_source' => $merge->envMonitorPlan->impact_source,
-                    'collection_method' => $merge->envMonitorPlan->collection_method,
-                    'location' => $merge->envMonitorPlan->location,
-                    'time_frequent' => $merge->envMonitorPlan->time_frequent,
-                    'executor' => $merge->envMonitorPlan->executor,
-                    'supervisor' => $merge->envMonitorPlan->supervisor,
-                    'report_recipient' => $merge->envMonitorPlan->report_recipient,
-                    'description' => $merge->envMonitorPlan->description,
-                ];
+                if($merge->envMonitorPlan) {
+                    $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
+                        'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
+                        'id' => $merge->id,
+                        'name' => "$changeType $ronaAwal akibat $component",
+                        'type' => 'subtitle',
+                        'indicator' => $merge->envMonitorPlan->indicator,
+                        'impact_source' => $merge->envMonitorPlan->impact_source,
+                        'collection_method' => $merge->envMonitorPlan->collection_method,
+                        'location' => $merge->envMonitorPlan->location,
+                        'time_frequent' => $merge->envMonitorPlan->time_frequent,
+                        'executor' => $merge->envMonitorPlan->executor,
+                        'supervisor' => $merge->envMonitorPlan->supervisor,
+                        'report_recipient' => $merge->envMonitorPlan->report_recipient,
+                        'description' => $merge->envMonitorPlan->description,
+                    ];
+                } else {
+                    continue;
+                }
                 $total++;
            }
            $idx++;
