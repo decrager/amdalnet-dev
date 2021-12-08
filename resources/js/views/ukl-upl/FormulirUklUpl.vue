@@ -24,13 +24,7 @@
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
           <matriks-identifikasi-dampak-table />
         </el-collapse-item>
-        <el-collapse-item name="3" title="PETA BATAS WILAYAH STUDI & PETA PENDUKUNG">
-          <upload-peta-batas
-            @handleReloadVsaList="handleReloadVsaList"
-          />
-
-        </el-collapse-item>
-        <el-collapse-item name="4" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+        <el-collapse-item name="3" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
           <dampak-hipotetik
             @handleReloadVsaList="handleReloadVsaList"
           />
@@ -41,6 +35,12 @@
           <dampak-penting-hipotetik
             @handleReloadVsaList="handleReloadVsaList"
           />-->
+        </el-collapse-item>
+        <el-collapse-item name="4" title="PETA BATAS WILAYAH STUDI & PETA PENDUKUNG">
+          <upload-peta-batas
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+
         </el-collapse-item>
         <el-collapse-item name="5" title="METODE STUDI">
           <metode-studi
@@ -126,9 +126,9 @@ export default {
         this.activeName = '1';
       } else if (tab === 'matriks-identifikasi-dampak') {
         this.activeName = '2';
-      } else if (tab === 'peta-batas') {
-        this.activeName = '3';
       } else if (tab === 'dampak-penting') {
+        this.activeName = '3';
+      } else if (tab === 'peta-batas') {
         this.activeName = '4';
       } else if (tab === 'metode-studi') {
         this.activeName = '5';
