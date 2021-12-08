@@ -97,6 +97,24 @@ class ScopingController extends Controller
         if ($request->component) {
             $params = $request->all();
             $component = $params['component'];
+            $invalid_component = (!isset($component['id_component']) || $component['id_component'] == null)
+                && (!isset($component['name']) || $component['name'] == null);
+            $invalid_description = (!isset($component['description_specific']) || $component['description_specific'] == null);
+            $invalid_unit = (!isset($component['unit']) || $component['unit'] == null);
+            $errors = [];
+            if ($invalid_component){
+                array_push($errors, 'Komponen kegiatan wajib diisi');
+            }
+            if ($invalid_description){
+                array_push($errors, 'Deskripsi wajib diisi');
+            }
+            if ($invalid_unit){
+                array_push($errors, 'Besaran wajib diisi');
+            }
+            if (count($errors) > 0) {
+                return response()->json(['errors' => join(', ', $errors)], 403);
+            }
+            
             if (isset($component['id_component']) && $component['id_component'] != null) {
                 $component['name'] = null;
                 $component['id_project_stage'] = null;
@@ -114,6 +132,28 @@ class ScopingController extends Controller
         } else if ($request->rona_awal) {
             $params = $request->all();
             $rona_awal = $params['rona_awal'];
+            $invalid_rona = (!isset($rona_awal['id_rona_awal']) || $rona_awal['id_rona_awal'] == null)
+                && (!isset($rona_awal['name']) || $rona_awal['name'] == null);
+            $invalid_description = (!isset($rona_awal['description_specific']) || $rona_awal['description_specific'] == null);
+            $invalid_unit = (!isset($rona_awal['unit']) || $rona_awal['unit'] == null);
+            $errors = [];
+            if ($invalid_rona){
+                array_push($errors, 'Komponen lingkungan wajib diisi');
+            }
+            if ($invalid_description){
+                array_push($errors, 'Deskripsi wajib diisi');
+            }
+            if ($invalid_unit){
+                array_push($errors, 'Besaran wajib diisi');
+            }
+            if (count($errors) > 0) {
+                return response()->json(['errors' => join(', ', $errors)], 403);
+            }
+            if ((!isset($rona_awal['id_rona_awal']) || $rona_awal['id_rona_awal'] == null)
+                && (!isset($rona_awal['name']) || $rona_awal['name'] == null)) {
+                //invalid input
+                return response()->json(['errors' => 'Komponen lingkungan wajib diisi.'], 403);
+            }
             if (isset($rona_awal['id_rona_awal']) && $rona_awal['id_rona_awal'] != null) {
                 $rona_awal['name'] = null;
                 $rona_awal['id_component_type'] = null;
