@@ -6,6 +6,7 @@
     >
       <div>
         <el-button
+          v-if="isFormulator"
           :loading="loadingSubmit"
           class="filter-item"
           type="primary"
@@ -19,6 +20,7 @@
         </span>
       </div>
       <el-upload
+        v-if="isFormulator"
         :loading="loadingMap"
         class="filter-item upload-demo"
         style="font-size: 0.8rem"
@@ -199,6 +201,7 @@
             v-model="scope.row.impact_source"
             type="textarea"
             :rows="2"
+            :readonly="!isFormulator"
           />
           <span v-else>{{ '' }}</span>
         </template>
@@ -213,6 +216,7 @@
             v-model="scope.row.success_indicator"
             type="textarea"
             :rows="2"
+            :readonly="!isFormulator"
           />
           <span v-else>{{ '' }}</span>
         </template>
@@ -225,6 +229,7 @@
             v-model="scope.row.form"
             type="textarea"
             :rows="2"
+            :readonly="!isFormulator"
           />
           <span v-else>{{ '' }}</span>
         </template>
@@ -237,6 +242,7 @@
             v-model="scope.row.location"
             type="textarea"
             :rows="2"
+            :readonly="!isFormulator"
           />
           <span v-else>{{ '' }}</span>
         </template>
@@ -249,6 +255,7 @@
             v-model="scope.row.period"
             type="textarea"
             :rows="2"
+            :readonly="!isFormulator"
           />
           <span v-else>{{ '' }}</span>
         </template>
@@ -261,6 +268,7 @@
             v-model="scope.row.institution"
             type="textarea"
             :rows="2"
+            :readonly="!isFormulator"
           />
           <span v-else>{{ '' }}</span>
         </template>
@@ -329,6 +337,9 @@ export default {
     },
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
+    },
+    isAdmin() {
+      return this.userInfo.roles.includes('examiner-administration');
     },
   },
   created() {
