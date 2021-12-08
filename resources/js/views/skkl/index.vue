@@ -26,27 +26,19 @@
 </template>
 
 <script>
-import Resource from '@/api/resource';
-const skklResource = new Resource('skkl');
-
 import Information from '@/views/skkl/components/Information';
 import DokumenPersetujuan from '@/views/skkl/components/DokumenPersetujuan';
 import WorkFlow from '@/components/Workflow';
 
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import axios from 'axios';
+
+// Map-related
+import shp from 'shpjs';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import Home from '@arcgis/core/widgets/Home';
-import Compass from '@arcgis/core/widgets/Compass';
-import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
-import Attribution from '@arcgis/core/widgets/Attribution';
-import Expand from '@arcgis/core/widgets/Expand';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
-import GroupLayer from '@arcgis/core/layers/GroupLayer';
-import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
-import shp from 'shpjs';
-import L from 'leaflet';
 
 export default {
   name: 'SKKL',
@@ -69,192 +61,185 @@ export default {
   },
   methods: {
     async loadMap() {
-      const project = await skklResource.list({
-        map: 'true',
-        idProject: this.idProject,
-      });
+      axios.get('api/map/' + this.idProject)
+        .then((response) => {
+          const map = new Map({
+            basemap: 'topo',
+          });
 
-      if (this.readonly === true) {
-        const map = new Map({
-          basemap: 'topo',
-        });
-
-        const batasProv = new MapImageLayer({
-          url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
-          sublayers: [
-            {
-              id: 0,
-              title: 'Batas Provinsi',
-            },
-          ],
-        });
-
-        const graticuleGrid = new MapImageLayer({
-          url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
-        });
-
-        map.addMany([batasProv, graticuleGrid]);
-
-        const baseGroupLayer = new GroupLayer({
-          title: 'Base Layer',
-          visible: true,
-          layers: [batasProv, graticuleGrid],
-          opacity: 0.9,
-        });
-
-        map.add(baseGroupLayer);
-
-        const mapGeojsonArray = [];
-        const splitMap = project.map.split('|');
-        console.log(splitMap);
-        shp(window.location.origin + project.map).then((data) => {
-          if (data.length > 1) {
-            for (let i = 0; i < data.length; i++) {
-              const blob = new Blob([JSON.stringify(data[i])], {
-                type: 'application/json',
-              });
-              const url = URL.createObjectURL(blob);
-              const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
-                outFields: ['*'],
-                title: 'Layers',
-              });
-              mapView.on('layerview-create', (event) => {
-                mapView.goTo({
-                  target: geojsonLayerArray.fullExtent,
+          const projects = response.data;
+          for (let i = 0; i < projects.length; i++) {
+            // Map Ekologi
+            if (projects[i].attachment_type === 'ecology') {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + this.idProject).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: 'red',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Batas Ekologi',
+                    renderer: rendererTapak,
+                  });
+                  map.add(geojsonLayerArray);
                 });
               });
-              mapGeojsonArray.push(geojsonLayerArray);
             }
-            const kegiatanGroupLayer = new GroupLayer({
-              title: project.project_title,
-              visible: true,
-              visibilityMode: 'exclusive',
-              layers: mapGeojsonArray,
-              opacity: 0.75,
-            });
 
-            map.add(kegiatanGroupLayer);
-          } else {
-            const blob = new Blob([JSON.stringify(data)], {
-              type: 'application/json',
-            });
-            const url = URL.createObjectURL(blob);
-            const geojsonLayer = new GeoJSONLayer({
-              url: url,
-              visible: true,
-              outFields: ['*'],
-              opacity: 0.75,
-              title: project.project_title,
-            });
-
-            map.add(geojsonLayer);
-            mapView.on('layerview-create', (event) => {
-              mapView.goTo({
-                target: geojsonLayer.fullExtent,
+            // Map Sosial
+            if (projects[i].attachment_type === 'social') {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + this.idProject).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: 'blue',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Batas Sosial',
+                    renderer: rendererTapak,
+                  });
+                  map.add(geojsonLayerArray);
+                });
               });
-            });
+            }
+
+            // Map Studi
+            if (projects[i].attachment_type === 'study') {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + this.idProject).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: 'green',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Batas Wilayah Studi',
+                    renderer: rendererTapak,
+                  });
+                  mapView.on('layerview-create', (event) => {
+                    mapView.goTo({
+                      target: geojsonLayerArray.fullExtent,
+                    });
+                  });
+                  map.add(geojsonLayerArray);
+                });
+              });
+            }
+
+            // Map Tapak
+            if (projects[i].attachment_type === 'tapak') {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + this.idProject).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: '#964B00',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Tapak',
+                    renderer: rendererTapak,
+                  });
+                  map.add(geojsonLayerArray);
+
+                  mapView.on('layerview-create', (event) => {
+                    mapView.goTo({
+                      target: geojsonLayerArray.fullExtent,
+                    });
+                  });
+                });
+              });
+            }
           }
-        });
 
-        const mapView = new MapView({
-          container: 'mapView',
-          map: map,
-          center: [115.287, -1.588],
-          zoom: 6,
-        });
-        this.$parent.mapView = mapView;
+          const mapView = new MapView({
+            container: 'mapView',
+            map: map,
+            center: [115.287, -1.588],
+            zoom: 5,
+          });
+          this.$parent.mapView = mapView;
 
-        const home = new Home({
-          view: mapView,
-        });
+          const layerList = new LayerList({
+            view: mapView,
+            container: document.createElement('div'),
+            listItemCreatedFunction: this.defineActions,
+          });
 
-        mapView.popup.on('trigger-action', (event) => {
-          if (event.action.id === 'get-details') {
-            console.log('tbd');
-          }
-        });
+          layerList.on('trigger-action', (event) => {
+            const id = event.action.id;
+            if (id === 'full-extent') {
+              mapView.goTo({
+                target: event.item.layer.fullExtent,
+              });
+            }
+          });
 
-        mapView.ui.add(home, 'top-left');
-        const compass = new Compass({
-          view: mapView,
-        });
-        mapView.ui.add(compass, 'top-left');
-        const basemapToggle = new BasemapToggle({
-          view: mapView,
-          container: document.createElement('div'),
-          secondBasemap: 'satellite',
-        });
-        const expandBasemapToggler = new Expand({
-          view: mapView,
-          name: 'basemap',
-          content: basemapToggle.domNode,
-          expandIconClass: 'esri-icon-basemap',
-        });
-        mapView.ui.add(expandBasemapToggler, 'top-left');
-        const attribution = new Attribution({
-          view: mapView,
-        });
-        mapView.ui.add(attribution, 'manual');
+          const legend = new Legend({
+            view: mapView,
+            container: document.createElement('div'),
+          });
 
-        const legend = new Legend({
-          view: mapView,
-          container: document.createElement('div'),
+          mapView.ui.add(layerList, 'top-right');
+          mapView.ui.add(legend, 'bottom-left');
         });
-        const layerList = new LayerList({
-          view: mapView,
-          container: document.createElement('div'),
-          listItemCreatedFunction: this.defineActions,
-        });
-
-        layerList.on('trigger-action', (event) => {
-          const id = event.action.id;
-          if (id === 'full-extent') {
-            mapView.goTo({
-              target: event.item.layer.fullExtent,
-            });
-          }
-        });
-
-        const legendExpand = new Expand({
-          view: mapView,
-          content: legend.domNode,
-          expandIconClass: 'esri-icon-collection',
-          expandTooltip: 'Legend',
-        });
-
-        const layersExpand = new Expand({
-          view: mapView,
-          content: layerList.domNode,
-          expandIconClass: 'esri-icon-layer-list',
-          expandTooltip: 'Layers',
-        });
-        mapView.ui.add(legendExpand, 'bottom-left');
-        mapView.ui.add(layersExpand, 'top-right');
-      } else {
-        console.log(this.mapUpload);
-        const map = L.map('mapView');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
-
-        for (let i = 0; i < this.mapUpload.length; i++) {
-          const reader = new FileReader(); // instantiate a new file reader
-          reader.onload = (event) => {
-            const geo = L.geoJSON().addTo(map);
-            const base = event.target.result;
-            shp(base).then((data) => {
-              const feature = geo.addData(data);
-              console.log(feature);
-
-              map.fitBounds(feature.getBounds());
-            });
-          };
-
-          reader.readAsArrayBuffer(this.mapUpload[i]);
-        }
-      }
     },
   },
 };
