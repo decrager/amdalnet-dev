@@ -113,8 +113,7 @@ class ScopingController extends Controller
             }
             if (count($errors) > 0) {
                 return response()->json(['errors' => join(', ', $errors)], 403);
-            }
-            
+            }            
             if (isset($component['id_component']) && $component['id_component'] != null) {
                 $component['name'] = null;
                 $component['id_project_stage'] = null;
@@ -148,11 +147,6 @@ class ScopingController extends Controller
             }
             if (count($errors) > 0) {
                 return response()->json(['errors' => join(', ', $errors)], 403);
-            }
-            if ((!isset($rona_awal['id_rona_awal']) || $rona_awal['id_rona_awal'] == null)
-                && (!isset($rona_awal['name']) || $rona_awal['name'] == null)) {
-                //invalid input
-                return response()->json(['errors' => 'Komponen lingkungan wajib diisi.'], 403);
             }
             if (isset($rona_awal['id_rona_awal']) && $rona_awal['id_rona_awal'] != null) {
                 $rona_awal['name'] = null;
