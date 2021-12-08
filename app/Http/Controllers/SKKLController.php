@@ -232,7 +232,7 @@ class SKKLController extends Controller
         $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
         $templateProcessor->setValue('location', $location);
 
-        $save_file_name = $idProject .'-skkl' . '.docx';
+        $save_file_name = $project->project_title .' - ' . $project->initiator->name . '.docx';
         if (!File::exists(storage_path('app/public/skkl/'))) {
             File::makeDirectory(storage_path('app/public/skkl/'));
         }
