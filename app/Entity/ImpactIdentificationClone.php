@@ -73,7 +73,7 @@ class ImpactIdentificationClone extends Model
 
     public function potentialImpactEvaluation()
     {
-        return $this->hasMany(PotentialImpactEvaluation::class, 'id_impact_identification', 'id');
+        return $this->hasMany(PotentialImpactEvalClone::class, 'id_impact_identification_clone', 'id');
     }
 
     public function real()

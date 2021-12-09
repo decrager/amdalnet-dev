@@ -669,10 +669,12 @@ class AndalComposingController extends Controller
         $project_address = '';
         $project_district = '';
         $project_province = '';
-        if($project->address && $project->address->first()) {
-            $project_address = $project->address->first()->address;
-            $project_district = $project->address->first()->district;
-            $project_province = $project->address->first()->prov;
+        if($project->address) {
+            if($project->address->first()) {
+                $project_address = $project->address->first()->address;
+                $project_district = $project->address->first()->district;
+                $project_province = $project->address->first()->prov;
+            }
         }
 
         $templateProcessor = new TemplateProcessor('template_andal.docx');
@@ -758,7 +760,7 @@ class AndalComposingController extends Controller
             $results['negative'][] = ['val' => $p->negative_feedback_summary ?? '']; 
         }
 
-        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'potential_impact_evaluation', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
         ->where('id_project', $id_project)->get();
 
         $total_ms = 0;
@@ -779,8 +781,29 @@ class AndalComposingController extends Controller
                 }
 
                 $changeType = $pA->id_change_type ? $pA->changeType->name : '';
-                //  $ronaAwal =  $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
-                //  $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+
+                // ======= POTENTIAL IMPACT EVALUATIONS ======= //
+                $ed_besaran_rencana = '';
+                $ed_kondisi_rona = '';
+                $ed_pengaruh_rencana = '';
+                $ed_intensitas_perhatian = '';
+                $ed_kesimpulan = '';
+
+                if($pA->potentialImpactEvaluation) {
+                    foreach($pA->potentialImpactEvaluation as $po) {
+                        if($po->id_pie_param == 1) {
+                            $ed_besaran_rencana = $po->text;
+                        } else if($po->id_pie_param == 2) {
+                            $ed_kondisi_rona = $po->text;
+                        } else if($po->id_pie_param == 3) {
+                            $ed_pengaruh_rencana = $po->text;
+                        } else if($po->id_pie_param == 4) {
+                            $ed_intensitas_perhatian = $po->text;
+                        } else if($po->id_pie_param == 5) {
+                            $ed_kesimpulan = $po->text;
+                        }
+                    }
+                }
 
                 $results[str_replace(' ', '_', strtolower($s->name))][] = [
                     'no' => $total + 1,
@@ -788,7 +811,11 @@ class AndalComposingController extends Controller
                     'rencana' => $pA->initial_study_plan ?? '',
                     'rona_lingkungan' => $ronaAwal,
                     'dampak_potensial' => "$changeType $ronaAwal akibat $component",
-                    'evaluasi_dampak' => $pA->potential_impact_evaluation ?? '',
+                    'ed_besaran_rencana' => $ed_besaran_rencana,
+                    'ed_kondisi_rona' => $ed_kondisi_rona,
+                    'ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                    'ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                    'ed_kesimpulan' => $ed_kesimpulan,
                     'dph' => $pA->is_hypothetical_significant ? 'DPH' : 'DTPH',
                     'batas_wilayah' => $pA->study_location ?? '',
                     'batas_waktu' => $pA->study_length_year . ' tahun ' . $pA->study_length_month . ' bulan'
