@@ -161,7 +161,7 @@
                   Tambah Tim LPJP
                 </el-button>
                 <el-button
-                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -170,7 +170,16 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleKerangkaUklUpl(scope.row)"
+                >
+                  Formulir UKL UPL
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && isFormulator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -179,13 +188,22 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isAmdal(scope.row) && isFormulator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleRklRpl(scope.row)"
                 >
                   RKL/RPL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && isFormulator"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleMatUklUpl(scope.row)"
+                >
+                  Matriks UKL/UPL
                 </el-button>
                 <el-button
                   v-if="isSubtance || isAdmin"
@@ -400,6 +418,13 @@ export default {
     console.log(this.userInfo);
   },
   methods: {
+    isUklUpl(project){
+      console.log(project.required_doc);
+      return project.required_doc === 'UKL-UPL';
+    },
+    isAmdal(project){
+      return project.required_doc === 'AMDAL';
+    },
     toTitleCase(str) {
       return str.replace(
         /\w\S*/g,
@@ -576,6 +601,11 @@ export default {
         path: `/amdal/${project.id}/formulir`,
       });
     },
+    handleKerangkaUklUpl(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/formulir`,
+      });
+    },
     handleUjiKa(project) {
       this.$router.push({
         path: `/dokumen-kegiatan/${project.id}/pengujian-ka`,
@@ -637,6 +667,11 @@ export default {
     handleAndal(project) {
       this.$router.push({
         path: `/dokumen-kegiatan/${project.id}/penyusunan-andal`,
+      });
+    },
+    handleMatUklUpl(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl-dummy`,
       });
     },
     handleRklRpl(project) {
