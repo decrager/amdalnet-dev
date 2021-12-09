@@ -18,17 +18,17 @@
 
     </span>
 
-    <table style="margin: 2em 0; border-collapse: collapse;clear:both;">
+    <table style="margin: 2em 0; border-collapse: collapse;clear:both; width: 100%">
       <!-- based on mockup received on Thu, 2 Dec 2021 -->
       <thead>
         <tr>
-          <th colspan="2">Rencana Usaha dan/atau Kegiatan yang Berpotensi Menimbulkan Dampak Lingkungan</th>
+          <th colspan="2">Komponen Dampak</th>
           <!-- <th>Pengelolaan yang sudah direncanakan</th> -->
-          <th>Komponen Rona yang Terkena Dampak</th>
-          <th>Dampak Potensial</th>
+          <th>Komponen Rona Lingkungan Awal</th>
+          <th>Sumber Dampak</th>
           <!-- <th style="width:18%;">Evaluasi Dampak Potensial</th>
           <th>Dampak Penting Hipotetik</th> -->
-          <th>Wilayah Studi</th>
+          <th>Besaran Dampak</th>
           <!-- <th>Batas Waktu Kajian</th> -->
         </tr>
       </thead>
