@@ -70,24 +70,26 @@
                 <p>{{ impact.rona_awal_name }} akibat {{ impact.component_name }}</p>
               </td>
               <td>
-                <template v-for="(pie, index) in pieParams">
-                  <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
-                    <el-popover
-                      placement="top-start"
-                      width="350"
-                      trigger="hover"
-                    >
-                      <p style="word-break: break-word !important; text-align:left !important;">{{ pie.description }}</p>
-                      <p slot="reference" :key="'po_'+ pie.id + '_'+ impact.id" style="font-weight:bold; cursor: pointer;">{{ pie.name }}</p>
-                    </el-popover>
-                    <el-input
-                      v-model="impact.potential_impact_evaluation[index].text"
-                      type="textarea"
-                      :rows="3"
-                      :value="impact.potential_impact_evaluation[index].text"
-                      :readonly="!isFormulator"
-                    />
-                  </div>
+                <template v-if="impact.is_hypothetical_significant">
+                  <template v-for="(pie, index) in pieParams">
+                    <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
+                      <el-popover
+                        placement="top-start"
+                        width="350"
+                        trigger="hover"
+                      >
+                        <p style="word-break: break-word !important; text-align:left !important;">{{ pie.description }}</p>
+                        <p slot="reference" :key="'po_'+ pie.id + '_'+ impact.id" style="font-weight:bold; cursor: pointer;">{{ pie.name }}</p>
+                      </el-popover>
+                      <el-input
+                        v-model="impact.potential_impact_evaluation[index].text"
+                        type="textarea"
+                        :rows="3"
+                        :value="impact.potential_impact_evaluation[index].text"
+                        :readonly="!isFormulator"
+                      />
+                    </div>
+                  </template>
                 </template>
               </td>
               <td>
