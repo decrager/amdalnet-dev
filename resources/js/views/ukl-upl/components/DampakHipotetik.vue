@@ -82,6 +82,7 @@
                       type="textarea"
                       :rows="3"
                       :value="impact.potential_impact_evaluation[index].text"
+                      :disabled="pieDisabled"
                     />
                   </div>
                 </template>
@@ -94,6 +95,7 @@
                     :label="item.label"
                     :value="item.value"
                     :disabled="item.disabled"
+                    @select="handleSelectDPH"
                   />
                 </el-select>
                 <div v-show="impact.is_hypothetical_significant === false" :key="'DTPH_'+impact.id" style="margin:1em 0;">
@@ -106,11 +108,12 @@
                   type="textarea"
                   :rows="3"
                   :value="impact.study_location"
+                  :disabled="studyLocationDisabled"
                 />
               </td>
               <td>
-                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" /> tahun</p>
-                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" /> bulan</p>
+                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" :disabled="studyLengthDisabled" size="mini" /> tahun</p>
+                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" :disabled="studyLengthDisabled" size="mini" /> bulan</p>
               </td>
             </tr>
           </template>
@@ -145,6 +148,9 @@ export default {
       ],
       pies: [],
       impIds: [],
+      studyLocationDisabled: false,
+      studyLengthDisabled: false,
+      pieDisabled: false,
     };
   },
   mounted() {
@@ -202,6 +208,19 @@ export default {
           });
           console.log(error);
         });
+    },
+    handleSelectDPH(item) {
+      if (item.value) {
+        // DPH
+        this.studyLocationDisabled = false;
+        this.studyLengthDisabled = false;
+        this.pieDisabled = false;
+      } else {
+        // DTPH
+        this.studyLocationDisabled = true;
+        this.studyLengthDisabled = true;
+        this.pieDisabled = true;
+      }
     },
     createDataArray(imps, stages) {
       const stageIds = [4, 1, 2, 3];
