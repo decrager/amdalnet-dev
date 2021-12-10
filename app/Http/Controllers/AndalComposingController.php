@@ -761,7 +761,7 @@ class AndalComposingController extends Controller
         }
 
         $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-        ->where('id_project', $id_project)->get();
+        ->where('id_project', $id_project)->with('potentialImpactEvaluation.pieParam')->get();
 
         $total_ms = 0;
         foreach($stages as $s) {
@@ -783,23 +783,33 @@ class AndalComposingController extends Controller
                 $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
                 // ======= POTENTIAL IMPACT EVALUATIONS ======= //
+                $ed_besaran_rencana_title = '';
                 $ed_besaran_rencana = '';
+                $ed_kondisi_rona_title = '';
                 $ed_kondisi_rona = '';
+                $ed_pengaruh_rencana_title = '';
                 $ed_pengaruh_rencana = '';
+                $ed_intensitas_perhatian_title = '';
                 $ed_intensitas_perhatian = '';
+                $ed_kesimpulan_title = '';
                 $ed_kesimpulan = '';
 
-                if($pA->potentialImpactEvaluation) {
+                if($pA->is_hypothetical_significant && $pA->potentialImpactEvaluation) {
                     foreach($pA->potentialImpactEvaluation as $po) {
                         if($po->id_pie_param == 1) {
+                            $ed_besaran_rencana_title = $po->pieParam->name;
                             $ed_besaran_rencana = $po->text;
                         } else if($po->id_pie_param == 2) {
+                            $ed_kondisi_rona_title = $po->pieParam->name;
                             $ed_kondisi_rona = $po->text;
                         } else if($po->id_pie_param == 3) {
+                            $ed_pengaruh_rencana_title = $po->pieParam->name;
                             $ed_pengaruh_rencana = $po->text;
                         } else if($po->id_pie_param == 4) {
+                            $ed_intensitas_perhatian_title = $po->pieParam->name;
                             $ed_intensitas_perhatian = $po->text;
                         } else if($po->id_pie_param == 5) {
+                            $ed_kesimpulan_title = $po->pieParam->name;
                             $ed_kesimpulan = $po->text;
                         }
                     }
@@ -811,10 +821,15 @@ class AndalComposingController extends Controller
                     'rencana' => $pA->initial_study_plan ?? '',
                     'rona_lingkungan' => $ronaAwal,
                     'dampak_potensial' => "$changeType $ronaAwal akibat $component",
+                    'ed_besaran_rencana_title' => $ed_besaran_rencana_title,
                     'ed_besaran_rencana' => $ed_besaran_rencana,
+                    'ed_kondisi_rona_title' => $ed_kondisi_rona_title,
                     'ed_kondisi_rona' => $ed_kondisi_rona,
+                    'ed_pengaruh_rencana_title' => $ed_pengaruh_rencana_title,
                     'ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                    'ed_intensitas_perhatian_title' => $ed_intensitas_perhatian_title,
                     'ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                    'ed_kesimpulan_title' => $ed_kesimpulan_title,
                     'ed_kesimpulan' => $ed_kesimpulan,
                     'dph' => $pA->is_hypothetical_significant ? 'DPH' : 'DTPH',
                     'batas_wilayah' => $pA->study_location ?? '',
