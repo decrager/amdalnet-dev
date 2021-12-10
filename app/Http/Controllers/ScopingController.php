@@ -119,14 +119,32 @@ class ScopingController extends Controller
                 $component['id_project_stage'] = null;
             }
             DB::beginTransaction();            
-            $createdComp = SubProjectComponent::create($component);
-            if ($createdComp) {
-                DB::commit();
-                return [
-                    'data' => $createdComp,
-                ];
+            if ($component['id'] == null) {
+                // create new
+                $createdComp = SubProjectComponent::create($component);
+                if ($createdComp) {
+                    DB::commit();
+                    return [
+                        'data' => $createdComp,
+                    ];
+                } else {
+                    DB::rollBack();
+                }
             } else {
-                DB::rollBack();
+                // edit
+                $edit = SubProjectComponent::find($component['id']);
+                $edit->name = $component['name'];
+                $edit->description_specific = $component['description_specific'];
+                $edit->unit = $component['unit'];
+                $saved = $edit->save();
+                if ($saved) {
+                    DB::commit();
+                    return [
+                        'data' => $saved,
+                    ];
+                } else {
+                    DB::rollBack();
+                }
             }
         } else if ($request->rona_awal) {
             $params = $request->all();

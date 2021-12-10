@@ -73,77 +73,59 @@
             <td>
               <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
                 <el-row>
-                  <el-button
-                    type="default"
-                    size="medium"
-                    class="button-medium"
-                  >
+                  <el-tooltip class="item" effect="dark" placement="top-start">
+                    <div slot="content">
+                      {{ comp.description_specific }}
+                    </div>
                     <el-button
-                      v-if="!isAndal"
-                      type="danger"
-                      size="mini"
-                      icon="el-icon-close"
-                      style="margin-left: 0px; margin-right: 10px;"
-                      class="button-action-mini"
-                      @click="handleDeleteComponent(comp.id)"
-                    />
-                    <span>{{ comp.name }}</span>
-                    <el-button
-                      type="success"
-                      size="mini"
-                      class="pull-right button-action-mini"
-                      icon="el-icon-caret-right"
+                      type="default"
+                      size="medium"
+                      :style="componentButtonStyle(comp.id)"
                       @click="handleViewRonaAwals(comp.id)"
-                    />
-                  </el-button>
+                    >
+                      <el-button
+                        v-if="!isAndal"
+                        type="danger"
+                        size="mini"
+                        icon="el-icon-close"
+                        style="margin-left: 0px; margin-right: 10px;"
+                        class="button-action-mini"
+                        @click="handleDeleteComponent(comp.id)"
+                      />
+                      <span>{{ comp.name }}</span>
+                      <el-button
+                        type="default"
+                        size="mini"
+                        class="pull-right button-action-mini"
+                        icon="el-icon-edit"
+                        @click="handleEditComponent(comp.id)"
+                      />
+                    </el-button>
+                  </el-tooltip>
                 </el-row>
-                <el-input v-model="comp.description_specific" size="mini" placeholder="Deskr. khusus" style="clear:both; display:block;margin-top:.5em;width:100%;" :disabled="true" />
               </div>
 
               <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
             </td>
-            <td>
-              <div v-for="ra in subProjectRonaAwals[0].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
+            <td v-for="i in 6" :key="i">
+              <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                <el-tooltip class="item" effect="dark" placement="top-start">
+                  <div slot="content">
+                    {{ ra.description_specific }}
+                  </div>
+                  <el-tag key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
+                </el-tooltip>
               </div>
 
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(1)" />
-            </td>
-            <td>
-              <div v-for="ra in subProjectRonaAwals[1].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
-              </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(2)" />
-            </td>
-            <td>
-              <div v-for="ra in subProjectRonaAwals[2].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
-              </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(3)" />
-            </td>
-            <td>
-              <div v-for="ra in subProjectRonaAwals[3].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
-              </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(4)" />
-            </td>
-            <td>
-              <div v-for="ra in subProjectRonaAwals[4].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
-              </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(5)" />
-            </td>
-            <td>
-              <div v-for="ra in subProjectRonaAwals[5].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tag :key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                <el-input v-model="ra.description_specific" size="mini" placeholder="Definisi" style="clear:both; display:block;margin-top:.5em;width:10em;" :disabled="true" />
-              </div>
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddRonaAwal(6)" />
+              <el-button
+                v-if="!isAndal"
+                icon="el-icon-plus"
+                circle
+                style="margin-top:3em;display:block;"
+                round
+                :disabled="currentIdSubProjectComponent === 0"
+                @click="handleAddRonaAwal(i)"
+              />
             </td>
           </tr>
         </tbody>
@@ -155,6 +137,8 @@
       :show="kKDialogueVisible"
       :sub-projects="subProjects"
       :id-project-stage="idProjectStage"
+      :sub-project-component="editSubProjectComponent"
+      :is-edit="isEditComponent"
       :current-id-sub-project="currentIdSubProject"
       @handleCloseAddComponent="handleCloseAddComponent"
       @handleSetCurrentIdSubProjectComponent="handleSetCurrentIdSubProjectComponent"
@@ -223,6 +207,8 @@ export default {
       ],
       currentIdSubProjectComponent: 0,
       currentIdComponentType: 0,
+      editSubProjectComponent: {},
+      isEditComponent: false,
     };
   },
   computed: {
@@ -242,6 +228,11 @@ export default {
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
     handleAddComponent() {
+      if (this.isEditComponent) {
+        this.editSubProjectComponent = {};
+        this.componentDialogKey = this.componentDialogKey + 1;
+      }
+      this.isEditComponent = false;
       this.kKDialogueVisible = true;
     },
     handleAddRonaAwal(idComponentType) {
@@ -299,6 +290,14 @@ export default {
           console.log(error);
         });
     },
+    handleEditComponent(id) {
+      // show dialog
+      this.isEditComponent = true;
+      this.editSubProjectComponent = this.subProjectComponents.filter(spc => spc.id === id)[0];
+      if (this.isEditComponent) {
+        this.kKDialogueVisible = true;
+      }
+    },
     async handleViewComponents(idSubProject) {
       this.$emit('handleCurrentIdSubProject', idSubProject);
       this.getComponents(idSubProject);
@@ -324,9 +323,18 @@ export default {
       this.componentDialogKey = this.componentDialogKey + 1;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
+    componentButtonStyle(id) {
+      if (id === this.currentIdSubProjectComponent) {
+        return { backgroundColor: '#facd7a', color: '#000000' };
+      } else {
+        return { backgroundColor: '#ffffff', color: '#099C4B' };
+      }
+    },
     async handleViewRonaAwals(idSubProjectComponent) {
       this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.componentButtonStyle(idSubProjectComponent);
       this.getRonaAwals(idSubProjectComponent);
+      // this.componentButtonStyle = { backgroundColor: '#facd7a' };
       // reload dialogs
       this.componentDialogKey = this.componentDialogKey + 1;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
@@ -416,6 +424,14 @@ table td.title, table tr.title td, table.title td { text-align:left;}
 
 .button-medium {
   padding: 5px 5px 5px 5px;
+}
+
+.button-comp-active {
+  background-color: #facd7a;
+}
+
+.button-comp-inactive {
+  background-color: white;
 }
 
 </style>

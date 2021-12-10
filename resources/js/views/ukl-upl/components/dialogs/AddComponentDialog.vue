@@ -1,11 +1,10 @@
 <template>
   <el-dialog
-    title="Tambah Komponen Kegiatan"
     :visible.sync="show"
     width="40%"
     :before-close="handleClose"
   >
-
+    <span slot="title" style="font-size: 14pt; font-weight: bold;">{{ title }}</span>
     <el-form label-position="top" :model="component">
       <el-form-item label="Tahap Kegiatan">
         <el-select
@@ -64,7 +63,7 @@ import Resource from '@/api/resource';
 const componentResource = new Resource('components');
 const projectStageResource = new Resource('project-stages');
 const scopingResource = new Resource('scoping');
-const subProjectComponentResource = new Resource('sub-project-components');
+// const subProjectComponentResource = new Resource('sub-project-components');
 
 export default {
   name: 'AddComponentDialog',
@@ -74,6 +73,11 @@ export default {
       type: Number,
       default: () => 0,
     },
+    subProjectComponent: {
+      type: Object,
+      default: () => {},
+    },
+    isEdit: Boolean,
     currentIdSubProject: {
       type: Number,
       default: () => 0,
@@ -85,6 +89,7 @@ export default {
   },
   data() {
     return {
+      title: 'Tambah Komponen Kegiatan',
       component: {},
       componentList: [],
       subProjectsArray: [],
@@ -145,6 +150,20 @@ export default {
       this.$emit('handleCloseAddComponent', false);
     },
     async getData() {
+      // if edit
+      if (this.isEdit) {
+        this.title = 'Edit Komponen Kegiatan';
+        this.component = this.subProjectComponent;
+        this.currentIdSubProject = this.component.id_sub_project;
+        if (this.component.name === null) {
+          this.component.name = this.component.component.name;
+        }
+        if (this.component.id_project_stage !== null) {
+          this.idProjectStage = this.component.id_project_stage;
+        } else {
+          this.idProjectStage = this.component.component.id_project_stage;
+        }
+      }
       const ps = await projectStageResource.list({
         ordered: true,
       });
@@ -172,16 +191,15 @@ export default {
           this.currentSubProjectName = s.name;
         }
       });
-
       // common desc
-      const comps = await subProjectComponentResource.list({
-        id_sub_project: this.currentIdSubProject,
-      });
-      if (comps.data.length > 0) {
-        const firstComp = comps.data[0];
-        this.component.description_common = firstComp.description_common;
-        this.disableDescCommon = true;
-      }
+      // const comps = await subProjectComponentResource.list({
+      //   id_sub_project: this.currentIdSubProject,
+      // });
+      // if (comps.data.length > 0) {
+      //   const firstComp = comps.data[0];
+      //   this.component.description_common = firstComp.description_common;
+      //   this.disableDescCommon = true;
+      // }
     },
   },
 };
