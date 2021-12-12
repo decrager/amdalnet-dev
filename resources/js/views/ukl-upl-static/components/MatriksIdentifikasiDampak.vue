@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <table class="title">
+  <div class="app-container" style="width:100%;">
+    <table>
       <thead>
         <tr>
           <th rowspan="2">Komponen Lingkungan</th>
@@ -81,5 +81,9 @@ export default {
 };
 </script>
 <style scoped>
+table {
+    margin: 2em 0; border-collapse: collapse;clear:both; width: 100%;
+    overflow: scroll;
+}
 td.input-checkbox {text-align: center;}
 </style>
