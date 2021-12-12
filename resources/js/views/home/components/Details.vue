@@ -210,7 +210,12 @@
                     Tingkat kesetujuan Anda terhadap Kegiatan/Proyek Ini
                   </div>
                   <div style="display:flex">
-                    <div>
+                    <div class="rating">
+                      <span>Khawatir </span>
+                      <el-rate v-model="ratings" @change="handleChange(ratings)" />
+                      <span> Harapan</span>
+                    </div>
+                    <!-- <div>
                       <ul>
                         <li class="fz8">1 Bintang : Khawatir</li>
                         <li class="fz8">5 Bintang :  Harapan</li>
@@ -218,7 +223,7 @@
                     </div>
                     <div style="padding-left:1rem">
                       <el-rate v-model="ratings" @change="handleChange(ratings)" />
-                    </div>
+                    </div> -->
                   </div>
                 </el-col>
               </el-row>
