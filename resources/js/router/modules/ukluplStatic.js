@@ -1,15 +1,21 @@
 import Layout from '@/layout';
 
 const ukluplStaticRoutes = {
-  path: '/ukluplstatic/form',
+  path: '/ukluplstatic',
   component: Layout,
   meta: { title: 'UKLUPLStatic', icon: 'zip' },
   children: [
     {
-      path: '',
+      path: 'form',
       component: () => import('@/views/ukl-upl-static/Form'),
       name: 'formUKLUPL',
       meta: { title: 'formUKLUPL', icon: 'zip', noCache: true },
+    },
+    {
+      path: 'matriks',
+      component: () => import('@/views/ukl-upl-static/Matriks'),
+      name: 'matriksUKLUPL',
+      meta: { title: 'Matriks UKL UPL', icon: 'zip', noCache: true },
     },
   ],
 };
