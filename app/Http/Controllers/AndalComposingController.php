@@ -509,10 +509,12 @@ class AndalComposingController extends Controller
 
         // ======== TIM PENYUSUN AMDAL ========= //
         $formulator = [];
+        $experts = [];
 
         $formulator_team = FormulatorTeam::where('id_project', $id_project)->first();
         if($formulator_team) {
-            $total = 1;
+            $total_formulator = 1;
+            $total_ahli = 1;
             foreach($formulator_team->member as $m) {
                 $formulatorName = '';
                 $formulatorStatus = '';
@@ -526,22 +528,28 @@ class AndalComposingController extends Controller
                     $formulatorRegNo = $m->formulator->reg_no;
                     $formulatorExpired =$m->formulator->date_end ? Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_end)->isoFormat('D MMMM Y') : '';
                     $formulatorExpertise = $m->formulator->expertise;
+                    $formulator[] = [
+                        'tim_penyusun' => $total_formulator,
+                        'name' => $formulatorName,
+                        'position' => $m->position ? $m->position : '',
+                        'cert_type' => $formulatorStatus,
+                        'reg_no' => $formulatorRegNo,
+                        'cert_expire' => $formulatorExpired,
+                        'expertise' => $formulatorExpertise,
+                    ];
+                    $total_formulator++;
                 } else if($m->expert){
                     $formulatorName = $m->expert->name;
                     $formulatorStatus = $m->expert->status;
                     $formulatorExpertise = $m->expert->expertise;
+                    $experts[] = [
+                        'tim_ahli' => $total_ahli,
+                        'name' => $formulatorName,
+                        'position' => $m->expert->status == 'Asisten' ? $m->expert->status : 'Ahli',
+                        'expertise' => $m->expert->expertise
+                    ];
+                    $total_ahli++;
                 }
-                $formulator[] = [
-                    'tim_penyusun' => $total,
-                    'name' => $formulatorName,
-                    'position' => $m->position,
-                    'cert_type' => $formulatorStatus,
-                    'reg_no' => $formulatorRegNo,
-                    'cert_expire' => $formulatorExpired,
-                    'expertise' => $formulatorExpertise,
-                ];
-
-                $total++;
             }
         }
 
@@ -576,17 +584,41 @@ class AndalComposingController extends Controller
             ];
         }
 
-        // ============== KA ============= //
+        // ============== KA DAN MATRIKS DPH ============= //
         $ids = [4,1,2,3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function($model) use($ids) {
             return array_search($model->getKey(),$ids);
         });
-        $impact_identification = ImpactIdentificationClone::where('id_project', $id_project)->get();
+        $impact_identification = ImpactIdentificationClone::where('id_project', $id_project)->with('potentialImpactEvaluation')->get();
    
         $pk = [];
         $k = [];
         $o = [];
         $po = [];
+        $dp_pk = [];
+        $dp_pk_name = [];
+        $dp_k = [];
+        $dp_k_name = [];
+        $dp_o = [];
+        $dp_o_name = [];
+        $dp_po = [];
+        $dp_po_name = [];
+        $dph_pk = [];
+        $dph_k = [];
+        $dph_o = [];
+        $dph_po = [];
+        $mdph_pk = [];
+        $mdph_pk_name = [];
+        $mdph_k = [];
+        $mdph_k_name = [];
+        $mdph_o = [];
+        $mdph_o_name = [];
+        $mdph_po = [];
+        $mdph_po_name = [];
+        $bwk_pk = [];
+        $bwk_k = [];
+        $bwk_o = [];
+        $bwk_po = [];
 
         foreach($stages as $s) {
             $total = 1;
@@ -618,18 +650,113 @@ class AndalComposingController extends Controller
                    continue;
                }
 
+               // ======= POTENTIAL IMPACT EVALUATIONS ======= //
+               $ed_besaran_rencana = '';
+               $ed_kondisi_rona = '';
+               $ed_pengaruh_rencana = '';
+               $ed_intensitas_perhatian = '';
+               $ed_kesimpulan = '';
 
+               if($imp->potentialImpactEvaluation) {
+                   foreach($imp->potentialImpactEvaluation as $pI) {
+                       if($pI->id_pie_param == 1) {
+                           $ed_besaran_rencana = $pI->text;
+                       } else if($pI->id_pie_param == 2) {
+                           $ed_kondisi_rona = $pI->text;
+                       } else if($pI->id_pie_param == 3) {
+                           $ed_pengaruh_rencana = $pI->text;
+                       } else if($pI->id_pie_param == 4) {
+                           $ed_intensitas_perhatian = $pI->text;
+                       } else if($pI->id_pie_param == 5) {
+                           $ed_kesimpulan = $pI->text;
+                       }
+                   }
+               }
+
+               $change_type = $imp->id_change_type ? $imp->changeType->name : '';
                 if($s->name == 'Pra Konstruksi') {
+
+                    // MATRIKS DP
+                    if(!in_array($component, $dp_pk_name)) {
+                        $dp_pk_name[] = $component;
+                        $dp_pk[] = [
+                            'dp_pk' => 'Tahap ' . $s->name,
+                            'dp_pk_component' => $component
+                        ];
+                    }
+
+                    // MATRIKS DPH
+                    if(!in_array($component, $mdph_pk_name)) {
+                        $mdph_pk_name[] = $component;
+                        $mdph_pk[] = [
+                            'mdph_pk' => 'Tahap ' . $s->name,
+                            'mdph_pk_component' => $component
+                        ];
+                    }
+
+
                     $pk[] = [
                         'ka_pk' => $total,
+                        'dp_pk' => $total,
                         'ka_pk_component' => $component,
                         'ka_pk_plan' => $imp->initial_study_plan,
                         'ka_pk_rona_awal' => $ronaAwal,
                         'ka_pk_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
                         'ka_pk_study_location' => $imp->study_location,
                         'ka_pk_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                        'ka_pk_potential_impact' => "$change_type $ronaAwal akibat $component",
+                        'ka_pk_ed_besaran_rencana' => $ed_besaran_rencana,
+                        'ka_pk_ed_kondisi_rona' => $ed_kondisi_rona,
+                        'ka_pk_ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                        'ka_pk_ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                        'ka_pk_ed_kesimpulan' => $ed_kesimpulan,
+                        'ka_pk_env_impact' => "$change_type $ronaAwal"
+                    ];
+
+                    // MATRIKS DPH
+                    $dph_pk[] = [
+                        'dph_pk' => $total,
+                        'dph_pk_component' => $component,
+                        'dph_pk_plan' => $imp->initial_study_plan,
+                        'dph_pk_rona_awal' => $ronaAwal,
+                        'dph_pk_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
+                        'dph_pk_study_location' => $imp->study_location,
+                        'dph_pk_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                        'dph_pk_potential_impact' => "$change_type $ronaAwal akibat $component",
+                        'dph_pk_ed_besaran_rencana' => $ed_besaran_rencana,
+                        'dph_pk_ed_kondisi_rona' => $ed_kondisi_rona,
+                        'dph_pk_ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                        'dph_pk_ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                        'dph_pk_ed_kesimpulan' => $ed_kesimpulan,
+                        'dph_pk_env_impact' => "$change_type $ronaAwal"
+                    ];
+
+                    // BATAS WAKTU KAJIAN
+                    $bwk_pk[] = [
+                        'bwk_pk' => $total,
+                        'bwk_pk_component' => $component,
+                        'bwk_pk_env_impact' => "$change_type $ronaAwal",
+                        'bwk_pk_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                     ];
                 } else if($s->name == 'Konstruksi') {
+                    // MATRIKS DP
+                    if(!in_array($component, $dp_k_name)) {
+                        $dp_k_name[] = $component;
+                        $dp_k[] = [
+                            'dp_k' => 'Tahap ' . $s->name,
+                            'dp_k_component' => $component
+                        ];
+                    }
+
+                    // MATRIKS DPH
+                    if(!in_array($component, $mdph_k_name)) {
+                        $mdph_k_name[] = $component;
+                        $mdph_k[] = [
+                            'mdph_k' => 'Tahap ' . $s->name,
+                            'mdph_k_component' => $component
+                        ];
+                    }
+
                     $k[] = [
                         'ka_k' => $total,
                         'ka_k_component' => $component,
@@ -638,8 +765,59 @@ class AndalComposingController extends Controller
                         'ka_k_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
                         'ka_k_study_location' => $imp->study_location,
                         'ka_k_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                        'ka_k_potential_impact' => "$change_type $ronaAwal akibat $component",
+                        'ka_k_ed_besaran_rencana' => $ed_besaran_rencana,
+                        'ka_k_ed_kondisi_rona' => $ed_kondisi_rona,
+                        'ka_k_ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                        'ka_k_ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                        'ka_k_ed_kesimpulan' => $ed_kesimpulan,
+                        'ka_k_env_impact' => "$change_type $ronaAwal"
+                    ];
+
+                    // MATRIKS DPH
+                    $dph_k[] = [
+                        'dph_k' => $total,
+                        'dph_k_component' => $component,
+                        'dph_k_plan' => $imp->initial_study_plan,
+                        'dph_k_rona_awal' => $ronaAwal,
+                        'dph_k_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
+                        'dph_k_study_location' => $imp->study_location,
+                        'dph_k_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                        'dph_k_potential_impact' => "$change_type $ronaAwal akibat $component",
+                        'dph_k_ed_besaran_rencana' => $ed_besaran_rencana,
+                        'dph_k_ed_kondisi_rona' => $ed_kondisi_rona,
+                        'dph_k_ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                        'dph_k_ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                        'dph_k_ed_kesimpulan' => $ed_kesimpulan,
+                        'dph_k_env_impact' => "$change_type $ronaAwal"
+                    ];
+
+                    // BATAS WAKTU KAJIAN
+                    $bwk_k[] = [
+                        'bwk_k' => $total,
+                        'bwk_k_component' => $component,
+                        'bwk_k_env_impact' => "$change_type $ronaAwal",
+                        'bwk_k_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                     ];
                 } else if($s->name == 'Operasi') {
+                    // MATRIKS DP
+                    if(!in_array($component, $dp_o_name)) {
+                        $dp_o_name[] = $component;
+                        $dp_o[] = [
+                            'dp_o' => 'Tahap ' . $s->name,
+                            'dp_o_component' => $component
+                        ];
+                    }
+
+                    // MATRIKS DPH
+                    if(!in_array($component, $mdph_o_name)) {
+                        $mdph_o_name[] = $component;
+                        $mdph_o[] = [
+                            'mdph_o' => 'Tahap ' . $s->name,
+                            'mdph_o_component' => $component
+                        ];
+                    }
+
                     $o[] = [
                         'ka_o' => $total,
                         'ka_o_component' => $component,
@@ -648,8 +826,59 @@ class AndalComposingController extends Controller
                         'ka_o_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
                         'ka_o_study_location' => $imp->study_location,
                         'ka_o_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                        'ka_o_potential_impact' => "$change_type $ronaAwal akibat $component",
+                        'ka_o_ed_besaran_rencana' => $ed_besaran_rencana,
+                        'ka_o_ed_kondisi_rona' => $ed_kondisi_rona,
+                        'ka_o_ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                        'ka_o_ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                        'ka_o_ed_kesimpulan' => $ed_kesimpulan,
+                        'ka_o_env_impact' => "$change_type $ronaAwal"
+                    ];
+
+                    // MATRIKS DPH
+                    $dph_o[] = [
+                        'dph_o' => $total,
+                        'dph_o_component' => $component,
+                        'dph_o_plan' => $imp->initial_study_plan,
+                        'dph_o_rona_awal' => $ronaAwal,
+                        'dph_o_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
+                        'dph_o_study_location' => $imp->study_location,
+                        'dph_o_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                        'dph_o_potential_impact' => "$change_type $ronaAwal akibat $component",
+                        'dph_o_ed_besaran_rencana' => $ed_besaran_rencana,
+                        'dph_o_ed_kondisi_rona' => $ed_kondisi_rona,
+                        'dph_o_ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                        'dph_o_ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                        'dph_o_ed_kesimpulan' => $ed_kesimpulan,
+                        'dph_o_env_impact' => "$change_type $ronaAwal"
+                    ];
+
+                    // BATAS WAKTU KAJIAN
+                    $bwk_o[] = [
+                        'bwk_o' => $total,
+                        'bwk_o_component' => $component,
+                        'bwk_o_env_impact' => "$change_type $ronaAwal",
+                        'bwk_o_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                     ];
                 } else if($s->name == 'Pasca Operasi') {
+                    // MATRIKS DP
+                    if(!in_array($component, $dp_po_name)) {
+                        $dp_po_name[] = $component;
+                        $dp_po[] = [
+                            'dp_po' => 'Tahap ' . $s->name,
+                            'dp_po_component' => $component
+                        ];
+                    }
+
+                    // MATRIKS DPH
+                    if(!in_array($component, $mdph_po_name)) {
+                        $mdph_po_name[] = $component;
+                        $mdph_po[] = [
+                            'mdph_po' => 'Tahap ' . $s->name,
+                            'mdph_po_component' => $component
+                        ];
+                    }
+
                     $po[] = [
                         'ka_po' => $total,
                         'ka_po_component' => $component,
@@ -658,6 +887,39 @@ class AndalComposingController extends Controller
                         'ka_po_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
                         'ka_po_study_location' => $imp->study_location,
                         'ka_po_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                        'ka_po_potential_impact' => "$change_type $ronaAwal akibat $component",
+                        'ka_po_ed_besaran_rencana' => $ed_besaran_rencana,
+                        'ka_po_ed_kondisi_rona' => $ed_kondisi_rona,
+                        'ka_po_ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                        'ka_po_ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                        'ka_po_ed_kesimpulan' => $ed_kesimpulan,
+                        'ka_po_env_impact' => "$change_type $ronaAwal"
+                    ];
+
+                    // MATRIKS DPH
+                    $dph_po[] = [
+                        'dph_po' => $total,
+                        'dph_po_component' => $component,
+                        'dph_po_plan' => $imp->initial_study_plan,
+                        'dph_po_rona_awal' => $ronaAwal,
+                        'dph_po_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
+                        'dph_po_study_location' => $imp->study_location,
+                        'dph_po_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
+                        'dph_po_potential_impact' => "$change_type $ronaAwal akibat $component",
+                        'dph_po_ed_besaran_rencana' => $ed_besaran_rencana,
+                        'dph_po_ed_kondisi_rona' => $ed_kondisi_rona,
+                        'dph_po_ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                        'dph_po_ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                        'dph_po_ed_kesimpulan' => $ed_kesimpulan,
+                        'dph_po_env_impact' => "$change_type $ronaAwal"
+                    ];
+
+                    // BATAS WAKTU KAJIAN
+                    $bwk_po[] = [
+                        'bwk_po' => $total,
+                        'bwk_po_component' => $component,
+                        'bwk_po_env_impact' => "$change_type $ronaAwal",
+                        'bwk_po_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                     ];
                 }
 
@@ -700,10 +962,27 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('lpjp_pic', $lpjp['pic']);
         $templateProcessor->setValue('lpjp_position', $lpjp['position']);
         $templateProcessor->cloneRowAndSetValues('tim_penyusun', $formulator);
+        $templateProcessor->cloneRowAndSetValues('tim_ahli', $experts);
         $templateProcessor->cloneRowAndSetValues('ka_pk', $pk);
         $templateProcessor->cloneRowAndSetValues('ka_k', $k);
         $templateProcessor->cloneRowAndSetValues('ka_o', $o);
         $templateProcessor->cloneRowAndSetValues('ka_po', $po);
+        $templateProcessor->cloneRowAndSetValues('dp_pk', $dp_pk);
+        $templateProcessor->cloneRowAndSetValues('dp_k', $dp_k);
+        $templateProcessor->cloneRowAndSetValues('dp_o', $dp_o);
+        $templateProcessor->cloneRowAndSetValues('dp_po', $dp_po);
+        $templateProcessor->cloneRowAndSetValues('dph_pk', $dph_pk);
+        $templateProcessor->cloneRowAndSetValues('dph_k', $dph_k);
+        $templateProcessor->cloneRowAndSetValues('dph_o', $dph_o);
+        $templateProcessor->cloneRowAndSetValues('dph_po', $dph_po);
+        $templateProcessor->cloneRowAndSetValues('mdph_pk', $mdph_pk);
+        $templateProcessor->cloneRowAndSetValues('mdph_k', $mdph_k);
+        $templateProcessor->cloneRowAndSetValues('mdph_o', $mdph_o);
+        $templateProcessor->cloneRowAndSetValues('mdph_po', $mdph_po);
+        $templateProcessor->cloneRowAndSetValues('bwk_pk', $bwk_pk);
+        $templateProcessor->cloneRowAndSetValues('bwk_k', $bwk_k);
+        $templateProcessor->cloneRowAndSetValues('bwk_o', $bwk_o);
+        $templateProcessor->cloneRowAndSetValues('bwk_po', $bwk_po);
 
         $save_file_name = $id_project .'-andal' . '.docx'; 
         
@@ -853,31 +1132,6 @@ class AndalComposingController extends Controller
         }
 
         return $results;
-    }
-
-    private function formulirKaPhpWord($id_project) {
-        $project = Project::findOrFail($id_project);
-        
-        $templateProcessor = new TemplateProcessor('template_ka_andal_2.docx');
-
-        $templateProcessor->setValue('project_title', $project->project_title);
-        $templateProcessor->setValue('pic', $project->initiator->name);
-        $templateProcessor->setValue('description', $project->description);
-        $templateProcessor->setValue('location_desc', $project->location_desc);
-        
-        $save_file_name = $id_project . '-ka-andal.docx';
-
-        if (!File::exists(storage_path('app/public/formulir/'))) {
-            File::makeDirectory(storage_path('app/public/formulir/'));
-        }
-
-        if (!File::exists(storage_path('app/public/formulir/' . $save_file_name))) {
-            $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
-        }
-        
-
-        return response()->download(storage_path('app/public/formulir/' . $save_file_name));
-
     }
 
     private function getComponentRonaAwal($imp, $id_project_stage) {
