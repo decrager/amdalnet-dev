@@ -44,15 +44,23 @@
         <el-form-item label="Harapan">
           <el-input v-model="form.expectation" type="textarea" autocomplete="off" />
         </el-form-item>
+        <el-form-item label="Kondisi Lingkungan di Dalam dan Sekitar Lokasi Tapak Proyek">
+          <el-input v-model="form.environment_condition" type="textarea" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="Nilai Lokal yang Berpotensi akan Terkena Dampak">
+          <el-input v-model="form.local_impact" type="textarea" autocomplete="off" />
+        </el-form-item>
         <el-form-item label="Berikan rating Anda untuk Rencana Usaha/Kegiatan ini">
-          <span style="display: block;">1 = Sangat tidak Setuju/Mendukung</span>
-          <span style="display: block;">5 = Sangat Setuju/Mendukung</span>
-          <el-rate
-            v-model="form.rating"
-            :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
-            :max="5"
-            style="margin-top:8px;"
-          />
+          <div class="rating">
+            <span>Khawatir </span>
+            <el-rate
+              v-model="form.rating"
+              :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
+              :max="5"
+              style="align-self: flex-start"
+            />
+            <span> Harapan</span>
+          </div>
         </el-form-item>
         <el-form-item style="margin-top: 10px">
           <el-button
@@ -160,6 +168,8 @@ export default {
           formData.append('responder_type_id', this.form.responder_type_id);
           formData.append('concern', this.form.concern);
           formData.append('expectation', this.form.expectation);
+          formData.append('environment_condition', this.form.environment_condition);
+          formData.append('local_impact', this.form.local_impact);
           formData.append('rating', this.form.rating);
           formData.append('announcement_id', this.announcementId);
 
@@ -203,5 +213,12 @@ export default {
 
 .select__peran {
   width: 100%;
+}
+
+.rating {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+  align-items: center;
 }
 </style>

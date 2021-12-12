@@ -87,7 +87,7 @@ export default {
   name: 'TahapPelingkupan',
   props: {
     activities: {
-      type: [],
+      type: Array,
       default: function(){
         return {};
       },
