@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <table>
+  <div class="app-container">
+    <table class="title">
       <thead>
         <tr>
           <th rowspan="2">Komponen Lingkungan</th>
@@ -36,8 +36,8 @@
             <tr :key="'mid_stages_'+ (id+1) + '_item_'+ idx">
               <td>{{ item.kl }}</td>
               <template v-for="(dp, di) in item.dampak">
-                <td :key="'mid_stages_'+ (id+1) + '_item_'+ idx + '_dampak_'+ di">
-                  <el-checkbox v-model="item.dampak[di]" />
+                <td :key="'mid_stages_'+ (id+1) + '_item_'+ idx + '_dampak_'+ di" class="input-checkbox">
+                  <el-checkbox v-model="item.dampak[di]" aria-readonly="true" />
                 </td>
               </template>
             </tr>
@@ -81,5 +81,5 @@ export default {
 };
 </script>
 <style scoped>
-th, td {border: 1px solid #eee;}
+td.input-checkbox {text-align: center;}
 </style>
