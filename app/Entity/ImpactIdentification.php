@@ -20,6 +20,8 @@ class ImpactIdentification extends Model
         'study_location',
         'study_length_year',
         'study_length_month',
+        'id_sub_project_component',
+        'id_sub_project_rona_awal',
     ];
 
     public function project(){
@@ -34,6 +36,14 @@ class ImpactIdentification extends Model
         return $this->belongsTo(ProjectRonaAwal::class, 'id_project_rona_awal');
     }
 
+    public function subProjectComponent(){
+        return $this->belongsTo(SubProjectComponent::class, 'id_sub_project_component');
+    }
+
+    public function subProjectRonaAwal(){
+        return $this->belongsTo(SubProjectRonaAwal::class, 'id_sub_project_rona_awal');
+    }
+
     public function changeType(){
         return $this->belongsTo(ChangeType::class, 'id_change_type');
     }
@@ -46,7 +56,7 @@ class ImpactIdentification extends Model
     {
         return $this->hasOne(EnvImpactAnalysis::class, 'id_impact_identifications', 'id');
     }
-    
+
     public function envManagePlan()
     {
         return $this->hasOne(EnvManagePlan::class, 'id_impact_identifications', 'id');
@@ -59,5 +69,20 @@ class ImpactIdentification extends Model
 
     public function impactStudy() {
         return $this->hasOne(ImpactStudy::class, 'id_impact_identification', 'id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'id_impact_identification', 'id');
+    }
+
+    public function potentialImpactEvaluation()
+    {
+        return $this->hasMany(PotentialImpactEvaluation::class, 'id_impact_identification', 'id');
+    }
+
+    public function clone()
+    {
+        return $this->hasOne(ImpactIdentificationClone::class, 'id_impact_identification', 'id');
     }
 }

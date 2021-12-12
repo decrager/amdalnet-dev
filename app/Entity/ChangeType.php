@@ -14,6 +14,7 @@ class ChangeType extends Model
     protected $table = 'change_types';
 
     protected $fillable = [
-        'name'
+        'name',
+        'is_primary',
     ];
 }

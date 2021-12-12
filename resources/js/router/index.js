@@ -20,7 +20,8 @@ import lpjpRoutes from './modules/lpjp';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
 // import paramRoutes from './modules/params';
-import uklUplRoutes from './modules/uklupl';
+import amdalRoutes from './modules/amdal';
+import ukluplRoutes from './modules/uklupl';
 import initiatorRoutes from './modules/initiator';
 // import formulatorRoutes from './modules/formulator';
 import lukRoutes from './modules/luk';
@@ -30,6 +31,7 @@ import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
 import dokumenRoutes from './modules/DokumenKegiatan';
 import flowchartRoutes from './modules/flowchart';
+import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
  * Layzloading will create many files and slow on compiling, so best not to use lazyloading on devlopment.
@@ -209,6 +211,20 @@ export const asyncRoutes = [
       },
     ],
   },
+  // {
+  //   path: '/fka',
+  //   component: Layout,
+  //   meta: { title: 'fka', icon: 'dashboard', noCache: true },
+  //   children: [
+  //     {
+  //       path: '/fka',
+  //       component: () => import('@/views/formulir-ka/index'),
+  //       name: 'FormulirKA',
+  //       meta: { title: 'Formulir Kerangka Acuan', icon: 'dashboard', noCache: true },
+  //     },
+  //   ],
+  // },
+  ukluplStaticRoutes,
   adminRoutes,
   projectRoutes,
   initiatorRoutes,
@@ -224,7 +240,22 @@ export const asyncRoutes = [
   announcementRoutes,
   feedbackRoutes,
   // workspaceRoutes,
-  uklUplRoutes,
+  amdalRoutes,
+  ukluplRoutes,
+  {
+    path: '/spt',
+    component: Layout,
+    meta: { title: 'SPT', icon: 'dashboard', noCache: true },
+    hidden: true,
+    children: [
+      {
+        path: '/spt',
+        component: () => import('@/views/spt/index'),
+        name: 'SPT',
+        meta: { title: 'SPT', icon: 'dashboard', noCache: true },
+      },
+    ],
+  },
   dokumenRoutes,
   errorRoutes,
   flowchartRoutes,

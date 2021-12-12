@@ -119,6 +119,7 @@ class AnnouncementController extends Controller
                 'end_date' => $params['end_date'],
                 'project_id' => $params['project_id'],
                 'project_result' => $params['project_result'],
+                'id_applicant' => $params['id_applicant'],
             ]);
 
             $project = Project::where('id', $params['project_id'])->first();
@@ -146,7 +147,9 @@ class AnnouncementController extends Controller
     {
         return Announcement::with([
             'project',
-            'project.province'
+            'project.province',
+            'project.address',
+            'initiator',
         ])->get()->where('id', '=', $announcement->id)->first();
     }
 

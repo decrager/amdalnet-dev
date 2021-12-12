@@ -2,16 +2,16 @@
   <el-dialog :title="'Berikan Tanggapan Baru'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
     <form enctype="multipart/form-data" @submit.prevent="saveFeedback">
       <input v-model="announcementId" type="hidden">
-      <el-form :model="form" style="max-width: 100%" label-position="top">
+      <el-form ref="feedForm" :model="form" style="max-width: 100%" label-position="top" :rules="rules">
         <el-form-item label="Nama">
           <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
 
         <div class="input__wrapper">
-          <el-form-item label="No. Telepon / Handphone">
+          <el-form-item label="No. Telepon / Handphone" prop="phone">
             <el-input v-model="form.phone" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="Email">
+          <el-form-item label="Email" prop="email">
             <el-input v-model="form.email" autocomplete="off" />
           </el-form-item>
         </div>
@@ -45,33 +45,35 @@
           <el-input v-model="form.expectation" type="textarea" autocomplete="off" />
         </el-form-item>
         <el-form-item label="Berikan rating Anda untuk Rencana Usaha/Kegiatan ini">
-          <span>1 = Sangat tidak Setuju/Mendukung</span>
+          <span style="display: block;">1 = Sangat tidak Setuju/Mendukung</span>
+          <span style="display: block;">5 = Sangat Setuju/Mendukung</span>
           <el-rate
             v-model="form.rating"
             :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
             :max="5"
             style="margin-top:8px;"
           />
-          <span>5 = Sangat Setuju/Mendukung</span>
         </el-form-item>
+        <el-form-item style="margin-top: 10px">
+          <el-button
+            type="danger"
+            size="mini"
+            icon="el-icon-circle-close"
+            @click="closeDialog()"
+          >
+            Tutup
+          </el-button>
 
-        <el-button
-          type="danger"
-          size="mini"
-          icon="el-icon-circle-close"
-          @click="closeDialog()"
-        >
-          Tutup
-        </el-button>
+          <el-button
+            type="submit"
+            size="mini"
+            icon="el-icon-s-claim"
+            @click="saveFeedback()"
+          >
+            Simpan
+          </el-button>
 
-        <el-button
-          type="submit"
-          size="mini"
-          icon="el-icon-s-claim"
-          @click="saveFeedback()"
-        >
-          Simpan
-        </el-button>
+        </el-form-item>
       </el-form>
     </form>
   </el-dialog>
@@ -111,6 +113,14 @@ export default {
       responders: [],
       errorMessage: null,
       photo_filepath: null,
+      rules: {
+        phone: [
+          { required: true, pattern: /\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{4})\D*/, message: 'Masukan Data Yang Sesuai', trigger: 'blur' },
+        ],
+        email: [
+          { required: true, pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, message: 'Masukan Data Yang Sesuai', trigger: 'blur' },
+        ],
+      },
     };
   },
   async created() {
@@ -138,33 +148,41 @@ export default {
       this.photo_filepath = this.$refs.file.files[0];
     },
     async saveFeedback() {
-      const formData = new FormData();
-      formData.append('photo_filepath', this.photo_filepath);
-      formData.append('name', this.form.name);
-      formData.append('id_card_number', this.form.id_card_number);
-      formData.append('phone', this.form.phone);
-      formData.append('email', this.form.email);
-      formData.append('responder_type_id', this.form.responder_type_id);
-      formData.append('concern', this.form.concern);
-      formData.append('expectation', this.form.expectation);
-      formData.append('rating', this.form.rating);
-      formData.append('announcement_id', this.announcementId);
+      // validasi dulu
+      this.$refs.feedForm.validate((valid) => {
+        if (valid) {
+          const formData = new FormData();
+          formData.append('photo_filepath', this.photo_filepath);
+          formData.append('name', this.form.name);
+          formData.append('id_card_number', this.form.id_card_number);
+          formData.append('phone', this.form.phone);
+          formData.append('email', this.form.email);
+          formData.append('responder_type_id', this.form.responder_type_id);
+          formData.append('concern', this.form.concern);
+          formData.append('expectation', this.form.expectation);
+          formData.append('rating', this.form.rating);
+          formData.append('announcement_id', this.announcementId);
 
-      _.each(this.formData, (value, key) => {
-        formData.append(key, value);
+          _.each(this.formData, (value, key) => {
+            formData.append(key, value);
+          });
+
+          const headers = { 'Content-Type': 'multipart/form-data' };
+          axios
+            .post('api/feedbacks', formData, { headers })
+            .then(() => {
+              this.closeDialog();
+              this.getAnnouncement();
+            })
+            .catch(error => {
+              this.errorMessage = error.message;
+              console.error('There was an error!', error);
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
       });
-
-      const headers = { 'Content-Type': 'multipart/form-data' };
-      await axios
-        .post('api/feedbacks', formData, { headers })
-        .then(() => {
-          this.closeDialog();
-          this.getAnnouncement();
-        })
-        .catch(error => {
-          this.errorMessage = error.message;
-          console.error('There was an error!', error);
-        });
     },
 
   },

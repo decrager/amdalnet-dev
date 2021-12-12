@@ -98,6 +98,7 @@ export default {
     formulatorTeam: 'Tim Penyusun',
     tuk: 'Tim Uji Kelayakan',
     editWorkspace: 'Edit Workspace',
+    projectWorkspace: 'Project workspace',
   },
   navbar: {
     logOut: 'Keluar',

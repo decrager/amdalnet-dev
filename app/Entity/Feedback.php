@@ -24,6 +24,10 @@ class Feedback extends Model
         'set_relevant_at',
         'deleted',
         'deleted_at',
+        'environment_condition',
+        'local_impact',
+        'community_type',
+        'community_gender'
     ];
 
     public function announcement()

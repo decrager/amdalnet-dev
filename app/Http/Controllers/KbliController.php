@@ -28,6 +28,16 @@ class KbliController extends Controller
             } else {
                 return response()->json(['error' => 'kbli '+ $request->sectorsByKbli +' not found'], 404);
             }
+          } else if ($request->fieldByKbli) {
+            $kbliName = $request->fieldByKbli;
+
+            $kbli = DB::table('kblis')->where('value', $kbliName)->first();
+
+            if($kbli != null){
+                return KbliResource::collection(Kbli::where('description', 'field')->where('parent_id', $kbli->id)->get(['id','value']));
+            } else {
+                return response()->json(['error' => 'kbli '+ $request->fieldByKbli +' not found'], 404);
+            }
           } else if ($request->kblis) {
             return KbliResource::collection(Kbli::distinct()->where('description', 'kbli_code')->get(['value']));
           } else {

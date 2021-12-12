@@ -34,6 +34,7 @@ export default {
       mapView: null,
       selectedFeedback: {},
       showIdDialog: false,
+      mapGeojsonArray: [],
     };
   },
   mounted: function() {
@@ -216,107 +217,113 @@ export default {
 
       map.add(rtrPulau);
 
-      const mapGeojson = [];
-      const mapGeojsonArray = [];
-      axios.get('api/projects')
+      // const mapGeojsonArray = [];
+      axios.get('api/maps')
         .then(response => {
-          const projects = response.data.data;
+          const projects = response.data;
           for (let i = 0; i < projects.length; i++) {
-            if (projects[i].map) {
-              const splitMap = projects[i].map.split(',');
-              for (let i = 0; i < splitMap.length; i++) {
-                shp(window.location.origin + '/storage/map/' + splitMap[i]).then(data => {
-                  if (data.length > 1) {
-                    for (let i = 0; i < data.length; i++) {
-                      const getProjectDetails = {
-                        title: 'Details',
-                        id: 'get-details',
-                        image: 'information-24-f.svg',
-                      };
-                      const arrayJsonTemplate = {
-                        title: projects[i].project_title + ' (' + projects[i].project_year + ').',
-                        content: '<table style="border-collapse: collapse !important">' +
-                            '<thead>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">KBLI Code</td>' +
-                                '<td> : </td>' +
-                                '<td>' + projects[i].kbli + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Pemrakarsa</td>' +
-                                '<td> : </td>' +
-                                '<td>' + projects[i].applicant + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Provinsi</td>' +
-                                '<td> : </td>' +
-                                '<td>' + projects[i].province + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Kota</td>' +
-                                '<td> : </td>' +
-                                '<td>' + projects[i].district + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Alamat</td>' +
-                                '<td> : </td>' +
-                                '<td>' + projects[i].address + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Deskripsi</td>' +
-                                '<td> : </td>' +
-                                '<td>' + projects[i].description + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Skala</td>' +
-                                '<td> : </td>' +
-                                '<td>' + projects[i].scale + ' ' + projects[i].scale_unit + '</td>' +
-                              '</tr>' +
-                            '</thead>' +
-                          '</table>',
-                        actions: [getProjectDetails],
-                      };
+            if (projects[i].stored_filename) {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + projects[i].id_project).then((response) => {
+                  console.log('a');
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: false,
+                    title: response.data.project_title,
+                    // popupTemplate: arrayJsonTemplate,
+                  });
+                  // map.add(geojsonLayerArray);
+                  // console.log(geojsonLayerArray);
 
-                      const blob = new Blob([JSON.stringify(data[i])], {
-                        type: 'application/json',
-                      });
-                      const url = URL.createObjectURL(blob);
-                      const geojsonLayerArray = new GeoJSONLayer({
-                        url: url,
-                        outFields: ['*'],
-                        title: projects[1].project_title,
-                        popupTemplate: arrayJsonTemplate,
-                      });
-                      mapGeojsonArray.push(geojsonLayerArray);
-                    }
+                  this.mapGeojsonArray.push(geojsonLayerArray);
+
+                  // last loop
+                  if (i === projects.length - 1){
+                    console.log(this.mapGeojsonArray);
                     const kegiatanGroupLayer = new GroupLayer({
-                      title: projects[1].project_title,
+                      title: 'LAYER KEGIATAN',
                       visible: false,
-                      visibilityMode: 'exclusive',
-                      layers: mapGeojsonArray,
+                      layers: this.mapGeojsonArray,
                       opacity: 0.90,
                     });
 
                     map.add(kegiatanGroupLayer);
-                  } else {
-                    const blob = new Blob([JSON.stringify(data)], {
-                      type: 'application/json',
-                    });
-                    const url = URL.createObjectURL(blob);
-                    const geojsonLayer = new GeoJSONLayer({
-                      url: url,
-                      visible: false,
-                      outFields: ['*'],
-                      title: projects[i].project_title,
-                    });
-                    mapGeojson.push(geojsonLayer);
-                    map.addMany(mapGeojson);
                   }
                 });
-              }
+              });
             }
           }
         });
+
+      const penutupanLahan2020 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const kawasanHutanB = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const indikatifPPTPKH = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/Indikatif_PPTPKH/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const piapsRevisi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIAPS_Revisi_VI/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const pippib2021Periode2 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const arKabKota = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/ADMINISTRASI_AR_KABKOTA_50K_2018/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const batasKabupaten = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Kabupaten_Kota_50K/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const batasProvinsi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Provinsi_Indonesia/MapServerr',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const sigapLayer = new GroupLayer({
+        title: 'SIGAP KLHK',
+        visible: false,
+        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2, arKabKota, batasKabupaten, batasProvinsi],
+        opacity: 0.90,
+      });
+
+      map.add(sigapLayer);
 
       const mapView = new MapView({
         container: 'mapViewDiv',
@@ -378,7 +385,7 @@ export default {
       });
 
       mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
+      mapView.ui.add(legend, 'top-right');
     },
   },
 };
@@ -392,7 +399,7 @@ export default {
   width: 100%;
   margin: 0;
   padding: 0;
-    position: absolute;
+  position: absolute;
 }
 
 #mapViewDiv {

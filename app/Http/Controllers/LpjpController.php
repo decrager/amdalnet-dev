@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Lpjp;
+use App\Entity\Project;
 use App\Http\Resources\LpjpResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
@@ -10,7 +11,7 @@ use App\Laravue\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class LpjpController extends Controller
@@ -22,14 +23,14 @@ class LpjpController extends Controller
      */
     public function index(Request $request)
     {
-        return LpjpResource::collection(Lpjp::where(function($query) use ($request) {
-            if($request->active) {
-                return $query->where([['date_start', '<=', date('Y-m-d H:i:s')],['date_end', '>=', date('Y-m-d H:i:s')]])
-                            ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
+        return LpjpResource::collection(Lpjp::where(function ($query) use ($request) {
+            if ($request->active) {
+                return $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+                    ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
             }
-        })->with(['province' => function($query) {
+        })->with(['province' => function ($query) {
             return $query->select(['id', 'name']);
-        }, 'district' => function($query) {
+        }, 'district' => function ($query) {
             return $query->select(['id', 'name']);
         }])->get());
     }
@@ -121,7 +122,7 @@ class LpjpController extends Controller
             } else {
                 DB::commit();
             }
-            
+
             return new LpjpResource($lpjp);
         }
     }
@@ -138,15 +139,14 @@ class LpjpController extends Controller
     }
 
     public function showByEmail(Request $request)
-    { 
-        If($request->email){
+    {
+        if ($request->email) {
             $lpjp = Lpjp::where('email', $request->email)->first();
-            
-            if($lpjp) {
+
+            if ($lpjp) {
                 return $lpjp;
             } else {
                 return response()->json(null, 200);
-
             }
         }
     }
@@ -199,7 +199,7 @@ class LpjpController extends Controller
         } else {
             $params = $request->all();
 
-            if($request->file('file') !== null){
+            if ($request->file('file') !== null) {
                 //create file
                 $file = $request->file('file');
                 $name = '/lpjp/' . uniqid() . '.' . $file->extension();
@@ -238,7 +238,42 @@ class LpjpController extends Controller
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
-    
+
         return response()->json(null, 204);
+    }
+
+    public function getFormulator(Request $request)
+    {
+        $getData = DB::table('projects')
+            ->select('lpjp.name as lpjp_name', 'projects.project_title', 'formulator_teams.name as formulator_name', 'projects.required_doc', 'projects.created_at')
+            ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
+            ->leftJoin('formulator_teams', 'formulator_teams.id_project', '=', 'projects.id')
+            ->where('projects.id', '=', $request->id)
+            ->get();
+
+        $jmlAnggotaNonTa = DB::table('projects')
+            ->select('formulators.name as formulator_name', 'formulators.reg_no', 'formulators.membership_status', 'formulator_team_members.position', 'formulators.expertise', 'formulators.cv_file')
+            ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
+            ->leftJoin('formulator_teams', 'formulator_teams.id_project', '=', 'projects.id')
+            ->leftJoin('formulator_team_members', 'formulator_team_members.id_formulator_team', '=', 'formulator_teams.id')
+            ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
+            ->where('projects.id', '=', $request->id)
+            ->where('formulators.membership_status', '!=', 'TA')
+            ->get();
+
+        $jmlAnggotaTa = DB::table('projects')
+            ->select('formulators.name as formulator_name', 'formulator_team_members.position', 'formulators.expertise', 'formulators.cv_file')
+            ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
+            ->leftJoin('formulator_teams', 'formulator_teams.id_project', '=', 'projects.id')
+            ->leftJoin('formulator_team_members', 'formulator_team_members.id_formulator_team', '=', 'formulator_teams.id')
+            ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
+            ->where('projects.id', '=', $request->id)
+            ->where('formulators.membership_status', '=', 'TA')
+            ->get();
+        return response()->json([
+            'data' => $getData,
+            'jumlah' => $jmlAnggotaNonTa,
+            'ta' => $jmlAnggotaTa
+        ]);
     }
 }

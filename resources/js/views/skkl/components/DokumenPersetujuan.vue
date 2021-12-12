@@ -8,38 +8,15 @@
   >
     <el-table-column label="Dokumen" header-align="center">
       <template slot-scope="scope">
-        <el-button
-          v-if="scope.row.name === 'Dokumen KA'"
-          type="text"
-          class="document_link"
-          @click="exportDocx"
-        >
-          <i class="el-icon-download" /> {{ scope.row.name }}
-        </el-button>
         <a
-          v-if="scope.row.name === 'Persetujuan Lingkungan SKKL'"
           class="document_link"
           :href="
-            scope.row.file ? scope.row.file : '/document/Template-SKKL.docx'
+            scope.row.file
           "
           download
         >
           <i class="el-icon-download" /> {{ scope.row.name }}
         </a>
-        <a v-if="checkDocument(scope.row.name)" class="document_link">
-          <i class="el-icon-download" /> {{ scope.row.name }}
-        </a>
-        &nbsp;
-        <el-upload
-          v-if="scope.row.name === 'Persetujuan Lingkungan SKKL'"
-          class="upload-demo"
-          :auto-upload="false"
-          :on-change="handleUploadChange"
-          action="#"
-          :show-file-list="false"
-        >
-          <el-button type="info" size="mini">Update</el-button>
-        </el-upload>
       </template>
     </el-table-column>
 

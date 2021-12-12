@@ -15,121 +15,95 @@
           Simpan & Lanjutkan
         </el-button>
       </span>
-      <vsa-list :key="vsaListKey">
-        <vsa-item :init-active="componentActive">
-          <vsa-heading>
-            KOMPONEN KEGIATAN YANG MENJADI SUMBER DAMPAK
-          </vsa-heading>
-          <vsa-content>
-            <sumber-dampak
-              @handleReloadVsaList="handleReloadVsaList"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="ronaActive">
-          <vsa-heading>
-            RONA LINGKUNGAN AWAL
-          </vsa-heading>
-          <vsa-content>
-            <rona-lingkungan-awal
-              @handleReloadVsaList="handleReloadVsaList"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="matriksActive">
-          <vsa-heading>
-            MATRIKS IDENTIFIKASI DAMPAK
-          </vsa-heading>
-          <vsa-content>
-            <matrik-identifikasi-dampak
-              @handleReloadVsaList="handleReloadVsaList"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="dampakPotensialActive">
-          <vsa-heading>
-            DAMPAK POTENSIAL
-          </vsa-heading>
-          <vsa-content>
-            <dampak-potensial
-              @handleReloadVsaList="handleReloadVsaList"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="dampakPentingHipotetikActive">
-          <vsa-heading>
-            DAMPAK PENTING HIPOTETIK
-          </vsa-heading>
-          <vsa-content>
-            <dampak-penting-hipotetik
-              @handleReloadVsaList="handleReloadVsaList"
-            />
-          </vsa-content>
-        </vsa-item>
-        <vsa-item :init-active="metodeStudiActive">
-          <vsa-heading>
-            METODE STUDI
-          </vsa-heading>
-          <vsa-content>
-            <metode-studi
-              @handleReloadVsaList="handleReloadVsaList"
-              @handleEnableSubmitForm="handleEnableSubmitForm"
-            />
-          </vsa-content>
-        </vsa-item>
-      </vsa-list>
+      <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
+        <el-collapse-item name="1" title="PELINGKUPAN">
+          <pelingkupan
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+        </el-collapse-item>
+        <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
+          <matriks-identifikasi-dampak-table />
+        </el-collapse-item>
+        <el-collapse-item name="3" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+          <dampak-hipotetik
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+          <!--
+          <dampak-potensial
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+          <dampak-penting-hipotetik
+            @handleReloadVsaList="handleReloadVsaList"
+          />-->
+        </el-collapse-item>
+        <el-collapse-item name="4" title="PETA BATAS WILAYAH STUDI & PETA PENDUKUNG">
+          <upload-peta-batas
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+
+        </el-collapse-item>
+        <el-collapse-item name="5" title="METODE STUDI">
+          <metode-studi
+            @handleReloadVsaList="handleReloadVsaList"
+            @handleEnableSubmitForm="handleEnableSubmitForm"
+          />
+        </el-collapse-item>
+        <el-collapse-item title="Matriks Dampak Penting Hipotetik" name="6">
+          <MatriksDPHTable />
+        </el-collapse-item>
+        <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
+          <bagan-alir />
+        </el-collapse-item>
+      </el-collapse>
     </el-card>
   </div>
 </template>
 
 <script>
-
-import {
-  VsaList,
-  VsaItem,
-  VsaHeading,
-  VsaContent,
-} from 'vue-simple-accordion';
-import 'vue-simple-accordion/dist/vue-simple-accordion.css';
-import SumberDampak from './components/SumberDampak.vue';
-import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
-import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
-import DampakPotensial from './components/DampakPotensial.vue';
-import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
+import Pelingkupan from './components/Pelingkupan.vue';
+import MatriksIdentifikasiDampakTable from './components/tables/MatriksIdentifikasiDampakTable.vue';
+import MatriksDPHTable from './components/tables/MatriksDPHTable.vue';
+import DampakHipotetik from './components/DampakHipotetik.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
+import BaganAlir from './components/BaganAlir.vue';
+import UploadPetaBatas from './components/UploadPetaBatas.vue';
 
 export default {
   name: 'FormulirUklUpl',
   components: {
-    VsaList,
-    VsaItem,
-    VsaHeading,
-    VsaContent,
-    SumberDampak,
-    RonaLingkunganAwal,
-    MatrikIdentifikasiDampak,
-    DampakPotensial,
-    DampakPentingHipotetik,
+    Pelingkupan,
+    MatriksIdentifikasiDampakTable,
+    DampakHipotetik,
     MetodeStudi,
+    MatriksDPHTable,
     Workflow,
+    BaganAlir,
+    UploadPetaBatas,
+  },
+  props: {
+    data: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
+      accordionKey: 1,
       idProject: 0,
       isSubmitEnabled: false,
-      vsaListKey: 0,
-      componentActive: true,
-      ronaActive: false,
+      scopingActive: true,
       matriksActive: false,
       dampakPotensialActive: false,
       dampakPentingHipotetikActive: false,
       metodeStudiActive: false,
+      activeName: '1',
     };
   },
   mounted() {
     this.setProjectId();
     this.$store.dispatch('getStep', 3);
+    this.data;
   },
   methods: {
     setProjectId(){
@@ -147,25 +121,21 @@ export default {
       this.isSubmitEnabled = true;
     },
     handleReloadVsaList(tab) {
-      this.vsaListKey = this.vsaListKey + 1;
-      this.componentActive = false;
-      this.ronaActive = false;
-      this.matriksActive = false;
-      this.dampakPotensialActive = false;
-      this.dampakPentingHipotetikActive = false;
-      this.metodeStudiActive = false;
-      if (tab === 'komponen') {
-        this.componentActive = true;
-      } else if (tab === 'rona-lingkungan-awal') {
-        this.ronaActive = true;
+      this.accordionKey = this.accordionKey + 1;
+      if (tab === 'pelingkupan') {
+        this.activeName = '1';
       } else if (tab === 'matriks-identifikasi-dampak') {
-        this.matriksActive = true;
-      } else if (tab === 'dampak-potensial') {
-        this.dampakPotensialActive = true;
-      } else if (tab === 'dampak-penting-hipotetik') {
-        this.dampakPentingHipotetikActive = true;
+        this.activeName = '2';
+      } else if (tab === 'dampak-penting') {
+        this.activeName = '3';
+      } else if (tab === 'peta-batas') {
+        this.activeName = '4';
       } else if (tab === 'metode-studi') {
-        this.metodeStudiActive = true;
+        this.activeName = '5';
+      } else if (tab === 'matriks-dph') {
+        this.activeName = '6';
+      } else if (tab === 'bagan-alir') {
+        this.activeName = '7';
       }
     },
   },
@@ -173,49 +143,8 @@ export default {
 </script>
 
 <style>
-.vsa-list {
-  /* CSS Variables */
-  --vsa-max-width: 100%;
-  --vsa-min-width: 300px;
-  --vsa-heading-padding: 1rem 1rem;
-  --vsa-text-color: rgba(55, 55, 55, 1);
-  --vsa-highlight-color: #1e5128;
-  --vsa-bg-color: rgba(255, 255, 255, 1);
-  --vsa-border-color: rgba(0, 0, 0, 0.2);
-  --vsa-border-width: 1px;
-  --vsa-border-style: solid;
-  --vsa-border: var(--vsa-border-width) var(--vsa-border-style) var(--vsa-border-color);
-  --vsa-content-padding: 1rem 1rem;
-  --vsa-default-icon-size: 1;
-
-  display: block;
-  max-width: var(--vsa-max-width);
-  min-width: var(--vsa-min-width);
-  width: 100%;
-
-  /* Reset the list styles */
-  padding: 0;
-  margin: 0;
-  list-style: none;
-
-  border: var(--vsa-border);
-  color: var(--vsa-text-color);
-  background-color: var(--vsa-bg-color);
-}
-.vsa-list [hidden]{
-  display:none
-}
-
-.vsa-item__content{
-  margin:0;
-  padding:var(--vsa-content-padding);
-  overflow: auto;
-}
-
-.vsa-item__trigger:focus,.vsa-item__trigger:hover{
-    outline:none;
-    background-color:var(--vsa-highlight-color);
-    color: white;
+.bagan__alir {
+  display: none;
 }
 
 h2 {
@@ -223,4 +152,25 @@ h2 {
   margin-block-start: 0em;
 }
 
+.el-collapse-item__header {
+  /* background-color: #296d36; */
+  background-color: #1E5128;
+  padding-left: 10px;
+  font-size: large;
+  font-weight: bold;
+  color: rgb(196, 196, 196);
+}
+.el-collapse-item__content {
+  padding-top: 10px;
+}
+
+table th, table td {word-break: normal !important; padding:.5em; line-height:1.2em; border: 1px solid #eee;}
+table td { vertical-align: top !important;}
+table thead  {background-color:#6cc26f !important; color: white !important;}
+table td.title, table tr.title td, table.title td { text-align:left;}
+div.div-fka {
+  padding: 0.5em;
+  margin-bottom: 0.6em;
+  background-color: #fafafa;
+}
 </style>

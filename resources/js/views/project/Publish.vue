@@ -1,5 +1,5 @@
 <template>
-  <div class="form-container" style="padding: 24px">
+  <div v-loading="fullLoading" class="form-container" style="padding: 24px">
     <workflow />
     <el-row>
       <el-col
@@ -21,7 +21,7 @@
         </div>
       </el-col>
     </el-row>
-    <el-row style="padding-top: 32px">
+    <el-row :gutter="4" style="padding-top: 32px">
       <el-col :span="12">
         <div><h3>Deskripsi Kegiatan</h3></div>
         <div v-html="project.description" />
@@ -31,18 +31,75 @@
         <div v-html="project.location_desc" />
       </el-col>
     </el-row>
-    <el-row>
+    <el-row :gutter="4">
       <el-col :span="12">
-        <h2>Hasil Penapisan</h2>
+        <div>
+          <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+            <el-table-column
+              prop="no"
+              label="No."
+            />
+            <!-- <el-table-column
+              prop="kbli"
+              label="KBLI"
+            /> -->
+            <el-table-column
+              prop="kegiatan"
+              label="Kegiatan"
+            />
+            <el-table-column
+              prop="jenisKegiatan"
+              label="Jenis Kegiatan"
+            />
+            <el-table-column
+              prop="skala"
+              label="Skala Besaran"
+            />
+          <!-- <el-table-column
+            prop="hasil"
+            label="Hasil"
+          /> -->
+          </el-table>
+        </div>
+      </el-col>
+      <el-col :span="12">
+        <div>
+          <el-table :data="project.address" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+            <el-table-column
+              label="No."
+            >
+              <template slot-scope="scope">
+                {{ scope.$index + 1 }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="prov"
+              label="Provinsi"
+            />
+            <el-table-column
+              prop="district"
+              label="City"
+            />
+            <el-table-column
+              prop="address"
+              label="address"
+            />
+          </el-table>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row :gutter="4">
+      <el-col :span="12">
+        <h2>Hasil Penapisan Rencana Kegiatan</h2>
         <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
-          <el-col :span="12">123456789</el-col></el-row>
+          <el-col :span="12">1611182998277</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
           <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
           <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
         <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
           <el-col :span="12">Pusat</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
+        <!-- <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
           <el-col :span="12">
             <el-form
               ref="project"
@@ -55,39 +112,27 @@
                 <el-select
                   v-model="project.type_formulator_team"
                   placeholder="Pilih"
-                  style="width: 100%"
                   :disabled="readonly"
-                  @change="onFormulatorTypeChange($event)"
                 >
                   <el-option
                     v-for="item in teamOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                    style="width: 200px"
                   />
                 </el-select>
               </el-form-item>
             </el-form>
-          </el-col></el-row>
-        <el-row v-if="getFormulatedTeam === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
+          </el-col>
+        </el-row> -->
+        <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
           <el-col :span="12">
             <el-form
               ref="project"
               :model="project"
               label-position="top"
-              label-width="200px"
-              style="max-width: 100%"
             >
               <el-form-item prop="id_lpjp">
-                <!-- <el-autocomplete
-                  v-model="project.lpjp_name"
-                  class="inline-input"
-                  :fetch-suggestions="lpjpSearch"
-                  placeholder="Masukan"
-                  :trigger-on-focus="false"
-                  style="width: 100%"
-                /> -->
                 <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
                   <el-option
                     v-for="item in getLpjps"
@@ -98,9 +143,13 @@
                 </el-select>
               </el-form-item>
             </el-form>
-          </el-col></el-row>
+          </el-col>
+        </el-row>
       </el-col>
-      <div v-if="getFormulatedTeam === 'mandiri'">
+      <el-col :span="12" />
+    </el-row>
+    <el-row>
+      <div v-if="project.type_formulator_team === 'mandiri'">
         <el-row style="padding-bottom: 16px">
           <h2>Tambah Penyusun</h2>
           <formulator-table
@@ -112,7 +161,7 @@
             @click="handleAddFormulatorTable"
           >+</el-button>
         </el-row>
-        <el-row style="padding-bottom: 16px">
+        <!-- <el-row style="padding-bottom: 16px">
           <h2>Tambah Tenaga Ahli</h2>
           <expert-table
             :list="listExpertTeam"
@@ -122,13 +171,12 @@
             type="primary"
             @click="handleAddExpertTable"
           >+</el-button>
-        </el-row>
+        </el-row> -->
       </div>
-
     </el-row>
     <div slot="footer" class="dialog-footer">
-      <el-button :disabled="readonly" @click="handleCancel()"> Batal </el-button>
-      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
+      <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
+      <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
     </div>
   </div>
 </template>
@@ -136,36 +184,33 @@
 <script>
 import Resource from '@/api/resource';
 import FormulatorTable from './components/formulatorTable.vue';
-import ExpertTable from './components/expertTable.vue';
+// import ExpertTable from './components/expertTable.vue';
 
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
+const provinceResource = new Resource('provinces');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
-const supportDocResource = new Resource('support-docs');
-const initiatorResource = new Resource('initiatorsByEmail');
-const formulatorResource = new Resource('formulators');
+// const supportDocResource = new Resource('support-docs');
+const initiatorByEmailResource = new Resource('initiatorsByEmail');
+const initiatorResource = new Resource('initiators');
+// const formulatorResource = new Resource('formulators');
 const formulatorTeamsResource = new Resource('formulator-teams');
 
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import Home from '@arcgis/core/widgets/Home';
-import Compass from '@arcgis/core/widgets/Compass';
-import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
-import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
-import L from 'leaflet';
 import Workflow from '@/components/Workflow';
+import axios from 'axios';
 
 export default {
   name: 'Publish',
-  components: { FormulatorTable, ExpertTable, Workflow },
+  components: { FormulatorTable, Workflow },
   props: {
     project: {
       type: Object,
@@ -176,8 +221,8 @@ export default {
       default: false,
     },
     mapUpload: {
-      type: Object,
-      default: null,
+      type: File,
+      default: () => null,
     },
   },
   data() {
@@ -185,7 +230,7 @@ export default {
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
-      teamOptions: [{ value: 'mandiri', label: 'Mandiri' }, { value: 'lpjp', label: 'LPJP' }],
+      teamOptions: [{ value: 'mandiri', label: 'Penyusun Perseorangan' }, { value: 'lpjp', label: 'Lembaga Penyedia Jasa Penyusun' }],
       teamToChooseOptions: null,
       kabkot: null,
       list: [],
@@ -198,7 +243,22 @@ export default {
       geojson: null,
       all: [],
       mapList: [],
+      tableData: [],
+      addressTableData: [],
+      province: null,
+      fullLoading: false,
     };
+  },
+  beforeRouteLeave(to, from, next) {
+    if (from.name === 'publishProject' && to.name === 'createProject') {
+      if (!to.params.project){
+        next(false);
+      } else {
+        next();
+      }
+    } else {
+      next();
+    }
   },
   computed: {
     getFormulatedTeam(){
@@ -207,30 +267,93 @@ export default {
     getLpjps(){
       return this.$store.getters.lpjps;
     },
-    getProjectField() {
-      const pfield = this.$store.getters.projectFieldOptions;
-      console.log(pfield);
-      return pfield.filter(e => e.value === this.project.field)[0].label;
-    },
+    // getProjectField() {
+    //   const pfield = this.$store.getters.projectFieldOptions;
+    //   console.log(pfield);
+    //   return pfield.filter(e => e.value === this.project.field)[0].label;
+    // },
   },
   async mounted() {
     console.log(this.project);
+    this.fullLoading = true;
     // for step
     this.$store.dispatch('getStep', 1);
-    await this.getProjectFields();
-    await this.getKbliEnvParams();
+    // await this.getProjectFields();
+    // await this.getKbliEnvParams();
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
+    // data table for subproject
+    this.setDataTables();
+    this.setAddressDataTables();
+    this.fullLoading = false;
+    this.loadMap();
     await this.$store.dispatch('getLpjp');
     await this.$store.dispatch('getFormulators', {
       page: 1,
       limit: 1000,
-      active: '',
+      active: 'true',
     });
-    this.loadMap();
   },
   methods: {
+    setAddressDataTables(){
+      this.addressTableData.push({
+        no: '1',
+        province: this.province,
+        city: this.kabkot,
+        address: this.project.address,
+      });
+    },
+    setDataTables(){
+      const mainArr = this.project.listSubProject.filter(e => e.type === 'utama').map((e, index) => {
+        return {
+          no: index + 1,
+          kbli: e.kbli,
+          kegiatan: e.name,
+          jenisKegiatan: e.biz_name,
+          skala: e.scale + ' ' + (e.scale_unit || ''),
+          hasil: e.result,
+        };
+      });
+      const suppArr = this.project.listSubProject.filter(e => e.type === 'pendukung').map((e, index) => {
+        return {
+          no: index + 1,
+          kbli: e.kbli,
+          kegiatan: e.name,
+          jenisKegiatan: e.biz_name,
+          skala: e.scale + ' ' + (e.scale_unit || ''),
+          hasil: e.result,
+        };
+      });
+      console.log('main', mainArr);
+      console.log('sup', suppArr);
+
+      if (mainArr.length > 0){
+        mainArr.unshift({
+          no: 'A',
+          kegiatan: 'Kegiatan Utama',
+        });
+      }
+
+      if (suppArr.length > 0){
+        suppArr.unshift({
+          no: 'B',
+          kegiatan: 'Kegiatan Pendukung',
+        });
+      }
+
+      this.tableData = [...mainArr, ...suppArr];
+      console.log('all', this.tableData);
+    },
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (row.scale) {
+        if (columnIndex === 1) {
+          return [1, 3];
+        } else if (columnIndex === 2) {
+          return [0, 0];
+        }
+      }
+    },
     defineActions(event) {
       const item = event.item;
 
@@ -244,94 +367,43 @@ export default {
         ],
       ];
     },
-    async getProjectFields() {
-      await this.$store.dispatch('getProjectFields');
-    },
+    // async getProjectFields() {
+    //   await this.$store.dispatch('getProjectFields');
+    // },
     loadMap() {
       if (this.readonly === true) {
         const map = new Map({
           basemap: 'topo',
         });
 
-        const batasProv = new MapImageLayer({
-          url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
-          sublayers: [{
-            id: 0,
-            title: 'Batas Provinsi',
-          }],
-        });
-
-        const graticuleGrid = new MapImageLayer({
-          url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
-        });
-
-        map.addMany([batasProv, graticuleGrid]);
-
-        const baseGroupLayer = new GroupLayer({
-          title: 'Base Layer',
-          visible: true,
-          layers: [batasProv, graticuleGrid],
-          opacity: 0.90,
-        });
-
-        map.add(baseGroupLayer);
-
-        const mapGeojsonArray = [];
-        const splitMap = this.project.map.split(',');
-
-        for (let i = 0; i < splitMap.length; i++) {
-          shp(window.location.origin + '/storage/map/' + splitMap[i]).then(data => {
-            if (data.length > 1) {
-              for (let i = 0; i < data.length; i++) {
-                const blob = new Blob([JSON.stringify(data[i])], {
-                  type: 'application/json',
-                });
-                const url = URL.createObjectURL(blob);
-                const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
-                  outFields: ['*'],
-                  title: 'Layers',
-                });
-                mapView.on('layerview-create', (event) => {
-                  mapView.goTo({
-                    target: geojsonLayerArray.fullExtent,
+        axios.get('api/map/' + this.project.id)
+          .then(response => {
+            const projects = response.data;
+            for (let i = 0; i < projects.length; i++) {
+              if (projects[i].attachment_type === 'tapak') {
+                shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                  const blob = new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  axios.get('api/projects/' + this.project.id).then((response) => {
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Peta Tapak',
+                    });
+                    mapView.on('layerview-create', (event) => {
+                      mapView.goTo({
+                        target: geojsonLayerArray.fullExtent,
+                      });
+                    });
+                    map.add(geojsonLayerArray);
                   });
                 });
-
-                mapGeojsonArray.push(geojsonLayerArray);
               }
-
-              const kegiatanGroupLayer = new GroupLayer({
-                title: this.project.project_title,
-                visible: true,
-                visibilityMode: 'exclusive',
-                layers: mapGeojsonArray,
-                opacity: 0.75,
-              });
-
-              map.add(kegiatanGroupLayer);
-            } else {
-              const blob = new Blob([JSON.stringify(data)], {
-                type: 'application/json',
-              });
-              const url = URL.createObjectURL(blob);
-              const geojsonLayer = new GeoJSONLayer({
-                url: url,
-                visible: true,
-                outFields: ['*'],
-                opacity: 0.75,
-                title: this.project.project_title,
-              });
-
-              map.add(geojsonLayer);
-              mapView.on('layerview-create', (event) => {
-                mapView.goTo({
-                  target: geojsonLayer.fullExtent,
-                });
-              });
             }
           });
-        }
 
         const mapView = new MapView({
           container: 'mapView',
@@ -341,33 +413,6 @@ export default {
         });
         this.$parent.mapView = mapView;
 
-        const home = new Home({
-          view: mapView,
-        });
-
-        mapView.popup.on('trigger-action', (event) => {
-          if (event.action.id === 'get-details') {
-            console.log('tbd');
-          }
-        });
-
-        mapView.ui.add(home, 'top-left');
-        const compass = new Compass({
-          view: mapView,
-        });
-        mapView.ui.add(compass, 'top-left');
-        const basemapToggle = new BasemapToggle({
-          view: mapView,
-          container: document.createElement('div'),
-          secondBasemap: 'satellite',
-        });
-        const expandBasemapToggler = new Expand({
-          view: mapView,
-          name: 'basemap',
-          content: basemapToggle.domNode,
-          expandIconClass: 'esri-icon-basemap',
-        });
-        mapView.ui.add(expandBasemapToggler, 'top-left');
         const attribution = new Attribution({
           view: mapView,
         });
@@ -399,36 +444,66 @@ export default {
           expandTooltip: 'Legend',
         });
 
-        const layersExpand = new Expand({
-          view: mapView,
-          content: layerList.domNode,
-          expandIconClass: 'esri-icon-layer-list',
-          expandTooltip: 'Layers',
-        });
         mapView.ui.add(legendExpand, 'bottom-left');
-        mapView.ui.add(layersExpand, 'top-right');
+        mapView.ui.add(layerList, 'top-right');
       } else {
-        console.log(this.mapUpload);
-        const map = L.map('mapView');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
+        const map = new Map({
+          basemap: 'topo',
+        });
 
-        for (let i = 0; i < this.mapUpload.length; i++){
-          const reader = new FileReader(); // instantiate a new file reader
-          reader.onload = (event) => {
-            const geo = L.geoJSON().addTo(map);
-            const base = event.target.result;
-            shp(base).then(function(data) {
-              const feature = geo.addData(data);
-              console.log(feature);
-
-              map.fitBounds(feature.getBounds());
+        const fr = new FileReader();
+        fr.onload = (event) => {
+          const base = event.target.result;
+          shp(base).then(function(data) {
+            const blob = new Blob([JSON.stringify(data)], {
+              type: 'application/json',
             });
-          };
 
-          reader.readAsArrayBuffer(this.mapUpload[i]);
-        }
+            const renderer = {
+              type: 'simple',
+              field: '*',
+              symbol: {
+                type: 'simple-fill',
+                outline: {
+                  color: 'red',
+                },
+              },
+            };
+            const url = URL.createObjectURL(blob);
+            const geojsonLayer = new GeoJSONLayer({
+              url: url,
+              visible: true,
+              outFields: ['*'],
+              opacity: 0.75,
+              title: 'Peta Tapak Proyek',
+              renderer: renderer,
+            });
+
+            map.add(geojsonLayer);
+            mapView.on('layerview-create', (event) => {
+              mapView.goTo({
+                target: geojsonLayer.fullExtent,
+              });
+            });
+          });
+        };
+        fr.readAsArrayBuffer(this.mapUpload);
+
+        const mapView = new MapView({
+          container: 'mapView',
+          map: map,
+          center: [115.287, -1.588],
+          zoom: 6,
+        });
+        this.$parent.mapView = mapView;
+
+        const layerList = new LayerList({
+          view: mapView,
+          container: document.createElement('div'),
+          listItemCreatedFunction: this.defineActions,
+        });
+
+        mapView.ui.add(layerList, 'top-right');
       }
     },
     handleAddExpertTable(){
@@ -442,8 +517,12 @@ export default {
       console.log(this.$store.getters.teamType);
     },
     async getInitiatorData(){
-      const data = await this.$store.dispatch('user/getInfo');
-      this.project.initiatorData = await initiatorResource.list({ email: data.email });
+      if (this.project.id_applicant){
+        this.project.initiatorData = await initiatorResource.get(this.project.id_applicant);
+      } else {
+        const data = await this.$store.dispatch('user/getInfo');
+        this.project.initiatorData = await initiatorByEmailResource.list({ email: data.email });
+      }
     },
     async getTeamOptions() {
       const { data } = await formulatorTeamResource.list({});
@@ -455,6 +534,11 @@ export default {
       const data = await districtResource.get(id);
       console.log(data);
       this.kabkot = data.name;
+    },
+    async getProvince(id) {
+      const data = await provinceResource.get(id);
+      console.log(data);
+      this.province = data.name;
     },
     calculatedProjectDoc() {
       this.kbliEnvParams.forEach((item) => {
@@ -510,40 +594,41 @@ export default {
       this.calculatedProjectDoc();
     },
     handleCancel() {
+      // this.$router.back();
       this.$router.push({
         name: 'createProject',
         params: { project: this.project },
       });
     },
-    async createTimPenyusun(){
-      // insert all tim ahli
-      const listAhli = [];
+    // async createTimPenyusun(){
+    //   // insert all tim ahli
+    //   const listAhli = [];
 
-      await this.listExpertTeam.forEach(element => {
-        // make form data because we got file
-        const formData = new FormData();
+    //   await this.listExpertTeam.forEach(element => {
+    //     // make form data because we got file
+    //     const formData = new FormData();
 
-        // eslint-disable-next-line no-undef
-        _.each(element, (value, key) => {
-          formData.append(key, value);
-        });
+    //     // eslint-disable-next-line no-undef
+    //     _.each(element, (value, key) => {
+    //       formData.append(key, value);
+    //     });
 
-        // adding TA for membership_status
-        formData.append('membership_status', 'TA');
+    //     // adding TA for membership_status
+    //     formData.append('membership_status', 'TA');
 
-        formulatorResource
-          .store(formData)
-          .then((response) => {
-            this.element = {};
-            listAhli.push(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      });
+    //     formulatorResource
+    //       .store(formData)
+    //       .then((response) => {
+    //         this.element = {};
+    //         listAhli.push(response);
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    //   });
 
-      this.all = [...listAhli, this.listFormulatorTeam];
-    },
+    //   this.all = [...listAhli, this.listFormulatorTeam];
+    // },
     async createTeam(id){
       console.log('list tim ahli yang dibuat', this.all);
       // create tim using all list
@@ -562,96 +647,113 @@ export default {
         });
     },
     async handleSubmit() {
+      this.fullLoading = true;
       this.project.id_applicant = this.project.initiatorData.id ? this.project.initiatorData.id : 0;
 
       if (!this.project.id_project){
         this.project.id_project = 1;
       }
 
-      if (this.getFormulatedTeam === 'mandiri') {
-        // await this.createTimPenyusun();
-      }
-
       // make form data because we got file
       const formData = new FormData();
 
-      for (var i = 0; i < this.mapUpload.length; i++){
-        const file = this.mapUpload[i];
-        formData.append('fileMap[' + i + ']', file);
+      // for formulator team mandiri
+      if (this.project.type_formulator_team === 'mandiri') {
+        formData.append('formulatorTeams', JSON.stringify(this.listFormulatorTeam));
+        for (var u = 0; u < this.listFormulatorTeam.length; u++){
+          formData.append('listFormulatorTeam[' + u + ']', this.listFormulatorTeam[u]);
+
+          if (this.listFormulatorTeam[u].fileDoc){
+            const formulatorFile = this.listFormulatorTeam[u].fileDoc;
+            formData.append('formulatorFiles[' + u + ']', formulatorFile);
+          }
+        }
       }
+
+      console.log(this.project);
 
       // eslint-disable-next-line no-undef
       _.each(this.project, (value, key) => {
-        formData.append(key, value);
+        if (key === 'listSubProject' || key === 'address'){
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
       });
 
       console.log('project yang disubmit', formData);
 
-      this.$refs.project.validate(valid => {
-        if (valid) {
-          if (this.project.id !== undefined) {
-            // update
-            projectResource.updateMultipart(this.project.id, formData).then(response => {
-              const { data } = response;
-              this.saveSupportDocs(data.id);
-              this.$message({
-                type: 'success',
-                message: 'Project info has been updated successfully',
-                duration: 5 * 1000,
-              });
-              this.$router.push('/project');
-            }).catch(error => {
-              console.log(error);
-            });
-          } else {
-            projectResource
-              .store(formData)
-              .then((response) => {
-                // save supportdocs
-                const { data } = response;
+      // this.$refs.project.validate(valid => {
+      // if (this.project.type_formulator_team) {
+      if (this.project.id !== undefined) {
+        // update
+        projectResource.updateMultipart(this.project.id, formData).then(response => {
+          // const { data } = response;
+          // this.saveSupportDocs(data.id);
+          this.$message({
+            type: 'success',
+            message: 'Project info has been updated successfully',
+            duration: 5 * 1000,
+          });
+          this.fullLoading = false;
+          this.$router.push('/project');
+        }).catch(error => {
+          console.log(error);
+        });
+      } else {
+        projectResource
+          .store(formData)
+          .then((response) => {
+            // save supportdocs
+            // const { data } = response;
 
-                this.saveSupportDocs(data.id);
-                // this.createTeam(data.id);
-                this.$message({
-                  message:
+            // this.saveSupportDocs(data.id);
+            // this.createTeam(data.id);
+            this.$message({
+              message:
                     'New Project ' +
                     this.project.project_title +
                     ' has been created successfully.',
-                  type: 'success',
-                  duration: 5 * 1000,
-                });
-                this.$router.push('/project');
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            this.$router.push('/project');
+          })
+          .catch((error) => {
+            this.fullLoading = false;
+            console.log(error);
+          });
+      }
+      // } else {
+      //   console.log('error submit!!');
+      //   this.$alert('Mohon Pilih tim Penyusun', 'Title', {
+      //     confirmButtonText: 'OK',
+      //   });
+      // }
+      // });
     },
-    async saveSupportDocs(id_project){
-      this.project.listSupportDoc.forEach(element => {
-        element.id_project = id_project;
+    // async saveSupportDocs(id_project){
+    //   this.project.listSupportDoc.forEach(element => {
+    //     element.id_project = id_project;
 
-        // make form data because we got file
-        const formData = new FormData();
+    //     // make form data because we got file
+    //     const formData = new FormData();
 
-        // eslint-disable-next-line no-undef
-        _.each(element, (value, key) => {
-          formData.append(key, value);
-        });
-        if (element.id === undefined){
-          supportDocResource.store(formData);
-        } else {
-          supportDocResource.updateMultipart(element.id, formData);
-        }
-      });
-    },
+    //     // eslint-disable-next-line no-undef
+    //     _.each(element, (value, key) => {
+    //       formData.append(key, value);
+    //     });
+    //     if (element.id === undefined){
+    //       supportDocResource.store(formData);
+    //     } else {
+    //       supportDocResource.updateMultipart(element.id, formData);
+    //     }
+    //   });
+    // },
     async updateList() {
-      await this.getKabKotName(this.project.id_district);
+      console.log(this.project.address[0]);
+      // await this.getKabKotName(this.project.address[0].id_district);
+      // await this.getProvince(this.project.address[0].id_prov);
       this.list = [
         {
           param: 'Nama Kegiatan',
@@ -659,7 +761,7 @@ export default {
         },
         {
           param: 'Bidang Usaha/Kegiatan',
-          value: this.getProjectField,
+          value: this.project.listSubProject[0].biz_name,
         },
         {
           param: 'Skala/Besaran',
@@ -667,7 +769,7 @@ export default {
         },
         {
           param: 'Alamat',
-          value: this.project.address,
+          value: this.project.address[0].address,
         },
         {
           param: 'Pemrakarsa',
@@ -691,7 +793,7 @@ export default {
         },
         {
           param: 'Provinsi/Kota',
-          value: this.kabkot,
+          value: this.project.address[0].district,
         },
       ];
     },

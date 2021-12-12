@@ -2,7 +2,7 @@ import Resource from '@/api/resource';
 const projectFieldResource = new Resource('project-fields');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
-const kbliResource = new Resource('kblis');
+const kbliResource = new Resource('business');
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const ossProjectResource = new Resource('oss-projects');
 const lpjpResource = new Resource('lpjp');
@@ -40,6 +40,10 @@ const projects = {
       {
         value: 'anggota',
         label: 'Anggota',
+      },
+      {
+        value: 'ahli',
+        label: 'Tenaga Ahli',
       },
     ],
     unitOptions: [],
@@ -104,7 +108,7 @@ const projects = {
     async getProvinces({ commit }) {
       const { data } = await provinceResource.list({});
       const option = data.map((i) => {
-        return { value: i.id, label: i.name };
+        return { value: i.name, label: i.name };
       });
       commit('SET_PROVINCE_OPTIONS', option);
     },
@@ -132,7 +136,7 @@ const projects = {
     async getDistricts({ commit }, payload) {
       const { data } = await districtResource.list(payload);
       const option = data.map((i) => {
-        return { value: i.id, label: i.name };
+        return { value: i.name, label: i.name };
       });
       commit('SET_CITY_OPTIONS', option);
     },

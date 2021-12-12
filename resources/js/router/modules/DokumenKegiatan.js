@@ -19,6 +19,13 @@ const dokumenKegiatanRoutes = {
       name: 'penyusunanRKLRPL',
       meta: { title: 'Penyusunan RKL RPL', icon: 'zip', noCache: true },
     },
+    // dummy for uklupl temp
+    {
+      path: ':id(\\d+)/penyusunan-rkl-rpl-dummy',
+      component: () => import('@/views/rkl-rpl/index-dummy'),
+      name: 'penyusunanRKLRPL',
+      meta: { title: 'Penyusunan RKL RPL', icon: 'zip', noCache: true },
+    },
     {
       path: ':id(\\d+)/pengujian-ka',
       component: () => import('@/views/pengujian/index'),

@@ -17,7 +17,8 @@ class UklUplResource extends JsonResource
         return [
             'name' => $this->user->name,
             'date' => $this->created_at,
-            'comment' => $this->comment
+            'comment' => $this->comment,
+            'avatar' => $this->user->avatar
         ];
     }
 }

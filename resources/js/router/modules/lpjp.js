@@ -14,7 +14,7 @@ const announcementRoutes = {
     //   meta: { title: 'listLpjpTeam', icon: 'documentation' },
     // },
     {
-      path: 'daftar-anggota',
+      path: ':id(\\d+)/daftar-anggota',
       component: () =>
         import('@/views/independent-formulator-team/member/Create'),
       name: 'listLpjpTeam',

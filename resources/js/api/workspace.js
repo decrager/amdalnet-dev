@@ -21,6 +21,14 @@ class WorkspaceResource extends Resource {
       params: { _method: 'POST' },
     });
   }
+
+  getConfig(id, filename) {
+    return request({
+      url: '/' + this.uri + '/config/' + id,
+      params: { filename },
+      method: 'get',
+    });
+  }
 }
 
 export { WorkspaceResource as default };

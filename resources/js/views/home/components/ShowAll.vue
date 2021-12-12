@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showAllTabs" style="margin-top:2rem;">
+  <div style="margin-top:2rem;">
     <div v-if="showFromAll" style="margin-top:2rem;">
       <el-form ref="form">
         <el-row :gutter="20">
@@ -29,10 +29,10 @@
       </el-form>
       <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
         <el-col :xs="24" :sm="3" style="padding-top:1rem">
-          <img class="imgCompany" src="https://placeimg.com/100/100/tech">
+          <img alt="" src="/images/list.svg">
         </el-col>
         <el-col :xs="24" :sm="18" style="padding-top:1rem">
-          <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project.province.name }}</h3>
+          <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }}</h3>
           <h3 class="fw-bold to mt-2-5">{{ amdal.pic_name }}</h3>
           <p class="tw">Pengumuman : {{ formatDateStr(amdal.start_date) }} | {{ amdal.feedbacks_count }} Tanggapan</p>
         </el-col>
@@ -44,6 +44,7 @@
       <div class="block" style="text-align:right">
         <pagination
           v-show="total > 0"
+          :auto-scroll="false"
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
@@ -52,9 +53,11 @@
       </div>
     </div>
     <div v-if="showDetailFromAll">
-      <DetailsFromAll
+      <Details
         :selected-announcement="selectedAnnouncement"
+        :selected-project="selectedProject"
         @handleCancelComponent="handleCancelComponent"
+        @handleSetTabs="handleSetTabs"
       />
     </div>
   </div>
@@ -62,16 +65,13 @@
 <script>
 import axios from 'axios';
 import Pagination from '@/components/Pagination';
-import DetailsFromAll from './DetailsFromAll';
+import Details from './Details';
 
 export default {
   name: 'ShowAll',
   components: {
     Pagination,
-    DetailsFromAll,
-  },
-  props: {
-    showAllTabs: Boolean,
+    Details,
   },
   data() {
     return {
@@ -92,7 +92,8 @@ export default {
       keyword: '',
       showDetailFromAll: false,
       showFromAll: true,
-      selectedAnnouncement: [],
+      selectedAnnouncement: {},
+      selectedProject: {},
     };
   },
   created() {
@@ -133,6 +134,7 @@ export default {
       axios.get('/api/announcements/' + id)
         .then(response => {
           this.selectedAnnouncement = response.data;
+          this.selectedProject = response.data.project;
           this.showDetailFromAll = true;
           this.showFromAll = false;
         });
@@ -147,6 +149,11 @@ export default {
       this.getAll(this.form.sort);
     },
     handleCancelComponent(){
+      this.showDetailFromAll = false;
+      this.showFromAll = true;
+    },
+    handleSetTabs(e){
+      console.log(e, 'ketu');
       this.showDetailFromAll = false;
       this.showFromAll = true;
     },

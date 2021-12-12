@@ -3,6 +3,7 @@
     <div class="filter-container">
       <el-row type="flex" class="row-bg" justify="space-between">
         <el-button
+          v-if="!isExaminer"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -13,6 +14,7 @@
       </el-row>
     </div>
     <el-table
+      :key="showFeedback"
       v-loading="loading"
       :data="feedbacks"
       fit
@@ -126,7 +128,13 @@ export default {
       identityDialogImg: '',
       showIdDialog: false,
       showFeedback: false,
+      userInfo: {},
     };
+  },
+  computed: {
+    isExaminer() {
+      return this.$store.getters.roles.includes('examiner');
+    },
   },
   mounted() {
     this.relevantChoices = [
@@ -172,6 +180,7 @@ export default {
     handleCloseFeedbackDialog(){
       this.showFeedback = false;
       this.showIdDialog = false;
+      this.getFeedbacks();
     },
     handleCloseIdentityDialog(){
       this.showFeedback = false;

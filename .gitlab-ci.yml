@@ -34,7 +34,8 @@ deploy_dev:
     - docker-compose exec -T laravel npm run production
     # - docker-compose restart laravel
     - echo "Update db cloud"
-    - ssh hadoop@192.168.7.23 'PGPASSWORD=SemangatT3rus pg_dump -h localhost -U amdaldevs -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql; PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet -U postgres -f ~/amdalnet.sql'
+    #- ssh hadoop@192.168.7.23 'PGPASSWORD=SemangatT3rus pg_dump -h localhost -U amdaldevs -d amdalnet -c --if-exists 
+    #- ssh amdalnet@103.172.205.4 'PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql; PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet_bak -U postgres -f ~/amdalnet.sql'
   environment:
     name: staging
   only:
@@ -53,6 +54,8 @@ deploy_cloud:
     - php artisan migrate
     - npm install
     - npm run production
+    #- PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql
+    #- PGPASSWORD=4md4lNET psql -h localhost -d amdalnet_bak -U postgres -f ~/amdalnet.sql
   only:
     - master
   tags:

@@ -6,7 +6,7 @@
           <el-tab-pane class="tabsCustom" label="AMDAL">
             <div v-for="amdal in amdals.data" :key="amdal.id" class="announce__box__wrapper">
               <div class="announce__box__icon">
-                <img alt="" src="/images/list.svg">
+                <img alt="" src="/images/list.png">
               </div>
               <div class="announce__box__desc">
                 <p class="announce__box__desc__content">{{ amdal.project_type }}</p>
@@ -55,19 +55,17 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      <Details
-        v-if="showDetails"
-        :show-details="showDetails"
-        :announcement-id="selectedId"
-        :selected-announcement="selectedAnnouncement"
-        :selected-project="selectedProject"
-        @handleCancelComponent="handleCancelComponent"
-        @handleSetTabs="handleSetTabs"
-      />
+      <div v-if="showDetails">
+        <Details
+          :selected-announcement="selectedAnnouncement"
+          :selected-project="selectedProject"
+          @handleCancelComponent="handleCancelComponent"
+          @handleSetTabs="handleSetTabs"
+        />
+      </div>
     </div>
-    <div>
+    <div v-if="showAllTabs">
       <ShowAll
-        :show-all-tabs="showAllTabs"
         @handleCancle="handleCancle"
       />
     </div>
@@ -116,27 +114,32 @@ export default {
         return dayjs(String(value)).format('DD MMMM YYYY');
       }
     },
-    openDetails(id, param) {
+    async openDetails(id, param) {
       this.showDetails = true;
       this.showTabs = false;
       this.selectedId = id;
       this.selectedAnnouncement = {};
       this.selectedProject = {};
-      this.showDetailsDialog = true;
-      axios.get('/api/announcements/' + this.selectedId)
+      await axios.get('/api/announcements/' + this.selectedId)
         .then(response => {
+          console.log(response.data);
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
-          console.log(this.selectedProject);
         });
+      console.log(this.selectedAnnouncement);
+      this.showDetailsDialog = true;
     },
-    handleCancelComponent(){
-      this.showDetails = false;
-      this.showTabs = true;
+    handleCancelComponent(e){
+      if (e === 'TABS'){
+        this.showDetails = false;
+        this.showTabs = true;
+      }
     },
-    handleSetTabs(){
-      this.showDetails = false;
-      this.showTabs = true;
+    handleSetTabs(e){
+      if (e === 'TABS'){
+        this.showDetails = false;
+        this.showTabs = true;
+      }
     },
     openAll(type){
       this.showTopTabs = false;

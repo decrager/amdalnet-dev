@@ -41,7 +41,7 @@ const announcements = {
   actions: {
     getAll({ commit }) {
       commit('LOADING_STATUS', true);
-      axios.get(`${API_URL}?project=ALL`)
+      axios.get(`${API_URL}?keyword=ALL`)
         .then(response => {
           commit('SET_ALL', response.data);
           commit('LOADING_STATUS', false);
@@ -49,7 +49,7 @@ const announcements = {
     },
     getAmdal({ commit }) {
       commit('LOADING_STATUS', true);
-      axios.get(`${API_URL}?project=AMDAL&limit=10`)
+      axios.get(`${API_URL}?keyword=AMDAL&limit=10`)
         .then(response => {
           commit('SET_AMDAL', response.data);
           commit('LOADING_STATUS', false);
@@ -57,20 +57,20 @@ const announcements = {
     },
     getUklupl({ commit }) {
       commit('LOADING_STATUS', true);
-      axios.get(`${API_URL}?project=UKL-UPL&limit=10`)
+      axios.get(`${API_URL}?keyword=UKL-UPL&limit=10`)
         .then(response => {
           commit('SET_UKLUPL', response.data);
           commit('LOADING_STATUS', false);
         });
     },
     countAmdal({ commit }) {
-      axios.get(`${API_URL}?project=AMDAL`)
+      axios.get(`${API_URL}?keyword=AMDAL`)
         .then(response => {
           commit('COUNT_AMDAL', response.data.data.length);
         });
     },
     countUklupl({ commit }) {
-      axios.get(`${API_URL}?project=UKL-UPL`)
+      axios.get(`${API_URL}?keyword=UKL-UPL`)
         .then(response => {
           commit('COUNT_UKLUPL', response.data.data.length);
         });

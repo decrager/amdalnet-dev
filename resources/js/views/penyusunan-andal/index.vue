@@ -21,33 +21,19 @@
           </el-col>
         </el-row>
       </div> -->
-      <el-tabs type="card">
-        <el-tab-pane label="Analisa Dampak Lingkungan">
-          <div class="filter-container">
-            <el-button
-              class="filter-item"
-              type="primary"
-              style="font-size: 0.8rem"
-              @click="handleSubmit"
-            >
-              {{ 'Simpan Perubahan' }}
-            </el-button>
-            <span style="font-size: 0.8rem">
-              <em>{{ lastTime }}</em>
-            </span>
-          </div>
-          <PenyusunanAndalTable
-            :loading="loading"
-            :list="compose"
-            @handleSubmitTanggapan="handleSubmitTanggapan"
-          />
+      <el-tabs v-model="activeName" type="card">
+        <el-tab-pane label="Formulir Kerangka Acuan" name="formulir-ka">
+          <FormulirKA v-if="activeName === 'formulir-ka'" />
         </el-tab-pane>
-        <el-tab-pane label="Dokumen ANDAL">
-          <el-row :gutter="32">
-            <!-- <el-col :sm="12" :md="7">
+        <el-tab-pane label="Analisa Dampak Lingkungan" name="andal">
+          <Andal v-if="activeName === 'andal'" />
+        </el-tab-pane>
+        <!-- <el-tab-pane label="Dokumen ANDAL" name="dokumen">
+          <el-row v-if="activeName === 'dokumen'" :gutter="32"> -->
+        <!-- <el-col :sm="12" :md="7">
               <MapList />
             </el-col> -->
-            <el-col :sm="24" :md="15">
+        <!-- <el-col :sm="24" :md="15">
               <DocsFrame />
             </el-col>
             <el-col :sm="24" :md="9">
@@ -64,7 +50,7 @@
               <Comment />
             </el-col>
           </el-row>
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
     </el-card>
   </div>
@@ -72,79 +58,45 @@
 
 <script>
 import Resource from '@/api/resource';
-const andalComposingResource = new Resource('andal-composing');
-import PenyusunanAndalTable from '@/views/penyusunan-andal/components/Table';
+const cloneResource = new Resource('andal-clone');
+import Andal from '@/views/penyusunan-andal/components/Andal';
+import FormulirKA from '@/views/penyusunan-andal/components/FormulirKA';
 // import MapList from '@/views/penyusunan-andal/components/MapList';
-import DocsFrame from '@/views/penyusunan-andal/components/DocsFrame';
-import Comment from '@/views/penyusunan-andal/components/Comment';
+// import DocsFrame from '@/views/penyusunan-andal/components/DocsFrame';
+// import Comment from '@/views/penyusunan-andal/components/Comment';
 import WorkFlow from '@/components/Workflow';
 
 export default {
   name: 'PenyusunanAndal',
   components: {
-    PenyusunanAndalTable,
+    Andal,
     // MapList,
-    DocsFrame,
-    Comment,
+    // DocsFrame,
+    // Comment,
     WorkFlow,
+    FormulirKA,
   },
   data() {
     return {
-      loading: false,
-      // projects: [],
       idProject: this.$route.params.id,
       compose: [],
       lastTime: null,
       userInfo: {
         roles: [],
       },
+      activeName: 'formulir-ka',
     };
   },
   created() {
-    // this.getProjects();
-    this.handleChange(this.idProject);
+    this.checkExist();
     this.getUserInfo();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
-    // async getProjects() {
-    //   const data = await andalComposingResource.list({ project: 'true' });
-    //   this.projects = data;
-    // },
-    async handleChange(val) {
-      this.loading = true;
-      this.idProject = val;
-      await this.getCompose();
-      await this.getLastTime(val);
-      this.loading = false;
-    },
-    async getLastTime(idProject) {
-      this.lastTime = await andalComposingResource.list({
-        lastTime: 'true',
-        idProject,
-      });
-    },
-    async getCompose() {
-      this.compose = await andalComposingResource.list({
-        idProject: this.idProject,
-      });
-    },
-    async handleSubmit() {
-      if (!this.idProject) {
-        return;
-      }
-
-      const sendForm = this.compose.filter((com) => com.type !== 'title');
-      const time = await andalComposingResource.store({
-        analysis: sendForm,
-        type: this.lastTime ? 'update' : 'new',
-      });
-      this.lastTime = time;
-      await this.getCompose();
-      this.$message({
-        message: 'Data is saved Successfully',
-        type: 'success',
-        duration: 5 * 1000,
+    async checkExist() {
+      await cloneResource.list({
+        exist: 'true',
+        idProject: this.$route.params.id,
       });
     },
     async getUserInfo() {
