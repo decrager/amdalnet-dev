@@ -92,4 +92,3 @@ deploy_prod_menlhk:
     - master
   tags:
     - amdalnet-prod-menlhk
-    - amdalnet-api-menlhk
