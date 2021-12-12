@@ -4,6 +4,7 @@ const ukluplStaticRoutes = {
   path: '/ukluplstatic/form',
   component: Layout,
   meta: { title: 'UKLUPLStatic', icon: 'zip' },
+  hidden: true,
   children: [
     {
       path: '',
