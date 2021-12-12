@@ -39,7 +39,7 @@
       <el-col span="18">
         <!-- Komponen Lingkungan  -->
         <table style="width:100%;">
-          <thead style="background: #333; color:#fff;">
+          <thead>
             <tr>
               <th rowspan="2">Komponen Kegiatan</th>
               <th colspan="5">Komponen Lingkungan</th>

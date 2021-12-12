@@ -1,7 +1,7 @@
 <template>
   <div id="formUKLUPL" class="app-container">
 
-    <!-- <workflow-ukl /> -->
+    <workflow-ukl />
     <h2>Formulir UKL UPL</h2>
     <el-button
       class="pull-right"
@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-// import WorkflowUkl from '@/components/WorkflowUkl';
+import WorkflowUkl from '@/components/WorkflowUkl';
 import Pelingkupan from './components/Pelingkupan';
 import MatriksIdentifikasiDampak from './components/MatriksIdentifikasiDampak';
 import JenisBesaranDampak from './components/JenisBesaranDampak';
@@ -28,7 +28,7 @@ import JenisBesaranDampak from './components/JenisBesaranDampak';
 export default {
   name: 'FormulirUKLUPL',
   components: {
-    // WorkflowUkl,
+    WorkflowUkl,
     Pelingkupan,
     MatriksIdentifikasiDampak,
     JenisBesaranDampak,

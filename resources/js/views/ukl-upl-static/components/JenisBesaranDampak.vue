@@ -7,12 +7,13 @@
       @click="handleSaveForm()"
     > Simpan Perubahan </el-button>
 
+    <p>&nbsp;</p>
     <table class="table-dampak">
       <thead>
         <tr>
           <th>Komponen Dampak</th>
           <th>Komponen Rona Lingkungan Awal</th>
-          <th style="width:200px;">&nbsp;</th>
+          <th style="width:180px;">&nbsp;</th>
           <th>Sumber Dampak</th>
           <th>Besaran Dampak</th>
         </tr>
@@ -42,7 +43,7 @@
                 <el-input
                   v-model="stage.dampak[idx].besaran"
                   type="textarea"
-                  :rows="3"
+                  :rows="2"
                   placeholder="Please input"
                 />
               </td>
@@ -135,6 +136,9 @@ export default {
 };
 </script>
 <style scoped>
+table {
+    margin: 2em 0; border-collapse: collapse;clear:both; width: 100%;
+}
 table.table-dampak td:not(.header) {
     text-align: center;
     vertical-align: top;
