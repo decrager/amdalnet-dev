@@ -76,3 +76,20 @@ deploy_prod:
     - tags
   tags:
     - prod
+
+deploy_prod_menlhk:
+  stage: production
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard HEAD
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - npm install  
+    - npm run production
+  only:
+    - master
+  tags:
+    - amdalnet-prod-menlhk
+    - amdalnet-api-menlhk
