@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="4">
       <el-col v-for="type of componentTypes" :key="type.id" :span="6" :xs="24">
-        <aside align="center" style="margin-bottom: 0px;">
+        <aside align="center" style="margin-bottom: 0px; background-color: #def5cf">
           Komponen {{ type.name }}
         </aside>
         <el-table
@@ -45,6 +45,7 @@
 import Resource from '@/api/resource';
 import RonaAwalDialog from '@/views/rona-awal/components/RonaAwalDialog.vue';
 const componentTypesResource = new Resource('component-types');
+const projectRonaAwalResource = new Resource('project-rona-awals');
 const ronaAwalResource = new Resource('rona-awals');
 
 export default {
@@ -58,6 +59,7 @@ export default {
       ronaAwal: {},
       componentTypes: [],
       componentTypeOptions: [],
+      dummyId: 99999999,
     };
   },
   mounted() {
@@ -68,23 +70,6 @@ export default {
     handleAddDialog() {
       this.showAddDialog = true;
     },
-    handleDelete(id) {
-      ronaAwalResource
-        .destroy(id)
-        .then(response => {
-          const message = 'Rona awal berhasil dihapus';
-          this.$message({
-            message: message,
-            type: 'success',
-            duration: 5 * 1000,
-          });
-          // refresh
-          this.getData();
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
     async getComponentTypeOptions() {
       const { data } = await componentTypesResource.list({});
       this.componentTypeOptions = data.map((i) => {
@@ -92,19 +77,39 @@ export default {
       });
     },
     async getData(){
+      const idProject = this.$route.params && this.$route.params.id;
       const compTypes = await componentTypesResource.list({});
       this.componentTypes = compTypes.data;
-      const ronaAwalList = await ronaAwalResource.list({
-        all: true,
+      const projectRonaAwals = await projectRonaAwalResource.list({
+        id_project: idProject,
       });
-      const ronaAwals = ronaAwalList.data;
+      if (projectRonaAwals.data.length > 0) {
+        projectRonaAwals.data.map((r) => {
+          if (r.id_component_type === null) {
+            r.id_component_type = r.id_component_type_master;
+          }
+          if (r.name === null) {
+            r.name = r.name_master;
+          }
+        });
+        this.ronaAwals = projectRonaAwals.data;
+      } else {
+        const ronaAwalList = await ronaAwalResource.list({
+          all: true,
+        });
+        this.ronaAwals = ronaAwalList.data;
+      }
+      this.reloadData();
+      this.$emit('handleSaveRonaAwals', this.ronaAwals);
+    },
+    reloadData() {
       const dataPerStep = {};
       this.componentTypes.map((s) => {
         dataPerStep[s.id] = [];
       });
       const data = {};
       this.componentTypes.map((s) => {
-        ronaAwals.map((k) => {
+        this.ronaAwals.map((k) => {
           if (k.id_component_type === s.id){
             dataPerStep[k.id_component_type].push(k);
           }
@@ -112,30 +117,20 @@ export default {
         data[s.id] = dataPerStep[s.id];
       });
       this.data = data;
-      this.ronaAwals = ronaAwals;
-      this.$emit('handleSaveRonaAwals', ronaAwals);
+      this.dummyId = this.dummyId + 1;
     },
     handleSubmitRonaAwal() {
-      ronaAwalResource
-        .store(this.ronaAwal)
-        .then((response) => {
-          this.$message({
-            message:
-              'Rona Lingkungan ' + this.ronaAwal.name + ' Berhasil Dibuat',
-            type: 'success',
-            duration: 5 * 1000,
-          });
-          this.ronaAwals.push(this.ronaAwal);
-          this.$emit('handleUpdateRonaAwals', this.ronaAwals);
-          // re-render table
-          this.getData();
-          // hide dialog
-          this.showAddDialog = false;
-          this.ronaAwal = {};
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      this.ronaAwal.id = this.dummyId;
+      this.ronaAwals.push(this.ronaAwal);
+      this.reloadData();
+      this.$emit('handleUpdateRonaAwals', this.ronaAwals);
+      this.showAddDialog = false;
+      this.ronaAwal = {};
+    },
+    handleDelete(id) {
+      this.ronaAwals = this.ronaAwals.filter(rAwal => rAwal.id !== id);
+      this.reloadData();
+      this.$emit('handleUpdateRonaAwals', this.ronaAwals);
     },
     handleCancelRonaAwal() {
       this.ronaAwal = {};

@@ -1,48 +1,83 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card>
-      <el-form
-        ref="postForm"
-        :model="postForm"
-        label-position="top"
-        label-width="200px"
-      >
-        <vsa-list>
-          <vsa-item>
-            <vsa-heading>
-              RONA LINGKUNGAN AWAL
-            </vsa-heading>
-            <vsa-content>
-              <rona-lingkungan-awal
-                @handleSaveRonaAwalData="handleSaveRonaAwalData"
-                @handleSaveComponents="handleSaveComponents"
-                @handleSaveRonaAwals="handleSaveRonaAwals"
-                @handleUpdateComponents="handleUpdateComponents"
-                @handleUpdateRonaAwals="handleUpdateRonaAwals"
-              />
-            </vsa-content>
-          </vsa-item>
-          <vsa-item>
-            <vsa-heading>
-              MATRIKS IDENTIFIKASI DAMPAK
-            </vsa-heading>
-            <vsa-content>
-              <matrik-identifikasi-dampak
-                :key="matriksComponentKey"
-                :id-project="postForm.id_project"
-              />
-            </vsa-content>
-          </vsa-item>
-          <vsa-item>
-            <vsa-heading>
-              JENIS DAN BESARAN DAMPAK
-            </vsa-heading>
-            <vsa-content>
-              This is the content
-            </vsa-content>
-          </vsa-item>
-        </vsa-list>
-      </el-form>
+      <workflow />
+      <h2>Formulir Kerangka Acuan</h2>
+      <span>
+        <el-button
+          class="pull-right"
+          type="success"
+          size="small"
+          icon="el-icon-check"
+          :disabled="!isSubmitEnabled"
+          @click="handleSaveForm()"
+        >
+          Simpan & Lanjutkan
+        </el-button>
+      </span>
+      <vsa-list :key="vsaListKey">
+        <vsa-item :init-active="componentActive">
+          <vsa-heading>
+            KOMPONEN KEGIATAN YANG MENJADI SUMBER DAMPAK
+          </vsa-heading>
+          <vsa-content>
+            <sumber-dampak
+              @handleReloadVsaList="handleReloadVsaList"
+            />
+          </vsa-content>
+        </vsa-item>
+        <vsa-item :init-active="ronaActive">
+          <vsa-heading>
+            RONA LINGKUNGAN AWAL
+          </vsa-heading>
+          <vsa-content>
+            <rona-lingkungan-awal
+              @handleReloadVsaList="handleReloadVsaList"
+            />
+          </vsa-content>
+        </vsa-item>
+        <vsa-item :init-active="matriksActive">
+          <vsa-heading>
+            MATRIKS IDENTIFIKASI DAMPAK
+          </vsa-heading>
+          <vsa-content>
+            <matrik-identifikasi-dampak
+              @handleReloadVsaList="handleReloadVsaList"
+            />
+          </vsa-content>
+        </vsa-item>
+        <vsa-item :init-active="dampakPotensialActive">
+          <vsa-heading>
+            DAMPAK POTENSIAL
+          </vsa-heading>
+          <vsa-content>
+            <dampak-potensial
+              @handleReloadVsaList="handleReloadVsaList"
+            />
+          </vsa-content>
+        </vsa-item>
+        <vsa-item :init-active="dampakPentingHipotetikActive">
+          <vsa-heading>
+            DAMPAK PENTING HIPOTETIK
+          </vsa-heading>
+          <vsa-content>
+            <dampak-penting-hipotetik
+              @handleReloadVsaList="handleReloadVsaList"
+            />
+          </vsa-content>
+        </vsa-item>
+        <vsa-item :init-active="metodeStudiActive">
+          <vsa-heading>
+            METODE STUDI
+          </vsa-heading>
+          <vsa-content>
+            <metode-studi
+              @handleReloadVsaList="handleReloadVsaList"
+              @handleEnableSubmitForm="handleEnableSubmitForm"
+            />
+          </vsa-content>
+        </vsa-item>
+      </vsa-list>
     </el-card>
   </div>
 </template>
@@ -56,8 +91,13 @@ import {
   VsaContent,
 } from 'vue-simple-accordion';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
+import SumberDampak from './components/SumberDampak.vue';
 import RonaLingkunganAwal from './components/RonaLingkunganAwal.vue';
 import MatrikIdentifikasiDampak from './components/MatrikIdentifikasiDampak.vue';
+import DampakPotensial from './components/DampakPotensial.vue';
+import DampakPentingHipotetik from './components/DampakPentingHipotetik.vue';
+import MetodeStudi from './components/MetodeStudi.vue';
+import Workflow from '@/components/Workflow';
 
 export default {
   name: 'FormulirUklUpl',
@@ -66,51 +106,67 @@ export default {
     VsaItem,
     VsaHeading,
     VsaContent,
+    SumberDampak,
     RonaLingkunganAwal,
     MatrikIdentifikasiDampak,
+    DampakPotensial,
+    DampakPentingHipotetik,
+    MetodeStudi,
+    Workflow,
   },
   data() {
     return {
-      postForm: {
-        id_project: 0,
-        rona_awal: {
-          components: [],
-          rona_awals: [],
-        },
-        mappings: {},
-      },
-      matriksComponentKey: 0,
+      idProject: 0,
+      isSubmitEnabled: false,
+      vsaListKey: 0,
+      componentActive: true,
+      ronaActive: false,
+      matriksActive: false,
+      dampakPotensialActive: false,
+      dampakPentingHipotetikActive: false,
+      metodeStudiActive: false,
     };
   },
   mounted() {
     this.setProjectId();
+    this.$store.dispatch('getStep', 3);
   },
   methods: {
     setProjectId(){
       const id = this.$route.params && this.$route.params.id;
-      this.postForm.id_project = id;
-    },
-    handleClick(tab, event) {
-      console.log(tab, event);
-    },
-    handleSaveRonaAwalData(data) {
-      this.postForm.rona_awal = data;
-    },
-    async handleSaveComponents(data){
-      this.postForm.rona_awal.components = await data;
-    },
-    async handleSaveRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = await data;
-    },
-    handleUpdateComponents(data){
-      this.postForm.rona_awal.components = data;
-      console.log('re-render matriks');
-      this.matriksComponentKey++;
-    },
-    handleUpdateRonaAwals(data){
-      this.postForm.rona_awal.rona_awals = data;
+      this.idProject = id;
     },
     handleSaveForm() {
+      const id = this.$route.params && this.$route.params.id;
+      this.$router.push({
+        name: 'DokumenUklUpl',
+        params: id,
+      });
+    },
+    handleEnableSubmitForm() {
+      this.isSubmitEnabled = true;
+    },
+    handleReloadVsaList(tab) {
+      this.vsaListKey = this.vsaListKey + 1;
+      this.componentActive = false;
+      this.ronaActive = false;
+      this.matriksActive = false;
+      this.dampakPotensialActive = false;
+      this.dampakPentingHipotetikActive = false;
+      this.metodeStudiActive = false;
+      if (tab === 'komponen') {
+        this.componentActive = true;
+      } else if (tab === 'rona-lingkungan-awal') {
+        this.ronaActive = true;
+      } else if (tab === 'matriks-identifikasi-dampak') {
+        this.matriksActive = true;
+      } else if (tab === 'dampak-potensial') {
+        this.dampakPotensialActive = true;
+      } else if (tab === 'dampak-penting-hipotetik') {
+        this.dampakPentingHipotetikActive = true;
+      } else if (tab === 'metode-studi') {
+        this.metodeStudiActive = true;
+      }
     },
   },
 };
@@ -123,7 +179,7 @@ export default {
   --vsa-min-width: 300px;
   --vsa-heading-padding: 1rem 1rem;
   --vsa-text-color: rgba(55, 55, 55, 1);
-  --vsa-highlight-color: rgba(85, 119, 170, 1);
+  --vsa-highlight-color: #1e5128;
   --vsa-bg-color: rgba(255, 255, 255, 1);
   --vsa-border-color: rgba(0, 0, 0, 0.2);
   --vsa-border-width: 1px;
@@ -154,6 +210,17 @@ export default {
   margin:0;
   padding:var(--vsa-content-padding);
   overflow: auto;
+}
+
+.vsa-item__trigger:focus,.vsa-item__trigger:hover{
+    outline:none;
+    background-color:var(--vsa-highlight-color);
+    color: white;
+}
+
+h2 {
+  display:inline-block;
+  margin-block-start: 0em;
 }
 
 </style>

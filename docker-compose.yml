@@ -37,6 +37,49 @@ services:
       - "POSTGRES_PASSWORD=laravue"
       - "POSTGRES_USER=laravue"
       - "POSTGRES_DB=laravue"
+  
+  # etherpad:
+  #   build:
+  #     context: ./docker
+  #     dockerfile: etherpad.Dockerfile
+  #   ports:
+  #     - "9001:9001"
+  #   environment:
+  #     - "TITLE=amdalnet"
+  #     - "ADMIN_PASSWORD=s3cr3t"
+  #     - "DB_TYPE=postgres"
+  #     - "DB_HOST=etherdb"
+  #     - "DB_PORT=5432"
+  #     - "DB_NAME=etherpad"
+  #     - "DB_USER=etherpad"
+  #     - "DB_PASS=etherpad"
+  #   depends_on:
+  #     - etherdb
+
+  etherdb:
+    image: postgres:13
+    ports:
+      - "6543:5432"
+    environment:
+      - "POSTGRES_PASSWORD=etherpad"
+      - "POSTGRES_USER=etherpad"
+      - "POSTGRES_DB=etherpad"
+  
+  # collabora:
+  #   image: collabora/code
+  #   ports:
+  #     - "9980:9980"
+  #   environment:
+  #     # - "domain=rise.mymac.net"
+  #     - "username=admin"
+  #     - "password=S3cRet"
+
+  onlyoffice:
+    image: onlyoffice/documentserver-de
+    ports:
+      - "80:80"
+
+    
 
 
 

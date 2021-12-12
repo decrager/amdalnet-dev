@@ -9,7 +9,7 @@ const tukRoutes = {
       path: '',
       component: () => import('@/views/error-page/404'),
       name: 'tuk',
-      meta: { title: 'tuk', icon: 'zip', noCache: true, permissions: ['view menu examiner team'] },
+      meta: { title: 'tuk', icon: 'id-badge', noCache: true, permissions: ['view menu examiner team'] },
     },
   ],
 };

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-container">
     <el-button
       type="success"
       size="small"
@@ -8,12 +8,6 @@
     >
       Simpan Perubahan
     </el-button>
-    <h3>Komponen Kegiatan yang Menjadi Sumber Dampak</h3>
-    <sumber-dampak
-      @handleSaveComponents="handleSaveComponents"
-      @handleUpdateComponents="handleUpdateComponents"
-    />
-    <h3 style="margin-top:20px;">Rona Lingkungan Awal</h3>
     <rona-awal-table
       @handleSaveRonaAwals="handleSaveRonaAwals"
       @handleUpdateRonaAwals="handleUpdateRonaAwals"
@@ -22,41 +16,64 @@
 </template>
 
 <script>
-import SumberDampak from './SumberDampak.vue';
+import Resource from '@/api/resource';
 import RonaAwalTable from './RonaAwalTable.vue';
+const projectRonaAwalResource = new Resource('project-rona-awals');
 
 export default {
   name: 'RonaLingkunganAwal',
-  components: { SumberDampak, RonaAwalTable },
+  components: { RonaAwalTable },
   data() {
     return {
-      rona_awal: {
-        components: [],
-        rona_awals: [],
-      },
+      idProject: 0,
+      components: [],
+      ronaAwals: [],
     };
   },
   mounted() {
+    this.idProject = parseInt(this.$route.params && this.$route.params.id);
   },
   methods: {
     handleSaveForm(){
-      this.$emit('handleSaveRonaAwalData', this.rona_awal);
+      this.storeRonaAwals();
+    },
+    storeRonaAwals() {
+      this.ronaAwals.map((ronaAwal) => {
+        if (!('id_rona_awal' in ronaAwal)) {
+          ronaAwal['id_rona_awal'] = ronaAwal['id'];
+        }
+        ronaAwal['id_project'] = this.idProject;
+      });
+      projectRonaAwalResource
+        .store({
+          'rona_awals': this.ronaAwals,
+        })
+        .then((response) => {
+          var message = (response.code === 200) ? 'Rona awal berhasil disimpan' : 'Terjadi kesalahan pada server';
+          var message_type = (response.code === 200) ? 'success' : 'error';
+          this.$message({
+            message: message,
+            type: message_type,
+            duration: 5 * 1000,
+          });
+          // reload accordion
+          this.$emit('handleReloadVsaList', 'matriks-identifikasi-dampak');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     async handleSaveComponents(data){
-      this.rona_awal.components = await data;
-      this.$emit('handleSaveComponents', data);
+      this.components = await data;
     },
     handleUpdateComponents(data){
-      this.rona_awal.components = data;
-      this.$emit('handleUpdateComponents', data);
+      this.components = data;
     },
     async handleSaveRonaAwals(data){
-      this.rona_awal.rona_awals = await data;
-      this.$emit('handleSaveRonaAwals', data);
+      this.ronaAwals = await data;
     },
     handleUpdateRonaAwals(data){
-      this.rona_awal.rona_awals = data;
-      this.$emit('handleUpdateRonaAwals', data);
+      this.ronaAwals = data;
     },
   },
 };

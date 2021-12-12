@@ -6,7 +6,7 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <lang-select class="right-menu-item hover-effect" />
+        <!--lang-select class="right-menu-item hover-effect" /-->
         <i class="el-icon-bell right-menu-item hover-effect" style="cursor: pointer; font-size: 18px; vertical-align: middle;" />
         <search id="header-search" class="right-menu-item" />
 
@@ -19,7 +19,7 @@
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar">
+          <img :src="avatar || 'no-avatar.png'" class="user-avatar" @error="$event.target.src='no-avatar.png'">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -89,7 +89,7 @@ export default {
   background: #099C4B;
   //margin: 5px;
   //border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 4px 4px rgba(0,21,41,.3);
 
   .hamburger-container {
     line-height: 46px;

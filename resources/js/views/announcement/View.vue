@@ -1,6 +1,7 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card>
+      <workflow />
       <announcement-detail
         :show-project-detail="showProjectDetail"
         :show-feedback-list="showFeedbackList"
@@ -16,12 +17,13 @@
 
 <script>
 import AnnouncementDetail from './components/Detail';
+import Workflow from '@/components/Workflow';
 import CreateFeedbackSPT from './components/CreateFeedbackSPT.vue';
 import { fetchInitiatorByEmail } from '@/api/klhk-role';
 
 export default {
   name: 'ViewForm',
-  components: { AnnouncementDetail, CreateFeedbackSPT },
+  components: { AnnouncementDetail, CreateFeedbackSPT, Workflow },
   data() {
     return {
       showProjectDetail: false,
@@ -32,6 +34,7 @@ export default {
   },
   mounted() {
     this.setData();
+    this.$store.dispatch('getStep', 2);
   },
   methods: {
     async setData(){

@@ -1,76 +1,57 @@
 <template>
-  <el-dialog :title="'Login Amdalnet'" :visible.sync="show" :close-on-click-modal="false" :show-close="false" width="35%">
-    <div class="login-container">
-      <div class="login-content">
-        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-          <div class="title-wrap">
-            <img
-              class="logo"
-              alt="Amdalnet"
-              :src="logo"
-            >
-            <!-- h3 class="title">
-              {{ $t('login.title') }}
-              <lang-select class="set-language" />
-            </h3 -->
-          </div>
-          <el-form-item prop="email">
-            <span class="svg-container">
-              <svg-icon icon-class="user" />
-            </span>
-            <el-input v-model="loginForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
-          </el-form-item>
-          <el-form-item prop="password">
-            <span class="svg-container">
-              <svg-icon icon-class="password" />
-            </span>
-            <el-input
-              v-model="loginForm.password"
-              name="password"
-              auto-complete="on"
-              placeholder="password"
-              :type="pwdType"
-              @keyup.enter.native="handleLogin"
-            />
-            <span class="show-pwd" @click="showPwd">
-              <svg-icon icon-class="eye" />
-            </span>
-          </el-form-item>
-          <el-form-item>
-            <el-button :loading="loading" class="button-login" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-              {{ $t('login.logIn') }}
-            </el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="danger" class="button-cancel" style="width:100%;" @click="closeDialog()">
-              Tutup
-            </el-button>
-          </el-form-item>
-          <div class="tips">
-            <span style="margin-right:20px;">Email: admin@laravue.dev</span>
-            <span>Password: laravue</span>
-          </div>
-        </el-form>
+  <div class="modal__container">
+    <el-dialog :title="'Login Amdalnet'" :visible.sync="show" :close-on-click-modal="false" :show-close="false" width="35%" :modal-append-to-body="false">
+      <div class="login-container">
+        <div class="login-content">
+          <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+            <div class="title-wrap">
+              <img
+                class="logo"
+                alt="Amdalnet"
+                :src="logo"
+              >
+            </div>
+            <el-form-item prop="email">
+              <span class="svg-container">
+                <svg-icon icon-class="user" />
+              </span>
+              <el-input v-model="loginForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
+            </el-form-item>
+            <el-form-item prop="password">
+              <span class="svg-container">
+                <svg-icon icon-class="password" />
+              </span>
+              <el-input
+                v-model="loginForm.password"
+                name="password"
+                auto-complete="on"
+                placeholder="password"
+                :type="pwdType"
+                @keyup.enter.native="handleLogin"
+              />
+              <span class="show-pwd" @click="showPwd">
+                <svg-icon icon-class="eye" />
+              </span>
+            </el-form-item>
+            <el-form-item>
+              <el-button :loading="loading" class="button-login" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
+                {{ $t('login.logIn') }}
+              </el-button>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="danger" class="button-cancel" style="width:100%;" @click="closeDialog()">
+                Tutup
+              </el-button>
+            </el-form-item>
+            <div class="tips">
+              <span style="margin-right:20px;">Email: admin@laravue.dev</span>
+              <span>Password: laravue</span>
+            </div>
+          </el-form>
+        </div>
       </div>
-    </div>
-    <!-- <el-button
-      type="danger"
-      size="mini"
-      icon="el-icon-circle-close"
-      @click="closeDialog()"
-    >
-      Tutup
-    </el-button>
-
-    <el-button
-      type="submit"
-      size="mini"
-      icon="el-icon-s-claim"
-      @click="login()"
-    >
-      Login
-    </el-button> -->
-  </el-dialog>
+    </el-dialog>
+  </div>
 </template>
 <script>
 import { validEmail } from '@/utils/validate';
@@ -105,8 +86,8 @@ export default {
       data: {},
       errorMessage: null,
       loginForm: {
-        email: 'admin@laravue.dev',
-        password: 'laravue',
+        email: 'admin@amdalnet.dev',
+        password: 'amdalnet',
       },
       loginRules: {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],

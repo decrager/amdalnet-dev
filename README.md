@@ -81,9 +81,14 @@ check:
 * [Echarts](http://echarts.apache.org/) - A powerful, interactive charting and visualization library for browser.
 
 
-## Workflow Test
+## Development Command
 
 ```
+# FrontEnd DEV hot reload
+npm run hot
+or
+yarn run hot
+
 # list command
 php artisan list
 
@@ -118,3 +123,13 @@ sudo apt-get install php-mbstring php-xml php-pgsql php-gd php-zip
 ```
 sudo php /var/www/amdal/artisan octane:start --server=swoole --port=8000 
 ```
+
+# Postgresl Export Import
+```
+PGPASSWORD=SemangatT3rus pg_dump -h localhost -U amdaldevs -d amdalnet -c > ~/amdalnet.sql
+PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet -U postgres -f ~/amdalnet.sql
+```
+
+
+<iframe name="embed_readwrite" src="http://192.168.7.23:9001/p/6?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>
+

@@ -1,14 +1,5 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
-/**
- * Layzloading will create many files and slow on compiling, so best not to use lazyloading on devlopment.
- * The syntax is lazyloading, but we convert to proper require() with babel-plugin-syntax-dynamic-import
- * @see https://doc.laravue.dev/guide/advanced/lazy-loading.html
- */
-
-Vue.use(Router);
-
 /* Layout */
 import Layout from '@/layout';
 
@@ -24,16 +15,29 @@ import errorRoutes from './modules/error';
 // import permissionRoutes from './modules/permission';
 import announcementRoutes from './modules/announcement';
 import feedbackRoutes from './modules/feedback';
+import lpjpRoutes from './modules/lpjp';
+// import workspaceRoutes from './modules/workspace';
 import masterRoutes from './modules/master';
 import projectRoutes from './modules/project';
 // import paramRoutes from './modules/params';
 import uklUplRoutes from './modules/uklupl';
 import initiatorRoutes from './modules/initiator';
-import formulatorRoutes from './modules/formulator';
+// import formulatorRoutes from './modules/formulator';
 import lukRoutes from './modules/luk';
 import tukRoutes from './modules/tuk';
 import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
+import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
+import dokumenRoutes from './modules/DokumenKegiatan';
+import flowchartRoutes from './modules/flowchart';
+
+/**
+ * Layzloading will create many files and slow on compiling, so best not to use lazyloading on devlopment.
+ * The syntax is lazyloading, but we convert to proper require() with babel-plugin-syntax-dynamic-import
+ * @see https://doc.laravue.dev/guide/advanced/lazy-loading.html
+ */
+
+Vue.use(Router);
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -41,13 +45,13 @@ import configurationRoutes from './modules/configuration';
  **/
 
 /**
-* hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
-* alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
-*                                if not set alwaysShow, only more than one route under the children
-*                                it will becomes nested mode, otherwise not show the root menu
-* redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
-* name:'router-name'             the name is used by <keep-alive> (must set!!!)
-* meta : {
+ * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
+ * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
+ *                                if not set alwaysShow, only more than one route under the children
+ *                                it will becomes nested mode, otherwise not show the root menu
+ * redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
+ * name:'router-name'             the name is used by <keep-alive> (must set!!!)
+ * meta : {
     roles: ['admin', 'editor']   Visible for these roles only
     permissions: ['view menu zip', 'manage user'] Visible for these permissions only
     title: 'title'               the name show in sub-menu and breadcrumb (recommend set)
@@ -56,7 +60,7 @@ import configurationRoutes from './modules/configuration';
     breadcrumb: false            if false, the item will hidden in breadcrumb (default is true)
     affix: true                  if true, the tag will affix in the tags-view
   }
-**/
+ **/
 
 export const constantRoutes = [
   {
@@ -111,7 +115,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'el-icon-data-analysis', noCache: false },
+        meta: { title: 'dashboard', icon: 'chart-pie-alt', noCache: false },
       },
     ],
   },
@@ -163,19 +167,20 @@ export const asyncRoutes = [
   // chartsRoutes,
   // nestedRoutes,
   // tableRoutes,
-  // {
-  //   path: '/theme',
-  //   component: Layout,
-  //   redirect: 'noredirect',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/theme/index'),
-  //       name: 'Theme',
-  //       meta: { title: 'theme', icon: 'theme' },
-  //     },
-  //   ],
-  // },
+  {
+    path: '/theme',
+    component: Layout,
+    redirect: 'noredirect',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/theme/index'),
+        name: 'Theme',
+        meta: { title: 'theme', icon: 'theme' },
+      },
+    ],
+  },
   // {
   //   path: '/clipboard',
   //   component: Layout,
@@ -190,7 +195,6 @@ export const asyncRoutes = [
   //     },
   //   ],
   // },
-  errorRoutes,
   {
     path: '/profile',
     component: Layout,
@@ -201,32 +205,39 @@ export const asyncRoutes = [
         path: 'edit',
         component: () => import('@/views/users/SelfProfile'),
         name: 'SelfProfile',
-        meta: { title: 'userProfile', icon: 'el-icon-user', noCache: true, permissions: ['view menu profile'] },
+        meta: { title: 'userProfile', icon: 'user-outline', noCache: true, permissions: ['view menu profile'] },
       },
     ],
   },
   adminRoutes,
   projectRoutes,
   initiatorRoutes,
-  formulatorRoutes,
+  // formulatorRoutes,
+  lpjpRoutes,
   lukRoutes,
   tukRoutes,
   expertBankRoutes,
   configurationRoutes,
   masterRoutes,
   // paramRoutes,
+  independentFormulatorTeamRoutes,
   announcementRoutes,
   feedbackRoutes,
+  // workspaceRoutes,
   uklUplRoutes,
+  dokumenRoutes,
+  errorRoutes,
+  flowchartRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  base: process.env.MIX_LARAVUE_PATH,
-  routes: constantRoutes,
-});
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    base: process.env.MIX_LARAVUE_PATH,
+    routes: constantRoutes,
+  });
 
 const router = createRouter();
 

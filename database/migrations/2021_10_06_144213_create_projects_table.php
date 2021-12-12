@@ -23,7 +23,7 @@ class CreateProjectsTable extends Migration
             $table->string('project_type')->nullable();
             $table->string('sector')->nullable();
             $table->string('description')->nullable();
-            $table->string('id_applicant')->nullable();
+            $table->integer('id_applicant')->nullable();
             $table->integer('id_prov')->nullable();
             $table->integer('id_district')->nullable();
             $table->string('address')->nullable();
@@ -32,6 +32,8 @@ class CreateProjectsTable extends Migration
             $table->string('risk_level')->nullable();
             $table->integer('project_year')->nullable();
             $table->string('map')->nullable();
+            $table->string('ktr')->nullable();
+            $table->string('type_formulator_team')->nullable();
             $table->integer('map_scale')->nullable();
             $table->string('map_scale_unit')->nullable();
             $table->string('id_formulator_team')->nullable();

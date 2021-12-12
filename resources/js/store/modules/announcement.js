@@ -7,6 +7,7 @@ const announcements = {
   state: {
     amdals: [],
     uklupls: [],
+    alls: [],
     amdalPopup: [],
     ukluplPopup: [],
     countAmdal: [],
@@ -15,6 +16,9 @@ const announcements = {
     loadingStatus: false,
   },
   mutations: {
+    SET_ALL(state, payload) {
+      state.alls = payload;
+    },
     SET_AMDAL(state, payload) {
       state.amdals = payload;
     },
@@ -35,6 +39,14 @@ const announcements = {
     },
   },
   actions: {
+    getAll({ commit }) {
+      commit('LOADING_STATUS', true);
+      axios.get(`${API_URL}?project=ALL`)
+        .then(response => {
+          commit('SET_ALL', response.data);
+          commit('LOADING_STATUS', false);
+        });
+    },
     getAmdal({ commit }) {
       commit('LOADING_STATUS', true);
       axios.get(`${API_URL}?project=AMDAL&limit=10`)

@@ -24,4 +24,9 @@ class ExpertBank extends Model
         'cert_non_luk_file',
         'ijazah_file',
     ];
+
+    public function expertBankTeamMember()
+    {
+        return $this->hasMany(ExpertBankTeamMember::class, 'id_expert_bank', 'id');
+    }
 }

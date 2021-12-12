@@ -20,10 +20,11 @@ class Formulator extends Model
         'id_institution',
         'membership_status',
         'id_lsp',
+        'email',
     ];
 
-    public function teams()
+    public function teamMember()
     {
-        return $this->belongsToMany(FormulatorTeam::class, 'teams', 'id_formulator', 'id_formulator_team');
+        return $this->hasMany(FormulatorTeamMember::class, 'id_formulator', 'id');
     }
 }
