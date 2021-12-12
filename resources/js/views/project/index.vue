@@ -603,7 +603,8 @@ export default {
     },
     handleKerangkaUklUpl(project) {
       this.$router.push({
-        path: `/uklupl/${project.id}/formulir`,
+        // path: `/uklupl/${project.id}/formulir`,
+        path: `/ukluplstatic/form`,
       });
     },
     handleUjiKa(project) {
