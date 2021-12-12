@@ -179,7 +179,7 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && isFormulator"
+                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -188,7 +188,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && isFormulator || isExaminer || isAdmin || isSubstance"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
