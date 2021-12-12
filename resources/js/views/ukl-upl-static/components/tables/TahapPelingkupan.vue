@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row>
-      <el-col span="8">
+      <el-col span="6">
         <!-- Kegiatan Utama-->
         <table>
           <thead>
@@ -36,10 +36,10 @@
             </template>
           </tbody>
         </table>    </el-col>
-      <el-col span="16">
+      <el-col span="18">
         <!-- Komponen Lingkungan  -->
-        <table>
-          <thead>
+        <table style="width:100%;">
+          <thead style="background: #333; color:#fff;">
             <tr>
               <th rowspan="2">Komponen Kegiatan</th>
               <th colspan="5">Komponen Lingkungan</th>
@@ -54,7 +54,26 @@
           </thead>
           <tbody>
             <tr>
-              <td />
+              <td>
+                <!-- komponen kegiatan -->
+                <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kKDialogueVisible = true" />
+              </td>
+              <td>
+                <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLGKDialogueVisible = true" />
+              </td>
+              <td>
+                <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLBDialogueVisible = true" />
+              </td>
+              <td>
+                <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLSBDialogueVisible = true" />
+              </td>
+              <td>
+                <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLKMDialogueVisible = true" />
+              </td>
+              <td>
+                <el-button icon="el-icon-plus" circle style="margin-top:3em;display:block;" @click="kLLDialogueVisible = true" />
+              </td>
+
             </tr>
           </tbody>
         </table>
