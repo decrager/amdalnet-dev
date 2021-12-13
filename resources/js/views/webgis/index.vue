@@ -1,6 +1,16 @@
 <template>
   <div class="webgis__container">
     <DarkHeaderHome />
+    <div class="input__select">
+      <el-autocomplete
+        v-model="projectTitle"
+        class="inline-input"
+        :fetch-suggestions="querySearch"
+        placeholder="Please Input"
+        :trigger-on-focus="false"
+        @select="handleSelect"
+      />
+    </div>
     <div id="mapViewDiv" />
   </div>
 
@@ -35,13 +45,43 @@ export default {
       selectedFeedback: {},
       showIdDialog: false,
       mapGeojsonArray: [],
+      projects: [],
+      projectTitle: '',
+      selectId: null,
     };
   },
   mounted: function() {
     console.log('Map Component Mounted');
     this.loadMap();
+    this.getProjectData();
   },
   methods: {
+    querySearch(queryString, cb) {
+      var projects = this.projects;
+      var results = queryString ? projects.filter(this.createFilter(queryString)) : projects;
+      const mapResult = results.map((item) => {
+        return {
+          value: item.project_title,
+          id: item.id_project,
+        };
+      });
+      cb(mapResult);
+    },
+    createFilter(queryString) {
+      return (link) => {
+        const resultLink = link.project_title.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
+        return resultLink;
+      };
+    },
+    getProjectData() {
+      axios.get('api/project-maps')
+        .then(response => {
+          this.projects = response.data;
+        });
+    },
+    handleSelect(item) {
+      this.selectId = item.id;
+    },
     toDashboard() {
       this.$router.push({ path: '/dashboard' });
     },
@@ -71,6 +111,158 @@ export default {
         proxyUrl: 'proxy/proxy.php',
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
+
+      console.log(this.selectId);
+
+      if (this.selectId != null) {
+        axios.get('api/map/' + this.selectId)
+          .then((response) => {
+            if (response.data.length > 1) {
+              const projects = response.data;
+              for (let i = 0; i < projects.length; i++) {
+              // Map Ekologi
+                if (projects[i].attachment_type === 'ecology') {
+                  shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                    const blob = new Blob([JSON.stringify(data)], {
+                      type: 'application/json',
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'red',
+                          width: 2,
+                        },
+                      },
+                    };
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Layer Batas Ekologi',
+                      renderer: rendererTapak,
+                    });
+                    mapView.on('layerview-create', (event) => {
+                      mapView.goTo({
+                        target: geojsonLayerArray.fullExtent,
+                      });
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                }
+
+                // Map Sosial
+                if (projects[i].attachment_type === 'social') {
+                  shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                    const blob = new Blob([JSON.stringify(data)], {
+                      type: 'application/json',
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'blue',
+                          width: 2,
+                        },
+                      },
+                    };
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Layer Batas Sosial',
+                      renderer: rendererTapak,
+                    });
+                    mapView.on('layerview-create', (event) => {
+                      mapView.goTo({
+                        target: geojsonLayerArray.fullExtent,
+                      });
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                }
+
+                // Map Studi
+                if (projects[i].attachment_type === 'study') {
+                  shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                    const blob = new Blob([JSON.stringify(data)], {
+                      type: 'application/json',
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'green',
+                          width: 2,
+                        },
+                      },
+                    };
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Layer Batas Wilayah Studi',
+                      renderer: rendererTapak,
+                    });
+                    mapView.on('layerview-create', (event) => {
+                      mapView.goTo({
+                        target: geojsonLayerArray.fullExtent,
+                      });
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                }
+
+                // Map Tapak
+                if (projects[i].attachment_type === 'tapak') {
+                  shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                    const blob = new Blob([JSON.stringify(data)], {
+                      type: 'application/json',
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: '#964B00',
+                          width: 2,
+                        },
+                      },
+                    };
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Layer Tapak',
+                      renderer: rendererTapak,
+                    });
+                    mapView.on('layerview-create', (event) => {
+                      mapView.goTo({
+                        target: geojsonLayerArray.fullExtent,
+                      });
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                }
+              }
+            }
+          });
+      }
 
       const featureLayer = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
@@ -229,22 +421,16 @@ export default {
                 });
                 const url = URL.createObjectURL(blob);
                 axios.get('api/projects/' + projects[i].id_project).then((response) => {
-                  console.log('a');
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
                     visible: false,
                     title: response.data.project_title,
-                    // popupTemplate: arrayJsonTemplate,
                   });
-                  // map.add(geojsonLayerArray);
-                  // console.log(geojsonLayerArray);
-
                   this.mapGeojsonArray.push(geojsonLayerArray);
 
                   // last loop
                   if (i === projects.length - 1){
-                    console.log(this.mapGeojsonArray);
                     const kegiatanGroupLayer = new GroupLayer({
                       title: 'LAYER KEGIATAN',
                       visible: false,
@@ -390,8 +576,14 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style>
 @import '../home/assets/css/style.css';
+.input__select {
+  position: absolute;
+  top: 70px;
+  left: 70px;
+  z-index: 100;
+}
 .webgis__container {
   display: flex;
   flex-direction: column;
