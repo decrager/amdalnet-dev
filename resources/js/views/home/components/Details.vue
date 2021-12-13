@@ -362,6 +362,7 @@ export default {
     };
   },
   async created() {
+    console.log('oprek', this.selectedAnnouncement);
     await this.getResponderType();
     await this.loadBusiness();
   },
@@ -374,6 +375,7 @@ export default {
       this.sector_name = business.value;
     },
     loadMap() {
+      console.log(this.selectedAnnouncement.project_id);
       const map = new Map({
         basemap: 'topo',
       });
