@@ -84,7 +84,7 @@
                 <td colspan="2">Deskripsi Lokasi</td>
               </tr>
               <tr class="bg-white-custom">
-                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.address[0].address : ''" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.location_desc : ''" />
               </tr>
             </table>
           </el-col>
