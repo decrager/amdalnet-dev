@@ -9,9 +9,9 @@
       <el-form-item label="Tahap Kegiatan">
         <el-select
           v-model="idProjectStage"
+          v-loading="loadingProjectStages"
           placeholder="Tahap Kegiatan"
           :disabled="true"
-          :loading="loadingProjectStages"
         >
           <el-option
             v-for="item of projectStages"
@@ -24,9 +24,9 @@
       <el-form-item label="Kegiatan Utama/Pendukung">
         <el-select
           v-model="currentIdSubProject"
+          v-loading="loadingSubProjects"
           placeholder="Pilih Kegiatan"
           :disabled="true"
-          :loading="loadingSubProjects"
         >
           <el-option
             v-for="item of subProjectsArray"
@@ -39,9 +39,9 @@
       <el-form-item label="Komponen Kegiatan">
         <el-select
           v-model="currentIdSubProjectComponent"
+          v-loading="loadingSubProjectComponents"
           placeholder="Pilih Komponen Kegiatan"
           :disabled="true"
-          :loading="loadingSubProjectComponents"
         >
           <el-option
             v-for="item of subProjectComponentsArray"
@@ -54,10 +54,9 @@
       <el-form-item label="Tipe Komponen Lingkungan">
         <el-select
           v-model="currentIdComponentType"
+          v-loading="loadingComponentTypes"
           placeholder="Pilih Tipe Komponen Lingkungan"
           :disabled="true"
-
-          :loading="loadingComponentTypes"
         >
           <el-option
             v-for="item of componentTypes"
