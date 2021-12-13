@@ -11,6 +11,7 @@
           v-model="idProjectStage"
           placeholder="Tahap Kegiatan"
           :disabled="true"
+          :loading="loadingProjectStages"
         >
           <el-option
             v-for="item of projectStages"
@@ -25,6 +26,7 @@
           v-model="currentIdSubProject"
           placeholder="Pilih Kegiatan"
           :disabled="true"
+          :loading="loadingSubProjects"
         >
           <el-option
             v-for="item of subProjectsArray"
@@ -96,6 +98,8 @@ export default {
       currentSubProjectName: '',
       projectStages: [],
       disableDescCommon: false,
+      loadingProjectStages: true,
+      loadingSubProjects: true,
     };
   },
   mounted() {
@@ -168,6 +172,7 @@ export default {
         ordered: true,
       });
       this.projectStages = ps.data;
+      this.loadingProjectStages = false;
       const compMaster = await componentResource.list({
         all: true,
       });
@@ -191,6 +196,7 @@ export default {
           this.currentSubProjectName = s.name;
         }
       });
+      this.loadingSubProjects = false;
       // common desc
       // const comps = await subProjectComponentResource.list({
       //   id_sub_project: this.currentIdSubProject,

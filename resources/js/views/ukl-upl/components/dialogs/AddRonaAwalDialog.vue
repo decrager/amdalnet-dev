@@ -11,6 +11,7 @@
           v-model="idProjectStage"
           placeholder="Tahap Kegiatan"
           :disabled="true"
+          :loading="loadingProjectStages"
         >
           <el-option
             v-for="item of projectStages"
@@ -25,6 +26,7 @@
           v-model="currentIdSubProject"
           placeholder="Pilih Kegiatan"
           :disabled="true"
+          :loading="loadingSubProjects"
         >
           <el-option
             v-for="item of subProjectsArray"
@@ -39,6 +41,7 @@
           v-model="currentIdSubProjectComponent"
           placeholder="Pilih Komponen Kegiatan"
           :disabled="true"
+          :loading="loadingSubProjectComponents"
         >
           <el-option
             v-for="item of subProjectComponentsArray"
@@ -53,6 +56,8 @@
           v-model="currentIdComponentType"
           placeholder="Pilih Tipe Komponen Lingkungan"
           :disabled="true"
+
+          :loading="loadingComponentTypes"
         >
           <el-option
             v-for="item of componentTypes"
@@ -138,6 +143,10 @@ export default {
       projectStages: [],
       componentTypes: [],
       disableDescCommon: false,
+      loadingProjectStages: true,
+      loadingSubProjects: true,
+      loadingSubProjectComponents: true,
+      loadingComponentTypes: true,
     };
   },
   mounted() {
@@ -213,6 +222,7 @@ export default {
     async getData() {
       const { data } = await componentTypeResource.list({});
       this.componentTypes = data;
+      this.loadingComponentTypes = false;
       const ronaAwals = await ronaAwalResource.list({
         all: true,
       });
@@ -228,12 +238,15 @@ export default {
         ordered: true,
       });
       this.projectStages = ps.data;
+      this.loadingProjectStages = false;
+
       this.subProjects.utama.map((u) => {
         this.subProjectsArray.push(u);
       });
       this.subProjects.pendukung.map((p) => {
         this.subProjectsArray.push(p);
       });
+      this.loadingSubProjects = false;
       this.subProjectComponents.map((c) => {
         if (c.name === null) {
           c.name = c.component.name;
@@ -245,6 +258,7 @@ export default {
           this.currentSubProjectComponentName = c.name;
         }
       });
+      this.loadingSubProjectComponents = false;
       // common desc
       const comps = await subProjectComponentResource.list({
         id_sub_project: this.currentIdSubProject,
