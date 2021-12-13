@@ -47,6 +47,10 @@ class ProjectController extends Controller
                 function ($query) use ($request) {
                     return $request->formulatorId ? $query->where('formulators.id', $request->formulatorId) : '';
                 }
+            )->where(
+                function ($query) use ($request) {
+                    return $request->search ? $query->where('projects.project_title', 'ilike' , '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
+                }
             )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')->orderBy('projects.id', 'DESC')->paginate($request->limit);
         }
 
@@ -59,6 +63,10 @@ class ProjectController extends Controller
         )->where(
             function ($query) use ($request) {
                 return $request->initiatorId ? $query->where('projects.id_applicant', $request->initiatorId) : '';
+            }
+        )->where(
+            function ($query) use ($request) {
+                return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
             }
         )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
     }
