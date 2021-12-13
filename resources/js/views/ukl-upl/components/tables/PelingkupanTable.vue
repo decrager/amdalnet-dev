@@ -2,6 +2,7 @@
   <el-row :gutter="4">
     <el-col :span="6" :xs="24">
       <el-table
+        v-loading="loadingSubProjects"
         :data="subProjects.utama"
         fit
         highlight-current-row
@@ -27,6 +28,7 @@
         </el-table-column>
       </el-table>
       <el-table
+        v-loading="loadingSubProjects"
         :data="subProjects.pendukung"
         fit
         highlight-current-row
@@ -71,7 +73,7 @@
         <tbody>
           <tr>
             <td>
-              <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
+              <div v-for="comp in subProjectComponents" :key="comp.id" v-loading="loadingComponents" style="margin:.5em 0;">
                 <el-row>
                   <el-tooltip class="item" effect="dark" placement="top-start">
                     <div slot="content">
@@ -108,7 +110,7 @@
               <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
             </td>
             <td v-for="i in 6" :key="i">
-              <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" style="margin:.5em 0;">
+              <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" v-loading="loadingRonaAwals" style="margin:.5em 0;">
                 <el-tooltip class="item" effect="dark" placement="top-start">
                   <div slot="content">
                     {{ ra.description_specific }}
@@ -209,6 +211,9 @@ export default {
       currentIdComponentType: 0,
       editSubProjectComponent: {},
       isEditComponent: false,
+      loadingSubProjects: true,
+      loadingRonaAwals: true,
+      loadingComponents: true,
     };
   },
   computed: {
@@ -351,6 +356,7 @@ export default {
         sub_project_type: 'pendukung',
       });
       this.subProjects.pendukung = subProjectPendukung.data;
+      this.loadingSubProjects = false;
       // init rona awals array
       for (let i = 0; i < 6; i++){
         this.subProjectRonaAwals.push({
@@ -385,6 +391,7 @@ export default {
         }
       });
       this.subProjectComponents = components.data;
+      this.loadingComponents = false;
       if (this.subProjectComponents.length > 0) {
         this.currentIdSubProjectComponent = this.subProjectComponents[0].id;
       }
@@ -402,6 +409,7 @@ export default {
         });
       });
       this.subProjectRonaAwals = ronaAwals.data;
+      this.loadingRonaAwals = false;
     },
   },
 };
