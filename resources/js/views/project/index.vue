@@ -3,7 +3,7 @@
     <el-card>
       <div class="filter-container">
         <el-row type="flex" class="row-bg" justify="space-between">
-          <div>
+          <el-col>
             <el-button
               v-if="isInitiator"
               class="filter-item"
@@ -13,58 +13,20 @@
             >
               {{ ' Kegiatan' }}
             </el-button>
-          </div>
-          <div>
-            <el-select
-              v-model="listQuery.document_type"
-              :placeholder="'Jenis Dokumen'"
-              clearable
-              class="filter-item"
-            >
-              <el-option
-                v-for="item in documentTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-            <el-select
-              v-model="listQuery.id_prov"
-              placeholder="Provinsi"
-              clearable
-              class="filter-item"
-              @change="changeProvince($event)"
-            >
-              <el-option
-                v-for="item in provinceOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-            <el-select
-              v-model="listQuery.id_district"
-              placeholder="Kab / Kota"
-              clearable
-              class="filter-item"
-            >
-              <el-option
-                v-for="item in cityOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                :disabled="cityOptions.length == 0"
-              />
-            </el-select>
-            <el-button
+          </el-col>
+          <el-col :span="6">
+            <el-input v-model="listQuery.search" placeholder="Please input" @change="handleFilter">
+              <el-button slot="append" icon="el-icon-search" @click="handleFilter" />
+            </el-input>
+            <!-- <el-button
               class="filter-item"
               type="primary"
               icon="el-icon-search"
               @click="handleFilter"
             >
               {{ $t('table.search') }}
-            </el-button>
-          </div>
+            </el-button> -->
+          </el-col>
         </el-row>
       </div>
       <el-table
@@ -179,7 +141,7 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && isFormulator"
+                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -188,7 +150,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && isFormulator || isExaminer || isAdmin || isSubstance"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -478,7 +440,7 @@ export default {
       });
     },
     async getFiltered(query) {
-      this.listLoading = true;
+      this.loading = true;
       const { data, total } = await projectResource.list(query);
       this.filtered = data.map(e => {
         e.listSubProject = e.list_sub_project;
@@ -486,7 +448,7 @@ export default {
       });
       this.total = total;
       console.log(this.filtered);
-      this.listLoading = false;
+      this.loading = false;
     },
     handleCreate() {
       this.$router.push({
@@ -603,7 +565,8 @@ export default {
     },
     handleKerangkaUklUpl(project) {
       this.$router.push({
-        path: `/uklupl/${project.id}/formulir`,
+        // path: `/uklupl/${project.id}/formulir`,
+        path: `/ukluplstatic/form`,
       });
     },
     handleUjiKa(project) {

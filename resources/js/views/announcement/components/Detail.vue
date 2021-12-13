@@ -57,7 +57,16 @@
       <FeedbackList />
     </div>
     <div v-if="showPublicConsultation">
-      <PublicConsultationForm />
+      <el-alert
+        v-if="publicConst.id"
+        title="Konsultasi Publik Telah Diterima"
+        type="success"
+        description="Terimakasih Sudah Mengirimkan Konsultasi Publik"
+        show-icon
+        center
+        :closable="false"
+      />
+      <PublicConsultationForm v-else />
     </div>
   </div>
 </template>
@@ -67,6 +76,7 @@ import Resource from '@/api/resource';
 import FeedbackList from '@/views/feedback/components/List.vue';
 import PublicConsultationForm from '@/views/public-consultation/components/Form.vue';
 const announcementResource = new Resource('announcements');
+const publicConsultations = new Resource('public-consultations');
 // const districtResource = new Resource('districts');
 
 export default {
@@ -82,6 +92,7 @@ export default {
       id: 0,
       announcement: {},
       announcementDetails: [],
+      publicConst: {},
     };
   },
   mounted() {
@@ -92,6 +103,8 @@ export default {
   methods: {
     async getAnnouncement() {
       const data = await announcementResource.get(this.id);
+      this.publicConst = await publicConsultations.list({ idProject: data.project_id });
+      console.log(this.publicConst);
       // const district = await districtResource.get(data.project.id_district);
       // data.district = district;
       this.announcement = data;

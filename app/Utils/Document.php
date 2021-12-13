@@ -337,7 +337,7 @@ final class Document
         $directory = $directory . $fileName . "-hist" . DIRECTORY_SEPARATOR;
         if (!$create && !is_dir($directory))  return "";
 
-        mkdir($directory);
+        // mkdir($directory);
 
         $directory = $directory . $fileName;
         if (!$create && !file_exists($directory)) return "";

@@ -9,6 +9,7 @@
       <el-form-item label="Tahap Kegiatan">
         <el-select
           v-model="idProjectStage"
+          v-loading="loadingProjectStages"
           placeholder="Tahap Kegiatan"
           :disabled="true"
         >
@@ -23,6 +24,7 @@
       <el-form-item label="Kegiatan Utama/Pendukung">
         <el-select
           v-model="currentIdSubProject"
+          v-loading="loadingSubProjects"
           placeholder="Pilih Kegiatan"
           :disabled="true"
         >
@@ -96,6 +98,8 @@ export default {
       currentSubProjectName: '',
       projectStages: [],
       disableDescCommon: false,
+      loadingProjectStages: true,
+      loadingSubProjects: true,
     };
   },
   mounted() {
@@ -168,6 +172,7 @@ export default {
         ordered: true,
       });
       this.projectStages = ps.data;
+      this.loadingProjectStages = false;
       const compMaster = await componentResource.list({
         all: true,
       });
@@ -191,6 +196,7 @@ export default {
           this.currentSubProjectName = s.name;
         }
       });
+      this.loadingSubProjects = false;
       // common desc
       // const comps = await subProjectComponentResource.list({
       //   id_sub_project: this.currentIdSubProject,

@@ -81,10 +81,10 @@
                 </td>
               </tr>
               <tr class="bg-blue-custom">
-                <td colspan="2">Deskripsi Kegiatan</td>
+                <td colspan="2">Deskripsi Lokasi</td>
               </tr>
               <tr class="bg-white-custom">
-                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.location_desc : ''" />
               </tr>
             </table>
           </el-col>
@@ -210,7 +210,12 @@
                     Tingkat kesetujuan Anda terhadap Kegiatan/Proyek Ini
                   </div>
                   <div style="display:flex">
-                    <div>
+                    <div class="rating">
+                      <span>Khawatir </span>
+                      <el-rate v-model="ratings" @change="handleChange(ratings)" />
+                      <span> Harapan</span>
+                    </div>
+                    <!-- <div>
                       <ul>
                         <li class="fz8">1 Bintang : Khawatir</li>
                         <li class="fz8">5 Bintang :  Harapan</li>
@@ -218,7 +223,7 @@
                     </div>
                     <div style="padding-left:1rem">
                       <el-rate v-model="ratings" @change="handleChange(ratings)" />
-                    </div>
+                    </div> -->
                   </div>
                 </el-col>
               </el-row>
@@ -357,6 +362,7 @@ export default {
     };
   },
   async created() {
+    console.log('oprek', this.selectedAnnouncement);
     await this.getResponderType();
     await this.loadBusiness();
   },
@@ -369,6 +375,7 @@ export default {
       this.sector_name = business.value;
     },
     loadMap() {
+      console.log(this.selectedAnnouncement.project_id);
       const map = new Map({
         basemap: 'topo',
       });
