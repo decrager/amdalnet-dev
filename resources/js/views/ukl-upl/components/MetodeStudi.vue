@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-button
-      v-if="!isAndal"
+      v-if="!isAndal && isFormulator"
       type="success"
       size="small"
       icon="el-icon-check"
@@ -35,6 +35,9 @@ export default {
   computed: {
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
+    },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
     },
   },
   mounted() {

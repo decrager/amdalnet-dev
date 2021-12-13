@@ -5,6 +5,7 @@
       <h2>Formulir Kerangka Acuan</h2>
       <span>
         <el-button
+          v-if="isFormulator"
           class="pull-right"
           type="success"
           size="small"
@@ -99,6 +100,11 @@ export default {
       metodeStudiActive: false,
       activeName: '1',
     };
+  },
+  computed: {
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   mounted() {
     this.setProjectId();

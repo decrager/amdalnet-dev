@@ -18,7 +18,7 @@
             <el-select
               v-model="scope.row.id_change_type"
               placeholder="Perubahan"
-              :disabled="isAndal"
+              :disabled="isAndal || !isFormulator"
             >
               <el-option
                 v-for="item of changeTypeOptions"
@@ -78,6 +78,9 @@ export default {
   computed: {
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
+    },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
     },
   },
   mounted() {

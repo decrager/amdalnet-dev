@@ -10,7 +10,7 @@
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
           </legend>
-          <form @submit.prevent="handleSubmit">
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="peSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
@@ -22,7 +22,7 @@
           <legend style="margin:0 2em;">Versi PDF
             <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
-          <form @submit.prevent="handleSubmit">
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
@@ -37,7 +37,7 @@
             <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSS)"><strong>{{ petaSosialSHP }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
-          <form @submit.prevent="handleSubmit">
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="psSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
@@ -51,7 +51,7 @@
             <div v-if="petaSosialPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSP)"><strong>{{ petaSosialPDF }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
-          <form @submit.prevent="handleSubmit">
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
@@ -66,7 +66,7 @@
             <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuS)"><strong>{{ petaStudiSHP }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
-          <form @submit.prevent="handleSubmit">
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="pwSHP" type="file" class="form-control-file" @change="onChangeFiles(5)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
@@ -79,7 +79,7 @@
             <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuP)"><strong>{{ petaStudiPDF }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
-          <form @submit.prevent="handleSubmit">
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
             <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(6)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
@@ -89,7 +89,7 @@
     </el-form-item>
     <div id="mapView" class="map-wrapper" />
 
-    <el-row style="text-align:right;">
+    <el-row v-if="isFormulator" style="text-align:right;">
       <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
     </el-row>
 
@@ -148,6 +148,11 @@ export default {
       // isVisible: false,
       // visible: [false, false, false, false, false, false, false],
     };
+  },
+  computed: {
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   mounted() {
     this.idProject = parseInt(this.$route.params && this.$route.params.id);

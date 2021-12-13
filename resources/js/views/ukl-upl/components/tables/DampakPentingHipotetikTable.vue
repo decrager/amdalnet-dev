@@ -12,11 +12,11 @@
         <div v-if="!scope.row.is_stage" class="post">
           <div class="entity-block">
             <div>Wilayah Studi</div>
-            <el-input v-model="scope.row.study_location" :readonly="isAndal" />
+            <el-input v-model="scope.row.study_location" :readonly="isAndal || !isFormulator" />
             <div>Batas Waktu Kajian</div>
-            <el-input-number v-model="scope.row.study_length_year" controls-position="right" :min="0" :max="100" :disabled="isAndal" />
+            <el-input-number v-model="scope.row.study_length_year" controls-position="right" :min="0" :max="100" :disabled="isAndal || !isFormulator" />
             tahun
-            <el-input-number v-model="scope.row.study_length_month" controls-position="right" :min="0" :max="11" :disabled="isAndal" />
+            <el-input-number v-model="scope.row.study_length_month" controls-position="right" :min="0" :max="11" :disabled="isAndal || !isFormulator" />
             bulan
           </div>
         </div>
@@ -60,7 +60,7 @@
             v-model="scope.row.is_hypothetical_significant"
             placeholder="Tidak Menjadi DPH"
             style="width: 100%"
-            :disabled="isAndal"
+            :disabled="isAndal || !isFormulator"
           >
             <el-option
               v-for="item of dphOptions"
@@ -97,6 +97,9 @@ export default {
   computed: {
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
+    },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
     },
   },
   mounted() {
