@@ -18,6 +18,7 @@ use App\Http\Controllers\PieParamController;
 use App\Http\Controllers\ImpactIdentificationController;
 use App\Http\Controllers\LpjpController;
 use App\Http\Controllers\MatriksDampakController;
+use App\Http\Controllers\WebgisController;
 
 /*
 |--------------------------------------------------------------------------
@@ -256,3 +257,4 @@ Route::get('matriks-dampak/table/{id}', [MatriksDampakController::class, 'getTab
 Route::get('matriks-dampak/table-dph/{id}', [MatriksDampakController::class, 'getTableDph']);
 Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 'getRonaMapping']);
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
+Route::get('project-maps', [WebgisController::class, 'index']);
