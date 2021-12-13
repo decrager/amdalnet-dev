@@ -81,10 +81,10 @@
                 </td>
               </tr>
               <tr class="bg-blue-custom">
-                <td colspan="2">Deskripsi Kegiatan</td>
+                <td colspan="2">Deskripsi Lokasi</td>
               </tr>
               <tr class="bg-white-custom">
-                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.address[0].address : ''" />
               </tr>
             </table>
           </el-col>
