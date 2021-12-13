@@ -261,17 +261,18 @@ export default {
     };
   },
   created() {
-    this.getPublicConsultation();
   },
-  mounted() {
+  async mounted() {
     const annId = this.$route.params && this.$route.params.id;
     this.postForm.announcement_id = annId;
     this.userId = this.$store.getters.userId;
-    this.getProjectDetail(annId);
+    await this.getProjectDetail(annId);
+    await this.getPublicConsultation();
   },
   methods: {
     async getPublicConsultation() {
-      const data = await publicConsultations.list({ idProject: this.$route.params.id });
+      console.log('aa', this.currentProject);
+      const data = await publicConsultations.list({ idProject: this.currentProject.id });
       this.postForm.id = data.id;
       // this.postForm.announcement_id = data.announcement_id;
       this.postForm.event_date = data.event_date;
