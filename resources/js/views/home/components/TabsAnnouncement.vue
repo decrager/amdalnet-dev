@@ -115,7 +115,6 @@ export default {
       }
     },
     async openDetails(id, param) {
-      this.showDetails = true;
       this.showTabs = false;
       this.selectedId = id;
       this.selectedAnnouncement = {};
@@ -125,6 +124,7 @@ export default {
           console.log(response.data);
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
+          this.showDetails = true;
         });
       console.log(this.selectedAnnouncement);
       this.showDetailsDialog = true;
