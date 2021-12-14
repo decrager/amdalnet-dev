@@ -358,7 +358,10 @@ export default {
       });
       this.pies = pies;
 
-      var dataList = impactList.data;
+      var dataList = impactList.data
+        .filter(imp => imp.rona_awal_name !== null && imp.rona_awal_name.replace(/\s+/g, '').trim() !== '')
+        .filter(imp => imp.component_name !== null && imp.component_name.replace(/\s+/g, '').trim() !== '');
+
       this.data = this.createDataArray(dataList, this.projectStages);
       this.isLoading = false;
       // console.log('end getData...', this.data);
