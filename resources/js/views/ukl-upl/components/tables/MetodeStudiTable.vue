@@ -20,35 +20,35 @@
     <el-table-column label="Data dan Informasi yang Relevan dan Dibutuhkan" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.required_information" type="textarea" :rows="2" :readonly="isAndal" />
+          <el-input v-model="scope.row.impact_study.required_information" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Pengumpulan Data untuk Prakiraan" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.data_gathering_method" type="textarea" :rows="2" :readonly="isAndal" />
+          <el-input v-model="scope.row.impact_study.data_gathering_method" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Analisis Data untuk Prakiraan" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.analysis_method" type="textarea" :rows="2" :readonly="isAndal" />
+          <el-input v-model="scope.row.impact_study.analysis_method" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Prakiraan Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.forecast_method" type="textarea" :rows="2" :readonly="isAndal" />
+          <el-input v-model="scope.row.impact_study.forecast_method" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Evaluasi Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.evaluation_method" type="textarea" :rows="2" :readonly="isAndal" />
+          <el-input v-model="scope.row.impact_study.evaluation_method" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
         </div>
       </template>
     </el-table-column>
@@ -73,6 +73,9 @@ export default {
   computed: {
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
+    },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
     },
   },
   mounted() {

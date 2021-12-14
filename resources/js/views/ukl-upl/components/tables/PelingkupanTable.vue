@@ -86,7 +86,7 @@
                       @click="handleViewRonaAwals(comp.id)"
                     >
                       <el-button
-                        v-if="!isAndal"
+                        v-if="!isAndal && isFormulator"
                         type="danger"
                         size="mini"
                         icon="el-icon-close"
@@ -107,7 +107,7 @@
                 </el-row>
               </div>
 
-              <el-button v-if="!isAndal" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
+              <el-button v-if="!isAndal && isFormulator" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
             </td>
             <td v-for="i in 6" :key="i">
               <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" v-loading="loadingRonaAwals" style="margin:.5em 0;">
@@ -115,12 +115,12 @@
                   <div slot="content">
                     {{ ra.description_specific }}
                   </div>
-                  <el-tag key="ra.id" type="info" :closable="closable && !isAndal" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
+                  <el-tag key="ra.id" type="info" :closable="closable && !isAndal && isFormulator" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                 </el-tooltip>
               </div>
 
               <el-button
-                v-if="!isAndal"
+                v-if="!isAndal && isFormulator"
                 icon="el-icon-plus"
                 circle
                 style="margin-top:3em;display:block;"
@@ -134,7 +134,7 @@
       </table>
     </el-col>
     <add-component-dialog
-      v-if="!isAndal"
+      v-if="!isAndal && isFormulator"
       :key="componentDialogKey"
       :show="kKDialogueVisible"
       :sub-projects="subProjects"
@@ -146,7 +146,7 @@
       @handleSetCurrentIdSubProjectComponent="handleSetCurrentIdSubProjectComponent"
     />
     <add-rona-awal-dialog
-      v-if="!isAndal"
+      v-if="!isAndal && isFormulator"
       :key="ronaAwalDialogKey"
       :show="kLDialogueVisible"
       :sub-projects="subProjects"
@@ -219,6 +219,9 @@ export default {
   computed: {
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
+    },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
     },
   },
   mounted() {

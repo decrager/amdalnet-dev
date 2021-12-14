@@ -2,6 +2,7 @@
   <div v-loading="isLoading" class="app-container">
 
     <el-button
+      v-if="isFormulator"
       type="success"
       size="small"
       icon="el-icon-check"
@@ -45,6 +46,7 @@
                 type="textarea"
                 :rows="3"
                 :value="impact.initial_study_plan"
+                :readonly="!isFormulator"
               /></td>
               <td>{{ impact.rona_awal_name }}</td>
               <td>
@@ -52,6 +54,7 @@
                   v-model="impact.id_change_type"
                   placeholder="Pilih"
                   clearable
+                  :disabled="!isFormulator"
                   @change.native="handleOptionChange"
                 >
                   <el-option
@@ -62,7 +65,7 @@
                   />
                 </el-select>
                 <template v-if="impact.id_change_type === 0">
-                  <el-input v-model="impact.change_type_name" placeholder="Please input text..." />
+                  <el-input v-model="impact.change_type_name" placeholder="Please input text..." :readonly="!isFormulator" />
                 </template>
                 <p>{{ impact.rona_awal_name }} akibat {{ impact.component_name }}</p>
               </td>
@@ -82,7 +85,7 @@
                       type="textarea"
                       :rows="3"
                       :value="impact.potential_impact_evaluation[index].text"
-                      :disabled="pieDisabled"
+                      :disabled="pieDisabled || !isFormulator"
                     />
                   </div>
                 </template>
@@ -94,12 +97,12 @@
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                    :disabled="item.disabled"
+                    :disabled="item.disabled || !isFormulator"
                     @select="handleSelectDPH"
                   />
                 </el-select>
                 <div v-show="impact.is_hypothetical_significant === false" :key="'DTPH_'+impact.id" style="margin:1em 0;">
-                  <el-switch v-model="impact.is_managed" active-text=" Dikelola" />
+                  <el-switch v-model="impact.is_managed" active-text=" Dikelola" :disabled="!isFormulator" />
                 </div>
               </td>
               <td>
@@ -108,12 +111,12 @@
                   type="textarea"
                   :rows="3"
                   :value="impact.study_location"
-                  :disabled="studyLocationDisabled"
+                  :disabled="studyLocationDisabled || !isFormulator"
                 />
               </td>
               <td>
-                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" :disabled="studyLengthDisabled" size="mini" /> tahun</p>
-                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" :disabled="studyLengthDisabled" size="mini" /> bulan</p>
+                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" :disabled="studyLengthDisabled || !isFormulator" size="mini" /> tahun</p>
+                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" :disabled="studyLengthDisabled || !isFormulator" size="mini" /> bulan</p>
               </td>
             </tr>
           </template>
@@ -152,6 +155,11 @@ export default {
       studyLengthDisabled: false,
       pieDisabled: false,
     };
+  },
+  computed: {
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   mounted() {
     console.log('getting ids', this.$route.params && this.$route.params.id);
