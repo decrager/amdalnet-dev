@@ -23,7 +23,7 @@ class SubProjectComponent extends Model
     {
         return $this->belongsTo(SubProject::class, 'id_sub_project');
     }
-    
+
     public function component()
     {
         return $this->belongsTo(Component::class, 'id_component');
