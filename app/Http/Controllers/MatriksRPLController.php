@@ -376,8 +376,8 @@ class MatriksRPLController extends Controller
         // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
         $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
-            $q->whereDoesntHave('detail', function($query) {
-                $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
+            $q->whereHas('detail', function($query) {
+                $query->where('important_trait', '+TP')->orWhere('important_trait', '-TP');
             });
         })->get();
 
@@ -542,8 +542,8 @@ class MatriksRPLController extends Controller
         // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
         $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
-            $q->whereDoesntHave('detail', function($query) {
-                $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
+            $q->whereHas('detail', function($query) {
+                $query->where('important_trait', '+TP')->orWhere('important_trait', '-TP');
             });
         })->get();
 
