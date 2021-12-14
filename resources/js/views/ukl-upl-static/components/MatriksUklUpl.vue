@@ -41,7 +41,7 @@
                       {{ bi + 1 }}. {{ bentuk }}
                     </div>
                   </template>
-                  <div style="margin:3em auto 1em;display:block;">
+                  <div style="margin:1em auto;display:block;">
                     <el-input v-model="iBentuk" placeholder="Bentuk pemantauan.." />
                     <el-button icon="el-icon-plus" circle />
                   </div>
@@ -110,7 +110,14 @@ export default {
 div.item-bentuk {
   padding: .5em;
   border-radius: .5em;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #dedede;
+  margin:.5em 0;
+}
+
+table {
+  margin: 2em 0;
+  border-collapse: collapse;
+  clear:both;
 }
 td.header { line-height: 300%;}
 td:not(.header) {
