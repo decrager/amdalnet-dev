@@ -411,7 +411,7 @@ class MatriksRKLController extends Controller
 
            $comments = $this->getComments($pA->id);
 
-           if(!$pA->envManagePlane) {
+           if(!$pA->envManagePlan) {
                $type = 'new';
            }
 
