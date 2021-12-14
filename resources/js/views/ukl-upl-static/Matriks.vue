@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <workflow-ukl />
+    <!-- <workflow-ukl /> -->
 
     <h2>Matriks UKL UPL</h2>
     <el-button
@@ -14,10 +14,10 @@
 
     <el-collapse v-model="activeName" :accordion="true">
       <el-collapse-item name="1" title="Matriks UKL (Upaya Pengelolaan Lingkungan Hidup)">
-        <matriks-ukl-upl />
+        <matriks-ukl-upl :mtype="'ukl'" :data="ukl" />
       </el-collapse-item>
       <el-collapse-item name="2" title="Matriks UPL (Upaya Pemantauan Lingkungan Hidup)">
-        <matriks-ukl-upl />
+        <matriks-ukl-upl :mtype="'upl'" :data="upl" />
       </el-collapse-item>
       <el-collapse-item name="3" title="Dokumen Pendukung">
         <dokumen-pendukung />
@@ -26,6 +26,7 @@
   </div>
 </template>
 <script>
+// import WorkflowUkl from '@/components/WorkflowUkl';
 import MatriksUklUpl from './components/MatriksUklUpl';
 import DokumenPendukung from './components/DokumenPendukung';
 
@@ -34,11 +35,111 @@ export default {
   components: {
     MatriksUklUpl,
     DokumenPendukung,
+    // WorkflowUkl,
   },
   data() {
-    return {};
+    return {
+      activeName: 1,
+      stages: ['Pra Konstruksi', 'Konstruksi', 'Operasi', 'Pasca Operasi'],
+      ukl: [
+        // pra konstruksi
+        {
+          stage: { id: 1, name: 'Pra Konstruksi' },
+          dampak: [
+            {
+              sumber: 'Pembebasan Lahan',
+              jenis: 'Perubahan',
+              rona_awal: 'Arus Lalu Lintas',
+              besaran: null,
+              standar_pengelolaan: {
+                bentuk: ['Memasang Rambu', 'Melakukan Pembebasan Lahan'],
+                lokasi: null,
+                periode: null,
+              },
+              institusi: {
+                pelaksana: null,
+                pengawas: null,
+                penerima_laporan: null,
+              },
+              keterangan: null,
+            },
+            {
+              sumber: 'Pengamanan Perairan',
+              jenis: 'Perubahan',
+              rona_awal: 'Terumbu Karang',
+              besaran: null,
+              standar_pengelolaan: {
+                bentuk: ['Melakukan sosialisasi'],
+                lokasi: null,
+                periode: null,
+              },
+              institusi: {
+                pelaksana: null,
+                pengawas: null,
+                penerima_laporan: null,
+              },
+              keterangan: null,
+            },
+            {
+              sumber: 'Sosialiasi',
+              jenis: 'Penurunan',
+              rona_awal: 'Air Limbah',
+              besaran: null,
+              standar_pengelolaan: {
+                bentuk: ['Melakukan sosialisasi'],
+                lokasi: null,
+                periode: null,
+              },
+              institusi: {
+                pelaksana: null,
+                pengawas: null,
+                penerima_laporan: null,
+              },
+              keterangan: null,
+            },
+          ],
+        },
+        // konstruksi
+        {
+          stage: { id: 2, name: 'Konstruksi' },
+          dampak: [
+            {
+              sumber: 'Mobilisasi Alat dan Bahan',
+              jenis: 'Peningkatan',
+              rona_awal: 'Kebisingan',
+              besaran: 'Radius 500 m dari lokasi proyek',
+              standar_pengelolaan: {
+                bentuk: [],
+                lokasi: null,
+                periode: null,
+              },
+              institusi: {
+                pelaksana: null,
+                pengawas: null,
+                penerima_laporan: null,
+              },
+              keterangan: null,
+            },
+          ],
+        },
+        // operasi
+        {
+          stage: { id: 3, name: 'Operasi' },
+          dampak: [],
+        },
+        // pasca operasi
+        {
+          stage: { id: 4, name: 'Pasca Operasi' },
+          dampak: [],
+        },
+      ],
+      // data-upl
+      upl: [],
+    };
   },
   methods: {
+    mounted() {
+    },
     handleSaveForm() {
       return;
     },

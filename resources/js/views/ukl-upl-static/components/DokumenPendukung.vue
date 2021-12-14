@@ -1,6 +1,5 @@
 <template>
   <div>
-    <p>Upload Files</p>
     <el-form label-position="top" label-width="100px">
       <el-form-item label="Surat Pernyataan Pengelolaan Lingkungan Hidup" :required="required">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
