@@ -277,7 +277,7 @@ class AndalCloneController extends Controller
 
                 if($imp->impactStudy) {
                     $study = ImpactStudyClone::where('id_impact_identification_clone', $imp->id)->first();
-                    $study->forecast_method = $o->impactStudy->forecast_method;
+                    $study->forecast_method = isset($o->impactStudy) ? $o->impactStudy->forecast_method : null;
                     $study->required_information = $o->impactStudy->required_information;
                     $study->data_gathering_method = $o->impactStudy->data_gathering_method;
                     $study->analysis_method = $o->impactStudy->analysis_method;
