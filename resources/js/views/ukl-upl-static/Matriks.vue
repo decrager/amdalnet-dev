@@ -134,7 +134,98 @@ export default {
         },
       ],
       // data-upl
-      upl: [],
+      upl: [
+        // pra konstruksi
+        {
+          stage: { id: 1, name: 'Pra Konstruksi' },
+          dampak: [
+            {
+              sumber: 'Pembebasan Lahan',
+              jenis: 'Perubahan',
+              rona_awal: 'Arus Lalu Lintas',
+              besaran: null,
+              standar_pengelolaan: {
+                bentuk: ['Memantau Arus Lalu Lintas'],
+                lokasi: null,
+                periode: null,
+              },
+              institusi: {
+                pelaksana: null,
+                pengawas: null,
+                penerima_laporan: null,
+              },
+              keterangan: null,
+            },
+            {
+              sumber: 'Pengamanan Perairan',
+              jenis: 'Perubahan',
+              rona_awal: 'Terumbu Karang',
+              besaran: null,
+              standar_pengelolaan: {
+                bentuk: [],
+                lokasi: null,
+                periode: null,
+              },
+              institusi: {
+                pelaksana: null,
+                pengawas: null,
+                penerima_laporan: null,
+              },
+              keterangan: null,
+            },
+            {
+              sumber: 'Sosialiasi',
+              jenis: 'Penurunan',
+              rona_awal: 'Air Limbah',
+              besaran: null,
+              standar_pengelolaan: {
+                bentuk: ['Mengecek Berkala Sungai X'],
+                lokasi: null,
+                periode: null,
+              },
+              institusi: {
+                pelaksana: null,
+                pengawas: null,
+                penerima_laporan: null,
+              },
+              keterangan: null,
+            },
+          ],
+        },
+        // konstruksi
+        {
+          stage: { id: 2, name: 'Konstruksi' },
+          dampak: [
+            {
+              sumber: 'Mobilisasi Alat dan Bahan',
+              jenis: 'Peningkatan',
+              rona_awal: 'Kebisingan',
+              besaran: 'Radius 500 m dari lokasi proyek',
+              standar_pengelolaan: {
+                bentuk: [],
+                lokasi: null,
+                periode: null,
+              },
+              institusi: {
+                pelaksana: null,
+                pengawas: null,
+                penerima_laporan: null,
+              },
+              keterangan: null,
+            },
+          ],
+        },
+        // operasi
+        {
+          stage: { id: 3, name: 'Operasi' },
+          dampak: [],
+        },
+        // pasca operasi
+        {
+          stage: { id: 4, name: 'Pasca Operasi' },
+          dampak: [],
+        },
+      ],
     };
   },
   methods: {
