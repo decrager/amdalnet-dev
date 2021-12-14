@@ -69,7 +69,9 @@ class MatriksDampakController extends Controller
     {
         return SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
             ->select('spra.id', 'spc.name AS component_name', 'spra.name AS rona_awal_name',
-                'c.name AS component_name_master', 'ra.name AS rona_awal_master')
+                'c.name AS component_name_master', 'ra.name AS rona_awal_master',
+                'spc.id_project_stage',
+                'c.id_project_stage AS id_project_stage_master')
             ->leftJoin('sub_project_components AS spc', 'spra.id_sub_project_component', '=', 'spc.id')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
@@ -115,7 +117,11 @@ class MatriksDampakController extends Controller
                             if (empty($cr->rona_awal_name)) {
                                 $cr->rona_awal_name = $cr->rona_awal_name_master;
                             }
-                            if (strtolower($cr->component_name) == strtolower($component->name)
+                            if (empty($cr->id_project_stage)) {
+                                $cr->id_project_stage = $cr->id_project_stage_master;
+                            }
+                            if ($cr->id_project_stage == $cstage['id_project_stage']
+                                && strtolower($cr->component_name) == strtolower($component->name)
                                 && strtolower($cr->rona_awal_name) == strtolower($ra['name'])) {
                                 if ($is_dph) {
                                     // check if DPH
@@ -137,6 +143,7 @@ class MatriksDampakController extends Controller
                                 } else {
                                     $ctype[$k] = 'v';
                                 }
+                                break;
                             }
                         }
                     }
