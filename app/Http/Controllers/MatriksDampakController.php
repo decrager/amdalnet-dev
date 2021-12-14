@@ -75,6 +75,8 @@ class MatriksDampakController extends Controller
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
             ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
             ->where('sp.id_project', $id)
+            ->whereNotNull('spc.id')
+            ->whereNotNull('spra.id')
             ->get();
     }
 
@@ -156,6 +158,8 @@ class MatriksDampakController extends Controller
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
             ->where('sp.id_project', $id)
+            ->whereNotNull('spc.id')
+            ->whereNotNull('spra.id')
             ->orderBy('spra.id', 'asc')
             ->get();
     }
@@ -190,6 +194,7 @@ class MatriksDampakController extends Controller
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
             ->where('sp.id_project', $id)
+            ->whereNotNull('spc.id')
             ->distinct()
             ->get();
     }
