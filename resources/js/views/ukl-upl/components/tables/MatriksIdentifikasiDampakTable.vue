@@ -1,6 +1,11 @@
 <template>
   <div class="container">
+    <span style="float:right; margin-bottom: 2em;">
+      <span v-show="!isLoading"><el-button icon="el-icon-refresh" round @click="refresh" /></span>
+      <span v-show="isLoading === true"><el-button icon="el-icon-loading"> Refreshing data...</el-button></span>
+    </span>
     <el-table
+      v-loading="isLoading"
       :data="data"
       :span-method="arraySpanMethod"
     >
@@ -39,12 +44,16 @@ export default {
       data: [],
       ronaMapping: {},
       maxColspan: 1,
+      isLoading: true,
     };
   },
   mounted() {
     this.getData();
   },
   methods: {
+    refresh() {
+      this.getData();
+    },
     ronaAwalListFiltered(component_type) {
       return this.ronaMapping[component_type];
     },
@@ -72,6 +81,7 @@ export default {
       this.maxColspan = length + 1;
     },
     async getData() {
+      this.isLoading = true;
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       await axios.get('api/matriks-dampak/rona-mapping/' + this.idProject)
         .then(response => {
@@ -88,6 +98,7 @@ export default {
           });
           this.component_types = Object.keys(ctypes);
           this.setMaxColspan();
+          this.isLoading = false;
         });
     },
   },
