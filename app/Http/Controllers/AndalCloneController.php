@@ -269,7 +269,6 @@ class AndalCloneController extends Controller
     private function checkExist($id) {
         $old_impact = ImpactIdentification::where('id_project', $id)->with(['potentialImpactEvaluation'])->get();
         foreach($old_impact as $o) {
-            dd($o->impactStudy->forecast_method);
             $imp = ImpactIdentificationClone::where('id_impact_identification', $o->id)->first();
             if($imp) {
                 $imp->id_sub_project_component = $o->id_sub_project_component;
