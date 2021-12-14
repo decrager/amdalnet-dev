@@ -180,11 +180,11 @@ export default {
       compositionError: false,
       timPenyusun: [
         {
-          label: 'LPJP',
+          label: 'Lembaga Penyedia Jasa Penyusun',
           value: 'lpjp',
         },
         {
-          label: 'Mandiri',
+          label: 'Penyusun Perseorangan',
           value: 'mandiri',
         },
       ],
