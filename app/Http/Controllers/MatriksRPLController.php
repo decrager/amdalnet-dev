@@ -324,7 +324,7 @@ class MatriksRPLController extends Controller
 
                 $comments = $this->getComments($pA->id);
 
-                if(!pA->envMonitorPlan) {
+                if(!$pA->envMonitorPlan) {
                     $type = 'new';
                 }
 
