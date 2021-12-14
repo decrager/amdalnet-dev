@@ -162,7 +162,6 @@ export default {
     },
   },
   mounted() {
-    console.log('getting ids', this.$route.params && this.$route.params.id);
     this.data = [];
     this.isLoading = true;
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
@@ -188,10 +187,9 @@ export default {
     },
     handleSetData(data) {
       this.data = data;
-      console.log(data);
+      // console.log(data);
     },
     handleSaveForm() {
-      console.log('DampakHipotetik saving entries...', this.data);
       impactIdtResource
         .store({
           study_data: this.data,
@@ -240,7 +238,6 @@ export default {
           if (this.pies){
             imp.potential_impact_evaluation.map((pie) => {
               pie.text = this.getPie(imp.id, pie.id_pie_param);
-              console.log(pie.text);
             });
           }
           if (imp.id_project_stage === id){
@@ -279,9 +276,6 @@ export default {
         });
         dummyId++;
       });
-
-      console.log(['createArray', data]);
-
       return data;
     },
     async getParams() {
@@ -299,7 +293,6 @@ export default {
       });
     },
     async getData() {
-      console.log('starting getData at DampakHipotetik');
       this.data = [];
       this.isLoading = true;
       if ((this.changeType.length === 0) || (this.pieParams.length === 0)) {
@@ -363,10 +356,11 @@ export default {
       });
       this.pies = pies;
 
-      var dataList = impactList.data;
+      var dataList = impactList.data
+        .filter(imp => imp.rona_awal_name !== null && imp.rona_awal_name.replace(/\s+/g, '').trim() !== '')
+        .filter(imp => imp.component_name !== null && imp.component_name.replace(/\s+/g, '').trim() !== '');
       this.data = this.createDataArray(dataList, this.projectStages);
       this.isLoading = false;
-      console.log('end getData...', this.data);
     },
     refresh(){
       this.getData();
