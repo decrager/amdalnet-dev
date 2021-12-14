@@ -24,13 +24,13 @@
         <template slot="title" class="head-accordion">
           <span class="title">PETA BATAS WILAYAH STUDI & PETA LAINNYA</span>
         </template>
-        <PetaBatas />
+        <PetaBatas v-if="activeName === 'peta-batas'" />
       </el-collapse-item>
       <el-collapse-item name="dampak-potensial">
         <template slot="title" class="head-accordion">
           <span class="title">DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
         </template>
-        <DampakHipotetik />
+        <DampakHipotetik v-if="activeName === 'dampak-potensial'" />
       </el-collapse-item>
       <el-collapse-item name="metode-studi">
         <template slot="title" class="head-accordion">
@@ -60,7 +60,7 @@
         <template slot="title" class="head-accordion">
           <span class="title">BAGAN ALIR DAMPAK PENTING</span>
         </template>
-        <bagan-alir-dampak />
+        <bagan-alir-dampak v-if="activeName === 'bagan-alir-dampak'" />
       </el-collapse-item>
     </el-collapse>
   </div>

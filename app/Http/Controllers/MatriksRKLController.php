@@ -344,7 +344,7 @@ class MatriksRKLController extends Controller
         $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
             $q->whereHas('detail', function($query) {
-                $query->where('important_trait', '+P');
+                $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
             });
         })->get();
         $results[] = [
@@ -411,6 +411,10 @@ class MatriksRKLController extends Controller
 
            $comments = $this->getComments($pA->id);
 
+           if(!$pA->envManagePlan) {
+               $type = 'new';
+           }
+
             $results[] = [
                 'no' => $total + 1,
                 'id' => $pA->id,
@@ -456,8 +460,8 @@ class MatriksRKLController extends Controller
     // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
     $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
     ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
-        $q->whereDoesntHave('detail', function($query) {
-            $query->where('important_trait', '+P');
+        $q->whereHas('detail', function($query) {
+            $query->where('important_trait', '+TP')->orWhere('important_trait', '-TP');
         });
     })->get();
 
@@ -507,6 +511,10 @@ class MatriksRKLController extends Controller
 
             $comments = $this->getComments($merge->id);
 
+            if(!$merge->envManagePlan) {
+                $type = 'new';
+            }
+
             $results[] = [
                 'no' => $total + 1,
                 'id' => $merge->id,
@@ -543,7 +551,7 @@ class MatriksRKLController extends Controller
     $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
     ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
         $q->whereHas('detail', function($query) {
-            $query->where('important_trait', '+P');
+            $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
         });
     })->get();
 
@@ -572,7 +580,7 @@ class MatriksRKLController extends Controller
 
             $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
-            if($pA->envManagerPlan) {
+            if($pA->envManagePlan) {
                 $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
                     'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl' => $total + 1,
                     'id' => $pA->id,
@@ -614,8 +622,8 @@ class MatriksRKLController extends Controller
         // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
         $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
-            $q->whereDoesntHave('detail', function($query) {
-                $query->where('important_trait', '+P');
+            $q->whereHas('detail', function($query) {
+                $query->where('important_trait', '+TP')->orWhere('important_trait', '-TP');
             });
         })->get();
 
@@ -650,7 +658,7 @@ class MatriksRKLController extends Controller
                 $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
                 $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
 
-                if($merge->envManagerPlan) {
+                if($merge->envManagePlan) {
                     $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
                         'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'  => $total + 1,
                         'id' => $merge->id,
@@ -680,7 +688,7 @@ class MatriksRKLController extends Controller
         $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
         ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
             $q->whereHas('detail', function($query) {
-                $query->where('important_trait', '+P');
+                $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
             });
         })->get();
 
@@ -752,8 +760,8 @@ class MatriksRKLController extends Controller
        // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
        $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
        ->where('id_project', $id_project)->whereHas('envImpactAnalysis', function($q) {
-           $q->whereDoesntHave('detail', function($query) {
-               $query->where('important_trait', '+P');
+           $q->whereHas('detail', function($query) {
+               $query->where('important_trait', '+TP')->orWhere('important_trait', '-TP');
            });
        })->get();
 

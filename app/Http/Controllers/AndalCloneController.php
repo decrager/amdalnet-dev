@@ -267,13 +267,33 @@ class AndalCloneController extends Controller
     }
 
     private function checkExist($id) {
-        $old_impact = ImpactIdentification::where('id_project', $id)->get();
+        $old_impact = ImpactIdentification::where('id_project', $id)->with(['impactStudy','potentialImpactEvaluation'])->get();
         foreach($old_impact as $o) {
-            $imp = ImpactIdentificationClone::where('id_impact_identification', $o->id)->first();
+            $imp = ImpactIdentificationClone::where('id_impact_identification', $o->id)->with(['impactStudy', 'potentialImpactEvaluation'])->first();
             if($imp) {
                 $imp->id_sub_project_component = $o->id_sub_project_component;
                 $imp->id_sub_project_rona_awal = $o->id_sub_project_rona_awal;
                 $imp->save();
+
+                if($imp->impactStudy) {
+                    $study = ImpactStudyClone::where('id_impact_identification_clone', $imp->id)->first();
+                    $study->forecast_method = isset($o->impactStudy) ? $o->impactStudy->forecast_method : null;
+                    $study->required_information = isset($o->impactStudy) ? $o->impactStudy->required_information : null;
+                    $study->data_gathering_method = isset($o->impactStudy) ? $o->impactStudy->data_gathering_method : null;
+                    $study->analysis_method = isset($o->impactStudy) ? $o->impactStudy->analysis_method : null;
+                    $study->evaluation_method = isset($o->impactStudy) ? $o->impactStudy->evaluation_method : null;
+                    $study->save();
+                } else {
+                    $study = new ImpactStudyClone();
+                    $study->id_impact_identification_clone = $imp->id;
+                    $study->forecast_method = isset($o->impactStudy) ? $o->impactStudy->forecast_method : null;
+                    $study->required_information = isset($o->impactStudy) ? $o->impactStudy->required_information : null;
+                    $study->data_gathering_method = isset($o->impactStudy) ? $o->impactStudy->data_gathering_method : null;
+                    $study->analysis_method = isset($o->impactStudy) ? $o->impactStudy->analysis_method : null;
+                    $study->evaluation_method = isset($o->impactStudy) ? $o->impactStudy->evaluation_method : null;
+                    $study->save();
+                }
+                
             } else {
                 $imp = new ImpactIdentificationClone();
                 $imp->id_impact_identification = $o->id;
@@ -285,6 +305,7 @@ class AndalCloneController extends Controller
                 $imp->is_hypothetical_significant = $o->is_hypothetical_significant;
                 $imp->initial_study_plan = $o->initial_study_plan;
                 $imp->study_location = $o->study_location;
+                $imp->study_length_month = $o->study_length_month;
                 $imp->study_length_year = $o->study_length_year;
                 $imp->id_sub_project_component = $o->id_sub_project_component;
                 $imp->id_sub_project_rona_awal = $o->id_sub_project_rona_awal;
