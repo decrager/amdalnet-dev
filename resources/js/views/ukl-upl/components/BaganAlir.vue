@@ -8,7 +8,7 @@
               <div><span class="header__text">Rencana Kegiatan</span>
                 <hr>
                 <div v-for="rencana in data.rencana_kegiatan" :key="rencana.id" class="text item">
-                  <p>- {{ rencana.name }}</p>
+                  <p v-if="rencana.type === 'utama'">- {{ rencana.name }}</p>
                 </div>
               </div>
             </li>
@@ -16,8 +16,8 @@
               <div>
                 <span class="header__text">Kegiatan Lain</span>
                 <hr>
-                <div v-for="rencana in data.kegiatan_lain" :key="rencana.id" class="text item">
-                  <p>- {{ rencana.name }}</p>
+                <div v-for="rencana in data.rencana_kegiatan" :key="rencana.id" class="text item">
+                  <p v-if="rencana.type === 'pendukung'">- {{ rencana.name }}</p>
                 </div>
               </div>
             </li>

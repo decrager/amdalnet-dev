@@ -14,17 +14,9 @@ class BaganAlirController extends Controller
     public function baganAlirUklUpl(Request $request, $id)
     {
         $getRencanaKegiatan = DB::table('sub_projects')
-            ->select('sub_projects.name')
+            ->select('sub_projects.name', 'sub_projects.type')
             ->leftJoin('projects', 'projects.id', '=', 'sub_projects.id_project')
             ->where('sub_projects.id_project', '=', $id)
-            ->where('sub_projects.type', '=', 'utama')
-            ->get();
-
-        $getKegiatanLain = DB::table('sub_projects')
-            ->select('sub_projects.name')
-            ->leftJoin('projects', 'projects.id', '=', 'sub_projects.id_project')
-            ->where('sub_projects.id_project', '=', $id)
-            ->where('sub_projects.type', '=', 'pendukung')
             ->get();
 
         $getFeedback = DB::table('announcements')
@@ -61,7 +53,6 @@ class BaganAlirController extends Controller
 
         return response()->json([
             'rencana_kegiatan' => $getRencanaKegiatan,
-            'kegiatan_lain' => $getKegiatanLain,
             'rona_awal' => $getRonaAwal,
             'feedback' => $getFeedback,
             'dampak_penting_potensi' => $dampakPentingPotensi,
