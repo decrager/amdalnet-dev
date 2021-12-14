@@ -161,7 +161,9 @@ export default {
     },
     searchRonaAwal(queryString, cb) {
       var ronaAwalList = this.ronaAwalList;
-      var results = queryString ? ronaAwalList.filter(this.createFilter(queryString)) : ronaAwalList;
+      var results = queryString ? ronaAwalList
+        .filter(ra => ra.id_component_type === this.currentIdComponentType)
+        .filter(this.createFilter(queryString)) : ronaAwalList;
       cb(results);
     },
     createFilter(queryString) {
@@ -229,6 +231,7 @@ export default {
       ronaAwals.data.forEach(ra => {
         raList.push({
           id: ra.id,
+          id_component_type: ra.id_component_type,
           value: ra.name,
         });
       });
