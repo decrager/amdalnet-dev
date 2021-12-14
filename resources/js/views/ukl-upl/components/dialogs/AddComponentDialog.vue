@@ -178,10 +178,12 @@ export default {
       });
       const cmpList = [];
       compMaster.data.forEach(cmp => {
-        cmpList.push({
-          id: cmp.id,
-          value: cmp.name,
-        });
+        if (cmp.id_project_stage === this.idProjectStage) {
+          cmpList.push({
+            id: cmp.id,
+            value: cmp.name,
+          });
+        }
       });
       this.componentList = cmpList;
       this.subProjects.utama.map((u) => {
