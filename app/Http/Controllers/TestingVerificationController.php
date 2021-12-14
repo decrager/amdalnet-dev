@@ -84,9 +84,9 @@ class TestingVerificationController extends Controller
                 $form = ProjectKaForm::where([['id_testing_verification', $verification->id], ['id_ka_form', $data['ka_forms'][$i]['id_ka_form']]])->first();
             }
 
-            $form->completeness = $data['ka_forms'][$i]['completeness'];
-            $form->suitability = $data['ka_forms'][$i]['suitability'];
-            $form->description = $data['ka_forms'][$i]['description'];
+            $form->completeness = isset($data['ka_forms'][$i]) ? $data['ka_forms'][$i]['completeness'] : null;
+            $form->suitability = isset($data['ka_forms'][$i]) ? $data['ka_forms'][$i]['suitability'] : null;
+            $form->description = isset($data['ka_forms'][$i]) ? $data['ka_forms'][$i]['description'] : null;
             $form->save();
         }
 
