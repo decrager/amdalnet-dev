@@ -278,19 +278,19 @@ class AndalCloneController extends Controller
                 if($imp->impactStudy) {
                     $study = ImpactStudyClone::where('id_impact_identification_clone', $imp->id)->first();
                     $study->forecast_method = isset($o->impactStudy) ? $o->impactStudy->forecast_method : null;
-                    $study->required_information = $o->impactStudy->required_information;
-                    $study->data_gathering_method = $o->impactStudy->data_gathering_method;
-                    $study->analysis_method = $o->impactStudy->analysis_method;
-                    $study->evaluation_method = $o->impactStudy->evaluation_method;
+                    $study->required_information = isset($o->impactStudy) ? $o->impactStudy->required_information : null;
+                    $study->data_gathering_method = isset($o->impactStudy) ? $o->impactStudy->data_gathering_method : null;
+                    $study->analysis_method = isset($o->impactStudy) ? $o->impactStudy->analysis_method : null;
+                    $study->evaluation_method = isset($o->impactStudy) ? $o->impactStudy->evaluation_method : null;
                     $study->save();
                 } else {
                     $study = new ImpactStudyClone();
                     $study->id_impact_identification_clone = $imp->id;
-                    $study->forecast_method = $o->impactStudy->forecast_method;
+                    $study->forecast_method = isset($o->impactStudy) ? $o->impactStudy->forecast_method : null;
                     $study->required_information = isset($o->impactStudy) ? $o->impactStudy->required_information : null;
-                    $study->data_gathering_method = $o->impactStudy->data_gathering_method;
-                    $study->analysis_method = $o->impactStudy->analysis_method;
-                    $study->evaluation_method = $o->impactStudy->evaluation_method;
+                    $study->data_gathering_method = isset($o->impactStudy) ? $o->impactStudy->data_gathering_method : null;
+                    $study->analysis_method = isset($o->impactStudy) ? $o->impactStudy->analysis_method : null;
+                    $study->evaluation_method = isset($o->impactStudy) ? $o->impactStudy->evaluation_method : null;
                     $study->save();
                 }
                 
