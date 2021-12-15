@@ -57,8 +57,8 @@
 </template>
 
 <script>
-import Resource from '@/api/resource';
-const cloneResource = new Resource('andal-clone');
+// import Resource from '@/api/resource';
+// const cloneResource = new Resource('andal-clone');
 import Andal from '@/views/penyusunan-andal/components/Andal';
 import FormulirKA from '@/views/penyusunan-andal/components/FormulirKA';
 // import MapList from '@/views/penyusunan-andal/components/MapList';
@@ -88,17 +88,17 @@ export default {
     };
   },
   created() {
-    this.checkExist();
+    // this.checkExist();
     this.getUserInfo();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
-    async checkExist() {
-      await cloneResource.list({
-        exist: 'true',
-        idProject: this.$route.params.id,
-      });
-    },
+    // async checkExist() {
+    //   await cloneResource.list({
+    //     exist: 'true',
+    //     idProject: this.$route.params.id,
+    //   });
+    // },
     async getUserInfo() {
       this.userInfo = await this.$store.dispatch('user/getInfo');
     },
