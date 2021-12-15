@@ -258,3 +258,4 @@ Route::get('matriks-dampak/table-dph/{id}', [MatriksDampakController::class, 'ge
 Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 'getRonaMapping']);
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
 Route::get('project-maps', [WebgisController::class, 'index']);
+Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);

@@ -101,8 +101,16 @@
               <div class="bottom_content">
                 <span class="header__text">Evaluasi Dampak Penting</span>
                 <hr>
-                <p>- Besaran rencana Usaha dan/atau Kegiatan yang menyebabkan dampak tersebut dan rencana pengelolaan lingkungan awal yang menjadi bagian rencana Usaha dan/atau kegiatan untuk menanggulangi dampak</p>
-                <p>- Kondisi rona lingkungan yang ada termasuk kemampuan mendukung Usaha dan/atau kegiatan tersebut atau tidak</p>
+                <div>
+                  <div v-for="stages in evaluations" :key="stages.id">
+                    <span v-if="stages.type === 'title'" class="sub_text">{{ stages.name }}</span>
+                    <span v-if="stages.type === 'subtitle'" class="sub_sub_text">{{ stages.impact_size }}</span>
+                    <div v-for="trait in stages.important_trait" :key="trait.id">
+                      <p class="description__text">{{ trait.id }}. {{ trait.description }}</p>
+                      <p>{{ trait.desc }}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </li>
           </ul>
@@ -159,6 +167,7 @@ export default {
       identifikasiDampaks: [],
       rona_mappings: [],
       impacts: [],
+      evaluations: [],
     };
   },
   created() {
@@ -188,6 +197,10 @@ export default {
       axios.get(`api/impact-identifications?id_project=${this.projectId}&join_tables=true`)
         .then(response => {
           this.impacts = response.data.data;
+        });
+      axios.get(`api/eval-dampak?idProject=${this.projectId}`)
+        .then((response) => {
+          this.evaluations = response.data;
         });
     },
     download() {
@@ -225,6 +238,18 @@ export default {
   font-size: 15px;
   font-weight: 600;
   color: #464646;
+}
+
+.sub_sub_text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #5a5959;
+}
+
+.description__text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #099C4B;
 }
 
 .component__content {
