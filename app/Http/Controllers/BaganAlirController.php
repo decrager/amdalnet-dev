@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\EnvImpactAnalysis;
 use App\Entity\ImpactIdentification;
+use App\Entity\ImpactIdentificationClone;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\SubProject;
@@ -57,5 +59,111 @@ class BaganAlirController extends Controller
             'feedback' => $getFeedback,
             'dampak_penting_potensi' => $dampakPentingPotensi,
         ]);
+    }
+
+    private function getEnvImpactAnalysis($id_project, $stages)
+    {
+        $alphabet_list = 'A';
+
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
+        $results = [];
+
+        foreach ($stages as $s) {
+            $results[] = [
+                'id' => $s->id,
+                'name' =>  $alphabet_list . '. ' . $s->name,
+                'type' => 'title'
+            ];
+
+            $total = 0;
+
+            foreach ($impactIdentifications as $imp) {
+                $ronaAwal = '';
+                $component = '';
+
+                // check stages
+                $id_stages = null;
+
+                if ($imp->subProjectComponent) {
+                    if ($imp->subProjectComponent->id_project_stage) {
+                        $id_stages = $imp->subProjectComponent->id_project_stage;
+                    } else {
+                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                    }
+
+                    if ($id_stages == $s->id) {
+                        if ($imp->subProjectRonaAwal) {
+                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
+                $important_trait = [];
+
+                foreach ($imp->envImpactAnalysis->detail as $det) {
+                    $important_trait[] = [
+                        'id' => $det->id_important_trait,
+                        'description' => $det->importantTrait->description,
+                        'desc' => $det->description,
+                    ];
+                }
+
+                $results[] = [
+                    'id' => $imp->id,
+                    'type' => 'subtitle',
+                    'impact_size' => $imp->envImpactAnalysis->impact_size,
+                    'important_trait' => $important_trait,
+                ];
+                $total++;
+            }
+
+            if ($total == 0) {
+                array_pop($results);
+            } else {
+                $alphabet_list++;
+            }
+        }
+
+        return $results;
+    }
+
+    public function evalDampak(Request $request)
+    {
+        if ($request->lastTime && $request->idProject) {
+            $id_project = $request->idProject;
+            $time = EnvImpactAnalysis::whereHas('impactIdentification', function ($q) use ($id_project) {
+                $q->where('id_project', $id_project);
+            })->orderBy('updated_at', 'DESC')->first();
+
+            if ($time) {
+                return 'Diperbarui ' . $time->updated_at->locale('id')->diffForHumans();
+            } else {
+                return null;
+            }
+        }
+
+        if ($request->idProject) {
+            $ids = [4, 1, 2, 3];
+            $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
+                return array_search($model->getKey(), $ids);
+            });
+
+            $project = Project::where('id', $request->idProject)->whereHas('impactIdentificationsClone', function ($query) {
+                $query->whereHas('envImpactAnalysis');
+            })->first();
+
+            if ($project) {
+                return $this->getEnvImpactAnalysis($request->idProject, $stages);
+            } else {
+                return $this->getImpactNotifications($request->idProject, $stages);
+            }
+        }
     }
 }
