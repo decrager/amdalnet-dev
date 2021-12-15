@@ -274,26 +274,6 @@ class AndalCloneController extends Controller
                 $imp->id_sub_project_component = $o->id_sub_project_component;
                 $imp->id_sub_project_rona_awal = $o->id_sub_project_rona_awal;
                 $imp->save();
-
-                if($imp->impactStudy) {
-                    $study = ImpactStudyClone::where('id_impact_identification_clone', $imp->id)->first();
-                    $study->forecast_method = isset($o->impactStudy) ? $o->impactStudy->forecast_method : null;
-                    $study->required_information = isset($o->impactStudy) ? $o->impactStudy->required_information : null;
-                    $study->data_gathering_method = isset($o->impactStudy) ? $o->impactStudy->data_gathering_method : null;
-                    $study->analysis_method = isset($o->impactStudy) ? $o->impactStudy->analysis_method : null;
-                    $study->evaluation_method = isset($o->impactStudy) ? $o->impactStudy->evaluation_method : null;
-                    $study->save();
-                } else {
-                    $study = new ImpactStudyClone();
-                    $study->id_impact_identification_clone = $imp->id;
-                    $study->forecast_method = isset($o->impactStudy) ? $o->impactStudy->forecast_method : null;
-                    $study->required_information = isset($o->impactStudy) ? $o->impactStudy->required_information : null;
-                    $study->data_gathering_method = isset($o->impactStudy) ? $o->impactStudy->data_gathering_method : null;
-                    $study->analysis_method = isset($o->impactStudy) ? $o->impactStudy->analysis_method : null;
-                    $study->evaluation_method = isset($o->impactStudy) ? $o->impactStudy->evaluation_method : null;
-                    $study->save();
-                }
-                
             } else {
                 $imp = new ImpactIdentificationClone();
                 $imp->id_impact_identification = $o->id;
