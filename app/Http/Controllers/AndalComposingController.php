@@ -1039,17 +1039,8 @@ class AndalComposingController extends Controller
             $results['negative'][] = ['val' => $p->negative_feedback_summary ?? '']; 
         }
 
-        // CHECK CLONE EXIST
-        $check = ImpactIdentificationClone::where('id_project', $id_project)->count();
-        $im = null;
-        if($check > 0) {
-            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-            ->where('id_project', $id_project)->with('potentialImpactEvaluation.pieParam')->get();
-        } else {
-            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-            ->where('id_project', $id_project)->with('potentialImpactEvaluation.pieParam')->get();
-        }
-
+        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+        ->where('id_project', $id_project)->with('potentialImpactEvaluation.pieParam')->get();
 
         $total_ms = 0;
         foreach($stages as $s) {

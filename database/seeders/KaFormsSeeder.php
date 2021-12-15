@@ -2,15 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Entity\Comment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
 use App\Entity\ImpactAnalysisDetail;
-use App\Entity\ImpactIdentificationClone;
-use App\Entity\ImpactStudyClone;
 use App\Entity\KaForm;
-use App\Entity\PotentialImpactEvalClone;
 use Illuminate\Database\Seeder;
 
 class KaFormsSeeder extends Seeder
@@ -43,57 +39,7 @@ class KaFormsSeeder extends Seeder
         // }
         // EnvManagePlan::truncate();
         // EnvMonitorPlan::truncate();
-        // ImpactAnalysisDetail::truncate();
-        // EnvImpactAnalysis::truncate();
-
-        // $imp = ImpactIdentificationClone::where('id_project', 165)->with(['impactStudy','envImpactAnalysis', 'envManagePlan', 'envMonitorPlan', 'comments', 'potentialImpactEvaluation'])->get();
-
-        // foreach($imp as $i) {
-        //     if($i->impactStudy) {
-        //         ImpactStudyClone::destroy($i->impactStudy->id);
-        //     }
-
-        //     $envImpactAnalysis = EnvImpactAnalysis::where('id_impact_identifications', $i->id)->with('detail')->get();
-        //     foreach($envImpactAnalysis as $envImpact) {
-        //         if($envImpact->detail) {
-        //             if($envImpact->detail->first()) {
-        //                 foreach($envImpact->detail as $d) {
-        //                     ImpactAnalysisDetail::destroy($d->id);
-        //                 }
-        //             }
-        //         }
-        //     }
-            
-        //     if($i->envImpactAnalysis) {
-        //         EnvImpactAnalysis::destroy($i->envImpactAnalysis->id);
-        //     }
-
-        //     if($i->envManagePlan) {
-        //         EnvManagePlan::destroy($i->envManagePlan->id);
-        //     }
-
-        //     if($i->envMonitorPlan) {
-        //         EnvMonitorPlan::destroy($i->envMonitorPlan->id);
-        //     }
-            
-        //     if($i->comments) {
-        //         if($i->comments->first()) {
-        //             foreach($i->comments as $c) {
-        //                 Comment::destroy($c->id);
-        //             }
-        //         }
-        //     }
-
-        //     if($i->potentialImpactEvaluation) {
-        //         if($i->potentialImpactEvaluation->first()) {
-        //             foreach($i->potentialImpactEvaluation as $p) {
-        //                 PotentialImpactEvalClone::destroy($p->id);
-        //             }
-        //         }
-        //     }
-        // }
-
-         ImpactIdentificationClone::where('id_project', 165)->delete();
-
+        ImpactAnalysisDetail::truncate();
+        EnvImpactAnalysis::truncate();
     }
 }
