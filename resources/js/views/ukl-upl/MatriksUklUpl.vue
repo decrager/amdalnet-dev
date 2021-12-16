@@ -69,7 +69,7 @@ export default {
       });
       var completed = 0;
       data.map((imp) => {
-        if (imp.id_change_type !== null && imp.id_unit !== null && imp.nominal !== null) {
+        if (imp.id_change_type !== null && (imp.id_unit !== null || imp.unit !== null)) {
           completed++;
         }
       });
@@ -79,7 +79,10 @@ export default {
           type: 'error',
           duration: 5 * 1000,
         });
-        this.$router.push({ path: '/amdal/' + idProject + '/formulir' });
+        this.$router.push({
+          name: 'FormulirUklUpl',
+          params: idProject,
+        });
       }
     },
   },

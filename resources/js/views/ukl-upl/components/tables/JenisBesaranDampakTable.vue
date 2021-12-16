@@ -106,19 +106,21 @@ export default {
           unit_data: this.data,
         })
         .then((response) => {
-          var message = (response.code === 200) ? 'Jenis dan besaran dampak berhasil disimpan' : 'Terjadi kesalahan pada server';
-          var message_type = (response.code === 200) ? 'success' : 'error';
-          this.$message({
-            message: message,
-            type: message_type,
-            duration: 5 * 1000,
-          });
           if (response.code === 200) {
+            this.$message({
+              message: 'Jenis dan besaran dampak berhasil disimpan',
+              type: 'success',
+              duration: 5 * 1000,
+            });
             this.$emit('handleEnableSimpanLanjutkan');
           }
         })
-        .catch((error) => {
-          console.log(error);
+        .catch((err) => {
+          this.$message({
+            message: err.response.data.message,
+            type: 'error',
+            duration: 5 * 1000,
+          });
         });
     },
   },

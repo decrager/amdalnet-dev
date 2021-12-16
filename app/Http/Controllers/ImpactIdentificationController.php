@@ -218,13 +218,17 @@ class ImpactIdentificationController extends Controller
                 $toUpdate = ImpactIdentification::find($impact['id']);
                 if ($toUpdate != null) {
                     try {
+                        if (empty($impact['unit'])) {
+                            array_push($errors, 'Besaran wajib diisi.');
+                            continue;
+                        }
                         $toUpdate->id_change_type = $impact['id_change_type'];
                         $toUpdate->unit = $impact['unit'];
                         $toUpdate->save();
                         $updated++;
                         array_push($response, $toUpdate);
                     } catch (Exception $e) {
-                        array_push($errors, $e->getMessage());
+                        array_push($errors, 'Gagal menyimpan Dampak.');
                     }
                 }
             }
@@ -241,7 +245,7 @@ class ImpactIdentificationController extends Controller
             return response()->json([
                 'status' => 500,
                 'code' => 500,
-                'message' => 'Some rows failed to update. Details = ' . implode(', ', $errors),
+                'message' => implode(', ', $errors),
             ], 500);
         }
     }
