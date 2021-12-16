@@ -310,7 +310,7 @@ class AndalCloneController extends Controller
                 }
 
                 // POTENTIAL IMPACT EVALUATION
-                $piv = PotentialImpactEvaluation::where('id_impact_identification', $id)->get();
+                $piv = PotentialImpactEvaluation::where('id_impact_identification', $oi->id)->get();
                 foreach($piv as $p) {
                     $potential = new PotentialImpactEvalClone();
                     $potential->id_impact_identification_clone = $imp->id;
