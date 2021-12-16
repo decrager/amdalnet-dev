@@ -10,8 +10,8 @@ const amdalRoutes = {
   children: [
     {
       path: ':id(\\d+)/formulir',
-      component: () => import('@/views/amdal/FormulirUklUpl'),
-      name: 'FormulirUklUpl',
+      component: () => import('@/views/amdal/FormulirAmdal'),
+      name: 'FormulirAmdal',
       hidden: false,
       meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
     },
@@ -24,8 +24,8 @@ const amdalRoutes = {
     },
     {
       path: ':id(\\d+)/dokumen',
-      component: () => import('@/views/amdal/DokumenUklUpl'),
-      name: 'DokumenUklUpl',
+      component: () => import('@/views/amdal/DokumenAmdal'),
+      name: 'DokumenAmdal',
       hidden: false,
       meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
     },

@@ -71,7 +71,7 @@ import BaganAlir from './components/BaganAlir.vue';
 import UploadPetaBatas from './components/UploadPetaBatas.vue';
 
 export default {
-  name: 'FormulirUklUpl',
+  name: 'FormulirAmdal',
   components: {
     Pelingkupan,
     MatriksIdentifikasiDampakTable,
@@ -119,7 +119,7 @@ export default {
     handleSaveForm() {
       const id = this.$route.params && this.$route.params.id;
       this.$router.push({
-        name: 'DokumenUklUpl',
+        name: 'DokumenAmdal',
         params: id,
       });
     },
