@@ -19,14 +19,16 @@
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="PELINGKUPAN">
           <pelingkupan
+            v-if="activeName === '1'"
             @handleReloadVsaList="handleReloadVsaList"
           />
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
-          <matriks-identifikasi-dampak-table />
+          <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
         </el-collapse-item>
         <el-collapse-item name="3" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
           <dampak-hipotetik
+            v-if="activeName === '3'"
             @handleReloadVsaList="handleReloadVsaList"
           />
           <!--
@@ -39,21 +41,23 @@
         </el-collapse-item>
         <el-collapse-item name="4" title="PETA BATAS WILAYAH STUDI & PETA PENDUKUNG">
           <upload-peta-batas
+            v-if="activeName === '4'"
             @handleReloadVsaList="handleReloadVsaList"
           />
 
         </el-collapse-item>
         <el-collapse-item name="5" title="METODE STUDI">
           <metode-studi
+            v-if="activeName === '5'"
             @handleReloadVsaList="handleReloadVsaList"
             @handleEnableSubmitForm="handleEnableSubmitForm"
           />
         </el-collapse-item>
         <el-collapse-item title="Matriks Dampak Penting Hipotetik" name="6">
-          <MatriksDPHTable />
+          <MatriksDPHTable v-if="activeName === '6'" />
         </el-collapse-item>
         <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
-          <bagan-alir />
+          <bagan-alir v-if="activeName === '7'" />
         </el-collapse-item>
       </el-collapse>
     </el-card>
