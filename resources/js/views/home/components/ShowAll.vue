@@ -1,32 +1,61 @@
 <template>
-  <div style="margin-top:2rem;">
-    <div v-if="showFromAll" style="margin-top:2rem;">
-      <!-- <el-form ref="form">
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="5">
-            <div style="display:flex; align-items:center;">
-              <h5 style="margin-left:1.5rem; margin-right:1rem;">Urutkan</h5>
-              <el-form-item label="">
-                <el-select v-model="form.sort" style="margin-left:auto" placeholder="Terbaru" @change="handleChange">
-                  <el-option label="Descending" value="DESC" />
-                  <el-option label="Ascending" value="ASC" />
-                </el-select>
-              </el-form-item>
+  <div>
+    <div v-if="showFromAll">
+      <el-row :gutter="20">
+        <el-col :span="8" :offset="16">
+          <div style="display:flex; align-items: center;">
+            <div style="width:75%; display:flex; align-items: center; background: #062307; padding: 0.5rem;">
+              <span style="font-weight:bold; display:inline-block; margin-right:0.5rem;">Search</span>
+              <el-input v-model="input" placeholder="Please input" />
             </div>
-          </el-col>
-          <el-col :xs="24" :sm="19">
-            <div style="display:flex; align-items:center; justify-content: end;">
-              <el-form-item ref="form" label="">
-                <el-input v-model="keyword" type="text" placeholder="Global search (All field)" />
-              </el-form-item>
-              <el-button type="warning fw-bold" plain @click="handleSearch">Cari</el-button>
-              <el-button type="info fw-bold" @click="handleCancle">
-                <i class="el-icon-d-arrow-left" /> Kembali
-              </el-button>
+            <div style="cursor:pointer; background:#dff5cf;padding: 0.5rem 0; width:25%; display:flex; align-items:center; position:relative" class="filter" @click="toggle = !toggle">
+              <img alt="" src="/images/filter.png">
+              <span style="font-weight:bold; display:inline-block; margin-right:0.5rem; color:#ef8913;">Filter</span>
+              <div v-show="toggle" style="display: flex;position: absolute;top: 3rem;width: 50rem;background: #dff5cf;right: 0;z-index: 99; color:#35442f;">
+                <div style="width:20%; padding:0.5rem;">
+                  <span style="font-size: 11px;font-weight: bold;">Pusat <el-radio v-model="radio" label="1" /></span>
+                </div>
+                <div style="width:20%; padding:0.5rem;">
+                  <span style="font-size: 11px;font-weight: bold;">Provinsi <el-radio v-model="radio" label="2" /></span>
+                  <el-select v-model="value" placeholder="Select">
+                    <el-option
+                      v-for="item in provinsi"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </div>
+                <div style="width:20%; padding:0.5rem;">
+                  <span style="font-size: 11px;font-weight: bold;">Kab. / Kota <el-radio v-model="radio" label="3" /></span>
+                  <el-select v-model="value" placeholder="Select">
+                    <el-option
+                      v-for="item in kota"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </div>
+                <div style="width:20%; padding:0.5rem;">
+                  <span style="font-size: 11px;font-weight: bold;">Urut Berdasarkan <el-radio v-model="radio" label="4" /></span>
+                  <el-select v-model="value" placeholder="Select">
+                    <el-option
+                      v-for="item in urut"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </div>
+                <div style="width:20%; padding:0.5rem;">
+                  <button style="padding:0.5rem 2rem; background:#f38c13; color:#fff; margin:auto; display:block;border-radius: 0.7rem;">Simpan<br>Filter</button>
+                </div>
+              </div>
             </div>
-          </el-col>
-        </el-row>
-      </el-form> -->
+          </div>
+        </el-col>
+      </el-row>
       <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
         <el-col :xs="24" :sm="3" style="padding-top:1rem">
           <img alt="" src="/images/list.svg">
@@ -94,6 +123,26 @@ export default {
       showFromAll: true,
       selectedAnnouncement: {},
       selectedProject: {},
+      radio: '1',
+      provinsi: [
+        {
+          value: 'Option1',
+          label: 'Option1',
+        },
+      ],
+      kota: [
+        {
+          value: 'Option1',
+          label: 'Option1',
+        },
+      ],
+      urut: [
+        {
+          value: 'Option1',
+          label: 'Option1',
+        },
+      ],
+      toggle: false,
     };
   },
   created() {

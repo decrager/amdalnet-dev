@@ -209,4 +209,5 @@ export default {
 .el-tabs__item.is-top{color: #f6993f;border-right: 1px solid #fff; border-top-right-radius: 5px;}
 .tabset >>> .el-tabs--card > .el-tabs__header{margin-bottom: 0px; border-bottom: none;}
 .tabset >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active{border-bottom: none;}
+.el-tabs__header.is-top{width: 25% !important;}
 </style>
