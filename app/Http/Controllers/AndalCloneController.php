@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Entity\ChangeType;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
+use App\Entity\ImpactStudy;
 use App\Entity\ImpactStudyClone;
 use App\Entity\PotentialImpactEvalClone;
+use App\Entity\PotentialImpactEvaluation;
 use App\Http\Resources\ImpactIdentificationCloneResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -267,53 +269,59 @@ class AndalCloneController extends Controller
     }
 
     private function checkExist($id) {
-        $old_impact = ImpactIdentification::where('id_project', $id)->with(['impactStudy','potentialImpactEvaluation'])->get();
-        foreach($old_impact as $o) {
-            $imp = ImpactIdentificationClone::where('id_impact_identification', $o->id)->with(['impactStudy', 'potentialImpactEvaluation'])->first();
-            if($imp) {
-                $imp->id_sub_project_component = $o->id_sub_project_component;
-                $imp->id_sub_project_rona_awal = $o->id_sub_project_rona_awal;
-                $imp->save();
-            } else {
+        $old_impact = ImpactIdentification::select('id', 'id_project')->where('id_project', $id)->with(['impactStudy', 'potentialImpactEvaluation'])->get();
+        $new_impact = ImpactIdentificationClone::select('id', 'id_project', 'id_impact_identification')->where('id_project', $id)->get();
+
+        $new_ids = [];
+        foreach($new_impact as $ni) {
+            $new_ids[] = $ni->id_impact_identification;
+        } 
+
+        foreach($old_impact as $oi) {
+            if(!in_array($oi->id, $new_ids)) {
                 $imp = new ImpactIdentificationClone();
-                $imp->id_impact_identification = $o->id;
-                $imp->id_project = $o->id_project;
-                $imp->id_change_type = $o->id_change_type;
-                $imp->id_unit = $o->id_unit;
-                $imp->nominal = $o->nominal;
-                $imp->potential_impact_evaluation = $o->potential_impact_evaluation;
-                $imp->is_hypothetical_significant = $o->is_hypothetical_significant;
-                $imp->initial_study_plan = $o->initial_study_plan;
-                $imp->study_location = $o->study_location;
-                $imp->study_length_month = $o->study_length_month;
-                $imp->study_length_year = $o->study_length_year;
-                $imp->id_sub_project_component = $o->id_sub_project_component;
-                $imp->id_sub_project_rona_awal = $o->id_sub_project_rona_awal;
-                $imp->is_managed = $o->is_managed;
+                $imp->id_impact_identification = $oi->id;
+                $imp->id_project = $oi->id_project;
+                $imp->id_change_type = $oi->id_change_type;
+                $imp->id_unit = $oi->id_unit;
+                $imp->nominal = $oi->nominal;
+                $imp->potential_impact_evaluation = $oi->potential_impact_evaluation;
+                $imp->is_hypothetical_significant = $oi->is_hypothetical_significant;
+                $imp->initial_study_plan = $oi->initial_study_plan;
+                $imp->study_location = $oi->study_location;
+                $imp->study_length_month = $oi->study_length_month;
+                $imp->study_length_year = $oi->study_length_year;
+                $imp->id_sub_project_component = $oi->id_sub_project_component;
+                $imp->id_sub_project_rona_awal = $oi->id_sub_project_rona_awal;
+                $imp->is_managed = $oi->is_managed;
                 $imp->save();
 
-                if($o->impactStudy) {
-                    $study = new ImpactStudyClone();
-                    $study->id_impact_identification_clone = $imp->id;
-                    $study->forecast_method = $o->impactStudy->forecast_method;
-                    $study->required_information = $o->impactStudy->required_information;
-                    $study->data_gathering_method = $o->impactStudy->data_gathering_method;
-                    $study->analysis_method = $o->impactStudy->analysis_method;
-                    $study->evaluation_method = $o->impactStudy->evaluation_method;
-                    $study->save();
+                // IMPACT STUDY
+                $is = ImpactStudy::where('id_impact_identification', $oi->id)->first();
+                if($is) {
+                    $new_is = new ImpactStudyClone();
+                    $new_is->id_impact_identification_clone = $imp->id;
+                    $new_is->forecast_method = $is->forecast_method;
+                    $new_is->required_information = $is->required_information;
+                    $new_is->data_gathering_method = $is->data_gathering_method;
+                    $new_is->analysis_method = $is->analysis_method;
+                    $new_is->evaluation_method = $is->evaluation_method;
+                    $new_is->save();
                 }
-    
-                if($o->potentialImpactEvaluation) {
-                    foreach($o->potentialImpactEvaluation as $p) {
-                        $potential = new PotentialImpactEvalClone();
-                        $potential->id_impact_identification_clone = $imp->id;
-                        $potential->id_pie_param = $p->id_pie_param;
-                        $potential->text = $p->text;
-                        $potential->save();
-                    }
+
+                // POTENTIAL IMPACT EVALUATION
+                $piv = PotentialImpactEvaluation::where('id_impact_identification', $id)->get();
+                foreach($piv as $p) {
+                    $potential = new PotentialImpactEvalClone();
+                    $potential->id_impact_identification_clone = $imp->id;
+                    $potential->id_pie_param = $p->id_pie_param;
+                    $potential->text = $p->text;
+                    $potential->save();
                 }
             }
         }
+
+        return response()->json(['message' => 'success']);
     }
 
     private function baganAlirUklUpl($id)
