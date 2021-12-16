@@ -218,8 +218,16 @@ class ImpactIdentificationController extends Controller
                 $toUpdate = ImpactIdentification::find($impact['id']);
                 if ($toUpdate != null) {
                     try {
+                        $empty = 0;
+                        if (empty($impact['id_change_type'])) {
+                            array_push($errors, 'Perubahan wajib diisi.');
+                            $empty++;
+                        }
                         if (empty($impact['unit'])) {
                             array_push($errors, 'Besaran wajib diisi.');
+                            $empty++;
+                        }
+                        if ($empty > 0) {
                             continue;
                         }
                         $toUpdate->id_change_type = $impact['id_change_type'];
