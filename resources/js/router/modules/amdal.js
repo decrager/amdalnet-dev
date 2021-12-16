@@ -10,21 +10,21 @@ const amdalRoutes = {
   children: [
     {
       path: ':id(\\d+)/formulir',
-      component: () => import('@/views/ukl-upl/FormulirUklUpl'),
+      component: () => import('@/views/amdal/FormulirUklUpl'),
       name: 'FormulirUklUpl',
       hidden: false,
       meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
     },
     {
       path: ':id(\\d+)/matriks',
-      component: () => import('@/views/ukl-upl/MatriksUklUpl'),
+      component: () => import('@/views/amdal/MatriksUklUpl'),
       name: 'MatriksUklUpl',
       hidden: false,
       meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
     },
     {
       path: ':id(\\d+)/dokumen',
-      component: () => import('@/views/ukl-upl/DokumenUklUpl'),
+      component: () => import('@/views/amdal/DokumenUklUpl'),
       name: 'DokumenUklUpl',
       hidden: false,
       meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
