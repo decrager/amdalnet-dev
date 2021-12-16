@@ -69,7 +69,7 @@ class MatriksDampakController extends Controller
     {
         return SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
             ->select('spra.id', 'spc.name AS component_name', 'spra.name AS rona_awal_name',
-                'c.name AS component_name_master', 'ra.name AS rona_awal_master',
+                'c.name AS component_name_master', 'ra.name AS rona_awal_name_master',
                 'spc.id_project_stage',
                 'c.id_project_stage AS id_project_stage_master')
             ->leftJoin('sub_project_components AS spc', 'spra.id_sub_project_component', '=', 'spc.id')
@@ -183,6 +183,9 @@ class MatriksDampakController extends Controller
             foreach($components_flat as $c) {
                 if ($c->id_project_stage == $stage->id
                 || $c->id_project_stage_master == $stage->id) {
+                    if (empty($c->name)) {
+                        $c->name = $c->name_master;
+                    }
                     array_push($list, $c);
                 }
             }
@@ -197,7 +200,7 @@ class MatriksDampakController extends Controller
 
     private function getComponents($id) {
         return SubProjectComponent::from('sub_project_components AS spc')
-            ->selectRaw('lower(spc.name) as name, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
+            ->selectRaw('lower(spc.name) as name, lower(c.name) as name_master, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
             ->where('sp.id_project', $id)
