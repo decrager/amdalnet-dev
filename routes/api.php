@@ -2,6 +2,7 @@
 
 use App\Entity\FormulatorTeam;
 use App\Http\Controllers\BaganAlirController;
+use App\Http\Controllers\BesaranDampakController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\UklUplCommentController;
 use App\Http\Controllers\ProjectMapAttachmentController;
@@ -259,3 +260,4 @@ Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
 Route::get('project-maps', [WebgisController::class, 'index']);
 Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
+Route::get('besaran-dampak/list/{id}', [BesaranDampakController::class, 'getList']);

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" style="padding: 24px">
+  <div v-if="isProjectUklUpl" class="app-container" style="padding: 24px">
     <el-card>
       <workflow-ukl />
       <h2>Formulir UKL UPL</h2>
@@ -19,14 +19,18 @@
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="PELINGKUPAN">
           <pelingkupan
+            v-if="activeName === '1'"
             @handleReloadVsaList="handleReloadVsaList"
           />
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
-          <matriks-identifikasi-dampak-table />
+          <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
         </el-collapse-item>
         <el-collapse-item name="3" title="JENIS DAN BESARAN DAMPAK">
-          <jenis-besaran-dampak-table />
+          <jenis-besaran-dampak-table
+            v-if="activeName === '3'"
+            @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan"
+          />
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -38,6 +42,8 @@ import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
 import MatriksIdentifikasiDampakTable from '@/views/amdal/components/tables/MatriksIdentifikasiDampakTable.vue';
 import JenisBesaranDampakTable from './components/tables/JenisBesaranDampakTable.vue';
 import WorkflowUkl from '@/components/WorkflowUkl';
+import Resource from '@/api/resource';
+const projectResource = new Resource('projects');
 
 export default {
   name: 'FormulirUklUpl',
@@ -64,6 +70,7 @@ export default {
       dampakPentingHipotetikActive: false,
       metodeStudiActive: false,
       activeName: '1',
+      isProjectUklUpl: false,
     };
   },
   computed: {
@@ -74,12 +81,29 @@ export default {
   mounted() {
     this.setProjectId();
     this.$store.dispatch('getStep', 3);
+    this.checkifUklUpl();
     this.data;
   },
   methods: {
     setProjectId(){
       const id = this.$route.params && this.$route.params.id;
       this.idProject = id;
+    },
+    async checkifUklUpl() {
+      const project = await projectResource.get(this.idProject);
+      if (project.required_doc === 'AMDAL') {
+        this.$message({
+          message: 'Kegiatan membutuhkan dokumen AMDAL',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.$router.push({
+          name: 'FormulirAmdal',
+          params: this.idProject,
+        });
+      } else {
+        this.isProjectUklUpl = true;
+      }
     },
     handleSaveForm() {
       const id = this.$route.params && this.$route.params.id;
@@ -88,7 +112,7 @@ export default {
         params: id,
       });
     },
-    handleEnableSubmitForm() {
+    handleEnableSimpanLanjutkan() {
       this.isSubmitEnabled = true;
     },
     handleReloadVsaList(tab) {
