@@ -1,0 +1,94 @@
+<template>
+  <div class="app-container" style="padding: 24px">
+    <el-card>
+      <workflow-ukl />
+      <h2>Matriks UKL UPL</h2>
+      <span>
+        <el-button
+          class="pull-right"
+          type="success"
+          size="small"
+          icon="el-icon-check"
+          :disabled="!isSubmitEnabled"
+          @click="handleSaveForm()"
+        >
+          Simpan & Lanjutkan
+        </el-button>
+      </span>
+      <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
+        <el-collapse-item name="1" title="MATRIKS UKL">
+          <matriks-ukl-table />
+        </el-collapse-item>
+        <el-collapse-item name="2" title="MATRIKS UPL">
+          <matriks-upl-table />
+        </el-collapse-item>
+        <el-collapse-item name="3" title="DOKUMEN PENDUKUNG">
+          <dokumen-pendukung />
+        </el-collapse-item>
+      </el-collapse>
+    </el-card>
+  </div>
+</template>
+
+<script>
+import MatriksUklTable from './components/tables/MatriksUklTable.vue';
+import MatriksUplTable from './components/tables/MatriksUplTable.vue';
+import DokumenPendukung from './components/DokumenPendukung.vue';
+import WorkflowUkl from '@/components/WorkflowUkl';
+import Resource from '@/api/resource';
+const impactIdtResource = new Resource('impact-identifications');
+
+export default {
+  name: 'MatriksUklUpl',
+  components: {
+    MatriksUklTable,
+    MatriksUplTable,
+    DokumenPendukung,
+    WorkflowUkl,
+  },
+  data() {
+    return {
+      isSubmitEnabled: false,
+      vsaListKey: 0,
+      uklActive: true,
+      uplActive: false,
+    };
+  },
+  mounted() {
+    this.checkImpactIdentificationData();
+    this.$store.dispatch('getStep', 4);
+  },
+  methods: {
+    async checkImpactIdentificationData() {
+      // check if nominal & units has been filled
+      // if not, show error popup, then redirect to formulir page
+      const idProject = parseInt(this.$route.params && this.$route.params.id);
+      const { data } = await impactIdtResource.list({
+        id_project: idProject,
+      });
+      var completed = 0;
+      data.map((imp) => {
+        if (imp.id_change_type !== null && imp.id_unit !== null && imp.nominal !== null) {
+          completed++;
+        }
+      });
+      if (completed < data.length) {
+        this.$message({
+          message: 'Mohon isi formulir UKL-UPL terlebih dahulu',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.$router.push({ path: '/amdal/' + idProject + '/formulir' });
+      }
+    },
+  },
+};
+</script>
+
+<style>
+h2 {
+  display:inline-block;
+  margin-block-start: 0em;
+}
+
+</style>
