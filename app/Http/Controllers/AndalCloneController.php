@@ -269,7 +269,7 @@ class AndalCloneController extends Controller
     }
 
     private function checkExist($id) {
-        $old_impact = ImpactIdentification::select('id', 'id_project')->where('id_project', $id)->with(['impactStudy', 'potentialImpactEvaluation'])->get();
+        $old_impact = ImpactIdentification::where('id_project', $id)->get();
         $new_impact = ImpactIdentificationClone::select('id', 'id_project', 'id_impact_identification')->where('id_project', $id)->get();
 
         $new_ids = [];
