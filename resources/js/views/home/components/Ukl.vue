@@ -124,7 +124,7 @@ export default {
       } else {
         sort = `&sort=${this.form.sort}`;
       }
-      axios.get(`/api/announcements?keyword=AMDAL`)
+      axios.get(`/api/announcements?keyword=UKL-UPL`)
         .then(response => {
           this.allData = response.data.data;
           this.total = response.data.total;
