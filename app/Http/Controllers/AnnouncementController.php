@@ -25,11 +25,17 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): AnnouncementResource
     {
-
         $getAllAnnouncement = Announcement::with([
             'project',
-            'project.province'
+            'project.province',
+            'project.address'
         ])->withCount('feedbacks')
+        ->whereHas("project.address",function($q) use($request){
+            $q->where("prov", "=", $request->provName);
+        })
+        ->orWhereHas("project.address",function($q) use($request){
+            $q->where("district", "=", $request->kotaName);
+        })
         ->when($request->has('keyword'), function ($query) use ($request) {
             $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
             $searchQuery = '%' . $request->keyword . '%';
