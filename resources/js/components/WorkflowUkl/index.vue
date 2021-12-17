@@ -1,6 +1,6 @@
 <template>
   <el-steps
-    :active="3"
+    :active="getStep"
     finish-status="success"
     align-center
     style="margin-bottom: 20px"
@@ -9,7 +9,7 @@
     <el-step title="Hasil Penapisan" />
     <el-step title="SPT dari Masyarakat" />
     <el-step title="Formulir UKL UPL" />
-    <el-step title="Mariks UKL UPL" />
+    <el-step title="Matriks UKL UPL" />
     <el-step title="Dokumen UKL UPL" />
     <el-step title="Surat Keputusan" />
   </el-steps>

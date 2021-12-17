@@ -1,7 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card v-loading="loading">
-      <workflow-ukl />
       <h2>Formulir Kerangka Acuan</h2>
       <div>
         <el-button v-if="showDocument" type="danger" @click="exportPdf">
@@ -49,12 +48,10 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
-import WorkflowUkl from '@/components/WorkflowUkl';
 
 export default {
   components: {
     Comment,
-    WorkflowUkl,
   },
   data() {
     return {
@@ -81,7 +78,6 @@ export default {
   created() {
     this.getData();
     // this.getDocument();
-    this.$store.dispatch('getStep', 5);
   },
   methods: {
     async getData() {

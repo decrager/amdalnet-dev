@@ -48,13 +48,14 @@
         <template slot="title" class="head-accordion">
           <span class="title">BAGAN ALIR PELINGKUPAN</span>
         </template>
-        <BaganAlir />
+        <BaganAlir v-if="activeName === 'bagan-alir-pelingkupan'" />
       </el-collapse-item>
       <el-collapse-item name="table-andal">
         <template slot="title" class="head-accordion">
           <span class="title">ANALISA DAMPAK LINGKUNGAN</span>
         </template>
-        <TableAndal v-if="activeName === 'table-andal'" />
+        <!-- <TableAndal v-if="activeName === 'table-andal'" /> -->
+        <MasterDetail v-if="activeName === 'table-andal'" />
       </el-collapse-item>
       <el-collapse-item name="bagan-alir-dampak">
         <template slot="title" class="head-accordion">
@@ -69,20 +70,22 @@
 <script>
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
-import TableAndal from '@/views/penyusunan-andal/components/Table';
-import MatriksIdentifikasiDampakTable from '@/views/ukl-upl/components/tables/MatriksIdentifikasiDampakTable.vue';
+// import TableAndal from '@/views/penyusunan-andal/components/Table';
+import MasterDetail from '@/views/penyusunan-andal/components/MasterDetail';
+import MatriksIdentifikasiDampakTable from '@/views/amdal/components/tables/MatriksIdentifikasiDampakTable.vue';
 import PetaBatas from '@/views/penyusunan-andal/clone/PetaBatas.vue';
 import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
-import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
-import MatriksDPHTable from '@/views/ukl-upl/components/tables/MatriksDPHTable.vue';
-import Pelingkupan from '@/views/ukl-upl/components/Pelingkupan.vue';
+import MetodeStudi from '@/views/amdal/components/MetodeStudi.vue';
+import MatriksDPHTable from '@/views/amdal/components/tables/MatriksDPHTable.vue';
+import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
 import BaganAlir from '@/views/penyusunan-andal/clone/BaganAlir.vue';
 import BaganAlirDampak from '../components/BaganAlirDampak.vue';
 
 export default {
   name: 'Andal',
   components: {
-    TableAndal,
+    // TableAndal,
+    MasterDetail,
     MatriksIdentifikasiDampakTable,
     PetaBatas,
     DampakHipotetik,

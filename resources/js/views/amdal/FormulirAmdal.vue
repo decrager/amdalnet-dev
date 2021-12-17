@@ -1,8 +1,8 @@
 <template>
-  <div v-if="isProjectUklUpl" class="app-container" style="padding: 24px">
+  <div v-if="isProjectAmdal" class="app-container" style="padding: 24px">
     <el-card>
-      <workflow-ukl />
-      <h2>Formulir UKL UPL</h2>
+      <workflow />
+      <h2>Formulir Kerangka Acuan</h2>
       <span>
         <el-button
           v-if="isFormulator"
@@ -26,11 +26,38 @@
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
           <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
         </el-collapse-item>
-        <el-collapse-item name="3" title="JENIS DAN BESARAN DAMPAK">
-          <jenis-besaran-dampak-table
+        <el-collapse-item name="3" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+          <dampak-hipotetik
             v-if="activeName === '3'"
-            @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan"
+            @handleReloadVsaList="handleReloadVsaList"
           />
+          <!--
+          <dampak-potensial
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+          <dampak-penting-hipotetik
+            @handleReloadVsaList="handleReloadVsaList"
+          />-->
+        </el-collapse-item>
+        <el-collapse-item name="4" title="PETA BATAS WILAYAH STUDI & PETA PENDUKUNG">
+          <upload-peta-batas
+            v-if="activeName === '4'"
+            @handleReloadVsaList="handleReloadVsaList"
+          />
+
+        </el-collapse-item>
+        <el-collapse-item name="5" title="METODE STUDI">
+          <metode-studi
+            v-if="activeName === '5'"
+            @handleReloadVsaList="handleReloadVsaList"
+            @handleEnableSubmitForm="handleEnableSubmitForm"
+          />
+        </el-collapse-item>
+        <el-collapse-item title="Matriks Dampak Penting Hipotetik" name="6">
+          <MatriksDPHTable v-if="activeName === '6'" />
+        </el-collapse-item>
+        <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
+          <bagan-alir v-if="activeName === '7'" />
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -38,20 +65,29 @@
 </template>
 
 <script>
-import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
-import MatriksIdentifikasiDampakTable from '@/views/amdal/components/tables/MatriksIdentifikasiDampakTable.vue';
-import JenisBesaranDampakTable from './components/tables/JenisBesaranDampakTable.vue';
-import WorkflowUkl from '@/components/WorkflowUkl';
+import Pelingkupan from './components/Pelingkupan.vue';
+import MatriksIdentifikasiDampakTable from './components/tables/MatriksIdentifikasiDampakTable.vue';
+import MatriksDPHTable from './components/tables/MatriksDPHTable.vue';
+import DampakHipotetik from './components/DampakHipotetik.vue';
+import MetodeStudi from './components/MetodeStudi.vue';
+import Workflow from '@/components/Workflow';
+import BaganAlir from './components/BaganAlir.vue';
+import UploadPetaBatas from './components/UploadPetaBatas.vue';
+
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
 
 export default {
-  name: 'FormulirUklUpl',
+  name: 'FormulirAmdal',
   components: {
     Pelingkupan,
     MatriksIdentifikasiDampakTable,
-    JenisBesaranDampakTable,
-    WorkflowUkl,
+    DampakHipotetik,
+    MetodeStudi,
+    MatriksDPHTable,
+    Workflow,
+    BaganAlir,
+    UploadPetaBatas,
   },
   props: {
     data: {
@@ -61,6 +97,7 @@ export default {
   },
   data() {
     return {
+      isProjectAmdal: false,
       accordionKey: 1,
       idProject: 0,
       isSubmitEnabled: false,
@@ -70,7 +107,6 @@ export default {
       dampakPentingHipotetikActive: false,
       metodeStudiActive: false,
       activeName: '1',
-      isProjectUklUpl: false,
     };
   },
   computed: {
@@ -80,39 +116,39 @@ export default {
   },
   mounted() {
     this.setProjectId();
+    this.checkifAmdal();
     this.$store.dispatch('getStep', 3);
-    this.checkifUklUpl();
     this.data;
   },
   methods: {
-    setProjectId(){
-      const id = this.$route.params && this.$route.params.id;
-      this.idProject = id;
-    },
-    async checkifUklUpl() {
+    async checkifAmdal() {
       const project = await projectResource.get(this.idProject);
-      if (project.required_doc === 'AMDAL') {
+      if (project.required_doc !== 'AMDAL') {
         this.$message({
-          message: 'Kegiatan membutuhkan dokumen AMDAL',
+          message: 'Kegiatan tidak membutuhkan dokumen AMDAL',
           type: 'error',
           duration: 5 * 1000,
         });
         this.$router.push({
-          name: 'FormulirAmdal',
+          name: 'FormulirUklUpl',
           params: this.idProject,
         });
       } else {
-        this.isProjectUklUpl = true;
+        this.isProjectAmdal = true;
       }
+    },
+    setProjectId(){
+      const id = this.$route.params && this.$route.params.id;
+      this.idProject = id;
     },
     handleSaveForm() {
       const id = this.$route.params && this.$route.params.id;
       this.$router.push({
-        name: 'MatriksUklUpl',
+        name: 'DokumenAmdal',
         params: id,
       });
     },
-    handleEnableSimpanLanjutkan() {
+    handleEnableSubmitForm() {
       this.isSubmitEnabled = true;
     },
     handleReloadVsaList(tab) {
@@ -121,8 +157,16 @@ export default {
         this.activeName = '1';
       } else if (tab === 'matriks-identifikasi-dampak') {
         this.activeName = '2';
-      } else if (tab === 'jenis-besaran-dampak') {
+      } else if (tab === 'dampak-penting') {
         this.activeName = '3';
+      } else if (tab === 'peta-batas') {
+        this.activeName = '4';
+      } else if (tab === 'metode-studi') {
+        this.activeName = '5';
+      } else if (tab === 'matriks-dph') {
+        this.activeName = '6';
+      } else if (tab === 'bagan-alir') {
+        this.activeName = '7';
       }
     },
   },

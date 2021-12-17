@@ -20,60 +20,72 @@ class ScopingController extends Controller
      */
     public function index(Request $request)
     {
+        return $this->getScopingData($request);        
+    }
+
+    private function getSubProjects(Request $request) {
+        $subprojects = SubProject::with('project')
+            ->where('id_project', $request->id_project)
+            ->where('type', $request->sub_project_type) // 'utama'/'pendukung'
+            ->get();
+        return SubProjectResource::collection($subprojects);
+    }
+
+    private function getComponents(Request $request) {
+        // return sub_project_components filter by id_sub_project & id_project_stage
+        $id_project_stage = $request->id_project_stage;
+        $id_sub_project = $request->id_sub_project;
+        $level1 = SubProjectComponent::with('component')
+            ->where('id_sub_project', $id_sub_project)
+            ->where('id_project_stage', $id_project_stage)
+            ->get();
+        $nested = SubProjectComponent::with('component')->whereHas('component', function($q) use ($id_project_stage) {
+                $q->where('id_project_stage', $id_project_stage);
+            })->where('id_sub_project', $id_sub_project)->get();
+        return $level1->merge($nested);
+    }
+
+    private function getRonaAwals(Request $request) {
+        $id_sub_project_component = $request->id_sub_project_component;
+        $rona_awals = [];
+        $component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();
+        foreach ($component_types as $ctype) {
+            $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal'])
+                ->where('id_sub_project_component', $id_sub_project_component)->get();                            
+            $rawals = [];
+            foreach ($sp_rona_awals as $rona_awal) {
+                if ($ctype->id == $rona_awal->id_component_type) {
+                    array_push($rawals,  $rona_awal);
+                }
+                if ($rona_awal->ronaAwal != null) {
+                    if ($ctype->id == $rona_awal->ronaAwal->id_component_type) {
+                        array_push($rawals,  $rona_awal);
+                    }
+                }
+            }
+            array_push($rona_awals, [
+                'component_type' => $ctype,
+                'rona_awals' => $rawals,
+            ]);
+        }
+        return [
+            'data' => $rona_awals,
+        ];
+    }
+
+    private function getScopingData(Request $request) {
         if ($request->id_project && $request->sub_project_type) {
-            $subprojects = SubProject::with('project')
-                ->where('id_project', $request->id_project)
-                ->where('type', $request->sub_project_type) // 'utama'/'pendukung'
-                ->get();
-            return SubProjectResource::collection($subprojects);
+            return $this->getSubProjects($request);
         }
         if ($request->id_sub_project && $request->id_project_stage) {
-            // return sub_project_components filter by id_sub_project & id_project_stage
-            $id_project_stage = $request->id_project_stage;
-            $id_sub_project = $request->id_sub_project;
-            $level1 = SubProjectComponent::with('component')
-                ->where('id_sub_project', $id_sub_project)
-                ->where('id_project_stage', $id_project_stage)
-                ->get();
-            $nested = SubProjectComponent::with('component')->whereHas('component', function($q) use ($id_project_stage) {
-                    $q->where('id_project_stage', $id_project_stage);
-                })->where('id_sub_project', $id_sub_project)->get();
-            $components = $level1->merge($nested);
+            $components = $this->getComponents($request);
             if ($request->sub_project_components) {
                 return SubProjectComponentResource::collection($components);
             }
         }
         if ($request->sub_project_rona_awals && $request->id_sub_project_component) {
-            $id_sub_project_component = $request->id_sub_project_component;
-            $rona_awals = [];
-            $component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();
-            foreach ($component_types as $ctype) {
-                $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal'])
-                    ->where('id_sub_project_component', $id_sub_project_component)->get();                            
-                $rawals = [];
-                foreach ($sp_rona_awals as $rona_awal) {
-                    if ($ctype->id == $rona_awal->id_component_type) {
-                        array_push($rawals,  $rona_awal);
-                    }
-                    if ($rona_awal->ronaAwal != null) {
-                        if ($ctype->id == $rona_awal->ronaAwal->id_component_type) {
-                            array_push($rawals,  $rona_awal);
-                        }
-                    }
-                }
-                array_push($rona_awals, [
-                    'component_type' => $ctype,
-                    'rona_awals' => $rawals,
-                ]);
-            }
-            return [
-                'data' => $rona_awals,
-            ];            
+            return $this->getRonaAwals($request);
         }
-    }
-
-    private function getComponents($id_sub_project, $id_project_stage)
-    {
     }
 
     /**
