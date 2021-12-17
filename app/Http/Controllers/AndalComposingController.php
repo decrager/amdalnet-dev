@@ -380,6 +380,7 @@ class AndalComposingController extends Controller
 
                 $results[] = [
                     'id' => $imp->id,
+                    'stage' => ucwords(strtolower($s->name)),
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
                     'component' => $component,
@@ -392,6 +393,7 @@ class AndalComposingController extends Controller
                     'condition_dev_no_plan' => null,
                     'condition_dev_with_plan' => null,
                     'impact_size_difference' => null,
+                    'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
                     'comments' => $comments
                 ];
                 $results[] = [
@@ -415,7 +417,7 @@ class AndalComposingController extends Controller
     {
         $alphabet_list = 'A';
 
-        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
         $results = [];
 
         foreach ($stages as $s) {
@@ -472,6 +474,7 @@ class AndalComposingController extends Controller
 
                 $results[] = [
                     'id' => $imp->id,
+                    'stage' => ucwords(strtolower($s->name)),
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
                     'component' => $component,
@@ -484,6 +487,7 @@ class AndalComposingController extends Controller
                     'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
                     'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
                     'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference,
+                    'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
                     'comments' => $comments
                 ];
                 $results[] = [
