@@ -68,20 +68,20 @@
         </el-col>
       </el-row>
       <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
-        <el-col :xs="24" :sm="3" style="padding-top:1rem">
-          <img alt="" src="/images/list.svg">
-        </el-col>
-        <el-col :xs="24" :sm="5" style="padding-top:1rem">
-          <h4 class="tw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</h4>
+        <el-col :xs="24" :sm="2" style="padding-top:0.5rem;padding-bottom:0.5rem">
+          <img alt="" class="customImage" src="/images/list.svg">
         </el-col>
         <el-col :xs="24" :sm="6" style="padding-top:1rem">
-          <h4 class="tw">Dampak Potensial: {{ amdal.potential_impact }}</h4>
+          <p class="tw fz11 fw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</p>
         </el-col>
-        <el-col :xs="24" :sm="7" style="padding-top:1rem">
-          <h4 class="tw">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</h4>
+        <el-col :xs="24" :sm="8" style="padding-top:1rem">
+          <p class="tw fz11">Dampak Potensial: {{ amdal.potential_impact }}</p>
+        </el-col>
+        <el-col :xs="24" :sm="5" style="padding-top:1rem">
+          <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
         </el-col>
         <el-col :xs="24" :sm="3">
-          <button class="el-button el-button--warning el-button--medium is-plain" @click="openDetails(amdal.id)">Berikan<br>Tanggapan</button>
+          <button class="el-button el-button--warning el-button--medium is-plain fz11" @click="openDetails(amdal.id)">Berikan<br>Tanggapan</button>
         </el-col>
       </el-row>
       <div class="block" style="text-align:right">
@@ -262,4 +262,8 @@ export default {
   .textFilter{font-weight:bold; display:inline-block; margin-right:0.5rem; }
   .textFilterNoAvtive{color:#ef8913;}
   .textFilterAvtive{color:#fff;}
+  .customImage{width: 50px;height: 50px;border-radius: 50% !important;object-fit: contain;object-position: center;margin: auto; display: block;}
+  .fz11{font-size: 11px;}
+  .fw{font-weight: bold;}
+  .el-button.el-button--warning.el-button--medium.is-plain{margin-left: 0; margin-top: 5px;}
 </style>
