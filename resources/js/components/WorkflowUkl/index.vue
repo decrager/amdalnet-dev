@@ -1,6 +1,6 @@
 <template>
   <el-steps
-    :active="3"
+    :active="getStep"
     finish-status="success"
     align-center
     style="margin-bottom: 20px"

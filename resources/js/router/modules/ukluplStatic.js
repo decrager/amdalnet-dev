@@ -17,6 +17,12 @@ const ukluplStaticRoutes = {
       name: 'matriksUKLUPL',
       meta: { title: 'Matriks UKL UPL', icon: 'zip', noCache: true },
     },
+    {
+      path: 'doc',
+      component: () => import('@/views/ukl-upl-static/Document'),
+      name: 'dokumenUKLUPL',
+      meta: { title: 'Dokumen UKL UPL', icon: 'zip', noCache: true },
+    },
   ],
 };
 
