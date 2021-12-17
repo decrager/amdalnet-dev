@@ -31,7 +31,7 @@ import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
 import dokumenRoutes from './modules/DokumenKegiatan';
 import flowchartRoutes from './modules/flowchart';
-import ukluplStaticRoutes from './modules/ukluplStatic';
+// import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
  * Layzloading will create many files and slow on compiling, so best not to use lazyloading on devlopment.
@@ -223,7 +223,7 @@ export const asyncRoutes = [
   //     },
   //   ],
   // },
-  ukluplStaticRoutes,
+  // ukluplStaticRoutes,
   adminRoutes,
   projectRoutes,
   initiatorRoutes,
