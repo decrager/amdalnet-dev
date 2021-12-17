@@ -8,7 +8,7 @@
               <span style="font-weight:bold; display:inline-block; margin-right:0.5rem;">Search</span>
               <el-input v-model="keyword" placeholder="Please input" @keyup.native.enter="handleSearch()" />
             </div>
-            <div class="customFilterRight filter bgActive" @click="handleShowFilter()">
+            <div :class="toggle ? 'customFilterRight filter bgNoActive' : 'customFilterRight filter bgActive'" @click="handleShowFilter()">
               <div v-if="toggle">
                 <div style="display:flex; align-items:center;">
                   <img alt="" src="/images/filter.png">
@@ -59,7 +59,7 @@
                   </el-select>
                 </div>
                 <div class="cardCustom">
-                  <button style="padding:0.5rem 2rem; background:#f38c13; color:#fff; margin:auto; display:block;border-radius: 0.7rem;">Simpan<br>Filter</button>
+                  <button style="padding:0.5rem 2rem; background:#f38c13; color:#fff; margin:auto; display:block;border-radius: 0.7rem; margin-top:0.5rem;">Simpan<br>Filter</button>
                 </div>
               </div>
             </div>
@@ -251,7 +251,7 @@ export default {
   .customFilter{display:flex; align-items: center;}
   .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.5rem;}
   .customFilterRight{cursor:pointer; padding: 0.5rem 0; width:25%; display:flex; align-items:center; position:relative}
-  .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;}
+  .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;padding: 1.5rem 1rem;}
   .cardCustom span{font-size: 11px;font-weight: bold;}
   .bgNoActive{background:#dff5cf; color:#35442f;}
   .bgActive{background:#062307; color: #fff;}
