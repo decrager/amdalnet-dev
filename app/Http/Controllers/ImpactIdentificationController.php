@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactStudy;
-use App\Entity\ProjectRonaAwal;
 use App\Entity\PotentialImpactEvaluation;
 use App\Http\Resources\ImpactIdentificationResource;
 use Exception;
@@ -12,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Entity\ChangeType;
 use App\Entity\EnvManagePlan;
-use Laravel\Octane\Exec;
+use App\Entity\EnvMonitorPlan;
 
 class ImpactIdentificationController extends Controller
 {
@@ -374,6 +373,57 @@ class ImpactIdentificationController extends Controller
         }
     }
 
+    private function saveMatriksUpl($params)
+    {
+        $updated = 0;
+        $errors = [];
+        $count = 0;
+        $response = [];
+        DB::beginTransaction();
+        foreach ($params['env_monitor_plan_data'] as $impact) {
+            
+            if (!$impact['is_stage']) {
+                if ($impact['env_monitor_plan'] != null) {
+                    foreach ($impact['env_monitor_plan'] as $plan) {
+                        $count++;
+                        $toUpdate = EnvMonitorPlan::find($plan['id']);
+                        if ($toUpdate != null) {
+                            $toUpdate->form = $plan['form'];
+                            $toUpdate->location = $plan['location'];
+                            $toUpdate->period = $plan['period'];
+                            $toUpdate->executor = $plan['executor'];
+                            $toUpdate->supervisor = $plan['supervisor'];
+                            $toUpdate->report_recipient = $plan['report_recipient'];
+                            $toUpdate->description = $plan['description'];
+                            try {
+                                $toUpdate->save();
+                                $updated++;
+                                array_push($response, $toUpdate);
+                            } catch (Exception $e) {
+                                array_push($errors, 'Gagal menyimpan bentuk pemantauan \'' . $plan['form'] . '\'');
+                            }
+                        }
+                    }
+                }
+            }            
+        }
+        if ($updated == $count) {
+            DB::commit();
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => $response,
+            ], 200);
+        } else {
+            DB::rollBack();
+            return response()->json([
+                'status' => 500,
+                'code' => 500,
+                'message' => implode(', ', $errors),
+            ], 500);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -391,6 +441,8 @@ class ImpactIdentificationController extends Controller
             return $this->saveImpactUnits($params);
         } else if (isset($params['env_manage_plan_data'])) {
             return $this->saveMatriksUkl($params);
+        } else if (isset($params['env_monitor_plan_data'])) {
+            return $this->saveMatriksUpl($params);
         } else if (isset($params['id_project']) && isset($params['id_sub_project_component'])
             && isset($params['id_sub_project_rona_awal'])) {
             $validator = $request->validate([

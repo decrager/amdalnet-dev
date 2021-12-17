@@ -6,6 +6,7 @@ use App\Entity\EnvMonitorPlan;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EnvMonitorPlanController extends Controller
 {
@@ -37,7 +38,30 @@ class EnvMonitorPlanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'id_impact_identifications' => 'required',
+                'form' => 'required',
+            ]
+        ); 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $params = $validator->validated();
+            DB::beginTransaction();
+            $saved = EnvMonitorPlan::create($params);
+            if ($saved->id > 0) {
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => $saved,
+            ], 200);
+        }
     }
 
     /**
@@ -86,8 +110,18 @@ class EnvMonitorPlanController extends Controller
         try {
             $envMonitorPlan->delete();
             DB::commit();
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => $envMonitorPlan,
+            ], 200);
         } catch (Exception $e) {
             DB::rollBack();
+            return response()->json([
+                'status' => 500,
+                'code' => 500,
+                'errors' => $e->getMessage(),
+            ], 500);
         }
     }
 }
