@@ -15,7 +15,7 @@
       </div>
       <div class="form-group">
         <label>Besaran Dampak</label>
-        <el-input v-model="andal.impact_size" />
+        <el-input v-model="andal.impact_size" :readonly="!isFormulator" />
       </div>
       <div class="form-group">
         <label>Perubahan Kondisi Dengan dan Tanpa Rencana Kegiatan</label>
@@ -26,6 +26,7 @@
               v-model="andal.studies_condition"
               type="textarea"
               :rows="2"
+              :readonly="!isFormulator"
             />
           </div>
           <div class="form-group">
@@ -36,6 +37,7 @@
               v-model="andal.condition_dev_no_plan"
               type="textarea"
               :rows="2"
+              :readonly="!isFormulator"
             />
           </div>
           <div class="form-group">
@@ -46,6 +48,7 @@
               v-model="andal.condition_dev_with_plan"
               type="textarea"
               :rows="2"
+              :readonly="!isFormulator"
             />
           </div>
           <div class="form-group">
@@ -54,6 +57,7 @@
               v-model="andal.impact_size_difference"
               type="textarea"
               :rows="2"
+              :readonly="!isFormulator"
             />
           </div>
         </div>
@@ -64,6 +68,7 @@
           <el-select
             v-model="andal.impact_type"
             placeholder="Pilih Jenis Dampak"
+            :disabled="!isFormulator"
           >
             <el-option
               v-for="item in jenisDampak"
@@ -78,6 +83,7 @@
           <el-select
             v-model="andal.impact_eval_result"
             placeholder="Pilih Hasil Evaluasi Dampak"
+            :disabled="!isFormulator"
           >
             <el-option
               v-for="item in hasilEvaluasiDampak"
@@ -111,6 +117,7 @@
                 v-model="andal.important_trait[index].desc"
                 type="textarea"
                 :rows="2"
+                :readonly="!isFormulator"
               />
             </el-col>
             <el-col :md="8" :sm="24">
@@ -118,17 +125,22 @@
                 v-model="andal.important_trait[index].important_trait"
                 style="display: grid; grid-template-columns: 0.5fr 0.5fr"
               >
-                <el-radio label="+P">+P</el-radio>
-                <el-radio label="-P">-P</el-radio>
-                <el-radio label="+TP">+TP</el-radio>
-                <el-radio label="-TP">-TP</el-radio>
+                <el-radio label="+P" :disabled="!isFormulator">+P</el-radio>
+                <el-radio label="-P" :disabled="!isFormulator">-P</el-radio>
+                <el-radio label="+TP" :disabled="!isFormulator">+TP</el-radio>
+                <el-radio label="-TP" :disabled="!isFormulator">-TP</el-radio>
               </el-radio-group>
             </el-col>
           </el-row>
         </div>
       </div>
     </el-col>
-    <el-col :md="24" :sm="24" style="text-align: right; margin-top: 10px">
+    <el-col
+      v-if="isFormulator"
+      :md="24"
+      :sm="24"
+      style="text-align: right; margin-top: 10px"
+    >
       <el-button @click="reset">Reset</el-button>
       <el-button type="primary" :loading="loadingsubmit" @click="handleSubmit">
         Simpan
@@ -183,6 +195,9 @@ export default {
 
       return false;
     },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   methods: {
     reset() {
@@ -192,7 +207,7 @@ export default {
       this.andal.condition_dev_with_plan = null;
       this.andal.impact_size_difference = null;
       this.andal.impact_type = null;
-      this.andal.impact_eval_resul = null;
+      this.andal.impact_eval_result = null;
 
       for (let i = 0; i < this.andal.important_trait.length; i++) {
         this.andal.important_trait[i].desc = null;

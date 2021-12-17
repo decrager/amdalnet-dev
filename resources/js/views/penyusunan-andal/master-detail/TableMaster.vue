@@ -39,13 +39,7 @@
           type="text"
           @click="showDetail(scope.row.stage, scope.row.id)"
         >
-          Lihat
-        </el-button>
-        <el-button
-          type="text"
-          @click="showDetail(scope.row.stage, scope.row.id)"
-        >
-          Edit
+          {{ isFormulator ? 'Edit' : 'Lihat' }}
         </el-button>
       </template>
     </el-table-column>
@@ -61,6 +55,11 @@ export default {
       default: () => [],
     },
     loading: Boolean,
+  },
+  computed: {
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   methods: {
     showDetail(stage, id) {
