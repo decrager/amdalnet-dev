@@ -15,15 +15,15 @@
           Simpan & Lanjutkan
         </el-button>
       </span>
-      <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
+      <el-collapse v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="MATRIKS UKL">
-          <matriks-ukl-table />
+          <matriks-ukl-table v-if="activeName === '1'" />
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS UPL">
-          <matriks-upl-table />
+          <matriks-upl-table v-if="activeName === '2'" />
         </el-collapse-item>
         <el-collapse-item name="3" title="DOKUMEN PENDUKUNG">
-          <dokumen-pendukung />
+          <dokumen-pendukung v-if="activeName === '3'" />
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -52,6 +52,7 @@ export default {
       vsaListKey: 0,
       uklActive: true,
       uplActive: false,
+      activeName: '1',
     };
   },
   mounted() {
@@ -68,7 +69,7 @@ export default {
       });
       var completed = 0;
       data.map((imp) => {
-        if (imp.id_change_type !== null && imp.id_unit !== null && imp.nominal !== null) {
+        if (imp.id_change_type !== null && (imp.id_unit !== null || imp.unit !== null)) {
           completed++;
         }
       });
@@ -78,7 +79,10 @@ export default {
           type: 'error',
           duration: 5 * 1000,
         });
-        this.$router.push({ path: '/amdal/' + idProject + '/formulir' });
+        this.$router.push({
+          name: 'FormulirUklUpl',
+          params: idProject,
+        });
       }
     },
   },
