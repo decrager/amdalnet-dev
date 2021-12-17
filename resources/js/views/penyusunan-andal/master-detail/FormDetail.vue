@@ -13,10 +13,10 @@
         <label>Komponen Rona Awal Lingkungan</label>
         <el-input v-model="andal.ronaAwal" :readonly="true" />
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label>Besaran Dampak</label>
         <el-input v-model="andal.impact_size" :readonly="!isFormulator" />
-      </div>
+      </div> -->
       <div class="form-group">
         <label>Perubahan Kondisi Dengan dan Tanpa Rencana Kegiatan</label>
         <div class="wrapper-form">
@@ -64,7 +64,7 @@
       </div>
       <el-row :gutter="24">
         <el-col :md="12" :sm="24">
-          <label>Jenis Dampak</label>
+          <label>Kategori Dampak</label>
           <el-select
             v-model="andal.impact_type"
             placeholder="Pilih Jenis Dampak"
