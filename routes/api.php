@@ -2,6 +2,7 @@
 
 use App\Entity\FormulatorTeam;
 use App\Http\Controllers\BaganAlirController;
+use App\Http\Controllers\BesaranDampakController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\UklUplCommentController;
 use App\Http\Controllers\ProjectMapAttachmentController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\PieParamController;
 use App\Http\Controllers\ImpactIdentificationController;
 use App\Http\Controllers\LpjpController;
 use App\Http\Controllers\MatriksDampakController;
+use App\Http\Controllers\MatriksUklUplController;
 use App\Http\Controllers\WebgisController;
 
 /*
@@ -259,3 +261,8 @@ Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
 Route::get('project-maps', [WebgisController::class, 'index']);
 Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
+Route::get('besaran-dampak/list/{id}', [BesaranDampakController::class, 'getList']);
+Route::get('matriks-ukl-upl/table-ukl/{id}', [MatriksUklUplController::class, 'getTableUkl']);
+Route::get('matriks-ukl-upl/table-upl/{id}', [MatriksUklUplController::class, 'getTableUpl']);
+Route::apiResource('env-manage-plans', 'EnvManagePlanController');
+Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
