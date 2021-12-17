@@ -6,7 +6,7 @@
           <div style="display:flex; align-items: center;">
             <div style="width:75%; display:flex; align-items: center; background: #062307; padding: 0.5rem;">
               <span style="font-weight:bold; display:inline-block; margin-right:0.5rem;">Search</span>
-              <el-input v-model="input" placeholder="Please input" />
+              <el-input v-model="keyword" placeholder="Please input" @keyup.native.enter="handleSearch()" />
             </div>
             <div style="cursor:pointer; background:#dff5cf;padding: 0.5rem 0; width:25%; display:flex; align-items:center; position:relative" class="filter" @click="toggle = !toggle">
               <img alt="" src="/images/filter.png">
@@ -60,14 +60,17 @@
         <el-col :xs="24" :sm="3" style="padding-top:1rem">
           <img alt="" src="/images/list.svg">
         </el-col>
-        <el-col :xs="24" :sm="18" style="padding-top:1rem">
-          <h3 class="tw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }}</h3>
-          <h3 class="fw-bold to mt-2-5">{{ amdal.pic_name }}</h3>
-          <p class="tw">Pengumuman : {{ formatDateStr(amdal.start_date) }} | {{ amdal.feedbacks_count }} Tanggapan</p>
+        <el-col :xs="24" :sm="5" style="padding-top:1rem">
+          <h4 class="tw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</h4>
+        </el-col>
+        <el-col :xs="24" :sm="6" style="padding-top:1rem">
+          <h4 class="tw">Dampak Potensial: {{ amdal.potential_impact }}</h4>
+        </el-col>
+        <el-col :xs="24" :sm="7" style="padding-top:1rem">
+          <h4 class="tw">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</h4>
         </el-col>
         <el-col :xs="24" :sm="3">
-          <button type="button" class="el-button el-button--success el-button--medium is-plain"><span>{{ amdal.project_result }}</span></button>
-          <button class="buttonCustom to" @click="openDetails(amdal.id)">Lihat Detail</button>
+          <button class="el-button el-button--warning el-button--medium is-plain" @click="openDetails(uklupl.id,'UKL')">Berikan<br>Tanggapan</button>
         </el-col>
       </el-row>
       <div class="block" style="text-align:right">
@@ -118,12 +121,13 @@ export default {
         page: 1,
         limit: 10,
       },
-      keyword: '',
+      keyword: 'UKL-UPL',
       showDetailFromAll: false,
       showFromAll: true,
       selectedAnnouncement: {},
       selectedProject: {},
       radio: '1',
+      value: '',
       provinsi: [
         {
           value: 'Option1',
@@ -166,14 +170,14 @@ export default {
       if (search === 'undefined'){
         search = '';
       } else {
-        search = `&keyword=${this.keyword}`;
+        search = `${this.keyword}`;
       }
       if (sort === 'undefined'){
         sort = `&sort=DESC`;
       } else {
         sort = `&sort=${this.form.sort}`;
       }
-      axios.get(`/api/announcements?keyword=UKL-UPL`)
+      axios.get(`/api/announcements?keyword=${this.keyword}&page=${this.listQuery.page}`)
         .then(response => {
           this.allData = response.data.data;
           this.total = response.data.total;
