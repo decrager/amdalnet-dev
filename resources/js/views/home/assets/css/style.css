@@ -241,7 +241,9 @@ input {
 .nav__menu {
     position: relative;
 }
-
+.announce__container .el-tabs__content{margin-top: -3.2rem !important}
+.customFilterRightWrap .el-radio__label{opacity: 0;}
+.customFilterRightWrap .el-select{margin-top: 0.5rem}
 @media screen and (max-width: 767px) {
     .nav__menu {
         position: fixed;

@@ -8,20 +8,21 @@
               <span style="font-weight:bold; display:inline-block; margin-right:0.5rem;">Search</span>
               <el-input v-model="keyword" placeholder="Please input" @keyup.native.enter="handleSearch()" />
             </div>
-            <div class="customFilterRight filter bgActive" @click="handleShowFilter()">
-              <div v-if="toggle">
-                <div style="display:flex; align-items:center;">
+            <div :class="toggle ? 'customFilterRight filter bgNoActive' : 'customFilterRight filter bgActive'">
+              <template v-if="toggle">
+                <div style="display:flex; align-items:center;" @click="handleShowFilter()">
                   <img alt="" src="/images/filter.png">
                   <span class="textFilter textFilterNoAvtive">Filter</span>
                 </div>
-              </div>
-              <div v-else>
-                <div style="display:flex; align-items:center;">
+              </template>
+              <template v-else>
+                <div style="display:flex; align-items:center;" @click="handleShowFilter()">
                   <img alt="" src="/images/filter-white.png">
                   <span class="textFilter textFilterAvtive">Filter</span>
                 </div>
-              </div>
-              <div v-show="toggle" class="customFilterRightWrap">
+              </template>
+              <div v-if="toggle" class="customFilterRightWrap">
+                <i class="el-icon-circle-close" style="position: absolute;left: 4px;top: 4px;font-size: 22px;cursor: pointer;" @click="handleHideFilter()" />
                 <div class="cardCustom">
                   <span>Pusat <el-radio v-model="radio" label="1" /></span>
                 </div>
@@ -59,7 +60,7 @@
                   </el-select>
                 </div>
                 <div class="cardCustom">
-                  <button style="padding:0.5rem 2rem; background:#f38c13; color:#fff; margin:auto; display:block;border-radius: 0.7rem;">Simpan<br>Filter</button>
+                  <button style="padding:0.5rem 2rem; background:#f38c13; color:#fff; margin:auto; display:block;border-radius: 0.7rem; margin-top:0.5rem;">Simpan<br>Filter</button>
                 </div>
               </div>
             </div>
@@ -67,20 +68,20 @@
         </el-col>
       </el-row>
       <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
-        <el-col :xs="24" :sm="3" style="padding-top:1rem">
-          <img alt="" src="/images/list.svg">
-        </el-col>
-        <el-col :xs="24" :sm="5" style="padding-top:1rem">
-          <h4 class="tw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</h4>
+        <el-col :xs="24" :sm="2" style="padding-top:0.5rem;padding-bottom:0.5rem">
+          <img alt="" class="customImage" src="/images/list.svg">
         </el-col>
         <el-col :xs="24" :sm="6" style="padding-top:1rem">
-          <h4 class="tw">Dampak Potensial: {{ amdal.potential_impact }}</h4>
+          <p class="tw fz11 fw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</p>
         </el-col>
-        <el-col :xs="24" :sm="7" style="padding-top:1rem">
-          <h4 class="tw">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</h4>
+        <el-col :xs="24" :sm="8" style="padding-top:1rem">
+          <p class="tw fz11">Dampak Potensial: {{ amdal.potential_impact }}</p>
+        </el-col>
+        <el-col :xs="24" :sm="5" style="padding-top:1rem">
+          <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
         </el-col>
         <el-col :xs="24" :sm="3">
-          <button class="el-button el-button--warning el-button--medium is-plain" @click="openDetails(uklupl.id,'UKL')">Berikan<br>Tanggapan</button>
+          <button class="el-button el-button--warning fz11 el-button--medium is-plain" @click="openDetails(uklupl.id,'UKL')">Berikan<br>Tanggapan</button>
         </el-col>
       </el-row>
       <div class="block" style="text-align:right">
@@ -222,6 +223,9 @@ export default {
     handleShowFilter(){
       this.toggle = true;
     },
+    handleHideFilter(){
+      this.toggle = false;
+    },
   },
 };
 </script>
@@ -248,9 +252,9 @@ export default {
   .el-pagination span:not([class*="suffix"]), .el-pagination button {color: #fff;}
   .el-button.el-button--info.fw-bold.el-button--medium {margin-bottom: 10px;}
   .customFilter{display:flex; align-items: center;}
-  .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.5rem;}
-  .customFilterRight{cursor:pointer; padding: 0.5rem 0; width:25%; display:flex; align-items:center; position:relative}
-  .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;}
+  .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.51rem;}
+  .customFilterRight{cursor:pointer; padding: 0.6rem; width:25%; display:flex; align-items:center; position:relative;}
+  .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;padding: 1.5rem 1rem;border-radius: 4px 0 4px 4px;}
   .cardCustom{width:20%; padding:0.5rem;}
   .cardCustom span{font-size: 11px;font-weight: bold;}
   .bgNoActive{background:#dff5cf; color:#35442f;}
@@ -258,4 +262,8 @@ export default {
   .textFilter{font-weight:bold; display:inline-block; margin-right:0.5rem; }
   .textFilterNoAvtive{color:#ef8913;}
   .textFilterAvtive{color:#fff;}
+  .customImage{width: 50px;height: 50px;border-radius: 50% !important;object-fit: contain;object-position: center;margin:auto; display: block;}
+  .fz11{font-size: 11px;}
+  .fw{font-weight: bold;}
+  .el-button.el-button--warning.el-button--medium.is-plain{margin-left: 0; margin-top: 5px;}
 </style>
