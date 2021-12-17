@@ -15,7 +15,6 @@
       <el-collapse-item name="1" title="Pelingkupan"><pelingkupan :stages="stages" /></el-collapse-item>
       <el-collapse-item name="2" title="Matriks Identifikasi Dampak"><matriks-identifikasi-dampak :stages="stages" /></el-collapse-item>
       <el-collapse-item name="3" title="Jenis dan Besaran Dampak"><jenis-besaran-dampak :stages="stages" /></el-collapse-item>
-
     </el-collapse>
   </div>
 </template>
@@ -35,10 +34,14 @@ export default {
   },
   data() {
     return {
+      activeName: 1,
       stages: ['Pra Konstruksi', 'Konstruksi', 'Operasi', 'Pasca Operasi'],
     };
   },
   methods: {
+    async create(){
+      this.$store.getters.step = 3;
+    },
     handleSaveForm() {
     },
   },
