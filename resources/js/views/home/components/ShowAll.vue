@@ -3,20 +3,30 @@
     <div v-if="showFromAll">
       <el-row :gutter="20">
         <el-col :span="8" :offset="16">
-          <div style="display:flex; align-items: center;">
-            <div style="width:75%; display:flex; align-items: center; background: #062307; padding: 0.5rem;">
+          <div class="customFilter">
+            <div class="customFilterLeft">
               <span style="font-weight:bold; display:inline-block; margin-right:0.5rem;">Search</span>
               <el-input v-model="keyword" placeholder="Please input" @keyup.native.enter="handleSearch()" />
             </div>
-            <div style="cursor:pointer; background:#dff5cf;padding: 0.5rem 0; width:25%; display:flex; align-items:center; position:relative" class="filter" @click="toggle = !toggle">
-              <img alt="" src="/images/filter.png">
-              <span style="font-weight:bold; display:inline-block; margin-right:0.5rem; color:#ef8913;">Filter</span>
-              <div v-show="toggle" style="display: flex;position: absolute;top: 3rem;width: 50rem;background: #dff5cf;right: 0;z-index: 99; color:#35442f;">
-                <div style="width:20%; padding:0.5rem;">
-                  <span style="font-size: 11px;font-weight: bold;">Pusat <el-radio v-model="radio" label="1" /></span>
+            <div class="customFilterRight filter bgActive" @click="handleShowFilter()">
+              <div v-if="toggle">
+                <div style="display:flex; align-items:center;">
+                  <img alt="" src="/images/filter.png">
+                  <span class="textFilter textFilterNoAvtive">Filter</span>
                 </div>
-                <div style="width:20%; padding:0.5rem;">
-                  <span style="font-size: 11px;font-weight: bold;">Provinsi <el-radio v-model="radio" label="2" /></span>
+              </div>
+              <div v-else>
+                <div style="display:flex; align-items:center;">
+                  <img alt="" src="/images/filter-white.png">
+                  <span class="textFilter textFilterAvtive">Filter</span>
+                </div>
+              </div>
+              <div v-show="toggle" class="customFilterRightWrap">
+                <div class="cardCustom">
+                  <span>Pusat <el-radio v-model="radio" label="1" /></span>
+                </div>
+                <div class="cardCustom">
+                  <span>Provinsi <el-radio v-model="radio" label="2" /></span>
                   <el-select v-model="value" placeholder="Select">
                     <el-option
                       v-for="item in provinsi"
@@ -26,8 +36,8 @@
                     />
                   </el-select>
                 </div>
-                <div style="width:20%; padding:0.5rem;">
-                  <span style="font-size: 11px;font-weight: bold;">Kab. / Kota <el-radio v-model="radio" label="3" /></span>
+                <div class="cardCustom">
+                  <span>Kab. / Kota <el-radio v-model="radio" label="3" /></span>
                   <el-select v-model="value" placeholder="Select">
                     <el-option
                       v-for="item in kota"
@@ -37,8 +47,8 @@
                     />
                   </el-select>
                 </div>
-                <div style="width:20%; padding:0.5rem;">
-                  <span style="font-size: 11px;font-weight: bold;">Urut Berdasarkan <el-radio v-model="radio" label="4" /></span>
+                <div class="cardCustom">
+                  <span>Urut Berdasarkan <el-radio v-model="radio" label="4" /></span>
                   <el-select v-model="value" placeholder="Select">
                     <el-option
                       v-for="item in urut"
@@ -48,7 +58,7 @@
                     />
                   </el-select>
                 </div>
-                <div style="width:20%; padding:0.5rem;">
+                <div class="cardCustom">
                   <button style="padding:0.5rem 2rem; background:#f38c13; color:#fff; margin:auto; display:block;border-radius: 0.7rem;">Simpan<br>Filter</button>
                 </div>
               </div>
@@ -211,6 +221,9 @@ export default {
       this.showDetailFromAll = false;
       this.showFromAll = true;
     },
+    handleShowFilter(){
+      this.toggle = true;
+    },
   },
 };
 </script>
@@ -235,4 +248,14 @@ export default {
   .pagination-container[data-v-5efa73f0] {background: transparent;padding: 0;}
   .el-pagination span:not([class*="suffix"]), .el-pagination button {color: #fff;}
   .el-button.el-button--info.fw-bold.el-button--medium {margin-bottom: 10px;}
+  .customFilter{display:flex; align-items: center;}
+  .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.5rem;}
+  .customFilterRight{cursor:pointer; padding: 0.5rem 0; width:25%; display:flex; align-items:center; position:relative}
+  .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;}
+  .cardCustom span{font-size: 11px;font-weight: bold;}
+  .bgNoActive{background:#dff5cf; color:#35442f;}
+  .bgActive{background:#062307; color: #fff;}
+  .textFilter{font-weight:bold; display:inline-block; margin-right:0.5rem; }
+  .textFilterNoAvtive{color:#ef8913;}
+  .textFilterAvtive{color:#fff;}
 </style>
