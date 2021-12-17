@@ -8,20 +8,21 @@
               <span style="font-weight:bold; display:inline-block; margin-right:0.5rem;">Search</span>
               <el-input v-model="keyword" placeholder="Please input" @keyup.native.enter="handleSearch()" />
             </div>
-            <div :class="toggle ? 'customFilterRight filter bgNoActive' : 'customFilterRight filter bgActive'" @click="handleShowFilter()">
-              <div v-if="toggle">
-                <div style="display:flex; align-items:center;">
+            <div :class="toggle ? 'customFilterRight filter bgNoActive' : 'customFilterRight filter bgActive'">
+              <template v-if="toggle">
+                <div style="display:flex; align-items:center;" @click="handleShowFilter()">
                   <img alt="" src="/images/filter.png">
                   <span class="textFilter textFilterNoAvtive">Filter</span>
                 </div>
-              </div>
-              <div v-else>
-                <div style="display:flex; align-items:center;">
+              </template>
+              <template v-else>
+                <div style="display:flex; align-items:center;" @click="handleShowFilter()">
                   <img alt="" src="/images/filter-white.png">
                   <span class="textFilter textFilterAvtive">Filter</span>
                 </div>
-              </div>
-              <div v-show="toggle" class="customFilterRightWrap">
+              </template>
+              <div v-if="toggle" class="customFilterRightWrap">
+                <i class="el-icon-circle-close" style="position: absolute;left: 4px;top: 4px;font-size: 22px;cursor: pointer;" @click="handleHideFilter()" />
                 <div class="cardCustom">
                   <span>Pusat <el-radio v-model="radio" label="1" /></span>
                 </div>
@@ -224,6 +225,9 @@ export default {
     handleShowFilter(){
       this.toggle = true;
     },
+    handleHideFilter(){
+      this.toggle = false;
+    },
   },
 };
 </script>
@@ -249,9 +253,9 @@ export default {
   .el-pagination span:not([class*="suffix"]), .el-pagination button {color: #fff;}
   .el-button.el-button--info.fw-bold.el-button--medium {margin-bottom: 10px;}
   .customFilter{display:flex; align-items: center;}
-  .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.5rem;}
-  .customFilterRight{cursor:pointer; padding: 0.5rem 0; width:25%; display:flex; align-items:center; position:relative}
-  .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;padding: 1.5rem 1rem;}
+  .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.51rem;}
+  .customFilterRight{cursor:pointer; padding: 0.6rem; width:25%; display:flex; align-items:center; position:relative;}
+  .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;padding: 1.5rem 1rem;border-radius: 4px 0 4px 4px;}
   .cardCustom span{font-size: 11px;font-weight: bold;}
   .bgNoActive{background:#dff5cf; color:#35442f;}
   .bgActive{background:#062307; color: #fff;}
