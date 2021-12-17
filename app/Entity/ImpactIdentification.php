@@ -85,4 +85,23 @@ class ImpactIdentification extends Model
     {
         return $this->hasOne(ImpactIdentificationClone::class, 'id_impact_identification', 'id');
     }
+
+    // TODO: cascade delete:
+    // protected static function boot()
+    // {
+    //     // env_manage_plans
+    //     // env_monitor_plans
+    //     // env_impact_analysis
+    //     // impact_studies
+    //     // potential_impact_evaluations
+    //     parent::boot();
+    //     static::deleting(function($impactIdentification) {
+    //         $impactIdentification->envImpactAnalysis()->delete();
+    //         $impactIdentification->envManagePlan()->delete();
+    //         $impactIdentification->envMonitorPlan()->delete();
+    //         $impactIdentification->impactStudy()->delete();
+    //         $impactIdentification->potentialImpactEvaluation()->delete();
+    //         $impactIdentification->comments()->delete();
+    //     });
+    // }
 }
