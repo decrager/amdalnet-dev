@@ -23,7 +23,7 @@
           <matriks-upl-table v-if="activeName === '2'" />
         </el-collapse-item>
         <el-collapse-item name="3" title="DOKUMEN PENDUKUNG">
-          <dokumen-pendukung v-if="activeName === '3'" />
+          <dokumen-pendukung v-if="activeName === '3'" @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan" />
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -84,6 +84,16 @@ export default {
           params: idProject,
         });
       }
+    },
+    handleEnableSimpanLanjutkan() {
+      this.isSubmitEnabled = true;
+    },
+    handleSaveForm() {
+      const id = this.$route.params && this.$route.params.id;
+      this.$router.push({
+        name: 'DokumenUklUpl',
+        params: id,
+      });
     },
   },
 };
