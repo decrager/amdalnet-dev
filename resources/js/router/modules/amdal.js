@@ -18,7 +18,7 @@ const amdalRoutes = {
     {
       path: ':id(\\d+)/matriks',
       component: () => import('@/views/amdal/MatriksUklUpl'),
-      name: 'MatriksUklUpl',
+      name: 'MatriksAmdal',
       hidden: false,
       meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
     },

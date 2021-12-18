@@ -51,6 +51,12 @@ const configurationRoutes = {
       name: 'cluster',
       meta: { title: 'cluster', icon: 'documentation', noCache: true, permissions: ['view menu cluster'] },
     },
+    {
+      path: 'map-service',
+      component: () => import('@/views/arcgis-service/Index'),
+      name: 'Map Service',
+      meta: { title: 'Map Service', icon: 'international', permissions: ['view menu cluster'] },
+    },
   ],
 };
 
