@@ -279,3 +279,4 @@ Route::get('matriks-ukl-upl/table-upl/{id}', [MatriksUklUplController::class, 'g
 Route::apiResource('env-manage-plans', 'EnvManagePlanController');
 Route::apiResource('env-manage-docs', 'EnvManageDocController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
+Route::apiResource('public-questions', 'PublicQuestionController');

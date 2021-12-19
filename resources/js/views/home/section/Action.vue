@@ -43,7 +43,7 @@
         </div>
         <div class="content" :hidden="!showPelingkupan" style="padding-top: 20px;">
           <h3 class="sub-title"><img src="/images/tracking.svg" style="width: 16px; height:16px" alt=""> Proses Persetujuan Lingkungan</h3>
-          <h3 class="sub-title"><img src="/images/tracking.svg" style="width: 16px; height:16px" alt=""> Pelayanan Public</h3>
+          <h3 class="sub-title" @click="showPubDialog"><img src="/images/tracking.svg" style="width: 16px; height:16px" alt=""> Pelayanan Public</h3>
           <h3 class="sub-title"><img src="/images/tracking.svg" style="width: 16px; height:16px" alt=""> Tracking Dokumen</h3>
         </div>
 
@@ -105,19 +105,20 @@
       </div>
       <h2 style="color: white; margin-top: 20px">Hasil Akhir Penapisan {{ last_result }}</h2>
     </div> -->
-
-    <amdal-simulation-dialog :show="showAmdalSimulation" />
+    <public-question-dialog :show="showPublicQues" @cancel="() => showPublicQues = false" />
   </section>
 </template>
 
 <script>
 import SubProjectTable from '../../project/components/SubProjectTable.vue';
-import AmdalSimulationDialog from '../components/AmdalSimulationDialog.vue';
+// import AmdalSimulationDialog from '../components/AmdalSimulationDialog.vue';
+import PublicQuestionDialog from '../components/PublicQuestionDialog.vue';
 export default {
   name: 'ActionHome',
-  components: { AmdalSimulationDialog, SubProjectTable },
+  components: { SubProjectTable, PublicQuestionDialog },
   data() {
     return {
+      showPublicQues: false,
       listSubProject: [],
       showAmdalSimulation: false,
       last_result: '',
@@ -132,6 +133,10 @@ export default {
     },
   },
   methods: {
+    showPubDialog(){
+      console.log('kepencet');
+      this.showPublicQues = true;
+    },
     cancelParam(){
       this.calculateListSubProjectResult();
       this.calculateChoosenProject();
