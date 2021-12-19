@@ -28,29 +28,29 @@
                 </div>
                 <div class="cardCustom">
                   <span>Provinsi <el-radio v-model="radio" label="2" /></span>
-                  <el-select v-model="value" placeholder="Select">
+                  <el-select v-model="provinsiValue" placeholder="Select" @change="getCity($event)">
                     <el-option
                       v-for="item in provinsi"
                       :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                      :label="item.name"
+                      :value="item.name"
                     />
                   </el-select>
                 </div>
                 <div class="cardCustom">
                   <span>Kab. / Kota <el-radio v-model="radio" label="3" /></span>
-                  <el-select v-model="value" placeholder="Select">
+                  <el-select v-model="kotaValue" placeholder="Select">
                     <el-option
                       v-for="item in kota"
                       :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                      :label="item.name"
+                      :value="item.name"
                     />
                   </el-select>
                 </div>
                 <div class="cardCustom">
                   <span>Urut Berdasarkan <el-radio v-model="radio" label="4" /></span>
-                  <el-select v-model="value" placeholder="Select">
+                  <el-select v-model="urutValue" placeholder="Select">
                     <el-option
                       v-for="item in urut"
                       :key="item.value"
@@ -60,7 +60,7 @@
                   </el-select>
                 </div>
                 <div class="cardCustom">
-                  <button style="padding:0.5rem 2rem; background:#f38c13; color:#fff; margin:auto; display:block;border-radius: 0.7rem; margin-top:0.5rem;">Simpan<br>Filter</button>
+                  <button style="padding:0.5rem 2rem; background:#f38c13; color:#fff; margin:auto; display:block;border-radius: 0.7rem; margin-top:0.5rem;" @click="handleFilter()">Simpan<br>Filter</button>
                 </div>
               </div>
             </div>
@@ -139,22 +139,19 @@ export default {
       selectedProject: {},
       radio: '1',
       value: '',
-      provinsi: [
-        {
-          value: 'Option1',
-          label: 'Option1',
-        },
-      ],
-      kota: [
-        {
-          value: 'Option1',
-          label: 'Option1',
-        },
-      ],
+      provinsi: {},
+      provinsiValue: null,
+      kotaValue: null,
+      urutValue: null,
+      kota: {},
       urut: [
         {
-          value: 'Option1',
-          label: 'Option1',
+          value: 'ASC',
+          label: 'ASC',
+        },
+        {
+          value: 'DESC',
+          label: 'DESC',
         },
       ],
       toggle: false,
@@ -162,11 +159,9 @@ export default {
   },
   created() {
     this.getAll();
+    this.getProvinces();
   },
   methods: {
-    handleFilter() {
-      this.getAll();
-    },
     formatDateStr(date) {
       const today = new Date(date);
       var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -225,6 +220,41 @@ export default {
     },
     handleHideFilter(){
       this.toggle = false;
+    },
+    getProvinces() {
+      axios.get('/api/provinces')
+        .then(response => {
+          this.provinsi = response.data.data;
+          console.log('hoho');
+          console.log(response.data.data);
+        });
+    },
+    getCity(event) {
+      axios.get(`/api/districts?provName=${event}`)
+        .then(response => {
+          this.kota = response.data.data;
+        });
+    },
+    handleFilter() {
+      if (this.provinsiValue !== null || this.provinsiValue !== 'undefined') {
+        var provName = 'provName=' + this.provinsiValue;
+      }
+
+      if (this.kotaValue !== null || this.kotaValue !== 'undefined') {
+        var kotaName = 'kotaName=' + this.kotaValue;
+      }
+
+      if (this.urutValue !== null || this.urutValue !== 'undefined') {
+        var urutValue = 'sort=' + this.urutValue;
+      }
+
+      console.log(urutValue);
+
+      axios.get(`/api/announcements?${provName}&${kotaName}&page=${this.listQuery.page}&${urutValue}`)
+        .then(response => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+        });
     },
   },
 };

@@ -25,6 +25,12 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): AnnouncementResource
     {
+        if ($request->sort == 'null') {
+            $sort = 'DESC';
+        } else {
+            $sort = $request->sort;
+        }
+
         $getAllAnnouncement = Announcement::with([
             'project',
             'project.province',
@@ -46,19 +52,8 @@ class AnnouncementController extends Controller
 
             return $indents;
         })
-        ->orderby('start_date', $request->sort ?? "DESC")->paginate($request->limit ? $request->limit : 10);
+        ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
 
-        // $getAllAnnouncement = Announcement::withCount('feedbacks')
-        //     ->when($request->has('project'), function ($query) use ($request) {
-        //         return $query->where('project_result', '=', $request->project);
-        //     })
-        //     ->orderby('start_date', 'DESC')
-        //     ->when(!isset($request->limit), function ($query) use ($request) {
-        //         return $query->get();
-        //     })
-        //     ->when($request->has('limit'), function ($query) use ($request) {
-        //         return $query->paginate($request->limit ?: 10);
-        //     });
         return AnnouncementResource::make($getAllAnnouncement);
     }
 

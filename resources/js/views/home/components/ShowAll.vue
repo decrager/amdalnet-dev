@@ -248,11 +248,12 @@ export default {
         var urutValue = 'sort=' + this.urutValue;
       }
 
+      console.log(urutValue);
+
       axios.get(`/api/announcements?${provName}&${kotaName}&page=${this.listQuery.page}&${urutValue}`)
         .then(response => {
           this.allData = response.data.data;
           this.total = response.data.total;
-          console.log(response.data.data);
         });
     },
   },
