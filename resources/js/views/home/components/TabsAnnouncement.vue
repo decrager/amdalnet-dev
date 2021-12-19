@@ -132,7 +132,6 @@ export default {
           this.selectedProject = response.data.project;
           this.showDetails = true;
         });
-      console.log(this.selectedAnnouncement);
       this.showDetailsDialog = true;
     },
     handleCancelComponent(e){

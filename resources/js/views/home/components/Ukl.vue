@@ -86,12 +86,22 @@
       </el-row>
       <div class="block" style="text-align:right">
         <pagination
+          v-if="paginationNoFilter"
           v-show="total > 0"
           :auto-scroll="false"
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
-          @pagination="handleFilter"
+          @pagination="getAll"
+        />
+        <pagination
+          v-if="paginationFilter"
+          v-show="total > 0"
+          :auto-scroll="false"
+          :total="total"
+          :page.sync="listQuery.page"
+          :limit.sync="listQuery.limit"
+          @pagination="getAll"
         />
       </div>
     </div>
@@ -132,6 +142,8 @@ export default {
         page: 1,
         limit: 10,
       },
+      paginationNoFilter: true,
+      paginationFilter: false,
       keyword: 'UKL-UPL',
       showDetailFromAll: false,
       showFromAll: true,
@@ -187,6 +199,8 @@ export default {
         .then(response => {
           this.allData = response.data.data;
           this.total = response.data.total;
+          this.paginationNoFilter = true;
+          this.paginationFilter = false;
         });
     },
     openDetails(id) {
@@ -248,12 +262,12 @@ export default {
         var urutValue = 'sort=' + this.urutValue;
       }
 
-      console.log(urutValue);
-
       axios.get(`/api/announcements?${provName}&${kotaName}&page=${this.listQuery.page}&${urutValue}`)
         .then(response => {
           this.allData = response.data.data;
           this.total = response.data.total;
+          this.paginationNoFilter = false;
+          this.paginationFilter = true;
         });
     },
   },

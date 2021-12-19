@@ -36,7 +36,7 @@ class AnnouncementController extends Controller
             'project.province',
             'project.address'
         ])->withCount('feedbacks')
-        ->whereHas("project.address",function($q) use($request){
+        ->orWhereHas("project.address",function($q) use($request){
             $q->where("prov", "=", $request->provName);
         })
         ->orWhereHas("project.address",function($q) use($request){
@@ -52,6 +52,36 @@ class AnnouncementController extends Controller
 
             return $indents;
         })
+        ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+
+        return AnnouncementResource::make($getAllAnnouncement);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return AnnouncementResource
+     */
+    public function getAnnouncementByFilter(Request $request): AnnouncementResource
+    {
+        if ($request->sort == 'null') {
+            $sort = 'DESC';
+        } else {
+            $sort = $request->sort;
+        }
+
+        $getAllAnnouncement = Announcement::with([
+            'project',
+            'project.province',
+            'project.address'
+        ])->withCount('feedbacks')
+        ->orWhereHas("project.address",function($q) use($request){
+            $q->where("prov", "=", $request->provName);
+        })
+        ->orWhereHas("project.address",function($q) use($request){
+            $q->where("district", "=", $request->kotaName);
+        })
+
         ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
 
         return AnnouncementResource::make($getAllAnnouncement);

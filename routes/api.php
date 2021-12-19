@@ -22,6 +22,7 @@ use App\Http\Controllers\MatriksDampakController;
 use App\Http\Controllers\MatriksUklUplController;
 use App\Http\Controllers\WebgisController;
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\AnnouncementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -279,7 +280,9 @@ Route::get('matriks-ukl-upl/table-ukl/{id}', [MatriksUklUplController::class, 'g
 Route::get('matriks-ukl-upl/table-upl/{id}', [MatriksUklUplController::class, 'getTableUpl']);
 Route::apiResource('env-manage-plans', 'EnvManagePlanController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
-Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
 Route::apiResource('env-manage-docs', 'EnvManageDocController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('public-questions', 'PublicQuestionController');
+
+Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
+Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
