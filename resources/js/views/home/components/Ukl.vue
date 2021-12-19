@@ -67,43 +67,56 @@
           </div>
         </el-col>
       </el-row>
-      <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
-        <el-col :xs="24" :sm="2" style="padding-top:0.5rem;padding-bottom:0.5rem">
-          <img alt="" class="customImage" src="/images/list.svg">
-        </el-col>
-        <el-col :xs="24" :sm="6" style="padding-top:1rem">
-          <p class="tw fz11 fw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</p>
-        </el-col>
-        <el-col :xs="24" :sm="8" style="padding-top:1rem">
-          <p class="tw fz11">Dampak Potensial: {{ amdal.potential_impact }}</p>
-        </el-col>
-        <el-col :xs="24" :sm="5" style="padding-top:1rem">
-          <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
-        </el-col>
-        <el-col :xs="24" :sm="3">
-          <button class="el-button el-button--warning fz11 el-button--medium is-plain" @click="openDetails(amdal.id,'UKL')">Berikan<br>Tanggapan</button>
-        </el-col>
-      </el-row>
-      <div class="block" style="text-align:right">
-        <pagination
-          v-if="paginationNoFilter"
-          v-show="total > 0"
-          :auto-scroll="false"
-          :total="total"
-          :page.sync="listQuery.page"
-          :limit.sync="listQuery.limit"
-          @pagination="getAll"
-        />
-        <pagination
-          v-if="paginationFilter"
-          v-show="total > 0"
-          :auto-scroll="false"
-          :total="total"
-          :page.sync="listQuery.page"
-          :limit.sync="listQuery.limit"
-          @pagination="getAll"
-        />
-      </div>
+      <template v-if="allData.length > 0">
+        <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
+          <el-col :xs="24" :sm="2" style="padding-top:0.5rem;padding-bottom:0.5rem">
+            <img alt="" class="customImage" src="/images/list.svg">
+          </el-col>
+          <el-col :xs="24" :sm="6" style="padding-top:1rem">
+            <p class="tw fz11 fw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</p>
+          </el-col>
+          <el-col :xs="24" :sm="8" style="padding-top:1rem">
+            <p class="tw fz11">Dampak Potensial: {{ amdal.potential_impact }}</p>
+          </el-col>
+          <el-col :xs="24" :sm="5" style="padding-top:1rem">
+            <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
+          </el-col>
+          <el-col :xs="24" :sm="3">
+            <button class="el-button el-button--warning fz11 el-button--medium is-plain" @click="openDetails(amdal.id,'UKL')">Berikan<br>Tanggapan</button>
+          </el-col>
+        </el-row>
+        <div class="block" style="text-align:right">
+          <pagination
+            v-if="paginationNoFilter"
+            v-show="total > 0"
+            :auto-scroll="false"
+            :total="total"
+            :page.sync="listQuery.page"
+            :limit.sync="listQuery.limit"
+            @pagination="getAll"
+          />
+          <pagination
+            v-if="paginationFilter"
+            v-show="total > 0"
+            :auto-scroll="false"
+            :total="total"
+            :page.sync="listQuery.page"
+            :limit.sync="listQuery.limit"
+            @pagination="getAll"
+          />
+        </div>
+      </template>
+      <template v-else>
+        <el-row :gutter="20">
+          <el-col :xs="24" style="padding-top:0.5rem;padding-bottom:0.5rem">
+            <el-alert
+              title="Warning"
+              type="warning"
+              description="No Record Found"
+            />
+          </el-col>
+        </el-row>
+      </template>
     </div>
     <div v-if="showDetailFromAll">
       <Details
