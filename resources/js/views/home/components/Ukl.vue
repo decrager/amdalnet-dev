@@ -10,7 +10,7 @@
             </div>
             <div :class="toggle ? 'customFilterRight filter bgNoActive' : 'customFilterRight filter bgActive'">
               <template v-if="toggle">
-                <div style="display:flex; align-items:center;" @click="handleShowFilter()">
+                <div style="display:flex; align-items:center;" @click="toggle = !toggle">
                   <img alt="" src="/images/filter.png">
                   <span class="textFilter textFilterNoAvtive">Filter</span>
                 </div>
@@ -81,7 +81,7 @@
           <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
         </el-col>
         <el-col :xs="24" :sm="3">
-          <button class="el-button el-button--warning fz11 el-button--medium is-plain" @click="openDetails(uklupl.id,'UKL')">Berikan<br>Tanggapan</button>
+          <button class="el-button el-button--warning fz11 el-button--medium is-plain" @click="openDetails(amdal.id,'UKL')">Berikan<br>Tanggapan</button>
         </el-col>
       </el-row>
       <div class="block" style="text-align:right">
@@ -204,6 +204,7 @@ export default {
         });
     },
     openDetails(id) {
+      console.log(id);
       axios.get('/api/announcements/' + id)
         .then(response => {
           this.selectedAnnouncement = response.data;
@@ -239,8 +240,6 @@ export default {
       axios.get('/api/provinces')
         .then(response => {
           this.provinsi = response.data.data;
-          console.log('hoho');
-          console.log(response.data.data);
         });
     },
     getCity(event) {
@@ -268,6 +267,7 @@ export default {
           this.total = response.data.total;
           this.paginationNoFilter = false;
           this.paginationFilter = true;
+          this.toggle = false;
         });
     },
   },

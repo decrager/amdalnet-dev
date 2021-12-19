@@ -10,7 +10,7 @@
             </div>
             <div :class="toggle ? 'customFilterRight filter bgNoActive' : 'customFilterRight filter bgActive'">
               <template v-if="toggle">
-                <div style="display:flex; align-items:center;" @click="handleShowFilter()">
+                <div style="display:flex; align-items:center;" @click="toggle = !toggle">
                   <img alt="" src="/images/filter.png">
                   <span class="textFilter textFilterNoAvtive">Filter</span>
                 </div>
@@ -206,10 +206,12 @@ export default {
     openDetails(id) {
       axios.get('/api/announcements/' + id)
         .then(response => {
+          // this.$emit('handleToggleShow',true);
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
           this.showDetailFromAll = true;
           this.showFromAll = false;
+          // console.log(this.showDetailFromAll)
         });
     },
     handleCancle(){
@@ -226,7 +228,6 @@ export default {
       this.showFromAll = true;
     },
     handleSetTabs(e){
-      console.log(e, 'ketu');
       this.showDetailFromAll = false;
       this.showFromAll = true;
     },
@@ -267,6 +268,7 @@ export default {
           this.total = response.data.total;
           this.paginationNoFilter = false;
           this.paginationFilter = true;
+          this.toggle = false;
         });
     },
   },
