@@ -525,8 +525,14 @@ input {
     cursor: pointer;
 }
 
+.simulations__box__links__wrapper {
+    background-color: #062307;
+    padding: 50px;
+    border-radius: 5px;
+}
+
 .actions__box__links__wrapper:hover {
-    transform: scale(1.1);
+    /* transform: scale(1.1); */
     transition: all .3s ease-in;
 }
 

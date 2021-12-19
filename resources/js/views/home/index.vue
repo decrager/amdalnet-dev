@@ -33,7 +33,9 @@ export default {
     'announcement-home': AnnouncementHome,
     'footer-home': FooterHome,
   },
-
+  created() {
+    this.$store.dispatch('getKblis', { kblis: true });
+  },
 };
 </script>
 

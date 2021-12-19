@@ -251,6 +251,7 @@ export default {
       axios.get(`/api/announcements?${provName}&${kotaName}&page=${this.listQuery.page}&${urutValue}`)
         .then(response => {
           this.allData = response.data.data;
+          this.total = response.data.total;
           console.log(response.data.data);
         });
     },
