@@ -21,6 +21,8 @@ use App\Http\Controllers\LpjpController;
 use App\Http\Controllers\MatriksDampakController;
 use App\Http\Controllers\MatriksUklUplController;
 use App\Http\Controllers\WebgisController;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\AnnouncementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -277,6 +279,10 @@ Route::get('besaran-dampak/list/{id}', [BesaranDampakController::class, 'getList
 Route::get('matriks-ukl-upl/table-ukl/{id}', [MatriksUklUplController::class, 'getTableUkl']);
 Route::get('matriks-ukl-upl/table-upl/{id}', [MatriksUklUplController::class, 'getTableUpl']);
 Route::apiResource('env-manage-plans', 'EnvManagePlanController');
+Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('env-manage-docs', 'EnvManageDocController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('public-questions', 'PublicQuestionController');
+
+Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
+Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
