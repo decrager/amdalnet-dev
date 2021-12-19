@@ -217,8 +217,8 @@ export default {
       // this.scale = choosenProject.scale;
       // this.scale_unit = choosenProject.scale_unit;
       // this.listSubProjectParams = choosenProject.listSubProjectParams;
-
-      this.last_result = choosenProject.result + ' ' + choosenProject.amdal_type;
+      const at = choosenProject.amdal_type ? choosenProject.amdal_type : '';
+      this.last_result = choosenProject.result + ' ' + at;
     },
   },
 };
