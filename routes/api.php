@@ -1,7 +1,8 @@
 <?php
 
-use App\Entity\FormulatorTeam;
+use App\Http\Controllers\ArcgisServiceController;
 use App\Http\Controllers\BaganAlirController;
+use App\Http\Controllers\BesaranDampakController;
 use App\Http\Controllers\ExportDocument;
 use App\Http\Controllers\UklUplCommentController;
 use App\Http\Controllers\ProjectMapAttachmentController;
@@ -18,6 +19,10 @@ use App\Http\Controllers\PieParamController;
 use App\Http\Controllers\ImpactIdentificationController;
 use App\Http\Controllers\LpjpController;
 use App\Http\Controllers\MatriksDampakController;
+use App\Http\Controllers\MatriksUklUplController;
+use App\Http\Controllers\WebgisController;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\AnnouncementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -256,3 +261,28 @@ Route::get('matriks-dampak/table/{id}', [MatriksDampakController::class, 'getTab
 Route::get('matriks-dampak/table-dph/{id}', [MatriksDampakController::class, 'getTableDph']);
 Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 'getRonaMapping']);
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
+Route::get('project-maps', [WebgisController::class, 'index']);
+Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
+
+// Arcgis Service
+Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
+Route::get('arcgis-service-categories', [ArcgisServiceController::class, 'arcgisServiceCategoryList']);
+Route::get('arcgis-service/{id}', [ArcgisServiceController::class, 'showArcgisServiceList']);
+Route::get('arcgis-service-category/{id}', [ArcgisServiceController::class, 'showArcgisServiceCategoryList']);
+Route::post('arcgis-service', [ArcgisServiceController::class, 'createArcgisService']);
+Route::post('arcgis-service-category', [ArcgisServiceController::class, 'createArcgisServiceCategory']);
+Route::patch('arcgis-service/{id}', [ArcgisServiceController::class, 'updateArcgisService']);
+Route::delete('arcgis-service/{id}', [ArcgisServiceController::class, 'deleteAcrgisService']);
+Route::delete('arcgis-service/{id}', [ArcgisServiceController::class, 'deleteAcrgisServiceCategory']);
+
+Route::get('besaran-dampak/list/{id}', [BesaranDampakController::class, 'getList']);
+Route::get('matriks-ukl-upl/table-ukl/{id}', [MatriksUklUplController::class, 'getTableUkl']);
+Route::get('matriks-ukl-upl/table-upl/{id}', [MatriksUklUplController::class, 'getTableUpl']);
+Route::apiResource('env-manage-plans', 'EnvManagePlanController');
+Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
+Route::apiResource('env-manage-docs', 'EnvManageDocController');
+Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
+Route::apiResource('public-questions', 'PublicQuestionController');
+
+Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
+Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);

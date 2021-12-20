@@ -1,13 +1,23 @@
 <template>
   <div class="webgis__container">
     <DarkHeaderHome />
+    <div class="input__select">
+      <el-autocomplete
+        v-model="projectTitle"
+        class="inline-input"
+        :fetch-suggestions="querySearch"
+        placeholder="Please Input"
+        :trigger-on-focus="false"
+        @select="handleSelect"
+      />
+    </div>
     <div id="mapViewDiv" />
   </div>
 
 </template>
 
 <script>
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+// import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import Home from '@arcgis/core/widgets/Home';
@@ -23,6 +33,8 @@ import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
+import rdtrMap from './mapRdtr';
+import rupabumis from './mapRupabumi';
 
 export default {
   name: 'WebGis',
@@ -35,13 +47,43 @@ export default {
       selectedFeedback: {},
       showIdDialog: false,
       mapGeojsonArray: [],
+      projects: [],
+      projectTitle: '',
+      selectId: null,
     };
   },
   mounted: function() {
     console.log('Map Component Mounted');
     this.loadMap();
+    this.getProjectData();
   },
   methods: {
+    querySearch(queryString, cb) {
+      var projects = this.projects;
+      var results = queryString ? projects.filter(this.createFilter(queryString)) : projects;
+      const mapResult = results.map((item) => {
+        return {
+          value: item.project_title,
+          id: item.id_project,
+        };
+      });
+      cb(mapResult);
+    },
+    createFilter(queryString) {
+      return (link) => {
+        const resultLink = link.project_title.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
+        return resultLink;
+      };
+    },
+    getProjectData() {
+      axios.get('api/project-maps')
+        .then(response => {
+          this.projects = response.data;
+        });
+    },
+    handleSelect(item) {
+      this.selectId = item.id;
+    },
     toDashboard() {
       this.$router.push({ path: '/dashboard' });
     },
@@ -72,151 +114,6 @@ export default {
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
 
-      const featureLayer = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
-        sublayers: [
-          {
-            id: 0,
-            title: 'Layer Kawasan Hutan',
-            popupTemplate: {
-              title: 'Kawasan Hutan',
-            },
-          },
-        ],
-        imageTransparency: true,
-      });
-
-      const batasProv = new MapImageLayer({
-        url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
-        sublayers: [{
-          id: 0,
-          title: 'Batas Provinsi',
-        }],
-      });
-
-      const graticuleGrid = new MapImageLayer({
-        url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
-      });
-
-      const ekoregion = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
-        visible: false,
-        sublayers: [
-          {
-            id: 1,
-            visible: false,
-            visibility: 'exclusive',
-            title: 'Ekoregion Laut',
-          }, {
-            id: 0,
-            visible: false,
-            visibility: 'exclusive',
-            title: 'Ekoregion Darat',
-          },
-        ],
-      });
-
-      const ppib = new MapImageLayer({
-        url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
-        visible: false,
-      });
-
-      const tutupanLahan = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
-        visible: false,
-      });
-      map.addMany([featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid]);
-
-      const baseGroupLayer = new GroupLayer({
-        title: 'Base Layer',
-        visible: true,
-        layers: [featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid],
-        opacity: 0.90,
-      });
-
-      map.add(baseGroupLayer);
-
-      const gistaruLayer = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-      map.add(gistaruLayer);
-
-      const perbatasanPapua = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_PERBATASAN_PAPUA/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const acehSumut = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KPN_ACEH_SUMUT/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const kalSul = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KALIMANTAN_SULAWESI_PERPRES/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const bandung = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KAWASAN_PERKOTAAN_CEKUNGAN_BANDUNG/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const jabodetabek = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_JABODETABEKPUNJUR/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const borobudur = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_BOROBUDUR/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const bbk = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_BBK/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const kedungSepur = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KEDUNGSEPUR/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const toba = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_TOBA/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      map.addMany([perbatasanPapua, bandung, jabodetabek, acehSumut, kalSul, borobudur, bbk, kedungSepur, toba]);
-
-      const ksnGroupLayer = new GroupLayer({
-        title: 'Layer Kawasan Strategis Nasional (KSN)',
-        visible: false,
-        layers: [perbatasanPapua, bandung, jabodetabek, acehSumut, kalSul, borobudur, bbk, kedungSepur, toba],
-        opacity: 0.90,
-      });
-
-      map.add(ksnGroupLayer);
-
-      const rtrPulau = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/001_RTR_PULAU/_RTR_PULAU_INDONESIA/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      map.add(rtrPulau);
-
       // const mapGeojsonArray = [];
       axios.get('api/maps')
         .then(response => {
@@ -229,24 +126,18 @@ export default {
                 });
                 const url = URL.createObjectURL(blob);
                 axios.get('api/projects/' + projects[i].id_project).then((response) => {
-                  console.log('a');
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
                     visible: false,
                     title: response.data.project_title,
-                    // popupTemplate: arrayJsonTemplate,
                   });
-                  // map.add(geojsonLayerArray);
-                  // console.log(geojsonLayerArray);
-
                   this.mapGeojsonArray.push(geojsonLayerArray);
 
                   // last loop
                   if (i === projects.length - 1){
-                    console.log(this.mapGeojsonArray);
                     const kegiatanGroupLayer = new GroupLayer({
-                      title: 'LAYER KEGIATAN',
+                      title: 'Peta Tematik AMDAL',
                       visible: false,
                       layers: this.mapGeojsonArray,
                       opacity: 0.90,
@@ -260,70 +151,46 @@ export default {
           }
         });
 
-      const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
+      // const kawasanHutan = new MapImageLayer({
+      //   url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+      //   imageTransparency: true,
+      //   visible: false,
+      //   visibilityMode: '',
+      // });
 
-      const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
+      // const batasKabupaten = new MapImageLayer({
+      //   title: 'Batas Kabupaten Indonesia',
+      //   url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Kabupaten_Kota_50K/MapServer',
+      //   imageTransparency: true,
+      //   visible: false,
+      //   visibilityMode: '',
+      // });
 
-      const indikatifPPTPKH = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/Indikatif_PPTPKH/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
+      // const batasProvinsi = new MapImageLayer({
+      //   title: 'Batas Provinsi Indonesia',
+      //   url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Provinsi_Indonesia/MapServer',
+      //   imageTransparency: true,
+      //   visible: false,
+      //   visibilityMode: '',
+      // });
 
-      const piapsRevisi = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIAPS_Revisi_VI/MapServer',
-        imageTransparency: true,
+      const tematikGroup = new GroupLayer({
+        title: 'Peta Tematik Status',
         visible: false,
-        visibilityMode: '',
-      });
-
-      const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      const arKabKota = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/ADMINISTRASI_AR_KABKOTA_50K_2018/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      const batasKabupaten = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Kabupaten_Kota_50K/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      const batasProvinsi = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Provinsi_Indonesia/MapServerr',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      const sigapLayer = new GroupLayer({
-        title: 'SIGAP KLHK',
-        visible: false,
-        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2, arKabKota, batasKabupaten, batasProvinsi],
+        layers: rdtrMap,
         opacity: 0.90,
       });
 
-      map.add(sigapLayer);
+      map.add(tematikGroup);
+
+      const rupabumiGroup = new GroupLayer({
+        title: 'Peta Rupa Bumi',
+        visible: true,
+        layers: rupabumis,
+        opacity: 0.90,
+      });
+
+      map.add(rupabumiGroup);
 
       const mapView = new MapView({
         container: 'mapViewDiv',
@@ -390,8 +257,14 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style>
 @import '../home/assets/css/style.css';
+.input__select {
+  position: absolute;
+  top: 70px;
+  left: 70px;
+  z-index: 100;
+}
 .webgis__container {
   display: flex;
   flex-direction: column;

@@ -22,7 +22,7 @@ deploy_dev:
   stage: dev
   script:
     - cd /home/adminhadoop/apps/amdalnet/
-    - git reset --hard HEAD
+    - git reset --hard origin/master
     - git pull
     - docker-compose up -d
     - sudo chown adminhadoop:adminhadoop -R storage/
@@ -47,7 +47,7 @@ deploy_cloud:
   stage: cloud
   script:
     - cd /var/www/amdalnet/
-    - git reset --hard HEAD
+    - git reset --hard origin/master
     - git pull
     - composer install
     - composer dump-autoload
@@ -65,7 +65,7 @@ deploy_prod:
   stage: production
   script:
     - cd /var/www/amdalnet/
-    - git reset --hard HEAD
+    - git reset --hard origin/master
     - git pull
     - composer install
     - composer dump-autoload
@@ -76,3 +76,37 @@ deploy_prod:
     - tags
   tags:
     - prod
+
+deploy_api_menlhk:
+  stage: production
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard origin/master
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - npm install
+    - npm run production
+  only:
+    - master
+  tags:
+    - amdalnet-api-menlhk
+
+deploy_app_menlhk:
+  stage: production
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard origin/master
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - npm install
+    - npm run production
+    #- echo "update app server"
+    #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
+  only:
+    - master
+  tags:
+    - amdalnet-app-menlhk

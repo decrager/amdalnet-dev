@@ -49,9 +49,9 @@ Onlyoffice:
 - Export
 
 
-sudo docker run -i -t -d -p 9000:80 --restart=always --name onlyoffice-document-server \
-    -v /home/amdalnet/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data \
-    -v /home/amdalnet/onlyoffice/DocumentServer/logs:/var/log/onlyoffice \
+sudo docker run -i -t -d -p 9000:80 --restart=always --name oods \
+    -v /home/ubuntu/office/DocumentServer/data:/var/www/onlyoffice/Data \
+    -v /home/ubuntu/office/DocumentServer/logs:/var/log/onlyoffice \
     onlyoffice/documentserver-de
 
 

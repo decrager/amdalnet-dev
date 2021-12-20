@@ -62,6 +62,7 @@
                 <el-col :sm="12" :md="isTeamExist ? 24 : 20">
                   <el-select
                     v-model="selectedLPJP"
+                    v-loading="loadingSelectLpjp"
                     filterable
                     placeholder="Lembaga Tim LPJP"
                     style="width: 100%"
@@ -168,6 +169,7 @@ export default {
       loadingTimAhli: false,
       loadingSubmit: false,
       loadingLpjp: false,
+      loadingSelectLpjp: false,
       idLpjp: 0,
       members: [],
       isTeamExist: false,
@@ -178,11 +180,11 @@ export default {
       compositionError: false,
       timPenyusun: [
         {
-          label: 'LPJP',
+          label: 'Lembaga Penyedia Jasa Penyusun',
           value: 'lpjp',
         },
         {
-          label: 'Mandiri',
+          label: 'Penyusun Perseorangan',
           value: 'mandiri',
         },
       ],
@@ -256,7 +258,9 @@ export default {
       cb(finalResults);
     },
     async getLpjp() {
+      this.loadingSelectLpjp = true;
       this.lpjp = await formulatorTeamsResource.list({ type: 'lpjp' });
+      this.loadingSelectLpjp = false;
     },
     async handleSaveLPJP() {
       this.loadingLpjp = true;

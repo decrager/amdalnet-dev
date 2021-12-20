@@ -25,11 +25,23 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): AnnouncementResource
     {
+        if ($request->sort == 'null') {
+            $sort = 'DESC';
+        } else {
+            $sort = $request->sort;
+        }
 
         $getAllAnnouncement = Announcement::with([
             'project',
-            'project.province'
+            'project.province',
+            'project.address'
         ])->withCount('feedbacks')
+        ->orWhereHas("project.address",function($q) use($request){
+            $q->where("prov", "=", $request->provName);
+        })
+        ->orWhereHas("project.address",function($q) use($request){
+            $q->where("district", "=", $request->kotaName);
+        })
         ->when($request->has('keyword'), function ($query) use ($request) {
             $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
             $searchQuery = '%' . $request->keyword . '%';
@@ -40,19 +52,38 @@ class AnnouncementController extends Controller
 
             return $indents;
         })
-        ->orderby('start_date', $request->sort ?? "DESC")->paginate($request->limit ? $request->limit : 10);
+        ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
 
-        // $getAllAnnouncement = Announcement::withCount('feedbacks')
-        //     ->when($request->has('project'), function ($query) use ($request) {
-        //         return $query->where('project_result', '=', $request->project);
-        //     })
-        //     ->orderby('start_date', 'DESC')
-        //     ->when(!isset($request->limit), function ($query) use ($request) {
-        //         return $query->get();
-        //     })
-        //     ->when($request->has('limit'), function ($query) use ($request) {
-        //         return $query->paginate($request->limit ?: 10);
-        //     });
+        return AnnouncementResource::make($getAllAnnouncement);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return AnnouncementResource
+     */
+    public function getAnnouncementByFilter(Request $request): AnnouncementResource
+    {
+        if ($request->sort == 'null') {
+            $sort = 'DESC';
+        } else {
+            $sort = $request->sort;
+        }
+
+        $getAllAnnouncement = Announcement::with([
+            'project',
+            'project.province',
+            'project.address'
+        ])->withCount('feedbacks')
+        ->orWhereHas("project.address",function($q) use($request){
+            $q->where("prov", "=", $request->provName);
+        })
+        ->orWhereHas("project.address",function($q) use($request){
+            $q->where("district", "=", $request->kotaName);
+        })
+
+        ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+
         return AnnouncementResource::make($getAllAnnouncement);
     }
 

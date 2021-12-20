@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="detailPengumuman">
+    <div class="detailPengumuman" style="margin-top:3.8rem;">
       <div class="wrapInDetail">
         <el-row :gutter="20">
           <el-col :span="24">
@@ -30,7 +30,7 @@
               </tr>
               <tr>
                 <td style="width:40%">Alamat</td>
-                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.address[0].address : ''" />
+                <td v-html="selectedAnnouncement.project.address ? selectedAnnouncement.project.address[0].address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Kewenangan</td>
@@ -81,10 +81,10 @@
                 </td>
               </tr>
               <tr class="bg-blue-custom">
-                <td colspan="2">Deskripsi Kegiatan</td>
+                <td colspan="2">Deskripsi Lokasi</td>
               </tr>
               <tr class="bg-white-custom">
-                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.location_desc : ''" />
               </tr>
             </table>
           </el-col>
@@ -210,14 +210,10 @@
                     Tingkat kesetujuan Anda terhadap Kegiatan/Proyek Ini
                   </div>
                   <div style="display:flex">
-                    <div>
-                      <ul>
-                        <li class="fz8">1 Bintang : Khawatir</li>
-                        <li class="fz8">5 Bintang :  Harapan</li>
-                      </ul>
-                    </div>
-                    <div style="padding-left:1rem">
+                    <div class="rating">
+                      <span>Khawatir </span>
                       <el-rate v-model="ratings" @change="handleChange(ratings)" />
+                      <span> Harapan</span>
                     </div>
                   </div>
                 </el-col>
@@ -369,6 +365,7 @@ export default {
       this.sector_name = business.value;
     },
     loadMap() {
+      // console.log(this.selectedAnnouncement.project_id);
       const map = new Map({
         basemap: 'topo',
       });
@@ -479,7 +476,6 @@ export default {
       await axios
         .post('api/feedbacks', formData, { headers })
         .then((data) => {
-          console.log(data);
           this.$message({
             type: 'success',
             message: 'Successfully create a feedback',
@@ -528,7 +524,7 @@ export default {
   margin-top: 15px !important;
 }
 .detailPengumuman {
-  background: #365337;
+  background: #062307;
   padding: 1.5rem;
   border-radius: 10px;
   margin-top: 2rem;
@@ -596,7 +592,7 @@ table.table__striped tr:nth-child(odd) {
   align-items: center;
 }
 .wrapInDetail {
-  background-color: #365337;
+  background-color: #062307;
   padding-bottom: 2rem;
 }
 .wrapDetailRight {

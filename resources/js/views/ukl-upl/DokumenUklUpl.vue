@@ -1,44 +1,39 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <el-card>
+    <el-card v-loading="loading">
+      <workflow-ukl />
       <h2>Formulir Kerangka Acuan</h2>
       <div>
-        <el-button v-if="showDocument === true" type="danger" icon="el-icon-download" @click="exportPdf">Export to .PDF</el-button>
-        <el-button v-if="!showDocument" type="primary" icon="el-icon-view" @click="showDocs">Lihat Dokumen</el-button>
-        <el-button v-if="showDocument" type="success" icon="el-icon-download" @click="exportDocx">Export to .DOCX</el-button>
+        <el-button v-if="showDocument" type="danger" @click="exportPdf">
+          Export to .PDF
+        </el-button>
+        <el-button v-if="showDocument" type="primary" @click="downloadDocx">
+          Export to .DOCX
+        </el-button>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
-        <el-col :span="16"><div class="grid-content bg-purple" />
-          <!-- <iframe v-show="showDocument" :src="'https://view.officeapps.live.com/op/embed.aspx?src='+projects" width="100%" height="723px" frameborder="0" /> -->
-          <iframe v-show="showDocument" :src="'https://docs.google.com/gview?url='+projects+'&embedded=true'" width="100%" height="723px" frameborder="0" />
-        </el-col>
-        <el-col :span="8"><div class="grid-content bg-purple" />
-
-          <el-input
-            v-model="message"
-            type="textarea"
-            :rows="5"
-            placeholder="Tulis Masukan"
+        <el-col :span="16">
+          <div class="grid-content bg-purple" />
+          <!-- <iframe
+            v-if="showDocument"
+            :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projectId}-form-ka-andal&embedded=true`"
+            width="100%"
+            height="723px"
+            frameborder="1"
+          /> -->
+          <iframe
+            v-if="showDocument"
+            :src="
+              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
+            "
+            width="100%"
+            height="723px"
+            frameborder="0"
           />
-          <div style="margin-top: 5px; display: flex; align-content: flex-end; justify-content: end;">
-            <el-button type="primary" icon="el-icon-s-promotion" @click="saveComment">Kirim</el-button>
-          </div>
-          <div v-if="comments" style="margin-top: 10px;">
-            <h3>Komentar Terbaru : </h3>
-            <img v-if="loading" src="images/loader.gif" alt="Loading...." class="loader">
-            <el-card v-for="comment in commentsData" :key="comment.id" shadow="always" style="margin-top: 10px;">
-              <div class="heading__comment">
-                <div class="img__comment">
-                  <img :src="comment.avatar" onerror="this.src='no-avatar.png'" alt="Avatar">
-                </div>
-                <div class="name__comment">
-                  <span style="font-weight: bold">{{ comment.name }}</span><br>
-                  <span><i>{{ formatDate(comment.date) }}</i></span>
-                </div>
-              </div>
-              <p>{{ comment.comment }}</p>
-            </el-card>
-          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="grid-content bg-purple" />
+          <Comment />
         </el-col>
       </el-row>
     </el-card>
@@ -46,46 +41,82 @@
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const andalComposingResource = new Resource('andal-composing');
+import Comment from '@/views/penyusunan-andal/components/Comment';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
+import WorkflowUkl from '@/components/WorkflowUkl';
 
 export default {
+  components: {
+    Comment,
+    WorkflowUkl,
+  },
   data() {
     return {
+      idProject: 0,
       projects: '',
-      commentsData: [],
-      comments: [],
-      message: null,
-      userId: 0,
-      errorComment: '',
-      docContents: [],
       loading: false,
       projectId: this.$route.params && this.$route.params.id,
-      metodeStudi: [],
+      metode_studi: [],
+      pra_konstruksi: [],
+      konstruksi: [],
+      operasi: [],
+      pasca_operasi: [],
+      project_title: '',
+      pic: '',
+      description: '',
+      location_desc: '',
+      positive: [],
+      negative: [],
+      penyusun: [],
+      out: '',
       showDocument: false,
-      docOutput: '',
     };
   },
-  mounted() {
+  created() {
+    this.getData();
     // this.getDocument();
-    this.getComment();
-    this.getUserId();
-    this.getDocContent();
-    this.generateDoc();
-  },
-  http: {
-    headers: {
-      'X-CSRF-TOKEN': window.csrf,
-    },
+    this.$store.dispatch('getStep', 5);
   },
   methods: {
-    generateDoc() {
+    async getData() {
+      this.loading = true;
+      const data = await andalComposingResource.list({
+        idProject: this.$route.params.id,
+        formulir: 'true',
+      });
+      console.log(data);
+      this.metode_studi = data.metode_studi;
+      this.konstruksi = data.konstruksi;
+      this.pra_konstruksi = data.pra_konstruksi;
+      this.operasi = data.operasi;
+      this.pasca_operasi = data.pasca_operasi;
+      this.project_title = data.project_title;
+      this.pic = data.pic;
+      this.description = data.description;
+      this.location_desc = data.location_desc;
+      this.negative = data.negative;
+      this.positive = data.positive;
+      this.penyusun = data.penyusun;
+      this.exportDocx();
+    },
+    async exportDocxPhpWord() {
+      await andalComposingResource.list({
+        idProject: this.$route.params.id,
+        formulir: 'true',
+      });
+    },
+    downloadDocx() {
+      saveAs(this.out, this.$route.params.id + '-form-ka.docx');
+    },
+    exportDocx() {
       PizZipUtils.getBinaryContent(
-        '/template_KA.docx',
+        '/template_ka.docx',
         (error, content) => {
           if (error) {
             throw error;
@@ -96,98 +127,65 @@ export default {
             linebreaks: true,
           });
           doc.render({
-            project_title: this.docContents.data.project_title,
-            pic: this.docContents.data.pic,
-            description: this.docContents.data.description,
-            location_desc: this.docContents.data.location_desc,
-            metode_studi: this.docContents.metode_studi,
-            pra_konstruksi: this.docContents.pra_konstruksi,
-            konstruksi: this.docContents.konstruksi,
-            operasi: this.docContents.operasi,
-            pasca_operasi: this.docContents.pasca_operasi,
-            pra_konstruksi_detail: this.docContents.pra_konstruksi_detail,
-            konstruksi_detail: this.docContents.konstruksi_detail,
-            operasi_detail: this.docContents.operasi_detail,
-            pasca_operasi_detail: this.docContents.pasca_operasi_detail,
+            metode_studi: this.metode_studi,
+            pra_konstruksi: this.pra_konstruksi,
+            konstruksi: this.konstruksi,
+            operasi: this.operasi,
+            pasca_operasi: this.pasca_operasi,
+            project_title: this.project_title,
+            pic: this.pic,
+            description: this.description,
+            location_desc: this.location_desc,
+            negative: this.negative,
+            positive: this.positive,
+            penyusun: this.penyusun,
           });
-
-          this.projects = window.location.origin + '/storage/formulir/form-ka-' + this.docContents.data.project_title + '.docx';
 
           const out = doc.getZip().generate({
             type: 'blob',
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            mimeType:
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
 
           const formData = new FormData();
-          formData.append('dokumenKa', out);
-          formData.append('project_name', this.docContents.data.project_title);
-          formData.append('id_project', this.projectId);
+          formData.append('docx', out);
+          formData.append('type', 'formulir');
+          formData.append('idProject', this.$route.params.id);
 
-          axios.post('api/upload-ka-doc', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
+          andalComposingResource
+            .store(formData)
+            .then((response) => {
+              this.showDocument = true;
+              this.projects =
+                window.location.origin +
+                '/storage/formulir/' +
+                this.$route.params.id +
+                '-form-ka.docx';
+              this.loading = false;
+            })
+            .catch((error) => {
+              console.log(error);
+            });
 
-          this.docOutput = out;
+          this.out = out;
         }
       );
     },
-    showDocs() {
-      this.generateDoc();
-      this.showDocument = true;
+    getDocument() {
+      this.projects =
+        window.location.origin +
+        '/storage/formulir/' +
+        this.$route.params.id +
+        '-form-ka.docx';
     },
-    formatDate(value) {
-      if (value) {
-        dayjs.locale('id');
-        return dayjs(String(value)).format('DD-MMMM-YYYY');
-      }
-    },
-    async getComment() {
-      this.loading = true;
-      await axios.get('api/ukl-upl-comment/' + this.projectId)
-        .then((response) => {
-          this.commentsData = response.data.data;
-          this.loading = false;
-          this.comments = 1;
-        });
-    },
-    getUserId() {
-      axios.get('api/user')
-        .then((response) => {
-          this.userId = response.data.data;
-        });
-    },
-    saveComment() {
-      if (this.message != null && this.message !== ' ') {
-        this.errorComment = null;
-        axios.post('api/ukl-upl-comment', {
-          id_project: parseInt(this.projectId),
-          id_user: this.userId.id,
-          comment: this.message,
-        }).then(res => {
-          if (res.data.status) {
-            this.commentsData.push({ 'name': this.userId.name, 'date': this.formatDate(new Date()), 'comment': this.message, 'avatar': this.commentsData.avatar || 'no-avatar.png' });
-            this.message = null;
-          }
-        });
-      } else {
-        this.errorComment = 'Please enter a comment to save';
-      }
-    },
-    getDocContent() {
-      axios.get('api/ka-docx/' + this.projectId)
-        .then((response) => {
-          this.docContents = response.data;
-        });
-    },
-    exportPdf() {
+    async exportPdf() {
       axios({
-        url: `api/form-ka-pdf/${this.projectId}`,
+        url: `api/andal-composing`,
         method: 'GET',
         responseType: 'blob',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
+        params: {
+          pdf: 'true',
+          idProject: this.$route.params.id,
         },
       }).then((response) => {
         const getHeaders = response.headers['content-disposition'].split('; ');
@@ -200,10 +198,6 @@ export default {
         document.body.appendChild(fileLink);
         fileLink.click();
       });
-    },
-    exportDocx() {
-      this.showDocument = true;
-      saveAs(this.docOutput, 'form-ka-' + this.docContents.data.project_title + '.docx');
     },
   },
 };
@@ -220,21 +214,21 @@ export default {
   flex: 2;
 }
 .body__section.right__section {
-  flex: 1
+  flex: 1;
 }
 .heading__comment {
   display: flex;
   column-gap: 15px;
 }
 .heading__comment.img__comment {
-  flex: .5
+  flex: 0.5;
 }
 .heading__comment.name__comment {
-  flex: 2
+  flex: 2;
 }
 .img__comment img {
   width: 32px;
   border-radius: 50%;
-  border: 2px solid #099C4B;
+  border: 2px solid #099c4b;
 }
 </style>

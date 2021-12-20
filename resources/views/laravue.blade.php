@@ -36,9 +36,8 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        .el-form .el-rate__icon {
-            font-size: 3rem !important;
-        }
+        .el-form .el-rate__icon {font-size: 3rem !important;}
+        #announce .el-tabs__content{min-height: 10rem !important;}
     </style>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css">

@@ -214,6 +214,7 @@ export default {
     },
     handleCancelParam(value){
       console.log(value);
+      this.$emit('cancel');
       value.showParamDialog = false;
       this.refresh++;
     },

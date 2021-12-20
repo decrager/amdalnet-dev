@@ -241,7 +241,9 @@ input {
 .nav__menu {
     position: relative;
 }
-
+.announce__container .el-tabs__content{margin-top: -3.2rem !important}
+.customFilterRightWrap .el-radio__label{opacity: 0;}
+.customFilterRightWrap .el-select{margin-top: 0.5rem}
 @media screen and (max-width: 767px) {
     .nav__menu {
         position: fixed;
@@ -523,8 +525,14 @@ input {
     cursor: pointer;
 }
 
+.simulations__box__links__wrapper {
+    background-color: #062307;
+    padding: 50px;
+    border-radius: 5px;
+}
+
 .actions__box__links__wrapper:hover {
-    transform: scale(1.1);
+    /* transform: scale(1.1); */
     transition: all .3s ease-in;
 }
 
