@@ -70,7 +70,7 @@
                 <p>{{ impact.rona_awal_name }} akibat {{ impact.component_name }}</p>
               </td>
               <td>
-                <template v-if="impact.is_hypothetical_significant">
+                <template>
                   <template v-for="(pie, index) in pieParams">
                     <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
                       <el-popover
@@ -108,6 +108,7 @@
               </td>
               <td>
                 <el-input
+                  v-if="impact.is_hypothetical_significant"
                   v-model="impact.study_location"
                   type="textarea"
                   :rows="3"
@@ -116,8 +117,8 @@
                 />
               </td>
               <td>
-                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" :disabled="!isFormulator" /> tahun</p>
-                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" :disabled="!isFormulator" /> bulan</p>
+                <p v-if="impact.is_hypothetical_significant"><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" :disabled="!isFormulator" /> tahun</p>
+                <p v-if="impact.is_hypothetical_significant"><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" :disabled="!isFormulator" /> bulan</p>
               </td>
             </tr>
           </template>
