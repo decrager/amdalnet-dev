@@ -89,7 +89,7 @@ class MeetingReportController extends Controller
     {
         if ($request->formulir) {
             $project_title = strtolower(Project::findOrFail($request->idProject)->project_title);
-            if (File ::exists(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'))) {
+            if (File::exists(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'))) {
                 File::delete(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'));
             }
 

@@ -21,7 +21,10 @@
         />
       </el-col>
       <el-col :sm="12" :md="12">
-        <UndanganRapat :meetings="meetings" />
+        <UndanganRapat
+          :meetings="meetings"
+          :loadingverification="loadingverification"
+        />
       </el-col>
     </el-row>
   </div>
