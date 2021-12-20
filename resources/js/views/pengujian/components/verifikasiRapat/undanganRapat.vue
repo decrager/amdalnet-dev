@@ -2,7 +2,7 @@
   <div>
     <h4 align="center">UNDANGAN RAPAT</h4>
     <el-form label-position="top" label-width="200px" style="max-width: 100%">
-      <el-row :gutter="32">
+      <el-row v-loading="loadingverification" :gutter="32">
         <el-col :sm="12" :md="12">
           <el-form-item label="Tanggal Rapat">
             <el-date-picker
@@ -145,6 +145,7 @@ export default {
       type: Object,
       default: () => {},
     },
+    loadingverification: Boolean,
   },
   data() {
     return {

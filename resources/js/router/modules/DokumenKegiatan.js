@@ -23,7 +23,7 @@ const dokumenKegiatanRoutes = {
     {
       path: ':id(\\d+)/penyusunan-rkl-rpl-dummy',
       component: () => import('@/views/rkl-rpl/index-dummy'),
-      name: 'penyusunanRKLRPL',
+      name: 'penyusunanRKLRPLDummy',
       meta: { title: 'Penyusunan RKL RPL', icon: 'zip', noCache: true },
     },
     {
