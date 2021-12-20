@@ -27,7 +27,12 @@
           @deleteinvitation="deleteInvitation($event)"
         />
       </el-col>
-      <el-col v-loading="loadingDocs" :sm="24" :md="12">
+      <el-col
+        v-loading="loadingDocs"
+        :sm="24"
+        :md="12"
+        :class="{ 'mt-col': loadingDocs }"
+      >
         <iframe
           v-if="showDocument"
           :src="
@@ -195,3 +200,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.mt-col {
+  margin-top: 100px;
+}
+</style>
