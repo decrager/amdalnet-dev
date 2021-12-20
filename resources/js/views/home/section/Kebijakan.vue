@@ -1,5 +1,5 @@
 <template>
-  <section id="kebijakan" class="kebijakan section_data">
+  <section id="kebijakan" class="kebijakan section_data pb-0">
     <div class="container">
       <el-row>
         <el-col :span="24">
@@ -167,5 +167,8 @@ export default {
 }
 .cp {
   cursor: pointer;
+}
+.pb-0 {
+  padding-bottom: 0;
 }
 </style>
