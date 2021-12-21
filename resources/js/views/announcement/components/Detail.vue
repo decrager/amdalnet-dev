@@ -54,7 +54,7 @@
       </el-row>
     </div>
     <div v-if="showFeedbackList">
-      <FeedbackList />
+      <FeedbackList :disable-rating="true" />
     </div>
     <div v-if="showPublicConsultation">
       <el-alert

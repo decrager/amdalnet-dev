@@ -68,6 +68,7 @@
             v-model="scope.row.rating"
             :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
             :max="5"
+            :disabled="disableRating"
             style="margin-top:8px;"
             @change="onChangeForm(scope.row.id, $event)"
           />
@@ -116,6 +117,14 @@ const responderTypeResource = new Resource('responder-types');
 export default {
   name: 'FeedbackList',
   components: { IdentityDialog, CreateFeedback },
+  props: {
+    disableRating: {
+      type: Boolean,
+      default: function(){
+        return false;
+      },
+    },
+  },
   data() {
     return {
       feedbacks: [],
