@@ -1,17 +1,5 @@
 <template>
   <div v-loading="isLoading" class="app-container">
-
-    <el-button
-      v-if="isFormulator"
-      type="success"
-      size="small"
-      icon="el-icon-check"
-      style="margin-bottom: 10px;"
-      @click="handleSaveForm()"
-    >
-      Simpan Perubahan
-    </el-button>
-
     <span style="float:right">
       <span v-show="!isLoading"><el-button icon="el-icon-refresh" round @click="refresh" /></span>
       <span v-show="isLoading === true"><el-button icon="el-icon-loading"> Refreshing data...</el-button></span>
@@ -125,6 +113,17 @@
         </tbody>
       </template>
     </table>
+    <div style="margin: 2em 0 1em 0; text-align: right;">
+      <el-button
+        v-if="isFormulator"
+        type="success"
+        size="small"
+        icon="el-icon-check"
+        @click="handleSaveForm()"
+      >
+        Simpan Perubahan
+      </el-button>
+    </div>
   </div>
 </template>
 <script>
