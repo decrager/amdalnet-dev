@@ -8,7 +8,11 @@
       </el-row>
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
-          <el-select v-model="optionValue" placeholder="Select" @change="handleFilter()">
+          <el-select
+            v-model="optionValue"
+            placeholder="Select"
+            @change="handleFilter()"
+          >
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -18,7 +22,12 @@
           </el-select>
         </el-col>
         <el-col :span="6" :offset="6">
-          <el-input v-model="keyword" type="text" placeholder="Pencarian" @keyup.native.enter="handleSearch()" />
+          <el-input
+            v-model="keyword"
+            type="text"
+            placeholder="Pencarian"
+            @keyup.native.enter="handleSearch()"
+          />
         </el-col>
       </el-row>
       <el-row :gutter="20" class="bb bg-custom">
@@ -65,7 +74,7 @@
         class="bb bg-custom tb-hover"
       >
         <el-col :span="2" class="text-center py">
-          <span class="fz12 white fw">{{ (index + 1) }}</span>
+          <span class="fz12 white fw">{{ index + 1 }}</span>
         </el-col>
         <el-col :span="6" class="py">
           <span class="fz12 white">{{ regulation.regulation_no }}</span>
@@ -77,10 +86,17 @@
           <span class="fz12 white">{{ formatDateStr(regulation.set) }}</span>
         </el-col>
         <el-col :span="3" class="py text-center">
-          <a href="#" class="fz12 white cl-blue">{{ regulation.link }}</a>
+          <a
+            :href="regulation.link"
+            target="_blank"
+            class="fz12 white cl-blue buttonDownload"
+            download
+          >
+            <i class="el-icon-download" /> Download
+          </a>
         </el-col>
       </el-row>
-      <div class="block" style="text-align:right">
+      <div class="block" style="text-align: right">
         <pagination
           v-show="total > 0"
           :auto-scroll="false"
@@ -153,7 +169,20 @@ export default {
   methods: {
     formatDateStr(date) {
       const today = new Date(date);
-      var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      var bulan = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
+      ];
       const year = today.getFullYear();
       const month = today.getMonth();
       const day = today.getDate();
@@ -162,22 +191,36 @@ export default {
       return finalDate;
     },
     getAll(search, sort) {
-      axios.get(`/api/regulations?keyword=${this.keyword}&page=${this.listQuery.page}`)
-        .then(response => {
+      axios
+        .get(
+          `/api/regulations?keyword=${this.keyword}&page=${this.listQuery.page}`
+        )
+        .then((response) => {
           this.allData = response.data.data;
           this.total = response.data.total;
         });
     },
-    handleSearch(){
+    handleSearch() {
       this.getAll(this.keyword);
     },
     handleFilter() {
-      console.log(this.optionValue);
-      axios.get(`/api/regulations?type=${this.optionValue}&page=${this.listQuery.page}`)
-        .then(response => {
+      axios
+        .get(
+          `/api/regulations?type=${this.optionValue}&page=${this.listQuery.page}`
+        )
+        .then((response) => {
           this.allData = response.data.data;
           this.total = response.data.total;
         });
+    },
+    GetFilename(url) {
+      if (url) {
+        var m = url.toString().match(/.*\/(.+?)\./);
+        if (m && m.length > 1) {
+          return m[1];
+        }
+      }
+      return '';
     },
   },
 };
@@ -248,5 +291,12 @@ export default {
 }
 .pb-0 {
   padding-bottom: 0;
+}
+.buttonDownload {
+  display: inline-block;
+  background: #099c4b;
+  padding: 0.4rem;
+  color: #fff;
+  border-radius: 10px;
 }
 </style>
