@@ -8,7 +8,7 @@
       </el-row>
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
-          <el-select v-model="value" placeholder="Select">
+          <el-select v-model="optionValue" placeholder="Select" @change="handleFilter()">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -18,7 +18,7 @@
           </el-select>
         </el-col>
         <el-col :span="6" :offset="6">
-          <el-input v-model="search" type="text" placeholder="Pencarian" />
+          <el-input v-model="keyword" type="text" placeholder="Pencarian" @keyup.native.enter="handleSearch()" />
         </el-col>
       </el-row>
       <el-row :gutter="20" class="bb bg-custom">
@@ -58,48 +58,126 @@
         </el-col>
       </el-row>
       <el-row
+        v-for="(regulation, index) in allData"
+        :key="regulation.id"
         :gutter="20"
         style="display: flex; align-items: center"
         class="bb bg-custom tb-hover"
       >
         <el-col :span="2" class="text-center py">
-          <span class="fz12 white fw">1</span>
+          <span class="fz12 white fw">{{ (index + 1) }}</span>
         </el-col>
         <el-col :span="6" class="py">
-          <span class="fz12 white">UU RI No. 32 Tahun 2009</span>
+          <span class="fz12 white">{{ regulation.regulation_no }}</span>
         </el-col>
         <el-col :span="8" class="py">
-          <span class="fz12 white">Undang - undang republik Indonesia tentang Perlindungan dan Pengelolaan Lunkung hidup</span>
+          <span class="fz12 white">{{ regulation.about }}</span>
         </el-col>
         <el-col :span="5" class="py text-center">
-          <span class="fz12 white">03 Oktober 2021</span>
+          <span class="fz12 white">{{ formatDateStr(regulation.set) }}</span>
         </el-col>
         <el-col :span="3" class="py text-center">
-          <a href="#" class="fz12 white cl-blue">link.pdf</a>
+          <a href="#" class="fz12 white cl-blue">{{ regulation.link }}</a>
         </el-col>
       </el-row>
+      <div class="block" style="text-align:right">
+        <pagination
+          v-show="total > 0"
+          :auto-scroll="false"
+          :total="total"
+          :page.sync="listQuery.page"
+          :limit.sync="listQuery.limit"
+          @pagination="getAll"
+        />
+      </div>
     </div>
   </section>
 </template>
 
 <script>
+import axios from 'axios';
+import Pagination from '@/components/Pagination';
+
 export default {
   name: 'Kebijakan',
+  components: {
+    Pagination,
+  },
   data() {
     return {
       options: [
         {
-          value: 'Option1',
-          label: 'Option1',
+          value: '1',
+          label: 'Ketetapan Majelis Permusyawaratan Rakyat (Tap MPR)',
+        },
+        {
+          value: '2',
+          label: 'Undang - undang (UU)',
+        },
+        {
+          value: '3',
+          label: 'Peraturan Pemerintah (PP)',
+        },
+        {
+          value: '4',
+          label: 'Peraturan Presiden (Perpres)',
+        },
+        {
+          value: '5',
+          label: 'Peraturan Mentri (Permen)',
+        },
+        {
+          value: '6',
+          label: 'Peraturan Daerah (Perda) Provinsi',
+        },
+        {
+          value: '7',
+          label: 'Peraturan Daerah (Perda) Kabupaten/Kota',
         },
       ],
       value: '',
       search: '',
+      allData: [],
+      total: 0,
+      listQuery: {
+        page: 1,
+        limit: 10,
+      },
+      keyword: '',
+      optionValue: null,
     };
   },
+  created() {
+    this.getAll();
+  },
   methods: {
-    handleFilter(e) {
-      console.log(e);
+    formatDateStr(date) {
+      const today = new Date(date);
+      var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const day = today.getDate();
+      const monthID = bulan[month];
+      const finalDate = `${day} ${monthID} ${year}`;
+      return finalDate;
+    },
+    getAll(search, sort) {
+      axios.get(`/api/regulations?keyword=${this.keyword}&page=${this.listQuery.page}`)
+        .then(response => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+        });
+    },
+    handleSearch(){
+      this.getAll(this.keyword);
+    },
+    handleFilter() {
+      console.log(this.optionValue);
+      axios.get(`/api/regulations?type=${this.optionValue}&page=${this.listQuery.page}`)
+        .then(response => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+        });
     },
   },
 };

@@ -286,3 +286,5 @@ Route::apiResource('public-questions', 'PublicQuestionController');
 
 Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
 Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
+
+Route::apiResource('regulations', 'PolicyController');
