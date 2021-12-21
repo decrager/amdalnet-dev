@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\AndalComment;
 use App\Entity\Comment;
+use App\Entity\ComponentType;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
@@ -15,12 +16,16 @@ use App\Entity\Lpjp;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\PublicConsultation;
+use App\Entity\RonaAwal;
+use App\Entity\SubProject;
+use App\Entity\SubProjectComponent;
+use App\Entity\SubProjectRonaAwal;
+use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -944,6 +949,74 @@ class AndalComposingController extends Controller
             }
         }
 
+        // ========= DESKRIPSI RENCANA USAHA DAN/ATAU KEGIATAN ======== //
+        $deskripsi_rencana = [];
+        $desk_ren_no = 'A';
+        $sub_projects = SubProject::where([['id_project', $id_project],['type', 'utama']])->get();
+        foreach($sub_projects as $sp) {
+            $sub_project_component = SubProjectComponent::where('id_sub_project', $sp->id)->get();
+            foreach($sub_project_component as $spc) {
+                $desk_ren_pen = '';
+                if($spc->name) {
+                    $desk_ren_pen = $spc->name;
+                } else if($spc->component) {
+                    $desk_ren_pen = $spc->component->name;
+                }
+
+                $deskripsi_rencana[] = [
+                    'deskripsi_rencana' => $desk_ren_no,
+                    'deskripsi_rencana_ru' => $sp->name,
+                    'deskripsi_rencana_pendukung' => $desk_ren_pen,
+                    'deskripsi_rencana_besaran' => $spc->unit,
+                    'deskripsi_rencana_lokasi' => $spc->description_common
+                ];
+            }
+            $desk_ren_no++;
+        }
+
+        // ======= RONA AWAL ============
+        $fisika_kima = [];
+        $biologi = [];
+        $sosekbud = [];
+        $kesmas = [];
+
+        $component_type = ComponentType::all();
+        foreach($component_type as $ct) {
+            if($ct->name == 'Biologi') {
+                $rona_awal = RonaAwal::where('id_component_type', $ct->id)->get();
+                foreach($rona_awal as $ra) {
+                    $biologi[] = [
+                        'rona_biologi_name' => $ra->name
+                    ];
+                }
+                $sp_rona = SubProject::where('id_project', $id_project)->get();
+                foreach($sp_rona as $sr) {
+                    $spr_component = SubProjectComponent::where('id_sub_project', $sr->id)->get();
+                    foreach($spr_component as $sprc) {
+                        $spr_rona = SubProjectRonaAwal::where([['id_sub_project_component', $sprc->id],['id_component_type', $sr->id]])->get();
+                        foreach($spr_rona as $sprr) {
+                            $biologi[] = [
+                                'rona_biologi_name' => $sprr->name
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        // ======== KONSULTASI PUBLIK ======== //
+        $konsul_publik_date = '';
+        $konsul_publik_lokasi = '';
+        $konsul_publik_peserta = '';
+        $konsul_publik_total = '';
+        $konsultasi_publik = PublicConsultation::where('project_id', $id_project)->first();
+        if($konsultasi_publik) {
+            $konsul_publik_date = $konsultasi_publik->event_date ? Carbon::createFromFormat('Y-m-d',  $konsultasi_publik->event_date)->isoFormat('D MMMM Y')  : '' ;
+            $konsul_publik_lokasi = $konsultasi_publik->location;
+            $konsul_publik_peserta = '';
+            $konsul_publik_total = $konsultasi_publik->participant;
+        }
+
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
@@ -966,6 +1039,10 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('lpjp_faksimili', $lpjp['faksimili']);
         $templateProcessor->setValue('lpjp_pic', $lpjp['pic']);
         $templateProcessor->setValue('lpjp_position', $lpjp['position']);
+        $templateProcessor->setValue('konsul_publik_date', $konsul_publik_date);
+        $templateProcessor->setValue('konsul_publik_lokasi', $konsul_publik_lokasi);
+        $templateProcessor->setValue('konsul_publik_peserta', $konsul_publik_peserta);
+        $templateProcessor->setValue('konsul_publik_total', $konsul_publik_total);
         $templateProcessor->cloneRowAndSetValues('tim_penyusun', $formulator);
         $templateProcessor->cloneRowAndSetValues('tim_ahli', $experts);
         $templateProcessor->cloneRowAndSetValues('ka_pk', $pk);
@@ -988,16 +1065,19 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneRowAndSetValues('bwk_k', $bwk_k);
         $templateProcessor->cloneRowAndSetValues('bwk_o', $bwk_o);
         $templateProcessor->cloneRowAndSetValues('bwk_po', $bwk_po);
+        $templateProcessor->cloneRowAndSetValues('deskripsi_rencana', $deskripsi_rencana);
+        $templateProcessor->cloneBlock('rona_biologi', count($biologi), true, false, $biologi);
 
         $save_file_name = $id_project . '-andal' . '.docx';
 
-        if (!File::exists(storage_path('app/public/workspace/'))) {
-            File::makeDirectory(storage_path('app/public/workspace/'));
-        }
+        // if (!File::exists(storage_path('app/public/workspace/'))) {
+        //     File::makeDirectory(storage_path('app/public/workspace/'));
+        // }
 
-        if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-            $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
-        }
+        // if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        //     $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        // }
+        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
 
 
         return response()->json(['message' => 'success']);
