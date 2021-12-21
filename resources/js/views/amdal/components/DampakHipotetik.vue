@@ -203,7 +203,7 @@ export default {
             duration: 5 * 1000,
           });
           if (response.code === 200){
-            this.$emit('handleReloadVsaList', 'metode-studi');
+            this.$emit('handleReloadVsaList', 'peta-batas');
           }
         })
         .catch((error) => {
