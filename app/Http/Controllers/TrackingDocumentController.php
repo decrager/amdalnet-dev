@@ -342,10 +342,8 @@ class TrackingDocumentController extends Controller
             }
         }
         // Dokumen UKL UPL (start: matriksComplete=true, end: check if document file exists with this id_project)
-            // directory: public/formulir/, filename: 'form-uklupl-' . $project->project_name . '.docx'
         $dokumenComplete = false;
-        // $docFilepath = 'app/public/formulir/' . $project->id. '-form-uklupl.docx';
-        $docFilepath = 'app/public/formulir/form-uklupl-' . $project->project_name . '.docx';
+        $docFilepath = 'app/public/ukl-upl/ukl-upl-' . strtolower($project->project_title) . '.docx';
         if ($sppl && $dpt && File::exists(storage_path($docFilepath))) {
             $dokumenComplete = true;
             $createdTime = date('Y-m-d H:i:s', filectime(storage_path($docFilepath)));
