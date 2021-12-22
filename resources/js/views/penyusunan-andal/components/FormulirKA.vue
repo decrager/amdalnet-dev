@@ -182,13 +182,16 @@ export default {
           idProject: this.$route.params.id,
         },
       }).then((response) => {
-        const getHeaders = response.headers['content-disposition'].split('; ');
-        const getFileName = getHeaders[1].split('=');
-        const getName = getFileName[1].split('=');
+        // const getHeaders = response.headers['content-disposition'].split('; ');
+        // const getFileName = getHeaders[1].split('=');
+        // const getName = getFileName[1].split('=');
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', `${getName}`);
+        fileLink.setAttribute(
+          'download',
+          `ka-andal-${this.project_title.toLowerCase()}.pdf`
+        );
         document.body.appendChild(fileLink);
         fileLink.click();
       });
