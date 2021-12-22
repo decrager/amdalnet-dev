@@ -1,11 +1,11 @@
 <template>
   <section id="kebijakan" class="kebijakan section_data pb-0">
     <div class="container">
-      <el-row>
+      <!-- <el-row>
         <el-col :span="24">
           <h2 class="fw white mb-1-5">Materi AMDALNET</h2>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
           <el-select
@@ -124,8 +124,8 @@ export default {
     return {
       options: [
         {
-          value: 2,
-          label: 2,
+          value: 5,
+          label: 5,
         },
         {
           value: 25,
@@ -229,9 +229,9 @@ export default {
 </script>
 
 <style scoped>
-#kebijakan {
+/* #kebijakan {
   background-color: #133715;
-}
+} */
 .fz12 {
   font-size: 12px;
 }

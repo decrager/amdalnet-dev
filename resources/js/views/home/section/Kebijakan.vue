@@ -1,11 +1,11 @@
 <template>
   <section id="kebijakan" class="kebijakan section_data pb-0">
     <div class="container">
-      <el-row>
+      <!-- <el-row>
         <el-col :span="24">
           <h2 class="fw white mb-1-5">Kebijakan AMDALNET</h2>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
           <el-select
@@ -30,82 +30,95 @@
           />
         </el-col>
       </el-row>
-      <el-row :gutter="20" class="bb bg-custom">
-        <el-col :span="2" class="text-center py1">
-          <div class="d-flex align-items-center justify-align-center">
-            <span class="fz12 white fw">No</span>
-          </div>
-        </el-col>
-        <el-col :span="6" class="py1 cp">
-          <div class="d-flex align-items-center" @click="handleSort(sort)">
-            <span class="fz12 white fw">Nomor Peraturan</span>
-            <i class="el-icon-d-caret white fz12 ml-0-3" />
-          </div>
-        </el-col>
-        <el-col :span="8" class="text-center py1 cp">
-          <div
-            class="d-flex align-items-center justify-align-center"
-            @click="handleSort(sort)"
-          >
-            <span class="fz12 white fw">Tentang</span>
-            <i class="el-icon-d-caret white fz12 ml-0-3" />
-          </div>
-        </el-col>
-        <el-col :span="5" class="text-center py1 cp">
-          <div
-            class="d-flex align-items-center justify-align-center"
-            @click="handleSort(sort)"
-          >
-            <span class="fz12 white fw">Ditetapkan</span>
-            <i class="el-icon-d-caret white fz12 ml-0-3" />
-          </div>
-        </el-col>
-        <el-col :span="3" class="text-center py1">
-          <div class="d-flex align-items-center justify-align-center">
-            <span class="fz12 white fw">Link</span>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row
-        v-for="(regulation, index) in allData"
-        :key="regulation.id"
-        :gutter="20"
-        style="display: flex; align-items: center"
-        class="bb bg-custom tb-hover"
-      >
-        <el-col :span="2" class="text-center py">
-          <span class="fz12 white fw">{{ index + 1 }}</span>
-        </el-col>
-        <el-col :span="6" class="py">
-          <span class="fz12 white">{{ regulation.regulation_no }}</span>
-        </el-col>
-        <el-col :span="8" class="py">
-          <span class="fz12 white">{{ regulation.about }}</span>
-        </el-col>
-        <el-col :span="5" class="py text-center">
-          <span class="fz12 white">{{ formatDateStr(regulation.set) }}</span>
-        </el-col>
-        <el-col :span="3" class="py text-center">
-          <a
-            :href="regulation.link"
-            target="_blank"
-            class="fz12 white cl-blue buttonDownload"
-            download
-          >
-            <i class="el-icon-download" /> Download
-          </a>
-        </el-col>
-      </el-row>
-      <div class="block" style="text-align: right">
-        <pagination
-          v-show="total > 0"
-          :auto-scroll="false"
-          :total="total"
-          :page.sync="listQuery.page"
-          :limit.sync="listQuery.limit"
-          @pagination="getAll"
-        />
-      </div>
+      <template v-if="allData.length > 0">
+        <el-row :gutter="20" class="bb bg-custom">
+          <el-col :span="2" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-center">
+              <span class="fz12 white fw">No</span>
+            </div>
+          </el-col>
+          <el-col :span="6" class="py1 cp">
+            <div class="d-flex align-items-center" @click="handleSort(sort)">
+              <span class="fz12 white fw">Nomor Peraturan</span>
+              <i class="el-icon-d-caret white fz12 ml-0-3" />
+            </div>
+          </el-col>
+          <el-col :span="8" class="text-center py1 cp">
+            <div
+              class="d-flex align-items-center justify-align-center"
+              @click="handleSort(sort)"
+            >
+              <span class="fz12 white fw">Tentang</span>
+              <i class="el-icon-d-caret white fz12 ml-0-3" />
+            </div>
+          </el-col>
+          <el-col :span="5" class="text-center py1 cp">
+            <div
+              class="d-flex align-items-center justify-align-center"
+              @click="handleSort(sort)"
+            >
+              <span class="fz12 white fw">Ditetapkan</span>
+              <i class="el-icon-d-caret white fz12 ml-0-3" />
+            </div>
+          </el-col>
+          <el-col :span="3" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-center">
+              <span class="fz12 white fw">Link</span>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row
+          v-for="(regulation, index) in allData"
+          :key="regulation.id"
+          :gutter="20"
+          style="display: flex; align-items: center"
+          class="bb bg-custom tb-hover"
+        >
+          <el-col :span="2" class="text-center py">
+            <span class="fz12 white fw">{{ index + 1 }}</span>
+          </el-col>
+          <el-col :span="6" class="py">
+            <span class="fz12 white">{{ regulation.regulation_no }}</span>
+          </el-col>
+          <el-col :span="8" class="py">
+            <span class="fz12 white">{{ regulation.about }}</span>
+          </el-col>
+          <el-col :span="5" class="py text-center">
+            <span class="fz12 white">{{ formatDateStr(regulation.set) }}</span>
+          </el-col>
+          <el-col :span="3" class="py text-center">
+            <a
+              :href="regulation.link"
+              target="_blank"
+              class="fz12 white cl-blue buttonDownload"
+              download
+            >
+              <i class="el-icon-download" /> Download
+            </a>
+          </el-col>
+        </el-row>
+        <div class="block" style="text-align: right">
+          <pagination
+            v-show="total > 0"
+            :auto-scroll="false"
+            :total="total"
+            :page.sync="listQuery.page"
+            :limit.sync="listQuery.limit"
+            @pagination="getAll"
+          />
+        </div>
+      </template>
+      <template v-else>
+        <el-row :gutter="20">
+          <el-col :xs="24" style="padding-top:0.5rem;padding-bottom:0.5rem">
+            <el-alert
+              title="Warning"
+              type="warning"
+              description="No Record Found"
+            />
+          </el-col>
+        </el-row>
+      </template>
     </div>
   </section>
 </template>
@@ -247,9 +260,9 @@ export default {
 </script>
 
 <style scoped>
-#kebijakan {
+/* #kebijakan {
   background-color: #133715;
-}
+} */
 .fz12 {
   font-size: 12px;
 }
