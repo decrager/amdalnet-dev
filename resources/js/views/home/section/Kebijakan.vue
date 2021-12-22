@@ -14,10 +14,10 @@
             @change="handleFilter()"
           >
             <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="item in regulations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             />
           </el-select>
         </el-col>
@@ -37,7 +37,7 @@
           </div>
         </el-col>
         <el-col :span="6" class="py1 cp">
-          <div class="d-flex align-items-center" @click="handleFilter('NOMOR')">
+          <div class="d-flex align-items-center" @click="handleSort(sort)">
             <span class="fz12 white fw">Nomor Peraturan</span>
             <i class="el-icon-d-caret white fz12 ml-0-3" />
           </div>
@@ -45,7 +45,7 @@
         <el-col :span="8" class="text-center py1 cp">
           <div
             class="d-flex align-items-center justify-align-center"
-            @click="handleFilter('TENTANG')"
+            @click="handleSort(sort)"
           >
             <span class="fz12 white fw">Tentang</span>
             <i class="el-icon-d-caret white fz12 ml-0-3" />
@@ -54,7 +54,7 @@
         <el-col :span="5" class="text-center py1 cp">
           <div
             class="d-flex align-items-center justify-align-center"
-            @click="handleFilter('TETAP')"
+            @click="handleSort(sort)"
           >
             <span class="fz12 white fw">Ditetapkan</span>
             <i class="el-icon-d-caret white fz12 ml-0-3" />
@@ -154,6 +154,7 @@ export default {
       value: '',
       search: '',
       allData: [],
+      regulations: [],
       total: 0,
       listQuery: {
         page: 1,
@@ -161,10 +162,12 @@ export default {
       },
       keyword: '',
       optionValue: null,
+      sort: 'ASC',
     };
   },
   created() {
     this.getAll();
+    this.getRegulations();
   },
   methods: {
     formatDateStr(date) {
@@ -193,11 +196,20 @@ export default {
     getAll(search, sort) {
       axios
         .get(
-          `/api/regulations?keyword=${this.keyword}&page=${this.listQuery.page}`
+          `/api/policys?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}`
         )
         .then((response) => {
           this.allData = response.data.data;
           this.total = response.data.total;
+        });
+    },
+    getRegulations() {
+      axios
+        .get(
+          `/api/regulations`
+        )
+        .then((response) => {
+          this.regulations = response.data;
         });
     },
     handleSearch() {
@@ -206,12 +218,20 @@ export default {
     handleFilter() {
       axios
         .get(
-          `/api/regulations?type=${this.optionValue}&page=${this.listQuery.page}`
+          `/api/policys?type=${this.optionValue}&page=${this.listQuery.page}`
         )
         .then((response) => {
           this.allData = response.data.data;
           this.total = response.data.total;
         });
+    },
+    handleSort(){
+      if (this.sort === 'ASC') {
+        this.sort = 'DESC';
+      } else {
+        this.sort = 'ASC';
+      }
+      this.getAll(null, this.sort);
     },
     GetFilename(url) {
       if (url) {
