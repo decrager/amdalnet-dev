@@ -52,6 +52,11 @@ class ProjectController extends Controller
                     return $request->search ? $query->where('projects.project_title', 'ilike' , '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
                 }
             )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')->orderBy('projects.id', 'DESC')->paginate($request->limit);
+        } else if ($request->registration_no) {
+            return ProjectResource::collection(Project::select('*')
+                ->where('registration_no', $request->registration_no)
+                ->orderBy('created_at', 'desc')
+                ->get());
         }
 
         return Project::with(['address','listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
