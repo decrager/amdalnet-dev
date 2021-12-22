@@ -33,7 +33,7 @@ import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
-import rdtrMap from './mapRdtr';
+// import rdtrMap from './mapRdtr';
 import rupabumis from './mapRupabumi';
 
 export default {
@@ -50,6 +50,9 @@ export default {
       projects: [],
       projectTitle: '',
       selectId: null,
+      title: '',
+      groupGeojson: [],
+      rendererTapak: {},
     };
   },
   mounted: function() {
@@ -126,20 +129,121 @@ export default {
                 });
                 const url = URL.createObjectURL(blob);
                 axios.get('api/projects/' + projects[i].id_project).then((response) => {
+                  const arrayJsonTemplate = {
+                    title: response.data.project_title + ' (' + response.data.project_year + ').',
+                    content: '<table style="border-collapse: collapse !important">' +
+                            '<thead>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">KBLI Code</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.kbli + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">No Registrasi</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.registration_no + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">Tipe</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.required_doc + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">Deskripsi</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.description + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">Skala</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.scale + ' ' + response.data.scale_unit + '</td>' +
+                              '</tr>' +
+                            '</thead>' +
+                          '</table>',
+                  };
+
+                  if (projects[i].attachment_type === 'ecology') {
+                    this.title = 'Peta Batas Ekologi';
+                    this.rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'blue',
+                          width: 2,
+                        },
+                      },
+                    };
+                  } else if (projects[i].attachment_type === 'social') {
+                    this.title = 'Peta Batas Sosial';
+                    this.rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'red',
+                          width: 2,
+                        },
+                      },
+                    };
+                  } else if (projects[i].attachment_type === 'study') {
+                    this.title = 'Peta Batas Wilayah Studi';
+                    this.rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'green',
+                          width: 2,
+                        },
+                      },
+                    };
+                  } else if (projects[i].attachment_type === 'tapak') {
+                    this.title = 'Peta Tapak';
+                    this.rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: '#964B00',
+                          width: 2,
+                        },
+                      },
+                    };
+                  }
+
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
-                    visible: false,
-                    title: response.data.project_title,
+                    visible: true,
+                    title: this.title,
+                    popupTemplate: arrayJsonTemplate,
+                    renderer: this.rendererTapak,
+                    maxScale: 5000,
                   });
                   this.mapGeojsonArray.push(geojsonLayerArray);
+
+                  const kegiatanGroupsLayer = new GroupLayer({
+                    title: response.data.project_title,
+                    visible: true,
+                    layers: this.mapGeojsonArray,
+                    opacity: 0.90,
+                  });
 
                   // last loop
                   if (i === projects.length - 1){
                     const kegiatanGroupLayer = new GroupLayer({
                       title: 'Peta Tematik AMDAL',
                       visible: false,
-                      layers: this.mapGeojsonArray,
+                      layers: kegiatanGroupsLayer,
                       opacity: 0.90,
                     });
 
@@ -174,14 +278,14 @@ export default {
       //   visibilityMode: '',
       // });
 
-      const tematikGroup = new GroupLayer({
-        title: 'Peta Tematik Status',
-        visible: false,
-        layers: rdtrMap,
-        opacity: 0.90,
-      });
+      // const tematikGroup = new GroupLayer({
+      //   title: 'Peta Tematik Status',
+      //   visible: false,
+      //   layers: rdtrMap,
+      //   opacity: 0.90,
+      // });
 
-      map.add(tematikGroup);
+      // map.add(tematikGroup);
 
       const rupabumiGroup = new GroupLayer({
         title: 'Peta Rupa Bumi',
@@ -244,6 +348,7 @@ export default {
 
       layerList.on('trigger-action', (event) => {
         const id = event.action.id;
+        console.log(event.item);
         if (id === 'full-extent') {
           mapView.goTo({
             target: event.item.layer.fullExtent,
