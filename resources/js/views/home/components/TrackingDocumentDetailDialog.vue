@@ -20,10 +20,10 @@
               <el-form-item label="Kewenangan :">
                 <div>{{ data.authority }}</div>
               </el-form-item>
-              <!-- <el-form-item label="Lokasi Rencana Usaha dan/atau Kegiatan :">
-                <div v-if="data.address[0] === undefined">-</div>
+              <el-form-item label="Lokasi Rencana Usaha dan/atau Kegiatan :">
+                <div v-if="data.address[0] === undefined || data.address[0] === null">-</div>
                 <div v-if="data.address[0] !== undefined">{{ data.address[0].address }}</div>
-              </el-form-item> -->
+              </el-form-item>
               <el-form-item label="Deskripsi :">
                 <div>{{ data.description }}</div>
               </el-form-item>
