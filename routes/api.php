@@ -23,6 +23,7 @@ use App\Http\Controllers\MatriksUklUplController;
 use App\Http\Controllers\WebgisController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\TrackingDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -286,5 +287,6 @@ Route::apiResource('public-questions', 'PublicQuestionController');
 
 Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
 Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
-
 Route::apiResource('regulations', 'PolicyController');
+
+Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index']);
