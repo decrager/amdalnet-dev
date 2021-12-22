@@ -777,7 +777,7 @@ class MatriksRKLController extends Controller
        // ============ POIN B.3 ============= //
        // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
        $idPoinA = [];
-       $poinA = ImpactIdentificationClone::select('id', 'id_project', '')
+       $poinA = ImpactIdentificationClone::select('id', 'id_project', 'is_hypothetical_significant')
        ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis', function($q) {
            $q->whereHas('detail', function($query) {
                $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
