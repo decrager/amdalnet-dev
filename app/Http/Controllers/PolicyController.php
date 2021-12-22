@@ -37,7 +37,7 @@ class PolicyController extends Controller
 
             return $indents;
         })
-        ->orderby('created_at', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+        ->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
 
         return response()->json($regulations, 200);
     }
