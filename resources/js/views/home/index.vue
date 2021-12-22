@@ -3,6 +3,7 @@
     <header-home />
     <hero-home />
     <steps-home />
+    <materi />
     <kebijakan />
     <action-home />
     <counter-home />
@@ -19,6 +20,7 @@ import HeaderHome from './section/Header.vue';
 import HeroHome from './section/HeroTop.vue';
 import StepsHome from './section/Steps.vue';
 import Kebijakan from './section/Kebijakan.vue';
+import Materi from './section/Materi.vue';
 import ActionHome from './section/Action.vue';
 import CounterHome from './section/Counter.vue';
 import AnnouncementHome from './section/Announce.vue';
@@ -31,6 +33,7 @@ export default {
     'hero-home': HeroHome,
     'steps-home': StepsHome,
     'kebijakan': Kebijakan,
+    'materi': Materi,
     'action-home': ActionHome,
     'counter-home': CounterHome,
     'announcement-home': AnnouncementHome,
