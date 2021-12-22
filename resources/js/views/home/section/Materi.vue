@@ -9,10 +9,10 @@
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
           <el-select
-            v-model="optionValue"
+            v-model="limit"
             placeholder="Show"
             style="width: 5.5rem"
-            @change="handleFilter()"
+            @change="handleLimit()"
           >
             <el-option
               v-for="item in options"
@@ -38,7 +38,7 @@
           </div>
         </el-col>
         <el-col :span="6" class="py1 cp">
-          <div class="d-flex align-items-center" @click="handleFilter('NOMOR')">
+          <div class="d-flex align-items-center" @click="handleSort(sort)">
             <span class="fz12 white fw">Judul Materi</span>
             <i class="el-icon-d-caret white fz12 ml-0-3" />
           </div>
@@ -46,7 +46,7 @@
         <el-col :span="8" class="text-center py1 cp">
           <div
             class="d-flex align-items-center justify-align-center"
-            @click="handleFilter('TENTANG')"
+            @click="handleSort(sort)"
           >
             <span class="fz12 white fw">Deskripsi</span>
             <i class="el-icon-d-caret white fz12 ml-0-3" />
@@ -55,7 +55,7 @@
         <el-col :span="5" class="text-center py1 cp">
           <div
             class="d-flex align-items-center justify-align-center"
-            @click="handleFilter('TETAP')"
+            @click="handleSort(sort)"
           >
             <span class="fz12 white fw">Tanggal Terbit</span>
             <i class="el-icon-d-caret white fz12 ml-0-3" />
@@ -67,33 +67,28 @@
           </div>
         </el-col>
       </el-row>
-      <!-- <el-row
-        v-for="(regulation, index) in allData"
-        :key="regulation.id"
-        :gutter="20"
-        style="display: flex; align-items: center"
-        class="bb bg-custom tb-hover"
-      > -->
       <el-row
+        v-for="(material, index) in allData"
+        :key="material.id"
         :gutter="20"
         style="display: flex; align-items: center"
         class="bb bg-custom tb-hover"
       >
         <el-col :span="2" class="text-center py">
-          <span class="fz12 white fw">1</span>
+          <span class="fz12 white fw">{{ (index + 1) }}</span>
         </el-col>
         <el-col :span="6" class="py">
-          <span class="fz12 white">Permenlhk NO P 23- 2018 Perubahan Izin Lingkungan di luar OSS</span>
+          <span class="fz12 white">{{ material.name }}</span>
         </el-col>
         <el-col :span="8" class="py">
-          <span class="fz12 white">Materi Bimtek Hotel Mercure Ancol, 25 Juli 2019</span>
+          <span class="fz12 white">{{ material.description }}</span>
         </el-col>
         <el-col :span="5" class="py text-center">
-          <span class="fz12 white">24 Jul 2019</span>
+          <span class="fz12 white">{{ formatDateStr(material.raise_date) }}</span>
         </el-col>
         <el-col :span="3" class="py text-center">
           <a
-            href="#"
+            :href="material.description"
             target="_blank"
             class="fz12 white cl-blue buttonDownload"
             download
@@ -103,34 +98,34 @@
         </el-col>
       </el-row>
       <div class="block" style="text-align: right">
-        <!-- <pagination
+        <pagination
           v-show="total > 0"
           :auto-scroll="false"
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
           @pagination="getAll"
-        /> -->
+        />
       </div>
     </div>
   </section>
 </template>
 
 <script>
-// import axios from 'axios';
-// import Pagination from '@/components/Pagination';
+import axios from 'axios';
+import Pagination from '@/components/Pagination';
 
 export default {
   name: 'Materi',
   components: {
-    // Pagination,
+    Pagination,
   },
   data() {
     return {
       options: [
         {
-          value: 10,
-          label: 10,
+          value: 2,
+          label: 2,
         },
         {
           value: 25,
@@ -145,17 +140,89 @@ export default {
           label: 100,
         },
       ],
+      search: '',
+      allData: [],
+      regulations: [],
+      total: 0,
+      listQuery: {
+        page: 1,
+        limit: 10,
+      },
       keyword: '',
-      optionValue: '',
+      optionValue: null,
+      sort: 'ASC',
+      limit: 10,
     };
   },
-  created() {},
+  created() {
+    this.getAll();
+  },
   methods: {
-    handleFilter(e) {
-      console.log(e);
+    formatDateStr(date) {
+      const today = new Date(date);
+      var bulan = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
+      ];
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const day = today.getDate();
+      const monthID = bulan[month];
+      const finalDate = `${day} ${monthID} ${year}`;
+      return finalDate;
     },
-    handleSearch(e) {
-      console.log(e);
+    getAll(search, sort, limit) {
+      axios
+        .get(
+          `/api/materials?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
+        )
+        .then((response) => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+        });
+    },
+    handleSearch() {
+      this.getAll(this.keyword, null);
+    },
+    handleFilter() {
+      axios
+        .get(
+          `/api/policys?type=${this.optionValue}&page=${this.listQuery.page}`
+        )
+        .then((response) => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+        });
+    },
+    handleSort(){
+      if (this.sort === 'ASC') {
+        this.sort = 'DESC';
+      } else {
+        this.sort = 'ASC';
+      }
+      this.getAll(null, this.sort);
+    },
+    handleLimit() {
+      this.getAll(null, null, this.limit);
+    },
+    GetFilename(url) {
+      if (url) {
+        var m = url.toString().match(/.*\/(.+?)\./);
+        if (m && m.length > 1) {
+          return m[1];
+        }
+      }
+      return '';
     },
   },
 };

@@ -291,5 +291,6 @@ Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByNa
 Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
 Route::apiResource('policys', 'PolicyController');
 Route::apiResource('regulations', 'RegulationsController');
+Route::apiResource('materials', 'MaterialController');
 
 Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index']);
