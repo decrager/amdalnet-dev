@@ -263,6 +263,8 @@ Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
 Route::get('project-maps', [WebgisController::class, 'index']);
 Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
+Route::get('dokumen-ukl-upl/{id}', [ExportDocument::class, 'uklUpl']);
+Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf']);
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
