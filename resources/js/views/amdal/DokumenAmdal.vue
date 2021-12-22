@@ -111,61 +111,58 @@ export default {
       saveAs(this.out, this.$route.params.id + '-form-ka.docx');
     },
     exportDocx() {
-      PizZipUtils.getBinaryContent(
-        '/template_ka.docx',
-        (error, content) => {
-          if (error) {
-            throw error;
-          }
-          const zip = new PizZip(content);
-          const doc = new Docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true,
-          });
-          doc.render({
-            metode_studi: this.metode_studi,
-            pra_konstruksi: this.pra_konstruksi,
-            konstruksi: this.konstruksi,
-            operasi: this.operasi,
-            pasca_operasi: this.pasca_operasi,
-            project_title: this.project_title,
-            pic: this.pic,
-            description: this.description,
-            location_desc: this.location_desc,
-            negative: this.negative,
-            positive: this.positive,
-            penyusun: this.penyusun,
-          });
-
-          const out = doc.getZip().generate({
-            type: 'blob',
-            mimeType:
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          });
-
-          const formData = new FormData();
-          formData.append('docx', out);
-          formData.append('type', 'formulir');
-          formData.append('idProject', this.$route.params.id);
-
-          andalComposingResource
-            .store(formData)
-            .then((response) => {
-              this.showDocument = true;
-              this.projects =
-                window.location.origin +
-                '/storage/formulir/' +
-                this.$route.params.id +
-                '-form-ka.docx';
-              this.loading = false;
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-
-          this.out = out;
+      PizZipUtils.getBinaryContent('/template_KA.docx', (error, content) => {
+        if (error) {
+          throw error;
         }
-      );
+        const zip = new PizZip(content);
+        const doc = new Docxtemplater(zip, {
+          paragraphLoop: true,
+          linebreaks: true,
+        });
+        doc.render({
+          metode_studi: this.metode_studi,
+          pra_konstruksi: this.pra_konstruksi,
+          konstruksi: this.konstruksi,
+          operasi: this.operasi,
+          pasca_operasi: this.pasca_operasi,
+          project_title: this.project_title,
+          pic: this.pic,
+          description: this.description,
+          location_desc: this.location_desc,
+          negative: this.negative,
+          positive: this.positive,
+          penyusun: this.penyusun,
+        });
+
+        const out = doc.getZip().generate({
+          type: 'blob',
+          mimeType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+
+        const formData = new FormData();
+        formData.append('docx', out);
+        formData.append('type', 'formulir');
+        formData.append('idProject', this.$route.params.id);
+
+        andalComposingResource
+          .store(formData)
+          .then((response) => {
+            this.showDocument = true;
+            this.projects =
+              window.location.origin +
+              '/storage/formulir/' +
+              this.$route.params.id +
+              '-form-ka.docx';
+            this.loading = false;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        this.out = out;
+      });
     },
     getDocument() {
       this.projects =
