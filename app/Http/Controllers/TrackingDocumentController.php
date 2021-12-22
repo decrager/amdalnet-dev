@@ -103,10 +103,12 @@ class TrackingDocumentController extends Controller
                 ]);
             }
         }
-        if ($project->required_doc == 'AMDAL') {
-            $timeline = $this->getTimelineAmdal($project, $timeline);
-        } else if (in_array($project->required_doc, ['UKL-UPL', 'SPPL'])) {
-            $timeline = $this->getTimelineUklUpl($project, $timeline);
+        if (count($feedbacks) > 0) {
+            if ($project->required_doc == 'AMDAL') {
+                $timeline = $this->getTimelineAmdal($project, $timeline);
+            } else if (in_array($project->required_doc, ['UKL-UPL', 'SPPL'])) {
+                $timeline = $this->getTimelineUklUpl($project, $timeline);
+            }
         }
         return $timeline;
     }
@@ -354,7 +356,7 @@ class TrackingDocumentController extends Controller
                 'icon' => 'el-icon-success',
                 'color' => 'green',
             ]);
-        } else {            
+        } else if ($sppl && $dpt) {            
             array_push($uklUplTimeline, [
                 'content' => 'Dokumen UKL UPL',
                 'timestamp' => null,

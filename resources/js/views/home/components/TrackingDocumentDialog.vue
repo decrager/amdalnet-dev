@@ -50,12 +50,9 @@ export default {
         registration_no.replace(/\s+/g, '').trim() !== '';
     },
     async handleSubmit() {
-      console.log(this.form);
       const { data } = await projectResource.list({
         registration_no: this.form.registrationNo,
       });
-      console.log(data);
-      // this.$emit('showTrackingDocumentDetail', data[0]);
       this.$refs['form'].validate((valid) => {
         if (valid && data.length > 0) {
           if (this.isValidRegistrationNo(data[0].registration_no)) {

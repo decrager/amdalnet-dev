@@ -85,7 +85,6 @@ export default {
       this.loading = true;
       await axios.get('api/tracking-document/' + this.project.id)
         .then(response => {
-          console.log(response.data);
           this.data = response.data.data;
           this.loading = false;
         });
