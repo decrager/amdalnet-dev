@@ -120,14 +120,15 @@ class AndalComposingController extends Controller
     public function store(Request $request)
     {
         if ($request->type == 'formulir') {
-            if (File::exists(storage_path('app/public/formulir/' . $request->idProject . '-form-ka-andal.docx'))) {
-                File::delete(storage_path('app/public/formulir/' . $request->idProject . '-form-ka-andal.docx'));
+            $project = Project::findOrFail($request->idProject);
+            if (File::exists(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.docx'))) {
+                File::delete(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.docx'));
             }
 
             if ($request->hasFile('docx')) {
                 //create file
                 $file = $request->file('docx');
-                $name = '/formulir/' . $request->idProject . '-form-ka-andal.docx';
+                $name = '/formulir/ka-andal-' . strtolower($project->project_title) . '.docx';
                 $file->storePubliclyAs('public', $name);
 
                 return response()->json(['message' => 'success']);
@@ -1125,7 +1126,7 @@ class AndalComposingController extends Controller
         }
 
         $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-            ->where('id_project', $id_project)->with('potentialImpactEvaluation.pieParam')->get();
+            ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
 
         $total_ms = 0;
         foreach ($stages as $s) {
@@ -1251,16 +1252,17 @@ class AndalComposingController extends Controller
         $domPdfPath = base_path('vendor/dompdf/dompdf');
         Settings::setPdfRendererPath($domPdfPath);
         Settings::setPdfRendererName('DomPDF');
+        $project = Project::findOrFail($idProject);
 
         //Load word file
-        $Content = IOFactory::load(storage_path('app/public/formulir/' . $idProject . '-form-ka-andal.docx'));
+        $Content = IOFactory::load(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.docx'));
 
         //Save it into PDF
         $PDFWriter = IOFactory::createWriter($Content, 'PDF');
 
-        $PDFWriter->save(storage_path('app/public/formulir/' . $idProject . '-form-ka-andal.pdf'));
+        $PDFWriter->save(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.pdf'));
 
-        return response()->download(storage_path('app/public/formulir/' . $idProject . '-form-ka-andal.pdf'))->deleteFileAfterSend(false);
+        return response()->download(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.pdf'))->deleteFileAfterSend(false);
     }
 
     private function getComments($id)
