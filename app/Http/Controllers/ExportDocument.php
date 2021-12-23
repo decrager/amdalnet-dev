@@ -454,8 +454,18 @@ class ExportDocument extends Controller
 
     public function uklUpl($id_project)
     {
+        if (!File::exists(storage_path('app/public/workspace/'))) {
+            File::makeDirectory(storage_path('app/public/workspace/'));
+        }
+
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
+
+        $save_file_name = 'ukl-upl-' . strtolower($project->project_title) . '.docx';
+
+        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            return $save_file_name;
+        }
 
         $project_title_big = strtoupper($project->project_title);
         $pemrakarsa = $project->initiator->name;
@@ -646,13 +656,7 @@ class ExportDocument extends Controller
         $templateProcessor->cloneRowAndSetValues('oll', $oll);
         $templateProcessor->cloneRowAndSetValues('po', $po);
 
-        $save_file_name = 'ukl-upl-' . strtolower($project->project_title) . '.docx';
-
-        if (!File::exists(storage_path('app/public/ukl-upl/'))) {
-            File::makeDirectory(storage_path('app/public/ukl-upl/'));
-        }
-
-        $templateProcessor->saveAs(storage_path('app/public/ukl-upl/' . $save_file_name));
+        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
 
         return $save_file_name;
     }

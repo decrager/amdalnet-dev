@@ -515,6 +515,16 @@ class AndalComposingController extends Controller
 
     private function dokumen($id_project)
     {
+        if (!File::exists(storage_path('app/public/workspace/'))) {
+            File::makeDirectory(storage_path('app/public/workspace/'));
+        }
+
+        $save_file_name = $id_project . '-andal' . '.docx';
+
+        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            return response()->json(['message' => 'success']);
+        }
+
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
 
@@ -1069,17 +1079,7 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneRowAndSetValues('deskripsi_rencana', $deskripsi_rencana);
         $templateProcessor->cloneBlock('rona_biologi', count($biologi), true, false, $biologi);
 
-        $save_file_name = $id_project . '-andal' . '.docx';
-
-        if (!File::exists(storage_path('app/public/workspace/'))) {
-            File::makeDirectory(storage_path('app/public/workspace/'));
-        }
-
-        if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-            $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
-        }
-        // $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
-
+        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
 
         return response()->json(['message' => 'success']);
     }

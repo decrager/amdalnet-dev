@@ -4,7 +4,7 @@
       <workflow-ukl />
       <h2>Dokumen UKL UPL</h2>
       <div>
-        <el-button v-if="projects !== null" type="danger" @click="exportPdf">
+        <!-- <el-button v-if="projects !== null" type="danger" @click="exportPdf">
           Export to .PDF
         </el-button>
         <a
@@ -14,18 +14,14 @@
           download
         >
           Export to .DOCX
-        </a>
+        </a> -->
+        <el-button :loading="loading" type="primary" @click="workspace">
+          Workspace
+        </el-button>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16">
           <div class="grid-content bg-purple" />
-          <!-- <iframe
-            v-if="showDocument"
-            :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projectId}-form-ka-andal&embedded=true`"
-            width="100%"
-            height="723px"
-            frameborder="1"
-          /> -->
           <iframe
             v-if="projects !== null"
             :src="
@@ -48,10 +44,6 @@
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 import axios from 'axios';
-import Docxtemplater from 'docxtemplater';
-import PizZip from 'pizzip';
-import PizZipUtils from 'pizzip/utils/index.js';
-import { saveAs } from 'file-saver';
 import WorkflowUkl from '@/components/WorkflowUkl';
 
 export default {
@@ -64,26 +56,12 @@ export default {
       projects: null,
       loading: false,
       projectId: this.$route.params && this.$route.params.id,
-      metode_studi: [],
-      pra_konstruksi: [],
-      konstruksi: [],
-      operasi: [],
-      pasca_operasi: [],
-      project_title: '',
-      pic: '',
-      description: '',
-      location_desc: '',
-      positive: [],
-      negative: [],
-      penyusun: [],
-      out: '',
       showDocument: true,
       projectName: '',
     };
   },
   created() {
     this.getData();
-    // this.getDocument();
     this.$store.dispatch('getStep', 5);
   },
   methods: {
@@ -93,7 +71,7 @@ export default {
         `/api/dokumen-ukl-upl/${this.$route.params.id}`
       );
       this.projects =
-        window.location.origin + '/storage/ukl-upl/' + projectName.data;
+        window.location.origin + '/storage/workspace/' + projectName.data;
       this.projectName = projectName.data;
       this.loading = false;
     },
@@ -102,70 +80,6 @@ export default {
         idProject: this.$route.params.id,
         formulir: 'true',
       });
-    },
-    downloadDocx() {
-      saveAs(this.out, this.$route.params.id + '-form-ka.docx');
-    },
-    exportDocx() {
-      PizZipUtils.getBinaryContent('/template_ka.docx', (error, content) => {
-        if (error) {
-          throw error;
-        }
-        const zip = new PizZip(content);
-        const doc = new Docxtemplater(zip, {
-          paragraphLoop: true,
-          linebreaks: true,
-        });
-        doc.render({
-          metode_studi: this.metode_studi,
-          pra_konstruksi: this.pra_konstruksi,
-          konstruksi: this.konstruksi,
-          operasi: this.operasi,
-          pasca_operasi: this.pasca_operasi,
-          project_title: this.project_title,
-          pic: this.pic,
-          description: this.description,
-          location_desc: this.location_desc,
-          negative: this.negative,
-          positive: this.positive,
-          penyusun: this.penyusun,
-        });
-
-        const out = doc.getZip().generate({
-          type: 'blob',
-          mimeType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        });
-
-        const formData = new FormData();
-        formData.append('docx', out);
-        formData.append('type', 'formulir');
-        formData.append('idProject', this.$route.params.id);
-
-        andalComposingResource
-          .store(formData)
-          .then((response) => {
-            this.showDocument = true;
-            this.projects =
-              window.location.origin +
-              '/storage/formulir/' +
-              this.$route.params.id +
-              '-form-ka.docx';
-            this.loading = false;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
-        this.out = out;
-      });
-    },
-    getDocument() {
-      this.projects =
-        window.location.origin +
-        '/storage/formulir/' +
-        this.$route.params.id +
-        '-form-ka.docx';
     },
     async exportPdf() {
       axios({
@@ -185,6 +99,15 @@ export default {
         );
         document.body.appendChild(fileLink);
         fileLink.click();
+      });
+    },
+    workspace() {
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: this.$route.params.id,
+          filename: this.projectName,
+        },
       });
     },
   },
