@@ -521,9 +521,9 @@ class AndalComposingController extends Controller
 
         $save_file_name = $id_project . '-andal' . '.docx';
 
-        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-            return response()->json(['message' => 'success']);
-        }
+        // if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        //     return response()->json(['message' => 'success']);
+        // }
 
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
@@ -640,12 +640,32 @@ class AndalComposingController extends Controller
         $bwk_k = [];
         $bwk_o = [];
         $bwk_po = [];
+        $com_pk = [];
+        $com_pk_name = [];
+        $com_k = [];
+        $com_k_name = [];
+        $com_o = [];
+        $com_o_name = [];
+        $com_po = [];
+        $com_po_name = [];
+        $pk_bwk = [];
+        $k_bwk = [];
+        $o_bwk = [];
+        $po_bwk = [];
 
         foreach ($stages as $s) {
             $total = 1;
+            $stage_id = null;
             foreach ($impact_identification as $imp) {
                 $ronaAwal = '';
                 $component = '';
+                $stage_merge = '';
+
+                if($stage_id == $s->id) {
+                    $stage_merge = '<w:vMerge w:val="continue"/>';
+                } else {
+                    $stage_merge = '<w:vMerge w:val="restart"/>';
+                }
 
                 // check stages
                 $id_stages = null;
@@ -670,6 +690,8 @@ class AndalComposingController extends Controller
                 } else {
                     continue;
                 }
+
+                $component_type = $this->getComponentType($imp);
 
                 // ======= POTENTIAL IMPACT EVALUATIONS ======= //
                 $ed_besaran_rencana = '';
@@ -701,20 +723,35 @@ class AndalComposingController extends Controller
                     if (!in_array($component, $dp_pk_name)) {
                         $dp_pk_name[] = $component;
                         $dp_pk[] = [
-                            'dp_pk' => 'Tahap ' . $s->name,
+                            'dp_pk' => 'Tahap ' . $s->name . $stage_merge,
                             'dp_pk_component' => $component
                         ];
                     }
 
-                    // MATRIKS DPH
+                    // MATRIKS DPH & COMPONENT
                     if (!in_array($component, $mdph_pk_name)) {
                         $mdph_pk_name[] = $component;
                         $mdph_pk[] = [
-                            'mdph_pk' => 'Tahap ' . $s->name,
+                            'mdph_pk' => 'Tahap ' . $s->name . $stage_merge,
                             'mdph_pk_component' => $component
                         ];
                     }
 
+                    // COMPONENT
+                    if (!in_array($component, $com_pk_name)) {
+                        $com_pk_name[] = $component;
+                        $com_pk[] = [
+                            'com_pk_name' => '2.1.' . count($com_pk_name) . ' ' . $component
+                        ];
+                    }
+                    
+                    // DESKRIPSI BATAS WILAYAH STUDI
+                    if(strtolower($component_type) == 'geofisik kimia' || strtolower($component_type) == 'biologi') {
+                        $pk_bwk[] = [
+                            'pk_bwk' => $ronaAwal . ' akibat ' . $component,
+                            'pk_bwk_ba' => ''
+                        ];
+                    }
 
                     $pk[] = [
                         'ka_pk' => $total,
@@ -764,7 +801,7 @@ class AndalComposingController extends Controller
                     if (!in_array($component, $dp_k_name)) {
                         $dp_k_name[] = $component;
                         $dp_k[] = [
-                            'dp_k' => 'Tahap ' . $s->name,
+                            'dp_k' => 'Tahap ' . $s->name . $stage_merge,
                             'dp_k_component' => $component
                         ];
                     }
@@ -773,8 +810,24 @@ class AndalComposingController extends Controller
                     if (!in_array($component, $mdph_k_name)) {
                         $mdph_k_name[] = $component;
                         $mdph_k[] = [
-                            'mdph_k' => 'Tahap ' . $s->name,
+                            'mdph_k' => 'Tahap ' . $s->name . $stage_merge,
                             'mdph_k_component' => $component
+                        ];
+                    }
+
+                    // COMPONENT
+                    if (!in_array($component, $com_k_name)) {
+                        $com_k_name[] = $component;
+                        $com_k[] = [
+                            'com_k_name' => '2.2.' . count($com_k_name) . ' ' . $component
+                        ];
+                    }
+
+                    // DESKRIPSI BATAS WILAYAH STUDI
+                    if(strtolower($component_type) == 'geofisik kimia' || strtolower($component_type) == 'biologi') {
+                        $k_bwk[] = [
+                            'k_bwk' => $ronaAwal . ' akibat ' . $component,
+                            'k_bwk_ba' => ''
                         ];
                     }
 
@@ -825,7 +878,7 @@ class AndalComposingController extends Controller
                     if (!in_array($component, $dp_o_name)) {
                         $dp_o_name[] = $component;
                         $dp_o[] = [
-                            'dp_o' => 'Tahap ' . $s->name,
+                            'dp_o' => 'Tahap ' . $s->name . $stage_merge,
                             'dp_o_component' => $component
                         ];
                     }
@@ -834,8 +887,24 @@ class AndalComposingController extends Controller
                     if (!in_array($component, $mdph_o_name)) {
                         $mdph_o_name[] = $component;
                         $mdph_o[] = [
-                            'mdph_o' => 'Tahap ' . $s->name,
+                            'mdph_o' => 'Tahap ' . $s->name . $stage_merge,
                             'mdph_o_component' => $component
+                        ];
+                    }
+
+                    // COMPONENT
+                    if (!in_array($component, $com_o_name)) {
+                        $com_o_name[] = $component;
+                        $com_o[] = [
+                            'com_o_name' => '2.3.' . count($com_o_name) . ' ' . $component
+                        ];
+                    }
+
+                    // DESKRIPSI BATAS WILAYAH STUDI
+                    if(strtolower($component_type) == 'geofisik kimia' || strtolower($component_type) == 'biologi') {
+                        $o_bwk[] = [
+                            'o_bwk' => $ronaAwal . ' akibat ' . $component,
+                            'o_bwk_ba' => ''
                         ];
                     }
 
@@ -886,7 +955,7 @@ class AndalComposingController extends Controller
                     if (!in_array($component, $dp_po_name)) {
                         $dp_po_name[] = $component;
                         $dp_po[] = [
-                            'dp_po' => 'Tahap ' . $s->name,
+                            'dp_po' => 'Tahap ' . $s->name . $stage_merge,
                             'dp_po_component' => $component
                         ];
                     }
@@ -895,8 +964,24 @@ class AndalComposingController extends Controller
                     if (!in_array($component, $mdph_po_name)) {
                         $mdph_po_name[] = $component;
                         $mdph_po[] = [
-                            'mdph_po' => 'Tahap ' . $s->name,
+                            'mdph_po' => 'Tahap ' . $s->name . $stage_merge,
                             'mdph_po_component' => $component
+                        ];
+                    }
+
+                    // COMPONENT
+                    if (!in_array($component, $com_po_name)) {
+                        $com_po_name[] = $component;
+                        $com_po[] = [
+                            'com_po_name' => '2.4.' . count($com_po_name) . ' ' . $component
+                        ];
+                    }
+
+                    // DESKRIPSI BATAS WILAYAH STUDI
+                    if(strtolower($component_type) == 'geofisik kimia' || strtolower($component_type) == 'biologi') {
+                        $po_bwk[] = [
+                            'po_bwk' => $ronaAwal . ' akibat ' . $component,
+                            'po_bwk_ba' => ''
                         ];
                     }
 
@@ -943,7 +1028,7 @@ class AndalComposingController extends Controller
                         'bwk_po_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                     ];
                 }
-
+                $stage_id = $s->id;
                 $total++;
             }
         }
@@ -966,6 +1051,7 @@ class AndalComposingController extends Controller
         $sub_projects = SubProject::where([['id_project', $id_project],['type', 'utama']])->get();
         foreach($sub_projects as $sp) {
             $sub_project_component = SubProjectComponent::where('id_sub_project', $sp->id)->get();
+            $last_ren_no = null;
             foreach($sub_project_component as $spc) {
                 $desk_ren_pen = '';
                 if($spc->name) {
@@ -974,13 +1060,22 @@ class AndalComposingController extends Controller
                     $desk_ren_pen = $spc->component->name;
                 }
 
+                if($last_ren_no == $desk_ren_no) {
+                    $ren_no = $desk_ren_no . '<w:vMerge w:val="continue"/>';
+                    $ren_ru =  $sp->name . '<w:vMerge w:val="continue"/>';
+                } else {
+                    $ren_no = $desk_ren_no . '<w:vMerge w:val="restart"/>'; 
+                    $ren_ru =  $sp->name . '<w:vMerge w:val="restart"/>';
+                }
+
                 $deskripsi_rencana[] = [
-                    'deskripsi_rencana' => $desk_ren_no,
-                    'deskripsi_rencana_ru' => $sp->name,
+                    'deskripsi_rencana' => $ren_no,
+                    'deskripsi_rencana_ru' => $ren_ru,
                     'deskripsi_rencana_pendukung' => $desk_ren_pen,
                     'deskripsi_rencana_besaran' => $spc->unit,
                     'deskripsi_rencana_lokasi' => $spc->description_common
                 ];
+                $last_ren_no = $desk_ren_no;
             }
             $desk_ren_no++;
         }
@@ -1077,11 +1172,38 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneRowAndSetValues('bwk_o', $bwk_o);
         $templateProcessor->cloneRowAndSetValues('bwk_po', $bwk_po);
         $templateProcessor->cloneRowAndSetValues('deskripsi_rencana', $deskripsi_rencana);
+        $templateProcessor->cloneRowAndSetValues('pk_bwk', $pk_bwk);
+        $templateProcessor->cloneRowAndSetValues('k_bwk', $k_bwk);
+        $templateProcessor->cloneRowAndSetValues('o_bwk', $o_bwk);
+        $templateProcessor->cloneRowAndSetValues('po_bwk', $po_bwk);
         $templateProcessor->cloneBlock('rona_biologi', count($biologi), true, false, $biologi);
+        $templateProcessor->cloneBlock('com_pk_block', count($com_pk), true, false, $com_pk);
+        $templateProcessor->cloneBlock('com_k_block', count($com_k), true, false, $com_k);
+        $templateProcessor->cloneBlock('com_o_block', count($com_o), true, false, $com_o);
+        $templateProcessor->cloneBlock('com_po_block', count($com_po), true, false, $com_po);
 
         $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
 
         return response()->json(['message' => 'success']);
+    }
+
+    private function getComponentType($imp) {
+        $component_type = '';
+        if($imp->subProjectRonaAwal->id_rona_awal) {
+            $com_type = ComponentType::find($imp->subProjectRonaAwal->ronaAwal->id_component_type);
+            if($com_type) {
+                $component_type = $com_type->name;
+            }
+        } else {
+            if($imp->subProjectRonaAwal->id_component_type) {
+                $com_type = ComponentType::find($imp->subProjectRonaAwal->id_component_type);
+                if($com_type) {
+                    $component_type = $com_type->name;
+                }
+            }
+        }
+
+        return $component_type;
     }
 
     private function formulirKa($id_project)
