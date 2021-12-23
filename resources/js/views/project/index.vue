@@ -195,7 +195,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -204,13 +204,22 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleWorkspaceRKLRPL(scope.row.id)"
                 >
                   Workspace RKL RPL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceUKLUPL(scope.row.id)"
+                >
+                  Workspace UKL UPL
                 </el-button>
                 <el-button
                   v-if="isInitiator"
@@ -298,6 +307,7 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
+import axios from 'axios';
 const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -700,6 +710,18 @@ export default {
         params: {
           id: idProject,
           filename: `${idProject}-rkl-rpl.docx`,
+        },
+      });
+    },
+    async handleWorkspaceUKLUPL(idProject) {
+      const projectName = await axios.get(
+        `/api/dokumen-ukl-upl/${idProject}`
+      );
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: idProject,
+          filename: projectName.data,
         },
       });
     },
