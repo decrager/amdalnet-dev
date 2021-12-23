@@ -2,7 +2,7 @@
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>Tentang {{ getLabel() }}</span>
+        <span>Tentang Penyusun</span>
       </div>
       <template v-if="user !== null">
         <div class="user-detail">
@@ -11,12 +11,12 @@
             <img>
           </div>
           <el-row>
-            <p class="label">Nama {{ getLabel() }}</p>
-            <p class="value">{{ user.name }}</p>
+            <span class="label">Nama Penyusn</span>
+            <span class="value">{{ user.name }}</span>
           </el-row>
           <el-row>
-            <p class="label">Nama {{ getLabel() }}</p>
-            <p class="value">{{ user.name }}</p>
+            <span class="label">Nama LPJP</span>
+            <span class="value">{{ user.name }}</span>
           </el-row>
 
         </div>
@@ -29,7 +29,7 @@
 import Resource from '@/api/resource';
 
 export default {
-  name: 'UserInformation',
+  name: 'FormulatorInformation',
   data() {
     return {
       isLoading: true,

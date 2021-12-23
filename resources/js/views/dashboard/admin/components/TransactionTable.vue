@@ -31,8 +31,9 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        success: 'success',
-        pending: 'danger',
+        approved: 'success',
+        processing: 'warning',
+        rejected: 'danger',
       };
       return statusMap[status];
     },

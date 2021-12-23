@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <!-- <component :is="currentRole" /> -->
-    <dashboard-admin v-if="isAdmin" />
+    <admin-dashboard v-if="isAdmin" />
     <user-dashboard v-else />
   </div>
 </template>
@@ -11,12 +11,12 @@ import { mapGetters } from 'vuex';
 // import adminDashboard from './admin';
 // import editorDashboard from './editor';
 import UserDashboard from './user';
-import DashboardAdmin from './admin';
+import AdminDashboard from './admin';
 
 export default {
   name: 'Dashboard',
   // components: { adminDashboard, editorDashboard },
-  components: { UserDashboard, DashboardAdmin },
+  components: { UserDashboard, AdminDashboard },
   data() {
     return {
       currentRole: 'adminDashboard',
@@ -26,12 +26,6 @@ export default {
     ...mapGetters([
       'roles',
     ]),
-    isFormulator() {
-      return this.$store.getters.roles.includes('formulator');
-    },
-    isInitiator() {
-      return this.$store.getters.roles.includes('initiator');
-    },
     isAdmin(){
       return this.$store.getters.roles.includes('admin');
     },
