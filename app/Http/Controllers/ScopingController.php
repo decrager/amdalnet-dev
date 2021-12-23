@@ -34,12 +34,14 @@ class ScopingController extends Controller
         try {
             $impacts = ImpactIdentification::select('id')
                 ->where('id_project', $request->id_project)
+                ->where('is_hypothetical_significant', true)
                 ->orderBy('id', 'asc')
                 ->get();
             $impactStudies = ImpactStudy::from('impact_studies AS is2')
                 ->selectRaw('is2.id_impact_identification AS id')
                 ->leftJoin('impact_identifications AS ii', 'is2.id_impact_identification', '=', 'ii.id')
                 ->where('ii.id_project', $request->id_project)
+                ->where('ii.is_hypothetical_significant', true)
                 ->orderBy('id', 'asc')
                 ->get();
             $id = [];
