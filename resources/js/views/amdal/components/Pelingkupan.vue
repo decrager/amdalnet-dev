@@ -1,23 +1,25 @@
 <template>
-  <el-tabs type="card">
-    <el-button
-      v-if="!isAndal && isFormulator"
-      type="success"
-      size="small"
-      icon="el-icon-check"
-      @click="handleSaveForm()"
-    >
-      Simpan Perubahan
-    </el-button>
-    <el-tab-pane v-for="s of projectStages" :key="s.id" :label="s.name">
-      <pelingkupan-table
-        :id-project="idProject"
-        :id-project-stage="s.id"
-        :current-id-sub-project="currentIdSubProject"
-        @handleCurrentIdSubProject="handleCurrentIdSubProject"
-      />
-    </el-tab-pane>
-  </el-tabs>
+  <div>
+    <el-tabs type="card">
+      <el-tab-pane v-for="s of projectStages" :key="s.id" :label="s.name">
+        <pelingkupan-table
+          :id-project="idProject"
+          :id-project-stage="s.id"
+          :current-id-sub-project="currentIdSubProject"
+          @handleCurrentIdSubProject="handleCurrentIdSubProject"
+        />
+      </el-tab-pane>
+    </el-tabs>
+    <div class="save-changes">
+      <el-button
+        v-if="!isAndal && isFormulator"
+        type="success"
+        size="small"
+        icon="el-icon-check"
+        @click="handleSaveForm()"
+      >Simpan Perubahan</el-button>
+    </div>
+  </div>
 </template>
 <script>
 
@@ -63,3 +65,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.save-changes {
+  text-align:right;
+}
+</style>

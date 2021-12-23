@@ -100,20 +100,20 @@ export default {
     },
   },
   created(){
-    console.log(this.$store.getters.token);
-    window.Echo.join(`chat`)
-      .here((users) => {
-        //
-      })
-      .joining((user) => {
-        console.log(user.name);
-      })
-      .leaving((user) => {
-        console.log(user.name);
-      })
-      .error((error) => {
-        console.error(error);
-      });
+    // console.log(this.$store.getters.token);
+    // window.Echo.join(`chat`)
+    //   .here((users) => {
+    //     //
+    //   })
+    //   .joining((user) => {
+    //     console.log(user.name);
+    //   })
+    //   .leaving((user) => {
+    //     console.log(user.name);
+    //   })
+    //   .error((error) => {
+    //     console.error(error);
+    //   });
   },
   methods: {
     markAsRead(){

@@ -1,12 +1,12 @@
 <template>
   <div class="webgis__container">
     <DarkHeaderHome />
-    <div class="input__select">
+    <div id="input__select__kegiatan">
       <el-autocomplete
         v-model="projectTitle"
         class="inline-input"
         :fetch-suggestions="querySearch"
-        placeholder="Please Input"
+        placeholder="Cari Kegiatan..."
         :trigger-on-focus="false"
         @select="handleSelect"
       />
@@ -27,13 +27,15 @@ import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
+import Print from '@arcgis/core/widgets/Print';
+import ScaleBar from '@arcgis/core/widgets/ScaleBar';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
-import rdtrMap from './mapRdtr';
+// import rdtrMap from './mapRdtr';
 import rupabumis from './mapRupabumi';
 
 export default {
@@ -50,6 +52,9 @@ export default {
       projects: [],
       projectTitle: '',
       selectId: null,
+      title: '',
+      groupGeojson: [],
+      rendererTapak: {},
     };
   },
   mounted: function() {
@@ -124,21 +129,124 @@ export default {
                 const blob = new Blob([JSON.stringify(data)], {
                   type: 'application/json',
                 });
+
+                console.log(projects[i].project_title);
                 const url = URL.createObjectURL(blob);
                 axios.get('api/projects/' + projects[i].id_project).then((response) => {
+                  const arrayJsonTemplate = {
+                    title: response.data.project_title + ' (' + response.data.project_year + ').',
+                    content: '<table style="border-collapse: collapse !important">' +
+                            '<thead>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">KBLI Code</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.kbli + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">No Registrasi</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.registration_no + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">Tipe</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.required_doc + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">Deskripsi</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.description + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">Skala</td>' +
+                                '<td> : </td>' +
+                                '<td>' + response.data.scale + ' ' + response.data.scale_unit + '</td>' +
+                              '</tr>' +
+                            '</thead>' +
+                          '</table>',
+                  };
+
+                  if (projects[i].attachment_type === 'ecology') {
+                    this.title = 'Peta Batas Ekologi';
+                    this.rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'blue',
+                          width: 2,
+                        },
+                      },
+                    };
+                  } else if (projects[i].attachment_type === 'social') {
+                    this.title = 'Peta Batas Sosial';
+                    this.rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'red',
+                          width: 2,
+                        },
+                      },
+                    };
+                  } else if (projects[i].attachment_type === 'study') {
+                    this.title = 'Peta Batas Wilayah Studi';
+                    this.rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: 'green',
+                          width: 2,
+                        },
+                      },
+                    };
+                  } else if (projects[i].attachment_type === 'tapak') {
+                    this.title = 'Peta Tapak';
+                    this.rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'simple-fill',
+                        color: [0, 0, 0, 0.0],
+                        outline: {
+                          color: '#964B00',
+                          width: 2,
+                        },
+                      },
+                    };
+                  }
+
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
                     visible: false,
-                    title: response.data.project_title,
+                    title: projects[i].project_title,
+                    popupTemplate: arrayJsonTemplate,
+                    renderer: this.rendererTapak,
+                    maxScale: 5000,
                   });
                   this.mapGeojsonArray.push(geojsonLayerArray);
+
+                  // const kegiatanGroupsLayer = new GroupLayer({
+                  //   title: response.data.project_title,
+                  //   visible: true,
+                  //   layers: this.mapGeojsonArray,
+                  //   opacity: 0.90,
+                  // });
 
                   // last loop
                   if (i === projects.length - 1){
                     const kegiatanGroupLayer = new GroupLayer({
                       title: 'Peta Tematik AMDAL',
-                      visible: false,
+                      visible: true,
                       layers: this.mapGeojsonArray,
                       opacity: 0.90,
                     });
@@ -174,14 +282,14 @@ export default {
       //   visibilityMode: '',
       // });
 
-      const tematikGroup = new GroupLayer({
-        title: 'Peta Tematik Status',
-        visible: false,
-        layers: rdtrMap,
-        opacity: 0.90,
-      });
+      // const tematikGroup = new GroupLayer({
+      //   title: 'Peta Tematik Status',
+      //   visible: false,
+      //   layers: rdtrMap,
+      //   opacity: 0.90,
+      // });
 
-      map.add(tematikGroup);
+      // map.add(tematikGroup);
 
       const rupabumiGroup = new GroupLayer({
         title: 'Peta Rupa Bumi',
@@ -242,8 +350,20 @@ export default {
         listItemCreatedFunction: this.defineActions,
       });
 
+      const print = new Print({
+        view: mapView,
+        printServiceUrl:
+              'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task',
+      });
+
+      const printExpand = new Expand({
+        view: mapView,
+        content: print,
+      });
+
       layerList.on('trigger-action', (event) => {
         const id = event.action.id;
+        console.log(event.item);
         if (id === 'full-extent') {
           mapView.goTo({
             target: event.item.layer.fullExtent,
@@ -251,20 +371,28 @@ export default {
         }
       });
 
+      const scaleBar = new ScaleBar({
+        view: mapView,
+        unit: 'metric', // The scale bar displays both metric and non-metric units.
+      });
+
+      // Add the widget to the bottom left corner of the view
+      mapView.ui.add(scaleBar, {
+        position: 'bottom-left',
+      });
+
+      mapView.ui.add(document.getElementById('input__select__kegiatan'), 'top-right');
+
       mapView.ui.add(layerList, 'top-right');
       mapView.ui.add(legend, 'top-right');
+      mapView.ui.add(printExpand, 'top-left');
     },
   },
 };
 </script>
 <style>
 @import '../home/assets/css/style.css';
-.input__select {
-  position: absolute;
-  top: 70px;
-  left: 70px;
-  z-index: 100;
-}
+
 .webgis__container {
   display: flex;
   flex-direction: column;
@@ -273,6 +401,15 @@ export default {
   margin: 0;
   padding: 0;
   position: absolute;
+}
+
+div#input__select__kegiatan {
+    width: 100%;
+}
+
+.inline-input {
+  width: 100%;
+  z-index: 100;
 }
 
 #mapViewDiv {

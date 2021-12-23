@@ -76,6 +76,7 @@ import UploadPetaBatas from './components/UploadPetaBatas.vue';
 
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
+const scopingResource = new Resource('scoping');
 
 export default {
   name: 'FormulirAmdal',
@@ -118,7 +119,6 @@ export default {
     this.setProjectId();
     this.checkifAmdal();
     this.$store.dispatch('getStep', 3);
-    this.data;
   },
   methods: {
     async checkifAmdal() {
@@ -141,12 +141,29 @@ export default {
       const id = this.$route.params && this.$route.params.id;
       this.idProject = id;
     },
-    handleSaveForm() {
+    async handleSaveForm() {
       const id = this.$route.params && this.$route.params.id;
-      this.$router.push({
-        name: 'DokumenAmdal',
-        params: id,
+      const checkFormulirKA = await scopingResource.list({
+        check_formulir_ka: true,
+        id_project: this.idProject,
       });
+      if (!checkFormulirKA.data) {
+        this.$message({
+          message: 'Mohon lengkapi Formulir KA terlebih dahulu',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      } else {
+        this.$message({
+          message: 'Formulir KA berhasil disimpan',
+          type: 'success',
+          duration: 5 * 1000,
+        });
+        this.$router.push({
+          name: 'DokumenAmdal',
+          params: id,
+        });
+      }
     },
     handleEnableSubmitForm() {
       this.isSubmitEnabled = true;

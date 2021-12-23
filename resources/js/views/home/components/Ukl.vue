@@ -82,7 +82,7 @@
             <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
           </el-col>
           <el-col :xs="24" :sm="3">
-            <button class="el-button el-button--warning el-button--medium is-plain fz11" @click="openDetails(amdal.id)">Berikan<br>Tanggapan</button>
+            <button class="el-button el-button--warning fz11 el-button--medium is-plain" @click="openDetails(amdal.id,'UKL')">Berikan<br>Tanggapan</button>
           </el-col>
         </el-row>
         <div class="block" style="text-align:right">
@@ -157,7 +157,7 @@ export default {
       },
       paginationNoFilter: true,
       paginationFilter: false,
-      keyword: 'AMDAL',
+      keyword: 'UKL-UPL',
       showDetailFromAll: false,
       showFromAll: true,
       selectedAnnouncement: {},
@@ -197,7 +197,7 @@ export default {
       const finalDate = `${day} ${monthID} ${year}`;
       return finalDate;
     },
-    getAll(search, sort) {
+    getAll(search, sort){
       if (search === 'undefined'){
         search = '';
       } else {
@@ -217,14 +217,13 @@ export default {
         });
     },
     openDetails(id) {
+      console.log(id);
       axios.get('/api/announcements/' + id)
         .then(response => {
-          // this.$emit('handleToggleShow',true);
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
           this.showDetailFromAll = true;
           this.showFromAll = false;
-          // console.log(this.showDetailFromAll)
         });
     },
     handleCancle(){
@@ -275,7 +274,7 @@ export default {
         var urutValue = 'sort=' + this.urutValue;
       }
 
-      axios.get(`/api/announcement-by-filter?${provName}&${kotaName}&page=${this.listQuery.page}&${urutValue}`)
+      axios.get(`/api/announcements?${provName}&${kotaName}&page=${this.listQuery.page}&${urutValue}`)
         .then(response => {
           this.allData = response.data.data;
           this.total = response.data.total;
@@ -300,11 +299,12 @@ export default {
   .mt-2-5{margin-top:2.5rem}
   .wrapButton{display:flex; margin:6rem 0 2rem 0}
   .el-form-item.el-form-item--medium{margin-bottom:10px}
+  .el-button.el-button--warning.el-button--medium.is-plain{color: #fff;background: #FFBA00;border-color: #FFBA00;margin-bottom:10px;margin-left: 1rem;}
   .wrapSelect{width: 60%;margin-left: auto;}
   .el-pager li{background:transparent; color:#eb933c;}
   .el-pagination .btn-prev, .el-pagination .btn-next{color: #f6993f;background-color: transparent;}
   .el-pagination button:disabled {background-color: transparent;color: #f6993f;}
-  .el-button--warning.is-plain {background:#F6993F;color: #000;background: #13ce66;border-color: #13ce66; margin-bottom:0.5rem; margin-top:3.5rem; margin-right: 0.5rem;}
+  .el-button--success.is-plain {color: #fff;background: #13ce66;border-color: #13ce66;border-radius: 2rem; margin-bottom:0.5rem; margin-top:3.5rem}
   .pagination-container[data-v-5efa73f0] {background: transparent;padding: 0;}
   .el-pagination span:not([class*="suffix"]), .el-pagination button {color: #fff;}
   .el-button.el-button--info.fw-bold.el-button--medium {margin-bottom: 10px;}
@@ -312,13 +312,14 @@ export default {
   .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.51rem;}
   .customFilterRight{cursor:pointer; padding: 0.6rem; width:25%; display:flex; align-items:center; position:relative;}
   .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;padding: 1.5rem 1rem;border-radius: 4px 0 4px 4px;}
+  .cardCustom{width:20%; padding:0.5rem;}
   .cardCustom span{font-size: 11px;font-weight: bold;}
   .bgNoActive{background:#dff5cf; color:#35442f;}
   .bgActive{background:#062307; color: #fff;}
   .textFilter{font-weight:bold; display:inline-block; margin-right:0.5rem; }
   .textFilterNoAvtive{color:#ef8913;}
   .textFilterAvtive{color:#fff;}
-  .customImage{width: 50px;height: 50px;border-radius: 50% !important;object-fit: contain;object-position: center;margin: auto; display: block;}
+  .customImage{width: 50px;height: 50px;border-radius: 50% !important;object-fit: contain;object-position: center;margin:auto; display: block;}
   .fz11{font-size: 11px;}
   .fw{font-weight: bold;}
   .el-button.el-button--warning.el-button--medium.is-plain{margin-left: 0; margin-top: 5px;}

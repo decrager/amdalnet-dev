@@ -2,23 +2,8 @@
   <div>
     <div
       class="filter-container"
-      style="display: flex; justify-content: space-between"
+      style="text-align: right;"
     >
-      <div>
-        <el-button
-          v-if="isFormulator"
-          :loading="loadingSubmit"
-          class="filter-item"
-          type="primary"
-          style="font-size: 0.8rem"
-          @click="handleSubmit"
-        >
-          {{ 'Simpan Perubahan' }}
-        </el-button>
-        <span style="font-size: 0.8rem">
-          <em>{{ lastTime }}</em>
-        </span>
-      </div>
       <el-upload
         v-if="isFormulator"
         :loading="loadingMap"
@@ -304,6 +289,21 @@
         </el-table-column>
       </el-table-column>
     </el-table>
+    <div style="text-align: right; margin: 2em 0 1em;">
+      <span style="font-size: 0.8rem; margin-right:0.5em;">
+        <em>{{ lastTime }}</em>
+      </span>
+      <el-button
+        v-if="isFormulator"
+        :loading="loadingSubmit"
+        class="filter-item"
+        type="primary"
+        style="font-size: 0.8rem"
+        @click="handleSubmit"
+      >
+        {{ 'Simpan Perubahan' }}
+      </el-button>
+    </div>
   </div>
 </template>
 

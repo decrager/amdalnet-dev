@@ -4,7 +4,7 @@
       <div v-if="showTabs" class="tabset">
         <el-tabs type="card">
           <el-tab-pane class="tabsCustom" label="AMDAL">
-            <div v-for="amdal in amdals.data" :key="amdal.id" class="announce__box__wrapper">
+            <!-- <div v-for="amdal in amdals.data" :key="amdal.id" class="announce__box__wrapper">
               <div class="announce__box__icon">
                 <img alt="" src="/images/list.png">
               </div>
@@ -17,7 +17,6 @@
               </div>
               <div class="announce__box__button">
                 <button class="button__tanggapan btn-tanggapan" @click="openDetails(amdal.id,'AMDAL')">
-                  <!-- <i class="el-icon-document" /> Berikan Tanggapan -->
                   Lihat Detail
                 </button>
               </div>
@@ -26,10 +25,13 @@
               <button class="button__tanggapan btn-tanggapan" @click="openAll('AMDAL')">
                 Lihat Semua
               </button>
-            </div>
+            </div> -->
+            <ShowAll
+              @handleCancle="handleCancle"
+            />
           </el-tab-pane>
           <el-tab-pane class="tabs-custom tabsCustom" label="UKL - UPL">
-            <div v-for="uklupl in uklupls.data" :key="uklupl.id" class="announce__box__wrapper">
+            <!-- <div v-for="uklupl in uklupls.data" :key="uklupl.id" class="announce__box__wrapper">
               <div class="announce__box__icon">
                 <img alt="" src="/images/list.svg">
               </div>
@@ -42,7 +44,6 @@
               </div>
               <div class="announce__box__button">
                 <button class="button__tanggapan btn-tanggapan" @click="openDetails(uklupl.id,'UKL')">
-                  <!-- <i class="el-icon-document" /> Berikan Tanggapan -->
                   Lihat Detail
                 </button>
               </div>
@@ -51,7 +52,10 @@
               <button class="button__tanggapan btn-tanggapan" @click="openAll('UKL_UPL')">
                 Lihat Semua
               </button>
-            </div>
+            </div> -->
+            <Ukl
+              @handleCancle="handleCancle"
+            />
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -65,9 +69,9 @@
       </div>
     </div>
     <div v-if="showAllTabs">
-      <ShowAll
+      <!-- <ShowAll
         @handleCancle="handleCancle"
-      />
+      /> -->
     </div>
   </div>
 </template>
@@ -78,6 +82,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/id';
 import Details from './Details';
 import ShowAll from './ShowAll';
+import Ukl from './Ukl';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -85,6 +90,7 @@ export default {
   components: {
     Details,
     ShowAll,
+    Ukl,
   },
   data() {
     return {
@@ -121,12 +127,10 @@ export default {
       this.selectedProject = {};
       await axios.get('/api/announcements/' + this.selectedId)
         .then(response => {
-          console.log(response.data);
           this.selectedAnnouncement = response.data;
           this.selectedProject = response.data.project;
           this.showDetails = true;
         });
-      console.log(this.selectedAnnouncement);
       this.showDetailsDialog = true;
     },
     handleCancelComponent(e){
@@ -203,4 +207,5 @@ export default {
 .el-tabs__item.is-top{color: #f6993f;border-right: 1px solid #fff; border-top-right-radius: 5px;}
 .tabset >>> .el-tabs--card > .el-tabs__header{margin-bottom: 0px; border-bottom: none;}
 .tabset >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active{border-bottom: none;}
+.el-tabs__header.is-top{width: 25% !important;}
 </style>

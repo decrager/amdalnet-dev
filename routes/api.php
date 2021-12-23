@@ -22,6 +22,9 @@ use App\Http\Controllers\MatriksDampakController;
 use App\Http\Controllers\MatriksUklUplController;
 use App\Http\Controllers\WebgisController;
 use App\Laravue\Models\User;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\TrackingDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -262,6 +265,8 @@ Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
 Route::get('project-maps', [WebgisController::class, 'index']);
 Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
+Route::get('dokumen-ukl-upl/{id}', [ExportDocument::class, 'uklUpl']);
+Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf']);
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
@@ -278,6 +283,7 @@ Route::get('besaran-dampak/list/{id}', [BesaranDampakController::class, 'getList
 Route::get('matriks-ukl-upl/table-ukl/{id}', [MatriksUklUplController::class, 'getTableUkl']);
 Route::get('matriks-ukl-upl/table-upl/{id}', [MatriksUklUplController::class, 'getTableUpl']);
 Route::apiResource('env-manage-plans', 'EnvManagePlanController');
+Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('env-manage-docs', 'EnvManageDocController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('public-questions', 'PublicQuestionController');
@@ -287,3 +293,10 @@ Route::get('mark-all-read/{user}', function(User $user){
     $user->unreadNotifications->markAsRead();
     return response(['message'=>'done']);
 });
+Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
+Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
+Route::apiResource('policys', 'PolicyController');
+Route::apiResource('regulations', 'RegulationsController');
+Route::apiResource('materials', 'MaterialController');
+
+Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index']);

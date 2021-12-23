@@ -69,13 +69,48 @@ deploy_prod:
     - git pull
     - composer install
     - composer dump-autoload
-    # - php artisan migrate
+    - php artisan migrate
     - npm install
     - npm run production
   only:
     - tags
   tags:
     - prod
+
+deploy_api-dev_menlhk:
+  stage: production
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard origin/master
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - npm install
+    - npm run production
+  only:
+    - master
+  tags:
+    - amdalnet-api-dev-menlhk
+
+deploy_app-dev_menlhk:
+  stage: production
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard origin/master
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - npm install
+    - npm run production
+    #- echo "update app server"
+    #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
+  only:
+    - master
+  tags:
+    - amdalnet-app-dev-menlhk
+
 
 deploy_api_menlhk:
   stage: production
