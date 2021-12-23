@@ -227,7 +227,7 @@ export default {
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
-                    visible: true,
+                    visible: false,
                     title: projects[i].project_title,
                     popupTemplate: arrayJsonTemplate,
                     renderer: this.rendererTapak,
@@ -246,7 +246,7 @@ export default {
                   if (i === projects.length - 1){
                     const kegiatanGroupLayer = new GroupLayer({
                       title: 'Peta Tematik AMDAL',
-                      visible: false,
+                      visible: true,
                       layers: this.mapGeojsonArray,
                       opacity: 0.90,
                     });
