@@ -143,6 +143,11 @@ export default {
     },
     handleSaveForm() {
       const id = this.$route.params && this.$route.params.id;
+      this.$message({
+        message: 'Formulir KA berhasil disimpan',
+        type: 'success',
+        duration: 5 * 1000,
+      });
       this.$router.push({
         name: 'DokumenAmdal',
         params: id,

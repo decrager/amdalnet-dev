@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <el-card v-loading="loading">
+    <el-card v-if="formulirKACompleted && templateKALoaded" v-loading="loading">
       <h2>Formulir Kerangka Acuan</h2>
       <div>
         <el-button v-if="showDocument" type="danger" @click="exportPdf">
@@ -41,6 +41,7 @@
 
 <script>
 import Resource from '@/api/resource';
+const scopingResource = new Resource('scoping');
 const andalComposingResource = new Resource('andal-composing');
 import Comment from '@/views/penyusunan-andal/components/Comment';
 import axios from 'axios';
@@ -55,6 +56,8 @@ export default {
   },
   data() {
     return {
+      templateKALoaded: false,
+      formulirKACompleted: false,
       idProject: 0,
       projects: '',
       loading: false,
@@ -82,6 +85,23 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
+      const checkFormulirKA = await scopingResource.list({
+        check_formulir_ka: true,
+        id_project: this.$route.params.id,
+      });
+      if (!checkFormulirKA.data) {
+        this.$message({
+          message: 'Mohon lengkapi Formulir KA terlebih dahulu',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.$router.push({
+          name: 'FormulirAmdal',
+          params: this.$route.params.id,
+        });
+      } else {
+        this.formulirKACompleted = true;
+      }
       const data = await andalComposingResource.list({
         idProject: this.$route.params.id,
         formulir: 'true',
@@ -113,8 +133,14 @@ export default {
     exportDocx() {
       PizZipUtils.getBinaryContent('/template_KA.docx', (error, content) => {
         if (error) {
+          this.$message({
+            message: 'Gagal memuat template formulir KA',
+            type: 'error',
+            duration: 5 * 1000,
+          });
           throw error;
         }
+        this.templateKALoaded = true;
         const zip = new PizZip(content);
         const doc = new Docxtemplater(zip, {
           paragraphLoop: true,
