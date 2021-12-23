@@ -47,3 +47,11 @@ export default {
   },
 };
 </script>
+<style scoped>
+li.el-menu-item:hover{
+  margin: 0 0.5em;
+  background: #fff;
+  color: #012210;
+  border-radius: .5em;
+}
+</style>

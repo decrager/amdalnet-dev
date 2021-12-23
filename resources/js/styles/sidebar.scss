@@ -1,4 +1,6 @@
 #app {
+  background: #eeeee5;
+  height: 100%;
 
   .main-container {
     min-height: 100%;
@@ -19,6 +21,7 @@
     left: 0;
     z-index: 1001;
     overflow: hidden;
+    border-radius: 0 0.5em 0.5em 0;
 
     // reset element-ui css
     .horizontal-collapse-transition {
@@ -71,6 +74,12 @@
       &:hover {
         background-color: $menuHover !important;
       }
+    }
+
+    li.is-active {
+      font-weight: bold !important;
+      letter-spacing: .05em;
+
     }
 
     .is-active>.el-submenu__title {

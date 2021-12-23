@@ -1,6 +1,7 @@
 <template>
   <div class="dashboard-container">
     <!-- <component :is="currentRole" /> -->
+    <user-dashboard />
   </div>
 </template>
 
@@ -8,10 +9,12 @@
 import { mapGetters } from 'vuex';
 // import adminDashboard from './admin';
 // import editorDashboard from './editor';
+import UserDashboard from './user';
 
 export default {
   name: 'Dashboard',
   // components: { adminDashboard, editorDashboard },
+  components: { UserDashboard },
   data() {
     return {
       currentRole: 'adminDashboard',
