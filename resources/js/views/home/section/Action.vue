@@ -67,13 +67,12 @@
           </router-link>
         </div>
 
-        <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showMateri = !showMateri">
+        <!-- <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showMateri = !showMateri">
           <div class="actions__box__links__icon">
             <img src="/images/digworkspace.svg" alt="">
           </div>
           <div class="actions__box__links__desc">
             <h2 class="actions__box__links__desc__title"><span class="title__primary">Materi </span> AMDALNET</h2>
-            <!-- <span class="actions__box__links__desc__subtitle">Konsultasi untuk pengajuan izin lingkungan</span> -->
           </div>
           <div>
             <img v-show="!showMateri" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
@@ -89,7 +88,6 @@
           </div>
           <div class="actions__box__links__desc">
             <h2 class="actions__box__links__desc__title"><span class="title__primary">Kebijakan </span> AMDALNET</h2>
-            <!-- <span class="actions__box__links__desc__subtitle">Konsultasi untuk pengajuan izin lingkungan</span> -->
           </div>
           <div>
             <img v-show="!showKebijakan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
@@ -98,7 +96,7 @@
         </div>
         <div class="content" :hidden="!showKebijakan" style="padding-top: 20px;">
           <Kebijakan />
-        </div>
+        </div> -->
       </div>
 
       <div class="actions__data__video">
@@ -148,8 +146,8 @@ import SubProjectTable from '../../project/components/SubProjectTable.vue';
 import PublicQuestionDialog from '../components/PublicQuestionDialog.vue';
 import TrackingDocumentDialog from '../components/TrackingDocumentDialog.vue';
 import TrackingDocumentDetailDialog from '../components/TrackingDocumentDetailDialog.vue';
-import Materi from './Materi.vue';
-import Kebijakan from './Kebijakan.vue';
+// import Materi from './Materi.vue';
+// import Kebijakan from './Kebijakan.vue';
 
 export default {
   name: 'ActionHome',
@@ -158,8 +156,8 @@ export default {
     PublicQuestionDialog,
     TrackingDocumentDialog,
     TrackingDocumentDetailDialog,
-    Materi,
-    Kebijakan,
+    // Materi,
+    // Kebijakan,
   },
   data() {
     return {
