@@ -129,6 +129,8 @@ export default {
                 const blob = new Blob([JSON.stringify(data)], {
                   type: 'application/json',
                 });
+
+                console.log(projects[i].project_title);
                 const url = URL.createObjectURL(blob);
                 axios.get('api/projects/' + projects[i].id_project).then((response) => {
                   const arrayJsonTemplate = {
@@ -226,26 +228,26 @@ export default {
                     url: url,
                     outFields: ['*'],
                     visible: true,
-                    title: this.title,
+                    title: projects[i].project_title,
                     popupTemplate: arrayJsonTemplate,
                     renderer: this.rendererTapak,
                     maxScale: 5000,
                   });
                   this.mapGeojsonArray.push(geojsonLayerArray);
 
-                  const kegiatanGroupsLayer = new GroupLayer({
-                    title: response.data.project_title,
-                    visible: true,
-                    layers: this.mapGeojsonArray,
-                    opacity: 0.90,
-                  });
+                  // const kegiatanGroupsLayer = new GroupLayer({
+                  //   title: response.data.project_title,
+                  //   visible: true,
+                  //   layers: this.mapGeojsonArray,
+                  //   opacity: 0.90,
+                  // });
 
                   // last loop
                   if (i === projects.length - 1){
                     const kegiatanGroupLayer = new GroupLayer({
                       title: 'Peta Tematik AMDAL',
                       visible: false,
-                      layers: kegiatanGroupsLayer,
+                      layers: this.mapGeojsonArray,
                       opacity: 0.90,
                     });
 
