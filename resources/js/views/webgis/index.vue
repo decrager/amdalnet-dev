@@ -1,12 +1,12 @@
 <template>
   <div class="webgis__container">
     <DarkHeaderHome />
-    <div class="input__select">
+    <div id="input__select__kegiatan">
       <el-autocomplete
         v-model="projectTitle"
         class="inline-input"
         :fetch-suggestions="querySearch"
-        placeholder="Please Input"
+        placeholder="Cari Kegiatan..."
         :trigger-on-focus="false"
         @select="handleSelect"
       />
@@ -27,6 +27,8 @@ import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
+import Print from '@arcgis/core/widgets/Print';
+import ScaleBar from '@arcgis/core/widgets/ScaleBar';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
@@ -346,6 +348,17 @@ export default {
         listItemCreatedFunction: this.defineActions,
       });
 
+      const print = new Print({
+        view: mapView,
+        printServiceUrl:
+              'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task',
+      });
+
+      const printExpand = new Expand({
+        view: mapView,
+        content: print,
+      });
+
       layerList.on('trigger-action', (event) => {
         const id = event.action.id;
         console.log(event.item);
@@ -356,20 +369,28 @@ export default {
         }
       });
 
+      const scaleBar = new ScaleBar({
+        view: mapView,
+        unit: 'metric', // The scale bar displays both metric and non-metric units.
+      });
+
+      // Add the widget to the bottom left corner of the view
+      mapView.ui.add(scaleBar, {
+        position: 'bottom-left',
+      });
+
+      mapView.ui.add(document.getElementById('input__select__kegiatan'), 'top-right');
+
       mapView.ui.add(layerList, 'top-right');
       mapView.ui.add(legend, 'top-right');
+      mapView.ui.add(printExpand, 'top-left');
     },
   },
 };
 </script>
 <style>
 @import '../home/assets/css/style.css';
-.input__select {
-  position: absolute;
-  top: 70px;
-  left: 70px;
-  z-index: 100;
-}
+
 .webgis__container {
   display: flex;
   flex-direction: column;
@@ -378,6 +399,15 @@ export default {
   margin: 0;
   padding: 0;
   position: absolute;
+}
+
+div#input__select__kegiatan {
+    width: 100%;
+}
+
+.inline-input {
+  width: 100%;
+  z-index: 100;
 }
 
 #mapViewDiv {
