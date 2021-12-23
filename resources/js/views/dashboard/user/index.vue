@@ -1,8 +1,8 @@
 <template>
   <div class="user-dashboard">
-    <el-row gutter="20">
-      <el-col span="12"><user-information /></el-col>
-      <el-col span="12">
+    <el-row :gutter="20">
+      <el-col :span="12"><user-information /></el-col>
+      <el-col :span="12">
         <user-activities />
         <user-summary />
       </el-col>
@@ -11,7 +11,7 @@
 </template>
 <script>
 import UserActivities from './components/activities';
-import UserInformation from './components/infomartion';
+import UserInformation from './components/infomation';
 import UserSummary from './components/summary';
 export default {
   name: 'UserDashboard',

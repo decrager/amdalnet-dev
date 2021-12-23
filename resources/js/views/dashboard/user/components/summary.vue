@@ -4,6 +4,8 @@
       <div slot="header" class="clearfix">
         <span>Persetujuan</span>
       </div>
+      <!-- flexbox -->
+
       <el-skeleton :rows="6" animated />
     </el-card>
   </div>
