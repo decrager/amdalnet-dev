@@ -78,7 +78,7 @@ export default {
         this.__resizeHandler();
       }
     },
-    setOptions({ amdalData, ukluplData, spplData, aAMDALData, aUKLUPLData } = {}) {
+    setOptions({ amdalData, ukluplData, spplData, aARKLRPLData } = {}) {
       this.chart.setOption({
         xAxis: {
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -107,7 +107,7 @@ export default {
           },
         },
         legend: {
-          data: ['AMDAL', 'UKL UPL', 'SPPL', 'Addendum AMDAL', 'Addendum UKL UPL'],
+          data: ['AMDAL', 'UKL UPL', 'SPPL', 'Addendum ANDAL dan RKL RPL'],
         },
         series: [
           {
@@ -162,24 +162,7 @@ export default {
             animationEasing: 'cubicInOut',
           },
           {
-            name: 'Addendum AMDAL',
-            itemStyle: {
-              normal: {
-                color: '#a7c5a5',
-                lineStyle: {
-                  color: '#a7c5a5',
-                  width: 2,
-                },
-              },
-            },
-            smooth: true,
-            type: 'line',
-            data: aAMDALData,
-            animationDuration: 2800,
-            animationEasing: 'cubicInOut',
-          },
-          {
-            name: 'Addendum UKL UPL',
+            name: 'Addendum ANDAL dan RKL RPL',
             itemStyle: {
               normal: {
                 color: '#a5c5bc',
@@ -191,7 +174,7 @@ export default {
             },
             smooth: true,
             type: 'line',
-            data: aUKLUPLData,
+            data: aARKLRPLData,
             animationDuration: 2800,
             animationEasing: 'cubicInOut',
           },

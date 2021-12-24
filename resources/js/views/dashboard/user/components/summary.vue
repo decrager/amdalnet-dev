@@ -87,6 +87,8 @@ export default {
     height: 150px;
     margin:0;
     padding:0;
+    overflow: hidden;
+    overflow: -moz-hidden-unscrollable;
 
     span {
       display:block;
