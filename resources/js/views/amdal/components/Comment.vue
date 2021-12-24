@@ -251,6 +251,9 @@ export default {
       });
 
       this.comments.unshift(newComment);
+      this.comment = null;
+      this.idStage = null;
+      this.column = null;
       this.$message({
         message: 'Komentar Berhasil Disimpan',
         type: 'success',
