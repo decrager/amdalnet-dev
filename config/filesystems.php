@@ -65,6 +65,15 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
         ],
 
+        'openstack' => [
+            'driver'    => 'swift',
+            'authUrl'   => env('OS_AUTH_URL', ''),
+            'region'    => env('OS_REGION_NAME', ''),
+            'user'      => env('OS_USERNAME', ''),
+            'domain'    => env('OS_USER_DOMAIN_NAME', 'default'),
+            'password'  => env('OS_PASSWORD', ''),
+            'container' => env('OS_CONTAINER_NAME', ''),
+         ],
     ],
 
     /*

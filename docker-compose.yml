@@ -56,14 +56,14 @@ services:
   #   depends_on:
   #     - etherdb
 
-  etherdb:
-    image: postgres:13
-    ports:
-      - "6543:5432"
-    environment:
-      - "POSTGRES_PASSWORD=etherpad"
-      - "POSTGRES_USER=etherpad"
-      - "POSTGRES_DB=etherpad"
+  # etherdb:
+  #   image: postgres:13
+  #   ports:
+  #     - "6543:5432"
+  #   environment:
+  #     - "POSTGRES_PASSWORD=etherpad"
+  #     - "POSTGRES_USER=etherpad"
+  #     - "POSTGRES_DB=etherpad"
   
   # collabora:
   #   image: collabora/code
