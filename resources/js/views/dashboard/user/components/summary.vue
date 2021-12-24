@@ -72,10 +72,10 @@ export default {
         { label: 'AMDAL', value: 3 },
         { label: 'UKL-UPL', value: 5 },
         { label: 'SPPL', value: 7 },
-        { label: 'Adendum AMDAL', value: 3 },
-        { label: 'Adendum UKL-UPL', value: 3 },
+        { label: 'Adendum AMDAL', value: 0 },
+        { label: 'Adendum UKL-UPL', value: 0 },
       ],
-      summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 3, addendum_amdal: 3 },
+      summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 0, addendum_amdal: 0 },
 
     };
   },
@@ -87,20 +87,23 @@ export default {
 <style lang="scss" scoped>
 
 .user-summary-cards {
-  .el-card span {
-    display:block;
-    text-align: center;
-    height: 2em;
-  }
-  .el-card .title {
-    font-weight: bold;
-  }
-  .el-card .value {
-    margin-top: 0.6em;
-    font-size: 200%;
-  }
-  .el-card .smaller {
-    font-size: 90%;
+  .el-card {
+    min-height: 8em;
+
+    span {
+      display:block;
+      text-align: center;
+    }
+    .title {
+      font-weight: bold;
+    }
+    .value {
+      margin-top: 0.8em;
+      font-size: 200%;
+    }
+    .smaller {
+      font-size: 90%;
+    }
   }
 }
 
