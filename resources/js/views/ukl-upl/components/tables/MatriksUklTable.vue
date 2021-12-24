@@ -35,7 +35,7 @@
       </el-table-column>
       <el-table-column label="Jenis Dampak">
         <template slot-scope="scope">
-          <span v-if="!scope.row.is_stage">{{ scope.row.rona_awal_name }} akibat {{ scope.row.component_name }}</span>
+          <span v-if="!scope.row.is_stage">{{ scope.row.change_type_name }} {{ scope.row.rona_awal_name }} akibat {{ scope.row.component_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Besaran Dampak">
