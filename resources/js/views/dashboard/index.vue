@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <!-- <component :is="currentRole" /> -->
     <admin-dashboard v-if="isAdmin" />
-    <user-dashboard v-else />
+    <user-dashboard v-if="isFormulator || isInitiator" />
   </div>
 </template>
 
@@ -28,6 +28,12 @@ export default {
     ]),
     isAdmin(){
       return this.$store.getters.roles.includes('admin');
+    },
+    isFormulator(){
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isInitiator(){
+      return this.$store.getters.roles.includes('initiator');
     },
   },
   created() {
