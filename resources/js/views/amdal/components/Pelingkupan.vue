@@ -19,22 +19,56 @@
         @click="handleSaveForm()"
       >Simpan Perubahan</el-button>
     </div>
+    <el-button type="primary" @click="showComment = !showComment">Komentar</el-button>
+    <Comment v-show="showComment" :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
   </div>
 </template>
 <script>
 
 import Resource from '@/api/resource';
 import PelingkupanTable from './tables/PelingkupanTable.vue';
+import Comment from './Comment.vue';
 const projectStageResource = new Resource('project-stages');
 
 export default {
   name: 'Pelingkupan',
-  components: { PelingkupanTable },
+  components: { PelingkupanTable, Comment },
   data() {
     return {
       idProject: 0,
       projectStages: [],
       currentIdSubProject: 0,
+      showComment: false,
+      commentColumn: [
+        {
+          label: 'Komponen Kegiatan',
+          value: 'Komponen Kegiatan',
+        },
+        {
+          label: 'Geofisika Kimia',
+          value: 'Geofisika Kimia',
+        },
+        {
+          label: 'Biologi',
+          value: 'Biologi',
+        },
+        {
+          label: 'Sosial Ekonomi Budaya',
+          value: 'Sosial Ekonomi Budaya',
+        },
+        {
+          label: 'Kesehatan Masyarakat',
+          value: 'Kesehatan Masyarakat',
+        },
+        {
+          label: 'Kegiatan Lain Sekitar',
+          value: 'Kegiatan Lain Sekitar',
+        },
+        {
+          label: 'Lainnya',
+          value: 'Lainnya',
+        },
+      ],
     };
   },
   computed: {
