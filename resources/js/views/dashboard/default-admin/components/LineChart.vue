@@ -19,7 +19,7 @@ export default {
     },
     height: {
       type: String,
-      default: '400px',
+      default: '350px',
     },
     autoResize: {
       type: Boolean,
@@ -78,7 +78,7 @@ export default {
         this.__resizeHandler();
       }
     },
-    setOptions({ amdalData, ukluplData, spplData, aAMDALData, aUKLUPLData } = {}) {
+    setOptions({ expectedData, actualData } = {}) {
       this.chart.setOption({
         xAxis: {
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -107,93 +107,45 @@ export default {
           },
         },
         legend: {
-          data: ['AMDAL', 'UKL UPL', 'SPPL', 'Addendum AMDAL', 'Addendum UKL UPL'],
+          data: ['expected', 'actual'],
         },
         series: [
           {
-            name: 'AMDAL',
+            name: 'expected',
             itemStyle: {
               normal: {
-                color: '#638761',
+                color: '#FF005A',
                 lineStyle: {
-                  color: '#638761',
+                  color: '#FF005A',
                   width: 2,
                 },
               },
             },
             smooth: true,
             type: 'line',
-            data: amdalData,
+            data: expectedData,
             animationDuration: 2800,
             animationEasing: 'cubicInOut',
           },
           {
-            name: 'UKL UPL',
+            name: 'actual',
             smooth: true,
             type: 'line',
             itemStyle: {
               normal: {
-                color: '#61929d',
+                color: '#3888fa',
                 lineStyle: {
-                  color: '#61929d',
+                  color: '#3888fa',
                   width: 2,
+                },
+                areaStyle: {
+                  color: '#f3f8ff',
                 },
               },
             },
-            data: ukluplData,
+            data: actualData,
             animationDuration: 2800,
             animationEasing: 'quadraticOut',
-          },
-          {
-            name: 'SPPL',
-            itemStyle: {
-              normal: {
-                color: '#54abab',
-                lineStyle: {
-                  color: '#54abab',
-                  width: 2,
-                },
-              },
-            },
-            smooth: true,
-            type: 'line',
-            data: spplData,
-            animationDuration: 2800,
-            animationEasing: 'cubicInOut',
-          },
-          {
-            name: 'Addendum AMDAL',
-            itemStyle: {
-              normal: {
-                color: '#a7c5a5',
-                lineStyle: {
-                  color: '#a7c5a5',
-                  width: 2,
-                },
-              },
-            },
-            smooth: true,
-            type: 'line',
-            data: aAMDALData,
-            animationDuration: 2800,
-            animationEasing: 'cubicInOut',
-          },
-          {
-            name: 'Addendum UKL UPL',
-            itemStyle: {
-              normal: {
-                color: '#a5c5bc',
-                lineStyle: {
-                  color: '#a5c5bc',
-                  width: 2,
-                },
-              },
-            },
-            smooth: true,
-            type: 'line',
-            data: aUKLUPLData,
-            animationDuration: 2800,
-            animationEasing: 'cubicInOut',
           },
         ],
       });

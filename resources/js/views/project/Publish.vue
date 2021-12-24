@@ -1,105 +1,107 @@
 <template>
-  <div v-loading="fullLoading" class="form-container" style="padding: 24px">
-    <workflow />
-    <el-row>
-      <el-col
-        :span="12"
-      ><h2>Informasi rencana Usaha/Kegiatan</h2>
-        <el-table
-          :data="list"
-          style="width: 100%"
-          :stripe="true"
-          :show-header="false"
-        >
-          <el-table-column prop="param" />
-          <el-table-column prop="value" />
-        </el-table>
-      </el-col>
-      <el-col :span="12">
-        <div>
-          <div id="mapView" />
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="4" style="padding-top: 32px">
-      <el-col :span="12">
-        <div><h3>Deskripsi Kegiatan</h3></div>
-        <div v-html="project.description" />
-      </el-col>
-      <el-col :span="12">
-        <div><h3>Deskripsi Lokasi</h3></div>
-        <div v-html="project.location_desc" />
-      </el-col>
-    </el-row>
-    <el-row :gutter="4">
-      <el-col :span="12">
-        <div>
-          <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-            <el-table-column
-              prop="no"
-              label="No."
-            />
-            <!-- <el-table-column
+
+  <div v-loading="fullLoading" class="form-container" style="margin: 2em;">
+    <el-card class="box-card">
+      <workflow />
+      <el-row :gutter="10">
+        <el-col
+          :span="12"
+        ><h2>Informasi rencana Usaha/Kegiatan</h2>
+          <el-table
+            :data="list"
+            style="width: 100%"
+            :stripe="true"
+            :show-header="false"
+          >
+            <el-table-column prop="param" />
+            <el-table-column prop="value" />
+          </el-table>
+        </el-col>
+        <el-col :span="12">
+          <div>
+            <div id="mapView" />
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="10" style="padding-top: 32px">
+        <el-col :span="12">
+          <div><h3>Deskripsi Kegiatan</h3></div>
+          <div v-html="project.description" />
+        </el-col>
+        <el-col :span="12">
+          <div><h3>Deskripsi Lokasi</h3></div>
+          <div v-html="project.location_desc" />
+        </el-col>
+      </el-row>
+      <el-row :gutter="10">
+        <el-col :span="12">
+          <div>
+            <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+              <el-table-column
+                prop="no"
+                label="No."
+              />
+              <!-- <el-table-column
               prop="kbli"
               label="KBLI"
             /> -->
-            <el-table-column
-              prop="kegiatan"
-              label="Kegiatan"
-            />
-            <el-table-column
-              prop="jenisKegiatan"
-              label="Jenis Kegiatan"
-            />
-            <el-table-column
-              prop="skala"
-              label="Skala Besaran"
-            />
-          <!-- <el-table-column
+              <el-table-column
+                prop="kegiatan"
+                label="Kegiatan"
+              />
+              <el-table-column
+                prop="jenisKegiatan"
+                label="Jenis Kegiatan"
+              />
+              <el-table-column
+                prop="skala"
+                label="Skala Besaran"
+              />
+              <!-- <el-table-column
             prop="hasil"
             label="Hasil"
           /> -->
-          </el-table>
-        </div>
-      </el-col>
-      <el-col :span="12">
-        <div>
-          <el-table :data="project.address" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-            <el-table-column
-              label="No."
-            >
-              <template slot-scope="scope">
-                {{ scope.$index + 1 }}
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="prov"
-              label="Provinsi"
-            />
-            <el-table-column
-              prop="district"
-              label="City"
-            />
-            <el-table-column
-              prop="address"
-              label="address"
-            />
-          </el-table>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="4">
-      <el-col :span="12">
-        <h2>Hasil Penapisan Rencana Kegiatan</h2>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
-          <el-col :span="12">1611182998277</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
-          <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
-          <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
-          <el-col :span="12">Pusat</el-col></el-row>
-        <!-- <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
+            </el-table>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div>
+            <el-table :data="project.address" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+              <el-table-column
+                label="No."
+              >
+                <template slot-scope="scope">
+                  {{ scope.$index + 1 }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="prov"
+                label="Provinsi"
+              />
+              <el-table-column
+                prop="district"
+                label="City"
+              />
+              <el-table-column
+                prop="address"
+                label="address"
+              />
+            </el-table>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="4">
+        <el-col :span="12">
+          <h2>Hasil Penapisan Rencana Kegiatan</h2>
+          <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
+            <el-col :span="12">1611182998277</el-col></el-row>
+          <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
+            <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
+          <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
+            <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
+          <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
+            <el-col :span="12">Pusat</el-col></el-row>
+          <!-- <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
           <el-col :span="12">
             <el-form
               ref="project"
@@ -125,42 +127,42 @@
             </el-form>
           </el-col>
         </el-row> -->
-        <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
-          <el-col :span="12">
-            <el-form
-              ref="project"
-              :model="project"
-              label-position="top"
-            >
-              <el-form-item prop="id_lpjp">
-                <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
-                  <el-option
-                    v-for="item in getLpjps"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </el-row>
-      </el-col>
-      <el-col :span="12" />
-    </el-row>
-    <el-row>
-      <div v-if="project.type_formulator_team === 'mandiri'">
-        <el-row style="padding-bottom: 16px">
-          <h2>Tambah Penyusun</h2>
-          <formulator-table
-            :list="listFormulatorTeam"
-            :loading="false"
-          />
-          <el-button
-            type="primary"
-            @click="handleAddFormulatorTable"
-          >+</el-button>
-        </el-row>
+          <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
+            <el-col :span="12">
+              <el-form
+                ref="project"
+                :model="project"
+                label-position="top"
+              >
+                <el-form-item prop="id_lpjp">
+                  <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
+                    <el-option
+                      v-for="item in getLpjps"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-form>
+            </el-col>
+          </el-row>
+        </el-col>
+        <el-col :span="12" />
+      </el-row>
+      <el-row>
+        <div v-if="project.type_formulator_team === 'mandiri'">
+          <el-row style="padding-bottom: 16px">
+            <h2>Tambah Penyusun</h2>
+            <formulator-table
+              :list="listFormulatorTeam"
+              :loading="false"
+            />
+            <el-button
+              type="primary"
+              @click="handleAddFormulatorTable"
+            >+</el-button>
+          </el-row>
         <!-- <el-row style="padding-bottom: 16px">
           <h2>Tambah Tenaga Ahli</h2>
           <expert-table
@@ -172,12 +174,13 @@
             @click="handleAddExpertTable"
           >+</el-button>
         </el-row> -->
+        </div>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
+        <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
       </div>
-    </el-row>
-    <div slot="footer" class="dialog-footer">
-      <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
-      <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
-    </div>
+    </el-card>
   </div>
 </template>
 
