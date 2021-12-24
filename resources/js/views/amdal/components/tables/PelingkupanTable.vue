@@ -247,22 +247,19 @@ export default {
       this.currentIdComponentType = idComponentType;
       this.kLDialogueVisible = true;
     },
-    handleCloseAddComponent(reload) {
+    handleCloseAddComponent(idSubProjectComponent) {
       this.kKDialogueVisible = false;
-      // reload table
-      if (reload) {
-        this.reloadData();
-      }
+      this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.reloadData();
     },
     handleSetCurrentIdSubProjectComponent(idSubProjectComponent) {
       this.currentIdSubProjectComponent = idSubProjectComponent;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
-    handleCloseAddRonaAwal(reload) {
+    handleCloseAddRonaAwal(idSubProjectComponent) {
       this.kLDialogueVisible = false;
-      if (reload) {
-        this.reloadData();
-      }
+      this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.reloadData();
     },
     handleDeleteComponent(id) {
       subProjectComponentResource
@@ -395,7 +392,7 @@ export default {
       });
       this.subProjectComponents = components.data;
       this.loadingComponents = false;
-      if (this.subProjectComponents.length > 0) {
+      if (this.subProjectComponents.length > 0 && this.currentIdSubProjectComponent === 0) {
         this.currentIdSubProjectComponent = this.subProjectComponents[0].id;
       }
     },

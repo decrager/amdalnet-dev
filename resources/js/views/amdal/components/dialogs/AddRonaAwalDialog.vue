@@ -193,9 +193,14 @@ export default {
           // save impact idt
           this.saveImpactIdentification(response.data.id);
           // reload PelingkupanTable
-          this.$emit('handleCloseAddRonaAwal', true);
+          this.$emit('handleCloseAddRonaAwal', response.data.id_sub_project_component);
         })
         .catch((error) => {
+          this.$message({
+            message: 'Gagal menyimpan komponen lingkungan',
+            type: 'error',
+            duration: 5 * 1000,
+          });
           console.log(error);
         });
     },
@@ -214,6 +219,11 @@ export default {
           });
         })
         .catch((error) => {
+          this.$message({
+            message: 'Gagal menyimpan dampak lingkungan',
+            type: 'error',
+            duration: 5 * 1000,
+          });
           console.log(error);
         });
     },
