@@ -24,6 +24,7 @@ use App\Http\Controllers\WebgisController;
 use App\Laravue\Models\User;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\KaCommentController;
 use App\Http\Controllers\TrackingDocumentController;
 
 /*
@@ -267,6 +268,7 @@ Route::get('project-maps', [WebgisController::class, 'index']);
 Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
 Route::get('dokumen-ukl-upl/{id}', [ExportDocument::class, 'uklUpl']);
 Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf']);
+Route::apiResource('ka-comment', 'KaCommentController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);

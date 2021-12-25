@@ -143,10 +143,15 @@ export default {
             duration: 5 * 1000,
           });
           // reload PelingkupanTable
-          this.$emit('handleCloseAddComponent', true);
+          this.$emit('handleCloseAddComponent', response.data.id);
           this.$emit('handleSetCurrentIdSubProjectComponent', response.data.id);
         })
         .catch((error) => {
+          this.$message({
+            message: 'Gagal menyimpan komponen kegiatan',
+            type: 'error',
+            duration: 5 * 1000,
+          });
           console.log(error);
         });
     },

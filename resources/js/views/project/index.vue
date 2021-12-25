@@ -34,7 +34,7 @@
         :data="filtered"
         fit
         highlight-current-row
-        :header-cell-style="{ background: '#3AB06F', color: 'white' }"
+        :header-cell-style="{ background: '#216221', color: 'white' }"
         style="width: 100%"
       >
         <el-table-column type="expand" class="row-detail">

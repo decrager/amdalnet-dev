@@ -8,10 +8,10 @@
       <div id="nav-menu" class="nav__menu">
         <ul class="nav__list">
           <li class="nav__item">
-            <a href="#home" class="nav__link active-link">Materi</a>
+            <a href="#materi" class="nav__link active-link">Materi</a>
           </li>
           <li class="nav__item">
-            <a href="#about" class="nav__link">Kebijakan</a>
+            <a href="#kebijakan" class="nav__link">Kebijakan</a>
           </li>
           <li class="nav__item">
             <a href="#about" class="nav__link">Tentang Kami</a>

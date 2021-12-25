@@ -105,10 +105,10 @@
                       <p>{{ com.created_at }}</p>
                     </div>
                     <el-checkbox
-                      v-if="isFormulator"
                       v-model="
                         list[scope.$index - 1].comments[index].is_checked
                       "
+                      :disabled="!isFormulator"
                       @change="
                         handleCheckedComment(
                           list[scope.$index - 1].comments[index].id

@@ -54,7 +54,7 @@
         </el-table-column>
       </el-table>
     </el-col>
-    <el-col :span="18" :xs="24">
+    <el-col v-loading="loadingKomponen" :span="18" :xs="24">
       <table :key="tableKey" class="title" style="border-collapse: collapse; width:100%;">
         <thead>
           <tr>
@@ -110,7 +110,7 @@
               <el-button v-if="!isAndal && isFormulator" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
             </td>
             <td v-for="i in 6" :key="i">
-              <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" v-loading="loadingRonaAwals" style="margin:.5em 0;">
+              <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" style="margin:.5em 0;">
                 <el-tooltip class="item" effect="dark" placement="top-start">
                   <div slot="content">
                     {{ ra.description_specific }}
@@ -212,7 +212,7 @@ export default {
       editSubProjectComponent: {},
       isEditComponent: false,
       loadingSubProjects: true,
-      loadingRonaAwals: true,
+      loadingKomponen: true,
       loadingComponents: true,
     };
   },
@@ -247,22 +247,19 @@ export default {
       this.currentIdComponentType = idComponentType;
       this.kLDialogueVisible = true;
     },
-    handleCloseAddComponent(reload) {
+    handleCloseAddComponent(idSubProjectComponent) {
       this.kKDialogueVisible = false;
-      // reload table
-      if (reload) {
-        this.reloadData();
-      }
+      this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.reloadData();
     },
     handleSetCurrentIdSubProjectComponent(idSubProjectComponent) {
       this.currentIdSubProjectComponent = idSubProjectComponent;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
-    handleCloseAddRonaAwal(reload) {
+    handleCloseAddRonaAwal(idSubProjectComponent) {
       this.kLDialogueVisible = false;
-      if (reload) {
-        this.reloadData();
-      }
+      this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.reloadData();
     },
     handleDeleteComponent(id) {
       subProjectComponentResource
@@ -395,7 +392,7 @@ export default {
       });
       this.subProjectComponents = components.data;
       this.loadingComponents = false;
-      if (this.subProjectComponents.length > 0) {
+      if (this.subProjectComponents.length > 0 && this.currentIdSubProjectComponent === 0) {
         this.currentIdSubProjectComponent = this.subProjectComponents[0].id;
       }
     },
@@ -412,7 +409,7 @@ export default {
         });
       });
       this.subProjectRonaAwals = ronaAwals.data;
-      this.loadingRonaAwals = false;
+      this.loadingKomponen = false;
     },
   },
 };
