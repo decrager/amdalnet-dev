@@ -96,7 +96,7 @@ export default {
       return roles.join(' | ');
     },
     sumNotifUnread(){
-      return this.notifications.filter(e => e.read_at !== null).length;
+      return this.notifications.filter(e => e.read_at === null).length === 0;
     },
   },
   created(){
