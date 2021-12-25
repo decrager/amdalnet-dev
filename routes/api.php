@@ -21,6 +21,7 @@ use App\Http\Controllers\LpjpController;
 use App\Http\Controllers\MatriksDampakController;
 use App\Http\Controllers\MatriksUklUplController;
 use App\Http\Controllers\WebgisController;
+use App\Laravue\Models\User;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\KaCommentController;
@@ -289,6 +290,11 @@ Route::apiResource('env-manage-docs', 'EnvManageDocController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('public-questions', 'PublicQuestionController');
 
+// notification
+Route::get('mark-all-read/{user}', function(User $user){
+    $user->unreadNotifications->markAsRead();
+    return response(['message'=>'done']);
+});
 Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
 Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
 Route::apiResource('policys', 'PolicyController');
