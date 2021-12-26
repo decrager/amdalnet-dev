@@ -293,6 +293,7 @@ Route::apiResource('public-questions', 'PublicQuestionController');
 // notification
 Route::get('mark-all-read/{user}', function(User $user){
     $user->unreadNotifications->markAsRead();
+    event(new \App\Events\NotificationEvent());
     return response(['message'=>'done']);
 });
 Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
@@ -302,3 +303,4 @@ Route::apiResource('regulations', 'RegulationsController');
 Route::apiResource('materials', 'MaterialController');
 
 Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index']);
+
