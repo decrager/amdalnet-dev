@@ -18,13 +18,15 @@
           <el-col :span="16">
             <el-row>
               <el-col :span="12">
-                <el-card class="box-card" style="background: #638761; color: white;">
+                <!-- #638761 -->
+                <el-card class="box-card" style="background: #347437; color: white;">
                   <span class="title">AMDAL</span>
                   <span class="value">{{ summary.amdal }}</span>
                 </el-card>
               </el-col>
               <el-col :span="12">
-                <el-card class="box-card" style="background: #61929d; color: white;">
+                <!-- #61929d -->
+                <el-card class="box-card" style="background: #449748; color: white;">
                   <span class="title">UKL-UPL</span>
                   <span class="value">{{ summary.uklupl }}</span>
                 </el-card>
@@ -32,13 +34,15 @@
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-card class="box-card" style="background: #54abab; color: white;">
+                <!-- #54abab -->
+                <el-card class="box-card" style="background: #EB8A00; color: white;">
                   <span class="title">SPPL</span>
                   <span class="value">{{ summary.sppl }}</span>
                 </el-card>
               </el-col>
               <el-col :span="12">
-                <el-card class="box-card" style="background: #a5c5bc; color: white;">
+                <!-- #a5c5bc -->
+                <el-card class="box-card" style="background: #FAC400; color: white;">
                   <span class="title smaller">Addendum Andal dan RKL RPL</span>
                   <span class="value" style="margin-top: 0.5em;">{{ summary.addendum }}</span>
                 </el-card>
