@@ -45,4 +45,7 @@ module.exports = {
     filename: '[name].js',
     chunkFilename: 'js/[name].[chunkhash:6].js',
   },
+  node: {
+    fs: 'empty',
+  },
 };

@@ -37,6 +37,7 @@ import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
 // import rdtrMap from './mapRdtr';
 import rupabumis from './mapRupabumi';
+import rtrwProvMap from './mapRtrw';
 
 export default {
   name: 'WebGis',
@@ -120,143 +121,207 @@ export default {
       });
 
       // const mapGeojsonArray = [];
+      // const mapGeojsonArray = [];
       axios.get('api/maps')
         .then(response => {
           const projects = response.data;
+
+          const dataEcology = {
+            type: 'FeatureCollection',
+            features: [],
+            fileName: 'ecology',
+          };
+          const dataSocial = {
+            type: 'FeatureCollection',
+            features: [],
+            fileName: 'social',
+          };
+          const dataStudy = {
+            type: 'FeatureCollection',
+            features: [],
+            fileName: 'study',
+          };
+          const dataTapak = {
+            type: 'FeatureCollection',
+            features: [],
+            fileName: 'tapak',
+          };
+
+          const titleEcology = 'Peta Batas Ekologi';
+          const titleSocial = 'Peta Batas Social';
+          const titleStudy = 'Peta Batas Study';
+          const titleTapak = 'Peta Batas Tapak';
+
+          const rendererEcology = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              color: [0, 0, 0, 0.0],
+              outline: {
+                color: '#a87000',
+                width: 2,
+              },
+            },
+          };
+          const rendererSocial = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              color: [0, 0, 0, 0.0],
+              outline: {
+                color: '#004c73',
+                width: 2,
+              },
+            },
+          };
+          const rendererStudy = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              color: [0, 0, 0, 0.0],
+              outline: {
+                color: '#ff00ff',
+                width: 2,
+              },
+            },
+          };
+          const rendererTapak = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
+              color: [200, 0, 0, 1],
+              outline: {
+                color: '#c80000',
+                width: 2,
+              },
+            },
+          };
+
           for (let i = 0; i < projects.length; i++) {
             if (projects[i].stored_filename) {
               shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                const blob = new Blob([JSON.stringify(data)], {
-                  type: 'application/json',
-                });
+                if (projects[i].attachment_type === 'tapak'){
+                  dataTapak.features = [...dataTapak.features, ...data.features];
+                } else if (projects[i].attachment_type === 'social'){
+                  dataSocial.features = [...dataSocial.features, ...data.features];
+                } else if (projects[i].attachment_type === 'ecology'){
+                  dataEcology.features = [...dataEcology.features, ...data.features];
+                } else if (projects[i].attachment_type === 'study'){
+                  dataStudy.features = [...dataStudy.features, ...data.features];
+                }
+              });
+            }
+          }
 
-                console.log(projects[i].project_title);
-                const url = URL.createObjectURL(blob);
-                axios.get('api/projects/' + projects[i].id_project).then((response) => {
-                  const arrayJsonTemplate = {
-                    title: response.data.project_title + ' (' + response.data.project_year + ').',
-                    content: '<table style="border-collapse: collapse !important">' +
+          console.log(dataEcology);
+
+          // Blob untuk masing2 type
+          const blobEcology = new Blob([JSON.stringify(dataEcology)], {
+            type: 'application/json',
+          });
+          const urlEcology = URL.createObjectURL(blobEcology);
+
+          const blobdataSocial = new Blob([JSON.stringify(dataSocial)], {
+            type: 'application/json',
+          });
+          const urlSocial = URL.createObjectURL(blobdataSocial);
+
+          const blobStudy = new Blob([JSON.stringify(dataStudy)], {
+            type: 'application/json',
+          });
+          const urlStudy = URL.createObjectURL(blobStudy);
+
+          const blobTapak = new Blob([JSON.stringify(dataEcology)], {
+            type: 'application/json',
+          });
+          const urlTapack = URL.createObjectURL(blobTapak);
+
+          const arrayJsonTemplate = {
+            title: projects[0].project_title + ' (' + projects[0].project_year + ').',
+            content: '<table style="border-collapse: collapse !important">' +
                             '<thead>' +
                               '<tr style="margin: 5px 0;">' +
                                 '<td style="width: 35%">KBLI Code</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.kbli + '</td>' +
+                                '<td>' + projects[0].kbli + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
                                 '<td style="width: 35%">No Registrasi</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.registration_no + '</td>' +
+                                '<td>' + projects[0].registration_no + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0;">' +
                                 '<td style="width: 35%">Tipe</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.required_doc + '</td>' +
+                                '<td>' + projects[0].required_doc + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
                                 '<td style="width: 35%">Deskripsi</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.description + '</td>' +
+                                '<td>' + projects[0].description + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0;">' +
                                 '<td style="width: 35%">Skala</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.scale + ' ' + response.data.scale_unit + '</td>' +
+                                '<td>' + projects[0].scale + ' ' + projects[0].scale_unit + '</td>' +
                               '</tr>' +
                             '</thead>' +
                           '</table>',
-                  };
+          };
 
-                  if (projects[i].attachment_type === 'ecology') {
-                    this.title = 'Peta Batas Ekologi';
-                    this.rendererTapak = {
-                      type: 'simple',
-                      field: '*',
-                      symbol: {
-                        type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
-                        outline: {
-                          color: 'blue',
-                          width: 2,
-                        },
-                      },
-                    };
-                  } else if (projects[i].attachment_type === 'social') {
-                    this.title = 'Peta Batas Sosial';
-                    this.rendererTapak = {
-                      type: 'simple',
-                      field: '*',
-                      symbol: {
-                        type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
-                        outline: {
-                          color: 'red',
-                          width: 2,
-                        },
-                      },
-                    };
-                  } else if (projects[i].attachment_type === 'study') {
-                    this.title = 'Peta Batas Wilayah Studi';
-                    this.rendererTapak = {
-                      type: 'simple',
-                      field: '*',
-                      symbol: {
-                        type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
-                        outline: {
-                          color: 'green',
-                          width: 2,
-                        },
-                      },
-                    };
-                  } else if (projects[i].attachment_type === 'tapak') {
-                    this.title = 'Peta Tapak';
-                    this.rendererTapak = {
-                      type: 'simple',
-                      field: '*',
-                      symbol: {
-                        type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
-                        outline: {
-                          color: '#964B00',
-                          width: 2,
-                        },
-                      },
-                    };
-                  }
+          this.mapGeojsonArray.push(new GeoJSONLayer({
+            url: urlEcology,
+            outFields: ['*'],
+            visible: false,
+            title: titleEcology,
+            popupTemplate: arrayJsonTemplate,
+            renderer: rendererEcology,
+            maxScale: 5000,
+            geometryType: 'polygon',
+          }));
+          this.mapGeojsonArray.push(new GeoJSONLayer({
+            url: urlSocial,
+            outFields: ['*'],
+            visible: false,
+            title: titleSocial,
+            popupTemplate: arrayJsonTemplate,
+            renderer: rendererSocial,
+            maxScale: 5000,
+            geometryType: 'polygon',
+          }));
+          this.mapGeojsonArray.push(new GeoJSONLayer({
+            url: urlStudy,
+            outFields: ['*'],
+            visible: false,
+            title: titleStudy,
+            popupTemplate: arrayJsonTemplate,
+            renderer: rendererStudy,
+            maxScale: 5000,
+            geometryType: 'polygon',
+          }));
+          this.mapGeojsonArray.push(new GeoJSONLayer({
+            url: urlTapack,
+            outFields: ['*'],
+            visible: false,
+            title: titleTapak,
+            popupTemplate: arrayJsonTemplate,
+            renderer: rendererTapak,
+            maxScale: 5000,
+            geometryType: 'polygon',
+          }));
 
-                  const geojsonLayerArray = new GeoJSONLayer({
-                    url: url,
-                    outFields: ['*'],
-                    visible: false,
-                    title: projects[i].project_title,
-                    popupTemplate: arrayJsonTemplate,
-                    renderer: this.rendererTapak,
-                    maxScale: 5000,
-                  });
-                  this.mapGeojsonArray.push(geojsonLayerArray);
+          const kegiatanGroupLayer = new GroupLayer({
+            title: 'Peta Tematik AMDAL',
+            visible: true,
+            layers: this.mapGeojsonArray,
+            opacity: 0.90,
+          });
 
-                  // const kegiatanGroupsLayer = new GroupLayer({
-                  //   title: response.data.project_title,
-                  //   visible: true,
-                  //   layers: this.mapGeojsonArray,
-                  //   opacity: 0.90,
-                  // });
-
-                  // last loop
-                  if (i === projects.length - 1){
-                    const kegiatanGroupLayer = new GroupLayer({
-                      title: 'Peta Tematik AMDAL',
-                      visible: true,
-                      layers: this.mapGeojsonArray,
-                      opacity: 0.90,
-                    });
-
-                    map.add(kegiatanGroupLayer);
-                  }
-                });
-              });
-            }
-          }
+          map.add(kegiatanGroupLayer);
         });
 
       // const kawasanHutan = new MapImageLayer({
@@ -282,15 +347,6 @@ export default {
       //   visibilityMode: '',
       // });
 
-      // const tematikGroup = new GroupLayer({
-      //   title: 'Peta Tematik Status',
-      //   visible: false,
-      //   layers: rdtrMap,
-      //   opacity: 0.90,
-      // });
-
-      // map.add(tematikGroup);
-
       const rupabumiGroup = new GroupLayer({
         title: 'Peta Rupa Bumi',
         visible: true,
@@ -299,6 +355,15 @@ export default {
       });
 
       map.add(rupabumiGroup);
+
+      const rtrwProvGroup = new GroupLayer({
+        title: 'Peta RTRW Provinsi',
+        visible: true,
+        layers: rtrwProvMap,
+        opacity: 0.90,
+      });
+
+      map.add(rtrwProvGroup);
 
       const mapView = new MapView({
         container: 'mapViewDiv',
