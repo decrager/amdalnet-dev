@@ -114,9 +114,9 @@ export default {
             name: 'AMDAL',
             itemStyle: {
               normal: {
-                color: '#638761',
+                color: '#347437',
                 lineStyle: {
-                  color: '#638761',
+                  color: '#347437',
                   width: 2,
                 },
               },
@@ -133,9 +133,9 @@ export default {
             type: 'line',
             itemStyle: {
               normal: {
-                color: '#61929d',
+                color: '#449748',
                 lineStyle: {
-                  color: '#61929d',
+                  color: '#449748',
                   width: 2,
                 },
               },
@@ -148,9 +148,9 @@ export default {
             name: 'SPPL',
             itemStyle: {
               normal: {
-                color: '#54abab',
+                color: '#eb8a00',
                 lineStyle: {
-                  color: '#54abab',
+                  color: '#eb8a00',
                   width: 2,
                 },
               },
@@ -165,9 +165,9 @@ export default {
             name: 'Addendum ANDAL dan RKL RPL',
             itemStyle: {
               normal: {
-                color: '#a5c5bc',
+                color: '#fac400',
                 lineStyle: {
-                  color: '#a5c5bc',
+                  color: '#fac400',
                   width: 2,
                 },
               },
