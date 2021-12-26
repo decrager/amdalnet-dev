@@ -61,7 +61,10 @@ export default {
 
   },
   mounted() {
-    this.getUser();
+    if (this.isAllowed){
+      console.log('entering user dashboard...');
+      this.getUser();
+    }
   },
   methods: {
     async getUser(){
@@ -96,6 +99,10 @@ export default {
         this.isLoading = false;
       });
       // console.log('getUser: ', this.user);
+    },
+    isAllowed() {
+      console.log('isAllowed?', this.$store.getters.roles);
+      return !!((this.isFormulator || this.isInitiator || this.isExaminer));
     },
   },
 };

@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <!-- <component :is="currentRole" /> -->
     <admin-dashboard v-if="isAdmin" />
-    <user-dashboard v-else />
+    <user-dashboard v-else-if="isFormulator || isInitiator || isExaminer" />
     <!--
     <examiner-dashboard v-if="isExaminer" />
       -->
