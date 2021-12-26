@@ -173,7 +173,8 @@ import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
-
+import qs from 'qs';
+import esriConfig from '@arcgis/core/config';
 const uploadMaps = new Resource('project-map');
 // const unggahMaps = new Resource('upload-map');
 // const unduhMaps = new Resource('download-map');
@@ -203,7 +204,9 @@ export default {
       idPSuP: 0,
       idPSuS: 0,
       idPemantauanShp: 0,
+      idPemantauanPdf: 0,
       idPengelolaanShp: 0,
+      idPengelolaanPdf: 0,
       index: 0,
       param: [],
       required: true,
@@ -221,16 +224,38 @@ export default {
     },
   },
   mounted() {
-    const tokenParam = {
-      username: 'haris3',
-      password: 'amdal123',
-      expiration: 20160,
-      client: 'requestip',
-      f: 'pjson',
+    esriConfig.request.portalUrl = 'https://amdalgis.menlhk.go.id/';
+    esriConfig.request.proxyUrl = 'proxy/proxy.php';
+    esriConfig.request.corsEnabledServers.push('https://amdalgis.menlhk.go.id/');
+    esriConfig.request.trustedServers.push('https://amdalgis.menlhk.go.id/');
+    esriConfig.request.corsDetection = false;
+    esriConfig.request.forceProxy = true;
+
+    console.log(esriConfig.request.allowedOrigins);
+
+    var data = qs.stringify({
+      'username': 'haris3',
+      'password': 'amdal123',
+      'client': 'requestip',
+      'expiration': 20160,
+      'f': 'json',
+    });
+
+    var config = {
+      method: 'POST',
+      url: 'https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST',
+        'Access-Control-Allow-Headers': 'access-control-allow-origin, access-control-allow-headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+      },
+      data: data,
     };
 
-    axios.post('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', tokenParam)
+    axios(config)
       .then(response => {
+        console.log(response);
         this.token = response.data.token;
       });
 
@@ -429,6 +454,37 @@ export default {
                   });
                 });
               }
+
+              // Map Pemantauan
+              if (projects[i].attachment_type === 'pemantauan') {
+                shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                  const blob = new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  var rendererTapakType = null;
+                  axios.get('api/projects/' + this.idProject).then((response) => {
+                    rendererTapakType = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                        url: '/titik_kelola.png',
+                        width: '24px',
+                        height: '24px',
+                      },
+                    };
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Titik Pemantauan',
+                      renderer: rendererTapakType,
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                });
+              }
             }
 
             const mapView = new MapView({
@@ -507,7 +563,16 @@ export default {
               this.petaPengelolaanSHP = e.original_filename;
               this.idPengelolaanShp = e.id;
             } else {
-              this.petaStudiPDF = e.original_filename;
+              this.petaPengelolaanPDF = e.original_filename;
+              // this.idPSuP = e.id;
+            }
+            break;
+          case 'pemantauan':
+            if (e.file_type === 'SHP') {
+              this.petaPemantauanSHP = e.original_filename;
+              this.idPemantauanShp = e.id;
+            } else {
+              this.petaPemantauanPDF = e.original_filename;
               // this.idPSuP = e.id;
             }
             break;
@@ -635,6 +700,27 @@ export default {
           this.param[index] = {
             attachment_type: 'pengelolaan',
             file_type: 'SHP',
+          };
+          break;
+        case 8:
+          this.files[index] = this.$refs.pengelolaanPdf.files;
+          this.param[index] = {
+            attachment_type: 'pengelolaan',
+            file_type: 'PDF',
+          };
+          break;
+        case 9:
+          this.files[index] = this.$refs.pemantauanShp.files;
+          this.param[index] = {
+            attachment_type: 'pemantauan',
+            file_type: 'SHP',
+          };
+          break;
+        case 10:
+          this.files[index] = this.$refs.pemantauanPdf.files;
+          this.param[index] = {
+            attachment_type: 'pemantauan',
+            file_type: 'PDF',
           };
           break;
         default:
@@ -845,13 +931,10 @@ export default {
             type: 'simple',
             field: '*',
             symbol: {
-              type: 'simple-marker', // autocasts as new SimpleMarkerSymbol()
-              size: 6,
-              color: 'black',
-              outline: { // autocasts as new SimpleLineSymbol()
-                width: 0.5,
-                color: 'white',
-              },
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_kelola.png',
+              width: '24px',
+              height: '24px',
             },
           };
           const url = URL.createObjectURL(blob);
@@ -868,6 +951,41 @@ export default {
         });
       };
       readerTitikPengelolaan.readAsArrayBuffer(mapTitikPengelolaan);
+
+      // Map Pengelolaan
+      const mapTitikPemantauan = this.$refs.pemantauan.files[0];
+      const readerTitikPemantauan = new FileReader();
+      readerTitikPemantauan.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_kelola.png',
+              width: '24px',
+              height: '24px',
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerTitikPemantauan = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Titik Pemantauan',
+            renderer: renderer,
+          });
+
+          map.add(layerTitikPemantauan);
+        });
+      };
+      readerTitikPemantauan.readAsArrayBuffer(mapTitikPemantauan);
 
       const mapView = new MapView({
         container: 'mapView',
