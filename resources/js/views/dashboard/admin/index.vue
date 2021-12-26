@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <date-filter />
+    <date-filter @filterChange="onFilterChange" />
     <submission-stats />
 
     <el-row style="margin: 2em auto;">
@@ -19,9 +19,7 @@
 </template>
 
 <script>
-// import PanelGroup from './components/PanelGroup';
-// import RaddarChart from './components/RaddarChart';
-// import PieChart from './components/PieChart';
+
 import InitiatorList from './components/InitiatorList';
 import SubmissionChart from './components/SubmissionChart';
 import PermitByRegion from './components/Permit';
@@ -31,9 +29,6 @@ import DateFilter from './components/DateFilter';
 export default {
   name: 'AdminDashboard',
   components: {
-    // PanelGroup,
-    // RaddarChart,
-    // PieChart,
     InitiatorList,
     SubmissionChart,
     PermitByRegion,
@@ -42,12 +37,13 @@ export default {
   },
   data() {
     return {
-      // lineChartData: lineChartData.newVisitis,
+      filter: '',
     };
   },
   methods: {
-    handleSetLineChartData(type) {
-      // this.lineChartData = lineChartData[type];
+    onFilterChange(val){
+      this.filter = val;
+      console.log('onFilterChange', this.filter);
     },
   },
 };
