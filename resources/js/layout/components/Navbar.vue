@@ -114,6 +114,12 @@ export default {
     //   .error((error) => {
     //     console.error(error);
     //   });
+
+    window.Echo.channel('notif')
+      .listen('NotificationEvent', e => {
+        this.$store.dispatch('user/getInfo');
+        console.log(e);
+      });
   },
   methods: {
     markAsRead(){

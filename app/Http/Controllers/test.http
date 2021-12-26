@@ -48,3 +48,6 @@ content-type: application/json
 
 {"email":"admin@amdalnet.dev","password":"amdalnet"}
 # 
+
+###
+GET http://localhost:8000/api/fire
