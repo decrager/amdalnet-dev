@@ -73,6 +73,7 @@ return [
             'domain'    => env('OS_USER_DOMAIN_NAME', 'default'),
             'password'  => env('OS_PASSWORD', ''),
             'container' => env('OS_CONTAINER_NAME', ''),
+            'tempUrlKey'=> env('OS_TEMPURL_KEY', 'rahasia123456'),
          ],
     ],
 

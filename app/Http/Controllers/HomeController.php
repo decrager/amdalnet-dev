@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\EntityHome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -15,7 +16,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        echo Storage::url('tes.jpg');
+        echo Storage::url('public/test/61c92bbba477f.txt');
+        echo Storage::disk('openstack')->temporaryUrl('public/test/61c92bbba477f.txt', Carbon::now()->addMinutes(30));
     }
 
     /**
@@ -37,6 +39,10 @@ class HomeController extends Controller
     public function store(Request $request)
     {
         //
+        $file = $request->file('file');
+        $name = 'test/' . uniqid() . '.' . $file->extension();
+        $file->storePubliclyAs('public', $name);
+        echo Storage::url($name);
     }
 
     /**
