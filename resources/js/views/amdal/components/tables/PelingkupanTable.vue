@@ -73,7 +73,7 @@
         <tbody>
           <tr>
             <td>
-              <div v-for="comp in subProjectComponents" :key="comp.id" v-loading="loadingComponents" style="margin:.5em 0;">
+              <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
                 <el-row>
                   <el-tooltip class="item" effect="dark" placement="top-start">
                     <div slot="content">
@@ -213,7 +213,6 @@ export default {
       isEditComponent: false,
       loadingSubProjects: true,
       loadingKomponen: true,
-      loadingComponents: true,
     };
   },
   computed: {
@@ -374,6 +373,7 @@ export default {
         if (sp.data.length > 0){
           this.getRonaAwals(sp.data[0].id);
         }
+        this.loadingKomponen = false;
         this.$emit('handleCurrentIdSubProject', firstSubProject.id);
         this.componentDialogKey = this.componentDialogKey + 1;
       }
@@ -391,7 +391,6 @@ export default {
         }
       });
       this.subProjectComponents = components.data;
-      this.loadingComponents = false;
       if (this.subProjectComponents.length > 0 && this.currentIdSubProjectComponent === 0) {
         this.currentIdSubProjectComponent = this.subProjectComponents[0].id;
       }
