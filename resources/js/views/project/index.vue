@@ -231,6 +231,15 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
+                  v-if="scope.row.feasibility_test && isAmdal(scope.row)"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleRekomendasiUjiKelayakan(scope.row.id)"
+                >
+                  Surat Rekomendasi Uji Kelayakan
+                </el-button>
+                <el-button
                   v-if="scope.row.feasibility_test"
                   href="#"
                   type="text"
@@ -589,6 +598,11 @@ export default {
         path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
       });
     },
+    handleRekomendasiUjiKelayakan(id) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${id}/rekomendasi-uji-kelayakan`,
+      });
+    },
     handleFeasibilityTest(id) {
       this.$router.push({
         path: `/dokumen-kegiatan/${id}/skkl`,
@@ -644,7 +658,7 @@ export default {
     },
     handleMatUklUpl(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl-dummy`,
+        path: `/uklupl/${project.id}/matriks`,
       });
     },
     handleRklRpl(project) {
