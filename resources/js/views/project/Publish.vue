@@ -176,7 +176,7 @@
         </el-row> -->
         </div>
       </el-row>
-      <div slot="footer" class="dialog-footer">
+      <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
       </div>
