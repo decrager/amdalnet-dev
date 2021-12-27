@@ -22,7 +22,7 @@ class KaCommentController extends Controller
             $komen = Comment::where([['document_type', $request->commentType], ['id_project', $request->idProject], ['reply_to', null]])
             ->orderBY('id', 'DESC')->get();
         } else {
-            $komen = Comment::where([['document_type', $request->commentType], ['id_impact_identification', $request->idImpactIdentification], ['reply_to', null]])
+            $komen = Comment::where([['document_type', $request->commentType], ['id_impact_identification', $request->impactIdentification], ['reply_to', null]])
                 ->orderBY('id', 'DESC')->get();
         }
 

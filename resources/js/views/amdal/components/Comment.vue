@@ -187,6 +187,11 @@ export default {
       return this.userInfo.roles.includes('examiner-administration');
     },
   },
+  watch: {
+    impactidentification(newVal, oldVal) {
+      this.getComments();
+    },
+  },
   created() {
     this.getStages();
     this.getComments();
