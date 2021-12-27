@@ -396,18 +396,20 @@ export default {
       }
     },
     async getRonaAwals(idSubProjectComponent) {
-      const ronaAwals = await scopingResource.list({
-        sub_project_rona_awals: true,
-        id_sub_project_component: idSubProjectComponent,
-      });
-      ronaAwals.data.map((ra) => {
-        ra.rona_awals.map((r) => {
-          if (r.name === null) {
-            r.name = r.rona_awal.name;
-          }
+      if (parseInt(idSubProjectComponent) > 0) {
+        const ronaAwals = await scopingResource.list({
+          sub_project_rona_awals: true,
+          id_sub_project_component: idSubProjectComponent,
         });
-      });
-      this.subProjectRonaAwals = ronaAwals.data;
+        ronaAwals.data.map((ra) => {
+          ra.rona_awals.map((r) => {
+            if (r.name === null) {
+              r.name = r.rona_awal.name;
+            }
+          });
+        });
+        this.subProjectRonaAwals = ronaAwals.data;
+      }
       this.loadingKomponen = false;
     },
   },
