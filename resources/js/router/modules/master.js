@@ -7,7 +7,7 @@ const masterRoutes = {
   meta: {
     title: 'masterData',
     icon: 'el-icon-reading',
-    permissions: ['view menu administrator'],
+    roles: ['admin-standard'],
   },
   children: [
     {

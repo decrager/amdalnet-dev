@@ -123,6 +123,7 @@ export default {
       this.list.forEach((role, index) => {
         role['index'] = index + 1;
         role['description'] = this.$t('roles.description.' + role.name);
+        role['name'] = this.$t('roles.title.' + role.name);
       });
       this.loading = false;
     },
