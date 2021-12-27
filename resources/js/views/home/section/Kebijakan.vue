@@ -37,33 +37,43 @@
               <span class="fz12 white fw">No</span>
             </div>
           </el-col>
-          <el-col :span="6" class="py1 cp">
+          <el-col :span="4" class="py1 cp">
             <div class="d-flex align-items-center" @click="handleSort(sort)">
-              <span class="fz12 white fw">Nomor Peraturan</span>
-              <i class="el-icon-d-caret white fz12 ml-0-3" />
-            </div>
-          </el-col>
-          <el-col :span="8" class="text-center py1 cp">
-            <div
-              class="d-flex align-items-center justify-align-center"
-              @click="handleSort(sort)"
-            >
-              <span class="fz12 white fw">Tentang</span>
+              <span class="fz12 white fw">Kebijakan PUU</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
           <el-col :span="5" class="text-center py1 cp">
             <div
-              class="d-flex align-items-center justify-align-center"
+              class="d-flex align-items-center justify-align-start"
               @click="handleSort(sort)"
             >
-              <span class="fz12 white fw">Ditetapkan</span>
+              <span class="fz12 white fw">Jenis PUU</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
+          <el-col :span="4" class="text-center py1 cp">
+            <div
+              class="d-flex align-items-center justify-align-start"
+              @click="handleSort(sort)"
+            >
+              <span class="fz12 white fw">Bidang Kegiatan</span>
+              <i class="el-icon-d-caret white fz12 ml-0-3" />
+            </div>
+          </el-col>
+          <el-col :span="4" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-start">
+              <span class="fz12 white fw">Tentang</span>
+            </div>
+          </el-col>
           <el-col :span="3" class="text-center py1">
-            <div class="d-flex align-items-center justify-align-center">
-              <span class="fz12 white fw">Link</span>
+            <div class="d-flex align-items-center justify-align-start">
+              <span class="fz12 white fw">Tgl Terbit</span>
+            </div>
+          </el-col>
+          <el-col :span="2" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-start">
+              <span class="fz12 white fw">Download</span>
             </div>
           </el-col>
         </el-row>
@@ -77,20 +87,26 @@
           <el-col :span="2" class="text-center py">
             <span class="fz12 white fw">{{ index + 1 }}</span>
           </el-col>
-          <el-col :span="6" class="py">
+          <el-col :span="4" class="py">
             <span class="fz12 white">{{ regulation.regulation_no }}</span>
           </el-col>
-          <el-col :span="8" class="py">
+          <el-col :span="5" class="py">
+            <span class="fz12 white">{{ regulation.regulation.name }}</span>
+          </el-col>
+          <el-col :span="4" class="py ">
+            <span class="fz12 white">{{ regulation.field_of_activity }}</span>
+          </el-col>
+          <el-col :span="4" class=" py1">
             <span class="fz12 white">{{ regulation.about }}</span>
           </el-col>
-          <el-col :span="5" class="py text-center">
+          <el-col :span="3" class=" py1">
             <span class="fz12 white">{{ formatDateStr(regulation.set) }}</span>
           </el-col>
-          <el-col :span="3" class="py text-center">
+          <el-col :span="2" class="py ">
             <a
               :href="regulation.link"
               target="_blank"
-              class="fz12 white cl-blue buttonDownload"
+              class="fz9 white cl-blue buttonDownload"
               download
             >
               <i class="el-icon-download" /> Download
@@ -110,7 +126,7 @@
       </template>
       <template v-else>
         <el-row :gutter="20">
-          <el-col :xs="24" style="padding-top:0.5rem;padding-bottom:0.5rem">
+          <el-col :xs="24" style="padding-top: 0.5rem; padding-bottom: 0.5rem">
             <el-alert
               title="Warning"
               type="warning"
@@ -134,36 +150,6 @@ export default {
   },
   data() {
     return {
-      options: [
-        {
-          value: '1',
-          label: 'Ketetapan Majelis Permusyawaratan Rakyat (Tap MPR)',
-        },
-        {
-          value: '2',
-          label: 'Undang - undang (UU)',
-        },
-        {
-          value: '3',
-          label: 'Peraturan Pemerintah (PP)',
-        },
-        {
-          value: '4',
-          label: 'Peraturan Presiden (Perpres)',
-        },
-        {
-          value: '5',
-          label: 'Peraturan Mentri (Permen)',
-        },
-        {
-          value: '6',
-          label: 'Peraturan Daerah (Perda) Provinsi',
-        },
-        {
-          value: '7',
-          label: 'Peraturan Daerah (Perda) Kabupaten/Kota',
-        },
-      ],
       value: '',
       search: '',
       allData: [],
@@ -176,6 +162,18 @@ export default {
       keyword: '',
       optionValue: null,
       sort: 'ASC',
+      tableData: [
+        {
+          no: '1000',
+          kebijakan: 'PP Nomor 22 Tahun 2021',
+          jenis: 'Peraturan Pemerintah',
+          bidang: 'Lingkungan Hidup',
+          tentang:
+            'Penyelenggaraan Perlindungan dan Pegelolaan Lingkungan Hidup',
+          tanggal: '01 Mar 2021',
+          link: 'https://amdal.menlhk.go.id/amdal_site/uploads/kebijakan/PP Nomor 22 Tahun 2021.pdf',
+        },
+      ],
     };
   },
   created() {
@@ -217,13 +215,9 @@ export default {
         });
     },
     getRegulations() {
-      axios
-        .get(
-          `/api/regulations`
-        )
-        .then((response) => {
-          this.regulations = response.data;
-        });
+      axios.get(`/api/regulations`).then((response) => {
+        this.regulations = response.data;
+      });
     },
     handleSearch() {
       this.getAll(this.keyword);
@@ -238,7 +232,7 @@ export default {
           this.total = response.data.total;
         });
     },
-    handleSort(){
+    handleSort() {
       if (this.sort === 'ASC') {
         this.sort = 'DESC';
       } else {
@@ -332,4 +326,8 @@ export default {
   color: #fff;
   border-radius: 10px;
 }
+.el-table__header-wrapper {
+  background-color: red;
+}
+.fz9{font-size: 9px;}
 </style>

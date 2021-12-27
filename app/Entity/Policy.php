@@ -12,4 +12,10 @@ class Policy extends Model
     protected $table = 'policys';
 
     protected $guarded = [];
+
+
+    public function regulation()
+    {
+        return $this->belongsTo(\App\Entity\Regulation::class, 'regulation_type', 'id');
+    }
 }
