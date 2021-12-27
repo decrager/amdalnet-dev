@@ -1,106 +1,98 @@
 <template>
-  <el-tabs v-model="activeName" type="card" style="margin-top: 30px">
-    <el-tab-pane label="Pra Konstruksi" name="pra-konstruksi">
-      <div v-loading="loading">
-        <div class="pagination-andal">
-          <el-button
-            icon="el-icon-arrow-left"
-            circle
-            :disabled="currentPagePraKonstruksi === 1"
-            @click="currentPagePraKonstruksi--"
-          />
-          <el-input v-model="currentPagePraKonstruksi" class="input-page" />
-          <span> / {{ totalPraKonstruksi }}</span>
-          <el-button
-            icon="el-icon-arrow-right"
-            circle
-            :disabled="currentPagePraKonstruksi === totalPraKonstruksi"
-            @click="currentPagePraKonstruksi++"
-          />
-        </div>
-        <FormDetail
-          :andal="list[indexPraKonstruksi[currentPagePraKonstruksi - 1]]"
-          :loadingsubmit="loadingsubmit"
-          @handleSubmit="handleSubmit"
+  <div style="margin-top: 30px">
+    <div v-if="activeName === 'pra-konstruksi'" v-loading="loading">
+      <div class="pagination-andal">
+        <el-button
+          icon="el-icon-arrow-left"
+          circle
+          :disabled="currentPagePraKonstruksi === 1"
+          @click="currentPagePraKonstruksi--"
+        />
+        <el-input v-model="currentPagePraKonstruksi" class="input-page" />
+        <span> / {{ totalPraKonstruksi }}</span>
+        <el-button
+          icon="el-icon-arrow-right"
+          circle
+          :disabled="currentPagePraKonstruksi === totalPraKonstruksi"
+          @click="currentPagePraKonstruksi++"
         />
       </div>
-    </el-tab-pane>
-    <el-tab-pane label="Konstruksi" name="konstruksi">
-      <div v-loading="loading">
-        <div class="pagination-andal">
-          <el-button
-            icon="el-icon-arrow-left"
-            circle
-            :disabled="currentPageKonstruksi === 1"
-            @click="currentPageKonstruksi--"
-          />
-          <el-input v-model="currentPageKonstruksi" class="input-page" />
-          <span> / {{ totalKonstruksi }}</span>
-          <el-button
-            icon="el-icon-arrow-right"
-            circle
-            :disabled="currentPageKonstruksi === totalKonstruksi"
-            @click="currentPageKonstruksi++"
-          />
-        </div>
-        <FormDetail
-          :andal="list[indexKonstruksi[currentPageKonstruksi - 1]]"
-          :loadingsubmit="loadingsubmit"
-          @handleSubmit="handleSubmit"
+      <FormDetail
+        :andal="list[indexPraKonstruksi[currentPagePraKonstruksi - 1]]"
+        :loadingsubmit="loadingsubmit"
+        @handleSubmit="handleSubmit"
+      />
+    </div>
+    <div v-if="activeName === 'konstruksi'" v-loading="loading">
+      <div class="pagination-andal">
+        <el-button
+          icon="el-icon-arrow-left"
+          circle
+          :disabled="currentPageKonstruksi === 1"
+          @click="currentPageKonstruksi--"
+        />
+        <el-input v-model="currentPageKonstruksi" class="input-page" />
+        <span> / {{ totalKonstruksi }}</span>
+        <el-button
+          icon="el-icon-arrow-right"
+          circle
+          :disabled="currentPageKonstruksi === totalKonstruksi"
+          @click="currentPageKonstruksi++"
         />
       </div>
-    </el-tab-pane>
-    <el-tab-pane label="Operasi" name="operasi">
-      <div v-loading="loading">
-        <div class="pagination-andal">
-          <el-button
-            icon="el-icon-arrow-left"
-            circle
-            :disabled="currentPageOperasi === 1"
-            @click="currentPageOperasi--"
-          />
-          <el-input v-model="currentPageOperasi" class="input-page" />
-          <span> / {{ totalOperasi }}</span>
-          <el-button
-            icon="el-icon-arrow-right"
-            circle
-            :disabled="currentPageOperasi === totalOperasi"
-            @click="currentPageOperasi++"
-          />
-        </div>
-        <FormDetail
-          :andal="list[indexOperasi[currentPageOperasi - 1]]"
-          :loadingsubmit="loadingsubmit"
-          @handleSubmit="handleSubmit"
+      <FormDetail
+        :andal="list[indexKonstruksi[currentPageKonstruksi - 1]]"
+        :loadingsubmit="loadingsubmit"
+        @handleSubmit="handleSubmit"
+      />
+    </div>
+    <div v-if="activeName === 'operasi'" v-loading="loading">
+      <div class="pagination-andal">
+        <el-button
+          icon="el-icon-arrow-left"
+          circle
+          :disabled="currentPageOperasi === 1"
+          @click="currentPageOperasi--"
+        />
+        <el-input v-model="currentPageOperasi" class="input-page" />
+        <span> / {{ totalOperasi }}</span>
+        <el-button
+          icon="el-icon-arrow-right"
+          circle
+          :disabled="currentPageOperasi === totalOperasi"
+          @click="currentPageOperasi++"
         />
       </div>
-    </el-tab-pane>
-    <el-tab-pane label="Pasca Operasi" name="pasca-operasi">
-      <div v-loading="loading">
-        <div class="pagination-andal">
-          <el-button
-            icon="el-icon-arrow-left"
-            circle
-            :disabled="currentPagePascaOperasi === 1"
-            @click="currentPagePascaOperasi--"
-          />
-          <el-input v-model="currentPagePascaOperasi" class="input-page" />
-          <span> / {{ totalPascaOperasi }}</span>
-          <el-button
-            icon="el-icon-arrow-right"
-            circle
-            :disabled="currentPagePascaOperasi === totalPascaOperasi"
-            @click="currentPagePascaOperasi++"
-          />
-        </div>
-        <FormDetail
-          :andal="list[indexPascaOperasi[currentPagePascaOperasi - 1]]"
-          :loadingsubmit="loadingsubmit"
-          @handleSubmit="handleSubmit"
+      <FormDetail
+        :andal="list[indexOperasi[currentPageOperasi - 1]]"
+        :loadingsubmit="loadingsubmit"
+        @handleSubmit="handleSubmit"
+      />
+    </div>
+    <div v-if="activeName === 'pasca-operasi'" v-loading="loading">
+      <div class="pagination-andal">
+        <el-button
+          icon="el-icon-arrow-left"
+          circle
+          :disabled="currentPagePascaOperasi === 1"
+          @click="currentPagePascaOperasi--"
+        />
+        <el-input v-model="currentPagePascaOperasi" class="input-page" />
+        <span> / {{ totalPascaOperasi }}</span>
+        <el-button
+          icon="el-icon-arrow-right"
+          circle
+          :disabled="currentPagePascaOperasi === totalPascaOperasi"
+          @click="currentPagePascaOperasi++"
         />
       </div>
-    </el-tab-pane>
-  </el-tabs>
+      <FormDetail
+        :andal="list[indexPascaOperasi[currentPagePascaOperasi - 1]]"
+        :loadingsubmit="loadingsubmit"
+        @handleSubmit="handleSubmit"
+      />
+    </div>
+  </div>
 </template>
 
 <script>
