@@ -19,7 +19,7 @@ export default {
     },
     height: {
       type: String,
-      default: '300px',
+      default: '350px',
     },
   },
   data() {
@@ -49,29 +49,28 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons');
 
       this.chart.setOption({
+        color: ['#5E727F', '#90a2ad', '#A27D95'],
         tooltip: {
           trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)',
+          formatter: '{b} : {c} ({d}%)',
         },
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['Industries', 'Technology', 'Forex', 'Gold', 'Forecasts'],
+          data: ['Pusat', 'Provinsi', 'Kabupaten/Kota'],
         },
         calculable: true,
         series: [
           {
-            name: 'WEEKLY WRITE ARTICLES',
+            name: 'Kewenangan Izin',
             type: 'pie',
-            roseType: 'radius',
+            // roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
             data: [
-              { value: 320, name: 'Industries' },
-              { value: 240, name: 'Technology' },
-              { value: 149, name: 'Forex' },
-              { value: 100, name: 'Gold' },
-              { value: 59, name: 'Forecasts' },
+              { value: 3056, name: 'Pusat' },
+              { value: 2356, name: 'Provinsi' },
+              { value: 6851, name: 'Kabupaten/Kota' },
             ],
             animationEasing: 'cubicInOut',
             animationDuration: 2600,
@@ -82,3 +81,8 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+div.chart {
+  padding: 1em 0;
+}
+</style>

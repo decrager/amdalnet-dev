@@ -87,6 +87,63 @@
       </el-col>
 
     </el-form-item>
+    <el-form-item label="Titik Pengelolaan" :required="required">
+      <el-col :span="11" style="margin-right:1em;">
+        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+          <legend style="margin:0 2em;">Versi SHP
+            <div v-if="petaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanShp)"><strong>{{ petaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+          </legend>
+
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
+            <input ref="pengelolaanShp" type="file" class="form-control-file" @change="onChangeFiles(7)">
+            <!-- <button type="submit">Unggah</button> -->
+          </form>
+        </fieldset>
+
+      </el-col>
+
+      <el-col :span="11" style="margin-right:1em;">
+        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+          <legend style="margin:0 2em;">Versi PDF
+            <div v-if="petaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanPdf)"><strong>{{ petaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+          </legend>
+
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
+            <input ref="pengelolaanPdf" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(8)">
+            <!-- <button type="submit">Unggah</button> -->
+          </form>
+        </fieldset>
+      </el-col>
+    </el-form-item>
+
+    <el-form-item label="Titik Pemantauan" :required="required">
+      <el-col :span="11" style="margin-right:1em;">
+        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+          <legend style="margin:0 2em;">Versi SHP
+            <div v-if="petaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanSHP)"><strong>{{ petaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+          </legend>
+
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
+            <input ref="pemantauanShp" type="file" class="form-control-file" @change="onChangeFiles(9)">
+            <!-- <button type="submit">Unggah</button> -->
+          </form>
+        </fieldset>
+
+      </el-col>
+
+      <el-col :span="11" style="margin-right:1em;">
+        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+          <legend style="margin:0 2em;">Versi PDF
+            <div v-if="petaPemantauanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanPDF)"><strong>{{ petaPemantauanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+          </legend>
+
+          <form v-if="isFormulator" @submit.prevent="handleSubmit">
+            <input ref="pemantauanPdf" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(10)">
+            <!-- <button type="submit">Unggah</button> -->
+          </form>
+        </fieldset>
+      </el-col>
+    </el-form-item>
     <div id="mapView" class="map-wrapper" />
 
     <el-row v-if="isFormulator" style="text-align:right;">
@@ -115,7 +172,9 @@ import MapView from '@arcgis/core/views/MapView';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
-
+import * as urlUtils from '@arcgis/core/core/urlUtils';
+import qs from 'qs';
+import esriConfig from '@arcgis/core/config';
 const uploadMaps = new Resource('project-map');
 // const unggahMaps = new Resource('upload-map');
 // const unduhMaps = new Resource('download-map');
@@ -133,6 +192,10 @@ export default {
       petaEkologisSHP: '',
       petaSosialSHP: '',
       petaStudiSHP: '',
+      petaPemantauanSHP: '',
+      petaPemantauanPDF: '',
+      petaPengelolaanSHP: '',
+      petaPengelolaanPDF: '',
       files: [],
       idPES: 0,
       idPEP: 0,
@@ -140,11 +203,17 @@ export default {
       idPSS: 0,
       idPSuP: 0,
       idPSuS: 0,
+      idPemantauanShp: 0,
+      idPemantauanPdf: 0,
+      idPengelolaanShp: 0,
+      idPengelolaanPdf: 0,
       index: 0,
       param: [],
       required: true,
       fileMap: [],
       mapShpFile: [],
+      projectTitle: '',
+      token: '',
       // isVisible: false,
       // visible: [false, false, false, false, false, false, false],
     };
@@ -155,6 +224,41 @@ export default {
     },
   },
   mounted() {
+    esriConfig.request.portalUrl = 'https://amdalgis.menlhk.go.id/';
+    esriConfig.request.proxyUrl = 'proxy/proxy.php';
+    esriConfig.request.corsEnabledServers.push('https://amdalgis.menlhk.go.id/');
+    esriConfig.request.trustedServers.push('https://amdalgis.menlhk.go.id/');
+    esriConfig.request.corsDetection = false;
+    esriConfig.request.forceProxy = true;
+
+    console.log(esriConfig.request.allowedOrigins);
+
+    var data = qs.stringify({
+      'username': 'haris3',
+      'password': 'amdal123',
+      'client': 'requestip',
+      'expiration': 20160,
+      'f': 'json',
+    });
+
+    var config = {
+      method: 'POST',
+      url: 'https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST',
+        'Access-Control-Allow-Headers': 'access-control-allow-origin, access-control-allow-headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(response => {
+        console.log(response);
+        this.token = response.data.token;
+      });
+
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
     this.getData();
     this.getMap();
@@ -185,7 +289,7 @@ export default {
                         type: 'simple-fill',
                         color: [0, 0, 0, 0.0],
                         outline: {
-                          color: 'red',
+                          color: '#964B00',
                           width: 2,
                         },
                       },
@@ -278,165 +382,110 @@ export default {
                     type: 'application/json',
                   });
                   const url = URL.createObjectURL(blob);
+                  var rendererTapakType = null;
                   axios.get('api/projects/' + this.idProject).then((response) => {
-                    const rendererTapak = {
+                    if (data.features[0].geometry.type === 'Polygon') {
+                      rendererTapakType = {
+                        type: 'simple',
+                        field: '*',
+                        symbol: {
+                          type: 'simple-fill',
+                          color: 'red',
+                          outline: {
+                            color: '#964B00',
+                            width: 2,
+                          },
+                        },
+                      };
+                    } else if (data.features[0].geometry.type === 'Point') {
+                      rendererTapakType = {
+                        type: 'simple',
+                        field: '*',
+                        symbol: {
+                          type: 'simple-fill',
+                          color: [0, 0, 0, 0.0],
+                          outline: {
+                            color: '#964B00',
+                            width: 2,
+                          },
+                        },
+                      };
+                    }
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Layer Tapak',
+                      renderer: rendererTapakType,
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                });
+              }
+
+              // Map Pengelolaan
+
+              if (projects[i].attachment_type === 'pengelolaan') {
+                shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                  const blob = new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  var rendererTapakType = null;
+                  axios.get('api/projects/' + this.idProject).then((response) => {
+                    rendererTapakType = {
                       type: 'simple',
                       field: '*',
                       symbol: {
-                        type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
-                        outline: {
-                          color: '#964B00',
-                          width: 2,
-                        },
+                        type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                        url: '/titik_kelola.png',
+                        width: '24px',
+                        height: '24px',
                       },
                     };
                     const geojsonLayerArray = new GeoJSONLayer({
                       url: url,
                       outFields: ['*'],
                       visible: true,
-                      title: 'Layer Tapak',
-                      renderer: rendererTapak,
+                      title: 'Titik Pengelolaan',
+                      renderer: rendererTapakType,
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                });
+              }
+
+              // Map Pemantauan
+              if (projects[i].attachment_type === 'pemantauan') {
+                shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                  const blob = new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  var rendererTapakType = null;
+                  axios.get('api/projects/' + this.idProject).then((response) => {
+                    rendererTapakType = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                        url: '/titik_kelola.png',
+                        width: '24px',
+                        height: '24px',
+                      },
+                    };
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Titik Pemantauan',
+                      renderer: rendererTapakType,
                     });
                     map.add(geojsonLayerArray);
                   });
                 });
               }
             }
-
-            //  Map Ekologis
-            // const mapBatasEkologis = this.$refs.peSHP.files[0];
-            // const readerEkologis = new FileReader();
-            // readerEkologis.onload = (event) => {
-            //   const base = event.target.result;
-            //   shp(base).then(function(data) {
-            //     console.log('map: ' + data);
-
-            //     const blob = new Blob([JSON.stringify(data)], {
-            //       type: 'application/json',
-            //     });
-
-            //     const renderer = {
-            //       type: 'simple',
-            //       field: '*',
-            //       symbol: {
-            //         type: 'simple-fill',
-            //         color: [0, 0, 0, 0.0],
-            //         outline: {
-            //           color: 'red',
-            //           width: 2,
-            //         },
-            //       },
-            //     };
-            //     const url = URL.createObjectURL(blob);
-            //     const layerEkologis = new GeoJSONLayer({
-            //       url: url,
-            //       visible: true,
-            //       outFields: ['*'],
-            //       opacity: 0.75,
-            //       title: 'Layer Batas Ekologis',
-            //       renderer: renderer,
-            //     });
-
-            //     map.add(layerEkologis);
-            //     mapView.on('layerview-create', (event) => {
-            //       mapView.goTo({
-            //         target: layerEkologis.fullExtent,
-            //       });
-            //     });
-            //   });
-            // };
-            // readerEkologis.readAsArrayBuffer(mapBatasEkologis);
-
-            // //  Map Batas Sosial
-            // const mapBatasSosial = this.$refs.psSHP.files[0];
-            // const readerSosial = new FileReader();
-            // readerSosial.onload = (event) => {
-            //   const base = event.target.result;
-            //   shp(base).then(function(data) {
-            //     console.log('map: ' + data);
-
-            //     const blob = new Blob([JSON.stringify(data)], {
-            //       type: 'application/json',
-            //     });
-
-            //     const renderer = {
-            //       type: 'simple',
-            //       field: '*',
-            //       symbol: {
-            //         type: 'simple-fill',
-            //         color: [0, 0, 0, 0.0],
-            //         outline: {
-            //           color: 'blue',
-            //           width: 2,
-            //         },
-            //       },
-            //     };
-            //     const url = URL.createObjectURL(blob);
-            //     const layerBatasSosial = new GeoJSONLayer({
-            //       url: url,
-            //       visible: true,
-            //       outFields: ['*'],
-            //       opacity: 0.75,
-            //       title: 'Layer Batas Sosial',
-            //       renderer: renderer,
-            //     });
-
-            //     map.add(layerBatasSosial);
-            //     mapView.on('layerview-create', (event) => {
-            //       mapView.goTo({
-            //         target: layerBatasSosial.fullExtent,
-            //       });
-            //     });
-            //   });
-            // };
-            // readerSosial.readAsArrayBuffer(mapBatasSosial);
-
-            // //  Map Batas Wilayah Studi
-            // const mapBatasWilayahStudi = this.$refs.pwSHP.files[0];
-            // const readerWilayahStudi = new FileReader();
-            // readerWilayahStudi.onload = (event) => {
-            //   const base = event.target.result;
-            //   shp(base).then(function(data) {
-            //     console.log('map: ' + data);
-
-            //     const blob = new Blob([JSON.stringify(data)], {
-            //       type: 'application/json',
-            //     });
-
-            //     const renderer = {
-            //       type: 'simple',
-            //       field: '*',
-            //       symbol: {
-            //         type: 'simple-fill',
-            //         color: [0, 0, 0, 0.0],
-            //         outline: {
-            //           color: 'green',
-            //           width: 2,
-            //         },
-            //       },
-            //     };
-            //     const url = URL.createObjectURL(blob);
-            //     const layerWilayahStudi = new GeoJSONLayer({
-            //       url: url,
-            //       visible: true,
-            //       outFields: ['*'],
-            //       opacity: 0.75,
-            //       title: 'Layer Batas Wilayah Studi',
-            //       renderer: renderer,
-            //     });
-
-            //     map.add(layerWilayahStudi);
-            //     mapView.on('layerview-create', (event) => {
-            //       mapView.goTo({
-            //         target: layerWilayahStudi.fullExtent,
-            //       });
-            //     });
-            //   });
-            // };
-            // readerWilayahStudi.readAsArrayBuffer(mapBatasWilayahStudi);
-
-            // Map Tapak
 
             const mapView = new MapView({
               container: 'mapView',
@@ -480,7 +529,6 @@ export default {
       this.process(files.data);
     },
     process(files){
-      // console.log(files);
       files.forEach((e) => {
         switch (e.attachment_type){
           case 'ecology':
@@ -510,24 +558,67 @@ export default {
               this.idPSuP = e.id;
             }
             break;
+          case 'pengelolaan':
+            if (e.file_type === 'SHP') {
+              this.petaPengelolaanSHP = e.original_filename;
+              this.idPengelolaanShp = e.id;
+            } else {
+              this.petaPengelolaanPDF = e.original_filename;
+              // this.idPSuP = e.id;
+            }
+            break;
+          case 'pemantauan':
+            if (e.file_type === 'SHP') {
+              this.petaPemantauanSHP = e.original_filename;
+              this.idPemantauanShp = e.id;
+            } else {
+              this.petaPemantauanPDF = e.original_filename;
+              // this.idPSuP = e.id;
+            }
+            break;
         }
       });
     },
     handleSubmit(){
-      console.log('submitting files....');
-
       const formData = new FormData();
       formData.append('id_project', this.idProject);
+
+      axios.get(`api/projects/${this.idProject}`)
+        .then(response => {
+          this.projectTitle = response.data.project_title;
+        });
+
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://amdalgis.menlhk.go.id/',
+      });
 
       this.files.forEach((e, i) => {
         formData.append('files[]', e[0]);
         formData.append('params[]', JSON.stringify(this.param[i]));
+
+        const paramItem = {
+          url: 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer',
+          type: 'Feature Service',
+          title: this.projectTitle,
+          file: e[0],
+        };
+
+        try {
+          axios.post('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/haris3/addItem', paramItem, {
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+            },
+          })
+            .then(response => {
+              console.log(response);
+            });
+        } catch (error) {
+          console.log(error);
+        }
       });
 
-      /* Object.entries(this.param).forEach(([key, value]) => {
-        formData.append(key, value);
-      }); */
-      console.log(this.files);
+      console.log(formData);
 
       axios.post('api/upload-maps', formData, {
         headers: {
@@ -551,7 +642,6 @@ export default {
     },
     onChangeFiles(idx){
       const index = idx - 1;
-      console.log('index' + index);
       switch (idx) {
         case 1: // ekologis SHP
           this.files[index] = this.$refs.peSHP.files;
@@ -605,10 +695,37 @@ export default {
           };
           // studi PDF
           break;
+        case 7:
+          this.files[index] = this.$refs.pengelolaanShp.files;
+          this.param[index] = {
+            attachment_type: 'pengelolaan',
+            file_type: 'SHP',
+          };
+          break;
+        case 8:
+          this.files[index] = this.$refs.pengelolaanPdf.files;
+          this.param[index] = {
+            attachment_type: 'pengelolaan',
+            file_type: 'PDF',
+          };
+          break;
+        case 9:
+          this.files[index] = this.$refs.pemantauanShp.files;
+          this.param[index] = {
+            attachment_type: 'pemantauan',
+            file_type: 'SHP',
+          };
+          break;
+        case 10:
+          this.files[index] = this.$refs.pemantauanPdf.files;
+          this.param[index] = {
+            attachment_type: 'pemantauan',
+            file_type: 'PDF',
+          };
+          break;
         default:
       }
       // this.showMap(idx);
-      console.log('handling on change', this.param);
       this.uploadMap();
     },
     defineActions(event) {
@@ -635,8 +752,6 @@ export default {
       readerEkologis.onload = (event) => {
         const base = event.target.result;
         shp(base).then(function(data) {
-          console.log('map: ' + data);
-
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
           });
@@ -679,8 +794,6 @@ export default {
       readerSosial.onload = (event) => {
         const base = event.target.result;
         shp(base).then(function(data) {
-          console.log('map: ' + data);
-
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
           });
@@ -723,8 +836,6 @@ export default {
       readerWilayahStudi.onload = (event) => {
         const base = event.target.result;
         shp(base).then(function(data) {
-          console.log('map: ' + data);
-
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
           });
@@ -763,7 +874,6 @@ export default {
 
       // Map Tapak
       const projId = this.$route.params && this.$route.params.id;
-      console.log(projId);
       axios.get('api/map/' + projId)
         .then(response => {
           const projects = response.data;
@@ -806,6 +916,77 @@ export default {
           }
         });
 
+      // Map Pengelolaan
+      const mapTitikPengelolaan = this.$refs.pengelolaanShp.files[0];
+      console.log(this.$refs.pengelolaanShp);
+      const readerTitikPengelolaan = new FileReader();
+      readerTitikPengelolaan.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_kelola.png',
+              width: '24px',
+              height: '24px',
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerTitikPengelolaan = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Titik Pengelolaan',
+            renderer: renderer,
+          });
+
+          map.add(layerTitikPengelolaan);
+        });
+      };
+      readerTitikPengelolaan.readAsArrayBuffer(mapTitikPengelolaan);
+
+      // Map Pengelolaan
+      const mapTitikPemantauan = this.$refs.pemantauan.files[0];
+      const readerTitikPemantauan = new FileReader();
+      readerTitikPemantauan.onload = (event) => {
+        const base = event.target.result;
+        shp(base).then(function(data) {
+          const blob = new Blob([JSON.stringify(data)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_kelola.png',
+              width: '24px',
+              height: '24px',
+            },
+          };
+          const url = URL.createObjectURL(blob);
+          const layerTitikPemantauan = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Layer Titik Pemantauan',
+            renderer: renderer,
+          });
+
+          map.add(layerTitikPemantauan);
+        });
+      };
+      readerTitikPemantauan.readAsArrayBuffer(mapTitikPemantauan);
+
       const mapView = new MapView({
         container: 'mapView',
         map: map,
@@ -840,7 +1021,6 @@ export default {
     showMap(id){
       this.visible[id] = true;
       this.isVisible = true;
-      console.log('showing Map...', this.visible);
       document.getElementById('map' + id).style.display = 'block';
     },
   },
