@@ -5,6 +5,53 @@
         <el-col :span="24">
           <h2 class="fw white mb-1-5">Kebijakan AMDALNET</h2>
         </el-col>
+        <el-col :span="12">
+          <el-select
+            v-model="optionValue"
+            placeholder="Select"
+            @change="handleFilter()"
+          >
+            <el-option
+              v-for="item in regulations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-col>
+        <el-col :span="6" :offset="6">
+          <el-input
+            v-model="keyword"
+            type="text"
+            placeholder="Pencarian"
+            @keyup.native.enter="handleSearch()"
+          />
+        </el-col>
+        <el-col :span="24">
+          <template>
+            <el-table :data="tableData" style="width: 100%">
+              <el-table-column type="expand">
+                <template slot-scope="props">
+                  <div>Tgl Terbit : {{ props.row.tanggal }}</div>
+                  <div>Download : {{ props.row.link }}</div>
+                </template>
+              </el-table-column>
+              <el-table-column label="No" prop="no" width="70px" />
+              <el-table-column
+                label="Kebijakan PUU"
+                prop="kebijakan"
+                align="left"
+              />
+              <el-table-column label="Jenis PUU" prop="jenis" align="left" />
+              <el-table-column
+                label="Bidang Kegiatan"
+                prop="bidang"
+                align="left"
+              />
+              <el-table-column label="Tentang" prop="tentang" align="left" />
+            </el-table>
+          </template>
+        </el-col>
       </el-row>
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
@@ -110,7 +157,7 @@
       </template>
       <template v-else>
         <el-row :gutter="20">
-          <el-col :xs="24" style="padding-top:0.5rem;padding-bottom:0.5rem">
+          <el-col :xs="24" style="padding-top: 0.5rem; padding-bottom: 0.5rem">
             <el-alert
               title="Warning"
               type="warning"
@@ -176,6 +223,18 @@ export default {
       keyword: '',
       optionValue: null,
       sort: 'ASC',
+      tableData: [
+        {
+          no: '1000',
+          kebijakan: 'PP Nomor 22 Tahun 2021',
+          jenis: 'Peraturan Pemerintah',
+          bidang: 'Lingkungan Hidup',
+          tentang:
+            'Penyelenggaraan Perlindungan dan Pegelolaan Lingkungan Hidup',
+          tanggal: '01 Mar 2021',
+          link: 'https://amdal.menlhk.go.id/amdal_site/uploads/kebijakan/PP Nomor 22 Tahun 2021.pdf',
+        },
+      ],
     };
   },
   created() {
@@ -217,13 +276,9 @@ export default {
         });
     },
     getRegulations() {
-      axios
-        .get(
-          `/api/regulations`
-        )
-        .then((response) => {
-          this.regulations = response.data;
-        });
+      axios.get(`/api/regulations`).then((response) => {
+        this.regulations = response.data;
+      });
     },
     handleSearch() {
       this.getAll(this.keyword);
@@ -238,7 +293,7 @@ export default {
           this.total = response.data.total;
         });
     },
-    handleSort(){
+    handleSort() {
       if (this.sort === 'ASC') {
         this.sort = 'DESC';
       } else {
@@ -331,5 +386,8 @@ export default {
   padding: 0.4rem;
   color: #fff;
   border-radius: 10px;
+}
+.el-table__header-wrapper {
+  background-color: red;
 }
 </style>
