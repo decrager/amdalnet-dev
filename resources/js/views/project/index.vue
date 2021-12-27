@@ -658,7 +658,7 @@ export default {
     },
     handleMatUklUpl(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl-dummy`,
+        path: `/uklupl/${project.id}/matriks`,
       });
     },
     handleRklRpl(project) {
