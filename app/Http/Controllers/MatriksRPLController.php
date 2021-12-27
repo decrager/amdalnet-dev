@@ -189,7 +189,7 @@ class MatriksRPLController extends Controller
             $envMonitor->impact_source = $monitor[$i]['impact_source'];
             $envMonitor->collection_method = $monitor[$i]['collection_method'];
             $envMonitor->location = $monitor[$i]['location'];
-            $envMonitor->time_frequent = $monitor[$i]['time_frequent'];
+            $envMonitor->time_frequent = $monitor[$i]['period_number'] . '-' . $monitor[$i]['period_description'];
             $envMonitor->executor = $monitor[$i]['executor'];
             $envMonitor->supervisor = $monitor[$i]['supervisor'];
             $envMonitor->report_recipient = $monitor[$i]['report_recipient'];
@@ -299,6 +299,9 @@ class MatriksRPLController extends Controller
             foreach($data as $pA) {
                 $ronaAwal = '';
                 $component = '';
+                $periodeNumber = '0';
+                $periodeDesc = '';
+
 
                 // check stages
                 $id_stages = null;
@@ -332,6 +335,19 @@ class MatriksRPLController extends Controller
                     $type = 'new';
                 }
 
+                // PERIODE NUMBER & DESCRIPTION
+                if($type != 'new') {
+                    if($pA->envMonitorPlan->time_frequent) {
+                        $split_period = explode('-', $pA->envMonitorPlan->time_frequent);
+                        if(is_numeric($split_period[0])) {
+                            $periodeNumber = $split_period[0];
+                        }
+                        if(count($split_period) > 1) {
+                            $periodeDesc = $split_period[1];
+                        }
+                    }
+                }
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $pA->id,
@@ -346,6 +362,8 @@ class MatriksRPLController extends Controller
                     'supervisor' => $type == 'new' ? null : $pA->envMonitorPlan->supervisor,
                     'report_recipient' => $type == 'new' ? null : $pA->envMonitorPlan->report_recipient,
                     'description' => $type == 'new' ? null : $pA->envMonitorPlan->description,
+                    'period_number' => $periodeNumber,
+                    'period_description' => $periodeDesc,
                     'comments' => $comments
                 ];
                 $results[] = [
@@ -403,6 +421,8 @@ class MatriksRPLController extends Controller
             foreach($data_merge_final as $merge) {
                 $ronaAwal = '';
                 $component = '';
+                $periodeNumber = '0';
+                $periodeDesc = '';
 
                 // check stages
                 $id_stages = null;
@@ -436,6 +456,19 @@ class MatriksRPLController extends Controller
                     $type = 'new';
                 }
 
+                // PERIODE NUMBER & DESCRIPTION
+                if($type != 'new') {
+                    if($merge->envMonitorPlan->time_frequent) {
+                        $split_period = explode('-', $merge->envMonitorPlan->time_frequent);
+                        if(is_numeric($split_period[0])) {
+                            $periodeNumber = $split_period[0];
+                        }
+                        if(count($split_period) > 1) {
+                            $periodeDesc = $split_period[1];
+                        }
+                    }
+                }
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $merge->id,
@@ -450,6 +483,8 @@ class MatriksRPLController extends Controller
                     'supervisor' => $type == 'new' ? null : $merge->envMonitorPlan->supervisor,
                     'report_recipient' => $type == 'new' ? null : $merge->envMonitorPlan->report_recipient,
                     'description' => $type == 'new' ? null : $merge->envMonitorPlan->description,
+                    'period_number' => $periodeNumber,
+                    'period_description' => $periodeDesc,
                     'comments' => $comments
                 ];
                 $results[] = [
