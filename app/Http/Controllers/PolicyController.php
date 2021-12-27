@@ -21,8 +21,8 @@ class PolicyController extends Controller
             $sort = $request->sort;
         }
 
-        $regulations = Policy::When($request->has('keyword'), function ($query) use ($request) {
-            $columnsToSearch = ['about', 'set'];
+        $regulations = Policy::with(['regulation'])->when($request->has('keyword'), function ($query) use ($request) {
+            $columnsToSearch = ['about', 'set', 'field_of_activity'];
             $searchQuery = '%' . $request->keyword . '%';
             $indents = $query->where('regulation_no', 'ILIKE', '%'.$request->keyword.'%');
             foreach($columnsToSearch as $column) {

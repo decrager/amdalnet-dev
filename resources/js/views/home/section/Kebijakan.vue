@@ -138,16 +138,16 @@
             <span class="fz12 white">{{ regulation.regulation_no }}</span>
           </el-col>
           <el-col :span="5" class="py">
-            <span class="fz12 white">{{ regulation.about }}</span>
+            <span class="fz12 white">{{ regulation.regulation.name }}</span>
           </el-col>
           <el-col :span="4" class="py ">
-            <span class="fz12 white">{{ formatDateStr(regulation.set) }}</span>
+            <span class="fz12 white">{{ regulation.field_of_activity }}</span>
           </el-col>
           <el-col :span="4" class=" py1">
-            <span class="fz12 white">Penyediaan Informasi Geospasial dalam Proses Izin Lingkungan</span>
+            <span class="fz12 white">{{ regulation.about }}</span>
           </el-col>
           <el-col :span="3" class=" py1">
-            <span class="fz12 white">4 November 2021</span>
+            <span class="fz12 white">{{ formatDateStr(regulation.set) }}</span>
           </el-col>
           <el-col :span="2" class="py ">
             <a
