@@ -239,6 +239,7 @@
             v-if="scope.row.type == 'subtitle'"
             v-model="scope.row.period_number"
             :min="0"
+            :disabled="!isFormulator"
             style="width: 100%"
           />
           <span v-if="scope.row.type == 'subtitle'">x</span>
@@ -246,6 +247,7 @@
             v-if="scope.row.type == 'subtitle'"
             v-model="scope.row.period_description"
             placeholder="Pilihan"
+            :disabled="!isFormulator"
           >
             <el-option
               v-for="item in periode"
