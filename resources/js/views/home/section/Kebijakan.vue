@@ -5,53 +5,6 @@
         <el-col :span="24">
           <h2 class="fw white mb-1-5">Kebijakan AMDALNET</h2>
         </el-col>
-        <!-- <el-col :span="12">
-          <el-select
-            v-model="optionValue"
-            placeholder="Select"
-            @change="handleFilter()"
-          >
-            <el-option
-              v-for="item in regulations"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-col>
-        <el-col :span="6" :offset="6">
-          <el-input
-            v-model="keyword"
-            type="text"
-            placeholder="Pencarian"
-            @keyup.native.enter="handleSearch()"
-          />
-        </el-col>
-        <el-col :span="24">
-          <template>
-            <el-table :data="tableData" style="width: 100%">
-              <el-table-column type="expand">
-                <template slot-scope="props">
-                  <div>Tgl Terbit : {{ props.row.tanggal }}</div>
-                  <div>Download : {{ props.row.link }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column label="No" prop="no" width="70px" />
-              <el-table-column
-                label="Kebijakan PUU"
-                prop="kebijakan"
-                align="left"
-              />
-              <el-table-column label="Jenis PUU" prop="jenis" align="left" />
-              <el-table-column
-                label="Bidang Kegiatan"
-                prop="bidang"
-                align="left"
-              />
-              <el-table-column label="Tentang" prop="tentang" align="left" />
-            </el-table>
-          </template>
-        </el-col> -->
       </el-row>
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
@@ -197,36 +150,6 @@ export default {
   },
   data() {
     return {
-      options: [
-        {
-          value: '1',
-          label: 'Ketetapan Majelis Permusyawaratan Rakyat (Tap MPR)',
-        },
-        {
-          value: '2',
-          label: 'Undang - undang (UU)',
-        },
-        {
-          value: '3',
-          label: 'Peraturan Pemerintah (PP)',
-        },
-        {
-          value: '4',
-          label: 'Peraturan Presiden (Perpres)',
-        },
-        {
-          value: '5',
-          label: 'Peraturan Mentri (Permen)',
-        },
-        {
-          value: '6',
-          label: 'Peraturan Daerah (Perda) Provinsi',
-        },
-        {
-          value: '7',
-          label: 'Peraturan Daerah (Perda) Kabupaten/Kota',
-        },
-      ],
       value: '',
       search: '',
       allData: [],
