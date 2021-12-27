@@ -7,7 +7,7 @@
       </div>
       <div class="form-group">
         <label>Dampak Penting Hipotetik</label>
-        <el-input v-model="andal.dph" :readonly="true" />
+        <el-input v-model="andal.name" :readonly="true" />
       </div>
       <div class="form-group">
         <label>Komponen Rona Awal Lingkungan</label>
@@ -80,6 +80,9 @@
         </el-col>
         <el-col :md="12" :sm="24">
           <label>Hasil Evaluasi Dampak</label>
+          <span style="display: block">
+            {{ dampakPentingConclusion(andal.important_trait) }}
+          </span>
           <el-select
             v-model="andal.impact_eval_result"
             placeholder="Pilih Hasil Evaluasi Dampak"
@@ -146,12 +149,24 @@
         Simpan
       </el-button>
     </el-col>
+    <el-col :md="24" :sm="24">
+      <Comment
+        :impactidentification="andal.id"
+        commenttype="andal"
+        :kolom="kolom"
+      />
+    </el-col>
   </el-row>
 </template>
 
 <script>
+import Comment from '@/views/amdal/components/Comment.vue';
+
 export default {
   name: 'FormDetail',
+  components: {
+    Comment,
+  },
   props: {
     andal: {
       type: Object,
@@ -185,6 +200,32 @@ export default {
           value: 'Tersier',
         },
       ],
+      kolom: [
+        {
+          label: 'Dampak Penting Hipotetik',
+          value: 'Dampak Penting Hipotetik',
+        },
+        {
+          label: 'Komponen Rona Awal Lingkungan',
+          value: 'Komponen Rona Awal Lingkungan',
+        },
+        {
+          label: 'Sifat Penting',
+          value: 'Sifat Penting',
+        },
+        {
+          label: 'Perubahan Kondisi Dengan dan Tanpa Rencana Kegiatan',
+          value: 'Perubahan Kondisi Dengan dan Tanpa Rencana Kegitan',
+        },
+        {
+          label: 'Jenis Dampak',
+          value: 'Jenis Dampak',
+        },
+        {
+          label: 'Hasil Evaluasi Dampak',
+          value: 'Hasil Evaluasi Dampak',
+        },
+      ],
     };
   },
   computed: {
@@ -216,6 +257,20 @@ export default {
     },
     handleSubmit() {
       this.$emit('handleSubmit');
+    },
+    dampakPentingConclusion(importantTrait) {
+      if (importantTrait.length > 0) {
+        const dampakPenting = importantTrait.filter((im) => {
+          return im.important_trait === '+P' || im.important_trait === '-P';
+        });
+        if (dampakPenting.length > 0) {
+          return 'Dampak Penting';
+        } else {
+          return 'Dampak Tidak Penting';
+        }
+      }
+
+      return '';
     },
   },
 };
