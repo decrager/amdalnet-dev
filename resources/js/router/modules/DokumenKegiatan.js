@@ -39,6 +39,19 @@ const dokumenKegiatanRoutes = {
       meta: { title: 'Pengujian RKL RPL', icon: 'zip', noCache: true },
     },
     {
+      path: ':id(\\d+)/rekomendasi-uji-kelayakan',
+      component: () =>
+        import(
+          '@/views/pengujian-rkl-rpl/components/ujiKelayakan/SuratRekomendasi'
+        ),
+      name: 'rekomendasiUjiKelayakan',
+      meta: {
+        title: 'Surat Rekomendasi Uji Kelayakan',
+        icon: 'zip',
+        noCache: true,
+      },
+    },
+    {
       path: ':id(\\d+)/skkl',
       component: () => import('@/views/skkl/index'),
       name: 'skkl',
