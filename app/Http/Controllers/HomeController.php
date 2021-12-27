@@ -18,6 +18,7 @@ class HomeController extends Controller
     {
         echo Storage::url('public/test/61c92bbba477f.txt');
         echo Storage::disk('openstack')->temporaryUrl('public/test/61c92bbba477f.txt', Carbon::now()->addMinutes(30));
+        echo Storage::temporaryUrl('public/test/61c92bbba477f.txt', Carbon::now()->addMinutes(30));
     }
 
     /**
