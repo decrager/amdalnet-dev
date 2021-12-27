@@ -5,7 +5,7 @@
         <el-col :span="24">
           <h2 class="fw white mb-1-5">Kebijakan AMDALNET</h2>
         </el-col>
-        <el-col :span="12">
+        <!-- <el-col :span="12">
           <el-select
             v-model="optionValue"
             placeholder="Select"
@@ -51,7 +51,7 @@
               <el-table-column label="Tentang" prop="tentang" align="left" />
             </el-table>
           </template>
-        </el-col>
+        </el-col> -->
       </el-row>
       <el-row :gutter="20" class="mb-1">
         <el-col :span="12">
@@ -84,33 +84,43 @@
               <span class="fz12 white fw">No</span>
             </div>
           </el-col>
-          <el-col :span="6" class="py1 cp">
+          <el-col :span="4" class="py1 cp">
             <div class="d-flex align-items-center" @click="handleSort(sort)">
-              <span class="fz12 white fw">Nomor Peraturan</span>
-              <i class="el-icon-d-caret white fz12 ml-0-3" />
-            </div>
-          </el-col>
-          <el-col :span="8" class="text-center py1 cp">
-            <div
-              class="d-flex align-items-center justify-align-center"
-              @click="handleSort(sort)"
-            >
-              <span class="fz12 white fw">Tentang</span>
+              <span class="fz12 white fw">Kebijakan PUU</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
           <el-col :span="5" class="text-center py1 cp">
             <div
-              class="d-flex align-items-center justify-align-center"
+              class="d-flex align-items-center justify-align-start"
               @click="handleSort(sort)"
             >
-              <span class="fz12 white fw">Ditetapkan</span>
+              <span class="fz12 white fw">Jenis PUU</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
+          <el-col :span="4" class="text-center py1 cp">
+            <div
+              class="d-flex align-items-center justify-align-start"
+              @click="handleSort(sort)"
+            >
+              <span class="fz12 white fw">Bidang Kegiatan</span>
+              <i class="el-icon-d-caret white fz12 ml-0-3" />
+            </div>
+          </el-col>
+          <el-col :span="4" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-start">
+              <span class="fz12 white fw">Tentang</span>
+            </div>
+          </el-col>
           <el-col :span="3" class="text-center py1">
-            <div class="d-flex align-items-center justify-align-center">
-              <span class="fz12 white fw">Link</span>
+            <div class="d-flex align-items-center justify-align-start">
+              <span class="fz12 white fw">Tgl Terbit</span>
+            </div>
+          </el-col>
+          <el-col :span="2" class="text-center py1">
+            <div class="d-flex align-items-center justify-align-start">
+              <span class="fz12 white fw">Download</span>
             </div>
           </el-col>
         </el-row>
@@ -124,20 +134,26 @@
           <el-col :span="2" class="text-center py">
             <span class="fz12 white fw">{{ index + 1 }}</span>
           </el-col>
-          <el-col :span="6" class="py">
+          <el-col :span="4" class="py">
             <span class="fz12 white">{{ regulation.regulation_no }}</span>
           </el-col>
-          <el-col :span="8" class="py">
+          <el-col :span="5" class="py">
             <span class="fz12 white">{{ regulation.about }}</span>
           </el-col>
-          <el-col :span="5" class="py text-center">
+          <el-col :span="4" class="py ">
             <span class="fz12 white">{{ formatDateStr(regulation.set) }}</span>
           </el-col>
-          <el-col :span="3" class="py text-center">
+          <el-col :span="4" class=" py1">
+            <span class="fz12 white">Penyediaan Informasi Geospasial dalam Proses Izin Lingkungan</span>
+          </el-col>
+          <el-col :span="3" class=" py1">
+            <span class="fz12 white">4 November 2021</span>
+          </el-col>
+          <el-col :span="2" class="py ">
             <a
               :href="regulation.link"
               target="_blank"
-              class="fz12 white cl-blue buttonDownload"
+              class="fz9 white cl-blue buttonDownload"
               download
             >
               <i class="el-icon-download" /> Download
@@ -390,4 +406,5 @@ export default {
 .el-table__header-wrapper {
   background-color: red;
 }
+.fz9{font-size: 9px;}
 </style>
