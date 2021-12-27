@@ -213,7 +213,6 @@ class FeasibilityTestController extends Controller
             File::makeDirectory(storage_path('app/public/uji-kelayakan/'));
         }
 
-        
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
         $save_file_name = 'uji-kelayakan-' . strtolower($project->project_title) . '.docx';
