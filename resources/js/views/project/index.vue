@@ -5,7 +5,7 @@
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col>
             <el-button
-              v-if="isInitiator"
+              v-if="couldCreateProject && !isScoping && !isDigiWork"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
@@ -60,7 +60,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="isInitiator"
+                  v-if="isInitiator && !isScoping && !isDigiWork"
                   type="text"
                   href="#"
                   icon="el-icon-user"
@@ -96,7 +96,7 @@
                   Delete
                 </el-button> -->
                 <el-button
-                  v-if="!isLpjp"
+                  v-if="couldViewProject && !isScoping && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -105,7 +105,7 @@
                   Lihat Detil Penapisan
                 </el-button>
                 <el-button
-                  v-if="(scope.row.published && (isInitiator || isExaminer))"
+                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork)"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -123,7 +123,7 @@
                   Tambah Tim LPJP
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -132,7 +132,7 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -141,7 +141,7 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin)"
+                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -150,7 +150,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -159,7 +159,7 @@
                   RKL/RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && isFormulator"
+                  v-if="isUklUpl(scope.row) && isFormulator && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -195,7 +195,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -204,7 +204,7 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -213,7 +213,7 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -222,7 +222,7 @@
                   Workspace UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator"
+                  v-if="isInitiator && !isScoping && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -357,6 +357,12 @@ export default {
     };
   },
   computed: {
+    couldCreateProject(){
+      return this.$store.getters.permissions.includes('create project');
+    },
+    couldViewProject(){
+      return this.$store.getters.permissions.includes('read project');
+    },
     isLpjp() {
       return this.userInfo.roles.includes('lpjp');
     },
@@ -374,6 +380,15 @@ export default {
     },
     isExaminer() {
       return this.userInfo.roles.includes('examiner');
+    },
+    isScoping(){
+      return this.$route.name === 'scopingProject';
+    },
+    isDigiWork(){
+      return this.$route.name === 'digWorkProject';
+    },
+    isScreening(){
+      return this.$route.name === 'screeningProject';
     },
   },
   async created() {
@@ -396,7 +411,7 @@ export default {
     // }
 
     this.getFiltered(this.listQuery);
-    console.log(this.userInfo);
+    console.log(this.$route.name);
   },
   methods: {
     isUklUpl(project){

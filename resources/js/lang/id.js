@@ -99,6 +99,12 @@ export default {
     tuk: 'Tim Uji Kelayakan',
     editWorkspace: 'Edit Workspace',
     projectWorkspace: 'Project workspace',
+    screening: 'Penapisan',
+    scoping: 'Asistensi Pelingkupan',
+    digWork: 'Digital Workspace',
+    screeningProject: 'Penapisan',
+    digWorkProject: 'Digital Workspace',
+    scopingProject: 'Asistensi Pelingkupan',
   },
   navbar: {
     logOut: 'Keluar',
