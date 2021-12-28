@@ -1,16 +1,19 @@
 <template>
   <div>
-    <header-home />
-    <hero-home />
-    <steps-home />
-    <materi />
-    <kebijakan />
-    <action-home />
-    <counter-home />
-    <announcement-home />
+    <header-home @handleSetMenu="handleSetMenu" />
+    <hero-home v-if="toggleMenu" />
+    <steps-home v-if="toggleMenu" />
+    <materi v-if="toggleMenuMateri" />
+    <kebijakan v-if="toggleMenuKebijakan" />
+    <action-home v-if="toggleMenu" />
+    <counter-home v-if="toggleMenu" />
+    <announcement-home v-if="toggleMenu" />
     <footer-home />
     <div class="footer__rights">
-      <p class="footer__copy">&#169; AMDALNET 2021. Direktorat Jenderal Planologi Kehutanan dan Tata Lingkungan.</p>
+      <p class="footer__copy">
+        &#169; AMDALNET 2021. Direktorat Jenderal Planologi Kehutanan dan Tata
+        Lingkungan.
+      </p>
     </div>
   </div>
 </template>
@@ -32,15 +35,40 @@ export default {
     'header-home': HeaderHome,
     'hero-home': HeroHome,
     'steps-home': StepsHome,
-    'kebijakan': Kebijakan,
-    'materi': Materi,
+    kebijakan: Kebijakan,
+    materi: Materi,
     'action-home': ActionHome,
     'counter-home': CounterHome,
     'announcement-home': AnnouncementHome,
     'footer-home': FooterHome,
   },
+  data() {
+    return {
+      toggleMenuMateri: false,
+      toggleMenuKebijakan: false,
+      toggleMenu: true,
+    };
+  },
   created() {
     this.$store.dispatch('getKblis', { kblis: true });
+  },
+  methods: {
+    handleSetMenu(e) {
+      this.toggleMenuMateri = false;
+      this.toggleMenuKebijakan = false;
+      this.toggleMenu = true;
+
+      if (e === 'MATERI') {
+        this.toggleMenuMateri = true;
+        this.toggleMenuKebijakan = false;
+        this.toggleMenu = false;
+      }
+      if (e === 'KEBIJAKAN') {
+        this.toggleMenuKebijakan = true;
+        this.toggleMenuMateri = false;
+        this.toggleMenu = false;
+      }
+    },
   },
 };
 </script>
