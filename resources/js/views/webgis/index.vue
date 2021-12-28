@@ -132,7 +132,6 @@ export default {
                   type: 'application/json',
                 });
 
-                console.log(projects[i].project_title);
                 const url = URL.createObjectURL(blob);
                 axios.get('api/projects/' + projects[i].id_project).then((response) => {
                   const arrayJsonTemplate = {
@@ -140,29 +139,44 @@ export default {
                     content: '<table style="border-collapse: collapse !important">' +
                             '<thead>' +
                               '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">KBLI Code</td>' +
+                                '<td style="width: 35%">FID</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.kbli + '</td>' +
+                                '<td>' + data.features[0].properties.id + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">No Registrasi</td>' +
+                                '<td style="width: 35%">NAMA_PEMRAKARSA</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.registration_no + '</td>' +
+                                '<td>' + data.features[0].properties.pemrakarsa + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Tipe</td>' +
+                                '<td style="width: 35%">LAYER</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.required_doc + '</td>' +
+                                '<td>' + data.features[0].properties.layer + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">Deskripsi</td>' +
+                                '<td style="width: 35%">NAMA_KEGIATAN</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.description + '</td>' +
+                                '<td>' + data.features[0].properties.kegiatan + '</td>' +
                               '</tr>' +
                               '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">Skala</td>' +
+                                '<td style="width: 35%">JENIS_DOKUMEN</td>' +
                                 '<td> : </td>' +
-                                '<td>' + response.data.scale + ' ' + response.data.scale_unit + '</td>' +
+                                '<td>' + data.features[0].properties.dokumen + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">LOKASI</td>' +
+                                '<td> : </td>' +
+                                '<td>' + data.features[0].properties.lokasi + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0;">' +
+                                '<td style="width: 35%">LUAS</td>' +
+                                '<td> : </td>' +
+                                '<td>' + data.features[0].properties.luas + '</td>' +
+                              '</tr>' +
+                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                '<td style="width: 35%">SKALA_DATA</td>' +
+                                '<td> : </td>' +
+                                '<td>' + data.features[0].properties.skala + '</td>' +
                               '</tr>' +
                             '</thead>' +
                           '</table>',
@@ -177,7 +191,7 @@ export default {
                         type: 'simple-fill',
                         color: [0, 0, 0, 0.0],
                         outline: {
-                          color: 'blue',
+                          color: [168, 112, 0, 1],
                           width: 2,
                         },
                       },
@@ -191,7 +205,7 @@ export default {
                         type: 'simple-fill',
                         color: [0, 0, 0, 0.0],
                         outline: {
-                          color: 'red',
+                          color: [0, 76, 115, 1],
                           width: 2,
                         },
                       },
@@ -205,7 +219,7 @@ export default {
                         type: 'simple-fill',
                         color: [0, 0, 0, 0.0],
                         outline: {
-                          color: 'green',
+                          color: [255, 0, 255, 1],
                           width: 2,
                         },
                       },
@@ -217,9 +231,9 @@ export default {
                       field: '*',
                       symbol: {
                         type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
+                        color: [200, 0, 0, 1],
                         outline: {
-                          color: '#964B00',
+                          color: [200, 0, 0, 1],
                           width: 2,
                         },
                       },
@@ -229,20 +243,14 @@ export default {
                   const geojsonLayerArray = new GeoJSONLayer({
                     url: url,
                     outFields: ['*'],
-                    visible: true,
+                    visible: false,
                     title: projects[i].project_title,
                     popupTemplate: arrayJsonTemplate,
                     renderer: this.rendererTapak,
                     maxScale: 5000,
                   });
-                  this.mapGeojsonArray.push(geojsonLayerArray);
 
-                  // const kegiatanGroupsLayer = new GroupLayer({
-                  //   title: response.data.project_title,
-                  //   visible: true,
-                  //   layers: this.mapGeojsonArray,
-                  //   opacity: 0.90,
-                  // });
+                  this.mapGeojsonArray.push(geojsonLayerArray);
 
                   // last loop
                   if (i === projects.length - 1){
