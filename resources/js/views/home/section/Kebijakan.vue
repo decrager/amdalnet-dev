@@ -256,6 +256,8 @@ export default {
 <style scoped>
 #kebijakan {
   background-color: #133715;
+  padding-top: 11rem;
+  padding-bottom: 11rem;
 }
 .fz12 {
   font-size: 12px;

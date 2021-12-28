@@ -8,13 +8,13 @@
       <div id="nav-menu" class="nav__menu">
         <ul class="nav__list">
           <li class="nav__item">
-            <a href="#materi" class="nav__link active-link">Materi</a>
+            <a href="#" class="nav__link active-link" @click="handleSetMenu('MATERI')">Materi</a>
           </li>
           <li class="nav__item">
-            <a href="#kebijakan" class="nav__link">Kebijakan</a>
+            <a href="#" class="nav__link" @click="handleSetMenu('KEBIJAKAN')">Kebijakan</a>
           </li>
           <li class="nav__item">
-            <a href="#about" class="nav__link">Tentang Kami</a>
+            <a href="#about" class="nav__link" @click="handleSetMenu('TENTANG')">Tentang Kami</a>
           </li>
           <li class="nav__item">
             <router-link to="login" class="btn__link">Masuk</router-link>
@@ -76,6 +76,9 @@ export default {
     toLogin() {
       this.loading = true;
       return this.$router.push('/login');
+    },
+    handleSetMenu(e){
+      this.$emit('handleSetMenu', e);
     },
   },
 };
