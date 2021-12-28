@@ -46,7 +46,9 @@ class BesaranDampakController extends Controller
     private function getImpactIdentifications($id)
     {
         $impacts = ImpactIdentification::from('impact_identifications AS ii')
-            ->selectRaw('ii.id, ii.id_change_type, ct."name" as change_type_name,
+            ->selectRaw('ii.id, ii.id_change_type, 
+                ii.change_type_name,
+                ct."name" as change_type_name_master,
                 spc.id_project_stage,
                 c.id_project_stage as id_project_stage_master,
                 spc."name" as component_name,

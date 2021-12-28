@@ -106,8 +106,8 @@ class MatriksUklUplController extends Controller
         }
         $impacts = ImpactIdentification::from('impact_identifications AS ii')
             ->with($with)
-            ->selectRaw('ii.id, ii.id_change_type, 
-                ct."name" as change_type_name,
+            ->selectRaw('ii.id, ii.id_change_type, ii.change_type_name,
+                ct."name" as change_type_name_master,
                 spc.id_project_stage,
                 c.id_project_stage as id_project_stage_master,
                 spc."name" as component_name,
@@ -150,6 +150,9 @@ class MatriksUklUplController extends Controller
                 }
                 if (empty($impact->unit)) {
                     $impact->unit = $impact->nominal . ' ' . $impact->unit_master;
+                }
+                if (!empty($impact->id_change_type)) {
+                    $impact->change_type_name = $impact->change_type_name_master;
                 }
                 if ($impact->id_project_stage == $stage->id) {
                     $impact['is_stage'] = false;
