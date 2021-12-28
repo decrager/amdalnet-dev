@@ -1,6 +1,6 @@
 <template>
-  <div id="detailForm">
-    <div v-if="data">
+  <div v-if="data" id="detailForm">
+    <div>
       <el-row class="detail-header">
         <el-col :span="18" class="stage">{{ data.stage }}</el-col>
         <el-col :span="6" style="font-size:150%; font-weight:900;text-align:right;">
@@ -81,17 +81,14 @@
       </el-row>
       <div style="text-align: right; margin-top:2em;">
         <el-button
-
           type="success"
           icon="el-icon-check"
           style="margin-bottom: 10px;"
+          @click="saveChanges()"
         >
           Simpan Perubahan
         </el-button>
       </div>
-    </div>
-    <div v-else>
-      <el-empty />
     </div>
   </div>
 </template>
@@ -99,6 +96,7 @@
 import Resource from '@/api/resource';
 import PieForm from './PieForm.vue';
 const pieResource = new Resource('pie-entries');
+const impactsResource = new Resource('impact-id');
 export default {
   name: 'DampakHipotetikDetailForm',
   components: {
@@ -187,7 +185,7 @@ export default {
     },
     hasChanges(e) {
       this.data.hasChanges = true;
-      this.$emit('hasChanges', true);
+      this.$emit('hasChanges', this.data);
     },
     onChangeType(val){
       const ct = this.changeTypes.find(e => e.id === val);
@@ -206,6 +204,13 @@ export default {
         this.getPies();
       }
       this.hasChanges(true);
+    },
+    saveChanges(){
+      console.log('You\'re initiating save!');
+      impactsResource.store(this.data);
+      this.data.hasChanges = false;
+      this.$emit('saveData', this.data);
+      console.log(this.data);
     },
   },
 };

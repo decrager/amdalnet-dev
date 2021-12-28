@@ -13,6 +13,7 @@
       :change-types="changeTypes"
       :pie-params="pieParams"
       @hasChanges="hasChanges"
+      @saveData="onSaveData"
     />
   </div>
 </template>
@@ -51,14 +52,14 @@ export default {
     async getImpacts(){
       projectStagesResource.list({ ordered: true }).then((res) => {
         this.stages = res;
-        console.log('stages', this.stages);
+        // console.log('stages', this.stages);
       });
 
       impactsResource.list({
         id_project: this.id_project,
       }).then((res) => {
         this.impacts = res;
-        console.log('impacts', this.impacts);
+        // console.log('impacts', this.impacts);
       });
     },
     async getParams(){
@@ -79,12 +80,18 @@ export default {
     },
     onDataSelected(obj) {
       this.selectedData = obj;
-      console.log('onSelectedData', this.selectedData.stage);
+      // console.log('onSelectedData', this.selectedData.stage);
     },
-    hasChanges(e) {
+    hasChanges(obj) {
+      this.handlePie(obj);
       const hc = this.impacts.filter(e => (e.hasChanges === true));
       this.totalChanges = hc.length;
-      console.log('calling totaller!', this.totalChanges);
+      // console.log('calling totaller!', this.totalChanges);
+    },
+    onSaveData(obj){
+      const temp = this.impacts;
+      this.impacts = null;
+      this.impacts = temp;
     },
   },
 };

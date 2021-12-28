@@ -561,6 +561,37 @@ class ImpactIdentificationController extends Controller
     }
 
     /**
+     * Save one impact
+      * @param \Illuminate\Http\Request $request
+      * @return \Illuminate\Http\Response
+     */
+    public function saveImpact(Request $request){
+        if($request && $request->id)
+        {
+            $impact = ImpactIdentification::find($request->id);
+            if($impact){
+                $impact->study_length_month = $request->study_length_month;
+                $impact->study_length_year = $request->study_length_year;
+                $impact->study_location = $request->study_location;
+                $impact->is_hypothetical_significant = $request->is_hypothetical_significant;
+                $impact->initial_study_plan = $request->initial_study_plan;
+
+                if (($request->id_change_type == 0) &&
+                    (($request->change_type_name  != null) &&
+                    (trim($request->change_type_name) != ""))){
+                    $ctype = ChangeType::firstOrCreate(['name' => trim($request->change_type_name)]);
+                    $impact->id_change_type = $ctype->id;
+                } else {
+                    $impact->id_change_type = $request->id_change_type;
+                }
+                $impact->save();
+                return response($impact);
+            }
+        }
+        return response($request);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Entity\ImpactIdentification  $impactIdentification

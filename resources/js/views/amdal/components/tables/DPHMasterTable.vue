@@ -116,7 +116,8 @@ export default {
       }
       return false;
     },
-    selection(e){
+    selection(e, r){
+      console.log('selection:', e, r);
       this.$emit('dataSelected', e);
     },
   },
