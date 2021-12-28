@@ -99,6 +99,12 @@ export default {
     tuk: 'Examiner Team',
     editWorkspace: 'Edit Workspace',
     projectWorkspace: 'Project workspace',
+    screening: 'Screening',
+    scoping: 'Scoping',
+    digWork: 'Digital Workspace',
+    screeningProject: 'Screening Project',
+    digWorkProject: 'Digital Workspace Project',
+    scopingProject: 'Scoping Project',
   },
   navbar: {
     logOut: 'Log Out',

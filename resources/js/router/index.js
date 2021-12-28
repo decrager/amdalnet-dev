@@ -31,6 +31,9 @@ import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
 import dokumenRoutes from './modules/DokumenKegiatan';
 import flowchartRoutes from './modules/flowchart';
+import scopingRoutes from './modules/scoping';
+import screeningRoutes from './modules/screening';
+import digWorkRoutes from './modules/digwork';
 // import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
@@ -226,6 +229,9 @@ export const asyncRoutes = [
   // ukluplStaticRoutes,
   adminRoutes,
   projectRoutes,
+  screeningRoutes,
+  scopingRoutes,
+  digWorkRoutes,
   // initiatorRoutes,
   // formulatorRoutes,
   lpjpRoutes,
