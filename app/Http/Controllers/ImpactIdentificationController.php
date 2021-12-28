@@ -330,7 +330,7 @@ class ImpactIdentificationController extends Controller
         $response = [];
         DB::beginTransaction();
         foreach ($params['env_manage_plan_data'] as $impact) {
-            
+
             if (!$impact['is_stage']) {
                 if ($impact['env_manage_plan'] != null) {
                     foreach ($impact['env_manage_plan'] as $plan) {
@@ -354,7 +354,7 @@ class ImpactIdentificationController extends Controller
                         }
                     }
                 }
-            }            
+            }
         }
         if ($updated == $count) {
             DB::commit();
@@ -381,7 +381,7 @@ class ImpactIdentificationController extends Controller
         $response = [];
         DB::beginTransaction();
         foreach ($params['env_monitor_plan_data'] as $impact) {
-            
+
             if (!$impact['is_stage']) {
                 if ($impact['env_monitor_plan'] != null) {
                     foreach ($impact['env_monitor_plan'] as $plan) {
@@ -405,7 +405,7 @@ class ImpactIdentificationController extends Controller
                         }
                     }
                 }
-            }            
+            }
         }
         if ($updated == $count) {
             DB::commit();
@@ -523,6 +523,40 @@ class ImpactIdentificationController extends Controller
         ->get();
              // ->where('id_pie_param' , $request->id_pie_param)->all();
         return response($pies);
+    }
+
+    /**
+     * Accomodating DPDPH in  master-detail format
+     */
+
+     /**
+      * Get Impact Identifications
+      * @param \Illuminate\Http\Request $request
+      * @return \Illuminate\Http\Response
+      */
+    public function getImpacts(Request $request){
+        $impacts = ImpactIdentification::from('impact_identifications AS ii')
+        ->selectRaw('ii.id, ii.id_change_type,
+            ct."name" as change_type_name,
+            COALESCE(c.id_project_stage, spc.id_project_stage) as project_stage,
+            COALESCE(c."name", spc."name") as component,
+            COALESCE(ra."name", spra."name") as rona_awal,
+            spra."name" as rona_awal_name,
+            ii.initial_study_plan,
+            ii.is_hypothetical_significant,
+            ii.is_managed,
+            ii.study_length_month,
+            ii.study_length_year,
+            ii.study_location')
+        ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
+        ->leftJoin('sub_project_rona_awals AS spra', 'ii.id_sub_project_rona_awal', '=', 'spra.id')
+        ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
+        ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
+        ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+        ->where('ii.id_project', $request->id_project)
+        ->orderBy('ii.id', 'asc')
+        ->get();
+        return response($impacts);
     }
 
     /**

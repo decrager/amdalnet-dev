@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isProjectAmdal" class="app-container" style="padding: 24px">
-    <el-card>
+  <div v-if="isProjectAmdal" class="app-container">
+    <el-card style="padding: 24px">
       <workflow />
       <h2>Formulir Kerangka Acuan</h2>
       <span>
@@ -27,10 +27,12 @@
           <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
         </el-collapse-item>
         <el-collapse-item name="3" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+          <dampak-hipotetik-m-d />
+          <!--
           <dampak-hipotetik
             v-if="activeName === '3'"
             @handleReloadVsaList="handleReloadVsaList"
-          />
+          /> -->
           <!--
           <dampak-potensial
             @handleReloadVsaList="handleReloadVsaList"
@@ -68,7 +70,8 @@
 import Pelingkupan from './components/Pelingkupan.vue';
 import MatriksIdentifikasiDampakTable from './components/tables/MatriksIdentifikasiDampakTable.vue';
 import MatriksDPHTable from './components/tables/MatriksDPHTable.vue';
-import DampakHipotetik from './components/DampakHipotetik.vue';
+// import DampakHipotetik from './components/DampakHipotetik.vue';
+import DampakHipotetikMD from './components/DPDPH.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
 import BaganAlir from './components/BaganAlir.vue';
@@ -83,7 +86,8 @@ export default {
   components: {
     Pelingkupan,
     MatriksIdentifikasiDampakTable,
-    DampakHipotetik,
+    // DampakHipotetik,
+    DampakHipotetikMD,
     MetodeStudi,
     MatriksDPHTable,
     Workflow,
@@ -98,6 +102,7 @@ export default {
   },
   data() {
     return {
+      sticky: 0,
       isProjectAmdal: false,
       accordionKey: 1,
       idProject: 0,
