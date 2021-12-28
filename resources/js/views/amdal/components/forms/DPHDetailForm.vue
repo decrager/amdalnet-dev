@@ -31,7 +31,7 @@
         <el-col :span="8">
           <el-form label-position="top">
             <el-form-item label="Dampak Penting Hipotetik">
-              <el-select v-model="data.is_hypothetical_significant" placeholder="Select" @change="hasChanges">
+              <el-select v-model="data.is_hypothetical_significant" placeholder="Select" @change="onDPHChange">
                 <el-option
                   v-for="item in dphdtph"
                   :key="item.value"
@@ -139,12 +139,20 @@ export default {
   },
   watch: {
     data: function(val) {
-      if (val.is_hypothetical_significant) {
+      if (val.id_change_type){
+        const ct = this.changeTypes.find(e => e.id === val.id_change_type);
+        if (!ct){
+          val.id_change_type = 0;
+        }
+      }
+      console.log('watch', val);
+
+      if (val.is_hypothetical_significant === true) {
         this.getPies();
       }
     },
     changeTypes: function(val){
-      console.log(val);
+      // console.log(val);
     },
   },
   methods: {
@@ -152,6 +160,7 @@ export default {
       this.pies = null;
 
       // console.log('hasPie?', this.data.pie);
+      console.log(this.data.pie);
       if (this.data.pie){
         this.pies = this.data.pie;
       } else {
@@ -188,6 +197,15 @@ export default {
         this.data.change_type_name = ct.name;
       }
       this.hasChanges(val);
+    },
+    onDPHChange(isDPH){
+      this.data.pie = null;
+      this.pies = null;
+      console.log('isDPH', isDPH);
+      if (isDPH){
+        this.getPies();
+      }
+      this.hasChanges(true);
     },
   },
 };

@@ -1,7 +1,7 @@
 <template>
   <fieldset>
     <legend>Evaluasi Dampak Potensial</legend>
-    <el-form v-if="data" ref="form" label-position="top" label-width="120px" @change="markChange">
+    <el-form v-if="data" ref="form" label-position="top" label-width="120px">
       <el-row
         :gutter="20"
         class="pies-input"
@@ -15,6 +15,7 @@
                 v-model="data[data.findIndex(e => e.id_pie_param === param.id)].text"
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
+                @change="markChange"
               />
             </el-form-item>
           </el-col>
@@ -111,7 +112,7 @@ export default {
   methods: {
     markChange(e){
       this.hasChanges = true;
-      console.log('hasChanges', this.hasChanges);
+      // console.log('pieFom hasChanges', this.hasChanges);
     },
   },
 };
