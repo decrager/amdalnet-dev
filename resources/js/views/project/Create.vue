@@ -44,7 +44,11 @@
               </el-col>
               <el-col :span="12">
                 <el-row>
-                  <el-form-item label="Upload Peta Tapak (File .ZIP Max 1MB)">
+                  <el-form-item label="">
+                    <div slot="label">
+                      <span>Upload Peta Tapak (File .ZIP Max 1MB)</span>
+                      <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+                    </div>
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
                     <!-- <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload"> -->
                   </el-form-item>
@@ -632,6 +636,8 @@ import shp from 'shpjs';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
 import Expand from '@arcgis/core/widgets/Expand';
+import esriRequest from '@arcgis/core/request';
+import qs from 'qs';
 
 export default {
   name: 'CreateProject',
@@ -658,6 +664,8 @@ export default {
     // };
 
     return {
+      mismatchMapData: false,
+      token: '',
       refresh: 0,
       preeAgreementLabel: '',
       preProject: true,
@@ -854,7 +862,37 @@ export default {
     },
   },
   async created() {
-    console.log('created');
+    urlUtils.addProxyRule({
+      proxyUrl: 'proxy/proxy.php',
+      urlPrefix: 'https://amdalgis.menlhk.go.id/',
+    });
+
+    var data = qs.stringify({
+      'username': 'haris3',
+      'password': 'amdal123',
+      'client': 'requestip',
+      'expiration': 20160,
+      'f': 'json',
+    });
+
+    var config = {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Keep-Alive': 'timeout=60',
+        'X-Content-Type-Options': 'nosniff',
+        'Connection': 'keep-alive',
+        'Content-Encoding': 'gzip',
+        'Strict-Transport-Security': 'max-age=31536000',
+      },
+      body: data,
+    };
+
+    esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
+      .then(response => response.json())
+      .then(data => {
+        this.token = data.token;
+      });
     // for step
     this.$store.dispatch('getStep', 0);
 
@@ -986,6 +1024,11 @@ export default {
         confirmButtonText: 'OK',
       });
     },
+    showMapAlert(){
+      this.$alert('Peta yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!', {
+        confirmButtonText: 'OK',
+      });
+    },
     handleFileKtrUpload(e){
       if (e.target.files[0].size > 1048576){
         this.showFileAlert();
@@ -994,7 +1037,6 @@ export default {
 
       this.fileKtr = e.target.files[0];
       this.fileKtrName = e.target.files[0].name;
-      console.log(this.fileKtr);
     },
     handleFilePreAgreementUpload(e){
       if (e.target.files[0].size > 1048576){
@@ -1011,7 +1053,6 @@ export default {
         return;
       }
 
-      console.log('map', this.fileMap);
       if (e !== 'a'){
         console.log(e.target.files[0]);
         this.fileMap = e.target.files[0];
@@ -1045,14 +1086,6 @@ export default {
         imageTransparency: true,
       });
 
-      const batasProv = new MapImageLayer({
-        url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
-        sublayers: [{
-          id: 0,
-          title: 'Batas Provinsi',
-        }],
-      });
-
       const graticuleGrid = new MapImageLayer({
         url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
       });
@@ -1084,97 +1117,16 @@ export default {
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
         visible: false,
       });
-      map.addMany([featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid]);
+      map.addMany([featureLayer, tutupanLahan, ekoregion, ppib, graticuleGrid]);
 
       const baseGroupLayer = new GroupLayer({
         title: 'Base Layer',
         visible: true,
-        layers: [featureLayer, batasProv, tutupanLahan, ekoregion, ppib, graticuleGrid],
+        layers: [featureLayer, tutupanLahan, ekoregion, ppib, graticuleGrid],
         opacity: 0.90,
       });
 
       map.add(baseGroupLayer);
-
-      const gistaruLayer = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/000_RTRWN/_RTRWN_PP_2017/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-      map.add(gistaruLayer);
-
-      const perbatasanPapua = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/KSN/KSN_PERBATASAN_PAPUA/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const acehSumut = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KPN_ACEH_SUMUT/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const kalSul = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KALIMANTAN_SULAWESI_PERPRES/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const bandung = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KAWASAN_PERKOTAAN_CEKUNGAN_BANDUNG/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const jabodetabek = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_JABODETABEKPUNJUR/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const borobudur = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_BOROBUDUR/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const bbk = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_BBK/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const kedungSepur = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_KEDUNGSEPUR/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      const toba = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/002_RTR_KSN/_RTR_KSN_TOBA/MapServer',
-        imageTransparency: true,
-        visible: false,
-      });
-
-      map.addMany([perbatasanPapua, bandung, jabodetabek, acehSumut, kalSul, borobudur, bbk, kedungSepur, toba]);
-
-      const ksnGroupLayer = new GroupLayer({
-        title: 'Layer Kawasan Strategis Nasional (KSN)',
-        visible: false,
-        layers: [perbatasanPapua, bandung, jabodetabek, acehSumut, kalSul, borobudur, bbk, kedungSepur, toba],
-        opacity: 0.90,
-      });
-
-      map.add(ksnGroupLayer);
-
-      const rtrPulau = new MapImageLayer({
-        url: 'https://gistaru.atrbpn.go.id/arcgis/rest/services/001_RTR_PULAU/_RTR_PULAU_INDONESIA/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      map.add(rtrPulau);
 
       const penutupanLahan2020 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
@@ -1211,31 +1163,10 @@ export default {
         visibilityMode: '',
       });
 
-      const arKabKota = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/ADMINISTRASI_AR_KABKOTA_50K_2018/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      const batasKabupaten = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Kabupaten_Kota_50K/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      const batasProvinsi = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Provinsi_Indonesia/MapServerr',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
       const sigapLayer = new GroupLayer({
         title: 'SIGAP KLHK',
         visible: false,
-        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2, arKabKota, batasKabupaten, batasProvinsi],
+        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2],
         opacity: 0.90,
       });
 
@@ -1245,6 +1176,24 @@ export default {
       fr.onload = (event) => {
         const base = event.target.result;
         shp(base).then(function(data) {
+          const mapSampleProperties = [
+            'id',
+            'pemrakarsa',
+            'kegiatan',
+            'layer',
+            'dokumen',
+            'lokasi',
+            'luas',
+            'skala',
+          ];
+
+          const mapUploadProperties = Object.keys(data.features[0].properties);
+
+          if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
+            this.showMapAlert();
+            return;
+          }
+
           const blob = new Blob([JSON.stringify(data)], {
             type: 'application/json',
           });
@@ -1254,8 +1203,9 @@ export default {
             field: '*',
             symbol: {
               type: 'simple-fill',
+              color: [200, 0, 0, 1],
               outline: {
-                color: 'red',
+                color: [200, 0, 0, 1],
               },
             },
           };
@@ -1399,6 +1349,32 @@ export default {
           return false;
         }
       });
+
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://amdalgis.menlhk.go.id/',
+      });
+
+      var myHeaders = new Headers();
+      myHeaders.append('Authorization', 'Bearer ' + this.token);
+
+      var formdatas = new FormData();
+      formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
+      formdatas.append('type', 'Feature Service');
+      formdatas.append('title', this.currentProject.project_title + '_Peta Tapak Proyek');
+      formdatas.append('file', this.fileMap);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdatas,
+        redirect: 'follow',
+      };
+
+      esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
     },
     async changeProvince(row) {
       // change all district by province
@@ -1517,6 +1493,26 @@ export default {
 }
 .el-collapse-item__content {
   padding-top: 10px;
+}
+
+.download__sample {
+  color: white;
+  padding: 5px;
+  background-color: #39773B;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.download__sample:hover {
+  background-color: #124e14;
+  color: white;
+}
+
+.mismatch__map {
+  color: rgb(230, 41, 41);
+  font-size: 10;
+  font-style: italic;
 }
 
 </style>

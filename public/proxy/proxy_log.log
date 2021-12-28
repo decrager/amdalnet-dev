@@ -17311,3 +17311,1988 @@
 12-26-21 17:03:03 | Using session token
 12-26-21 17:03:03 | Ok to proxy
 12-26-21 17:03:03 | Proxy complete
+
+ 
+12-28-21 10:11:12 | POST detected
+12-28-21 10:11:12 | Using session token
+12-28-21 10:11:12 | Ok to proxy
+12-28-21 10:11:12 | Proxy complete
+ 
+12-28-21 10:16:18 | GET detected
+12-28-21 10:16:18 | Using session token
+12-28-21 10:16:18 | Ok to proxy
+12-28-21 10:16:18 | Proxy complete
+ 
+12-28-21 10:20:24 | GET detected
+12-28-21 10:20:24 | Using session token
+12-28-21 10:20:24 | Ok to proxy
+12-28-21 10:20:24 | Proxy complete
+ 
+12-28-21 10:26:05 | POST detected
+12-28-21 10:26:05 | Using session token
+12-28-21 10:26:05 | Authorization failed : {"error":{"code":498,"message":"Invalid token.","details":[]}}
+12-28-21 10:26:05 | Retry attempt 1 of 3
+12-28-21 10:26:05 | Resource using ArcGIS Server security
+12-28-21 10:26:06 | Got token endpoint
+12-28-21 10:26:06 | Adding token to session
+12-28-21 10:26:06 | Using session token
+12-28-21 10:26:06 | Ok to proxy
+12-28-21 10:26:06 | Proxy complete
+ 
+12-28-21 10:35:25 | POST detected
+12-28-21 10:35:25 | Using session token
+12-28-21 10:35:25 | Ok to proxy
+12-28-21 10:35:25 | Proxy complete
+ 
+12-28-21 10:35:49 | GET detected
+12-28-21 10:35:49 | Using session token
+12-28-21 10:35:49 | Ok to proxy
+12-28-21 10:35:49 | Proxy complete
+ 
+12-28-21 10:37:52 | GET detected
+12-28-21 10:37:52 | Using session token
+12-28-21 10:37:53 | Ok to proxy
+12-28-21 10:37:53 | Proxy complete
+ 
+12-28-21 10:44:08 | GET detected
+12-28-21 10:44:08 | Using session token
+12-28-21 10:44:08 | Ok to proxy
+12-28-21 10:44:08 | Proxy complete
+ 
+12-28-21 11:30:35 | GET detected
+12-28-21 11:30:35 | Using session token
+12-28-21 11:30:36 | Ok to proxy
+12-28-21 11:30:36 | Proxy complete
+ 
+12-28-21 11:33:32 | POST detected
+12-28-21 11:33:32 | Using session token
+12-28-21 11:33:33 | Authorization failed : {"error":{"code":498,"message":"Invalid token.","details":[]}}
+12-28-21 11:33:33 | Retry attempt 1 of 3
+12-28-21 11:33:33 | Resource using ArcGIS Server security
+12-28-21 11:33:33 | Got token endpoint
+12-28-21 11:33:33 | Adding token to session
+12-28-21 11:33:33 | Using session token
+12-28-21 11:33:33 | Ok to proxy
+12-28-21 11:33:33 | Proxy complete
+ 
+12-28-21 11:33:54 | GET detected
+12-28-21 11:33:54 | Using session token
+12-28-21 11:33:54 | Ok to proxy
+12-28-21 11:33:54 | Proxy complete
+ 
+12-28-21 11:35:31 | POST detected
+12-28-21 11:35:31 | Using session token
+12-28-21 11:35:32 | Ok to proxy
+12-28-21 11:35:32 | Proxy complete
+ 
+12-28-21 11:35:52 | GET detected
+12-28-21 11:35:52 | Using session token
+12-28-21 11:35:52 | Ok to proxy
+12-28-21 11:35:52 | Proxy complete
+ 
+12-28-21 11:43:15 | POST detected
+12-28-21 11:43:15 | Using session token
+12-28-21 11:43:15 | Ok to proxy
+12-28-21 11:43:15 | Proxy complete
+ 
+12-28-21 11:45:10 | GET detected
+12-28-21 11:45:10 | Using session token
+12-28-21 11:45:10 | Ok to proxy
+12-28-21 11:45:10 | Proxy complete
+ 
+12-28-21 11:48:52 | POST detected
+12-28-21 11:48:52 | Using session token
+12-28-21 11:48:52 | Ok to proxy
+12-28-21 11:48:52 | Proxy complete
+ 
+12-28-21 11:49:08 | GET detected
+12-28-21 11:49:08 | Using session token
+12-28-21 11:49:08 | Ok to proxy
+12-28-21 11:49:08 | Proxy complete
+ 
+12-28-21 11:53:02 | POST detected
+12-28-21 11:53:02 | Using session token
+12-28-21 11:53:02 | Ok to proxy
+12-28-21 11:53:02 | Proxy complete
+ 
+12-28-21 11:53:14 | GET detected
+12-28-21 11:53:14 | Using session token
+12-28-21 11:53:14 | Ok to proxy
+12-28-21 11:53:14 | Proxy complete
+ 
+12-28-21 11:54:43 | POST detected
+12-28-21 11:54:43 | Using session token
+12-28-21 11:54:44 | Ok to proxy
+12-28-21 11:54:44 | Proxy complete
+ 
+12-28-21 11:55:07 | GET detected
+12-28-21 11:55:07 | Using session token
+12-28-21 11:55:07 | Ok to proxy
+12-28-21 11:55:07 | Proxy complete
+ 
+12-28-21 11:57:10 | POST detected
+12-28-21 11:57:10 | Using session token
+12-28-21 11:57:10 | Ok to proxy
+12-28-21 11:57:10 | Proxy complete
+ 
+12-28-21 12:07:24 | POST detected
+12-28-21 12:07:24 | Using session token
+12-28-21 12:07:25 | Ok to proxy
+12-28-21 12:07:25 | Proxy complete
+ 
+12-28-21 12:07:33 | GET detected
+12-28-21 12:07:33 | Using session token
+12-28-21 12:07:33 | Ok to proxy
+12-28-21 12:07:33 | Proxy complete
+ 
+12-28-21 12:12:28 | POST detected
+12-28-21 12:12:28 | Using session token
+12-28-21 12:12:28 | Ok to proxy
+12-28-21 12:12:28 | Proxy complete
+ 
+12-28-21 12:12:39 | GET detected
+12-28-21 12:12:39 | Using session token
+12-28-21 12:12:39 | Ok to proxy
+12-28-21 12:12:39 | Proxy complete
+ 
+12-28-21 12:17:01 | POST detected
+12-28-21 12:17:01 | Using session token
+12-28-21 12:17:01 | Ok to proxy
+12-28-21 12:17:01 | Proxy complete
+ 
+12-28-21 12:17:29 | GET detected
+12-28-21 12:17:29 | Using session token
+12-28-21 12:17:29 | Ok to proxy
+12-28-21 12:17:29 | Proxy complete
+ 
+12-28-21 12:18:34 | POST detected
+12-28-21 12:18:34 | Using session token
+12-28-21 12:18:34 | Ok to proxy
+12-28-21 12:18:34 | Proxy complete
+ 
+12-28-21 12:18:45 | GET detected
+12-28-21 12:18:45 | Using session token
+12-28-21 12:18:45 | Ok to proxy
+12-28-21 12:18:45 | Proxy complete
+ 
+12-28-21 12:19:02 | GET detected
+12-28-21 12:19:02 | Using session token
+12-28-21 12:19:03 | Ok to proxy
+12-28-21 12:19:03 | Proxy complete
+ 
+12-28-21 12:21:38 | POST detected
+12-28-21 12:21:38 | Using session token
+12-28-21 12:21:39 | Ok to proxy
+12-28-21 12:21:39 | Proxy complete
+ 
+12-28-21 12:21:51 | GET detected
+12-28-21 12:21:51 | Using session token
+12-28-21 12:21:51 | Ok to proxy
+12-28-21 12:21:51 | Proxy complete
+ 
+12-28-21 12:23:44 | POST detected
+12-28-21 12:23:44 | Using session token
+12-28-21 12:23:44 | Ok to proxy
+12-28-21 12:23:44 | Proxy complete
+ 
+12-28-21 12:23:58 | GET detected
+12-28-21 12:23:58 | Using session token
+12-28-21 12:23:58 | Ok to proxy
+12-28-21 12:23:58 | Proxy complete
+ 
+12-28-21 13:00:23 | GET detected
+12-28-21 13:00:23 | Using session token
+12-28-21 13:00:24 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+12-28-21 13:00:24 | Retry attempt 1 of 3
+12-28-21 13:00:24 | Resource using ArcGIS Server security
+12-28-21 13:00:24 | Got token endpoint
+12-28-21 13:00:24 | Adding token to session
+12-28-21 13:00:24 | Using session token
+12-28-21 13:00:24 | Ok to proxy
+12-28-21 13:00:24 | Proxy complete
+ 
+12-28-21 13:00:24 | GET detected
+12-28-21 13:00:24 | Using session token
+12-28-21 13:00:25 | Ok to proxy
+12-28-21 13:00:25 | Proxy complete
+ 
+12-28-21 13:00:25 | GET detected
+12-28-21 13:00:25 | Using session token
+12-28-21 13:00:25 | Ok to proxy
+12-28-21 13:00:25 | Proxy complete
+ 
+12-28-21 13:00:25 | GET detected
+12-28-21 13:00:25 | Using session token
+12-28-21 13:00:25 | Ok to proxy
+12-28-21 13:00:25 | Proxy complete
+ 
+12-28-21 13:00:25 | GET detected
+12-28-21 13:00:25 | Using session token
+12-28-21 13:00:25 | Ok to proxy
+12-28-21 13:00:25 | Proxy complete
+ 
+12-28-21 13:00:25 | GET detected
+12-28-21 13:00:25 | Using session token
+12-28-21 13:00:25 | Ok to proxy
+12-28-21 13:00:25 | Proxy complete
+ 
+12-28-21 13:00:25 | GET detected
+12-28-21 13:00:25 | Using session token
+12-28-21 13:00:26 | Ok to proxy
+12-28-21 13:00:26 | Proxy complete
+ 
+12-28-21 13:01:34 | GET detected
+12-28-21 13:01:34 | Using session token
+12-28-21 13:01:34 | Ok to proxy
+12-28-21 13:01:34 | Proxy complete
+ 
+12-28-21 13:01:34 | GET detected
+12-28-21 13:01:34 | Using session token
+12-28-21 13:01:34 | Ok to proxy
+12-28-21 13:01:34 | Proxy complete
+ 
+12-28-21 13:01:34 | GET detected
+12-28-21 13:01:34 | Using session token
+12-28-21 13:01:34 | Ok to proxy
+12-28-21 13:01:34 | Proxy complete
+ 
+12-28-21 13:01:34 | GET detected
+12-28-21 13:01:34 | Using session token
+12-28-21 13:01:34 | Ok to proxy
+12-28-21 13:01:34 | Proxy complete
+ 
+12-28-21 13:01:34 | GET detected
+12-28-21 13:01:34 | Using session token
+12-28-21 13:01:35 | Ok to proxy
+12-28-21 13:01:35 | Proxy complete
+ 
+12-28-21 13:01:35 | GET detected
+12-28-21 13:01:35 | Using session token
+12-28-21 13:01:35 | Ok to proxy
+12-28-21 13:01:35 | Proxy complete
+ 
+12-28-21 13:01:35 | GET detected
+12-28-21 13:01:35 | Using session token
+12-28-21 13:01:35 | Ok to proxy
+12-28-21 13:01:35 | Proxy complete
+ 
+12-28-21 13:04:23 | GET detected
+12-28-21 13:04:23 | Using session token
+12-28-21 13:04:23 | Ok to proxy
+12-28-21 13:04:23 | Proxy complete
+ 
+12-28-21 13:04:23 | GET detected
+12-28-21 13:04:23 | Using session token
+12-28-21 13:04:23 | Ok to proxy
+12-28-21 13:04:23 | Proxy complete
+ 
+12-28-21 13:04:23 | GET detected
+12-28-21 13:04:23 | Using session token
+12-28-21 13:04:23 | Ok to proxy
+12-28-21 13:04:23 | Proxy complete
+ 
+12-28-21 13:04:23 | GET detected
+12-28-21 13:04:23 | Using session token
+12-28-21 13:04:23 | Ok to proxy
+12-28-21 13:04:23 | Proxy complete
+ 
+12-28-21 13:04:23 | GET detected
+12-28-21 13:04:23 | Using session token
+12-28-21 13:04:23 | Ok to proxy
+12-28-21 13:04:23 | Proxy complete
+ 
+12-28-21 13:04:23 | GET detected
+12-28-21 13:04:23 | Using session token
+12-28-21 13:04:23 | Ok to proxy
+12-28-21 13:04:23 | Proxy complete
+ 
+12-28-21 13:04:23 | GET detected
+12-28-21 13:04:23 | Using session token
+12-28-21 13:04:23 | Ok to proxy
+12-28-21 13:04:23 | Proxy complete
+ 
+12-28-21 13:08:23 | GET detected
+12-28-21 13:08:23 | Using session token
+12-28-21 13:08:23 | Ok to proxy
+12-28-21 13:08:23 | Proxy complete
+ 
+12-28-21 13:08:23 | GET detected
+12-28-21 13:08:23 | Using session token
+12-28-21 13:08:23 | Ok to proxy
+12-28-21 13:08:23 | Proxy complete
+ 
+12-28-21 13:08:23 | GET detected
+12-28-21 13:08:23 | Using session token
+12-28-21 13:08:23 | Ok to proxy
+12-28-21 13:08:23 | Proxy complete
+ 
+12-28-21 13:08:23 | GET detected
+12-28-21 13:08:23 | Using session token
+12-28-21 13:08:24 | Ok to proxy
+12-28-21 13:08:24 | Proxy complete
+ 
+12-28-21 13:08:24 | GET detected
+12-28-21 13:08:24 | Using session token
+12-28-21 13:08:24 | Ok to proxy
+12-28-21 13:08:24 | Proxy complete
+ 
+12-28-21 13:08:24 | GET detected
+12-28-21 13:08:24 | Using session token
+12-28-21 13:08:24 | Ok to proxy
+12-28-21 13:08:24 | Proxy complete
+ 
+12-28-21 13:08:24 | GET detected
+12-28-21 13:08:24 | Using session token
+12-28-21 13:08:24 | Ok to proxy
+12-28-21 13:08:24 | Proxy complete
+ 
+12-28-21 13:09:35 | GET detected
+12-28-21 13:09:35 | Using session token
+12-28-21 13:09:35 | Ok to proxy
+12-28-21 13:09:35 | Proxy complete
+ 
+12-28-21 13:09:35 | GET detected
+12-28-21 13:09:35 | Using session token
+12-28-21 13:09:35 | Ok to proxy
+12-28-21 13:09:35 | Proxy complete
+ 
+12-28-21 13:09:35 | GET detected
+12-28-21 13:09:35 | Using session token
+12-28-21 13:09:35 | Ok to proxy
+12-28-21 13:09:35 | Proxy complete
+ 
+12-28-21 13:09:35 | GET detected
+12-28-21 13:09:35 | Using session token
+12-28-21 13:09:35 | Ok to proxy
+12-28-21 13:09:35 | Proxy complete
+ 
+12-28-21 13:09:35 | GET detected
+12-28-21 13:09:35 | Using session token
+12-28-21 13:09:35 | Ok to proxy
+12-28-21 13:09:35 | Proxy complete
+ 
+12-28-21 13:09:35 | GET detected
+12-28-21 13:09:35 | Using session token
+12-28-21 13:09:36 | Ok to proxy
+12-28-21 13:09:36 | Proxy complete
+ 
+12-28-21 13:09:36 | GET detected
+12-28-21 13:09:36 | Using session token
+12-28-21 13:09:36 | Ok to proxy
+12-28-21 13:09:36 | Proxy complete
+ 
+12-28-21 13:10:24 | GET detected
+12-28-21 13:10:24 | Using session token
+12-28-21 13:10:24 | Ok to proxy
+12-28-21 13:10:24 | Proxy complete
+ 
+12-28-21 13:10:24 | GET detected
+12-28-21 13:10:24 | Using session token
+12-28-21 13:10:24 | Ok to proxy
+12-28-21 13:10:24 | Proxy complete
+ 
+12-28-21 13:10:24 | GET detected
+12-28-21 13:10:24 | Using session token
+12-28-21 13:10:24 | Ok to proxy
+12-28-21 13:10:24 | Proxy complete
+ 
+12-28-21 13:10:24 | GET detected
+12-28-21 13:10:24 | Using session token
+12-28-21 13:10:24 | Ok to proxy
+12-28-21 13:10:24 | Proxy complete
+ 
+12-28-21 13:10:24 | GET detected
+12-28-21 13:10:24 | Using session token
+12-28-21 13:10:24 | Ok to proxy
+12-28-21 13:10:24 | Proxy complete
+ 
+12-28-21 13:10:24 | GET detected
+12-28-21 13:10:24 | Using session token
+12-28-21 13:10:25 | Ok to proxy
+12-28-21 13:10:25 | Proxy complete
+ 
+12-28-21 13:10:25 | GET detected
+12-28-21 13:10:25 | Using session token
+12-28-21 13:10:25 | Ok to proxy
+12-28-21 13:10:25 | Proxy complete
+ 
+12-28-21 13:11:53 | GET detected
+12-28-21 13:11:53 | Using session token
+12-28-21 13:11:53 | Ok to proxy
+12-28-21 13:11:53 | Proxy complete
+ 
+12-28-21 13:11:53 | GET detected
+12-28-21 13:11:53 | Using session token
+12-28-21 13:11:53 | Ok to proxy
+12-28-21 13:11:53 | Proxy complete
+ 
+12-28-21 13:11:53 | GET detected
+12-28-21 13:11:53 | Using session token
+12-28-21 13:11:53 | Ok to proxy
+12-28-21 13:11:53 | Proxy complete
+ 
+12-28-21 13:11:53 | GET detected
+12-28-21 13:11:53 | Using session token
+12-28-21 13:11:53 | Ok to proxy
+12-28-21 13:11:53 | Proxy complete
+ 
+12-28-21 13:11:53 | GET detected
+12-28-21 13:11:53 | Using session token
+12-28-21 13:11:53 | Ok to proxy
+12-28-21 13:11:53 | Proxy complete
+ 
+12-28-21 13:11:53 | GET detected
+12-28-21 13:11:53 | Using session token
+12-28-21 13:11:53 | Ok to proxy
+12-28-21 13:11:53 | Proxy complete
+ 
+12-28-21 13:11:53 | GET detected
+12-28-21 13:11:53 | Using session token
+12-28-21 13:11:53 | Ok to proxy
+12-28-21 13:11:53 | Proxy complete
+ 
+12-28-21 13:25:10 | GET detected
+12-28-21 13:25:10 | Using session token
+12-28-21 13:25:10 | Ok to proxy
+12-28-21 13:25:10 | Proxy complete
+ 
+12-28-21 13:25:10 | GET detected
+12-28-21 13:25:10 | Using session token
+12-28-21 13:25:10 | Ok to proxy
+12-28-21 13:25:10 | Proxy complete
+ 
+12-28-21 13:25:11 | GET detected
+12-28-21 13:25:11 | Using session token
+12-28-21 13:25:11 | Ok to proxy
+12-28-21 13:25:11 | Proxy complete
+ 
+12-28-21 13:25:11 | GET detected
+12-28-21 13:25:11 | Using session token
+12-28-21 13:25:11 | Ok to proxy
+12-28-21 13:25:11 | Proxy complete
+ 
+12-28-21 13:25:11 | GET detected
+12-28-21 13:25:11 | Using session token
+12-28-21 13:25:11 | Ok to proxy
+12-28-21 13:25:11 | Proxy complete
+ 
+12-28-21 13:25:11 | GET detected
+12-28-21 13:25:11 | Using session token
+12-28-21 13:25:11 | Ok to proxy
+12-28-21 13:25:11 | Proxy complete
+ 
+12-28-21 13:25:11 | GET detected
+12-28-21 13:25:11 | Using session token
+12-28-21 13:25:11 | Ok to proxy
+12-28-21 13:25:11 | Proxy complete
+ 
+12-28-21 13:26:22 | GET detected
+12-28-21 13:26:22 | Using session token
+12-28-21 13:26:22 | Ok to proxy
+12-28-21 13:26:22 | Proxy complete
+ 
+12-28-21 13:26:22 | GET detected
+12-28-21 13:26:22 | Using session token
+12-28-21 13:26:22 | Ok to proxy
+12-28-21 13:26:22 | Proxy complete
+ 
+12-28-21 13:26:22 | GET detected
+12-28-21 13:26:22 | Using session token
+12-28-21 13:26:22 | Ok to proxy
+12-28-21 13:26:22 | Proxy complete
+ 
+12-28-21 13:26:22 | GET detected
+12-28-21 13:26:22 | Using session token
+12-28-21 13:26:23 | Ok to proxy
+12-28-21 13:26:23 | Proxy complete
+ 
+12-28-21 13:26:23 | GET detected
+12-28-21 13:26:23 | Using session token
+12-28-21 13:26:23 | Ok to proxy
+12-28-21 13:26:23 | Proxy complete
+ 
+12-28-21 13:26:23 | GET detected
+12-28-21 13:26:23 | Using session token
+12-28-21 13:26:23 | Ok to proxy
+12-28-21 13:26:23 | Proxy complete
+ 
+12-28-21 13:26:23 | GET detected
+12-28-21 13:26:23 | Using session token
+12-28-21 13:26:23 | Ok to proxy
+12-28-21 13:26:23 | Proxy complete
+ 
+12-28-21 13:41:47 | GET detected
+12-28-21 13:41:47 | Using session token
+12-28-21 13:41:47 | Ok to proxy
+12-28-21 13:41:47 | Proxy complete
+ 
+12-28-21 13:41:47 | GET detected
+12-28-21 13:41:47 | Using session token
+12-28-21 13:41:48 | Ok to proxy
+12-28-21 13:41:48 | Proxy complete
+ 
+12-28-21 13:41:48 | GET detected
+12-28-21 13:41:48 | Using session token
+12-28-21 13:41:48 | Ok to proxy
+12-28-21 13:41:48 | Proxy complete
+ 
+12-28-21 13:41:48 | GET detected
+12-28-21 13:41:48 | Using session token
+12-28-21 13:41:51 | Ok to proxy
+12-28-21 13:41:51 | Proxy complete
+ 
+12-28-21 13:41:51 | GET detected
+12-28-21 13:41:51 | Using session token
+12-28-21 13:41:52 | Ok to proxy
+12-28-21 13:41:52 | Proxy complete
+ 
+12-28-21 13:41:52 | GET detected
+12-28-21 13:41:52 | Using session token
+12-28-21 13:41:52 | Ok to proxy
+12-28-21 13:41:52 | Proxy complete
+ 
+12-28-21 13:41:52 | GET detected
+12-28-21 13:41:52 | Using session token
+12-28-21 13:41:52 | Ok to proxy
+12-28-21 13:41:52 | Proxy complete
+ 
+12-28-21 13:50:33 | GET detected
+12-28-21 13:50:33 | Using session token
+12-28-21 13:50:33 | Ok to proxy
+12-28-21 13:50:33 | Proxy complete
+ 
+12-28-21 13:50:33 | GET detected
+12-28-21 13:50:33 | Using session token
+12-28-21 13:50:33 | Ok to proxy
+12-28-21 13:50:33 | Proxy complete
+ 
+12-28-21 13:50:33 | GET detected
+12-28-21 13:50:33 | Using session token
+12-28-21 13:50:33 | Ok to proxy
+12-28-21 13:50:33 | Proxy complete
+ 
+12-28-21 13:50:33 | GET detected
+12-28-21 13:50:33 | Using session token
+12-28-21 13:50:33 | Ok to proxy
+12-28-21 13:50:33 | Proxy complete
+ 
+12-28-21 13:50:34 | GET detected
+12-28-21 13:50:34 | Using session token
+12-28-21 13:50:34 | Ok to proxy
+12-28-21 13:50:34 | Proxy complete
+ 
+12-28-21 13:50:34 | GET detected
+12-28-21 13:50:34 | Using session token
+12-28-21 13:50:35 | Ok to proxy
+12-28-21 13:50:35 | Proxy complete
+ 
+12-28-21 13:50:35 | GET detected
+12-28-21 13:50:35 | Using session token
+12-28-21 13:50:35 | Ok to proxy
+12-28-21 13:50:35 | Proxy complete
+ 
+12-28-21 13:52:00 | GET detected
+12-28-21 13:52:00 | Using session token
+12-28-21 13:52:01 | Ok to proxy
+12-28-21 13:52:01 | Proxy complete
+ 
+12-28-21 13:52:01 | GET detected
+12-28-21 13:52:01 | Using session token
+12-28-21 13:52:02 | Ok to proxy
+12-28-21 13:52:02 | Proxy complete
+ 
+12-28-21 13:52:02 | GET detected
+12-28-21 13:52:02 | Using session token
+12-28-21 13:52:02 | Ok to proxy
+12-28-21 13:52:02 | Proxy complete
+ 
+12-28-21 13:52:02 | GET detected
+12-28-21 13:52:02 | Using session token
+12-28-21 13:52:02 | Ok to proxy
+12-28-21 13:52:02 | Proxy complete
+ 
+12-28-21 13:52:02 | GET detected
+12-28-21 13:52:02 | Using session token
+12-28-21 13:52:03 | Ok to proxy
+12-28-21 13:52:03 | Proxy complete
+ 
+12-28-21 13:52:03 | GET detected
+12-28-21 13:52:03 | Using session token
+12-28-21 13:52:03 | Ok to proxy
+12-28-21 13:52:03 | Proxy complete
+ 
+12-28-21 13:52:03 | GET detected
+12-28-21 13:52:03 | Using session token
+12-28-21 13:52:03 | Ok to proxy
+12-28-21 13:52:03 | Proxy complete
+ 
+12-28-21 13:54:21 | GET detected
+12-28-21 13:54:21 | Using session token
+12-28-21 13:54:21 | Ok to proxy
+12-28-21 13:54:21 | Proxy complete
+ 
+12-28-21 13:54:21 | GET detected
+12-28-21 13:54:21 | Using session token
+12-28-21 13:54:21 | Ok to proxy
+12-28-21 13:54:21 | Proxy complete
+ 
+12-28-21 13:54:21 | GET detected
+12-28-21 13:54:21 | Using session token
+12-28-21 13:54:22 | Ok to proxy
+12-28-21 13:54:22 | Proxy complete
+ 
+12-28-21 13:54:22 | GET detected
+12-28-21 13:54:22 | Using session token
+12-28-21 13:54:22 | Ok to proxy
+12-28-21 13:54:22 | Proxy complete
+ 
+12-28-21 13:54:22 | GET detected
+12-28-21 13:54:22 | Using session token
+12-28-21 13:54:22 | Ok to proxy
+12-28-21 13:54:22 | Proxy complete
+ 
+12-28-21 13:54:22 | GET detected
+12-28-21 13:54:22 | Using session token
+12-28-21 13:54:22 | Ok to proxy
+12-28-21 13:54:22 | Proxy complete
+ 
+12-28-21 13:54:22 | GET detected
+12-28-21 13:54:22 | Using session token
+12-28-21 13:54:22 | Ok to proxy
+12-28-21 13:54:22 | Proxy complete
+ 
+12-28-21 13:56:57 | GET detected
+12-28-21 13:56:57 | Using session token
+12-28-21 13:56:58 | Ok to proxy
+12-28-21 13:56:58 | Proxy complete
+ 
+12-28-21 13:56:58 | GET detected
+12-28-21 13:56:58 | Using session token
+12-28-21 13:56:58 | Ok to proxy
+12-28-21 13:56:58 | Proxy complete
+ 
+12-28-21 13:56:58 | GET detected
+12-28-21 13:56:58 | Using session token
+12-28-21 13:56:58 | Ok to proxy
+12-28-21 13:56:58 | Proxy complete
+ 
+12-28-21 13:56:58 | GET detected
+12-28-21 13:56:58 | Using session token
+12-28-21 13:56:58 | Ok to proxy
+12-28-21 13:56:58 | Proxy complete
+ 
+12-28-21 13:56:58 | GET detected
+12-28-21 13:56:58 | Using session token
+12-28-21 13:56:58 | Ok to proxy
+12-28-21 13:56:58 | Proxy complete
+ 
+12-28-21 13:56:58 | GET detected
+12-28-21 13:56:58 | Using session token
+12-28-21 13:56:59 | Ok to proxy
+12-28-21 13:56:59 | Proxy complete
+ 
+12-28-21 13:56:59 | GET detected
+12-28-21 13:56:59 | Using session token
+12-28-21 13:56:59 | Ok to proxy
+12-28-21 13:56:59 | Proxy complete
+ 
+12-28-21 13:57:39 | GET detected
+12-28-21 13:57:39 | Using session token
+12-28-21 13:57:39 | Ok to proxy
+12-28-21 13:57:39 | Proxy complete
+ 
+12-28-21 13:57:39 | GET detected
+12-28-21 13:57:39 | Using session token
+12-28-21 13:57:40 | Ok to proxy
+12-28-21 13:57:40 | Proxy complete
+ 
+12-28-21 13:57:40 | GET detected
+12-28-21 13:57:40 | Using session token
+12-28-21 13:57:41 | Ok to proxy
+12-28-21 13:57:41 | Proxy complete
+ 
+12-28-21 13:57:41 | GET detected
+12-28-21 13:57:41 | Using session token
+12-28-21 13:57:41 | Ok to proxy
+12-28-21 13:57:41 | Proxy complete
+ 
+12-28-21 13:57:41 | GET detected
+12-28-21 13:57:41 | Using session token
+12-28-21 13:57:41 | Ok to proxy
+12-28-21 13:57:41 | Proxy complete
+ 
+12-28-21 13:57:41 | GET detected
+12-28-21 13:57:41 | Using session token
+12-28-21 13:57:41 | Ok to proxy
+12-28-21 13:57:41 | Proxy complete
+ 
+12-28-21 13:57:41 | GET detected
+12-28-21 13:57:41 | Using session token
+12-28-21 13:57:41 | Ok to proxy
+12-28-21 13:57:41 | Proxy complete
+ 
+12-28-21 14:04:13 | GET detected
+12-28-21 14:04:13 | Using session token
+12-28-21 14:04:13 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+12-28-21 14:04:13 | Retry attempt 1 of 3
+12-28-21 14:04:13 | Resource using ArcGIS Server security
+12-28-21 14:04:13 | Got token endpoint
+12-28-21 14:04:14 | Adding token to session
+12-28-21 14:04:14 | Using session token
+12-28-21 14:04:14 | Ok to proxy
+12-28-21 14:04:14 | Proxy complete
+ 
+12-28-21 14:04:14 | GET detected
+12-28-21 14:04:14 | Using session token
+12-28-21 14:04:14 | Ok to proxy
+12-28-21 14:04:14 | Proxy complete
+ 
+12-28-21 14:04:14 | GET detected
+12-28-21 14:04:14 | Using session token
+12-28-21 14:04:14 | Ok to proxy
+12-28-21 14:04:14 | Proxy complete
+ 
+12-28-21 14:04:14 | GET detected
+12-28-21 14:04:14 | Using session token
+12-28-21 14:04:15 | Ok to proxy
+12-28-21 14:04:15 | Proxy complete
+ 
+12-28-21 14:04:15 | GET detected
+12-28-21 14:04:15 | Using session token
+12-28-21 14:04:15 | Ok to proxy
+12-28-21 14:04:15 | Proxy complete
+ 
+12-28-21 14:04:15 | GET detected
+12-28-21 14:04:15 | Using session token
+12-28-21 14:04:15 | Ok to proxy
+12-28-21 14:04:15 | Proxy complete
+ 
+12-28-21 14:04:15 | GET detected
+12-28-21 14:04:15 | Using session token
+12-28-21 14:04:15 | Ok to proxy
+12-28-21 14:04:15 | Proxy complete
+ 
+12-28-21 14:05:08 | GET detected
+12-28-21 14:05:08 | Using session token
+12-28-21 14:05:08 | Ok to proxy
+12-28-21 14:05:08 | Proxy complete
+ 
+12-28-21 14:05:08 | GET detected
+12-28-21 14:05:08 | Using session token
+12-28-21 14:05:09 | Ok to proxy
+12-28-21 14:05:09 | Proxy complete
+ 
+12-28-21 14:05:09 | GET detected
+12-28-21 14:05:09 | Using session token
+12-28-21 14:05:09 | Ok to proxy
+12-28-21 14:05:09 | Proxy complete
+ 
+12-28-21 14:05:09 | GET detected
+12-28-21 14:05:09 | Using session token
+12-28-21 14:05:09 | Ok to proxy
+12-28-21 14:05:09 | Proxy complete
+ 
+12-28-21 14:05:09 | GET detected
+12-28-21 14:05:09 | Using session token
+12-28-21 14:05:09 | Ok to proxy
+12-28-21 14:05:09 | Proxy complete
+ 
+12-28-21 14:05:09 | GET detected
+12-28-21 14:05:09 | Using session token
+12-28-21 14:05:09 | Ok to proxy
+12-28-21 14:05:09 | Proxy complete
+ 
+12-28-21 14:05:09 | GET detected
+12-28-21 14:05:09 | Using session token
+12-28-21 14:05:09 | Ok to proxy
+12-28-21 14:05:09 | Proxy complete
+ 
+12-28-21 14:06:15 | GET detected
+12-28-21 14:06:15 | Using session token
+12-28-21 14:06:15 | Ok to proxy
+12-28-21 14:06:15 | Proxy complete
+ 
+12-28-21 14:06:15 | GET detected
+12-28-21 14:06:15 | Using session token
+12-28-21 14:06:15 | Ok to proxy
+12-28-21 14:06:15 | Proxy complete
+ 
+12-28-21 14:06:15 | GET detected
+12-28-21 14:06:15 | Using session token
+12-28-21 14:06:15 | Ok to proxy
+12-28-21 14:06:15 | Proxy complete
+ 
+12-28-21 14:06:15 | GET detected
+12-28-21 14:06:15 | Using session token
+12-28-21 14:06:16 | Ok to proxy
+12-28-21 14:06:16 | Proxy complete
+ 
+12-28-21 14:06:16 | GET detected
+12-28-21 14:06:16 | Using session token
+12-28-21 14:06:16 | Ok to proxy
+12-28-21 14:06:16 | Proxy complete
+ 
+12-28-21 14:06:16 | GET detected
+12-28-21 14:06:16 | Using session token
+12-28-21 14:06:16 | Ok to proxy
+12-28-21 14:06:16 | Proxy complete
+ 
+12-28-21 14:06:16 | GET detected
+12-28-21 14:06:16 | Using session token
+12-28-21 14:06:16 | Ok to proxy
+12-28-21 14:06:16 | Proxy complete
+ 
+12-28-21 14:07:13 | GET detected
+12-28-21 14:07:13 | Using session token
+12-28-21 14:07:13 | Ok to proxy
+12-28-21 14:07:13 | Proxy complete
+ 
+12-28-21 14:07:13 | GET detected
+12-28-21 14:07:13 | Using session token
+12-28-21 14:07:13 | Ok to proxy
+12-28-21 14:07:13 | Proxy complete
+ 
+12-28-21 14:07:13 | GET detected
+12-28-21 14:07:13 | Using session token
+12-28-21 14:07:14 | Ok to proxy
+12-28-21 14:07:14 | Proxy complete
+ 
+12-28-21 14:07:14 | GET detected
+12-28-21 14:07:14 | Using session token
+12-28-21 14:07:14 | Ok to proxy
+12-28-21 14:07:14 | Proxy complete
+ 
+12-28-21 14:07:14 | GET detected
+12-28-21 14:07:14 | Using session token
+12-28-21 14:07:15 | Ok to proxy
+12-28-21 14:07:15 | Proxy complete
+ 
+12-28-21 14:07:15 | GET detected
+12-28-21 14:07:15 | Using session token
+12-28-21 14:07:15 | Ok to proxy
+12-28-21 14:07:15 | Proxy complete
+ 
+12-28-21 14:07:15 | GET detected
+12-28-21 14:07:15 | Using session token
+12-28-21 14:07:16 | Ok to proxy
+12-28-21 14:07:16 | Proxy complete
+ 
+12-28-21 14:11:35 | GET detected
+12-28-21 14:11:35 | Using session token
+12-28-21 14:11:35 | Ok to proxy
+12-28-21 14:11:35 | Proxy complete
+ 
+12-28-21 14:11:35 | GET detected
+12-28-21 14:11:35 | Using session token
+12-28-21 14:11:35 | Ok to proxy
+12-28-21 14:11:35 | Proxy complete
+ 
+12-28-21 14:11:35 | GET detected
+12-28-21 14:11:35 | Using session token
+12-28-21 14:11:35 | Ok to proxy
+12-28-21 14:11:35 | Proxy complete
+ 
+12-28-21 14:11:35 | GET detected
+12-28-21 14:11:35 | Using session token
+12-28-21 14:11:35 | Ok to proxy
+12-28-21 14:11:35 | Proxy complete
+ 
+12-28-21 14:11:35 | GET detected
+12-28-21 14:11:35 | Using session token
+12-28-21 14:11:36 | Ok to proxy
+12-28-21 14:11:36 | Proxy complete
+ 
+12-28-21 14:11:36 | GET detected
+12-28-21 14:11:36 | Using session token
+12-28-21 14:11:36 | Ok to proxy
+12-28-21 14:11:36 | Proxy complete
+ 
+12-28-21 14:11:36 | GET detected
+12-28-21 14:11:36 | Using session token
+12-28-21 14:11:37 | Ok to proxy
+12-28-21 14:11:37 | Proxy complete
+ 
+12-28-21 14:12:59 | GET detected
+12-28-21 14:12:59 | Using session token
+12-28-21 14:12:59 | Ok to proxy
+12-28-21 14:12:59 | Proxy complete
+ 
+12-28-21 14:12:59 | GET detected
+12-28-21 14:12:59 | Using session token
+12-28-21 14:13:00 | Ok to proxy
+12-28-21 14:13:00 | Proxy complete
+ 
+12-28-21 14:13:00 | GET detected
+12-28-21 14:13:00 | Using session token
+12-28-21 14:13:00 | Ok to proxy
+12-28-21 14:13:00 | Proxy complete
+ 
+12-28-21 14:13:00 | GET detected
+12-28-21 14:13:00 | Using session token
+12-28-21 14:13:00 | Ok to proxy
+12-28-21 14:13:00 | Proxy complete
+ 
+12-28-21 14:13:00 | GET detected
+12-28-21 14:13:00 | Using session token
+12-28-21 14:13:00 | Ok to proxy
+12-28-21 14:13:00 | Proxy complete
+ 
+12-28-21 14:13:00 | GET detected
+12-28-21 14:13:00 | Using session token
+12-28-21 14:13:00 | Ok to proxy
+12-28-21 14:13:00 | Proxy complete
+ 
+12-28-21 14:13:00 | GET detected
+12-28-21 14:13:00 | Using session token
+12-28-21 14:13:00 | Ok to proxy
+12-28-21 14:13:00 | Proxy complete
+ 
+12-28-21 14:14:04 | GET detected
+12-28-21 14:14:04 | Using session token
+12-28-21 14:14:04 | Ok to proxy
+12-28-21 14:14:04 | Proxy complete
+ 
+12-28-21 14:14:04 | GET detected
+12-28-21 14:14:04 | Using session token
+12-28-21 14:14:04 | Ok to proxy
+12-28-21 14:14:04 | Proxy complete
+ 
+12-28-21 14:14:04 | GET detected
+12-28-21 14:14:04 | Using session token
+12-28-21 14:14:04 | Ok to proxy
+12-28-21 14:14:04 | Proxy complete
+ 
+12-28-21 14:14:04 | GET detected
+12-28-21 14:14:04 | Using session token
+12-28-21 14:14:04 | Ok to proxy
+12-28-21 14:14:04 | Proxy complete
+ 
+12-28-21 14:14:04 | GET detected
+12-28-21 14:14:04 | Using session token
+12-28-21 14:14:04 | Ok to proxy
+12-28-21 14:14:04 | Proxy complete
+ 
+12-28-21 14:14:04 | GET detected
+12-28-21 14:14:04 | Using session token
+12-28-21 14:14:04 | Ok to proxy
+12-28-21 14:14:04 | Proxy complete
+ 
+12-28-21 14:14:04 | GET detected
+12-28-21 14:14:04 | Using session token
+12-28-21 14:14:05 | Ok to proxy
+12-28-21 14:14:05 | Proxy complete
+ 
+12-28-21 14:14:39 | GET detected
+12-28-21 14:14:39 | Using session token
+12-28-21 14:14:40 | Ok to proxy
+12-28-21 14:14:40 | Proxy complete
+ 
+12-28-21 14:14:40 | GET detected
+12-28-21 14:14:40 | Using session token
+12-28-21 14:14:40 | Ok to proxy
+12-28-21 14:14:40 | Proxy complete
+ 
+12-28-21 14:14:40 | GET detected
+12-28-21 14:14:40 | Using session token
+12-28-21 14:14:40 | Ok to proxy
+12-28-21 14:14:40 | Proxy complete
+ 
+12-28-21 14:14:40 | GET detected
+12-28-21 14:14:40 | Using session token
+12-28-21 14:14:41 | Ok to proxy
+12-28-21 14:14:41 | Proxy complete
+ 
+12-28-21 14:14:41 | GET detected
+12-28-21 14:14:41 | Using session token
+12-28-21 14:14:42 | Ok to proxy
+12-28-21 14:14:42 | Proxy complete
+ 
+12-28-21 14:14:42 | GET detected
+12-28-21 14:14:42 | Using session token
+12-28-21 14:14:42 | Ok to proxy
+12-28-21 14:14:42 | Proxy complete
+ 
+12-28-21 14:14:42 | GET detected
+12-28-21 14:14:42 | Using session token
+12-28-21 14:14:42 | Ok to proxy
+12-28-21 14:14:42 | Proxy complete
+ 
+12-28-21 14:15:55 | GET detected
+12-28-21 14:15:55 | Using session token
+12-28-21 14:15:55 | Ok to proxy
+12-28-21 14:15:55 | Proxy complete
+ 
+12-28-21 14:15:55 | GET detected
+12-28-21 14:15:55 | Using session token
+12-28-21 14:15:55 | Ok to proxy
+12-28-21 14:15:55 | Proxy complete
+ 
+12-28-21 14:15:55 | GET detected
+12-28-21 14:15:55 | Using session token
+12-28-21 14:15:55 | Ok to proxy
+12-28-21 14:15:55 | Proxy complete
+ 
+12-28-21 14:15:55 | GET detected
+12-28-21 14:15:55 | Using session token
+12-28-21 14:15:55 | Ok to proxy
+12-28-21 14:15:55 | Proxy complete
+ 
+12-28-21 14:15:55 | GET detected
+12-28-21 14:15:55 | Using session token
+12-28-21 14:15:56 | Ok to proxy
+12-28-21 14:15:56 | Proxy complete
+ 
+12-28-21 14:15:56 | GET detected
+12-28-21 14:15:56 | Using session token
+12-28-21 14:15:56 | Ok to proxy
+12-28-21 14:15:56 | Proxy complete
+ 
+12-28-21 14:15:56 | GET detected
+12-28-21 14:15:56 | Using session token
+12-28-21 14:15:56 | Ok to proxy
+12-28-21 14:15:56 | Proxy complete
+ 
+12-28-21 14:16:31 | GET detected
+12-28-21 14:16:31 | Using session token
+12-28-21 14:16:31 | Ok to proxy
+12-28-21 14:16:31 | Proxy complete
+ 
+12-28-21 14:16:31 | GET detected
+12-28-21 14:16:31 | Using session token
+12-28-21 14:16:31 | Ok to proxy
+12-28-21 14:16:31 | Proxy complete
+ 
+12-28-21 14:16:31 | GET detected
+12-28-21 14:16:31 | Using session token
+12-28-21 14:16:31 | Ok to proxy
+12-28-21 14:16:31 | Proxy complete
+ 
+12-28-21 14:16:31 | GET detected
+12-28-21 14:16:31 | Using session token
+12-28-21 14:16:31 | Ok to proxy
+12-28-21 14:16:31 | Proxy complete
+ 
+12-28-21 14:16:31 | GET detected
+12-28-21 14:16:31 | Using session token
+12-28-21 14:16:31 | Ok to proxy
+12-28-21 14:16:31 | Proxy complete
+ 
+12-28-21 14:16:31 | GET detected
+12-28-21 14:16:31 | Using session token
+12-28-21 14:16:31 | Ok to proxy
+12-28-21 14:16:31 | Proxy complete
+ 
+12-28-21 14:16:31 | GET detected
+12-28-21 14:16:31 | Using session token
+12-28-21 14:16:32 | Ok to proxy
+12-28-21 14:16:32 | Proxy complete
+ 
+12-28-21 14:17:06 | GET detected
+12-28-21 14:17:06 | Using session token
+12-28-21 14:17:06 | Ok to proxy
+12-28-21 14:17:06 | Proxy complete
+ 
+12-28-21 14:17:06 | GET detected
+12-28-21 14:17:06 | Using session token
+12-28-21 14:17:06 | Ok to proxy
+12-28-21 14:17:06 | Proxy complete
+ 
+12-28-21 14:17:06 | GET detected
+12-28-21 14:17:06 | Using session token
+12-28-21 14:17:07 | Ok to proxy
+12-28-21 14:17:07 | Proxy complete
+ 
+12-28-21 14:17:07 | GET detected
+12-28-21 14:17:07 | Using session token
+12-28-21 14:17:07 | Ok to proxy
+12-28-21 14:17:07 | Proxy complete
+ 
+12-28-21 14:17:07 | GET detected
+12-28-21 14:17:07 | Using session token
+12-28-21 14:17:08 | Ok to proxy
+12-28-21 14:17:08 | Proxy complete
+ 
+12-28-21 14:17:08 | GET detected
+12-28-21 14:17:08 | Using session token
+12-28-21 14:17:08 | Ok to proxy
+12-28-21 14:17:08 | Proxy complete
+ 
+12-28-21 14:17:08 | GET detected
+12-28-21 14:17:08 | Using session token
+12-28-21 14:17:08 | Ok to proxy
+12-28-21 14:17:08 | Proxy complete
+ 
+12-28-21 14:18:05 | GET detected
+12-28-21 14:18:05 | Using session token
+12-28-21 14:18:05 | Ok to proxy
+12-28-21 14:18:05 | Proxy complete
+ 
+12-28-21 14:18:05 | GET detected
+12-28-21 14:18:05 | Using session token
+12-28-21 14:18:05 | Ok to proxy
+12-28-21 14:18:05 | Proxy complete
+ 
+12-28-21 14:18:05 | GET detected
+12-28-21 14:18:05 | Using session token
+12-28-21 14:18:05 | Ok to proxy
+12-28-21 14:18:05 | Proxy complete
+ 
+12-28-21 14:18:05 | GET detected
+12-28-21 14:18:05 | Using session token
+12-28-21 14:18:06 | Ok to proxy
+12-28-21 14:18:06 | Proxy complete
+ 
+12-28-21 14:18:06 | GET detected
+12-28-21 14:18:06 | Using session token
+12-28-21 14:18:06 | Ok to proxy
+12-28-21 14:18:06 | Proxy complete
+ 
+12-28-21 14:18:06 | GET detected
+12-28-21 14:18:06 | Using session token
+12-28-21 14:18:08 | Ok to proxy
+12-28-21 14:18:08 | Proxy complete
+ 
+12-28-21 14:18:08 | GET detected
+12-28-21 14:18:08 | Using session token
+12-28-21 14:18:08 | Ok to proxy
+12-28-21 14:18:08 | Proxy complete
+ 
+12-28-21 14:22:49 | GET detected
+12-28-21 14:22:49 | Using session token
+12-28-21 14:22:49 | Ok to proxy
+12-28-21 14:22:49 | Proxy complete
+ 
+12-28-21 14:22:49 | GET detected
+12-28-21 14:22:49 | Using session token
+12-28-21 14:22:49 | Ok to proxy
+12-28-21 14:22:49 | Proxy complete
+ 
+12-28-21 14:22:49 | GET detected
+12-28-21 14:22:49 | Using session token
+12-28-21 14:22:49 | Ok to proxy
+12-28-21 14:22:49 | Proxy complete
+ 
+12-28-21 14:22:49 | GET detected
+12-28-21 14:22:49 | Using session token
+12-28-21 14:22:50 | Ok to proxy
+12-28-21 14:22:50 | Proxy complete
+ 
+12-28-21 14:22:50 | GET detected
+12-28-21 14:22:50 | Using session token
+12-28-21 14:22:50 | Ok to proxy
+12-28-21 14:22:50 | Proxy complete
+ 
+12-28-21 14:22:50 | GET detected
+12-28-21 14:22:50 | Using session token
+12-28-21 14:22:50 | Ok to proxy
+12-28-21 14:22:50 | Proxy complete
+ 
+12-28-21 14:22:50 | GET detected
+12-28-21 14:22:50 | Using session token
+12-28-21 14:22:50 | Ok to proxy
+12-28-21 14:22:50 | Proxy complete
+ 
+12-28-21 14:24:46 | GET detected
+12-28-21 14:24:46 | Using session token
+12-28-21 14:24:46 | Ok to proxy
+12-28-21 14:24:46 | Proxy complete
+ 
+12-28-21 14:24:46 | GET detected
+12-28-21 14:24:46 | Using session token
+12-28-21 14:24:46 | Ok to proxy
+12-28-21 14:24:46 | Proxy complete
+ 
+12-28-21 14:24:46 | GET detected
+12-28-21 14:24:46 | Using session token
+12-28-21 14:24:47 | Ok to proxy
+12-28-21 14:24:47 | Proxy complete
+ 
+12-28-21 14:24:47 | GET detected
+12-28-21 14:24:47 | Using session token
+12-28-21 14:24:47 | Ok to proxy
+12-28-21 14:24:47 | Proxy complete
+ 
+12-28-21 14:24:47 | GET detected
+12-28-21 14:24:47 | Using session token
+12-28-21 14:24:47 | Ok to proxy
+12-28-21 14:24:47 | Proxy complete
+ 
+12-28-21 14:24:47 | GET detected
+12-28-21 14:24:47 | Using session token
+12-28-21 14:24:47 | Ok to proxy
+12-28-21 14:24:47 | Proxy complete
+ 
+12-28-21 14:24:47 | GET detected
+12-28-21 14:24:47 | Using session token
+12-28-21 14:24:47 | Ok to proxy
+12-28-21 14:24:47 | Proxy complete
+ 
+12-28-21 14:28:08 | GET detected
+12-28-21 14:28:08 | Using session token
+12-28-21 14:28:08 | Ok to proxy
+12-28-21 14:28:08 | Proxy complete
+ 
+12-28-21 14:28:08 | GET detected
+12-28-21 14:28:08 | Using session token
+12-28-21 14:28:08 | Ok to proxy
+12-28-21 14:28:08 | Proxy complete
+ 
+12-28-21 14:28:08 | GET detected
+12-28-21 14:28:08 | Using session token
+12-28-21 14:28:08 | Ok to proxy
+12-28-21 14:28:08 | Proxy complete
+ 
+12-28-21 14:28:08 | GET detected
+12-28-21 14:28:08 | Using session token
+12-28-21 14:28:08 | Ok to proxy
+12-28-21 14:28:08 | Proxy complete
+ 
+12-28-21 14:28:08 | GET detected
+12-28-21 14:28:08 | Using session token
+12-28-21 14:28:09 | Ok to proxy
+12-28-21 14:28:09 | Proxy complete
+ 
+12-28-21 14:28:09 | GET detected
+12-28-21 14:28:09 | Using session token
+12-28-21 14:28:09 | Ok to proxy
+12-28-21 14:28:09 | Proxy complete
+ 
+12-28-21 14:28:09 | GET detected
+12-28-21 14:28:09 | Using session token
+12-28-21 14:28:09 | Ok to proxy
+12-28-21 14:28:09 | Proxy complete
+ 
+12-28-21 14:29:02 | GET detected
+12-28-21 14:29:02 | Using session token
+12-28-21 14:29:02 | Ok to proxy
+12-28-21 14:29:02 | Proxy complete
+ 
+12-28-21 14:29:02 | GET detected
+12-28-21 14:29:02 | Using session token
+12-28-21 14:29:02 | Ok to proxy
+12-28-21 14:29:02 | Proxy complete
+ 
+12-28-21 14:29:02 | GET detected
+12-28-21 14:29:02 | Using session token
+12-28-21 14:29:02 | Ok to proxy
+12-28-21 14:29:02 | Proxy complete
+ 
+12-28-21 14:29:02 | GET detected
+12-28-21 14:29:02 | Using session token
+12-28-21 14:29:02 | Ok to proxy
+12-28-21 14:29:02 | Proxy complete
+ 
+12-28-21 14:29:02 | GET detected
+12-28-21 14:29:02 | Using session token
+12-28-21 14:29:02 | Ok to proxy
+12-28-21 14:29:02 | Proxy complete
+ 
+12-28-21 14:29:02 | GET detected
+12-28-21 14:29:02 | Using session token
+12-28-21 14:29:03 | Ok to proxy
+12-28-21 14:29:03 | Proxy complete
+ 
+12-28-21 14:29:03 | GET detected
+12-28-21 14:29:03 | Using session token
+12-28-21 14:29:03 | Ok to proxy
+12-28-21 14:29:03 | Proxy complete
+ 
+12-28-21 14:30:48 | GET detected
+12-28-21 14:30:48 | Using session token
+12-28-21 14:30:48 | Ok to proxy
+12-28-21 14:30:48 | Proxy complete
+ 
+12-28-21 14:30:49 | GET detected
+12-28-21 14:30:49 | Using session token
+12-28-21 14:30:49 | Ok to proxy
+12-28-21 14:30:49 | Proxy complete
+ 
+12-28-21 14:30:49 | GET detected
+12-28-21 14:30:49 | Using session token
+12-28-21 14:30:49 | Ok to proxy
+12-28-21 14:30:49 | Proxy complete
+ 
+12-28-21 14:30:49 | GET detected
+12-28-21 14:30:49 | Using session token
+12-28-21 14:30:49 | Ok to proxy
+12-28-21 14:30:49 | Proxy complete
+ 
+12-28-21 14:30:49 | GET detected
+12-28-21 14:30:49 | Using session token
+12-28-21 14:30:49 | Ok to proxy
+12-28-21 14:30:49 | Proxy complete
+ 
+12-28-21 14:30:49 | GET detected
+12-28-21 14:30:49 | Using session token
+12-28-21 14:30:49 | Ok to proxy
+12-28-21 14:30:49 | Proxy complete
+ 
+12-28-21 14:30:49 | GET detected
+12-28-21 14:30:49 | Using session token
+12-28-21 14:30:49 | Ok to proxy
+12-28-21 14:30:49 | Proxy complete
+ 
+12-28-21 14:38:11 | GET detected
+12-28-21 14:38:11 | Using session token
+12-28-21 14:38:12 | Ok to proxy
+12-28-21 14:38:12 | Proxy complete
+ 
+12-28-21 14:38:12 | GET detected
+12-28-21 14:38:12 | Using session token
+12-28-21 14:38:12 | Ok to proxy
+12-28-21 14:38:12 | Proxy complete
+ 
+12-28-21 14:38:12 | GET detected
+12-28-21 14:38:12 | Using session token
+12-28-21 14:38:12 | Ok to proxy
+12-28-21 14:38:12 | Proxy complete
+ 
+12-28-21 14:38:12 | GET detected
+12-28-21 14:38:12 | Using session token
+12-28-21 14:38:12 | Ok to proxy
+12-28-21 14:38:12 | Proxy complete
+ 
+12-28-21 14:38:12 | GET detected
+12-28-21 14:38:12 | Using session token
+12-28-21 14:38:12 | Ok to proxy
+12-28-21 14:38:12 | Proxy complete
+ 
+12-28-21 14:38:12 | GET detected
+12-28-21 14:38:12 | Using session token
+12-28-21 14:38:13 | Ok to proxy
+12-28-21 14:38:13 | Proxy complete
+ 
+12-28-21 14:38:13 | GET detected
+12-28-21 14:38:13 | Using session token
+12-28-21 14:38:13 | Ok to proxy
+12-28-21 14:38:13 | Proxy complete
+ 
+12-28-21 14:39:48 | GET detected
+12-28-21 14:39:48 | Using session token
+12-28-21 14:39:48 | Ok to proxy
+12-28-21 14:39:48 | Proxy complete
+ 
+12-28-21 14:39:48 | GET detected
+12-28-21 14:39:48 | Using session token
+12-28-21 14:39:48 | Ok to proxy
+12-28-21 14:39:48 | Proxy complete
+ 
+12-28-21 14:39:48 | GET detected
+12-28-21 14:39:48 | Using session token
+12-28-21 14:39:48 | Ok to proxy
+12-28-21 14:39:48 | Proxy complete
+ 
+12-28-21 14:39:48 | GET detected
+12-28-21 14:39:48 | Using session token
+12-28-21 14:39:48 | Ok to proxy
+12-28-21 14:39:48 | Proxy complete
+ 
+12-28-21 14:39:48 | GET detected
+12-28-21 14:39:48 | Using session token
+12-28-21 14:39:48 | Ok to proxy
+12-28-21 14:39:48 | Proxy complete
+ 
+12-28-21 14:39:48 | GET detected
+12-28-21 14:39:48 | Using session token
+12-28-21 14:39:48 | Ok to proxy
+12-28-21 14:39:48 | Proxy complete
+ 
+12-28-21 14:39:48 | GET detected
+12-28-21 14:39:48 | Using session token
+12-28-21 14:39:49 | Ok to proxy
+12-28-21 14:39:49 | Proxy complete
+ 
+12-28-21 14:40:49 | GET detected
+12-28-21 14:40:49 | Using session token
+12-28-21 14:40:49 | Ok to proxy
+12-28-21 14:40:49 | Proxy complete
+ 
+12-28-21 14:40:49 | GET detected
+12-28-21 14:40:49 | Using session token
+12-28-21 14:40:49 | Ok to proxy
+12-28-21 14:40:49 | Proxy complete
+ 
+12-28-21 14:40:49 | GET detected
+12-28-21 14:40:49 | Using session token
+12-28-21 14:40:49 | Ok to proxy
+12-28-21 14:40:49 | Proxy complete
+ 
+12-28-21 14:40:49 | GET detected
+12-28-21 14:40:49 | Using session token
+12-28-21 14:40:49 | Ok to proxy
+12-28-21 14:40:49 | Proxy complete
+ 
+12-28-21 14:40:49 | GET detected
+12-28-21 14:40:49 | Using session token
+12-28-21 14:40:50 | Ok to proxy
+12-28-21 14:40:50 | Proxy complete
+ 
+12-28-21 14:40:50 | GET detected
+12-28-21 14:40:50 | Using session token
+12-28-21 14:40:50 | Ok to proxy
+12-28-21 14:40:50 | Proxy complete
+ 
+12-28-21 14:40:50 | GET detected
+12-28-21 14:40:50 | Using session token
+12-28-21 14:40:50 | Ok to proxy
+12-28-21 14:40:50 | Proxy complete
+ 
+12-28-21 14:45:30 | GET detected
+12-28-21 14:45:30 | Using session token
+12-28-21 14:45:30 | Ok to proxy
+12-28-21 14:45:30 | Proxy complete
+ 
+12-28-21 14:45:30 | GET detected
+12-28-21 14:45:30 | Using session token
+12-28-21 14:45:31 | Ok to proxy
+12-28-21 14:45:31 | Proxy complete
+ 
+12-28-21 14:45:31 | GET detected
+12-28-21 14:45:31 | Using session token
+12-28-21 14:45:31 | Ok to proxy
+12-28-21 14:45:31 | Proxy complete
+ 
+12-28-21 14:45:31 | GET detected
+12-28-21 14:45:31 | Using session token
+12-28-21 14:45:31 | Ok to proxy
+12-28-21 14:45:31 | Proxy complete
+ 
+12-28-21 14:45:31 | GET detected
+12-28-21 14:45:31 | Using session token
+12-28-21 14:45:31 | Ok to proxy
+12-28-21 14:45:31 | Proxy complete
+ 
+12-28-21 14:45:31 | GET detected
+12-28-21 14:45:31 | Using session token
+12-28-21 14:45:31 | Ok to proxy
+12-28-21 14:45:31 | Proxy complete
+ 
+12-28-21 14:45:31 | GET detected
+12-28-21 14:45:31 | Using session token
+12-28-21 14:45:31 | Ok to proxy
+12-28-21 14:45:31 | Proxy complete
+ 
+12-28-21 14:51:08 | GET detected
+12-28-21 14:51:08 | Using session token
+12-28-21 14:51:08 | Ok to proxy
+12-28-21 14:51:08 | Proxy complete
+ 
+12-28-21 14:51:08 | GET detected
+12-28-21 14:51:08 | Using session token
+12-28-21 14:51:09 | Ok to proxy
+12-28-21 14:51:09 | Proxy complete
+ 
+12-28-21 14:51:09 | GET detected
+12-28-21 14:51:09 | Using session token
+12-28-21 14:51:09 | Ok to proxy
+12-28-21 14:51:09 | Proxy complete
+ 
+12-28-21 14:51:09 | GET detected
+12-28-21 14:51:09 | Using session token
+12-28-21 14:51:09 | Ok to proxy
+12-28-21 14:51:09 | Proxy complete
+ 
+12-28-21 14:51:09 | GET detected
+12-28-21 14:51:09 | Using session token
+12-28-21 14:51:09 | Ok to proxy
+12-28-21 14:51:09 | Proxy complete
+ 
+12-28-21 14:51:09 | GET detected
+12-28-21 14:51:09 | Using session token
+12-28-21 14:51:09 | Ok to proxy
+12-28-21 14:51:09 | Proxy complete
+ 
+12-28-21 14:51:09 | GET detected
+12-28-21 14:51:09 | Using session token
+12-28-21 14:51:09 | Ok to proxy
+12-28-21 14:51:09 | Proxy complete
+ 
+12-28-21 14:53:01 | GET detected
+12-28-21 14:53:01 | Using session token
+12-28-21 14:53:01 | Ok to proxy
+12-28-21 14:53:01 | Proxy complete
+ 
+12-28-21 14:53:01 | GET detected
+12-28-21 14:53:01 | Using session token
+12-28-21 14:53:02 | Ok to proxy
+12-28-21 14:53:02 | Proxy complete
+ 
+12-28-21 14:53:02 | GET detected
+12-28-21 14:53:02 | Using session token
+12-28-21 14:53:02 | Ok to proxy
+12-28-21 14:53:02 | Proxy complete
+ 
+12-28-21 14:53:02 | GET detected
+12-28-21 14:53:02 | Using session token
+12-28-21 14:53:02 | Ok to proxy
+12-28-21 14:53:02 | Proxy complete
+ 
+12-28-21 14:53:02 | GET detected
+12-28-21 14:53:02 | Using session token
+12-28-21 14:53:03 | Ok to proxy
+12-28-21 14:53:03 | Proxy complete
+ 
+12-28-21 14:53:03 | GET detected
+12-28-21 14:53:03 | Using session token
+12-28-21 14:53:03 | Ok to proxy
+12-28-21 14:53:03 | Proxy complete
+ 
+12-28-21 14:53:03 | GET detected
+12-28-21 14:53:03 | Using session token
+12-28-21 14:53:04 | Ok to proxy
+12-28-21 14:53:04 | Proxy complete
+ 
+12-28-21 14:54:43 | GET detected
+12-28-21 14:54:43 | Using session token
+12-28-21 14:54:43 | Ok to proxy
+12-28-21 14:54:43 | Proxy complete
+ 
+12-28-21 14:54:43 | GET detected
+12-28-21 14:54:43 | Using session token
+12-28-21 14:54:44 | Ok to proxy
+12-28-21 14:54:44 | Proxy complete
+ 
+12-28-21 14:54:44 | GET detected
+12-28-21 14:54:44 | Using session token
+12-28-21 14:54:44 | Ok to proxy
+12-28-21 14:54:44 | Proxy complete
+ 
+12-28-21 14:54:44 | GET detected
+12-28-21 14:54:44 | Using session token
+12-28-21 14:54:44 | Ok to proxy
+12-28-21 14:54:44 | Proxy complete
+ 
+12-28-21 14:54:44 | GET detected
+12-28-21 14:54:44 | Using session token
+12-28-21 14:54:44 | Ok to proxy
+12-28-21 14:54:44 | Proxy complete
+ 
+12-28-21 14:54:44 | GET detected
+12-28-21 14:54:44 | Using session token
+12-28-21 14:54:44 | Ok to proxy
+12-28-21 14:54:44 | Proxy complete
+ 
+12-28-21 14:54:44 | GET detected
+12-28-21 14:54:44 | Using session token
+12-28-21 14:54:44 | Ok to proxy
+12-28-21 14:54:44 | Proxy complete
+ 
+12-28-21 14:59:53 | POST detected
+12-28-21 14:59:53 | Using session token
+12-28-21 14:59:53 | Authorization failed : {"error":{"code":498,"message":"Invalid token.","details":[]}}
+12-28-21 14:59:53 | Retry attempt 1 of 3
+12-28-21 14:59:53 | Resource using ArcGIS Server security
+12-28-21 14:59:53 | Got token endpoint
+12-28-21 14:59:54 | Adding token to session
+12-28-21 14:59:54 | Using session token
+12-28-21 14:59:54 | Ok to proxy
+12-28-21 14:59:54 | Proxy complete
+ 
+12-28-21 15:00:27 | GET detected
+12-28-21 15:00:27 | Using session token
+12-28-21 15:00:27 | Ok to proxy
+12-28-21 15:00:27 | Proxy complete
+ 
+12-28-21 15:35:18 | POST detected
+12-28-21 15:35:18 | Using session token
+12-28-21 15:35:18 | Ok to proxy
+12-28-21 15:35:18 | Proxy complete
+ 
+12-28-21 15:36:31 | POST detected
+12-28-21 15:36:31 | Using session token
+12-28-21 15:36:31 | Ok to proxy
+12-28-21 15:36:31 | Proxy complete
+ 
+12-28-21 15:38:31 | POST detected
+12-28-21 15:38:31 | Using session token
+12-28-21 15:38:32 | Ok to proxy
+12-28-21 15:38:32 | Proxy complete
+ 
+12-28-21 15:38:42 | FILES detected
+12-28-21 15:38:42 | Using session token
+12-28-21 15:38:42 | Ok to proxy
+12-28-21 15:38:42 | Proxy complete
+ 
+12-28-21 15:41:29 | POST detected
+12-28-21 15:41:29 | Using session token
+12-28-21 15:41:29 | Ok to proxy
+12-28-21 15:41:29 | Proxy complete
+ 
+12-28-21 15:41:45 | FILES detected
+12-28-21 15:41:45 | Using session token
+12-28-21 15:41:45 | Ok to proxy
+12-28-21 15:41:45 | Proxy complete
+ 
+12-28-21 15:43:26 | FILES detected
+12-28-21 15:43:26 | Using session token
+12-28-21 15:43:26 | Ok to proxy
+12-28-21 15:43:26 | Proxy complete
+ 
+12-28-21 15:47:52 | POST detected
+12-28-21 15:47:52 | Using session token
+12-28-21 15:47:53 | Ok to proxy
+12-28-21 15:47:53 | Proxy complete
+ 
+12-28-21 15:48:35 | FILES detected
+12-28-21 15:48:35 | Using session token
+12-28-21 15:48:35 | Ok to proxy
+12-28-21 15:48:35 | Proxy complete
+ 
+12-28-21 15:54:34 | POST detected
+12-28-21 15:54:34 | Using session token
+12-28-21 15:54:35 | Ok to proxy
+12-28-21 15:54:35 | Proxy complete
+ 
+12-28-21 16:18:11 | GET detected
+12-28-21 16:18:11 | Using session token
+12-28-21 16:18:11 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+12-28-21 16:18:11 | Retry attempt 1 of 3
+12-28-21 16:18:11 | Resource using ArcGIS Server security
+12-28-21 16:18:11 | Got token endpoint
+12-28-21 16:18:11 | Adding token to session
+12-28-21 16:18:11 | Using session token
+12-28-21 16:18:11 | Ok to proxy
+12-28-21 16:18:11 | Proxy complete
+ 
+12-28-21 16:18:11 | GET detected
+12-28-21 16:18:11 | Using session token
+12-28-21 16:18:12 | Ok to proxy
+12-28-21 16:18:12 | Proxy complete
+ 
+12-28-21 16:18:12 | GET detected
+12-28-21 16:18:12 | Using session token
+12-28-21 16:18:12 | Ok to proxy
+12-28-21 16:18:12 | Proxy complete
+ 
+12-28-21 16:18:12 | GET detected
+12-28-21 16:18:12 | Using session token
+12-28-21 16:18:12 | Ok to proxy
+12-28-21 16:18:12 | Proxy complete
+ 
+12-28-21 16:18:12 | GET detected
+12-28-21 16:18:12 | Using session token
+12-28-21 16:18:12 | Ok to proxy
+12-28-21 16:18:12 | Proxy complete
+ 
+12-28-21 16:18:12 | GET detected
+12-28-21 16:18:12 | Using session token
+12-28-21 16:18:12 | Ok to proxy
+12-28-21 16:18:12 | Proxy complete
+ 
+12-28-21 16:18:12 | GET detected
+12-28-21 16:18:12 | Using session token
+12-28-21 16:18:12 | Ok to proxy
+12-28-21 16:18:12 | Proxy complete
+ 
+12-28-21 16:18:12 | GET detected
+12-28-21 16:18:12 | Using session token
+12-28-21 16:18:13 | Ok to proxy
+12-28-21 16:18:13 | Proxy complete
+ 
+12-28-21 16:18:13 | GET detected
+12-28-21 16:18:13 | Using session token
+12-28-21 16:18:13 | Ok to proxy
+12-28-21 16:18:13 | Proxy complete
+ 
+12-28-21 16:18:13 | GET detected
+12-28-21 16:18:13 | Using session token
+12-28-21 16:18:13 | Ok to proxy
+12-28-21 16:18:13 | Proxy complete
+ 
+12-28-21 16:18:13 | GET detected
+12-28-21 16:18:13 | Using session token
+12-28-21 16:18:13 | Ok to proxy
+12-28-21 16:18:13 | Proxy complete
+ 
+12-28-21 17:43:30 | POST detected
+12-28-21 17:43:30 | Using session token
+12-28-21 17:43:31 | Authorization failed : {"error":{"code":498,"message":"Invalid token.","details":[]}}
+12-28-21 17:43:31 | Retry attempt 1 of 3
+12-28-21 17:43:31 | Resource using ArcGIS Server security
+12-28-21 17:43:31 | Got token endpoint
+12-28-21 17:43:31 | Adding token to session
+12-28-21 17:43:31 | Using session token
+12-28-21 17:43:31 | Ok to proxy
+12-28-21 17:43:31 | Proxy complete
+ 
+12-28-21 17:44:22 | POST detected
+12-28-21 17:44:22 | Using session token
+12-28-21 17:44:22 | Ok to proxy
+12-28-21 17:44:22 | Proxy complete
+ 
+12-28-21 17:44:57 | POST detected
+12-28-21 17:44:57 | Using session token
+12-28-21 17:44:57 | Ok to proxy
+12-28-21 17:44:57 | Proxy complete
+ 
+12-28-21 17:49:50 | POST detected
+12-28-21 17:49:50 | Using session token
+12-28-21 17:49:51 | Ok to proxy
+12-28-21 17:49:51 | Proxy complete
+ 
+12-28-21 17:53:27 | POST detected
+12-28-21 17:53:27 | Using session token
+12-28-21 17:53:27 | Ok to proxy
+12-28-21 17:53:27 | Proxy complete
+ 
+12-28-21 17:54:50 | POST detected
+12-28-21 17:54:50 | Using session token
+12-28-21 17:54:50 | Ok to proxy
+12-28-21 17:54:50 | Proxy complete
+ 
+12-28-21 17:56:24 | POST detected
+12-28-21 17:56:24 | Using session token
+12-28-21 17:56:24 | Ok to proxy
+12-28-21 17:56:24 | Proxy complete
+ 
+12-28-21 17:58:46 | FILES detected
+12-28-21 17:58:46 | Using session token
+12-28-21 17:58:47 | Ok to proxy
+12-28-21 17:58:47 | Proxy complete
+ 
+12-28-21 18:11:25 | POST detected
+12-28-21 18:11:25 | Using session token
+12-28-21 18:11:26 | Ok to proxy
+12-28-21 18:11:26 | Proxy complete
+ 
+12-28-21 18:15:42 | POST detected
+12-28-21 18:15:42 | Using session token
+12-28-21 18:15:42 | Ok to proxy
+12-28-21 18:15:42 | Proxy complete
+ 
+12-28-21 18:17:41 | GET detected
+12-28-21 18:17:41 | Using session token
+12-28-21 18:17:42 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+12-28-21 18:17:42 | Retry attempt 1 of 3
+12-28-21 18:17:42 | Resource using ArcGIS Server security
+12-28-21 18:17:42 | Got token endpoint
+12-28-21 18:17:42 | Adding token to session
+12-28-21 18:17:42 | Using session token
+12-28-21 18:17:42 | Ok to proxy
+12-28-21 18:17:42 | Proxy complete
+ 
+12-28-21 18:17:42 | GET detected
+12-28-21 18:17:42 | Using session token
+12-28-21 18:17:42 | Ok to proxy
+12-28-21 18:17:42 | Proxy complete
+ 
+12-28-21 18:17:43 | GET detected
+12-28-21 18:17:43 | Using session token
+12-28-21 18:17:43 | Ok to proxy
+12-28-21 18:17:43 | Proxy complete
+ 
+12-28-21 18:17:43 | GET detected
+12-28-21 18:17:43 | Using session token
+12-28-21 18:17:43 | Ok to proxy
+12-28-21 18:17:43 | Proxy complete
+ 
+12-28-21 18:17:43 | GET detected
+12-28-21 18:17:43 | Using session token
+12-28-21 18:17:43 | Ok to proxy
+12-28-21 18:17:43 | Proxy complete
+ 
+12-28-21 18:17:43 | GET detected
+12-28-21 18:17:43 | Using session token
+12-28-21 18:17:43 | Ok to proxy
+12-28-21 18:17:43 | Proxy complete
+ 
+12-28-21 18:17:43 | GET detected
+12-28-21 18:17:43 | Using session token
+12-28-21 18:17:43 | Ok to proxy
+12-28-21 18:17:43 | Proxy complete
+ 
+12-28-21 18:18:48 | POST detected
+12-28-21 18:18:48 | Using session token
+12-28-21 18:18:48 | Ok to proxy
+12-28-21 18:18:48 | Proxy complete
+ 
+12-28-21 18:21:40 | POST detected
+12-28-21 18:21:40 | Using session token
+12-28-21 18:21:41 | Ok to proxy
+12-28-21 18:21:41 | Proxy complete
+ 
+12-28-21 18:25:08 | FILES detected
+12-28-21 18:25:08 | Using session token
+12-28-21 18:25:09 | Ok to proxy
+12-28-21 18:25:09 | Proxy complete
+ 
+12-28-21 18:25:09 | FILES detected
+12-28-21 18:25:09 | Using session token
+12-28-21 18:25:09 | Ok to proxy
+12-28-21 18:25:09 | Proxy complete
+ 
+12-28-21 18:25:09 | FILES detected
+12-28-21 18:25:09 | Using session token
+12-28-21 18:25:09 | Ok to proxy
+12-28-21 18:25:09 | Proxy complete
+ 
+12-28-21 18:26:53 | POST detected
+12-28-21 18:26:53 | Using session token
+12-28-21 18:26:53 | Ok to proxy
+12-28-21 18:26:53 | Proxy complete
+ 
+12-28-21 18:28:04 | GET detected
+12-28-21 18:28:04 | Using session token
+12-28-21 18:28:04 | Ok to proxy
+12-28-21 18:28:04 | Proxy complete
+ 
+12-28-21 18:28:04 | GET detected
+12-28-21 18:28:04 | Using session token
+12-28-21 18:28:05 | Ok to proxy
+12-28-21 18:28:05 | Proxy complete
+ 
+12-28-21 18:28:05 | GET detected
+12-28-21 18:28:05 | Using session token
+12-28-21 18:28:05 | Ok to proxy
+12-28-21 18:28:05 | Proxy complete
+ 
+12-28-21 18:28:05 | GET detected
+12-28-21 18:28:05 | Using session token
+12-28-21 18:28:05 | Ok to proxy
+12-28-21 18:28:05 | Proxy complete
+ 
+12-28-21 18:28:05 | GET detected
+12-28-21 18:28:05 | Using session token
+12-28-21 18:28:05 | Ok to proxy
+12-28-21 18:28:05 | Proxy complete
+ 
+12-28-21 18:28:05 | GET detected
+12-28-21 18:28:05 | Using session token
+12-28-21 18:28:05 | Ok to proxy
+12-28-21 18:28:05 | Proxy complete
+ 
+12-28-21 18:28:05 | GET detected
+12-28-21 18:28:05 | Using session token
+12-28-21 18:28:05 | Ok to proxy
+12-28-21 18:28:05 | Proxy complete
+ 
+12-28-21 18:30:55 | GET detected
+12-28-21 18:30:55 | Using session token
+12-28-21 18:30:55 | Ok to proxy
+12-28-21 18:30:55 | Proxy complete
+ 
+12-28-21 18:30:56 | GET detected
+12-28-21 18:30:56 | Using session token
+12-28-21 18:30:56 | Ok to proxy
+12-28-21 18:30:56 | Proxy complete
+ 
+12-28-21 18:30:56 | GET detected
+12-28-21 18:30:56 | Using session token
+12-28-21 18:30:56 | Ok to proxy
+12-28-21 18:30:56 | Proxy complete
+ 
+12-28-21 18:30:56 | GET detected
+12-28-21 18:30:56 | Using session token
+12-28-21 18:30:56 | Ok to proxy
+12-28-21 18:30:56 | Proxy complete
+ 
+12-28-21 18:30:56 | GET detected
+12-28-21 18:30:56 | Using session token
+12-28-21 18:30:56 | Ok to proxy
+12-28-21 18:30:56 | Proxy complete
+ 
+12-28-21 18:30:56 | GET detected
+12-28-21 18:30:56 | Using session token
+12-28-21 18:30:56 | Ok to proxy
+12-28-21 18:30:56 | Proxy complete
+ 
+12-28-21 18:30:56 | GET detected
+12-28-21 18:30:56 | Using session token
+12-28-21 18:30:56 | Ok to proxy
+12-28-21 18:30:56 | Proxy complete
+ 
+12-28-21 18:32:08 | GET detected
+12-28-21 18:32:08 | Using session token
+12-28-21 18:32:08 | Ok to proxy
+12-28-21 18:32:08 | Proxy complete
+ 
+12-28-21 18:32:08 | GET detected
+12-28-21 18:32:08 | Using session token
+12-28-21 18:32:08 | Ok to proxy
+12-28-21 18:32:08 | Proxy complete
+ 
+12-28-21 18:32:08 | GET detected
+12-28-21 18:32:08 | Using session token
+12-28-21 18:32:08 | Ok to proxy
+12-28-21 18:32:08 | Proxy complete
+ 
+12-28-21 18:32:08 | GET detected
+12-28-21 18:32:08 | Using session token
+12-28-21 18:32:08 | Ok to proxy
+12-28-21 18:32:08 | Proxy complete
+ 
+12-28-21 18:32:08 | GET detected
+12-28-21 18:32:08 | Using session token
+12-28-21 18:32:08 | Ok to proxy
+12-28-21 18:32:08 | Proxy complete
+ 
+12-28-21 18:32:08 | GET detected
+12-28-21 18:32:08 | Using session token
+12-28-21 18:32:08 | Ok to proxy
+12-28-21 18:32:08 | Proxy complete
+ 
+12-28-21 18:32:08 | GET detected
+12-28-21 18:32:08 | Using session token
+12-28-21 18:32:09 | Ok to proxy
+12-28-21 18:32:09 | Proxy complete
+ 
+12-28-21 18:41:21 | POST detected
+12-28-21 18:41:21 | Using session token
+12-28-21 18:41:22 | Ok to proxy
+12-28-21 18:41:22 | Proxy complete
+ 
+12-28-21 18:47:37 | POST detected
+12-28-21 18:47:37 | Using session token
+12-28-21 18:47:37 | Authorization failed : {"error":{"code":498,"message":"Invalid token.","details":[]}}
+12-28-21 18:47:37 | Retry attempt 1 of 3
+12-28-21 18:47:37 | Resource using ArcGIS Server security
+12-28-21 18:47:37 | Got token endpoint
+12-28-21 18:47:38 | Adding token to session
+12-28-21 18:47:38 | Using session token
+12-28-21 18:47:38 | Ok to proxy
+12-28-21 18:47:38 | Proxy complete
+ 
+12-28-21 18:50:19 | POST detected
+12-28-21 18:50:19 | Using session token
+12-28-21 18:50:20 | Ok to proxy
+12-28-21 18:50:20 | Proxy complete
+ 
+12-28-21 18:59:22 | POST detected
+12-28-21 18:59:22 | Using session token
+12-28-21 18:59:22 | Ok to proxy
+12-28-21 18:59:22 | Proxy complete
+ 
+12-28-21 19:02:22 | POST detected
+12-28-21 19:02:22 | Using session token
+12-28-21 19:02:22 | Ok to proxy
+12-28-21 19:02:22 | Proxy complete
+ 
+12-28-21 19:06:23 | POST detected
+12-28-21 19:06:23 | Using session token
+12-28-21 19:06:23 | Ok to proxy
+12-28-21 19:06:23 | Proxy complete
+ 
+12-28-21 19:07:36 | POST detected
+12-28-21 19:07:36 | Using session token
+12-28-21 19:07:36 | Ok to proxy
+12-28-21 19:07:36 | Proxy complete
+ 
+12-28-21 19:12:24 | POST detected
+12-28-21 19:12:24 | Using session token
+12-28-21 19:12:24 | Ok to proxy
+12-28-21 19:12:24 | Proxy complete
+ 
+12-28-21 19:13:23 | FILES detected
+12-28-21 19:13:23 | Using session token
+12-28-21 19:13:24 | Ok to proxy
+12-28-21 19:13:24 | Proxy complete
+ 
+12-28-21 19:13:24 | FILES detected
+12-28-21 19:13:24 | Using session token
+12-28-21 19:13:24 | Ok to proxy
+12-28-21 19:13:24 | Proxy complete
+ 
+12-28-21 19:14:32 | POST detected
+12-28-21 19:14:32 | Using session token
+12-28-21 19:14:33 | Ok to proxy
+12-28-21 19:14:33 | Proxy complete
