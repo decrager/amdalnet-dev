@@ -97,28 +97,29 @@
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
               <div v-for="plan in scope.row.env_manage_plan" :key="plan.id">
-                <el-input-number
-                  v-if="plan.is_selected"
-                  v-model="plan.period_number"
-                  :min="0"
-                  :max="100"
-                  :disabled="!isFormulator"
-                  size="mini"
-                />
-                x
-                <el-select
-                  v-if="plan.is_selected"
-                  v-model="plan.period_description"
-                  placeholder="Pilihan"
-                  :disabled="!isFormulator"
-                >
-                  <el-option
-                    v-for="item in periode"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                <div v-if="plan.is_selected">
+                  <el-input-number
+                    v-model="plan.period_number"
+                    :min="0"
+                    :max="100"
+                    :disabled="!isFormulator"
+                    size="mini"
                   />
-                </el-select>
+                  x
+                  <el-select
+                    v-if="plan.is_selected"
+                    v-model="plan.period_description"
+                    placeholder="Pilihan"
+                    :disabled="!isFormulator"
+                  >
+                    <el-option
+                      v-for="item in periode"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </div>
               </div>
             </div>
           </template>
