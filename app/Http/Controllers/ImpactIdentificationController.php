@@ -219,7 +219,7 @@ class ImpactIdentificationController extends Controller
                 if ($toUpdate != null) {
                     try {
                         $empty = 0;
-                        if (empty($impact['id_change_type'])) {
+                        if (empty($impact['id_change_type']) && empty($impact['change_type_name'])) {
                             array_push($errors, 'Perubahan wajib diisi.');
                             $empty++;
                         }
@@ -230,7 +230,11 @@ class ImpactIdentificationController extends Controller
                         if ($empty > 0) {
                             continue;
                         }
+                        if (!empty($impact['id_change_type'])) {
+                            $impact['change_type_name'] = null;
+                        }
                         $toUpdate->id_change_type = $impact['id_change_type'];
+                        $toUpdate->change_type_name = $impact['change_type_name'];
                         $toUpdate->unit = $impact['unit'];
                         $toUpdate->save();
                         $updated++;
@@ -339,7 +343,9 @@ class ImpactIdentificationController extends Controller
                         if ($toUpdate != null) {
                             $toUpdate->form = $plan['form'];
                             $toUpdate->location = $plan['location'];
-                            $toUpdate->period = $plan['period'];
+                            if (is_numeric($plan['period_number'])) {
+                                $toUpdate->period = $plan['period_number'] . '-' . $plan['period_description'];
+                            }
                             $toUpdate->executor = $plan['executor'];
                             $toUpdate->supervisor = $plan['supervisor'];
                             $toUpdate->report_recipient = $plan['report_recipient'];
@@ -390,7 +396,9 @@ class ImpactIdentificationController extends Controller
                         if ($toUpdate != null) {
                             $toUpdate->form = $plan['form'];
                             $toUpdate->location = $plan['location'];
-                            $toUpdate->period = $plan['period'];
+                            if (is_numeric($plan['period_number'])) {
+                                $toUpdate->period = $plan['period_number'] . '-' . $plan['period_description'];
+                            }
                             $toUpdate->executor = $plan['executor'];
                             $toUpdate->supervisor = $plan['supervisor'];
                             $toUpdate->report_recipient = $plan['report_recipient'];

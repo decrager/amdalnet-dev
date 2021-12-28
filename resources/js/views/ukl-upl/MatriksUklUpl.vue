@@ -36,6 +36,7 @@ import MatriksUplTable from './components/tables/MatriksUplTable.vue';
 import DokumenPendukung from './components/DokumenPendukung.vue';
 import WorkflowUkl from '@/components/WorkflowUkl';
 import Resource from '@/api/resource';
+import axios from 'axios';
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
@@ -57,6 +58,7 @@ export default {
   },
   mounted() {
     this.checkImpactIdentificationData();
+    this.checkIfFormComplete();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
@@ -84,6 +86,13 @@ export default {
           params: idProject,
         });
       }
+    },
+    async checkIfFormComplete() {
+      const idProject = parseInt(this.$route.params && this.$route.params.id);
+      await axios.get('api/matriks-ukl-upl/is-form-complete/' + idProject)
+        .then(response => {
+          this.isSubmitEnabled = response.data.data;
+        });
     },
     handleEnableSimpanLanjutkan() {
       this.isSubmitEnabled = true;

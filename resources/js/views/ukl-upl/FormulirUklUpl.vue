@@ -17,7 +17,7 @@
         </el-button>
       </span>
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
-        <el-collapse-item name="1" title="PELINGKUPAN">
+        <el-collapse-item name="1" title="IDENTIFIKASI KOMPONEN KEGIATAN DAN KOMPONEN LINGKUNGAN">
           <pelingkupan
             v-if="activeName === '1'"
             @handleReloadVsaList="handleReloadVsaList"

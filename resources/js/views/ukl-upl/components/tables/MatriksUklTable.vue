@@ -97,12 +97,29 @@
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
               <div v-for="plan in scope.row.env_manage_plan" :key="plan.id">
-                <el-input
-                  v-if="plan.is_selected"
-                  v-model="plan.period"
-                  type="textarea"
-                  :rows="2"
-                />
+                <div v-if="plan.is_selected">
+                  <el-input-number
+                    v-model="plan.period_number"
+                    :min="0"
+                    :max="100"
+                    :disabled="!isFormulator"
+                    size="mini"
+                  />
+                  x
+                  <el-select
+                    v-if="plan.is_selected"
+                    v-model="plan.period_description"
+                    placeholder="Pilihan"
+                    :disabled="!isFormulator"
+                  >
+                    <el-option
+                      v-for="item in periode"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </div>
               </div>
             </div>
           </template>
@@ -151,6 +168,24 @@ export default {
       currentPlanIdx: 0,
       newEnvManagePlan: {},
       data: [],
+      periode: [
+        {
+          label: 'per Hari',
+          value: 'per Hari',
+        },
+        {
+          label: 'per Minggu',
+          value: 'per Minggu',
+        },
+        {
+          label: 'per Bulan',
+          value: 'per Bulan',
+        },
+        {
+          label: 'per Tahun',
+          value: 'per Tahun',
+        },
+      ],
       loading: true,
       splhKey: 1,
       iplhKey: 1,
@@ -223,7 +258,6 @@ export default {
         });
     },
     handleAddPlan(idImp) {
-      console.log('this.newEnvManagePlan[idImp] = ' + this.newEnvManagePlan[idImp]);
       if (this.newEnvManagePlan[idImp] === null ||
         this.newEnvManagePlan[idImp].replace(/\s+/g, '').trim() === '') {
         this.$message({
