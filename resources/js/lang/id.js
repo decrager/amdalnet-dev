@@ -276,7 +276,7 @@ export default {
       'formulator-expert': 'Penyusun Ahli',
       lpjp: 'lpjp',
       pustanling: 'pustanling',
-      luk: 'luk',
+      luk: 'Lembaga Uji Kelayakan',
       'examiner-chief': 'Ahli Ketua',
       'examiner-secretary': 'Ahli Sekertaris',
       'examiner-administration': 'Ahli Admin',
