@@ -84,14 +84,15 @@ export default {
     ]),
     getRole() {
       const roles = this.$store.getters.roles.map(value => {
-        if (value === 'initiator'){
-          value = 'pemrakarsa';
-        } else if (value === 'formulator'){
-          value = 'penyusun';
-        } else if (value === 'examiner'){
-          value = 'ahli';
-        }
-        return this.$options.filters.uppercaseFirst(value);
+        // if (value === 'initiator'){
+        //   value = 'pemrakarsa';
+        // } else if (value === 'formulator'){
+        //   value = 'penyusun';
+        // } else if (value === 'examiner'){
+        //   value = 'ahli';
+        // }
+        const translatedRole = this.$t('roles.title.' + value);
+        return this.$options.filters.uppercaseFirst(translatedRole);
       });
       return roles.join(' | ');
     },
