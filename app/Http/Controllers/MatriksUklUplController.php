@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\EnvManageDoc;
 use App\Entity\ImpactIdentification;
 use App\Entity\ProjectStage;
 use Illuminate\Http\Request;
@@ -16,6 +17,76 @@ class MatriksUklUplController extends Controller
     public function getTableUpl(Request $request, $id)
     {
         return $this->getTableData($request, $id, 'upl');
+    }
+
+    public function getIsFormComplete(Request $request, $id)
+    {
+        // check if at least one UKL & UPL per impact_idt is filled
+        $impacts = ImpactIdentification::select('*')
+            ->with('envManagePlan')
+            ->where('id_project', $id)
+            ->get();
+        $uklCount = 0;
+        foreach ($impacts as $impact) {
+            if (!empty($impact->envManagePlan)) {
+                if (!empty($impact->envManagePlan[0]->form)) {
+                    $uklCount++;
+                }
+            }
+        }
+        // $uklFilled = $uklCount == count($impacts);
+        $uklFilled = $uklCount > 0;
+        $uplCount = 0;
+        foreach ($impacts as $impact) {
+            if (!empty($impact->envMonitorPlan)) {
+                if (!empty($impact->envMonitorPlan[0]->form)) {
+                    $uplCount++;
+                }
+            }
+        }
+        // $uplFilled = $uplCount == count($impacts);
+        $uplFilled = $uplCount > 0;
+        // check if env_manage_docs are uploaded
+        $docs = EnvManageDoc::select('*')
+            ->where('id_project', $id)
+            ->orderBy('type', 'desc')
+            ->get();
+        $sppl = false;
+        $dpt = false;
+        foreach ($docs as $doc) {
+            if ($doc->type == 'SPPL' && !empty($doc->filepath)){
+                $sppl = true;
+            }
+            if ($doc->type == 'DPT' && !empty($doc->filepath)){
+                $dpt = true;
+            }
+        }
+        $docsUploaded = $sppl && $dpt;
+        return response()->json([
+            'status' => 200,
+            'code' => 200,
+            'data' => $uklFilled && $uplFilled && $docsUploaded,
+        ], 200);
+    }
+
+    private function setEnvPlanData($envPlan) {
+        foreach ($envPlan as $idx=>$plan) {
+            $split_period = explode('-', $plan->period);
+            $plan['period_number'] = null;
+            $plan['period_description'] = null;
+            if (is_numeric($split_period[0])) {
+                $plan['period_number'] = $split_period[0];
+            }
+            if (count($split_period) > 1) {
+                $plan['period_description'] = $split_period[1];
+            }
+            if ($idx == 0) {
+                $plan['is_selected'] = true;
+            } else {
+                $plan['is_selected'] = false;
+            }
+        }
+        return $envPlan;
     }
 
     private function getTableData(Request $request, $id, $type)
@@ -85,23 +156,11 @@ class MatriksUklUplController extends Controller
                     $impact['index'] = $index;
                     if ($type == 'ukl'){
                         if ($impact->envManagePlan != null) {
-                            foreach ($impact->envManagePlan as $idx=>$plan) {
-                                if ($idx == 0) {
-                                    $plan['is_selected'] = true;
-                                } else {
-                                    $plan['is_selected'] = false;
-                                }
-                            }
+                            $impact->envManagePlan = $this->setEnvPlanData($impact->envManagePlan);
                         }
                     } else if ($type == 'upl'){
                         if ($impact->envMonitorPlan != null) {
-                            foreach ($impact->envMonitorPlan as $idx=>$plan) {
-                                if ($idx == 0) {
-                                    $plan['is_selected'] = true;
-                                } else {
-                                    $plan['is_selected'] = false;
-                                }
-                            }
+                            $impact->envMonitorPlan = $this->setEnvPlanData($impact->envMonitorPlan);
                         }
                     }
                     array_push($data, $impact);

@@ -43,7 +43,7 @@
           <span v-if="!scope.row.is_stage">{{ scope.row.unit }}</span>
         </template>
       </el-table-column>
-      <el-table-column :key="splhKey" label="Standar Pengelolaan Lingkungan Hidup">
+      <el-table-column :key="splhKey" label="Standar Pemantauan Lingkungan Hidup">
         <el-table-column label="Bentuk">
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
@@ -97,18 +97,34 @@
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
               <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
-                <el-input
+                <el-input-number
                   v-if="plan.is_selected"
-                  v-model="plan.period"
-                  type="textarea"
-                  :rows="2"
+                  v-model="plan.period_number"
+                  :min="0"
+                  :max="100"
+                  :disabled="!isFormulator"
+                  size="mini"
                 />
+                x
+                <el-select
+                  v-if="plan.is_selected"
+                  v-model="plan.period_description"
+                  placeholder="Pilihan"
+                  :disabled="!isFormulator"
+                >
+                  <el-option
+                    v-for="item in periode"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </div>
             </div>
           </template>
         </el-table-column>
       </el-table-column>
-      <el-table-column :key="iplhKey" label="Institut Pengelolaan Lingkungan Hidup">
+      <el-table-column :key="iplhKey" label="Institut Pemantauan Lingkungan Hidup">
         <template slot-scope="scope">
           <div v-if="!scope.row.is_stage">
             <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
@@ -151,6 +167,24 @@ export default {
       currentPlanIdx: 0,
       newEnvMonitorPlan: {},
       data: [],
+      periode: [
+        {
+          label: 'per Hari',
+          value: 'per Hari',
+        },
+        {
+          label: 'per Minggu',
+          value: 'per Minggu',
+        },
+        {
+          label: 'per Bulan',
+          value: 'per Bulan',
+        },
+        {
+          label: 'per Tahun',
+          value: 'per Tahun',
+        },
+      ],
       loading: true,
       splhKey: 1,
       iplhKey: 1,
