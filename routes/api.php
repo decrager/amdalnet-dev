@@ -284,6 +284,7 @@ Route::delete('arcgis-service/{id}', [ArcgisServiceController::class, 'deleteAcr
 Route::get('besaran-dampak/list/{id}', [BesaranDampakController::class, 'getList']);
 Route::get('matriks-ukl-upl/table-ukl/{id}', [MatriksUklUplController::class, 'getTableUkl']);
 Route::get('matriks-ukl-upl/table-upl/{id}', [MatriksUklUplController::class, 'getTableUpl']);
+Route::get('matriks-ukl-upl/is-form-complete/{id}', [MatriksUklUplController::class, 'getIsFormComplete']);
 Route::apiResource('env-manage-plans', 'EnvManagePlanController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('env-manage-docs', 'EnvManageDocController');

@@ -339,7 +339,9 @@ class ImpactIdentificationController extends Controller
                         if ($toUpdate != null) {
                             $toUpdate->form = $plan['form'];
                             $toUpdate->location = $plan['location'];
-                            $toUpdate->period = $plan['period'];
+                            if (is_numeric($plan['period_number'])) {
+                                $toUpdate->period = $plan['period_number'] . '-' . $plan['period_description'];
+                            }
                             $toUpdate->executor = $plan['executor'];
                             $toUpdate->supervisor = $plan['supervisor'];
                             $toUpdate->report_recipient = $plan['report_recipient'];
@@ -390,7 +392,9 @@ class ImpactIdentificationController extends Controller
                         if ($toUpdate != null) {
                             $toUpdate->form = $plan['form'];
                             $toUpdate->location = $plan['location'];
-                            $toUpdate->period = $plan['period'];
+                            if (is_numeric($plan['period_number'])) {
+                                $toUpdate->period = $plan['period_number'] . '-' . $plan['period_description'];
+                            }
                             $toUpdate->executor = $plan['executor'];
                             $toUpdate->supervisor = $plan['supervisor'];
                             $toUpdate->report_recipient = $plan['report_recipient'];
