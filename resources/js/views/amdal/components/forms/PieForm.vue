@@ -1,8 +1,26 @@
 <template>
   <fieldset>
     <legend>Evaluasi Dampak Potensial</legend>
-    <el-form ref="form" :model="pies" label-position="top" label-width="120px" @change="markChange">
-      <el-row :gutter="20" class="pies-input">
+    <el-form v-if="data" ref="form" label-position="top" label-width="120px" @change="markChange">
+      <el-row
+        :gutter="20"
+        class="pies-input"
+      >
+        <template
+          v-for="param in params"
+        >
+          <el-col :key="'pie_param_' + param.id" :span="spanValue" class="pie-item">
+            <el-form-item :label="param.name" prop="desc">
+              <el-input
+                v-model="data[data.findIndex(e => e.id_pie_param === param.id)].text"
+                type="textarea"
+                :autosize="{ minRows: 3, maxRows: 5}"
+              />
+            </el-form-item>
+          </el-col>
+        </template>
+
+        <!--
         <el-col :span="spanValue" class="pie-item">
           <el-form-item label="A." prop="desc">
             <el-input
@@ -48,6 +66,7 @@
             />
           </el-form-item>
         </el-col>
+-->
       </el-row>
     </el-form>
   </fieldset>
@@ -55,13 +74,37 @@
 <script>
 export default {
   name: 'PieForm',
+  props: {
+    data: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
+    params: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
+    idImpactIdentification: {
+      type: Number,
+      default: 0,
+    },
+  },
   data() {
     return {
       hasChanges: false,
       spanValue: 12,
-      piesParam: [],
-      pies: { A: '', B: '', C: '', D: '', E: '' },
     };
+  },
+  watch: {
+    data: function(val) {
+      console.log('pie data', val);
+    },
+    params: function(val) {
+      console.log('pie data', val);
+    },
   },
   mounted(){
   },

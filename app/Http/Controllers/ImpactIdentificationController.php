@@ -539,9 +539,9 @@ class ImpactIdentificationController extends Controller
         ->selectRaw('ii.id, ii.id_change_type,
             ct."name" as change_type_name,
             COALESCE(c.id_project_stage, spc.id_project_stage) as project_stage,
-            COALESCE(c."name", spc."name") as component,
+            ps.name as stage,
+            COALESCE(c."name", spc."name") as komponen,
             COALESCE(ra."name", spra."name") as rona_awal,
-            spra."name" as rona_awal_name,
             ii.initial_study_plan,
             ii.is_hypothetical_significant,
             ii.is_managed,
@@ -553,6 +553,7 @@ class ImpactIdentificationController extends Controller
         ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
         ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
         ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+        ->leftJoin('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'))
         ->where('ii.id_project', $request->id_project)
         ->orderBy('ii.id', 'asc')
         ->get();
