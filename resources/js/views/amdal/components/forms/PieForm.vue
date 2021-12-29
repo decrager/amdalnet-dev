@@ -1,76 +1,31 @@
 <template>
-  <fieldset v-loading="loading">
-    <legend>Evaluasi Dampak Potensial</legend>
-    <el-form v-if="data" ref="form" label-position="top" label-width="120px">
-      <el-row
-        :gutter="20"
-        class="pies-input"
-      >
-        <template
-          v-for="param in params"
+  <div v-loading="loading">
+    <fieldset>
+      <legend>Evaluasi Dampak Potensial</legend>
+      <el-form v-if="data" ref="form" label-position="top" label-width="120px">
+        <el-row
+          :gutter="20"
+          class="pies-input"
         >
-          <el-col :key="'pie_param_' + param.id" :span="spanValue" class="pie-item">
-            <el-form-item :label="param.name" prop="desc">
-              <el-input
-                v-model="data[data.findIndex(e => e.id_pie_param === param.id)].text"
-                type="textarea"
-                :autosize="{ minRows: 3, maxRows: 5}"
-                @change="markChange"
-              />
-            </el-form-item>
-          </el-col>
-        </template>
-
-        <!--
-        <el-col :span="spanValue" class="pie-item">
-          <el-form-item label="A." prop="desc">
-            <el-input
-              v-model="pies.A"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5}"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="spanValue" class="pie-item">
-          <el-form-item label="B." prop="desc">
-            <el-input
-              v-model="pies.B"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5}"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="spanValue" class="pie-item">
-          <el-form-item label="C." prop="desc">
-            <el-input
-              v-model="pies.A"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5}"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="spanValue" class="pie-item">
-          <el-form-item label="D." prop="desc">
-            <el-input
-              v-model="pies.A"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5}"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="spanValue" class="pie-item">
-          <el-form-item label="E." prop="desc">
-            <el-input
-              v-model="pies.A"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5}"
-            />
-          </el-form-item>
-        </el-col>
--->
-      </el-row>
-    </el-form>
-  </fieldset>
+          <template
+            v-for="param in params"
+          >
+            <el-col :key="'pie_param_' + param.id" :span="spanValue" class="pie-item">
+              <el-form-item :label="param.name" prop="desc">
+                <el-input
+                  v-model="data[data.findIndex(e => e.id_pie_param === param.id)].text"
+                  type="textarea"
+                  :autosize="{ minRows: 3, maxRows: 5}"
+                  :disabled="!isFormulator"
+                  @change="markChange"
+                />
+              </el-form-item>
+            </el-col>
+          </template>
+        </el-row>
+      </el-form>
+    </fieldset>
+  </div>
 </template>
 <script>
 export default {
@@ -102,6 +57,11 @@ export default {
       hasChanges: false,
       spanValue: 12,
     };
+  },
+  computed: {
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   watch: {
     data: function(val) {
@@ -149,5 +109,4 @@ fieldset {
     font-weight: 600;
   }
 }
-
 </style>

@@ -14,7 +14,7 @@
       <div class="entry-title">
         <el-form label-position="top">
           <el-form-item label="Dampak Potensial">
-            <el-select v-model="data.id_change_type" placeholder="Pilih" @change="onChangeType">
+            <el-select v-model="data.id_change_type" placeholder="Pilih" :disabled="!isFormulator" @change="onChangeType">
               <el-option
                 v-for="item in changeTypes"
                 :key="item.id"
@@ -22,7 +22,7 @@
                 :value="item.id"
               />
             </el-select>
-            <el-input v-if="data.id_change_type === 0" v-model="data.change_type_name" type="text" style="width: 200px;" @change="hasChanges" />
+            <el-input v-if="data.id_change_type === 0" v-model="data.change_type_name" type="text" style="width: 200px;" :readonly="!isFormulator" @change="hasChanges" />
             <span style="margin-left: 1em; font-size: inherit; font-size: 150%;">{{ data.rona_awal }} akibat {{ data.komponen }}</span>
           </el-form-item>
         </el-form>
@@ -43,6 +43,7 @@
             v-if="data.is_hypothetical_significant === false"
             v-model="data.is_managed"
             active-text="Dikelola"
+            :disabled="!isFormulator"
             @change="hasChanges"
             />
             </el-form-item>
@@ -51,6 +52,7 @@
                 v-model="data.initial_study_plan"
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
+                :readonly="!isFormulator"
                 @input="hasChanges"
               />
             </el-form-item>
@@ -59,7 +61,7 @@
                 v-model="data.study_location"
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
-                :disabled="!data.is_hypothetical_significant"
+                :disabled="!data.is_hypothetical_significant || !isFormulator"
                 @input="hasChanges"
               />
             </el-form-item>
@@ -68,7 +70,7 @@
                 <el-input-number
                   v-model="data.study_length_year"
                   size="small"
-                  :disabled="!data.is_hypothetical_significant"
+                  :disabled="!data.is_hypothetical_significant || !isFormulator"
                   @change="hasChanges"
                 /> &nbsp;&nbsp;tahun</span>
               <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!data.is_hypothetical_significant" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
@@ -136,6 +138,11 @@ export default {
       isSaving: false,
       isLoadingPie: false,
     };
+  },
+  computed: {
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   watch: {
     data: function(val) {

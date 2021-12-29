@@ -1,5 +1,15 @@
 <template>
-  <div>
+  <div v-loading="isLoading">
+    <div style="text-align:right;">  <el-button
+      type="success"
+      icon="el-icon-check"
+      style="margin-bottom: 10px;"
+      :disabled="totalChanges <= 0"
+      @click="saveChanges()"
+    >
+      Simpan Semua Perubahan
+    </el-button>
+    </div>
     <dampak-hipotetik-master-table
       :impacts="impacts"
       :id-project="id_project"
@@ -55,6 +65,7 @@ export default {
         // console.log('stages', this.stages);
       });
 
+      this.impacts = null;
       impactsResource.list({
         id_project: this.id_project,
       }).then((res) => {
@@ -92,6 +103,26 @@ export default {
       const temp = this.impacts;
       this.impacts = null;
       this.impacts = temp;
+    },
+    saveChanges(){
+      const imps = new Resource('impact-ids');
+      const impstosave = this.impacts.filter(e => e.hasChanges === true);
+      this.isLoading = true;
+      imps.store(impstosave).then((res) => {
+        this.$message({
+          message: 'Dampak Hipotetik berhasil disimpan',
+          type: 'success',
+          duration: 5 * 1000,
+        });
+        this.isLoading = false;
+        this.refresh();
+      }); /* .catch((err) => {
+        this.isLoading = false;
+      });*/
+    },
+    refresh(){
+      this.totalChanges = 0;
+      this.getImpacts();
     },
   },
 };

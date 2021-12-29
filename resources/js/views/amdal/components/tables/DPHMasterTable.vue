@@ -55,7 +55,9 @@
         </template>
       </el-table-column>
     </el-table>
-    <div v-if="totalChanges > 0" style="text-align: right; margin-bottom: 0.5em;">Data berubah: <span style="font-weight: bold">{{ totalChanges }}</span></div>
+    <div v-if="totalChanges > 0" style="text-align: right; margin-bottom: 0.5em;">
+      <div>Data berubah: <span style="font-weight:">{{ totalChanges }}</span></div>
+    </div>
   </div>
 </template>
 <script>

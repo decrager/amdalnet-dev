@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use App\Entity\ChangeType;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
+use PHPUnit\Framework\Constraint\IsEmpty;
+use PhpParser\Node\Expr\Empty_;
 
 class ImpactIdentificationController extends Controller
 {
@@ -587,7 +589,7 @@ class ImpactIdentificationController extends Controller
                 }
                 $impact->save();
 
-                if($request->pie){
+                if(isset($request['pie']) && $request->pie){
                     foreach($request->pie as $pie){
                         $p = PotentialImpactEvaluation::where('id_impact_identification', $request->id)
                             ->where('id_pie_param', $pie['id_pie_param'])->first();
@@ -606,6 +608,60 @@ class ImpactIdentificationController extends Controller
             }
         }
         return response($request, 418);
+    }
+
+    /**
+     * Save one impact
+      * @param \Illuminate\Http\Request $request
+      * @return \Illuminate\Http\Response
+     */
+    public function saveImpacts(Request $request){
+        $request = $request->all();
+        if(Empty($request)) {
+            return response('empty request', 418);
+        }
+
+        foreach($request as $imp){
+            $id = $imp['id'];
+            $impact = ImpactIdentification::find($id);
+            if($impact){
+
+                $impact->study_length_month = $imp['study_length_month'];
+                $impact->study_length_year = $imp['study_length_year'];
+                $impact->study_location = $imp['study_location'];
+                $impact->is_hypothetical_significant = $imp['is_hypothetical_significant'];
+                $impact->initial_study_plan = $imp['initial_study_plan'];
+
+                if (($imp['id_change_type'] == 0) &&
+                    (($imp['change_type_name']  != null) &&
+                    (trim($imp['change_type_name']) != ""))){
+                    $ctype = ChangeType::firstOrCreate(['name' => trim($imp['change_type_name'])]);
+                    $impact->id_change_type = $ctype->id;
+                } else {
+                    $impact->id_change_type = $imp['id_change_type'];
+                }
+                $impact->save();
+
+                if(isset($imp['pie']) && (!Empty($imp['pie']))){
+                    foreach($imp['pie'] as $pie){
+                        $p = PotentialImpactEvaluation::where('id_impact_identification', $imp['id'])
+                            ->where('id_pie_param', $pie['id_pie_param'])->first();
+
+                        if (!$p) {
+                            $p = new PotentialImpactEvaluation();
+                            $p->id_impact_identification = $imp['id'];
+                            $p->id_pie_param = $pie['id_pie_param'];
+                        }
+                        $p->text = $pie['text'];
+                        $p->save();
+                    }
+                }
+
+
+            }
+        }
+
+        return response($impact, 200);
     }
 
     /**
