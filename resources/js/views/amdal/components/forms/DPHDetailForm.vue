@@ -57,7 +57,7 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item label="Wilayah Studi">
+            <el-form-item v-if="data.is_hypothetical_significant" label="Wilayah Studi">
               <el-input
                 v-model="data.study_location"
                 type="textarea"
@@ -66,7 +66,7 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item label="Batas Waktu Kajian">
+            <el-form-item v-if="data.is_hypothetical_significant" label="Batas Waktu Kajian">
               <span style="margin-right: 1em">
                 <el-input-number
                   v-model="data.study_length_year"
