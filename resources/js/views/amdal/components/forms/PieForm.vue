@@ -1,5 +1,5 @@
 <template>
-  <fieldset>
+  <fieldset v-loading="loading">
     <legend>Evaluasi Dampak Potensial</legend>
     <el-form v-if="data" ref="form" label-position="top" label-width="120px">
       <el-row
@@ -92,6 +92,10 @@ export default {
       type: Number,
       default: 0,
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -118,6 +122,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+fieldset {
+  min-height: 200px;
+}
 .pies-input{
 
   -ms-box-orient: horizontal;

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="data" id="detailForm">
+  <div v-if="data" id="detailForm" v-loading="isSaving">
     <div>
       <el-row class="detail-header">
         <el-col :span="18" class="stage">{{ data.stage }}</el-col>
@@ -51,7 +51,7 @@
                 v-model="data.initial_study_plan"
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
-                @change="hasChanges"
+                @input="hasChanges"
               />
             </el-form-item>
             <el-form-item label="Wilayah Studi">
@@ -60,7 +60,7 @@
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
                 :disabled="!data.is_hypothetical_significant"
-                @change="hasChanges"
+                @input="hasChanges"
               />
             </el-form-item>
             <el-form-item label="Batas Waktu Kajian">
@@ -76,7 +76,7 @@
           </el-form>
         </el-col>
         <el-col :span="16">
-          <pie-form v-if="data.is_hypothetical_significant === true" :data="pies" :params="pieParams" :id-impact-identification="data.id" />
+          <pie-form v-if="data.is_hypothetical_significant === true" :data="pies" :params="pieParams" :id-impact-identification="data.id" :loading="isLoadingPie" />
         </el-col>
       </el-row>
       <div style="text-align: right; margin-top:2em;">
@@ -133,6 +133,8 @@ export default {
         { label: 'DPH', value: true },
         { label: 'DTPH', value: false },
       ],
+      isSaving: false,
+      isLoadingPie: false,
     };
   },
   watch: {
@@ -156,29 +158,37 @@ export default {
   methods: {
     async getPies(){
       this.pies = null;
+      this.isLoadingPie = true;
 
-      // console.log('hasPie?', this.data.pie);
-      console.log(this.data.pie);
-      if (this.data.pie){
+      console.log('hasPie?', this.data.pie);
+
+      if ((typeof this.data.pie !== 'undefined') && (this.data.pie !== null) && (this.data.pie.length > 0)){
         this.pies = this.data.pie;
+        this.isLoadingPie = false;
       } else {
         pieResource.list({
           id_impact_identification: [this.data.id],
         }).then((res) => {
-          if (res.length > 0) {
+          console.log('calling ', res.length);
+          if (res && (res.length > 0)) {
             this.data.pie = res;
             this.pies = res;
           } else {
+            const pies = [];
             this.pieParams.forEach((e) => {
-              this.pies.push({
+              pies.push({
                 id: 0,
                 id_impact_identification: this.data.id,
                 id_pie_param: e.id,
                 text: null,
               });
             });
-            this.data.pie = this.pies;
+            this.pies = pies;
+            this.data.pie = pies;
+            console.log('empty pies', this.pies);
           }
+          this.isLoadingPie = false;
+
           this.$emit('pieData', this.pies);
         });
       }
@@ -207,9 +217,20 @@ export default {
     },
     saveChanges(){
       console.log('You\'re initiating save!');
-      impactsResource.store(this.data);
-      this.data.hasChanges = false;
-      this.$emit('saveData', this.data);
+      this.isSaving = true;
+
+      impactsResource.store(this.data).then((res) => {
+        var message = 'Dampak Penting Hipotetik berhasil disimpan';
+        var message_type = 'success';
+        this.$message({
+          message: message,
+          type: message_type,
+          duration: 5 * 1000,
+        });
+        this.isSaving = false;
+        this.data.hasChanges = false;
+        this.$emit('hasChanges', this.data);
+      });
       console.log(this.data);
     },
   },

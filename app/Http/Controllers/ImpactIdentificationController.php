@@ -570,6 +570,7 @@ class ImpactIdentificationController extends Controller
         {
             $impact = ImpactIdentification::find($request->id);
             if($impact){
+
                 $impact->study_length_month = $request->study_length_month;
                 $impact->study_length_year = $request->study_length_year;
                 $impact->study_location = $request->study_location;
@@ -585,10 +586,26 @@ class ImpactIdentificationController extends Controller
                     $impact->id_change_type = $request->id_change_type;
                 }
                 $impact->save();
-                return response($impact);
+
+                if($request->pie){
+                    foreach($request->pie as $pie){
+                        $p = PotentialImpactEvaluation::where('id_impact_identification', $request->id)
+                            ->where('id_pie_param', $pie['id_pie_param'])->first();
+
+                        if (!$p) {
+                            $p = new PotentialImpactEvaluation();
+                            $p->id_impact_identification = $request->id;
+                            $p->id_pie_param = $pie['id_pie_param'];
+                        }
+                        $p->text = $pie['text'];
+                        $p->save();
+                    }
+                }
+
+                return response($impact, 200);
             }
         }
-        return response($request);
+        return response($request, 418);
     }
 
     /**
