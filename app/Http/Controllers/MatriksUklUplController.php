@@ -159,11 +159,11 @@ class MatriksUklUplController extends Controller
                     $impact['index'] = $index;
                     if ($type == 'ukl'){
                         if ($impact->envManagePlan != null) {
-                            $impact->envManagePlan = $this->setEnvPlanData($impact->envManagePlan);
+                            $impact->env_manage_plan = $this->setEnvPlanData($impact->envManagePlan);
                         }
                     } else if ($type == 'upl'){
                         if ($impact->envMonitorPlan != null) {
-                            $impact->envMonitorPlan = $this->setEnvPlanData($impact->envMonitorPlan);
+                            $impact->env_monitor_plan = $this->setEnvPlanData($impact->envMonitorPlan);
                         }
                     }
                     array_push($data, $impact);
