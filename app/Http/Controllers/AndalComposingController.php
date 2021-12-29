@@ -142,7 +142,7 @@ class AndalComposingController extends Controller
                 $evaluation->description = $request->description;
                 $evaluation->save();
             }
-            
+
             return response()->json(['message' => 'success']);
         }
 
@@ -1328,10 +1328,10 @@ class AndalComposingController extends Controller
                         'dpg_pk_impact_no' => '6.1.' . $i + 1 . '.' . $a + 1 . '. ' . $dpg_pk_block[$i]['dampak'][$a],
                         'dpg_pk_impact' => $dpg_pk_block[$i]['dampak'][$a],
                         'dpg_pk_impact_small' => strtolower($dpg_pk_block[$i]['dampak'][$a]),
-                        'dpg_pk_studies' => $dpg_pk_block[$i]['studies'][$a],
-                        'dpg_pk_no_plan' => $dpg_pk_block[$i]['no_plan'][$a],
-                        'dpg_pk_with_plan' => $dpg_pk_block[$i]['with_plan'][$a],
-                        'dpg_pk_size_differ' => $dpg_pk_block[$i]['size_differ'][$a],
+                        'dpg_pk_studies' => $dpg_pk_block[$i]['table_with_no_plan'][$a]['studies'],
+                        'dpg_pk_no_plan' => $dpg_pk_block[$i]['table_with_no_plan'][$a]['no_plan'],
+                        'dpg_pk_with_plan' => $dpg_pk_block[$i]['table_with_no_plan'][$a]['with_plan'],
+                        'dpg_pk_size_differ' => $dpg_pk_block[$i]['table_with_no_plan'][$a]['size_differ'],
                         'dpg_pk_imp_result' => $dpg_pk_block[$i]['impact_result'][$a],
                     ];
 
