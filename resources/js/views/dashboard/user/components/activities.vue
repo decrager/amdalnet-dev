@@ -30,13 +30,12 @@ export default {
   name: 'UserActivities',
   data(){
     return {
-      isLoading: true,
-      /* list: [
+      isLoading: false,
+      list: [
         { title: 'Pembangunan Pabrik Pupuk Organik', location: 'Semarang - Jawa Tengah', doc: 'AMDAL' },
         { title: 'Pembangunan Gudang Pupuk Organik', location: 'Sidoarjo - Jawa Timur', doc: 'UKL-UPL' },
         { title: 'Pembangunan Lahan Parkir', location: 'Semarang - Jawa Tengah', doc: 'SPPL' },
-      ],*/
-      list: [],
+      ],
     };
   },
   mounted(){
