@@ -8,6 +8,7 @@ use App\Entity\ComponentType;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
+use App\Entity\HolisticEvaluation;
 use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
@@ -39,6 +40,16 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->holisticEvaluation) {
+            $evaluation = HolisticEvaluation::where('id_project', $request->idProject)->count();
+            if($evaluation > 0) {
+                $evaluation = HolisticEvaluation::where('id_project', $request->idProject)->first();
+                return $evaluation->description;
+            }
+
+            return null;
+        }
+
         if ($request->pdf) {
             return $this->exportKAPDF($request->idProject);
         }
@@ -119,6 +130,22 @@ class AndalComposingController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->type == 'holisticEvaluation') {
+            $evaluation = HolisticEvaluation::where('id_project', $request->idProject)->count();
+            if($evaluation > 0) {
+                $evaluation = HolisticEvaluation::where('id_project', $request->idProject)->first();
+                $evaluation->description = $request->description;
+                $evaluation->save();
+            } else {
+                $evaluation = new HolisticEvaluation();
+                $evaluation->id_project = $request->idProject;
+                $evaluation->description = $request->description;
+                $evaluation->save();
+            }
+            
+            return response()->json(['message' => 'success']);
+        }
+
         if ($request->type == 'formulir') {
             $project = Project::findOrFail($request->idProject);
             if (File::exists(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.docx'))) {

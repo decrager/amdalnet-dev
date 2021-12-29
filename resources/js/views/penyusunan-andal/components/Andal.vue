@@ -63,6 +63,12 @@
         </template>
         <bagan-alir-dampak v-if="activeName === 'bagan-alir-dampak'" />
       </el-collapse-item>
+      <el-collapse-item name="evaluasi-holistik">
+        <template slot="title" class="head-accordion">
+          <span class="title">EVALUASI HOLISTIK</span>
+        </template>
+        <EvaluasiHolistik v-if="activeName === 'evaluasi-holistik'" />
+      </el-collapse-item>
     </el-collapse>
   </div>
 </template>
@@ -80,6 +86,7 @@ import MatriksDPHTable from '@/views/amdal/components/tables/MatriksDPHTable.vue
 import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
 import BaganAlir from '@/views/penyusunan-andal/clone/BaganAlir.vue';
 import BaganAlirDampak from '../components/BaganAlirDampak.vue';
+import EvaluasiHolistik from '@/views/penyusunan-andal/components/EvaluasiHolistik.vue';
 
 export default {
   name: 'Andal',
@@ -94,6 +101,7 @@ export default {
     Pelingkupan,
     BaganAlir,
     BaganAlirDampak,
+    EvaluasiHolistik,
   },
   data() {
     return {
