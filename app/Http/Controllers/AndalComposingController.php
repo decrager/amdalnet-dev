@@ -548,9 +548,9 @@ class AndalComposingController extends Controller
 
         $save_file_name = $id_project . '-andal' . '.docx';
 
-        // if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-        //     return response()->json(['message' => 'success']);
-        // }
+        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            return response()->json(['message' => 'success']);
+        }
 
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
