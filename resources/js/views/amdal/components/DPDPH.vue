@@ -1,14 +1,37 @@
 <template>
   <div v-loading="isLoading">
-    <div style="text-align:right;">  <el-button
-      type="success"
-      icon="el-icon-check"
-      style="margin-bottom: 10px;"
-      :disabled="totalChanges <= 0"
-      @click="saveChanges()"
-    >
-      Simpan Semua Perubahan
-    </el-button>
+    <div style="text-align:right;margin-top:1em;">
+      <div style="float:left;">
+        <el-popconfirm
+          v-if="totalChanges > 0"
+          confirm-button-text="Iya, refresh!"
+          cancel-button-text="Tidak"
+          title="Ada data yang belum disimpan. Yakin akan muat ulang data?"
+          icon-color="red"
+          @confirm="refresh()"
+        >
+          <el-button
+            slot="reference"
+            icon="el-icon-refresh"
+          > Refresh data
+          </el-button>
+        </el-popconfirm>
+
+        <el-button
+          v-if="totalChanges <= 0"
+          icon="el-icon-refresh"
+          @click="refresh()"
+        > Refresh data
+        </el-button></div>
+
+      <el-button
+        type="success"
+        icon="el-icon-check"
+        :disabled="totalChanges <= 0"
+        @click="saveChanges()"
+      >
+        Simpan Semua Perubahan
+      </el-button>
     </div>
     <dampak-hipotetik-master-table
       :impacts="impacts"
