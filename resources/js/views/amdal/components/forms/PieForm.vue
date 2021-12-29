@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading">
     <fieldset>
-      <legend>Evaluasi Dampak Potensial</legend>
+      <legend>Evaluasi Dampak Potensial <span v-if="!isFormulator" style="font-size:80%; font-style: italic; color: blue;">&nbsp;&nbsp;read-only</span></legend>
       <el-form v-if="data" ref="form" label-position="top" label-width="120px">
         <el-row
           :gutter="20"
@@ -11,12 +11,22 @@
             v-for="param in params"
           >
             <el-col :key="'pie_param_' + param.id" :span="spanValue" class="pie-item">
-              <el-form-item :label="param.name" prop="desc">
+              <el-form-item prop="desc">
+                <el-popover
+                  v-if="param.description !== ''"
+                  placement="top-start"
+                  width="350"
+                  trigger="hover"
+                >
+                  <p style="word-break: break-word !important; text-align:left !important;">{{ param.description }}</p>
+                  <label slot="reference" :key="'po_'+ param.id + '_'+ data[data.findIndex(e => e.id_pie_param === param.id)].id" class="el-form-item__label" style="cursor: pointer;">{{ param.name }}</label>
+                </el-popover>
+                <label v-else class="el-form-item__label">{{ param.name }}</label>
                 <el-input
                   v-model="data[data.findIndex(e => e.id_pie_param === param.id)].text"
                   type="textarea"
                   :autosize="{ minRows: 3, maxRows: 5}"
-                  :disabled="!isFormulator"
+                  :readonly="!isFormulator"
                   @change="markChange"
                 />
               </el-form-item>
@@ -69,6 +79,9 @@ export default {
     },
     params: function(val) {
       console.log('pie data', val);
+    },
+    loading: function(val){
+      console.log('pieForm loading...', val);
     },
   },
   mounted(){

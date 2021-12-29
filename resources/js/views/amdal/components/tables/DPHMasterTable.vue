@@ -48,7 +48,7 @@
               <el-tag v-if="scope.row.is_hypothetical_significant" class="dph">DPH</el-tag>
               <el-tag v-else-if="scope.row.is_hypothetical_significant === false" type="info" class="dtph">DTPH</el-tag>
               <el-tag v-if="(scope.row.is_hypothetical_significant === false) && (scope.row.is_managed === true)" type="info" class="dph">Dikelola</el-tag>
-              <el-tag v-if="scope.row.hasChanges === true" type="danger">~data berubah</el-tag>
+              <el-tag v-if="scope.row.hasChanges === true" type="danger">~berubah</el-tag>
             </span>
           </div>
 
@@ -149,5 +149,10 @@ export default {
       }
   }
 }
+
+    span.el-table__column-filter-trigger {
+      margin-left:1em !important;
+      font-size: 120% !important;
+    }
 
 </style>

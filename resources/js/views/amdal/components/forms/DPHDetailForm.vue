@@ -11,6 +11,7 @@
         -->
         </el-col>
       </el-row>
+
       <div class="entry-title">
         <el-form label-position="top">
           <el-form-item label="Dampak Potensial">
@@ -43,7 +44,7 @@
             v-if="data.is_hypothetical_significant === false"
             v-model="data.is_managed"
             active-text="Dikelola"
-            :disabled="!isFormulator"
+            :readonly="!isFormulator"
             @change="hasChanges"
             />
             </el-form-item>
@@ -61,7 +62,7 @@
                 v-model="data.study_location"
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
-                :disabled="!data.is_hypothetical_significant || !isFormulator"
+                :readonly="!data.is_hypothetical_significant || !isFormulator"
                 @input="hasChanges"
               />
             </el-form-item>
@@ -73,12 +74,18 @@
                   :disabled="!data.is_hypothetical_significant || !isFormulator"
                   @change="hasChanges"
                 /> &nbsp;&nbsp;tahun</span>
-              <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!data.is_hypothetical_significant" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
+              <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!data.is_hypothetical_significant || !isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
             </el-form-item>
           </el-form>
         </el-col>
         <el-col :span="16">
-          <pie-form v-if="data.is_hypothetical_significant === true" :data="pies" :params="pieParams" :id-impact-identification="data.id" :loading="isLoadingPie" />
+          <pie-form
+            v-if="data.is_hypothetical_significant === true"
+            :data="pies"
+            :params="pieParams"
+            :id-impact-identification="data.id"
+            :loading="isLoadingPie"
+          />
         </el-col>
       </el-row>
       <div style="text-align: right; margin-top:2em;">
@@ -92,17 +99,21 @@
         </el-button>
       </div>
     </div>
+
+    <Comment :impactidentification="data.id" commenttype="dpdphdm" :kolom="kolom" style="margin: auto;" />
   </div>
 </template>
 <script>
 import Resource from '@/api/resource';
 import PieForm from './PieForm.vue';
+import Comment from '@/views/amdal/components/Comment.vue';
 const pieResource = new Resource('pie-entries');
 const impactsResource = new Resource('impact-id');
 export default {
   name: 'DampakHipotetikDetailForm',
   components: {
     PieForm,
+    Comment,
 
   },
   props: {
@@ -137,6 +148,14 @@ export default {
       ],
       isSaving: false,
       isLoadingPie: false,
+      kolom: [
+        { label: 'Dampak Potensial', value: 'Dampak Potensial' },
+        { label: 'Dampak Penting Hipotetik', value: 'Dampak Penting Hipotetik' },
+        { label: 'Pengelolaan yang sudah direncanakan', value: 'Pengelolaan yang sudah direncanakan' },
+        { label: 'Wilayah Studi', value: 'Wilayah Studi' },
+        { label: 'Batas Waktu Studi', value: 'Batas Waktu Studi' },
+        { label: 'Evaluasi Dampak Potensial', value: 'Evaluasi Dampak Potensial' },
+      ],
     };
   },
   computed: {
