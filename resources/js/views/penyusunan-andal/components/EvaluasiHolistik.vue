@@ -1,10 +1,15 @@
 <template>
   <el-row v-loading="loading">
     <el-col :md="24" :sm="24">
-      <Tinymce v-model="evaluation" :height="200" />
+      <Tinymce v-model="evaluation" :height="300" />
     </el-col>
     <el-col :md="24" :sm="24" style="text-align: right">
-      <el-button :loading="loadingSubmit" type="primary" @click="checkSubmit">
+      <el-button
+        :loading="loadingSubmit"
+        type="primary"
+        style="margin-top: 20px"
+        @click="checkSubmit"
+      >
         Simpan
       </el-button>
     </el-col>
@@ -27,6 +32,9 @@ export default {
       loading: false,
       loadingSubmit: false,
     };
+  },
+  created() {
+    this.getData();
   },
   methods: {
     async getData() {
@@ -53,9 +61,14 @@ export default {
       await andalComposingResource.store({
         type: 'holisticEvaluation',
         description: this.evaluation,
-        idProject: this.route.params.id,
+        idProject: this.$route.params.id,
       });
       this.loadingSubmit = false;
+      this.$message({
+        message: 'Evaluasi holistik berhasil disimpan',
+        type: 'success',
+        duration: 5 * 1000,
+      });
       this.getData();
     },
   },
