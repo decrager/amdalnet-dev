@@ -27,7 +27,7 @@
                   type="textarea"
                   :autosize="{ minRows: 3, maxRows: 5}"
                   :readonly="!isFormulator"
-                  @change="markChange"
+                  @input="markChange"
                 />
               </el-form-item>
             </el-col>

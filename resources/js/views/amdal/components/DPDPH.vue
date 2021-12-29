@@ -99,7 +99,7 @@ export default {
       // console.log('onSelectedData', this.selectedData.stage);
     },
     hasChanges(obj) {
-      this.handlePie(obj);
+      // this.handlePie(obj);
       const hc = this.impacts.filter(e => (e.hasChanges === true));
       this.totalChanges = hc.length;
       console.log('calling totaller!', this.totalChanges);

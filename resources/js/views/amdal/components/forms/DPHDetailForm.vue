@@ -54,7 +54,7 @@
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
                 :readonly="!isFormulator"
-                @change="hasChanges"
+                @input="hasChanges"
               />
             </el-form-item>
             <el-form-item v-if="data.is_" label="Wilayah Studi">
@@ -63,7 +63,7 @@
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
                 :readonly="!data.is_hypothetical_significant || !isFormulator"
-                @change="hasChanges"
+                @input="hasChanges"
               />
             </el-form-item>
             <el-form-item label="Batas Waktu Kajian">
@@ -94,7 +94,7 @@
           type="success"
           icon="el-icon-check"
           style="margin-bottom: 10px;"
-          :disabled="dataChanged"
+          :disabled="!data.hasChanges"
           @click="saveChanges()"
         >
           Simpan Perubahan
@@ -266,9 +266,9 @@ export default {
         });
         this.isSaving = false;
         this.data.hasChanges = false;
+        console.log(this.data);
         this.$emit('hasChanges', this.data);
       });
-      console.log(this.data);
     },
   },
 };
