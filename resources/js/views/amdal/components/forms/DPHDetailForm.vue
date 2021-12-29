@@ -54,7 +54,7 @@
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
                 :readonly="!isFormulator"
-                @input="hasChanges"
+                @change="hasChanges"
               />
             </el-form-item>
             <el-form-item v-if="data.is_" label="Wilayah Studi">
@@ -63,7 +63,7 @@
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
                 :readonly="!data.is_hypothetical_significant || !isFormulator"
-                @input="hasChanges"
+                @change="hasChanges"
               />
             </el-form-item>
             <el-form-item label="Batas Waktu Kajian">
@@ -72,7 +72,7 @@
                   v-model="data.study_length_year"
                   size="small"
                   :disabled="!data.is_hypothetical_significant || !isFormulator"
-                  @input="hasChanges"
+                  @change="hasChanges"
                 /> &nbsp;&nbsp;tahun</span>
               <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!data.is_hypothetical_significant || !isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
             </el-form-item>
@@ -94,7 +94,7 @@
           type="success"
           icon="el-icon-check"
           style="margin-bottom: 10px;"
-          :disabled="!dataChanged"
+          :disabled="dataChanged"
           @click="saveChanges()"
         >
           Simpan Perubahan
