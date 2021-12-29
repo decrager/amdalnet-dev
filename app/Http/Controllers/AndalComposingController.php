@@ -24,9 +24,11 @@ use App\Entity\SubProjectRonaAwal;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\Shared\Html;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -1248,6 +1250,17 @@ class AndalComposingController extends Controller
             $konsul_publik_total = $konsultasi_publik->participant;
         }
 
+        // ======= EVALUASI HOLISTIK ====== //
+        $holistic_evaluations = '';
+        $hol_eval = HolisticEvaluation::where('id_project', $id_project)->first();
+        if($hol_eval) {
+            $holistic_evaluations = $hol_eval->description;
+        }
+        $holEvalTable = new Table();
+        $holEvalTable->addRow();
+        $cell = $holEvalTable->addCell();
+        Html::addHtml($cell, $holistic_evaluations);
+
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
@@ -1306,6 +1319,7 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneBlock('com_k_block', count($com_k), true, false, $com_k);
         $templateProcessor->cloneBlock('com_o_block', count($com_o), true, false, $com_o);
         $templateProcessor->cloneBlock('com_po_block', count($com_po), true, false, $com_po);
+        $templateProcessor->setComplexBlock('holistic_evaluation',  $holEvalTable);
 
         // PRAKIRAAN DAMPAK PENTING
         $pdp = [];
