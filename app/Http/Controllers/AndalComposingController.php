@@ -1252,10 +1252,10 @@ class AndalComposingController extends Controller
 
         // ======= EVALUASI HOLISTIK ====== //
         $holistic_evaluations = '';
-        $hol_eval = HolisticEvaluation::where('id_project', $id_project)->first();
-        if($hol_eval) {
-            $holistic_evaluations = $hol_eval->description;
-        }
+        // $hol_eval = HolisticEvaluation::where('id_project', $id_project)->first();
+        // if($hol_eval) {
+        //     $holistic_evaluations = $hol_eval->description;
+        // }
         $holEvalTable = new Table();
         $holEvalTable->addRow();
         $cell = $holEvalTable->addCell();
