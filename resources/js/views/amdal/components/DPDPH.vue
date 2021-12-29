@@ -60,12 +60,7 @@ export default {
   },
   methods: {
     async getImpacts(){
-      projectStagesResource.list({ ordered: true }).then((res) => {
-        this.stages = res;
-        // console.log('stages', this.stages);
-      });
-
-      this.impacts = [];
+      this.impacts = null;
       impactsResource.list({
         id_project: this.id_project,
       }).then((res) => {
@@ -74,7 +69,7 @@ export default {
           console.log('inside map');
           return e;
         });
-        console.log('getPies: ', imps);
+        // console.log('getPies: ', imps);
         this.impacts = imps;
       });
     },
@@ -89,6 +84,10 @@ export default {
           name: 'Lainnya',
           id: 0,
         });
+      });
+      await projectStagesResource.list({ ordered: true }).then((res) => {
+        this.stages = res;
+        // console.log('stages', this.stages);
       });
     },
     handlePie(obj){
