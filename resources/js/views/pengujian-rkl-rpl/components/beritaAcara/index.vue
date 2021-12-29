@@ -130,6 +130,11 @@ export default {
             pasca_operasi: this.docs.pasca_operasi,
             meeting_lead: this.docs.meeting_lead,
             meeting_lead_institution: this.docs.meeting_lead_institution,
+            kewenangan_big: 'PUSAT',
+            kewenangan: 'Pusat',
+            summary: '',
+            year: '2021',
+            jabatan_ketua_tuk: '',
           });
 
           const out = doc.getZip().generate({
