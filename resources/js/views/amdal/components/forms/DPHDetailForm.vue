@@ -57,7 +57,7 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item v-if="data.is_hypothetical_significant" label="Wilayah Studi">
+            <el-form-item v-if="data.is_" label="Wilayah Studi">
               <el-input
                 v-model="data.study_location"
                 type="textarea"
@@ -66,13 +66,13 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item v-if="data.is_hypothetical_significant" label="Batas Waktu Kajian">
+            <el-form-item label="Batas Waktu Kajian">
               <span style="margin-right: 1em">
                 <el-input-number
                   v-model="data.study_length_year"
                   size="small"
                   :disabled="!data.is_hypothetical_significant || !isFormulator"
-                  @change="hasChanges"
+                  @input="hasChanges"
                 /> &nbsp;&nbsp;tahun</span>
               <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!data.is_hypothetical_significant || !isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
             </el-form-item>
@@ -85,6 +85,7 @@
             :params="pieParams"
             :id-impact-identification="data.id"
             :loading="isLoadingPie"
+            @hasChanges="hasChanges"
           />
         </el-col>
       </el-row>
@@ -93,6 +94,7 @@
           type="success"
           icon="el-icon-check"
           style="margin-bottom: 10px;"
+          :disabled="!dataChanged"
           @click="saveChanges()"
         >
           Simpan Perubahan
@@ -148,6 +150,7 @@ export default {
       ],
       isSaving: false,
       isLoadingPie: false,
+      dataChanged: false,
       kolom: [
         { label: 'Dampak Potensial', value: 'Dampak Potensial' },
         { label: 'Dampak Penting Hipotetik', value: 'Dampak Penting Hipotetik' },
@@ -171,7 +174,9 @@ export default {
           val.id_change_type = 0;
         }
       }
-      console.log('watch', val);
+
+      // console.log('watch', val);
+      this.dataChanged = false;
 
       if (val.is_hypothetical_significant === true) {
         this.getPies();
@@ -186,7 +191,7 @@ export default {
       this.pies = null;
       this.isLoadingPie = true;
 
-      console.log('hasPie?', this.data.pie);
+      // console.log('hasPie?', this.data.pie);
 
       if ((typeof this.data.pie !== 'undefined') && (this.data.pie !== null) && (this.data.pie.length > 0)){
         this.pies = this.data.pie;
@@ -195,7 +200,7 @@ export default {
         pieResource.list({
           id_impact_identification: [this.data.id],
         }).then((res) => {
-          console.log('calling ', res.length);
+          // console.log('calling ', res.length);
           if (res && (res.length > 0)) {
             this.data.pie = res;
             this.pies = res;
@@ -211,7 +216,7 @@ export default {
             });
             this.pies = pies;
             this.data.pie = pies;
-            console.log('empty pies', this.pies);
+            // console.log('empty pies', this.pies);
           }
           this.isLoadingPie = false;
 
@@ -220,6 +225,8 @@ export default {
       }
     },
     hasChanges(e) {
+      console.log('has changes:', e);
+      this.dataChanged = true;
       this.data.hasChanges = true;
       this.$emit('hasChanges', this.data);
     },
@@ -240,6 +247,10 @@ export default {
         this.getPies();
       }
       this.hasChanges(true);
+    },
+    onPieFormChanges(val) {
+      console.log('onPieFormChanges: ', val);
+      this.hasChanges(val);
     },
     saveChanges(){
       console.log('You\'re initiating save!');

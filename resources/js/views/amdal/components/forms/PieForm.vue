@@ -27,7 +27,7 @@
                   type="textarea"
                   :autosize="{ minRows: 3, maxRows: 5}"
                   :readonly="!isFormulator"
-                  @change="markChange"
+                  @input="markChange"
                 />
               </el-form-item>
             </el-col>
@@ -75,13 +75,13 @@ export default {
   },
   watch: {
     data: function(val) {
-      console.log('pie data', val);
+      // console.log('pie data', val);
     },
     params: function(val) {
-      console.log('pie data', val);
+      // console.log('pie data', val);
     },
     loading: function(val){
-      console.log('pieForm loading...', val);
+      // console.log('pieForm loading...', val);
     },
   },
   mounted(){
@@ -89,6 +89,7 @@ export default {
   methods: {
     markChange(e){
       this.hasChanges = true;
+      this.$emit('hasChanges', this.hasChanges);
       // console.log('pieFom hasChanges', this.hasChanges);
     },
   },

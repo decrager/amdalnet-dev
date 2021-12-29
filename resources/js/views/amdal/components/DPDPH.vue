@@ -65,12 +65,17 @@ export default {
         // console.log('stages', this.stages);
       });
 
-      this.impacts = null;
+      this.impacts = [];
       impactsResource.list({
         id_project: this.id_project,
       }).then((res) => {
-        this.impacts = res;
-        // console.log('impacts', this.impacts);
+        const imps = res.map((e) => {
+          e.hasChanges = false;
+          console.log('inside map');
+          return e;
+        });
+        console.log('getPies: ', imps);
+        this.impacts = imps;
       });
     },
     async getParams(){
@@ -87,7 +92,7 @@ export default {
       });
     },
     handlePie(obj){
-      // this.selectedData.pie = obj;
+      this.selectedData.hasChanges = true;
     },
     onDataSelected(obj) {
       this.selectedData = obj;
@@ -97,7 +102,7 @@ export default {
       this.handlePie(obj);
       const hc = this.impacts.filter(e => (e.hasChanges === true));
       this.totalChanges = hc.length;
-      // console.log('calling totaller!', this.totalChanges);
+      console.log('calling totaller!', this.totalChanges);
     },
     onSaveData(obj){
       const temp = this.impacts;

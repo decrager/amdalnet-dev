@@ -48,7 +48,7 @@
               <el-tag v-if="scope.row.is_hypothetical_significant" class="dph">DPH</el-tag>
               <el-tag v-else-if="scope.row.is_hypothetical_significant === false" type="info" class="dtph">DTPH</el-tag>
               <el-tag v-if="(scope.row.is_hypothetical_significant === false) && (scope.row.is_managed === true)" type="info" class="dph">Dikelola</el-tag>
-              <el-tag v-if="scope.row.hasChanges === true" type="danger">~berubah</el-tag>
+              <el-tag v-if="scope.row.hasChanges === true" type="danger">~diubah</el-tag>
             </span>
           </div>
 
@@ -56,7 +56,7 @@
       </el-table-column>
     </el-table>
     <div v-if="totalChanges > 0" style="text-align: right; margin-bottom: 0.5em;">
-      <div>Data berubah: <span style="font-weight:">{{ totalChanges }}</span></div>
+      <div>Diubah: <span style="font-weight:bold; color: red;">{{ totalChanges }}</span></div>
     </div>
   </div>
 </template>
@@ -96,7 +96,9 @@ export default {
         { text: 'Pasca Operasi', value: 'Pasca Operasi' },
       ],
       changeFilters: [
-        { text: 'Data berubah', value: true },
+        { text: 'Data diubah', value: 1 },
+        { text: 'DPH', value: 2 },
+        { text: 'DTPH', value: 3 },
       ],
     };
   },
@@ -113,13 +115,22 @@ export default {
       return row.stage === value;
     },
     onChangefilter(value, row){
-      if (row.hasChanges) {
-        return row.hasChanges === value;
+      // 1, 2, 3 => data diubah, dph, dtph
+      if (value === 1) {
+        if (row.hasChanges) {
+          return row.hasChanges === true;
+        }
+      }
+      if (value === 2) {
+        return row.is_hypothetical_significant === true;
+      }
+      if (value === 3) {
+        return row.is_hypothetical_significant === false;
       }
       return false;
     },
     selection(e, r){
-      console.log('selection:', e, r);
+      // console.log('selection:', e, r);
       this.$emit('dataSelected', e);
     },
   },
