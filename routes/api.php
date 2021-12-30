@@ -269,6 +269,7 @@ Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
 Route::get('dokumen-ukl-upl/{id}', [ExportDocument::class, 'uklUpl']);
 Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf']);
 Route::apiResource('ka-comment', 'KaCommentController');
+Route::apiResource('employee-tuk', 'EmployeeTUKController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);

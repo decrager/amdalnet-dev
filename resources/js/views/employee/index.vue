@@ -1,0 +1,91 @@
+<template>
+  <div class="app-container" style="padding: 24px">
+    <el-card>
+      <div class="filter-container">
+        <el-button
+          class="filter-item"
+          type="primary"
+          icon="el-icon-plus"
+          @click="handleSubmitRoute"
+        >
+          {{ 'Tambah Pegawai TUK' }}
+        </el-button>
+      </div>
+      <EmployeeTable
+        :list="list"
+        :loading="loading"
+        @handleDelete="handleDelete($event)"
+      />
+      <!-- <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="handleFilter"
+      /> -->
+    </el-card>
+  </div>
+</template>
+
+<script>
+import EmployeeTable from '@/views/employee/components/EmployeeTable.vue';
+import Resource from '@/api/resource';
+const employeeTukResource = new Resource('employee-tuk');
+
+export default {
+  name: 'Employee',
+  components: {
+    EmployeeTable,
+  },
+  data() {
+    return {
+      list: [],
+      loading: false,
+    };
+  },
+  created() {
+    this.getData();
+  },
+  methods: {
+    async getData() {
+      this.loading = true;
+      this.list = await employeeTukResource.list({ type: 'list' });
+      this.loading = false;
+    },
+    handleSubmitRoute() {
+      this.$router.push({ name: 'createEmployeeTuk' });
+    },
+    handleDelete({ id, nama }) {
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + nama + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          employeeTukResource
+            .destroy(id)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Hapus Selesai',
+              });
+              this.getData();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Hapus Digagalkan',
+          });
+        });
+    },
+  },
+};
+</script>
