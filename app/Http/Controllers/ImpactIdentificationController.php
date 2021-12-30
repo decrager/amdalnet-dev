@@ -570,12 +570,39 @@ class ImpactIdentificationController extends Controller
         return response($impacts);
     }
 
+    public function getImpact(Request $request){
+        $impact = ImpactIdentification::from('impact_identifications AS ii')
+        ->selectRaw('ii.id, ii.id_change_type,
+            ct."name" as change_type_name,
+            COALESCE(c.id_project_stage, spc.id_project_stage) as project_stage,
+            ps.name as stage,
+            COALESCE(c."name", spc."name") as komponen,
+            COALESCE(ra."name", spra."name") as rona_awal,
+            ii.initial_study_plan,
+            ii.is_hypothetical_significant,
+            ii.is_managed,
+            ii.study_length_month,
+            ii.study_length_year,
+            ii.study_location')
+        ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
+        ->leftJoin('sub_project_rona_awals AS spra', 'ii.id_sub_project_rona_awal', '=', 'spra.id')
+        ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
+        ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
+        ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+        ->leftJoin('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'))
+        ->where('ii.id', $request->id)
+        ->first();
+        if($impact) return response($impact);
+        return response('Dampak tidak ditemukan',404);
+    }
+
     /**
      * Save one impact
       * @param \Illuminate\Http\Request $request
       * @return \Illuminate\Http\Response
      */
     public function saveImpact(Request $request){
+
         if($request && $request->id)
         {
             $impact = ImpactIdentification::find($request->id);
@@ -586,6 +613,7 @@ class ImpactIdentificationController extends Controller
                 $impact->study_location = $request->study_location;
                 $impact->is_hypothetical_significant = $request->is_hypothetical_significant;
                 $impact->initial_study_plan = $request->initial_study_plan;
+                $impact->is_managed = $request->is_managed;
 
                 if (($request->id_change_type == 0) &&
                     (($request->change_type_name  != null) &&
@@ -615,7 +643,7 @@ class ImpactIdentificationController extends Controller
                 return response($impact, 200);
             }
         }
-        return response($request, 418);
+        return response('Tidak berhasil menyimpan dampak', 500);
     }
 
     /**
@@ -639,6 +667,7 @@ class ImpactIdentificationController extends Controller
                 $impact->study_location = $imp['study_location'];
                 $impact->is_hypothetical_significant = $imp['is_hypothetical_significant'];
                 $impact->initial_study_plan = $imp['initial_study_plan'];
+                $impact->is_managed = $imp['is_managed'];
 
                 if (($imp['id_change_type'] == 0) &&
                     (($imp['change_type_name']  != null) &&

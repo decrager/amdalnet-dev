@@ -1,5 +1,5 @@
 <template>
-  <div id="dpdph-master-table">
+  <div id="dpdph-master-table" v-loading="loading">
 
     <div style="text-align: right; margin-bottom: 0.5em;">Total: <span style="font-weight: bold">{{ impacts.length }}</span></div>
     <el-table
@@ -55,9 +55,18 @@
         </template>
       </el-table-column>
     </el-table>
-    <div v-if="totalChanges > 0" style="text-align: right; margin-bottom: 0.5em;">
-      <div>Diubah: <span style="font-weight:bold; color: red;">{{ totalChanges }}</span></div>
+    <div style="text-align: right; margin-top: 1.5em;">
+      <span v-if="totalChanges > 0" style="margin-right: 1em;">Diubah: <span style="font-weight:bold; color: red;">{{ totalChanges }}</span></span>
+      <el-button
+        type="success"
+        icon="el-icon-check"
+        :disabled="totalChanges <= 0"
+        @click="saveChanges()"
+      >
+        Simpan Perubahan
+      </el-button>
     </div>
+
   </div>
 </template>
 <script>
@@ -86,6 +95,10 @@ export default {
       type: Number,
       default: 0,
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -108,8 +121,8 @@ export default {
     },
   },
   methods: {
-    entryGrouping({ row, column, rowIndex, columnIndex }) {
-      // there's a change in stage
+    saveChanges() {
+      this.$emit('saveChanges', true);
     },
     filterTag(value, row){
       return row.stage === value;

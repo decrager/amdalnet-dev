@@ -4,11 +4,27 @@
       <el-row class="detail-header">
         <el-col :span="18" class="stage">{{ data.stage }}</el-col>
         <el-col :span="6" style="font-size:150%; font-weight:900;text-align:right;">
-        <!-- <el-button icon="el-icon-back" type="info" circle />
+          <!-- <el-button icon="el-icon-back" type="info" circle />
         <span style="font-weight:900; margin: auto 1em">2</span>
 
         <el-button icon="el-icon-right" type="info" circle />
         -->
+
+          <el-popconfirm
+            v-if="data.hasChanges"
+            confirm-button-text="Iya, refresh!"
+            cancel-button-text="Tidak"
+            title="Ada data yang belum disimpan. Yakin akan muat ulang data?"
+            icon-color="red"
+            @confirm="refresh()"
+          >
+            <el-button
+              slot="reference"
+              icon="el-icon-refresh"
+              :disabled="!data.hasChanges"
+            > Refresh data
+            </el-button>
+          </el-popconfirm>
         </el-col>
       </el-row>
 
@@ -57,7 +73,7 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item v-if="data.is_" label="Wilayah Studi">
+            <el-form-item v-if="data.is_hypothetical_significant === true" label="Wilayah Studi">
               <el-input
                 v-model="data.study_location"
                 type="textarea"
@@ -66,7 +82,7 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item label="Batas Waktu Kajian">
+            <el-form-item v-if="data.is_hypothetical_significant === true" label="Batas Waktu Kajian">
               <span style="margin-right: 1em">
                 <el-input-number
                   v-model="data.study_length_year"
@@ -264,10 +280,37 @@ export default {
           type: message_type,
           duration: 5 * 1000,
         });
-        this.isSaving = false;
+
         this.data.hasChanges = false;
-        console.log(this.data);
+        // console.log(this.data);
         this.$emit('hasChanges', this.data);
+      }).finally(() => {
+        this.isSaving = false;
+      });
+    },
+    refresh() {
+      this.isSaving = true;
+      impactsResource.list(
+        { id: this.data.id }
+      ).then((e) => {
+        /**
+         * {"id":2159,"id_change_type":null,"change_type_name":null,"project_stage":null,"stage":null,"komponen":null,"rona_awal":"Fauna","initial_study_plan":null,"is_hypothetical_significant":false,"is_managed":true,"study_length_month":0,"study_length_year":0,"study_location":null}
+         */
+        this.data.id_change_type = e.id_change_type;
+        this.data.change_type_name = e.change_type_name;
+        this.data.is_hypothetical_significant = e.is_hypothetical_significant;
+        this.data.is_managed = e.is_managed;
+        this.data.initial_study_plan = e.initial_study_plan;
+        this.data.study_length_month = e.study_length_month;
+        this.data.study_length_year = e.study_length_year;
+        this.data.study_location = e.study_location;
+        this.data.hasChanges = false;
+        this.$emit('hasChanges', this.data);
+        if (this.data.is_hypothetical_significant === true) {
+          this.getPies();
+        }
+      }).finally(() => {
+        this.isSaving = false;
       });
     },
   },

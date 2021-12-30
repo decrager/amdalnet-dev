@@ -1,36 +1,26 @@
 <template>
   <div v-loading="isLoading">
     <div style="text-align:right;margin-top:1em;">
-      <div style="float:left;">
-        <el-popconfirm
-          v-if="totalChanges > 0"
-          confirm-button-text="Iya, refresh!"
-          cancel-button-text="Tidak"
-          title="Ada data yang belum disimpan. Yakin akan muat ulang data?"
-          icon-color="red"
-          @confirm="refresh()"
-        >
-          <el-button
-            slot="reference"
-            icon="el-icon-refresh"
-          > Refresh data
-          </el-button>
-        </el-popconfirm>
-
+      <el-popconfirm
+        v-if="totalChanges > 0"
+        confirm-button-text="Iya, refresh!"
+        cancel-button-text="Tidak"
+        title="Ada data yang belum disimpan. Yakin akan muat ulang data?"
+        icon-color="red"
+        @confirm="refresh()"
+      >
         <el-button
-          v-if="totalChanges <= 0"
+          slot="reference"
           icon="el-icon-refresh"
-          @click="refresh()"
         > Refresh data
-        </el-button></div>
+        </el-button>
+      </el-popconfirm>
 
       <el-button
-        type="success"
-        icon="el-icon-check"
-        :disabled="totalChanges <= 0"
-        @click="saveChanges()"
-      >
-        Simpan Semua Perubahan
+        v-if="totalChanges <= 0"
+        icon="el-icon-refresh"
+        @click="refresh()"
+      > Refresh data
       </el-button>
     </div>
     <dampak-hipotetik-master-table
@@ -39,7 +29,9 @@
       :change-types="changeTypes"
       :stages="stages"
       :total-changes="totalChanges"
+      :loading="isLoading"
       @dataSelected="onDataSelected"
+      @saveChanges="saveChanges"
     />
     <dampak-hipotetik-detail-form
       :data="selectedData"
@@ -84,6 +76,7 @@ export default {
   methods: {
     async getImpacts(){
       this.impacts = null;
+      this.isLoading = true;
       impactsResource.list({
         id_project: this.id_project,
       }).then((res) => {
@@ -94,6 +87,8 @@ export default {
         });
         // console.log('getPies: ', imps);
         this.impacts = imps;
+      }).finally(() => {
+        this.isLoading = false;
       });
     },
     async getParams(){
@@ -131,7 +126,7 @@ export default {
       this.impacts = null;
       this.impacts = temp;
     },
-    saveChanges(){
+    saveChanges(evt){
       const imps = new Resource('impact-ids');
       const impstosave = this.impacts.filter(e => e.hasChanges === true);
       this.isLoading = true;
@@ -141,11 +136,11 @@ export default {
           type: 'success',
           duration: 5 * 1000,
         });
-        this.isLoading = false;
-        this.refresh();
-      }); /* .catch((err) => {
-        this.isLoading = false;
-      });*/
+      })
+        .finally(() => {
+          this.refresh();
+          this.isLoading = false;
+        });
     },
     refresh(){
       this.totalChanges = 0;
