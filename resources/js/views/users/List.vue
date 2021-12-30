@@ -37,7 +37,7 @@
 
       <el-table-column align="center" label="Role" width="120">
         <template slot-scope="scope">
-          <span>{{ scope.row.roles.join(', ') }}</span>
+          <span>{{ $t('roles.title.' + scope.row.roles.join(', ')) }}</span>
         </template>
       </el-table-column>
 
@@ -276,6 +276,7 @@ export default {
       this.loading = true;
       const { data, meta } = await userResource.list(this.query);
       this.list = data;
+      console.log(this.list);
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });

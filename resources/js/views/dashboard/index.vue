@@ -30,7 +30,7 @@ export default {
       'roles',
     ]),
     isAdmin(){
-      return this.$store.getters.roles.includes('admin');
+      return (this.$store.getters.roles[0].split('-')[0] === 'admin');
     },
     isFormulator(){
       return this.$store.getters.roles.includes('formulator');
