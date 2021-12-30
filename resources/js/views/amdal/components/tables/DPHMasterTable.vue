@@ -182,17 +182,26 @@ export default {
     span.change-type { text-decoration: underline; }
 
   .dpdph-table{
+    th.el-table__cell > .cell.highlight,
     th{
-        background: none !important;
-        color: inherit !important;
+        /* background: none !important;*/
+        color: white !important;
 
+      }
+      th.el-table__cell > .cell.highlight:before{
+        content: '\2022';
+        margin-right: 0.5em;
       }
   }
 }
 
     span.el-table__column-filter-trigger {
-      margin-left:1em !important;
-      font-size: 120% !important;
+      margin-left: 0.5em;
+      color: white !important;
+      .el-icon-arrow-down{
+        font-size: 120%;
+        color: white !important;
+      }
     }
 
 </style>
