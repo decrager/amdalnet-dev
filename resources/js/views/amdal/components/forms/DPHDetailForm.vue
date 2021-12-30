@@ -11,10 +11,10 @@
         -->
 
           <el-popconfirm
-            v-if="data.hasChanges"
+            :disabled="!data.hasChanges"
             confirm-button-text="Iya, refresh!"
             cancel-button-text="Tidak"
-            title="Ada data yang belum disimpan. Yakin akan muat ulang data?"
+            title="Ada perubahan yang belum disimpan. Yakin akan muat ulang data?"
             icon-color="red"
             @confirm="refresh()"
           >
