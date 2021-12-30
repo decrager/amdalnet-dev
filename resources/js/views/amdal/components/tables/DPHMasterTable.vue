@@ -196,11 +196,12 @@ export default {
 }
 
     span.el-table__column-filter-trigger {
-      margin-left: 0.5em;
+      margin-left: 0.2em;
       color: white !important;
       .el-icon-arrow-down{
         font-size: 120%;
         color: white !important;
+        font-weight: bold !important;
       }
     }
 
