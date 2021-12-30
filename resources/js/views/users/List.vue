@@ -276,7 +276,6 @@ export default {
       this.loading = true;
       const { data, meta } = await userResource.list(this.query);
       this.list = data;
-      console.log(this.list);
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });
@@ -406,12 +405,14 @@ export default {
     },
 
     normalizeMenuPermission(permission) {
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name.substring(10)), disabled: permission.disabled || false };
+      const tmp = this.$t('permission.name.' + permission.name);
+      return { id: permission.id, name: this.$options.filters.uppercaseFirst(tmp.substring(10)), disabled: permission.disabled || false };
     },
 
     normalizePermission(permission) {
+      const tmp = this.$t('permission.name.' + permission.name);
       const disabled = permission.disabled || permission.name === 'manage permission';
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name), disabled: disabled };
+      return { id: permission.id, name: this.$options.filters.uppercaseFirst(tmp), disabled: disabled };
     },
 
     confirmPermission() {

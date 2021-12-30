@@ -151,11 +151,13 @@ export default {
     },
 
     normalizeMenuPermission(permission) {
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name.substring(10)) };
+      const tmp = this.$t('permission.name.' + permission.name);
+      return { id: permission.id, name: this.$options.filters.uppercaseFirst(tmp.substring(10)) };
     },
 
     normalizePermission(permission) {
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name), disabled: permission.name === 'manage permission' };
+      const tmp = this.$t('permission.name.' + permission.name);
+      return { id: permission.id, name: this.$options.filters.uppercaseFirst(tmp), disabled: permission.name === 'manage permission' };
     },
 
     permissionKeys(permissions) {
