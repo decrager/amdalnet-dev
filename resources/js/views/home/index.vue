@@ -1,5 +1,6 @@
 <template>
   <div>
+    <disclaimer v-if="isFirstVisit()" @closeDialog="onCloseDisclaimer" />
     <header-home @handleSetMenu="handleSetMenu" />
     <hero-home v-if="toggleMenu" />
     <steps-home v-if="toggleMenu" />
@@ -28,6 +29,9 @@ import ActionHome from './section/Action.vue';
 import CounterHome from './section/Counter.vue';
 import AnnouncementHome from './section/Announce.vue';
 import FooterHome from './section/Footer.vue';
+import Disclaimer from './components/Disclaimer.vue';
+
+import Cookies from 'js-cookie';
 
 export default {
   name: 'HomeIndex',
@@ -41,6 +45,7 @@ export default {
     'counter-home': CounterHome,
     'announcement-home': AnnouncementHome,
     'footer-home': FooterHome,
+    Disclaimer,
   },
   data() {
     return {
@@ -51,6 +56,9 @@ export default {
   },
   created() {
     this.$store.dispatch('getKblis', { kblis: true });
+  },
+  mounted(){
+
   },
   methods: {
     handleSetMenu(e) {
@@ -68,6 +76,18 @@ export default {
         this.toggleMenuMateri = false;
         this.toggleMenu = false;
       }
+    },
+    isFirstVisit(){
+      const recurring = Cookies.get('recurring');
+
+      if (recurring) {
+        return false;
+      }
+      return true;
+    },
+    onCloseDisclaimer(val){
+      Cookies.set('recurring', true, { expires: 30 * 6, path: '' });
+      console.log('closing disclaimer....');
     },
   },
 };
