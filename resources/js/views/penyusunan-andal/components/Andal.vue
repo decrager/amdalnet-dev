@@ -30,8 +30,8 @@
         <template slot="title" class="head-accordion">
           <span class="title">DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
         </template>
-        <DampakHipotetikMD v-if="activeName === 'dampak-potensial'" />
-        <!-- <DampakHipotetik v-if="activeName === 'dampak-potensial'" /> -->
+        <!-- <DampakHipotetikMD v-if="activeName === 'dampak-potensial'" /> -->
+        <DampakHipotetik v-if="activeName === 'dampak-potensial'" />
       </el-collapse-item>
       <el-collapse-item name="metode-studi">
         <template slot="title" class="head-accordion">
@@ -81,8 +81,8 @@ const andalComposingResource = new Resource('andal-composing');
 import MasterDetail from '@/views/penyusunan-andal/components/MasterDetail';
 import MatriksIdentifikasiDampakTable from '@/views/amdal/components/tables/MatriksIdentifikasiDampakTable.vue';
 import PetaBatas from '@/views/penyusunan-andal/clone/PetaBatas.vue';
-// import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
-import DampakHipotetikMD from '@/views/amdal/components/DPDPH.vue';
+import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
+// import DampakHipotetikMD from '@/views/amdal/components/DPDPH.vue';
 import MetodeStudi from '@/views/amdal/components/MetodeStudi.vue';
 import MatriksDPHTable from '@/views/amdal/components/tables/MatriksDPHTable.vue';
 import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
@@ -97,8 +97,8 @@ export default {
     MasterDetail,
     MatriksIdentifikasiDampakTable,
     PetaBatas,
-    // DampakHipotetik,
-    DampakHipotetikMD,
+    DampakHipotetik,
+    // DampakHipotetikMD,
     MetodeStudi,
     MatriksDPHTable,
     Pelingkupan,
