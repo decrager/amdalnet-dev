@@ -241,7 +241,7 @@ export default {
       }
     },
     hasChanges(e) {
-      console.log('has changes:', e);
+      // console.log('has changes:', e);
       this.dataChanged = true;
       this.data.hasChanges = true;
       this.$emit('hasChanges', this.data);
@@ -258,18 +258,18 @@ export default {
     onDPHChange(isDPH){
       this.data.pie = null;
       this.pies = null;
-      console.log('isDPH', isDPH);
+      // console.log('isDPH', isDPH);
       if (isDPH){
         this.getPies();
       }
       this.hasChanges(true);
     },
     onPieFormChanges(val) {
-      console.log('onPieFormChanges: ', val);
+      // console.log('onPieFormChanges: ', val);
       this.hasChanges(val);
     },
     saveChanges(){
-      console.log('You\'re initiating save!');
+      // console.log('You\'re initiating save!');
       this.isSaving = true;
 
       impactsResource.store(this.data).then((res) => {

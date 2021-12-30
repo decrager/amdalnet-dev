@@ -82,7 +82,7 @@ export default {
       }).then((res) => {
         const imps = res.map((e) => {
           e.hasChanges = false;
-          console.log('inside map');
+          // console.log('inside map');
           return e;
         });
         // console.log('getPies: ', imps);
@@ -92,7 +92,7 @@ export default {
       });
     },
     async getParams(){
-      console.log('getting params!');
+      // console.log('getting params!');
       await pieParamsResource.list({}).then((res) => {
         this.pieParams = res.data;
       });
@@ -119,7 +119,7 @@ export default {
       // this.handlePie(obj);
       const hc = this.impacts.filter(e => (e.hasChanges === true));
       this.totalChanges = hc.length;
-      console.log('calling totaller!', this.totalChanges);
+      // console.log('calling totaller!', this.totalChanges);
     },
     onSaveData(obj){
       const temp = this.impacts;
