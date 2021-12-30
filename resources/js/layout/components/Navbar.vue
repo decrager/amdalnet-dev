@@ -100,7 +100,7 @@ export default {
       return this.notifications.filter(e => e.read_at === null).length === 0;
     },
   },
-  created(){
+  mounted(){
     // console.log(this.$store.getters.token);
     // window.Echo.join(`chat`)
     //   .here((users) => {
