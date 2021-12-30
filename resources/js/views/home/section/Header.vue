@@ -1,7 +1,7 @@
 <template>
   <header id="header" class="header">
     <nav class="nav container">
-      <a href="#" class="nav__logo">
+      <a href="#" class="nav__logo" @click="handleSetMenu('LOGO')">
         <img src="/images/logo-amdal-white.png" alt="">
       </a>
 
