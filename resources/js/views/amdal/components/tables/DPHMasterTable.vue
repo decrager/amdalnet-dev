@@ -55,17 +55,21 @@
         </template>
       </el-table-column>
     </el-table>
-    <div style="text-align: right; margin-top: 1.5em;">
-      <span v-if="totalChanges > 0" style="margin-right: 1em;">Diubah: <span style="font-weight:bold; color: red;">{{ totalChanges }}</span></span>
-      <el-button
-        type="success"
-        icon="el-icon-check"
-        :disabled="totalChanges <= 0"
-        @click="saveChanges()"
-      >
-        Simpan Perubahan
-      </el-button>
-    </div>
+    <el-row>
+      <el-col>
+        <div style="text-align: right; margin-top: 1.5em;">
+          <span v-if="totalChanges > 0" style="margin-right: 1em;">Diubah: <span style="font-weight:bold; color: red;">{{ totalChanges }}</span></span>
+          <el-button
+            type="success"
+            icon="el-icon-check"
+            :disabled="totalChanges <= 0"
+            @click="saveChanges()"
+          >
+            Simpan Perubahan
+          </el-button>
+        </div>
+      </el-col>
+    </el-row>
 
   </div>
 </template>
@@ -112,6 +116,7 @@ export default {
         { text: 'Data diubah', value: 1 },
         { text: 'DPH', value: 2 },
         { text: 'DTPH', value: 3 },
+        { text: 'Belum terdefinisi', value: 4 },
       ],
     };
   },
@@ -140,7 +145,18 @@ export default {
       if (value === 3) {
         return row.is_hypothetical_significant === false;
       }
+
+      if (value === 4) {
+        if (row.change_type_name === null) {
+          return true;
+        }
+        return (row.id_change_type === null) || ((row.change_type_name).trim() === '');
+      }
+
       return false;
+    },
+    onFilterChange(e){
+      console.log(e);
     },
     selection(e, r){
       // console.log('selection:', e, r);
