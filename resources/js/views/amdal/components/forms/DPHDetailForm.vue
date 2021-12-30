@@ -305,6 +305,7 @@ export default {
         this.data.study_length_year = e.study_length_year;
         this.data.study_location = e.study_location;
         this.data.hasChanges = false;
+        this.data.pie = null;
         this.$emit('hasChanges', this.data);
         if (this.data.is_hypothetical_significant === true) {
           this.getPies();
