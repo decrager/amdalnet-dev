@@ -305,3 +305,8 @@ Route::apiResource('materials', 'MaterialController');
 
 Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index']);
 
+// dpdph master-detail
+Route::get('impacts', [ImpactIdentificationController::class, 'getImpacts']);
+Route::post('impact-id', [ImpactIdentificationController::class, 'saveImpact']);
+Route::get('impact-id', [ImpactIdentificationController::class, 'getImpact']);
+Route::post('impact-ids', [ImpactIdentificationController::class, 'saveImpacts']);

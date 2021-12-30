@@ -19,8 +19,7 @@
         @click="handleSaveForm()"
       >Simpan Perubahan</el-button>
     </div>
-    <el-button type="primary" @click="showComment = !showComment">Komentar</el-button>
-    <Comment v-show="showComment" :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
+    <Comment :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
   </div>
 </template>
 <script>
@@ -38,7 +37,6 @@ export default {
       idProject: 0,
       projectStages: [],
       currentIdSubProject: 0,
-      showComment: false,
       commentColumn: [
         {
           label: 'Komponen Kegiatan',

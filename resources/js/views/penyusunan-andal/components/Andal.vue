@@ -30,6 +30,7 @@
         <template slot="title" class="head-accordion">
           <span class="title">DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
         </template>
+        <!-- <DampakHipotetikMD v-if="activeName === 'dampak-potensial'" /> -->
         <DampakHipotetik v-if="activeName === 'dampak-potensial'" />
       </el-collapse-item>
       <el-collapse-item name="metode-studi">
@@ -63,6 +64,12 @@
         </template>
         <bagan-alir-dampak v-if="activeName === 'bagan-alir-dampak'" />
       </el-collapse-item>
+      <el-collapse-item name="evaluasi-holistik">
+        <template slot="title" class="head-accordion">
+          <span class="title">EVALUASI HOLISTIK</span>
+        </template>
+        <EvaluasiHolistik v-if="activeName === 'evaluasi-holistik'" />
+      </el-collapse-item>
     </el-collapse>
   </div>
 </template>
@@ -75,11 +82,13 @@ import MasterDetail from '@/views/penyusunan-andal/components/MasterDetail';
 import MatriksIdentifikasiDampakTable from '@/views/amdal/components/tables/MatriksIdentifikasiDampakTable.vue';
 import PetaBatas from '@/views/penyusunan-andal/clone/PetaBatas.vue';
 import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
+// import DampakHipotetikMD from '@/views/amdal/components/DPDPH.vue';
 import MetodeStudi from '@/views/amdal/components/MetodeStudi.vue';
 import MatriksDPHTable from '@/views/amdal/components/tables/MatriksDPHTable.vue';
 import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
 import BaganAlir from '@/views/penyusunan-andal/clone/BaganAlir.vue';
 import BaganAlirDampak from '../components/BaganAlirDampak.vue';
+import EvaluasiHolistik from '@/views/penyusunan-andal/components/EvaluasiHolistik.vue';
 
 export default {
   name: 'Andal',
@@ -89,11 +98,13 @@ export default {
     MatriksIdentifikasiDampakTable,
     PetaBatas,
     DampakHipotetik,
+    // DampakHipotetikMD,
     MetodeStudi,
     MatriksDPHTable,
     Pelingkupan,
     BaganAlir,
     BaganAlirDampak,
+    EvaluasiHolistik,
   },
   data() {
     return {

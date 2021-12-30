@@ -61,7 +61,7 @@
                     icon="el-icon-close"
                     style="margin-left: 0px; margin-right: 10px;"
                     class="button-action-mini"
-                    @click="handleDeletePlan(plan.id)"
+                    @click="handleDeletePlan(scope.row.id, plan.id)"
                   />
                   <span>{{ plan.form }}</span>
                   <!-- <el-button
@@ -257,6 +257,21 @@ export default {
           });
         });
     },
+    addPlanToImpact(idImp, plan) {
+      const idx = this.data.findIndex(imp => imp.id === idImp);
+      if (idx >= 0) {
+        this.data[idx].env_manage_plan.push(plan);
+      }
+    },
+    removePlanFromImpact(idImp, idPlan) {
+      const idx = this.data.findIndex(imp => imp.id === idImp);
+      if (idx >= 0) {
+        const idxPlan = this.data[idx].env_manage_plan.findIndex(p => p.id === idPlan);
+        if (idxPlan >= 0) {
+          this.data[idx].env_manage_plan.splice(idxPlan, 1);
+        }
+      }
+    },
     handleAddPlan(idImp) {
       if (this.newEnvManagePlan[idImp] === null ||
         this.newEnvManagePlan[idImp].replace(/\s+/g, '').trim() === '') {
@@ -278,7 +293,8 @@ export default {
                 type: 'success',
                 duration: 5 * 1000,
               });
-              this.getData();
+              // add new env_manage_plan to this.data
+              this.addPlanToImpact(parseInt(idImp), response.data);
             }
           })
           .catch((err) => {
@@ -290,7 +306,7 @@ export default {
           });
       }
     },
-    handleDeletePlan(id) {
+    handleDeletePlan(idImp, id) {
       envManagePlanResource
         .destroy(id)
         .then((response) => {
@@ -300,7 +316,8 @@ export default {
               type: 'success',
               duration: 5 * 1000,
             });
-            this.getData();
+            // remove env_manage_plan from this.data
+            this.removePlanFromImpact(parseInt(idImp), parseInt(id));
           }
         })
         .catch((err) => {

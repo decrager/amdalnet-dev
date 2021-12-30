@@ -61,7 +61,7 @@
                     icon="el-icon-close"
                     style="margin-left: 0px; margin-right: 10px;"
                     class="button-action-mini"
-                    @click="handleDeletePlan(plan.id)"
+                    @click="handleDeletePlan(scope.row.id, plan.id)"
                   />
                   <span>{{ plan.form }}</span>
                   <!-- <el-button
@@ -258,6 +258,21 @@ export default {
           });
         });
     },
+    addPlanToImpact(idImp, plan) {
+      const idx = this.data.findIndex(imp => imp.id === idImp);
+      if (idx >= 0) {
+        this.data[idx].env_monitor_plan.push(plan);
+      }
+    },
+    removePlanFromImpact(idImp, idPlan) {
+      const idx = this.data.findIndex(imp => imp.id === idImp);
+      if (idx >= 0) {
+        const idxPlan = this.data[idx].env_monitor_plan.findIndex(p => p.id === idPlan);
+        if (idxPlan >= 0) {
+          this.data[idx].env_monitor_plan.splice(idxPlan, 1);
+        }
+      }
+    },
     handleAddPlan(idImp) {
       if (this.newEnvMonitorPlan[idImp] === null ||
         this.newEnvMonitorPlan[idImp].replace(/\s+/g, '').trim() === '') {
@@ -279,7 +294,8 @@ export default {
                 type: 'success',
                 duration: 5 * 1000,
               });
-              this.getData();
+              // add new env_monitor_plan to this.data
+              this.addPlanToImpact(parseInt(idImp), response.data);
             }
           })
           .catch((err) => {
@@ -291,7 +307,7 @@ export default {
           });
       }
     },
-    handleDeletePlan(id) {
+    handleDeletePlan(idImp, id) {
       envMonitorPlanResource
         .destroy(id)
         .then((response) => {
@@ -301,7 +317,8 @@ export default {
               type: 'success',
               duration: 5 * 1000,
             });
-            this.getData();
+            // remove env_monitor_plan from this.data
+            this.removePlanFromImpact(parseInt(idImp), parseInt(id));
           }
         })
         .catch((err) => {

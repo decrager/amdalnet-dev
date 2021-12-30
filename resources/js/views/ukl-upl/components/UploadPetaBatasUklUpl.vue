@@ -1,17 +1,17 @@
 <template>
   <el-form label-position="top" label-width="100px">
     <!-- ekologis -->
-    <el-form-item label="Peta Batas Ekologis" :required="required">
+    <el-form-item label="Peta Titik Pengelolaan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
 
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPES)"><strong>{{ petaEkologisSHP }}<i class="el-icon-circle-check" /></strong></span>
+            <div v-if="petaPengelolaanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanSHP)"><strong>{{ petaPengelolaanSHP }}<i class="el-icon-circle-check" /></strong></span>
               <!-- &nbsp;<i class="el-icon-delete"></i>-->
             </div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="peSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
+            <input ref="refPengelolaanSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -20,25 +20,25 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="petaPengelolaanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPengelolaanPDF)"><strong>{{ petaPengelolaanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
+            <input ref="refPengelolaanPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
       </el-col>
     </el-form-item>
 
-    <el-form-item label="Peta Batas Sosial" :required="required">
+    <el-form-item label="Peta Titik Penataan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSS)"><strong>{{ petaSosialSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="petaPemantauanSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanSHP)"><strong>{{ petaPemantauanSHP }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="psSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
+            <input ref="refPemantauanSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
@@ -48,44 +48,15 @@
       <el-col :span="11" style="margin-right:1em;">
         <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
           <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaSosialPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSP)"><strong>{{ petaSosialPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            <div v-if="petaPemantauanPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPemantauanPDF)"><strong>{{ petaPemantauanPDF }}<i class="el-icon-circle-check" /></strong></span></div>
           </legend>
 
           <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
+            <input ref="refPemantauanPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
             <!-- <button type="submit">Unggah</button> -->
           </form>
         </fieldset>
       </el-col>
-    </el-form-item>
-
-    <el-form-item label="Peta Batas Wilayah Studi" :required="required">
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuS)"><strong>{{ petaStudiSHP }}<i class="el-icon-circle-check" /></strong></span></div>
-          </legend>
-
-          <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="pwSHP" type="file" class="form-control-file" @change="onChangeFiles(5)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuP)"><strong>{{ petaStudiPDF }}<i class="el-icon-circle-check" /></strong></span></div>
-          </legend>
-
-          <form v-if="isFormulator" @submit.prevent="handleSubmit">
-            <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(6)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-
     </el-form-item>
 
     <div id="mapView" class="map-wrapper" />
@@ -124,25 +95,21 @@ const uploadMaps = new Resource('project-map');
 // const unduhMaps = new Resource('download-map');
 
 export default {
-  name: 'UploadPetaBatas',
+  name: 'UploadPetaBatasUklUpl',
   data() {
     return {
       data: [],
       idProject: 0,
       currentMaps: [],
-      petaEkologisPDF: '',
-      petaSosialPDF: '',
-      petaStudiPDF: '',
-      petaEkologisSHP: '',
-      petaSosialSHP: '',
-      petaStudiSHP: '',
+      petaPengelolaanPDF: '',
+      petaPemantauanSHP: '',
+      petaPemantauanPDF: '',
+      petaPengelolaanSHP: '',
       files: [],
-      idPES: 0,
-      idPEP: 0,
-      idPSP: 0,
-      idPSS: 0,
-      idPSuP: 0,
-      idPSuS: 0,
+      idPengelolaanSHP: 0,
+      idPengelolaanPDF: 0,
+      idPemantauanPDF: 0,
+      idPemantauanSHP: 0,
       index: 0,
       param: [],
       required: true,
@@ -308,6 +275,66 @@ export default {
                 });
               }
 
+              // Map Pengelolaan
+              if (projects[i].attachment_type === 'pengelolaan') {
+                shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                  const blob = new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  axios.get('api/projects/' + this.idProject).then((response) => {
+                    const rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                        url: '/titik_kelola.png',
+                        width: '24px',
+                        height: '24px',
+                      },
+                    };
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Layer Titik Pengelolaan',
+                      renderer: rendererTapak,
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                });
+              }
+
+              // Map Pemantauan
+              if (projects[i].attachment_type === 'pemantauan') {
+                shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                  const blob = new Blob([JSON.stringify(data)], {
+                    type: 'application/json',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  axios.get('api/projects/' + this.idProject).then((response) => {
+                    const rendererTapak = {
+                      type: 'simple',
+                      field: '*',
+                      symbol: {
+                        type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                        url: '/titik_pantau.png',
+                        width: '24px',
+                        height: '24px',
+                      },
+                    };
+                    const geojsonLayerArray = new GeoJSONLayer({
+                      url: url,
+                      outFields: ['*'],
+                      visible: true,
+                      title: 'Layer Titik Pengelolaan',
+                      renderer: rendererTapak,
+                    });
+                    map.add(geojsonLayerArray);
+                  });
+                });
+              }
+
               // Map Tapak
               if (projects[i].attachment_type === 'tapak') {
                 shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
@@ -401,31 +428,22 @@ export default {
     process(files){
       files.forEach((e) => {
         switch (e.attachment_type){
-          case 'ecology':
+          case 'pengelolaan':
             if (e.file_type === 'SHP') {
-              this.petaEkologisSHP = e.original_filename;
-              this.idPES = e.id;
+              this.petaPengelolaanSHP = e.original_filename;
+              this.idPengelolaanSHP = e.id;
             } else {
-              this.petaEkologisPDF = e.original_filename;
-              this.idPEP = e.id;
+              this.petaPengelolaanPDF = e.original_filename;
+              this.idPengelolaanPDF = e.id;
             }
             break;
-          case 'social':
+          case 'pemantauan':
             if (e.file_type === 'SHP') {
-              this.petaSosialSHP = e.original_filename;
-              this.idPSS = e.id;
+              this.petaPemantauanSHP = e.original_filename;
+              this.idPemantauanSHP = e.id;
             } else {
-              this.petaSosialPDF = e.original_filename;
-              this.idPSP = e.id;
-            }
-            break;
-          case 'study':
-            if (e.file_type === 'SHP') {
-              this.petaStudiSHP = e.original_filename;
-              this.idPSuS = e.id;
-            } else {
-              this.petaStudiPDF = e.original_filename;
-              this.idPSuP = e.id;
+              this.petaPemantauanPDF = e.original_filename;
+              this.idPemantauanPDF = e.id;
             }
             break;
         }
@@ -501,9 +519,9 @@ export default {
       const index = idx - 1;
       switch (idx) {
         case 1: // ekologis SHP
-          this.files[index] = this.$refs.peSHP.files;
+          this.files[index] = this.$refs.refPengelolaanSHP.files;
           this.param[index] = {
-            attachment_type: 'ecology',
+            attachment_type: 'pengelolaan',
             file_type: 'SHP',
           };
 
@@ -511,46 +529,30 @@ export default {
           break;
         case 2:
           // ekologis PDF
-          this.files[index] = this.$refs.pePDF.files;
+          this.files[index] = this.$refs.refPengelolaanPDF.files;
           this.param[index] = {
-            attachment_type: 'ecology',
+            attachment_type: 'pengelolaan',
             file_type: 'PDF',
           };
           // this.param[index]['file_type'] = 'PDF';
-          // this.embedSrc = window.URL.createObjectURL(this.$refs.pePDF.files);
+          // this.embedSrc = window.URL.createObjectURL(this.$refs.refPengelolaanPDF.files);
           break;
         case 3:
-          this.files[index] = this.$refs.psSHP.files;
+          this.files[index] = this.$refs.refPemantauanSHP.files;
           this.param[index] = {
-            attachment_type: 'social',
+            attachment_type: 'pemantauan',
             file_type: 'SHP',
           };
           // sosial SHP
           break;
         case 4:
-          this.files[index] = this.$refs.psPDF.files;
+          this.files[index] = this.$refs.refPemantauanPDF.files;
           this.param[index] = {
-            attachment_type: 'social',
+            attachment_type: 'pemantauan',
             file_type: 'PDF',
           };
 
           // sosial PDF
-          break;
-        case 5:
-          this.files[index] = this.$refs.pwSHP.files;
-          this.param[index] = {
-            attachment_type: 'study',
-            file_type: 'SHP',
-          };
-          // studi SHP
-          break;
-        case 6:
-          this.files[index] = this.$refs.pwPDF.files;
-          this.param[index] = {
-            attachment_type: 'study',
-            file_type: 'PDF',
-          };
-          // studi PDF
           break;
         default:
       }
@@ -575,10 +577,10 @@ export default {
         basemap: 'topo',
       });
 
-      //  Map Ekologis
-      const mapBatasEkologis = this.$refs.peSHP.files[0];
-      const readerEkologis = new FileReader();
-      readerEkologis.onload = (event) => {
+      //  Map Pengelolaan
+      const mapPengelolaan = this.$refs.refPengelolaanSHP.files[0];
+      const readerPengelolaan = new FileReader();
+      readerPengelolaan.onload = (event) => {
         const base = event.target.result;
         shp(base).then(function(data) {
           const blob = new Blob([JSON.stringify(data)], {
@@ -589,38 +591,36 @@ export default {
             type: 'simple',
             field: '*',
             symbol: {
-              type: 'simple-fill',
-              color: [0, 0, 0, 0.0],
-              outline: {
-                color: [168, 112, 0, 1],
-                width: 2,
-              },
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_kelola.png',
+              width: '24px',
+              height: '24px',
             },
           };
           const url = URL.createObjectURL(blob);
-          const layerEkologis = new GeoJSONLayer({
+          const layerPengelolaan = new GeoJSONLayer({
             url: url,
             visible: true,
             outFields: ['*'],
             opacity: 0.75,
-            title: 'Layer Batas Ekologis',
+            title: 'Layer Titik Pengelolaan',
             renderer: renderer,
           });
 
-          map.add(layerEkologis);
+          map.add(layerPengelolaan);
           mapView.on('layerview-create', (event) => {
             mapView.goTo({
-              target: layerEkologis.fullExtent,
+              target: layerPengelolaan.fullExtent,
             });
           });
         });
       };
-      readerEkologis.readAsArrayBuffer(mapBatasEkologis);
+      readerPengelolaan.readAsArrayBuffer(mapPengelolaan);
 
-      //  Map Batas Sosial
-      const mapBatasSosial = this.$refs.psSHP.files[0];
-      const readerSosial = new FileReader();
-      readerSosial.onload = (event) => {
+      //  Map Pemantauan
+      const mapPemantauan = this.$refs.refPemantauanSHP.files[0];
+      const readerPemantauan = new FileReader();
+      readerPemantauan.onload = (event) => {
         const base = event.target.result;
         shp(base).then(function(data) {
           const blob = new Blob([JSON.stringify(data)], {
@@ -628,20 +628,17 @@ export default {
           });
 
           const renderer = {
-
             type: 'simple',
             field: '*',
             symbol: {
-              type: 'simple-fill',
-              color: [0, 0, 0, 0.0],
-              outline: {
-                color: [0, 76, 115, 1],
-                width: 2,
-              },
+              type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+              url: '/titik_pantau.png',
+              width: '24px',
+              height: '24px',
             },
           };
           const url = URL.createObjectURL(blob);
-          const layerBatasSosial = new GeoJSONLayer({
+          const layerPemantauan = new GeoJSONLayer({
             url: url,
             visible: true,
             outFields: ['*'],
@@ -650,101 +647,15 @@ export default {
             renderer: renderer,
           });
 
-          map.add(layerBatasSosial);
+          map.add(layerPemantauan);
           mapView.on('layerview-create', (event) => {
             mapView.goTo({
-              target: layerBatasSosial.fullExtent,
+              target: layerPemantauan.fullExtent,
             });
           });
         });
       };
-      readerSosial.readAsArrayBuffer(mapBatasSosial);
-
-      //  Map Batas Wilayah Studi
-      const mapBatasWilayahStudi = this.$refs.pwSHP.files[0];
-      const readerWilayahStudi = new FileReader();
-      readerWilayahStudi.onload = (event) => {
-        const base = event.target.result;
-        shp(base).then(function(data) {
-          const blob = new Blob([JSON.stringify(data)], {
-            type: 'application/json',
-          });
-
-          const renderer = {
-            type: 'simple',
-            field: '*',
-            symbol: {
-              type: 'simple-fill',
-              color: [0, 0, 0, 0.0],
-              outline: {
-                color: [255, 0, 255, 1],
-                width: 2,
-              },
-            },
-          };
-          const url = URL.createObjectURL(blob);
-          const layerWilayahStudi = new GeoJSONLayer({
-            url: url,
-            visible: true,
-            outFields: ['*'],
-            opacity: 0.75,
-            title: 'Layer Batas Wilayah Studi',
-            renderer: renderer,
-          });
-
-          map.add(layerWilayahStudi);
-          mapView.on('layerview-create', (event) => {
-            mapView.goTo({
-              target: layerWilayahStudi.fullExtent,
-            });
-          });
-        });
-      };
-      readerWilayahStudi.readAsArrayBuffer(mapBatasWilayahStudi);
-
-      // Map Tapak
-      const projId = this.$route.params && this.$route.params.id;
-      axios.get('api/map/' + projId)
-        .then(response => {
-          const projects = response.data;
-          for (let i = 0; i < projects.length; i++) {
-            if (projects[i].stored_filename) {
-              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                const blob = new Blob([JSON.stringify(data)], {
-                  type: 'application/json',
-                });
-                const url = URL.createObjectURL(blob);
-                axios.get('api/projects/' + projId).then((response) => {
-                  const rendererTapak = {
-                    type: 'simple',
-                    field: '*',
-                    symbol: {
-                      type: 'simple-fill',
-                      color: [200, 0, 0, 1],
-                      outline: {
-                        color: [200, 0, 0, 1],
-                        width: 2,
-                      },
-                    },
-                  };
-                  const geojsonLayerArray = new GeoJSONLayer({
-                    url: url,
-                    outFields: ['*'],
-                    visible: true,
-                    title: 'Layer Tapak',
-                    renderer: rendererTapak,
-                  });
-                  mapView.on('layerview-create', (event) => {
-                    mapView.goTo({
-                      target: geojsonLayerArray.fullExtent,
-                    });
-                  });
-                  map.add(geojsonLayerArray);
-                });
-              });
-            }
-          }
-        });
+      readerPemantauan.readAsArrayBuffer(mapPemantauan);
 
       const mapView = new MapView({
         container: 'mapView',

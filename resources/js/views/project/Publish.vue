@@ -467,8 +467,9 @@ export default {
               field: '*',
               symbol: {
                 type: 'simple-fill',
+                color: [200, 0, 0, 1],
                 outline: {
-                  color: 'red',
+                  color: [200, 0, 0, 1],
                 },
               },
             };

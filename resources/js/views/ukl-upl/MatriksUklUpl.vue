@@ -25,6 +25,9 @@
         <el-collapse-item name="3" title="DOKUMEN PENDUKUNG">
           <dokumen-pendukung v-if="activeName === '3'" @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan" />
         </el-collapse-item>
+        <el-collapse-item name="4" title="PETA TITIK PEMANTAUAN & PENGELOLAAN">
+          <upload-peta-batas-ukl-upl v-if="activeName === '4'" />
+        </el-collapse-item>
       </el-collapse>
     </el-card>
   </div>
@@ -37,6 +40,7 @@ import DokumenPendukung from './components/DokumenPendukung.vue';
 import WorkflowUkl from '@/components/WorkflowUkl';
 import Resource from '@/api/resource';
 import axios from 'axios';
+import UploadPetaBatasUklUpl from './components/UploadPetaBatasUklUpl.vue';
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
@@ -46,6 +50,7 @@ export default {
     MatriksUplTable,
     DokumenPendukung,
     WorkflowUkl,
+    UploadPetaBatasUklUpl,
   },
   data() {
     return {
