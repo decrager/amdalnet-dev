@@ -117,6 +117,26 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Tambah SOP', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'pegawai-tuk',
+      component: () => import('@/views/employee/index'),
+      name: 'employeeTuk',
+      meta: { title: 'Pegawai TUK', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'pegawai-tuk/create',
+      component: () => import('@/views/employee/Create'),
+      name: 'createEmployeeTuk',
+      hidden: true,
+      meta: { title: 'Tambah Pegawai TUK', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'pegawai-tuk/edit/:id',
+      component: () => import('@/views/employee/Create'),
+      name: 'editEmployeeTuk',
+      hidden: true,
+      meta: { title: 'Edit Pegawai TUK', icon: 'documentation', noCache: true },
+    },
     // {
     //   path: 'master-data/params',
     //   component: () => import('@/views/params/index'),
