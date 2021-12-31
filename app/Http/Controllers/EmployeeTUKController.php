@@ -7,6 +7,7 @@ use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,7 +26,7 @@ class EmployeeTUKController extends Controller
         }
 
         if($request->type == 'list') {
-            $employees = LukMember::with(['province', 'district'])->orderBy('id', 'desc')->get();
+            $employees = LukMember::with(['province', 'district'])->orderBy('id', 'desc')->paginate($request->limit);
             return $employees;
         }
     }
@@ -55,17 +56,19 @@ class EmployeeTUKController extends Controller
         if($validator->fails()) {
             return response()->json(['errors' => $validator->messages()]);
         }
+        
+        DB::beginTransaction();
 
-        // $is_user_exist = User::where('email', $request->email)->count();
-        // if($is_user_exist == 0) {
-        //     $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
-        //     $user = User::create([
-        //         'name' => ucfirst($request->name),
-        //         'email' => $request->email,
-        //         'password' => Hash::make('amdalnet')
-        //     ]);
-        //     $user->syncRoles($valsubRole);
-        // }
+        $is_user_exist = User::where('email', $request->email)->count();
+        if($is_user_exist == 0) {
+            $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
+            $user = User::create([
+                'name' => ucfirst($request->name),
+                'email' => $request->email,
+                'password' => Hash::make('amdalnet')
+            ]);
+            $user->syncRoles($valsubRole);
+        }
 
         $employee_tuk = null;
 
@@ -105,7 +108,13 @@ class EmployeeTUKController extends Controller
             $employee_tuk->cv = Storage::url($name);
         }
 
-        $employee_tuk->save();
+        $saved = $employee_tuk->save();
+
+        if(!$saved) {
+            DB::rollback();
+        } else {
+            DB::commit();
+        }
 
         return response()->json(['error' => null, 'message' => 'success']);
     }
@@ -152,6 +161,8 @@ class EmployeeTUKController extends Controller
      */
     public function destroy($id)
     {
+        $member = LukMember::findOrFail($id);
+        User::where('email', $member->email)->delete();
         LukMember::destroy($id);
 
         return response()->json(['message' => 'Data successfully deleted']);

@@ -16,19 +16,20 @@
         :loading="loading"
         @handleDelete="handleDelete($event)"
       />
-      <!-- <pagination
+      <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
         @pagination="handleFilter"
-      /> -->
+      />
     </el-card>
   </div>
 </template>
 
 <script>
 import EmployeeTable from '@/views/employee/components/EmployeeTable.vue';
+import Pagination from '@/components/Pagination';
 import Resource from '@/api/resource';
 const employeeTukResource = new Resource('employee-tuk');
 
@@ -36,20 +37,32 @@ export default {
   name: 'Employee',
   components: {
     EmployeeTable,
+    Pagination,
   },
   data() {
     return {
       list: [],
       loading: false,
+      listQuery: {
+        page: 1,
+        limit: 10,
+        type: 'list',
+      },
+      total: 0,
     };
   },
   created() {
     this.getData();
   },
   methods: {
+    handleFilter() {
+      this.getData();
+    },
     async getData() {
       this.loading = true;
-      this.list = await employeeTukResource.list({ type: 'list' });
+      const { data, total } = await employeeTukResource.list(this.listQuery);
+      this.list = data;
+      this.total = total;
       this.loading = false;
     },
     handleSubmitRoute() {
