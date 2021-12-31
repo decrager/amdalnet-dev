@@ -563,7 +563,7 @@ class ImpactIdentificationController extends Controller
         ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
         ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
         ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
-        ->leftJoin('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'))
+        ->join('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'))
         ->where('ii.id_project', $request->id_project)
         ->orderBy('ii.id', 'asc')
         ->get();
@@ -589,7 +589,7 @@ class ImpactIdentificationController extends Controller
         ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
         ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
         ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
-        ->leftJoin('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'))
+        ->join('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'))
         ->where('ii.id', $request->id)
         ->first();
         if($impact) return response($impact);

@@ -293,10 +293,12 @@ export default {
       impactsResource.list(
         { id: this.data.id }
       ).then((e) => {
-        /**
-         * {"id":2159,"id_change_type":null,"change_type_name":null,"project_stage":null,"stage":null,"komponen":null,"rona_awal":"Fauna","initial_study_plan":null,"is_hypothetical_significant":false,"is_managed":true,"study_length_month":0,"study_length_year":0,"study_location":null}
-         */
-        this.data.id_change_type = e.id_change_type;
+        const ct = this.changeTypes.find(c => c.id === e.id_change_type);
+        if (ct) {
+          this.data.id_change_type = e.id_change_type;
+        } else {
+          this.data.id_change_type = 0;
+        }
         this.data.change_type_name = e.change_type_name;
         this.data.is_hypothetical_significant = e.is_hypothetical_significant;
         this.data.is_managed = e.is_managed;
