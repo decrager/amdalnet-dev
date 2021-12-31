@@ -82,19 +82,32 @@ export default {
       impactsResource.list({
         id_project: this.id_project,
       }).then((res) => {
-        const imps = res.map((e) => {
+        res.map((e) => {
           e.hasChanges = false;
-          // console.log('inside map');
-          return e;
         });
-        // console.log('getPies: ', imps);
-        this.impacts = imps;
+
+        // sort
+        if ((this.stages !== null) && (this.stages.length > 0)){
+          this.impacts = this.sortImpacts(res);
+        } else {
+          this.isLoading = true;
+          projectStagesResource.list({ ordered: true }).then((stages) => {
+            this.stages = stages.data;
+            this.impacts = this.sortImpacts(res);
+          }).finally(() => {
+            this.isLoading = false;
+          });
+        }
       }).finally(() => {
         this.isLoading = false;
       });
     },
     async getParams(){
       // console.log('getting params!');
+      /* await projectStagesResource.list({ ordered: true }).then((res) => {
+        this.stages = res.data;
+        console.log('get param stages', this.stages);
+      });*/
       await pieParamsResource.list({}).then((res) => {
         this.pieParams = res.data;
       });
@@ -104,10 +117,6 @@ export default {
           name: 'Lainnya',
           id: 0,
         });
-      });
-      await projectStagesResource.list({ ordered: true }).then((res) => {
-        this.stages = res;
-        // console.log('stages', this.stages);
       });
     },
     handlePie(obj){
@@ -146,6 +155,13 @@ export default {
     refresh(){
       this.totalChanges = 0;
       this.getImpacts();
+    },
+    sortImpacts(imps){
+      return imps.sort((a, b) => {
+        const ia = this.stages.findIndex(sa => a.project_stage === sa.id);
+        const ib = this.stages.findIndex(sb => b.project_stage === sb.id);
+        return ia - ib;
+      });
     },
   },
 };
