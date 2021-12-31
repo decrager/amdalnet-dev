@@ -608,12 +608,19 @@ class ImpactIdentificationController extends Controller
             $impact = ImpactIdentification::find($request->id);
             if($impact){
 
-                $impact->study_length_month = $request->study_length_month;
-                $impact->study_length_year = $request->study_length_year;
-                $impact->study_location = $request->study_location;
                 $impact->is_hypothetical_significant = $request->is_hypothetical_significant;
                 $impact->initial_study_plan = $request->initial_study_plan;
-                $impact->is_managed = $request->is_managed;
+                if($request->is_hypothetical_significant == true){
+                    $impact->study_length_month = $request->study_length_month;
+                    $impact->study_length_year = $request->study_length_year;
+                    $impact->study_location = $request->study_location;
+                    $impact->is_managed = null;
+                } else {
+                    $impact->study_length_month = null;
+                    $impact->study_length_year = null;
+                    $impact->study_location = null;
+                    $impact->is_managed = ($request->is_hypothetical_significant == false) ? $request->is_managed : false;
+                }
 
                 if (($request->id_change_type == 0) &&
                     (($request->change_type_name  != null) &&
@@ -661,13 +668,20 @@ class ImpactIdentificationController extends Controller
             $id = $imp['id'];
             $impact = ImpactIdentification::find($id);
             if($impact){
-
-                $impact->study_length_month = $imp['study_length_month'];
-                $impact->study_length_year = $imp['study_length_year'];
-                $impact->study_location = $imp['study_location'];
                 $impact->is_hypothetical_significant = $imp['is_hypothetical_significant'];
                 $impact->initial_study_plan = $imp['initial_study_plan'];
-                $impact->is_managed = $imp['is_managed'];
+                if($imp['is_hypothetical_significant'] == true) {
+                    $impact->study_length_month = $imp['study_length_month'];
+                    $impact->study_length_year = $imp['study_length_year'];
+                    $impact->study_location = $imp['study_location'];
+                    $impact->is_managed = false;
+                }
+                else {
+                    $impact->study_length_month =  null;
+                    $impact->study_length_year = null;
+                    $impact->study_location = null;
+                    $impact->is_managed = ($imp['is_hypothetical_significant'] == false) ? $imp['is_managed'] : false;
+                }
 
                 if (($imp['id_change_type'] == 0) &&
                     (($imp['change_type_name']  != null) &&

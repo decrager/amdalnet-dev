@@ -51,6 +51,7 @@ const impactsResource = new Resource('impacts');
 const projectStagesResource = new Resource('project-stages');
 const changeTypeResource = new Resource('change-types');
 const pieParamsResource = new Resource('pie-params');
+const impIdsResource = new Resource('impact-ids');
 
 export default {
   name: 'DampakHipotetikMD',
@@ -65,6 +66,7 @@ export default {
       selectedData: null,
       pieParams: [],
       changeTypes: [],
+      impact_res_name: 'impacts',
     };
   },
   mounted(){
@@ -127,10 +129,9 @@ export default {
       this.impacts = temp;
     },
     saveChanges(evt){
-      const imps = new Resource('impact-ids');
       const impstosave = this.impacts.filter(e => e.hasChanges === true);
       this.isLoading = true;
-      imps.store(impstosave).then((res) => {
+      impIdsResource.store(impstosave).then((res) => {
         this.$message({
           message: 'Dampak Hipotetik berhasil disimpan',
           type: 'success',

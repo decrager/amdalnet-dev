@@ -48,7 +48,7 @@
         <el-col :span="8">
           <el-form label-position="top">
             <el-form-item label="Dampak Penting Hipotetik">
-              <el-select v-model="data.is_hypothetical_significant" placeholder="Select" @change="onDPHChange">
+              <el-select v-model="data.is_hypothetical_significant" placeholder="Select" @change="hasChanges">
                 <el-option
                   v-for="item in dphdtph"
                   :key="item.value"
@@ -73,7 +73,7 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item v-if="data.is_hypothetical_significant === true" label="Wilayah Studi">
+            <el-form-item v-if="!(data.is_hypothetical_significant === false)" label="Wilayah Studi">
               <el-input
                 v-model="data.study_location"
                 type="textarea"
@@ -82,21 +82,20 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item v-if="data.is_hypothetical_significant === true" label="Batas Waktu Kajian">
+            <el-form-item v-if="!(data.is_hypothetical_significant === false)" label="Batas Waktu Kajian">
               <span style="margin-right: 1em">
                 <el-input-number
                   v-model="data.study_length_year"
                   size="small"
-                  :disabled="!data.is_hypothetical_significant || !isFormulator"
+                  :disabled="!isFormulator"
                   @change="hasChanges"
                 /> &nbsp;&nbsp;tahun</span>
-              <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!data.is_hypothetical_significant || !isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
+              <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
             </el-form-item>
           </el-form>
         </el-col>
         <el-col :span="16">
           <pie-form
-            v-if="data.is_hypothetical_significant === true"
             :data="pies"
             :params="pieParams"
             :id-impact-identification="data.id"
@@ -193,10 +192,7 @@ export default {
 
       // console.log('watch', val);
       this.dataChanged = false;
-
-      if (val.is_hypothetical_significant === true) {
-        this.getPies();
-      }
+      this.getPies();
     },
     changeTypes: function(val){
       // console.log(val);
@@ -256,12 +252,8 @@ export default {
       this.hasChanges(val);
     },
     onDPHChange(isDPH){
-      this.data.pie = null;
-      this.pies = null;
-      // console.log('isDPH', isDPH);
-      if (isDPH){
-        this.getPies();
-      }
+      // this.data.pie = null;
+      // this.pies = null;
       this.hasChanges(true);
     },
     onPieFormChanges(val) {
@@ -281,6 +273,14 @@ export default {
           duration: 5 * 1000,
         });
 
+        this.data.id_change_type = res.id_change_type;
+        this.data.change_type_name = res.change_type_name;
+        this.data.is_hypothetical_significant = res.is_hypothetical_significant;
+        this.data.is_managed = res.is_managed;
+        this.data.initial_study_plan = res.initial_study_plan;
+        this.data.study_length_month = res.study_length_month;
+        this.data.study_length_year = res.study_length_year;
+        this.data.study_location = res.study_location;
         this.data.hasChanges = false;
         // console.log(this.data);
         this.$emit('hasChanges', this.data);
@@ -307,9 +307,9 @@ export default {
         this.data.hasChanges = false;
         this.data.pie = null;
         this.$emit('hasChanges', this.data);
-        if (this.data.is_hypothetical_significant === true) {
-          this.getPies();
-        }
+        // if (this.data.is_hypothetical_significant === true) {
+        this.getPies();
+        // }
       }).finally(() => {
         this.isSaving = false;
       });
