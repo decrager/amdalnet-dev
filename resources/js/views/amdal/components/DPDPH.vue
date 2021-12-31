@@ -85,29 +85,18 @@ export default {
         res.map((e) => {
           e.hasChanges = false;
         });
-
-        // sort
-        if ((this.stages !== null) && (this.stages.length > 0)){
-          this.impacts = this.sortImpacts(res);
-        } else {
-          this.isLoading = true;
-          projectStagesResource.list({ ordered: true }).then((stages) => {
-            this.stages = stages.data;
-            this.impacts = this.sortImpacts(res);
-          }).finally(() => {
-            this.isLoading = false;
-          });
-        }
+        const order = [4, 1, 2, 3]; // stage's order
+        this.impacts = res.sort((a, b) => order.indexOf(a.project_stage) - order.indexOf(b.project_stage));
       }).finally(() => {
         this.isLoading = false;
       });
     },
     async getParams(){
       // console.log('getting params!');
-      /* await projectStagesResource.list({ ordered: true }).then((res) => {
+      await projectStagesResource.list({ ordered: true }).then((res) => {
         this.stages = res.data;
         console.log('get param stages', this.stages);
-      });*/
+      });
       await pieParamsResource.list({}).then((res) => {
         this.pieParams = res.data;
       });
