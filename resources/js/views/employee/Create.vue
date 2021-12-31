@@ -303,7 +303,7 @@ const districtResource = new Resource('districts');
 const employeeTukResource = new Resource('employee-tuk');
 
 export default {
-  name: 'CreatePenyusun',
+  name: 'CreateEmployee',
   data() {
     return {
       currentData: {
