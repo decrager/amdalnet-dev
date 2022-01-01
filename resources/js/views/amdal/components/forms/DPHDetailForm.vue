@@ -274,7 +274,7 @@ export default {
         });
 
         this.data.id_change_type = res.id_change_type;
-        this.data.change_type_name = res.change_type_name;
+        // this.data.change_type_name = res.change_type_name;
         this.data.is_hypothetical_significant = res.is_hypothetical_significant;
         this.data.is_managed = res.is_managed;
         this.data.initial_study_plan = res.initial_study_plan;

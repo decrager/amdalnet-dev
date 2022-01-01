@@ -4,7 +4,7 @@
     <div style="text-align: right; margin-bottom: 0.5em;">Total: <span style="font-weight: bold">{{ impacts.length }}</span></div>
     <el-table
       :data="impacts"
-      height="250"
+      max-height="300"
       highlight-current-row
       header-row-class-name="dpdph-table"
       style="width: 100%"

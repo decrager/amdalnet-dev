@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading">
+  <div v-loading="loading" class="pies-form">
     <fieldset>
       <legend>Evaluasi Dampak Potensial <span v-if="!isFormulator" style="font-size:80%; font-style: italic; color: blue;">&nbsp;&nbsp;read-only</span></legend>
       <el-form v-if="data" ref="form" label-position="top" label-width="120px">
@@ -16,6 +16,7 @@
                   v-if="param.description !== ''"
                   placement="top-start"
                   width="350"
+                  popper-class="pie-desc-popper"
                   trigger="hover"
                 >
                   <p style="word-break: break-word !important; text-align:left !important;">{{ param.description }}</p>
@@ -95,10 +96,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
-fieldset {
-  min-height: 200px;
-}
+<style lang="scss">
 .pies-input{
 
   -ms-box-orient: horizontal;
@@ -122,5 +120,18 @@ fieldset {
   legend {
     font-weight: 600;
   }
+}
+
+div.pie-desc-popper {
+  background: #333 !important;
+  color: white !important;
+  border-radius:0.6em;
+  padding: 1em !important;
+  border:none;
+
+  p{ margin:0; padding:0; font-size:90%; line-height: 1.45em; letter-spacing: 0.05em;}
+
+  &[x-placement^="bottom"] .popper__arrow::after { border-bottom-color: #333; }
+  &[x-placement^="top"] .popper__arrow::after { border-top-color: #333; }
 }
 </style>
