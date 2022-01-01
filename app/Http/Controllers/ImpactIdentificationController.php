@@ -547,7 +547,7 @@ class ImpactIdentificationController extends Controller
     public function getImpacts(Request $request){
         $impacts = ImpactIdentification::from('impact_identifications AS ii')
         ->selectRaw('ii.id, ii.id_change_type,
-            ct."name" as change_type_name,
+            COALESCE(ii.change_type_name, ct."name") as change_type_name,
             COALESCE(c.id_project_stage, spc.id_project_stage) as project_stage,
             ps.name as stage,
             COALESCE(c."name", spc."name") as komponen,
@@ -573,7 +573,7 @@ class ImpactIdentificationController extends Controller
     public function getImpact(Request $request){
         $impact = ImpactIdentification::from('impact_identifications AS ii')
         ->selectRaw('ii.id, ii.id_change_type,
-            ct."name" as change_type_name,
+            COALESCE(ii.change_type_name, ct."name") as change_type_name,
             COALESCE(c.id_project_stage, spc.id_project_stage) as project_stage,
             ps.name as stage,
             COALESCE(c."name", spc."name") as komponen,
