@@ -44,7 +44,7 @@
         <div class="content" :hidden="!showPelingkupan" style="padding-top: 20px;">
           <h3 class="sub-title"><img src="/images/docPlus.svg" style="width: 16px; height:16px" alt=""> Proses Persetujuan Lingkungan</h3>
           <h3 class="sub-title" @click="showPubDialog"><img src="/images/pubques.svg" style="width: 16px; height:16px" alt=""> Pelayanan Public</h3>
-          <h3 class="sub-title"><img src="/images/search.svg" style="width: 16px; height:16px" alt=""> Tracking Dokumen</h3>
+          <h3 class="sub-title" @click="showTrackingDialog"><img src="/images/search.svg" style="width: 16px; height:16px" alt=""> Tracking Dokumen</h3>
         </div>
 
         <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showDigi = !showDigi">
@@ -67,14 +67,35 @@
           </router-link>
         </div>
 
-        <!-- <div class="actions__box__links__wrapper">
+        <!-- <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showMateri = !showMateri">
           <div class="actions__box__links__icon">
-            <img src="/images/tracking.svg" alt="">
+            <img src="/images/digworkspace.svg" alt="">
           </div>
           <div class="actions__box__links__desc">
-            <h2 class="actions__box__links__desc__title"><span class="title__primary">Tracking</span> Dokumen</h2>
-            <span class="actions__box__links__desc__subtitle">Layanan untuk melacak status dokumen AMDAL</span>
+            <h2 class="actions__box__links__desc__title"><span class="title__primary">Materi </span> AMDALNET</h2>
           </div>
+          <div>
+            <img v-show="!showMateri" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
+            <img v-show="showMateri" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
+          </div>
+        </div>
+        <div class="content" :hidden="!showMateri" style="padding-top: 20px;">
+          <Materi />
+        </div>
+        <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showKebijakan = !showKebijakan">
+          <div class="actions__box__links__icon">
+            <img src="/images/digworkspace.svg" alt="">
+          </div>
+          <div class="actions__box__links__desc">
+            <h2 class="actions__box__links__desc__title"><span class="title__primary">Kebijakan </span> AMDALNET</h2>
+          </div>
+          <div>
+            <img v-show="!showKebijakan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
+            <img v-show="showKebijakan" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
+          </div>
+        </div>
+        <div class="content" :hidden="!showKebijakan" style="padding-top: 20px;">
+          <Kebijakan />
         </div> -->
       </div>
 
@@ -106,6 +127,16 @@
       <h2 style="color: white; margin-top: 20px">Hasil Akhir Penapisan {{ last_result }}</h2>
     </div> -->
     <public-question-dialog :show="showPublicQues" @cancel="() => showPublicQues = false" />
+    <tracking-document-dialog
+      :show="showTrackingDocument"
+      @showTrackingDocumentDetail="showTrackingDocumentDetailDialog"
+    />
+    <tracking-document-detail-dialog
+      v-if="project.id !== undefined"
+      :show="showTrackingDocumentDetail"
+      :project="project"
+      @cancel="closeTrackingDocumentDetail"
+    />
   </section>
 </template>
 
@@ -113,18 +144,35 @@
 import SubProjectTable from '../../project/components/SubProjectTable.vue';
 // import AmdalSimulationDialog from '../components/AmdalSimulationDialog.vue';
 import PublicQuestionDialog from '../components/PublicQuestionDialog.vue';
+import TrackingDocumentDialog from '../components/TrackingDocumentDialog.vue';
+import TrackingDocumentDetailDialog from '../components/TrackingDocumentDetailDialog.vue';
+// import Materi from './Materi.vue';
+// import Kebijakan from './Kebijakan.vue';
+
 export default {
   name: 'ActionHome',
-  components: { SubProjectTable, PublicQuestionDialog },
+  components: {
+    SubProjectTable,
+    PublicQuestionDialog,
+    TrackingDocumentDialog,
+    TrackingDocumentDetailDialog,
+    // Materi,
+    // Kebijakan,
+  },
   data() {
     return {
       showPublicQues: false,
+      showTrackingDocument: false,
+      showTrackingDocumentDetail: false,
       listSubProject: [],
       showAmdalSimulation: false,
       last_result: '',
       showPenapisan: false,
       showPelingkupan: false,
       showDigi: false,
+      showMateri: false,
+      showKebijakan: false,
+      project: {},
     };
   },
   computed: {
@@ -136,6 +184,19 @@ export default {
     showPubDialog(){
       console.log('kepencet');
       this.showPublicQues = true;
+    },
+    showTrackingDialog(){
+      this.showTrackingDocumentDetail = false;
+      this.showTrackingDocument = true;
+    },
+    showTrackingDocumentDetailDialog(project){
+      this.project = project;
+      this.showTrackingDocument = false;
+      this.showTrackingDocumentDetail = true;
+    },
+    closeTrackingDocumentDetail() {
+      this.showTrackingDocumentDetail = false;
+      this.project = {};
     },
     cancelParam(){
       this.calculateListSubProjectResult();

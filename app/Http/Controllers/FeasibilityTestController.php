@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Entity\EligibilityCriteria;
 use App\Entity\FeasibilityTest;
 use App\Entity\FeasibilityTestDetail;
+use App\Entity\Project;
+use App\Utils\TemplateProcessor;
+use Carbon\Carbon;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 
 class FeasibilityTestController extends Controller
@@ -16,6 +22,14 @@ class FeasibilityTestController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->pdf) {
+            return $this->exportPDF($request->idProject);
+        }
+
+        if($request->dokumen) {
+           return $this->dokumen($request->idProject);
+        }
+
         if($request->idProject) {
             $feasibility = FeasibilityTest::where('id_project', $request->idProject)->first();
             if($feasibility) {
@@ -192,5 +206,79 @@ class FeasibilityTestController extends Controller
             'conclusion' => null,
             'detail' => $data
         ];
+    }
+
+    private function dokumen($id_project) {
+        if (!File::exists(storage_path('app/public/uji-kelayakan/'))) {
+            File::makeDirectory(storage_path('app/public/uji-kelayakan/'));
+        }
+
+        Carbon::setLocale('id');
+        $project = Project::findOrFail($id_project);
+        $save_file_name = 'uji-kelayakan-' . strtolower($project->project_title) . '.docx';
+
+        $project_type = $project->project_type;
+        $project_title_big = strtoupper($project->project_title);
+        $project_address_big = '';
+        $project_district_big = '';
+        $project_province_big = '';
+        $pemrakarsa_big = strtoupper($project->initiator->name);
+        $project_title = ucwords(strtolower($project->project_title));
+        $project_address = '';
+        $project_district = '';
+        $project_province = '';
+        $pemrakarsa = $project->initiator->name;
+        $pic = $project->initiator->pic;
+        $pemrakarsa_address = $project->initiator->address;
+
+        if($project->address) {
+            if($project->address->first()) {
+                $project_address = $project->address->first()->address;
+                $project_district = ucwords(strtolower($project->address->first()->district));
+                $project_province = 'Provinsi ' . ucwords(strtolower($project->address->first()->prov));
+                $project_address_big = strtoupper($project->address->first()->address);
+                $project_district_big = strtoupper($project->address->first()->district);
+                $project_province_big = 'PROVINSI ' . strtoupper($project->address->first()->prov);
+            }
+        }
+
+        $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
+
+        $templateProcessor = new TemplateProcessor('template_kelayakan.docx');
+        $templateProcessor->setValue('docs_date', $docs_date);
+        $templateProcessor->setValue('project_title_big', $project_title_big);
+        $templateProcessor->setValue('project_address_big', $project_address_big);
+        $templateProcessor->setValue('project_district_big', $project_district_big);
+        $templateProcessor->setValue('project_province_big', $project_province_big);
+        $templateProcessor->setValue('pemrakarsa_big', $pemrakarsa_big);
+        $templateProcessor->setValue('project_title', $project_title);
+        $templateProcessor->setValue('project_address', $project_address);
+        $templateProcessor->setValue('project_district', $project_district);
+        $templateProcessor->setValue('project_province', $project_province);
+        $templateProcessor->setValue('pemrakarsa', $pemrakarsa);
+        $templateProcessor->setValue('project_type', $project_type);
+        $templateProcessor->setValue('pic', $pic);
+        $templateProcessor->setValue('pemrakarsa_address', $pemrakarsa_address);
+
+        $templateProcessor->saveAs(storage_path('app/public/uji-kelayakan/' . $save_file_name));
+
+        return $save_file_name;
+    }
+
+    private function exportPDF($id_project) {
+        $domPdfPath = base_path('vendor/dompdf/dompdf');
+        Settings::setPdfRendererPath($domPdfPath);
+        Settings::setPdfRendererName('DomPDF');
+        $project = Project::findOrFail($id_project);
+
+        //Load word file
+        $Content = IOFactory::load(storage_path('app/public/uji-kelayakan/' . 'uji-kelayakan-' . strtolower($project->project_title) . '.docx'));
+
+        //Save it into PDF
+        $PDFWriter = IOFactory::createWriter($Content, 'PDF');
+
+        $PDFWriter->save(storage_path('app/public/uji-kelayakan/' . 'uji-kelayakan-' . strtolower($project->project_title) . '.pdf'));
+
+        return response()->download(storage_path('app/public/uji-kelayakan/' . 'uji-kelayakan-' . strtolower($project->project_title) . '.pdf'))->deleteFileAfterSend(true);
     }
 }

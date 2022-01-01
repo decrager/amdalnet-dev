@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
+use App\Entity\ImpactIdentification;
+use App\Entity\ImpactStudy;
 use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
 use App\Http\Resources\SubProjectComponentResource;
 use App\Http\Resources\SubProjectResource;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +23,47 @@ class ScopingController extends Controller
      */
     public function index(Request $request)
     {
+        if ($request->check_formulir_ka && $request->id_project) {
+            return $this->checkFormulirKA($request);
+        }
         return $this->getScopingData($request);        
+    }
+
+    private function checkFormulirKA(Request $request) {    
+        // check if formulir KA is complete
+        try {
+            $impacts = ImpactIdentification::select('id')
+                ->where('id_project', $request->id_project)
+                ->where('is_hypothetical_significant', true)
+                ->orderBy('id', 'asc')
+                ->get();
+            $impactStudies = ImpactStudy::from('impact_studies AS is2')
+                ->selectRaw('is2.id_impact_identification AS id')
+                ->leftJoin('impact_identifications AS ii', 'is2.id_impact_identification', '=', 'ii.id')
+                ->where('ii.id_project', $request->id_project)
+                ->where('ii.is_hypothetical_significant', true)
+                ->orderBy('id', 'asc')
+                ->get();
+            $id = [];
+            $id2 = [];
+            foreach ($impacts as $impact) {
+                array_push($id, $impact->id);
+            }
+            foreach ($impactStudies as $impactStudy) {
+                array_push($id2, $impactStudy->id);
+            }
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => empty($id) && empty($id2) ? false : $id == $id2,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     private function getSubProjects(Request $request) {

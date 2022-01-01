@@ -23,7 +23,7 @@ const dokumenKegiatanRoutes = {
     {
       path: ':id(\\d+)/penyusunan-rkl-rpl-dummy',
       component: () => import('@/views/rkl-rpl/index-dummy'),
-      name: 'penyusunanRKLRPL',
+      name: 'penyusunanRKLRPLDummy',
       meta: { title: 'Penyusunan RKL RPL', icon: 'zip', noCache: true },
     },
     {
@@ -37,6 +37,19 @@ const dokumenKegiatanRoutes = {
       component: () => import('@/views/pengujian-rkl-rpl/index'),
       name: 'pengujianRKLRPL',
       meta: { title: 'Pengujian RKL RPL', icon: 'zip', noCache: true },
+    },
+    {
+      path: ':id(\\d+)/rekomendasi-uji-kelayakan',
+      component: () =>
+        import(
+          '@/views/pengujian-rkl-rpl/components/ujiKelayakan/SuratRekomendasi'
+        ),
+      name: 'rekomendasiUjiKelayakan',
+      meta: {
+        title: 'Surat Rekomendasi Uji Kelayakan',
+        icon: 'zip',
+        noCache: true,
+      },
     },
     {
       path: ':id(\\d+)/skkl',

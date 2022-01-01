@@ -14,6 +14,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+        $this->load('notifications');
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -30,6 +31,7 @@ class UserResource extends JsonResource
                 },
                 $this->getAllPermissions()->toArray()
             ),
+            'notifications' => $this->notifications,
             'avatar' => $this->avatar,
         ];
     }

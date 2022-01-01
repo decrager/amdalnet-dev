@@ -210,12 +210,12 @@ export default {
   padding: 0 !important;
 }
 .comment-reply {
-  background: #ceeccb;
+  background: #f3f7f3; /*#ceeccb;*/
   padding: 20px;
   border-top: 1px solid #ccc;
 }
 .comment-header.reply,
 .comment-body.reply {
-  background: #ceeccb;
+  background: #f3f7f3; /*#ceeccb;*/
 }
 </style>

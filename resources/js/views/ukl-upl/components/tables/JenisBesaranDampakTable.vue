@@ -35,6 +35,9 @@
                 :value="item.id"
               />
             </el-select>
+            <template v-if="scope.row.id_change_type === 0">
+              <el-input v-model="scope.row.change_type_name" placeholder="Please input text..." :readonly="!isFormulator" />
+            </template>
           </div>
         </template>
       </el-table-column>
@@ -89,6 +92,10 @@ export default {
   methods: {
     async getData() {
       const { data } = await changeTypeResource.list({});
+      data.push({
+        id: 0,
+        name: 'Lainnya',
+      });
       this.changeTypes = data;
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       await axios.get('api/besaran-dampak/list/' + this.idProject)

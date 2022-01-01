@@ -1,20 +1,21 @@
 <template>
   <div class="app-container">
-    <el-button
-      v-if="!isAndal && isFormulator"
-      type="success"
-      size="small"
-      icon="el-icon-check"
-      style="margin-bottom: 10px;"
-      @click="handleSaveForm()"
-    >
-      Simpan Perubahan
-    </el-button>
     <identifikasi-dampak-table
       :id-project="idProject"
       :table="'metode-studi'"
       @handleSetData="handleSetData"
     />
+    <div style="text-align: right; margin: 2em 0 1em 0;">
+      <el-button
+        v-if="!isAndal && isFormulator"
+        type="success"
+        size="small"
+        icon="el-icon-check"
+        @click="handleSaveForm()"
+      >
+        Simpan Perubahan
+      </el-button>
+    </div>
   </div>
 </template>
 
@@ -71,3 +72,4 @@ export default {
   },
 };
 </script>
+

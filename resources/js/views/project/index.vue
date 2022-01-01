@@ -5,7 +5,7 @@
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col>
             <el-button
-              v-if="isInitiator"
+              v-if="couldCreateProject && !isScoping && !isDigiWork"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
@@ -34,7 +34,7 @@
         :data="filtered"
         fit
         highlight-current-row
-        :header-cell-style="{ background: '#3AB06F', color: 'white' }"
+        :header-cell-style="{ background: '#216221', color: 'white' }"
         style="width: 100%"
       >
         <el-table-column type="expand" class="row-detail">
@@ -60,7 +60,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="isInitiator"
+                  v-if="isInitiator && !isScoping && !isDigiWork"
                   type="text"
                   href="#"
                   icon="el-icon-user"
@@ -96,7 +96,7 @@
                   Delete
                 </el-button> -->
                 <el-button
-                  v-if="!isLpjp"
+                  v-if="couldViewProject && !isScoping && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -105,7 +105,7 @@
                   Lihat Detil Penapisan
                 </el-button>
                 <el-button
-                  v-if="(scope.row.published && (isInitiator || isExaminer))"
+                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork)"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -123,7 +123,7 @@
                   Tambah Tim LPJP
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -132,7 +132,7 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -141,7 +141,7 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin)"
+                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -150,7 +150,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -159,7 +159,7 @@
                   RKL/RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && isFormulator"
+                  v-if="isUklUpl(scope.row) && isFormulator && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -195,7 +195,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -204,7 +204,7 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -213,13 +213,31 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator"
+                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceUKLUPL(scope.row.id)"
+                >
+                  Workspace UKL UPL
+                </el-button>
+                <el-button
+                  v-if="isInitiator && !isScoping && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleGenerateSPPL(scope.row)"
                 >
                   Unduh SPPL
+                </el-button>
+                <el-button
+                  v-if="scope.row.feasibility_test && isAmdal(scope.row)"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleRekomendasiUjiKelayakan(scope.row.id)"
+                >
+                  Surat Rekomendasi Uji Kelayakan
                 </el-button>
                 <el-button
                   v-if="scope.row.feasibility_test"
@@ -298,6 +316,7 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
+import axios from 'axios';
 const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -338,6 +357,12 @@ export default {
     };
   },
   computed: {
+    couldCreateProject(){
+      return this.$store.getters.permissions.includes('create project');
+    },
+    couldViewProject(){
+      return this.$store.getters.permissions.includes('read project');
+    },
     isLpjp() {
       return this.userInfo.roles.includes('lpjp');
     },
@@ -355,6 +380,15 @@ export default {
     },
     isExaminer() {
       return this.userInfo.roles.includes('examiner');
+    },
+    isScoping(){
+      return this.$route.name === 'scopingProject';
+    },
+    isDigiWork(){
+      return this.$route.name === 'digWorkProject';
+    },
+    isScreening(){
+      return this.$route.name === 'screeningProject';
     },
   },
   async created() {
@@ -377,7 +411,7 @@ export default {
     // }
 
     this.getFiltered(this.listQuery);
-    console.log(this.userInfo);
+    console.log(this.$route.name);
   },
   methods: {
     isUklUpl(project){
@@ -579,6 +613,11 @@ export default {
         path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
       });
     },
+    handleRekomendasiUjiKelayakan(id) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${id}/rekomendasi-uji-kelayakan`,
+      });
+    },
     handleFeasibilityTest(id) {
       this.$router.push({
         path: `/dokumen-kegiatan/${id}/skkl`,
@@ -634,7 +673,7 @@ export default {
     },
     handleMatUklUpl(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl-dummy`,
+        path: `/uklupl/${project.id}/matriks`,
       });
     },
     handleRklRpl(project) {
@@ -700,6 +739,18 @@ export default {
         params: {
           id: idProject,
           filename: `${idProject}-rkl-rpl.docx`,
+        },
+      });
+    },
+    async handleWorkspaceUKLUPL(idProject) {
+      const projectName = await axios.get(
+        `/api/dokumen-ukl-upl/${idProject}`
+      );
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: idProject,
+          filename: projectName.data,
         },
       });
     },

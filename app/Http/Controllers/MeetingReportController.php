@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Entity\ExpertBankTeam;
 use App\Entity\ExpertBankTeamMember;
+use App\Entity\ImpactIdentificationClone;
 use App\Entity\Initiator;
 use App\Entity\MeetingReport;
 use App\Entity\MeetingReportInvitation;
 use App\Entity\Project;
+use App\Entity\ProjectStage;
 use App\Entity\TestingMeeting;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class MeetingReportController extends Controller
 {
@@ -20,6 +24,10 @@ class MeetingReportController extends Controller
      */
     public function index(Request $request)
     {
+
+        if($request->docs) {
+            return $this->getDocs($request->idProject);
+        }
 
         if($request->pemrakarsa) {
             return Initiator::where('user_type', 'Pemrakarsa')->get();
@@ -79,6 +87,24 @@ class MeetingReportController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->formulir) {
+            $project_title = strtolower(Project::findOrFail($request->idProject)->project_title);
+            if (File::exists(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'))) {
+                File::delete(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'));
+            }
+
+            if ($request->hasFile('docx')) {
+                //create file
+                $file = $request->file('docx');
+                $name = '/berita-acara/ba-ka-andal-' . $project_title . '.docx';
+                $file->storePubliclyAs('public', $name);
+
+                return response()->json(['message' => 'success']);
+            }
+
+            return;
+        }
+
         $data = $request->reports;
 
         // Save meetings
@@ -278,5 +304,156 @@ class MeetingReportController extends Controller
         ];
 
         return $data;
+    }
+
+    private function getDocs($id_project) {
+        Carbon::setLocale('id');
+        $isExist = MeetingReport::where([['id_project', $id_project],['document_type', 'ka']])->count();
+        $project = Project::findOrFail($id_project);
+        $report = null;
+
+        if($isExist > 0) {
+            $report = MeetingReport::where([['id_project', $id_project],['document_type', 'ka']])->first();
+        } else {
+            $report = TestingMeeting::where([['id_project', $id_project],['document_type', 'ka']])->first();
+        }
+
+        $district = '';
+        $province = '';
+        $ketua_tuk = '';
+        $ketua_tuk_institution = '';
+        $team_member = [];
+
+        if($project->address) {
+            if($project->address->first()) {
+                $district = $project->address->first()->district;
+                $province = 'provinsi ' . $project->address->first()->province;
+            }
+        }
+
+        if($report->expert_bank_team_id) {
+            $leader = ExpertBankTeamMember::where([['id_expert_bank_team', $report->expert_bank_team_id],['position', 'Ketua']])->first();
+            if($leader) {
+                $ketua_tuk = $leader->expertBank->name;
+                $ketua_tuk_institution = $leader->expertBank->institution;
+            }
+        }
+
+        if($report->invitations) {
+            if($report->invitations->first()) {
+                $alphabet_order = 'a';
+                foreach($report->invitations as $inv) {
+                    if($inv->id_expert_bank_team_member) {
+                        $member = ExpertBankTeamMember::find($inv->id_expert_bank_team_member);
+                        if($member) {
+                            if($member->position != 'Ketua') {
+                                $team_member[] = [
+                                    'no' => $alphabet_order . '.',
+                                    'name' => $member->expertBank->name . ' (Pakar '. $member->expertBank->expertise . ');'
+                                ];
+                                $alphabet_order++;
+                            }
+                        }
+                    } else {
+                        $team_member[] = [
+                            'no' => $alphabet_order . '.',
+                            'name' => 'Wakil dari ' . $inv->role . ';'
+                        ];
+                        $alphabet_order++;
+                    }
+                }
+            }
+        }
+
+        $ids = [4, 1, 2, 3];
+        $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
+            return array_search($model->getKey(), $ids);
+        });
+
+        // DAMPAK PENTING HIPOTETIK
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant', 'study_length_year', 'study_length_month')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
+        $pra_konstruksi = [];
+        $konstruksi = [];
+        $operasi = [];
+        $pasca_operasi = [];
+
+        foreach ($stages as $s) {
+            $total = 1;
+
+            foreach ($impactIdentifications as $imp) {
+                $ronaAwal = '';
+                $component = '';
+
+                // check stages
+                $id_stages = null;
+
+                if ($imp->subProjectComponent) {
+                    if ($imp->subProjectComponent->id_project_stage) {
+                        $id_stages = $imp->subProjectComponent->id_project_stage;
+                    } else {
+                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                    }
+
+                    if ($id_stages == $s->id) {
+                        if ($imp->subProjectRonaAwal) {
+                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
+                $changeType = $imp->id_change_type ? $imp->changeType->name : '';
+
+                $current_stage = strtolower(($s->name));
+                $data = [
+                    'no' => $total . '.',
+                    'dph' => "$changeType $ronaAwal akibat $component",
+                    'batas_waktu' => $imp->study_length_year . ' Tahun ' . $imp->study_length_month . ' Bulan'
+                ];
+
+                if($current_stage == 'pra konstruksi') {
+                    $pra_konstruksi[] = $data;
+                } else if($current_stage == 'konstruksi') {
+                    $konstruksi[] = $data;
+                }  else if($current_stage == 'operasi') {
+                    $operasi[] = $data;
+                } else {
+                    $pasca_operasi[] = $data;
+                }
+
+                $total++;
+            }
+        }
+
+        return [
+            'document_type_big' => 'FORMULIR KERANGKA ACUAN ANALISIS DAMPAK LINGKUNGAN (KA-ANDAL)',
+            'document_type' => 'Formulir Kerangka Acuan Analisis Dampak Lingkungan (KA-ANDAL)',
+            'project_title_big' => strtoupper($project->project_title),
+            'project_address_big' => strtoupper($district . ' ' . $province),
+            'pemrakarsa_big' => strtoupper($project->initiator->name),
+            'meeting_date' =>  $report->meeting_date ? Carbon::createFromFormat('Y-m-d', $report->meeting_date)->isoFormat('dddd/D MMMM Y') : '',
+            'meeting_location' => $report->location,
+            'pemrakarsa' => $project->initiator->name,
+            'pic' => $project->initiator->pic,
+            'position' => $report->position,
+            'leader' => $ketua_tuk,
+            'team_member' => $team_member,
+            'project_title' => ucwords(strtolower($project->project_title)),
+            'project_address' => ucwords(strtolower($district . ' ' . $province)),
+            'pemrakarsa' => $project->initiator->name,
+            'meeting_lead' => $ketua_tuk,
+            'meeting_lead_institution' => $ketua_tuk_institution,
+            'pra_konstruksi' => $pra_konstruksi,
+            'konstruksi' => $konstruksi,
+            'operasi' => $operasi,
+            'pasca_operasi' => $pasca_operasi 
+        ];
+
     }
 }

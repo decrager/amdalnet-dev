@@ -35,7 +35,7 @@
       </el-table-column>
       <el-table-column label="Jenis Dampak">
         <template slot-scope="scope">
-          <span v-if="!scope.row.is_stage">{{ scope.row.rona_awal_name }} akibat {{ scope.row.component_name }}</span>
+          <span v-if="!scope.row.is_stage">{{ scope.row.change_type_name }} {{ scope.row.rona_awal_name }} akibat {{ scope.row.component_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Besaran Dampak">
@@ -61,7 +61,7 @@
                     icon="el-icon-close"
                     style="margin-left: 0px; margin-right: 10px;"
                     class="button-action-mini"
-                    @click="handleDeletePlan(plan.id)"
+                    @click="handleDeletePlan(scope.row.id, plan.id)"
                   />
                   <span>{{ plan.form }}</span>
                   <!-- <el-button
@@ -97,12 +97,29 @@
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
               <div v-for="plan in scope.row.env_manage_plan" :key="plan.id">
-                <el-input
-                  v-if="plan.is_selected"
-                  v-model="plan.period"
-                  type="textarea"
-                  :rows="2"
-                />
+                <div v-if="plan.is_selected">
+                  <el-input-number
+                    v-model="plan.period_number"
+                    :min="0"
+                    :max="100"
+                    :disabled="!isFormulator"
+                    size="mini"
+                  />
+                  x
+                  <el-select
+                    v-if="plan.is_selected"
+                    v-model="plan.period_description"
+                    placeholder="Pilihan"
+                    :disabled="!isFormulator"
+                  >
+                    <el-option
+                      v-for="item in periode"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </div>
               </div>
             </div>
           </template>
@@ -151,6 +168,24 @@ export default {
       currentPlanIdx: 0,
       newEnvManagePlan: {},
       data: [],
+      periode: [
+        {
+          label: 'per Hari',
+          value: 'per Hari',
+        },
+        {
+          label: 'per Minggu',
+          value: 'per Minggu',
+        },
+        {
+          label: 'per Bulan',
+          value: 'per Bulan',
+        },
+        {
+          label: 'per Tahun',
+          value: 'per Tahun',
+        },
+      ],
       loading: true,
       splhKey: 1,
       iplhKey: 1,
@@ -222,8 +257,22 @@ export default {
           });
         });
     },
+    addPlanToImpact(idImp, plan) {
+      const idx = this.data.findIndex(imp => imp.id === idImp);
+      if (idx >= 0) {
+        this.data[idx].env_manage_plan.push(plan);
+      }
+    },
+    removePlanFromImpact(idImp, idPlan) {
+      const idx = this.data.findIndex(imp => imp.id === idImp);
+      if (idx >= 0) {
+        const idxPlan = this.data[idx].env_manage_plan.findIndex(p => p.id === idPlan);
+        if (idxPlan >= 0) {
+          this.data[idx].env_manage_plan.splice(idxPlan, 1);
+        }
+      }
+    },
     handleAddPlan(idImp) {
-      console.log('this.newEnvManagePlan[idImp] = ' + this.newEnvManagePlan[idImp]);
       if (this.newEnvManagePlan[idImp] === null ||
         this.newEnvManagePlan[idImp].replace(/\s+/g, '').trim() === '') {
         this.$message({
@@ -244,7 +293,8 @@ export default {
                 type: 'success',
                 duration: 5 * 1000,
               });
-              this.getData();
+              // add new env_manage_plan to this.data
+              this.addPlanToImpact(parseInt(idImp), response.data);
             }
           })
           .catch((err) => {
@@ -256,7 +306,7 @@ export default {
           });
       }
     },
-    handleDeletePlan(id) {
+    handleDeletePlan(idImp, id) {
       envManagePlanResource
         .destroy(id)
         .then((response) => {
@@ -266,7 +316,8 @@ export default {
               type: 'success',
               duration: 5 * 1000,
             });
-            this.getData();
+            // remove env_manage_plan from this.data
+            this.removePlanFromImpact(parseInt(idImp), parseInt(id));
           }
         })
         .catch((err) => {

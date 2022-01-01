@@ -22,15 +22,18 @@ import projectRoutes from './modules/project';
 // import paramRoutes from './modules/params';
 import amdalRoutes from './modules/amdal';
 import ukluplRoutes from './modules/uklupl';
-import initiatorRoutes from './modules/initiator';
+// import initiatorRoutes from './modules/initiator';
 // import formulatorRoutes from './modules/formulator';
-import lukRoutes from './modules/luk';
-import tukRoutes from './modules/tuk';
-import expertBankRoutes from './modules/expert-bank';
+// import lukRoutes from './modules/luk';
+// import tukRoutes from './modules/tuk';
+// import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
 import dokumenRoutes from './modules/DokumenKegiatan';
 import flowchartRoutes from './modules/flowchart';
+import scopingRoutes from './modules/scoping';
+import screeningRoutes from './modules/screening';
+import digWorkRoutes from './modules/digwork';
 // import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
@@ -227,12 +230,15 @@ export const asyncRoutes = [
   // ukluplStaticRoutes,
   adminRoutes,
   projectRoutes,
-  initiatorRoutes,
+  screeningRoutes,
+  scopingRoutes,
+  digWorkRoutes,
+  // initiatorRoutes,
   // formulatorRoutes,
   lpjpRoutes,
-  lukRoutes,
-  tukRoutes,
-  expertBankRoutes,
+  // lukRoutes,
+  // tukRoutes,
+  // expertBankRoutes,
   configurationRoutes,
   masterRoutes,
   // paramRoutes,

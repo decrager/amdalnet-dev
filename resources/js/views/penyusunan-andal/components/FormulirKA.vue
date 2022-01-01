@@ -108,7 +108,7 @@ export default {
       });
     },
     downloadDocx() {
-      saveAs(this.out, this.$route.params.id + '-form-ka-andal.docx');
+      saveAs(this.out, `ka-andal-${this.project_title.toLowerCase()}.docx`);
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
@@ -154,9 +154,7 @@ export default {
               this.showDocument = true;
               this.projects =
                 window.location.origin +
-                '/storage/formulir/' +
-                this.$route.params.id +
-                '-form-ka-andal.docx';
+                `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
               this.loading = false;
             })
             .catch((error) => {
@@ -172,7 +170,7 @@ export default {
         window.location.origin +
         '/storage/formulir/' +
         this.$route.params.id +
-        '-form-ka-andal.docx';
+        `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
     },
     async exportPdf() {
       axios({
@@ -184,13 +182,16 @@ export default {
           idProject: this.$route.params.id,
         },
       }).then((response) => {
-        const getHeaders = response.headers['content-disposition'].split('; ');
-        const getFileName = getHeaders[1].split('=');
-        const getName = getFileName[1].split('=');
+        // const getHeaders = response.headers['content-disposition'].split('; ');
+        // const getFileName = getHeaders[1].split('=');
+        // const getName = getFileName[1].split('=');
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', `${getName}`);
+        fileLink.setAttribute(
+          'download',
+          `ka-andal-${this.project_title.toLowerCase()}.pdf`
+        );
         document.body.appendChild(fileLink);
         fileLink.click();
       });

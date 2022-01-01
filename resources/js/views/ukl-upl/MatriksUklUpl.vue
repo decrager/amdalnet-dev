@@ -25,6 +25,9 @@
         <el-collapse-item name="3" title="DOKUMEN PENDUKUNG">
           <dokumen-pendukung v-if="activeName === '3'" @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan" />
         </el-collapse-item>
+        <el-collapse-item name="4" title="PETA TITIK PEMANTAUAN & PENGELOLAAN">
+          <upload-peta-batas-ukl-upl v-if="activeName === '4'" />
+        </el-collapse-item>
       </el-collapse>
     </el-card>
   </div>
@@ -36,6 +39,8 @@ import MatriksUplTable from './components/tables/MatriksUplTable.vue';
 import DokumenPendukung from './components/DokumenPendukung.vue';
 import WorkflowUkl from '@/components/WorkflowUkl';
 import Resource from '@/api/resource';
+import axios from 'axios';
+import UploadPetaBatasUklUpl from './components/UploadPetaBatasUklUpl.vue';
 const impactIdtResource = new Resource('impact-identifications');
 
 export default {
@@ -45,6 +50,7 @@ export default {
     MatriksUplTable,
     DokumenPendukung,
     WorkflowUkl,
+    UploadPetaBatasUklUpl,
   },
   data() {
     return {
@@ -57,6 +63,7 @@ export default {
   },
   mounted() {
     this.checkImpactIdentificationData();
+    this.checkIfFormComplete();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
@@ -84,6 +91,13 @@ export default {
           params: idProject,
         });
       }
+    },
+    async checkIfFormComplete() {
+      const idProject = parseInt(this.$route.params && this.$route.params.id);
+      await axios.get('api/matriks-ukl-upl/is-form-complete/' + idProject)
+        .then(response => {
+          this.isSubmitEnabled = response.data.data;
+        });
     },
     handleEnableSimpanLanjutkan() {
       this.isSubmitEnabled = true;

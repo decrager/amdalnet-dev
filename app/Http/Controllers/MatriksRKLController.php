@@ -279,7 +279,7 @@ class MatriksRKLController extends Controller
                 $envManage->success_indicator = $manage[$i]['success_indicator'];
                 $envManage->form = $manage[$i]['form'];
                 $envManage->location = $manage[$i]['location'];
-                $envManage->period = $manage[$i]['period'];
+                $envManage->period = $manage[$i]['period_number'] . '-' . $manage[$i]['period_description'];
                 $envManage->institution = $manage[$i]['institution'];
                 $envManage->save();
             }
@@ -386,6 +386,8 @@ class MatriksRKLController extends Controller
         foreach($data as $pA) {
             $ronaAwal = '';
             $component = '';
+            $periodeNumber = '0';
+            $periodeDesc = '';
 
             // check stages
             $id_stages = null;
@@ -415,9 +417,23 @@ class MatriksRKLController extends Controller
 
            $comments = $this->getComments($pA->id);
 
+           
            if(!$pA->envManagePlan) {
                $type = 'new';
-           }
+            }
+            
+            // PERIODE NUMBER & DESCRIPTION
+            if($type != 'new') {
+                if($pA->envManagePlan->period) {
+                    $split_period = explode('-', $pA->envManagePlan->period);
+                    if(is_numeric($split_period[0])) {
+                        $periodeNumber = $split_period[0];
+                    }
+                    if(count($split_period) > 1) {
+                        $periodeDesc = $split_period[1];
+                    }
+                }
+            }
 
             $results[] = [
                 'no' => $total + 1,
@@ -430,6 +446,8 @@ class MatriksRKLController extends Controller
                 'location' => $type == 'new' ? null : $pA->envManagePlan->location,
                 'period' => $type == 'new' ? null : $pA->envManagePlan->period,
                 'institution' => $type == 'new' ? null : $pA->envManagePlan->institution,
+                'period_number' => $periodeNumber,
+                'period_description' => $periodeDesc,
                 'comments' => $comments
             ];
             $results[] = [
@@ -487,6 +505,8 @@ class MatriksRKLController extends Controller
         foreach($data_merge_final as $merge) {
             $ronaAwal = '';
             $component = '';
+            $periodeNumber = '0';
+            $periodeDesc = '';
 
             // check stages
             $id_stages = null;
@@ -520,6 +540,19 @@ class MatriksRKLController extends Controller
                 $type = 'new';
             }
 
+             // PERIODE NUMBER & DESCRIPTION
+             if($type != 'new') {
+                if($merge->envManagePlan->period) {
+                    $split_period = explode('-', $merge->envManagePlan->period);
+                    if(is_numeric($split_period[0])) {
+                        $periodeNumber = $split_period[0];
+                    }
+                    if(count($split_period) > 1) {
+                        $periodeDesc = $split_period[1];
+                    }
+                }
+            }
+
             $results[] = [
                 'no' => $total + 1,
                 'id' => $merge->id,
@@ -531,6 +564,8 @@ class MatriksRKLController extends Controller
                 'location' => $type == 'new' ? null : $merge->envManagePlan->location,
                 'period' => $type == 'new' ? null : $merge->envManagePlan->period,
                 'institution' => $type == 'new' ? null : $merge->envManagePlan->institution,
+                'period_number' => $periodeNumber,
+                'period_description' => $periodeDesc,
                 'comments' => $comments
             ];
             $results[] = [
@@ -777,7 +812,7 @@ class MatriksRKLController extends Controller
        // ============ POIN B.3 ============= //
        // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
        $idPoinA = [];
-       $poinA = ImpactIdentificationClone::select('id', 'id_project', '')
+       $poinA = ImpactIdentificationClone::select('id', 'id_project', 'is_hypothetical_significant')
        ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis', function($q) {
            $q->whereHas('detail', function($query) {
                $query->where('important_trait', '+P')->orWhere('important_trait', '-P');

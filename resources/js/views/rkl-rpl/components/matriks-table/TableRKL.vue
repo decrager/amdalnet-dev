@@ -1,24 +1,6 @@
 <template>
   <div>
-    <div
-      class="filter-container"
-      style="display: flex; justify-content: space-between"
-    >
-      <div>
-        <el-button
-          v-if="isFormulator"
-          :loading="loadingSubmit"
-          class="filter-item"
-          type="primary"
-          style="font-size: 0.8rem"
-          @click="handleSubmit"
-        >
-          {{ 'Simpan Perubahan' }}
-        </el-button>
-        <span style="font-size: 0.8rem">
-          <em>{{ lastTime }}</em>
-        </span>
-      </div>
+    <div class="filter-container" style="text-align: right">
       <el-upload
         v-if="isFormulator"
         :loading="loadingMap"
@@ -248,15 +230,32 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Periode Pengelolaan Lingkungan Hidup">
+      <el-table-column
+        label="Periode Pengelolaan Lingkungan Hidup"
+        align="center"
+      >
         <template slot-scope="scope">
-          <el-input
+          <el-input-number
             v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.period"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
+            v-model="scope.row.period_number"
+            :min="0"
+            :disabled="!isFormulator"
+            style="width: 100%"
           />
+          <span v-if="scope.row.type == 'subtitle'">x</span>
+          <el-select
+            v-if="scope.row.type == 'subtitle'"
+            v-model="scope.row.period_description"
+            placeholder="Pilihan"
+            :disabled="!isFormulator"
+          >
+            <el-option
+              v-for="item in periode"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
           <span v-else>{{ '' }}</span>
         </template>
       </el-table-column>
@@ -274,6 +273,21 @@
         </template>
       </el-table-column>
     </el-table>
+    <div style="margin: 2em 0 1em; text-align: right">
+      <span style="font-size: 0.8rem; margin-right: 0.5em">
+        <em>{{ lastTime }}</em>
+      </span>
+      <el-button
+        v-if="isFormulator"
+        :loading="loadingSubmit"
+        class="filter-item"
+        type="primary"
+        style="font-size: 0.8rem"
+        @click="handleSubmit"
+      >
+        {{ 'Simpan Perubahan' }}
+      </el-button>
+    </div>
   </div>
 </template>
 
@@ -296,6 +310,24 @@ export default {
       impactComment: null,
       impactColumnType: null,
       userInfo: {},
+      periode: [
+        {
+          label: 'per Hari',
+          value: 'per Hari',
+        },
+        {
+          label: 'per Minggu',
+          value: 'per Minggu',
+        },
+        {
+          label: 'per Bulan',
+          value: 'per Bulan',
+        },
+        {
+          label: 'per Tahun',
+          value: 'per Tahun',
+        },
+      ],
       kolom: [
         {
           label: 'Jenis Dampak yang Timbul',

@@ -2,8 +2,10 @@
 
 namespace App\Laravue\Models;
 
+use App\Notifications\UserRegistered;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -98,5 +100,18 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::created(function ($user) {
+            $admins = User::all()->filter(function($user) {
+                return $user->hasRole('admin');
+            });
+
+            Notification::send($admins, new UserRegistered($user));
+            event(new \App\Events\NotificationEvent());
+        });
     }
 }
