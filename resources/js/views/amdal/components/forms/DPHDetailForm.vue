@@ -125,7 +125,7 @@ import Resource from '@/api/resource';
 import PieForm from './PieForm.vue';
 import Comment from '@/views/amdal/components/Comment.vue';
 const pieResource = new Resource('pie-entries');
-const impactsResource = new Resource('impact-id');
+const impactsResource = new Resource('impacts');
 export default {
   name: 'DampakHipotetikDetailForm',
   components: {
@@ -149,6 +149,10 @@ export default {
       default: function() {
         return [];
       },
+    },
+    mode: {
+      type: Number,
+      default: 0,
     },
   },
   data() {
@@ -211,6 +215,7 @@ export default {
       } else {
         pieResource.list({
           id_impact_identification: [this.data.id],
+          mode: this.mode,
         }).then((res) => {
           // console.log('calling ', res.length);
           if (res && (res.length > 0)) {
@@ -264,7 +269,7 @@ export default {
       // console.log('You\'re initiating save!');
       this.isSaving = true;
 
-      impactsResource.store(this.data).then((res) => {
+      impactsResource.store({ mode: this.mode, data: [this.data] }).then((res) => {
         var message = 'Dampak Penting Hipotetik berhasil disimpan';
         var message_type = 'success';
         this.$message({
@@ -273,16 +278,15 @@ export default {
           duration: 5 * 1000,
         });
 
-        this.data.id_change_type = res.id_change_type;
+        /* this.data.id_change_type = res.id_change_type;
         // this.data.change_type_name = res.change_type_name;
         this.data.is_hypothetical_significant = res.is_hypothetical_significant;
         this.data.is_managed = res.is_managed;
         this.data.initial_study_plan = res.initial_study_plan;
         this.data.study_length_month = res.study_length_month;
         this.data.study_length_year = res.study_length_year;
-        this.data.study_location = res.study_location;
+        this.data.study_location = res.study_location;*/
         this.data.hasChanges = false;
-        // console.log(this.data);
         this.$emit('hasChanges', this.data);
       }).finally(() => {
         this.isSaving = false;
@@ -290,8 +294,9 @@ export default {
     },
     refresh() {
       this.isSaving = true;
+      console.log('refreshing:', this.mode);
       impactsResource.list(
-        { id: this.data.id }
+        { id: this.data.id, mode: this.mode }
       ).then((e) => {
         const ct = this.changeTypes.find(c => c.id === e.id_change_type);
         if (ct) {

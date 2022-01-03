@@ -30,6 +30,7 @@
       :stages="stages"
       :total-changes="totalChanges"
       :loading="isLoading"
+      :mode="mode"
       @dataSelected="onDataSelected"
       @saveChanges="saveChanges"
     />
@@ -37,6 +38,7 @@
       :data="selectedData"
       :change-types="changeTypes"
       :pie-params="pieParams"
+      :mode="mode"
       @hasChanges="hasChanges"
       @saveData="onSaveData"
     />
@@ -51,11 +53,16 @@ const impactsResource = new Resource('impacts');
 const projectStagesResource = new Resource('project-stages');
 const changeTypeResource = new Resource('change-types');
 const pieParamsResource = new Resource('pie-params');
-const impIdsResource = new Resource('impact-ids');
 
 export default {
   name: 'DampakHipotetikMD',
   components: { DampakHipotetikDetailForm, DampakHipotetikMasterTable },
+  props: {
+    mode: {
+      type: Number,
+      default: 0,
+    },
+  },
   data() {
     return {
       id_project: 0,
@@ -81,6 +88,7 @@ export default {
       this.isLoading = true;
       impactsResource.list({
         id_project: this.id_project,
+        mode: this.mode,
       }).then((res) => {
         res.map((e) => {
           e.hasChanges = false;
@@ -129,7 +137,7 @@ export default {
     saveChanges(evt){
       const impstosave = this.impacts.filter(e => e.hasChanges === true);
       this.isLoading = true;
-      impIdsResource.store(impstosave).then((res) => {
+      impactsResource.store({ mode: this.mode, data: impstosave }).then((res) => {
         this.$message({
           message: 'Dampak Hipotetik berhasil disimpan',
           type: 'success',
