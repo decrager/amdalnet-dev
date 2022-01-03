@@ -243,6 +243,8 @@ Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
+Route::get('map-geojson-merge', [ProjectMapAttachmentController::class, 'getMergeGeojson']);
+Route::get('map-geojson/{id}', [ProjectMapAttachmentController::class, 'getGeojson']);
 Route::get('change-types', [ChangeTypeController::class, 'index']);
 Route::get('pie-params', [PieParamController::class, 'index']);
 Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
@@ -292,10 +294,10 @@ Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('public-questions', 'PublicQuestionController');
 
 // notification
-Route::get('mark-all-read/{user}', function(User $user){
+Route::get('mark-all-read/{user}', function (User $user) {
     $user->unreadNotifications->markAsRead();
     event(new \App\Events\NotificationEvent());
-    return response(['message'=>'done']);
+    return response(['message' => 'done']);
 });
 Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
 Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);

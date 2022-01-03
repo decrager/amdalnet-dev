@@ -184,12 +184,15 @@ class ProjectController extends Controller
             if ($files = $request->file('fileMap')) {
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
                 $files->storePubliclyAs('public/map/', $mapName);
+                var_dump($request->geomFromGeojson);
                 ProjectMapAttachment::create([
                     'id_project' => $project->id,
                     'attachment_type' => 'tapak',
                     'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
-                    'stored_filename' => $mapName
+                    'stored_filename' => $mapName,
+                    'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomFromGeojson'), 4326)"),
+                    'properties' => $request->geomProperties
                 ]);
             }
 
