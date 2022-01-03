@@ -137,6 +137,19 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Edit Pegawai TUK', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'materi',
+      component: () => import('@/views/materi/index'),
+      name: 'materi',
+      meta: { title: 'Materi', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'materi/create',
+      component: () => import('@/views/materi/Create'),
+      name: 'addMateri',
+      hidden: true,
+      meta: { title: 'Tambah Materi', icon: 'documentation', noCache: true },
+    },
     // {
     //   path: 'master-data/params',
     //   component: () => import('@/views/params/index'),
