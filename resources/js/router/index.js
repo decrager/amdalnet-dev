@@ -25,7 +25,7 @@ import ukluplRoutes from './modules/uklupl';
 // import initiatorRoutes from './modules/initiator';
 // import formulatorRoutes from './modules/formulator';
 // import lukRoutes from './modules/luk';
-// import tukRoutes from './modules/tuk';
+import tukRoutes from './modules/tuk';
 // import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
@@ -242,6 +242,7 @@ export const asyncRoutes = [
   masterRoutes,
   // paramRoutes,
   independentFormulatorTeamRoutes,
+  tukRoutes,
   announcementRoutes,
   feedbackRoutes,
   // workspaceRoutes,
