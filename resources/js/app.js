@@ -9,22 +9,17 @@ import router from '@/router';
 import i18n from './lang'; // Internationalization
 import '@/icons'; // icon
 import '@/permission'; // permission control
-import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
-import { Icon } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import {
+  applyPolyfills,
+  defineCustomElements,
+} from '@esri/calcite-components/dist/loader';
 
-// eslint-disable-next-line
-delete Icon.Default.prototype._getIconUrl;
-// eslint-disable-next-line
-Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
-  iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+applyPolyfills().then(() => {
+  defineCustomElements(window);
 });
 
-Vue.component('l-map', LMap);
-Vue.component('l-tile-layer', LTileLayer);
-Vue.component('l-marker', LMarker);
+// tell Vue.js to ignore Calcite Components
+Vue.config.ignoredElements = [/calcite-\w*/];
 
 import * as filters from './filters'; // global filters
 

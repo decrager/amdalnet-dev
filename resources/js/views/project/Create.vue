@@ -879,20 +879,18 @@ export default {
       method: 'post',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Keep-Alive': 'timeout=60',
-        'X-Content-Type-Options': 'nosniff',
         'Connection': 'keep-alive',
         'Content-Encoding': 'gzip',
-        'Strict-Transport-Security': 'max-age=31536000',
       },
       body: data,
+      responseType: 'json',
     };
 
     esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
-      .then(response => response.json())
-      .then(data => {
-        this.token = data.token;
+      .then(response => {
+        this.token = response.data.token;
       });
+
     // for step
     this.$store.dispatch('getStep', 0);
 
@@ -1024,11 +1022,6 @@ export default {
         confirmButtonText: 'OK',
       });
     },
-    showMapAlert(){
-      this.$alert('Peta yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!', {
-        confirmButtonText: 'OK',
-      });
-    },
     handleFileKtrUpload(e){
       if (e.target.files[0].size > 1048576){
         this.showFileAlert();
@@ -1054,7 +1047,6 @@ export default {
       }
 
       if (e !== 'a'){
-        console.log(e.target.files[0]);
         this.fileMap = e.target.files[0];
         this.fileMapName = e.target.files[0].name;
       }
@@ -1086,43 +1078,16 @@ export default {
         imageTransparency: true,
       });
 
-      const graticuleGrid = new MapImageLayer({
-        url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
-      });
-
-      const ekoregion = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
-        visible: false,
-        sublayers: [
-          {
-            id: 1,
-            visible: false,
-            visibility: 'exclusive',
-            title: 'Ekoregion Laut',
-          }, {
-            id: 0,
-            visible: false,
-            visibility: 'exclusive',
-            title: 'Ekoregion Darat',
-          },
-        ],
-      });
-
-      const ppib = new MapImageLayer({
-        url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
-        visible: false,
-      });
-
       const tutupanLahan = new MapImageLayer({
         url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
         visible: false,
       });
-      map.addMany([featureLayer, tutupanLahan, ekoregion, ppib, graticuleGrid]);
+      map.addMany([featureLayer, tutupanLahan]);
 
       const baseGroupLayer = new GroupLayer({
         title: 'Base Layer',
         visible: true,
-        layers: [featureLayer, tutupanLahan, ekoregion, ppib, graticuleGrid],
+        layers: [featureLayer, tutupanLahan],
         opacity: 0.90,
       });
 
@@ -1173,57 +1138,56 @@ export default {
       map.add(sigapLayer);
 
       const fr = new FileReader();
-      fr.onload = (event) => {
+      fr.onload = async function(event) {
         const base = event.target.result;
-        shp(base).then(function(data) {
-          const mapSampleProperties = [
-            'id',
-            'pemrakarsa',
-            'kegiatan',
-            'layer',
-            'dokumen',
-            'lokasi',
-            'luas',
-            'skala',
-          ];
+        const datas = await shp(base);
+        const mapSampleProperties = [
+          'id',
+          'pemrakarsa',
+          'kegiatan',
+          'layer',
+          'dokumen',
+          'lokasi',
+          'luas',
+          'skala',
+        ];
 
-          const mapUploadProperties = Object.keys(data.features[0].properties);
+        const mapUploadProperties = Object.keys(datas.features[0].properties);
 
-          if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
-            this.showMapAlert();
-            return;
-          }
+        if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
+          alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+          return;
+        }
 
-          const blob = new Blob([JSON.stringify(data)], {
-            type: 'application/json',
-          });
+        const blob = new Blob([JSON.stringify(datas)], {
+          type: 'application/json',
+        });
 
-          const renderer = {
-            type: 'simple',
-            field: '*',
-            symbol: {
-              type: 'simple-fill',
+        const renderer = {
+          type: 'simple',
+          field: '*',
+          symbol: {
+            type: 'simple-fill',
+            color: [200, 0, 0, 1],
+            outline: {
               color: [200, 0, 0, 1],
-              outline: {
-                color: [200, 0, 0, 1],
-              },
             },
-          };
-          const url = URL.createObjectURL(blob);
-          const geojsonLayer = new GeoJSONLayer({
-            url: url,
-            visible: true,
-            outFields: ['*'],
-            opacity: 0.75,
-            title: 'Peta Tapak Proyek',
-            renderer: renderer,
-          });
+          },
+        };
+        const url = URL.createObjectURL(blob);
+        const geojsonLayer = new GeoJSONLayer({
+          url: url,
+          visible: true,
+          outFields: ['*'],
+          opacity: 0.75,
+          title: 'Peta Tapak Proyek',
+          renderer: renderer,
+        });
 
-          map.add(geojsonLayer);
-          mapView.on('layerview-create', (event) => {
-            mapView.goTo({
-              target: geojsonLayer.fullExtent,
-            });
+        map.add(geojsonLayer);
+        mapView.on('layerview-create', async function(event) {
+          await mapView.goTo({
+            target: geojsonLayer.fullExtent,
           });
         });
       };
@@ -1342,7 +1306,7 @@ export default {
           // send to pubishProjectRoute
           this.$router.push({
             name: 'publishProject',
-            params: { project: this.currentProject, mapUpload: this.fileMap },
+            params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson },
           });
         } else {
           console.log('error submit!!');
@@ -1355,6 +1319,8 @@ export default {
         urlPrefix: 'https://amdalgis.menlhk.go.id/',
       });
 
+      console.log(this.$refs.fileMap.files[0]);
+
       var myHeaders = new Headers();
       myHeaders.append('Authorization', 'Bearer ' + this.token);
 
@@ -1362,18 +1328,19 @@ export default {
       formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
       formdatas.append('type', 'Feature Service');
       formdatas.append('title', this.currentProject.project_title + '_Peta Tapak Proyek');
-      formdatas.append('file', this.fileMap);
+      formdatas.append('file', this.currentProject.fileMap);
+      formdatas.append('fileName', this.currentProject.project_title + '_Peta Tapak Proyek');
 
       var requestOptions = {
         method: 'POST',
         headers: myHeaders,
         body: formdatas,
-        redirect: 'follow',
+        responseType: 'json',
+        multipart: true,
       };
 
       esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
+        .then(response => response.data)
         .catch(error => console.log('error', error));
     },
     async changeProvince(row) {

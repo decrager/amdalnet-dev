@@ -230,6 +230,8 @@ export default {
   },
   data() {
     return {
+      geomFromGeojson: {},
+      geomProperties: {},
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
@@ -379,33 +381,39 @@ export default {
           basemap: 'topo',
         });
 
-        axios.get('api/map/' + this.project.id)
-          .then(response => {
-            const projects = response.data;
-            for (let i = 0; i < projects.length; i++) {
-              if (projects[i].attachment_type === 'tapak') {
-                shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                  const blob = new Blob([JSON.stringify(data)], {
-                    type: 'application/json',
-                  });
-                  const url = URL.createObjectURL(blob);
-                  axios.get('api/projects/' + this.project.id).then((response) => {
-                    const geojsonLayerArray = new GeoJSONLayer({
-                      url: url,
-                      outFields: ['*'],
-                      visible: true,
-                      title: 'Peta Tapak',
-                    });
-                    mapView.on('layerview-create', (event) => {
-                      mapView.goTo({
-                        target: geojsonLayerArray.fullExtent,
-                      });
-                    });
-                    map.add(geojsonLayerArray);
-                  });
+        axios.get(`api/map-geojson/${this.idProject}?type=tapak`)
+          .then((response) => {
+            response.data.forEach((item) => {
+              const blob = new Blob([item.feature_layer], {
+                type: 'application/json',
+              });
+              const rendererTapak = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  type: 'simple-fill',
+                  color: [200, 0, 0, 1],
+                  outline: {
+                    color: [200, 0, 0, 1],
+                    width: 2,
+                  },
+                },
+              };
+              const url = URL.createObjectURL(blob);
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: url,
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Tapak Proyek',
+                renderer: rendererTapak,
+              });
+              mapView.on('layerview-create', (event) => {
+                mapView.goTo({
+                  target: geojsonLayerArray.fullExtent,
                 });
-              }
-            }
+              });
+              map.add(geojsonLayerArray);
+            });
           });
 
         const mapView = new MapView({
@@ -457,7 +465,10 @@ export default {
         const fr = new FileReader();
         fr.onload = (event) => {
           const base = event.target.result;
-          shp(base).then(function(data) {
+          shp(base).then((data) => {
+            this.geomFromGeojson = data.features[0].geometry;
+            this.geomProperties = data.features[0].properties;
+
             const blob = new Blob([JSON.stringify(data)], {
               type: 'application/json',
             });
@@ -660,6 +671,8 @@ export default {
 
       // make form data because we got file
       const formData = new FormData();
+      formData.append('geomFromGeojson', JSON.stringify(this.geomFromGeojson));
+      formData.append('geomProperties', JSON.stringify(this.geomProperties));
 
       // for formulator team mandiri
       if (this.project.type_formulator_team === 'mandiri') {
@@ -674,8 +687,6 @@ export default {
         }
       }
 
-      console.log(this.project);
-
       // eslint-disable-next-line no-undef
       _.each(this.project, (value, key) => {
         if (key === 'listSubProject' || key === 'address'){
@@ -685,7 +696,7 @@ export default {
         }
       });
 
-      console.log('project yang disubmit', formData);
+      console.log(formData);
 
       // this.$refs.project.validate(valid => {
       // if (this.project.type_formulator_team) {
