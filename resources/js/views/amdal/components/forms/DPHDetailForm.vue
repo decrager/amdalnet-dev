@@ -9,22 +9,6 @@
 
         <el-button icon="el-icon-right" type="info" circle />
         -->
-
-          <el-popconfirm
-            :disabled="!data.hasChanges"
-            confirm-button-text="Iya, refresh!"
-            cancel-button-text="Tidak"
-            title="Ada perubahan yang belum disimpan. Yakin akan muat ulang data?"
-            icon-color="red"
-            @confirm="refresh()"
-          >
-            <el-button
-              slot="reference"
-              icon="el-icon-refresh"
-              :disabled="!data.hasChanges"
-            > Refresh data
-            </el-button>
-          </el-popconfirm>
         </el-col>
       </el-row>
 
@@ -48,7 +32,7 @@
         <el-col :span="8">
           <el-form label-position="top">
             <el-form-item label="Dampak Penting Hipotetik">
-              <el-select v-model="data.is_hypothetical_significant" placeholder="Select" @change="onDPHChange">
+              <el-select v-model="data.is_hypothetical_significant" placeholder="Select" @change="hasChanges">
                 <el-option
                   v-for="item in dphdtph"
                   :key="item.value"
@@ -73,7 +57,7 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item v-if="data.is_hypothetical_significant === true" label="Wilayah Studi">
+            <el-form-item v-if="!(data.is_hypothetical_significant === false)" label="Wilayah Studi">
               <el-input
                 v-model="data.study_location"
                 type="textarea"
@@ -82,21 +66,20 @@
                 @input="hasChanges"
               />
             </el-form-item>
-            <el-form-item v-if="data.is_hypothetical_significant === true" label="Batas Waktu Kajian">
+            <el-form-item v-if="!(data.is_hypothetical_significant === false)" label="Batas Waktu Kajian">
               <span style="margin-right: 1em">
                 <el-input-number
                   v-model="data.study_length_year"
                   size="small"
-                  :disabled="!data.is_hypothetical_significant || !isFormulator"
+                  :disabled="!isFormulator"
                   @change="hasChanges"
                 /> &nbsp;&nbsp;tahun</span>
-              <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!data.is_hypothetical_significant || !isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
+              <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
             </el-form-item>
           </el-form>
         </el-col>
         <el-col :span="16">
           <pie-form
-            v-if="data.is_hypothetical_significant === true"
             :data="pies"
             :params="pieParams"
             :id-impact-identification="data.id"
@@ -106,6 +89,21 @@
         </el-col>
       </el-row>
       <div style="text-align: right; margin-top:2em;">
+        <el-popconfirm
+          :disabled="!data.hasChanges"
+          confirm-button-text="Iya, refresh!"
+          cancel-button-text="Tidak"
+          title="Ada perubahan yang belum disimpan. Yakin akan muat ulang data?"
+          icon-color="red"
+          @confirm="refresh()"
+        >
+          <el-button
+            slot="reference"
+            icon="el-icon-refresh"
+            :disabled="!data.hasChanges"
+          > Reset
+          </el-button>
+        </el-popconfirm> &nbsp;&nbsp;
         <el-button
           type="success"
           icon="el-icon-check"
@@ -118,7 +116,7 @@
       </div>
     </div>
 
-    <Comment :impactidentification="data.id" commenttype="dpdphdm" :kolom="kolom" style="margin: auto;" />
+    <Comment :impactidentification="data.id" :commenttype="commentType[mode]" :kolom="kolom" style="margin: auto;" />
   </div>
 </template>
 <script>
@@ -126,7 +124,7 @@ import Resource from '@/api/resource';
 import PieForm from './PieForm.vue';
 import Comment from '@/views/amdal/components/Comment.vue';
 const pieResource = new Resource('pie-entries');
-const impactsResource = new Resource('impact-id');
+const impactsResource = new Resource('impacts');
 export default {
   name: 'DampakHipotetikDetailForm',
   components: {
@@ -151,6 +149,10 @@ export default {
         return [];
       },
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -167,6 +169,7 @@ export default {
       isSaving: false,
       isLoadingPie: false,
       dataChanged: false,
+      commentType: ['dpdph-ka', 'dpdph-andal'],
       kolom: [
         { label: 'Dampak Potensial', value: 'Dampak Potensial' },
         { label: 'Dampak Penting Hipotetik', value: 'Dampak Penting Hipotetik' },
@@ -193,10 +196,7 @@ export default {
 
       // console.log('watch', val);
       this.dataChanged = false;
-
-      if (val.is_hypothetical_significant === true) {
-        this.getPies();
-      }
+      this.getPies();
     },
     changeTypes: function(val){
       // console.log(val);
@@ -215,6 +215,7 @@ export default {
       } else {
         pieResource.list({
           id_impact_identification: [this.data.id],
+          mode: this.mode,
         }).then((res) => {
           // console.log('calling ', res.length);
           if (res && (res.length > 0)) {
@@ -256,12 +257,8 @@ export default {
       this.hasChanges(val);
     },
     onDPHChange(isDPH){
-      this.data.pie = null;
-      this.pies = null;
-      // console.log('isDPH', isDPH);
-      if (isDPH){
-        this.getPies();
-      }
+      // this.data.pie = null;
+      // this.pies = null;
       this.hasChanges(true);
     },
     onPieFormChanges(val) {
@@ -272,7 +269,7 @@ export default {
       // console.log('You\'re initiating save!');
       this.isSaving = true;
 
-      impactsResource.store(this.data).then((res) => {
+      impactsResource.store({ mode: this.mode, data: [this.data] }).then((res) => {
         var message = 'Dampak Penting Hipotetik berhasil disimpan';
         var message_type = 'success';
         this.$message({
@@ -281,8 +278,15 @@ export default {
           duration: 5 * 1000,
         });
 
+        /* this.data.id_change_type = res.id_change_type;
+        // this.data.change_type_name = res.change_type_name;
+        this.data.is_hypothetical_significant = res.is_hypothetical_significant;
+        this.data.is_managed = res.is_managed;
+        this.data.initial_study_plan = res.initial_study_plan;
+        this.data.study_length_month = res.study_length_month;
+        this.data.study_length_year = res.study_length_year;
+        this.data.study_location = res.study_location;*/
         this.data.hasChanges = false;
-        // console.log(this.data);
         this.$emit('hasChanges', this.data);
       }).finally(() => {
         this.isSaving = false;
@@ -290,13 +294,16 @@ export default {
     },
     refresh() {
       this.isSaving = true;
+      console.log('refreshing:', this.mode);
       impactsResource.list(
-        { id: this.data.id }
+        { id: this.data.id, mode: this.mode }
       ).then((e) => {
-        /**
-         * {"id":2159,"id_change_type":null,"change_type_name":null,"project_stage":null,"stage":null,"komponen":null,"rona_awal":"Fauna","initial_study_plan":null,"is_hypothetical_significant":false,"is_managed":true,"study_length_month":0,"study_length_year":0,"study_location":null}
-         */
-        this.data.id_change_type = e.id_change_type;
+        const ct = this.changeTypes.find(c => c.id === e.id_change_type);
+        if (ct) {
+          this.data.id_change_type = e.id_change_type;
+        } else {
+          this.data.id_change_type = 0;
+        }
         this.data.change_type_name = e.change_type_name;
         this.data.is_hypothetical_significant = e.is_hypothetical_significant;
         this.data.is_managed = e.is_managed;
@@ -305,10 +312,11 @@ export default {
         this.data.study_length_year = e.study_length_year;
         this.data.study_location = e.study_location;
         this.data.hasChanges = false;
+        this.data.pie = null;
         this.$emit('hasChanges', this.data);
-        if (this.data.is_hypothetical_significant === true) {
-          this.getPies();
-        }
+        // if (this.data.is_hypothetical_significant === true) {
+        this.getPies();
+        // }
       }).finally(() => {
         this.isSaving = false;
       });

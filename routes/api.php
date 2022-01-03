@@ -271,6 +271,8 @@ Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
 Route::get('dokumen-ukl-upl/{id}', [ExportDocument::class, 'uklUpl']);
 Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf']);
 Route::apiResource('ka-comment', 'KaCommentController');
+Route::apiResource('employee-tuk', 'EmployeeTUKController');
+Route::apiResource('tuk-management', 'TUKManagementController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
@@ -312,3 +314,4 @@ Route::get('impacts', [ImpactIdentificationController::class, 'getImpacts']);
 Route::post('impact-id', [ImpactIdentificationController::class, 'saveImpact']);
 Route::get('impact-id', [ImpactIdentificationController::class, 'getImpact']);
 Route::post('impact-ids', [ImpactIdentificationController::class, 'saveImpacts']);
+Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
