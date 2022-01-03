@@ -60,3 +60,9 @@ echo Storage::disk('openstack')->temporaryUrl('public/test/61c92bbba477f.txt', C
 echo Storage::temporaryUrl('public/test/61c92bbba477f.txt', Carbon::now()->addMinutes(30));
 
 ```
+
+Akses ke url file, ke container `public` bisa dilakukan dengan akses sebagai berikut
+
+```
+echo Storage::url('public/test/61c92bbba477f.txt');
+```
