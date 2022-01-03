@@ -26,18 +26,16 @@
                 </el-row>
               </el-form>
               <el-form>
-                <el-form-item label="Taggal Terbit">
-                  <el-date-picker
-                    v-model="date"
-                    type="datetime"
-                    placeholder="Tanggal"
-                  />
-                </el-form-item>
+                <el-row>
+                  <el-form-item label="Tanggal Terbit">
+                    <el-input type="date" placeholder="Tanggal Terbit" style="width:50%" />
+                  </el-form-item>
+                </el-row>
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Download">
-                    <el-input type="text" placeholder="Link Download" />
+                  <el-form-item label="Upload Dokumen">
+                    <el-input type="file" placeholder="Upload Dokumen" />
                   </el-form-item>
                 </el-row>
               </el-form>

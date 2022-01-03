@@ -12,7 +12,7 @@
           {{ 'Tambah Materi' }}
         </el-button>
       </div>
-      <el-table :data="tableData" border style="width: 100%">
+      <!-- <el-table :data="tableData" border style="width: 100%">
         <el-table-column prop="no" label="No" width="70" />
         <el-table-column prop="judul" label="Judul Materi" />
         <el-table-column prop="deskripsi" label="Deskripsi" />
@@ -27,22 +27,22 @@
             </el-button>
           </template>
         </el-table-column>
-      </el-table>
-      <!-- <component-table
+      </el-table> -->
+      <component-table
         :loading="loading"
-        :list="list"
+        :list="tableData"
         @handleEditForm="handleEditForm($event)"
         @handleView="handleView($event)"
         @handleDelete="handleDelete($event)"
-      /> -->
+      />
       <!-- <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
         @pagination="handleFilter"
-      />
-      <component-dialog
+      /> -->
+      <!-- <component-dialog
         :component="component"
         :show="show"
         :list-view="listView"
@@ -56,7 +56,7 @@
 <script>
 // import Resource from '@/api/resource';
 // import Pagination from '@/components/Pagination';
-// import ComponentTable from './components/ComponentTable.vue';
+import ComponentTable from './components/ComponentTable.vue';
 // import ComponentDialog from './components/ComponentDialog.vue';
 // const appParamResource = new Resource('app-params');
 
@@ -64,19 +64,18 @@ export default {
   name: 'Materi',
   components: {
     // Pagination,
-    // ComponentTable,
+    ComponentTable,
     // ComponentDialog,
   },
   data() {
     return {
       tableData: [
         {
-          no: 1,
           judul:
             'Permenlhk NO P 23- 2018 Perubahan Izin Lingkungan di luar OSS',
           deskripsi: 'Materi Bimtek Hotel Mercure Ancol, 25 Juli 2019',
           tanggal: '27 Oktober 2021',
-          download: 'Download',
+          link: 'Download',
         },
       ],
     };
