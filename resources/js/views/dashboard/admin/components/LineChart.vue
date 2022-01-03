@@ -19,7 +19,7 @@ export default {
     },
     height: {
       type: String,
-      default: '350px',
+      default: '400px',
     },
     autoResize: {
       type: Boolean,
@@ -78,7 +78,7 @@ export default {
         this.__resizeHandler();
       }
     },
-    setOptions({ expectedData, actualData } = {}) {
+    setOptions({ amdalData, ukluplData, spplData, aARKLRPLData } = {}) {
       this.chart.setOption({
         xAxis: {
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -107,45 +107,76 @@ export default {
           },
         },
         legend: {
-          data: ['expected', 'actual'],
+          data: ['AMDAL', 'UKL UPL', 'SPPL', 'Addendum ANDAL dan RKL RPL'],
         },
         series: [
           {
-            name: 'expected',
+            name: 'AMDAL',
             itemStyle: {
               normal: {
-                color: '#FF005A',
+                color: '#347437',
                 lineStyle: {
-                  color: '#FF005A',
+                  color: '#347437',
                   width: 2,
                 },
               },
             },
             smooth: true,
             type: 'line',
-            data: expectedData,
+            data: amdalData,
             animationDuration: 2800,
             animationEasing: 'cubicInOut',
           },
           {
-            name: 'actual',
+            name: 'UKL UPL',
             smooth: true,
             type: 'line',
             itemStyle: {
               normal: {
-                color: '#3888fa',
+                color: '#449748',
                 lineStyle: {
-                  color: '#3888fa',
+                  color: '#449748',
                   width: 2,
-                },
-                areaStyle: {
-                  color: '#f3f8ff',
                 },
               },
             },
-            data: actualData,
+            data: ukluplData,
             animationDuration: 2800,
             animationEasing: 'quadraticOut',
+          },
+          {
+            name: 'SPPL',
+            itemStyle: {
+              normal: {
+                color: '#eb8a00',
+                lineStyle: {
+                  color: '#eb8a00',
+                  width: 2,
+                },
+              },
+            },
+            smooth: true,
+            type: 'line',
+            data: spplData,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
+          },
+          {
+            name: 'Addendum ANDAL dan RKL RPL',
+            itemStyle: {
+              normal: {
+                color: '#fac400',
+                lineStyle: {
+                  color: '#fac400',
+                  width: 2,
+                },
+              },
+            },
+            smooth: true,
+            type: 'line',
+            data: aARKLRPLData,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
           },
         ],
       });

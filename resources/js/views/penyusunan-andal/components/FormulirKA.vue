@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <el-card>
+    <el-card v-loading="loading">
       <h2>Formulir Kerangka Acuan</h2>
       <div>
         <el-button v-if="showDocument" type="danger" @click="exportPdf">
@@ -13,12 +13,21 @@
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16">
           <div class="grid-content bg-purple" />
-          <iframe
+          <!-- <iframe
             v-if="showDocument"
             :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projectId}-form-ka-andal&embedded=true`"
             width="100%"
             height="723px"
             frameborder="1"
+          /> -->
+          <iframe
+            v-if="showDocument"
+            :src="
+              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
+            "
+            width="100%"
+            height="723px"
+            frameborder="0"
           />
         </el-col>
         <el-col :span="8">
@@ -72,6 +81,7 @@ export default {
   },
   methods: {
     async getData() {
+      this.loading = true;
       const data = await andalComposingResource.list({
         idProject: this.$route.params.id,
         formulir: 'true',
@@ -98,7 +108,7 @@ export default {
       });
     },
     downloadDocx() {
-      saveAs(this.out, this.$route.params.id + '-form-ka-andal.docx');
+      saveAs(this.out, `ka-andal-${this.project_title.toLowerCase()}.docx`);
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
@@ -133,8 +143,6 @@ export default {
               'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
 
-          this.out = out;
-
           const formData = new FormData();
           formData.append('docx', out);
           formData.append('type', 'formulir');
@@ -144,10 +152,16 @@ export default {
             .store(formData)
             .then((response) => {
               this.showDocument = true;
+              this.projects =
+                window.location.origin +
+                `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
+              this.loading = false;
             })
             .catch((error) => {
               console.log(error);
             });
+
+          this.out = out;
         }
       );
     },
@@ -156,7 +170,7 @@ export default {
         window.location.origin +
         '/storage/formulir/' +
         this.$route.params.id +
-        '-form-ka-andal.docx';
+        `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
     },
     async exportPdf() {
       axios({
@@ -168,13 +182,16 @@ export default {
           idProject: this.$route.params.id,
         },
       }).then((response) => {
-        const getHeaders = response.headers['content-disposition'].split('; ');
-        const getFileName = getHeaders[1].split('=');
-        const getName = getFileName[1].split('=');
+        // const getHeaders = response.headers['content-disposition'].split('; ');
+        // const getFileName = getHeaders[1].split('=');
+        // const getName = getFileName[1].split('=');
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', `${getName}`);
+        fileLink.setAttribute(
+          'download',
+          `ka-andal-${this.project_title.toLowerCase()}.pdf`
+        );
         document.body.appendChild(fileLink);
         fileLink.click();
       });

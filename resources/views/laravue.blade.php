@@ -39,9 +39,14 @@
         .el-form .el-rate__icon {
             font-size: 3rem !important;
         }
+
+        #announce .el-tabs__content {
+            min-height: 10rem !important;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css">
+    <link rel="stylesheet" type="text/css" href=https://js.arcgis.com/calcite-components/1.0.0-beta.71/calcite.css />
 </head>
 
 <body>

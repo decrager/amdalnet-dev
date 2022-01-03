@@ -30,10 +30,46 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row :gutter="8">
+          <el-col
+            :span="16"
+          >
+            <el-form-item label="Kegiatan Utama/Pendukung" prop="project_type">
+              <el-input
+                v-for="(sP,sPidx) in announcement.sub_project"
+                :key="sPidx"
+                v-model="announcement.sub_project[sPidx].name"
+                disabled
+                style="margin-bottom:6px;"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col
+            :span="8"
+          >
+            <el-form-item
+              label="Skala/Besaran"
+              prop="project_scale"
+            ><el-input
+              v-for="(scP,scPidx) in announcement.sub_project"
+              :key="scPidx"
+              v-model="announcement.sub_project[scPidx].scale"
+              disabled
+              style="margin-bottom:6px;"
+            />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item label="Lokasi rencana Atau Kegiatan" prop="project_location">
-          <el-input v-model="announcement.project_location" disabled />
+          <el-input
+            v-for="(location,idx) in announcement.project_location"
+            :key="idx"
+            v-model="announcement.project_location[idx].address"
+            disabled
+            style="margin-bottom: 6px;"
+          />
         </el-form-item>
-        <el-form-item ref="fileProofUpload" label="Bukti Pengumuman" prop="fileProof">
+        <el-form-item ref="fileProofUpload" label="Bukti Pengumuman (Max 1MB)" prop="fileProof">
           <el-col :span="24"><div
             style="
                     border: 1px solid #ccc;
@@ -57,7 +93,7 @@
             >
           </div></el-col>
         </el-form-item>
-        <el-form-item label="Dampak" prop="potential_impact">
+        <el-form-item label="Dampak Potensial" prop="potential_impact">
           <el-input v-model="announcement.potential_impact" type="textarea" />
         </el-form-item>
         <el-row :gutter="8">
@@ -129,6 +165,9 @@ export default {
       },
     };
   },
+  mounted(){
+    console.log(this.announcement);
+  },
   methods: {
     handleSubmitAnnouncement() {
       this.$refs.announcement.validate(valid => {
@@ -141,12 +180,17 @@ export default {
       });
     },
     handleCancelAnnouncement() {
+      console.log(this.announcement.project_location);
       this.$emit('handleCancelAnnouncement');
     },
     checkProofFile() {
       document.querySelector('#proofFile').click();
     },
     checkProfFileSure(){
+      if (document.querySelector('#proofFile').files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
       this.fileName = document.querySelector('#proofFile').files[0].name;
       this.fileProof = document.querySelector('#proofFile').files[0];
       this.announcement.fileProof = this.fileProof;

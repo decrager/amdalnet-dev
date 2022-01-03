@@ -13,6 +13,7 @@ const getters = {
   introduction: state => state.user.introduction,
   roles: state => state.user.roles,
   permissions: state => state.user.permissions,
+  notifications: state => state.user.notifications,
   permissionRoutes: state => state.permission.routes,
   addRoutes: state => state.permission.addRoutes,
   amdals: state => state.announcement.amdals,
@@ -36,5 +37,6 @@ const getters = {
   lpjps: state => state.project.listLpjp,
   step: state => state.workflow.step,
   isPemerintah: state => state.initiator.isPemerintah,
+  jumlahAnggota: state => state.penyusun.jumlahAnggota,
 };
 export default getters;

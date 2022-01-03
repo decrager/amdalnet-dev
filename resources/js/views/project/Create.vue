@@ -24,8 +24,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang">
-                  <input ref="fileKtr" type="file" class="el-input__inner" @change="handleFileKtrUpload()">
+                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 1MB)" prop="project_type">
+                  <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -44,10 +44,15 @@
               </el-col>
               <el-col :span="12">
                 <el-row>
-                  <el-form-item label="Upload Peta (File .ZIP)">
-                    <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload">
+                  <el-form-item label="">
+                    <div slot="label">
+                      <span>Upload Peta Tapak (File .ZIP Max 1MB)</span>
+                      <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+                    </div>
+                    <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
+                    <!-- <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload"> -->
                   </el-form-item>
-                  <div id="mapView" style="height: 400px;" />
+                  <div id="mapView" style="height: 600px;" />
                 </el-row>
               </el-col>
             </el-row>
@@ -83,7 +88,7 @@
                       </template>
                     </el-table-column>
 
-                    <el-table-column label="City" width="300px">
+                    <el-table-column label="Kota/Kabupaten" width="300px">
                       <template slot-scope="scope">
                         <el-select
                           v-model="scope.row.district"
@@ -104,6 +109,17 @@
                     <el-table-column label="Alamat">
                       <template slot-scope="scope">
                         <el-input v-model="scope.row.address" />
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column width="100px">
+                      <template slot-scope="scope">
+                        <el-popconfirm
+                          title="Hapus Alamat ?"
+                          @confirm="currentProject.address.splice(scope.$index,1)"
+                        >
+                          <el-button slot="reference" type="danger" icon="el-icon-close" />
+                        </el-popconfirm>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -189,7 +205,9 @@
               </el-col>
             </el-row>
             <el-row>
-              <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+              <keep-alive>
+                <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+              </keep-alive>
               <el-button
                 type="primary"
                 @click="handleAddSubProjectTable"
@@ -292,10 +310,11 @@
 
                 <el-form-item
                   v-if="currentProject.pre_agreement"
-                  :label="preeAgreementLabel"
+                  :label="preeAgreementLabel + ' Max 1MB'"
                   prop="pre_agreement"
                 >
-                  <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload">
+                  <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
+                  <classic-upload :name="filePreAgreementName" :fid="'filePreAgreement'" @handleFileUpload="handleFilePreAgreementUpload" />
                   <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi ke Kementrian Investasi</el-tag>
                 </el-form-item>
               </el-col>
@@ -600,23 +619,32 @@
 <script>
 // import Tinymce from '@/components/Tinymce';
 import Workflow from '@/components/Workflow';
+import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
 // import SupportTable from './components/SupportTable.vue';
 import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
-// import * as L from 'leaflet';
-import shp from 'shpjs';
+
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
+import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import shp from 'shpjs';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
+import * as urlUtils from '@arcgis/core/core/urlUtils';
+import Expand from '@arcgis/core/widgets/Expand';
+import esriRequest from '@arcgis/core/request';
+import qs from 'qs';
 
 export default {
   name: 'CreateProject',
   components: {
     // Tinymce,
     // SupportTable,
+    ClassicUpload,
     Workflow,
     SubProjectTable,
   },
@@ -628,7 +656,16 @@ export default {
       callback();
     };
 
+    // var validateFile = (rule, value, callback) => {
+    //   if (value.size > 1024 * 1024) {
+    //     callback(new Error('File Maximum 1 MB'));
+    //   }
+    //   callback();
+    // };
+
     return {
+      mismatchMapData: false,
+      token: '',
       refresh: 0,
       preeAgreementLabel: '',
       preProject: true,
@@ -643,6 +680,9 @@ export default {
       fileName: 'No File Selected.',
       fileMap: [],
       isOss: true,
+      fileKtrName: 'No File Selected',
+      fileMapName: 'No File Selected',
+      filePreAgreementName: 'No File Selected',
       studyApproachOptions: [
         {
           value: 'Terpadu',
@@ -790,36 +830,6 @@ export default {
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
         ],
       },
-      tableData: [
-        {
-          no: 'A',
-          kegiatan: 'Kegiatan Utama',
-          jenisKegiatan: '',
-          skala: '',
-          hasil: '',
-        },
-        {
-          no: '1',
-          kegiatan: 'Pabrik Pupuk',
-          jenisKegiatan: 'Industri ',
-          skala: '111',
-          hasil: 'aaaa',
-        },
-        {
-          no: 'B',
-          kegiatan: 'Kegiatan Pendukung',
-          jenisKegiatan: '',
-          skala: '',
-          hasil: '',
-        },
-        {
-          no: '2',
-          kegiatan: 'Pabrik Pupuk',
-          jenisKegiatan: 'Industri ',
-          skala: '111',
-          hasil: 'aaaa',
-        },
-      ],
     };
   },
   computed: {
@@ -852,6 +862,35 @@ export default {
     },
   },
   async created() {
+    urlUtils.addProxyRule({
+      proxyUrl: 'proxy/proxy.php',
+      urlPrefix: 'https://amdalgis.menlhk.go.id/',
+    });
+
+    var data = qs.stringify({
+      'username': 'haris3',
+      'password': 'amdal123',
+      'client': 'requestip',
+      'expiration': 20160,
+      'f': 'json',
+    });
+
+    var config = {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Connection': 'keep-alive',
+        'Content-Encoding': 'gzip',
+      },
+      body: data,
+      responseType: 'json',
+    };
+
+    esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
+      .then(response => {
+        this.token = response.data.token;
+      });
+
     // for step
     this.$store.dispatch('getStep', 0);
 
@@ -866,11 +905,19 @@ export default {
 
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
-      this.fileName = this.getFileName(this.currentProject.map);
-      this.fileMap = this.getFileName(this.currentProject.map);
-      this.listSupportTable = await this.getListSupporttable(
-        this.currentProject.id
-      );
+      this.listSubProject = this.currentProject.listSubProject;
+      this.fileMap = this.currentProject.fileMap;
+      this.fileMapName = this.fileMap.name;
+      this.fileKtr = this.currentProject.fileKtr;
+      this.fileKtrName = this.fileKtr.name;
+      this.filePreAgreement = this.currentProject.filePreAgreement;
+      this.filePreAgreementName = this.currentProject.filePreAgreement.name;
+      this.handleFileTapakProyekMapUpload('a');
+      // this.fileName = this.getFileName(this.currentProject.map);
+      // this.fileMap = this.getFileName(this.currentProject.map);
+      // this.listSupportTable = await this.getListSupporttable(
+      //   this.currentProject.id
+      // );
       this.getDistricts(this.currentProject.id_prov);
     }
     this.getAllData();
@@ -932,12 +979,12 @@ export default {
       });
     },
     calculateChoosenProject(){
-      console.log('project tanpa filter', this.currentProject);
+      // console.log('project tanpa filter', this.currentProject);
       const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
       const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
       const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
 
-      console.log('listAmdal', listMainProjectAmdal);
+      // console.log('listAmdal', listMainProjectAmdal);
       let choosenProject = '';
 
       if (listMainProjectAmdal.length !== 0){
@@ -948,7 +995,7 @@ export default {
         choosenProject = listMainProjectSppl[0];
       }
 
-      console.log('choosenProject', choosenProject);
+      // console.log('choosenProject', choosenProject);
 
       // add choosen project to current project
       this.currentProject.kbli = choosenProject.kbli;
@@ -967,52 +1014,180 @@ export default {
       this.calculateChoosenProject();
       this.activeName = '3';
     },
-    handleFileKtrUpload(){
-      this.fileKtr = this.$refs.fileKtr.files[0];
+    checkMapFile() {
+      document.querySelector('#ktrFile').click();
     },
-    handleFilePreAgreementUpload(){
-      this.filePreAgreement = this.$refs.filePreAgreement.files[0];
+    showFileAlert(){
+      this.$alert('File Yang Diupload Melebihi 1 MB', {
+        confirmButtonText: 'OK',
+      });
+    },
+    handleFileKtrUpload(e){
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
+      this.fileKtr = e.target.files[0];
+      this.fileKtrName = e.target.files[0].name;
+    },
+    handleFilePreAgreementUpload(e){
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+      this.filePreAgreement = e.target.files[0];
+      this.filePreAgreementName = e.target.files[0].name;
+      // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekMapUpload(e){
-      this.fileMap = this.$refs.fileMap.files[0];
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e !== 'a'){
+        this.fileMap = e.target.files[0];
+        this.fileMapName = e.target.files[0].name;
+      }
+      // if (this.$refs.fileMap.files[0]){
+      //   console.log(this.$refs.fileMap.files[0]);
+      //   this.fileMap = this.$refs.fileMap.files[0];
+      // }
 
       const map = new Map({
         basemap: 'topo',
       });
 
-      const fr = new FileReader();
-      fr.onload = (event) => {
-        const base = event.target.result;
-        shp(base).then(function(data) {
-          const blob = new Blob([JSON.stringify(data)], {
-            type: 'application/json',
-          });
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://gistaru.atrbpn.go.id/',
+      });
 
-          const renderer = {
-            type: 'simple',
-            field: '*',
-            symbol: {
-              type: 'simple-fill',
-              outline: {
-                color: 'red',
-              },
+      const featureLayer = new MapImageLayer({
+        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            title: 'Layer Kawasan Hutan',
+            popupTemplate: {
+              title: 'Kawasan Hutan',
             },
-          };
-          const url = URL.createObjectURL(blob);
-          const geojsonLayer = new GeoJSONLayer({
-            url: url,
-            visible: true,
-            outFields: ['*'],
-            opacity: 0.75,
-            title: 'Peta Tapak Proyek',
-            renderer: renderer,
-          });
+          },
+        ],
+        imageTransparency: true,
+      });
 
-          map.add(geojsonLayer);
-          mapView.on('layerview-create', (event) => {
-            mapView.goTo({
-              target: geojsonLayer.fullExtent,
-            });
+      const tutupanLahan = new MapImageLayer({
+        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
+        visible: false,
+      });
+      map.addMany([featureLayer, tutupanLahan]);
+
+      const baseGroupLayer = new GroupLayer({
+        title: 'Base Layer',
+        visible: true,
+        layers: [featureLayer, tutupanLahan],
+        opacity: 0.90,
+      });
+
+      map.add(baseGroupLayer);
+
+      const penutupanLahan2020 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const kawasanHutanB = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const indikatifPPTPKH = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/Indikatif_PPTPKH/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const piapsRevisi = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIAPS_Revisi_VI/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const pippib2021Periode2 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const sigapLayer = new GroupLayer({
+        title: 'SIGAP KLHK',
+        visible: false,
+        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2],
+        opacity: 0.90,
+      });
+
+      map.add(sigapLayer);
+
+      const fr = new FileReader();
+      fr.onload = async function(event) {
+        const base = event.target.result;
+        const datas = await shp(base);
+        const mapSampleProperties = [
+          'id',
+          'pemrakarsa',
+          'kegiatan',
+          'layer',
+          'dokumen',
+          'lokasi',
+          'luas',
+          'skala',
+        ];
+
+        const mapUploadProperties = Object.keys(datas.features[0].properties);
+
+        if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
+          alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+          return;
+        }
+
+        const blob = new Blob([JSON.stringify(datas)], {
+          type: 'application/json',
+        });
+
+        const renderer = {
+          type: 'simple',
+          field: '*',
+          symbol: {
+            type: 'simple-fill',
+            color: [200, 0, 0, 1],
+            outline: {
+              color: [200, 0, 0, 1],
+            },
+          },
+        };
+        const url = URL.createObjectURL(blob);
+        const geojsonLayer = new GeoJSONLayer({
+          url: url,
+          visible: true,
+          outFields: ['*'],
+          opacity: 0.75,
+          title: 'Peta Tapak Proyek',
+          renderer: renderer,
+        });
+
+        map.add(geojsonLayer);
+        mapView.on('layerview-create', async function(event) {
+          await mapView.goTo({
+            target: geojsonLayer.fullExtent,
           });
         });
       };
@@ -1022,9 +1197,21 @@ export default {
         container: 'mapView',
         map: map,
         center: [115.287, -1.588],
-        zoom: 6,
+        zoom: 4,
       });
       this.$parent.mapView = mapView;
+
+      const legend = new Legend({
+        view: mapView,
+        container: document.createElement('div'),
+      });
+
+      const legendListExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap', // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+        expandTooltip: 'Layer Legend', // optional, defaults to "Expand" for English locale
+        view: mapView,
+        content: legend,
+      });
 
       const layerList = new LayerList({
         view: mapView,
@@ -1032,7 +1219,24 @@ export default {
         listItemCreatedFunction: this.defineActions,
       });
 
-      mapView.ui.add(layerList, 'top-right');
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layers', // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+        expandTooltip: 'Daftar Layer', // optional, defaults to "Expand" for English locale
+        view: mapView,
+        content: layerList,
+      });
+
+      layerList.on('trigger-action', (event) => {
+        const id = event.action.id;
+        if (id === 'full-extent') {
+          mapView.goTo({
+            target: event.item.layer.fullExtent,
+          });
+        }
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendListExpand, 'top-right');
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });
@@ -1061,8 +1265,8 @@ export default {
         );
       };
     },
-    checkMapFile() {
-      document.querySelector('#mapFile').click();
+    checkKtrFile() {
+      document.querySelector('#ktrFile').click();
     },
     checkMapFileSure(e) {
       this.fileName = e.target.files[0].name;
@@ -1102,17 +1306,46 @@ export default {
           // send to pubishProjectRoute
           this.$router.push({
             name: 'publishProject',
-            params: { project: this.currentProject, mapUpload: this.fileMap },
+            params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson },
           });
         } else {
           console.log('error submit!!');
           return false;
         }
       });
+
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://amdalgis.menlhk.go.id/',
+      });
+
+      console.log(this.$refs.fileMap.files[0]);
+
+      var myHeaders = new Headers();
+      myHeaders.append('Authorization', 'Bearer ' + this.token);
+
+      var formdatas = new FormData();
+      formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
+      formdatas.append('type', 'Feature Service');
+      formdatas.append('title', this.currentProject.project_title + '_Peta Tapak Proyek');
+      formdatas.append('file', this.currentProject.fileMap);
+      formdatas.append('fileName', this.currentProject.project_title + '_Peta Tapak Proyek');
+
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdatas,
+        responseType: 'json',
+        multipart: true,
+      };
+
+      esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
+        .then(response => response.data)
+        .catch(error => console.log('error', error));
     },
     async changeProvince(row) {
       // change all district by province
-      console.log(row);
+      // console.log(row);
       delete row.district;
       await this.getDistricts(row.prov);
       row.districts = this.$store.getters.cityOptions;
@@ -1227,6 +1460,26 @@ export default {
 }
 .el-collapse-item__content {
   padding-top: 10px;
+}
+
+.download__sample {
+  color: white;
+  padding: 5px;
+  background-color: #39773B;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.download__sample:hover {
+  background-color: #124e14;
+  color: white;
+}
+
+.mismatch__map {
+  color: rgb(230, 41, 41);
+  font-size: 10;
+  font-style: italic;
 }
 
 </style>

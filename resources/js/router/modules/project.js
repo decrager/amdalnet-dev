@@ -4,14 +4,14 @@ const projectRoutes = {
   path: '/project',
   component: Layout,
   redirect: '/project/',
-  meta: { title: 'project', icon: 'zip', permissions: ['view menu project'] },
+  meta: { title: 'project', icon: 'documentation', permissions: ['view menu project'] },
   alwaysShow: true,
   children: [
     {
       path: '',
       component: () => import('@/views/project'),
       name: 'listProject',
-      meta: { title: 'listProject', icon: 'documentation', permissions: ['view menu project'] },
+      meta: { title: 'listProject', icon: 'nested', permissions: ['view menu project'] },
     },
     // {
     //   path: 'post',
@@ -36,7 +36,7 @@ const projectRoutes = {
       component: () => import('@/views/project/Create'),
       name: 'createProject',
       hidden: true,
-      meta: { title: 'addProject', icon: 'documentation', noCache: true },
+      meta: { title: 'addProject', icon: 'documentation' },
     },
     {
       path: 'publish',

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ProjectStage;
-use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
+use App\Entity\SubProjectRonaAwal;
 use App\Http\Resources\SubProjectComponentResource;
 use Illuminate\Http\Request;
 
@@ -149,6 +149,10 @@ class SubProjectComponentController extends Controller
     public function destroy(SubProjectComponent $subProjectComponent)
     {
         try {
+            // cascade delete for sub_project_rona_awals
+            SubProjectRonaAwal::select('id')
+                ->where('id_sub_project_component', $subProjectComponent->id)
+                ->delete();
             $subProjectComponent->delete();
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);

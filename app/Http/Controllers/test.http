@@ -16,7 +16,7 @@ GET http://localhost:8000/api/districts/12
 ###
 GET http://localhost:8000/api/kblis?sectors=true
 ###
-GET http://localhost:8000/api/kblis?kblis=true
+GET http://localhost:8000/api/business/2
 ###
 GET http://localhost:8000/api/kblis?sectorsByKbli=41011
 ###
@@ -42,3 +42,12 @@ GET http://localhost:8000/api/initiatorsByEmail?email=nurika@pemrakarsaa.com
 ###
 GET http://192.168.7.94:8000/api/clear-cache
 ###
+
+POST http://localhost:8000/api/auth/login
+content-type: application/json
+
+{"email":"admin@amdalnet.dev","password":"amdalnet"}
+# 
+
+###
+GET http://localhost:8000/api/fire

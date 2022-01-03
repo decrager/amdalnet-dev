@@ -21,9 +21,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="KBLI">
+      <el-table-column align="center" label="Non KBLI" width="100px">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" @change="onChangeKbli(scope.row)">
+          <el-checkbox v-model="scope.row.nonKbli" @change="onChangeKbli(scope.row)" />
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="KBLI" width="100px">
+        <template slot-scope="scope">
+          <div v-if="scope.row.nonKbli">{{ 'Non KBLI' }}</div>
+          <el-select v-else v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" :disabled="scope.row.nonKbli" @change="onChangeKbli(scope.row)">
             <el-option
               v-for="item in listKbli"
               :key="item.value"
@@ -34,7 +41,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Sector">
+      <el-table-column align="center" label="Sektor">
         <template slot-scope="scope">
           <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)">
             <el-option
@@ -49,14 +56,16 @@
 
       <el-table-column align="center" label="Jenis Rencana Kegiatan">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.biz_type" filterable placeholder="Pilih" size="mini" @change="onChangeFieldType(scope.row)">
-            <el-option
-              v-for="item in scope.row.listField"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+          <el-tooltip :key="refresh" class="item" effect="dark" :content="scope.row.biz_name || 'Pilih'" placement="bottom">
+            <el-select v-model="scope.row.biz_type" filterable placeholder="Pilih" size="mini" @change="onChangeFieldType(scope.row)">
+              <el-option
+                v-for="item in scope.row.listField"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-tooltip>
         </template>
       </el-table-column>
 
@@ -66,6 +75,7 @@
             v-model="scope.row.name"
             class="edit-input"
             size="mini"
+            maxlength="200"
           />
         </template>
       </el-table-column>
@@ -73,7 +83,18 @@
       <el-table-column align="center" label="Skala Besaran">
         <template slot-scope="scope">
           <el-button type="primary" @click="handleClick(scope.row)">Input</el-button>
-          <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.biz_type" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
+          <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.biz_type ? scope.row.biz_type.toString() : scope.row.biz_type" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
+        </template>
+      </el-table-column>
+
+      <el-table-column width="60px">
+        <template slot-scope="scope">
+          <el-popconfirm
+            title="Hapus Kegiatan ?"
+            @confirm="list.splice(scope.$index,1)"
+          >
+            <el-button slot="reference" type="danger" icon="el-icon-close" />
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -84,7 +105,7 @@
 import Resource from '@/api/resource';
 import ParamDialog from '@/views/project/components/ParamDialog.vue';
 const kbliEnvParamResource = new Resource('kbli-env-params');
-const kbliResource = new Resource('kblis');
+const kbliResource = new Resource('business');
 
 export default {
   name: 'SubProjectTable',
@@ -122,6 +143,16 @@ export default {
     async onChangeKbli(sproject){
       this.loading = true;
       // await this.getBusinessByKbli(sproject);
+      // reset value
+      if (sproject.nonKbli){
+        delete sproject.kbli;
+      }
+      delete sproject.sector;
+      delete sproject.listSector;
+      delete sproject.listField;
+      delete sproject.biz_type;
+      delete sproject.listSubProjectParams;
+
       await this.getSectorByKbli(sproject);
       this.refresh++;
       this.loading = false;
@@ -134,9 +165,13 @@ export default {
     },
     async onChangeFieldType(sproject){
       this.loading = true;
+      const { value } = await kbliResource.get(sproject.biz_type);
+      sproject.biz_name = value;
+      console.log(sproject.biz_name);
       await this.getBusinessByField(sproject);
       console.log(sproject);
       this.loading = false;
+      this.refresh++;
     },
     async getBusinessByField(sproject) {
       const { data } = await kbliEnvParamResource.list({
@@ -156,12 +191,21 @@ export default {
       });
     },
     async getSectorByKbli(sproject) {
-      const { data } = await kbliResource.list({
-        sectorsByKbli: sproject.kbli,
-      });
-      sproject.listSector = data.map((i) => {
-        return { value: i.id, label: i.value };
-      });
+      if (sproject.nonKbli) {
+        const { data } = await kbliResource.list({
+          sectorsByKbli: 'Non KBLI',
+        });
+        sproject.listSector = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      } else if (sproject.kbli) {
+        const { data } = await kbliResource.list({
+          sectorsByKbli: sproject.kbli,
+        });
+        sproject.listSector = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      }
     },
     handleClick(value){
       console.log(value);
@@ -170,6 +214,7 @@ export default {
     },
     handleCancelParam(value){
       console.log(value);
+      this.$emit('cancel');
       value.showParamDialog = false;
       this.refresh++;
     },

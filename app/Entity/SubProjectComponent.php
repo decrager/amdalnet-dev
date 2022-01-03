@@ -15,13 +15,15 @@ class SubProjectComponent extends Model
         'id_project_stage',
         'description_common',
         'description_specific',
+        'definition',
+        'unit',
     ];
 
     public function subProject()
     {
         return $this->belongsTo(SubProject::class, 'id_sub_project');
     }
-    
+
     public function component()
     {
         return $this->belongsTo(Component::class, 'id_component');

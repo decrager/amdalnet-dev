@@ -57,6 +57,8 @@
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const cloneResource = new Resource('andal-clone');
 import Andal from '@/views/penyusunan-andal/components/Andal';
 import FormulirKA from '@/views/penyusunan-andal/components/FormulirKA';
 // import MapList from '@/views/penyusunan-andal/components/MapList';
@@ -76,8 +78,6 @@ export default {
   },
   data() {
     return {
-      loading: false,
-      // projects: [],
       idProject: this.$route.params.id,
       compose: [],
       lastTime: null,
@@ -88,20 +88,16 @@ export default {
     };
   },
   created() {
-    // this.getProjects();
-    this.handleChange(this.idProject);
+    this.checkExist();
     this.getUserInfo();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
-    // async getProjects() {
-    //   const data = await andalComposingResource.list({ project: 'true' });
-    //   this.projects = data;
-    // },
-    async handleChange(val) {
-      this.loading = true;
-      this.idProject = val;
-      this.loading = false;
+    async checkExist() {
+      await cloneResource.list({
+        exist: 'true',
+        idProject: this.$route.params.id,
+      });
     },
     async getUserInfo() {
       this.userInfo = await this.$store.dispatch('user/getInfo');

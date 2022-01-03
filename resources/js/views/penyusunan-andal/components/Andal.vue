@@ -16,7 +16,7 @@
         <template slot="title" class="head-accordion">
           <span class="title">MATRIKS IDENTIFIKASI DAMPAK</span>
         </template>
-        <MatrikIdentifikasiDampak
+        <MatriksIdentifikasiDampakTable
           v-if="activeName === 'matriks-identifikasi'"
         />
       </el-collapse-item>
@@ -24,13 +24,14 @@
         <template slot="title" class="head-accordion">
           <span class="title">PETA BATAS WILAYAH STUDI & PETA LAINNYA</span>
         </template>
-        <UploadPetaBatas />
+        <PetaBatas v-if="activeName === 'peta-batas'" />
       </el-collapse-item>
       <el-collapse-item name="dampak-potensial">
         <template slot="title" class="head-accordion">
           <span class="title">DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
         </template>
-        <DampakHipotetik />
+        <!-- <DampakHipotetikMD v-if="activeName === 'dampak-potensial'" /> -->
+        <DampakHipotetik v-if="activeName === 'dampak-potensial'" />
       </el-collapse-item>
       <el-collapse-item name="metode-studi">
         <template slot="title" class="head-accordion">
@@ -42,25 +43,32 @@
         <template slot="title" class="head-accordion">
           <span class="title">MATRIKS DAMPAK PENTING HIPOTETIK</span>
         </template>
-        <MatriksDampakPentingHipotetik v-if="activeName === 'matriks-dampak'" />
+        <MatriksDPHTable v-if="activeName === 'matriks-dampak'" />
       </el-collapse-item>
       <el-collapse-item name="bagan-alir-pelingkupan">
         <template slot="title" class="head-accordion">
           <span class="title">BAGAN ALIR PELINGKUPAN</span>
         </template>
-        <BaganAlir />
+        <BaganAlir v-if="activeName === 'bagan-alir-pelingkupan'" />
       </el-collapse-item>
       <el-collapse-item name="table-andal">
         <template slot="title" class="head-accordion">
           <span class="title">ANALISA DAMPAK LINGKUNGAN</span>
         </template>
-        <TableAndal v-if="activeName === 'table-andal'" />
+        <!-- <TableAndal v-if="activeName === 'table-andal'" /> -->
+        <MasterDetail v-if="activeName === 'table-andal'" />
       </el-collapse-item>
       <el-collapse-item name="bagan-alir-dampak">
         <template slot="title" class="head-accordion">
           <span class="title">BAGAN ALIR DAMPAK PENTING</span>
         </template>
-        <bagan-alir-dampak />
+        <bagan-alir-dampak v-if="activeName === 'bagan-alir-dampak'" />
+      </el-collapse-item>
+      <el-collapse-item name="evaluasi-holistik">
+        <template slot="title" class="head-accordion">
+          <span class="title">EVALUASI HOLISTIK</span>
+        </template>
+        <EvaluasiHolistik v-if="activeName === 'evaluasi-holistik'" />
       </el-collapse-item>
     </el-collapse>
   </div>
@@ -69,28 +77,34 @@
 <script>
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
-import TableAndal from '@/views/penyusunan-andal/components/Table';
-import MatrikIdentifikasiDampak from '@/views/ukl-upl/components/MatrikIdentifikasiDampak.vue';
-import UploadPetaBatas from '@/views/ukl-upl/components/UploadPetaBatas.vue';
-import DampakHipotetik from '@/views/ukl-upl/components/DampakHipotetik.vue';
-import MetodeStudi from '@/views/ukl-upl/components/MetodeStudi.vue';
-import MatriksDampakPentingHipotetik from '@/views/ukl-upl/components/MatriksDampakPentingHipotetik.vue';
-import Pelingkupan from '@/views/ukl-upl/components/Pelingkupan.vue';
-import BaganAlir from '@/views/ukl-upl/components/BaganAlir.vue';
+// import TableAndal from '@/views/penyusunan-andal/components/Table';
+import MasterDetail from '@/views/penyusunan-andal/components/MasterDetail';
+import MatriksIdentifikasiDampakTable from '@/views/amdal/components/tables/MatriksIdentifikasiDampakTable.vue';
+import PetaBatas from '@/views/penyusunan-andal/clone/PetaBatas.vue';
+import DampakHipotetik from '@/views/penyusunan-andal/clone/DpDPH.vue';
+// import DampakHipotetikMD from '@/views/amdal/components/DPDPH.vue';
+import MetodeStudi from '@/views/amdal/components/MetodeStudi.vue';
+import MatriksDPHTable from '@/views/amdal/components/tables/MatriksDPHTable.vue';
+import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
+import BaganAlir from '@/views/penyusunan-andal/clone/BaganAlir.vue';
 import BaganAlirDampak from '../components/BaganAlirDampak.vue';
+import EvaluasiHolistik from '@/views/penyusunan-andal/components/EvaluasiHolistik.vue';
 
 export default {
   name: 'Andal',
   components: {
-    TableAndal,
-    MatrikIdentifikasiDampak,
-    UploadPetaBatas,
+    // TableAndal,
+    MasterDetail,
+    MatriksIdentifikasiDampakTable,
+    PetaBatas,
     DampakHipotetik,
+    // DampakHipotetikMD,
     MetodeStudi,
-    MatriksDampakPentingHipotetik,
+    MatriksDPHTable,
     Pelingkupan,
     BaganAlir,
     BaganAlirDampak,
+    EvaluasiHolistik,
   },
   data() {
     return {
@@ -105,6 +119,7 @@ export default {
         docs: 'true',
         idProject: this.$route.params.id,
       });
+      this.loadingWorkspace = false;
 
       this.$router.push({
         name: 'projectWorkspace',

@@ -37,7 +37,7 @@
 
       <el-table-column align="center" label="Role" width="120">
         <template slot-scope="scope">
-          <span>{{ scope.row.roles.join(', ') }}</span>
+          <span>{{ $t('roles.title.' + scope.row.roles.join(', ')) }}</span>
         </template>
       </el-table-column>
 
@@ -405,12 +405,14 @@ export default {
     },
 
     normalizeMenuPermission(permission) {
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name.substring(10)), disabled: permission.disabled || false };
+      const tmp = this.$t('permission.name.' + permission.name);
+      return { id: permission.id, name: this.$options.filters.uppercaseFirst(tmp.substring(10)), disabled: permission.disabled || false };
     },
 
     normalizePermission(permission) {
+      const tmp = this.$t('permission.name.' + permission.name);
       const disabled = permission.disabled || permission.name === 'manage permission';
-      return { id: permission.id, name: this.$options.filters.uppercaseFirst(permission.name), disabled: disabled };
+      return { id: permission.id, name: this.$options.filters.uppercaseFirst(tmp), disabled: disabled };
     },
 
     confirmPermission() {

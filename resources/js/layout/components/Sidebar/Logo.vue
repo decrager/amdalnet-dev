@@ -2,7 +2,7 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo2" class="sidebar-logo">
+        <img v-if="logo" :src="logo2" class="sidebar-logo" style="width: 40px; height: 40px">
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <img v-if="logo" :src="logo" class="sidebar-logo">
@@ -13,7 +13,7 @@
 
 <script>
 const logo = require('@/assets/logo-amdal-white.png').default;
-const logo2 = require('@/assets/logo.png').default;
+const logo2 = require('@/assets/logo2.png').default;
 
 export default {
   name: 'SidebarLogo',
@@ -48,7 +48,7 @@ export default {
     height: 50px;
     line-height: 50px;
     // background: #2b2f3a;
-    background: #012210;
+    // background: #183b13; //#012210;
     text-align: center;
     overflow: hidden;
 

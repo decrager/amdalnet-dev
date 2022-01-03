@@ -1,5 +1,7 @@
 const ArcGISPlugin = require('@arcgis/webpack-plugin');
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
 module.exports = {
 
   // runtimeCompiler: false
@@ -30,6 +32,16 @@ module.exports = {
     plugins: [
       new ArcGISPlugin({
         useDefaultAssetLoaders: false,
+      }),
+      new CopyPlugin({
+        patterns: [
+          // calcite assets
+          {
+            context: 'node_modules',
+            from: '@esri/calcite-components/dist/calcite',
+            to: './',
+          },
+        ],
       }),
       // new webpack.NormalModuleReplacementPlugin(
       //   // dojo/domReady (only works if the DOM is ready when invoked)

@@ -17,11 +17,13 @@ use App\Laravue\JsonResponse;
 use App\Laravue\Models\Permission;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\UserRegistered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Validator;
 
@@ -90,6 +92,12 @@ class UserController extends BaseController
             ]);
             $role = Role::findByName($params['role']);
             $user->syncRoles($role);
+
+            // $admins = User::all()->filter(function($user) {
+            //     return $user->hasRole('admin');
+            // });
+
+            // Notification::send($admins, new UserRegistered($user));
 
             return new UserResource($user);
         }

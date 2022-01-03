@@ -2,6 +2,7 @@
   <div>
     <div class="filter-container">
       <el-button
+        v-if="isFormulator"
         :loading="loadingSubmit"
         class="filter-item"
         type="primary"
@@ -57,7 +58,7 @@
           >
             <h4>MASUKAN/SARAN PERBAIKAN</h4>
             <div class="comment-list">
-              <div class="comment-card">
+              <div v-if="isSubstance || isExaminer" class="comment-card">
                 <el-card style="margin-bottom: 10px">
                   <div class="comment-body" style="padding-top: 20px">
                     <el-select
@@ -107,6 +108,7 @@
                       v-model="
                         list[scope.$index - 1].comments[index].is_checked
                       "
+                      :disabled="!isFormulator"
                       @change="
                         handleCheckedComment(
                           list[scope.$index - 1].comments[index].id
@@ -132,7 +134,7 @@
                       {{ rep.description }}
                     </div>
                   </div>
-                  <div class="comment-reply">
+                  <div v-if="isFormulator" class="comment-reply">
                     <el-input
                       v-model="
                         list[scope.$index - 1].comments[index].reply_desc
@@ -181,6 +183,7 @@
             <el-input
               v-if="scope.row.component != undefined"
               v-model="scope.row.impact_size"
+              :readonly="!isFormulator"
             />
             <span v-else>{{ '' }}</span>
           </template>
@@ -194,10 +197,14 @@
                 :key="trait.id"
               >
                 <span>{{ index + 1 }}. {{ trait.description }}</span>
-                <el-input v-model="scope.row.important_trait[index].desc" />
+                <el-input
+                  v-model="scope.row.important_trait[index].desc"
+                  :readonly="!isFormulator"
+                />
                 <span>-Pilih Sifat Penting-</span>
                 <el-radio-group
                   v-model="scope.row.important_trait[index].important_trait"
+                  :disabled="!isFormulator"
                 >
                   <el-radio label="+P">+P</el-radio>
                   <el-radio label="-P">-P</el-radio>
@@ -221,6 +228,7 @@
               v-model="scope.row.studies_condition"
               type="textarea"
               :rows="2"
+              :readonly="!isFormulator"
             />
             <span>
               2. A. Perkembangan Kondisi TANPA Adanya Rencana Kegiatan
@@ -229,6 +237,7 @@
               v-model="scope.row.condition_dev_no_plan"
               type="textarea"
               :rows="2"
+              :readonly="!isFormulator"
             />
             <span>
               &nbsp;&nbsp;&nbsp;B. Perkembangan Kondisi DENGAN Adanya Rencana
@@ -238,12 +247,14 @@
               v-model="scope.row.condition_dev_with_plan"
               type="textarea"
               :rows="2"
+              :readonly="!isFormulator"
             />
             <span> 3. Selisih Besaran Dampak </span>
             <el-input
               v-model="scope.row.impact_size_difference"
               type="textarea"
               :rows="2"
+              :readonly="!isFormulator"
             />
           </div>
           <span v-else>{{ '' }}</span>
@@ -257,6 +268,7 @@
             v-model="scope.row.impact_type"
             placeholder="Pilih Jenis Dampak"
             style="width: 100%"
+            :disabled="!isFormulator"
           >
             <el-option
               v-for="item in jenisDampak"
@@ -271,12 +283,15 @@
 
       <el-table-column label="Hasil Evaluasi Dampak">
         <template slot-scope="scope">
-          <span v-if="scope.row.component != undefined">Dampak Penting</span>
+          <span v-if="scope.row.component != undefined">{{
+            dampakPentingConclusion(scope.row.important_trait)
+          }}</span>
           <el-select
             v-if="scope.row.component != undefined"
             v-model="scope.row.impact_eval_result"
             placeholder="Pilih"
             style="width: 100%"
+            :disabled="!isFormulator"
           >
             <el-option
               v-for="item in hasilEvaluasiDampak"
@@ -394,6 +409,20 @@ export default {
       ],
     };
   },
+  computed: {
+    isSubstance() {
+      return this.$store.getters.roles.includes('examiner-substance');
+    },
+    isExaminer() {
+      return this.$store.getters.roles.includes('examiner');
+    },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isAdmin() {
+      return this.userInfo.roles.includes('examiner-administration');
+    },
+  },
   created() {
     this.getCompose();
     this.getLastTime();
@@ -415,7 +444,7 @@ export default {
     },
     async handleSubmit() {
       this.loadingSubmit = true;
-      const sendForm = this.list.filter((com) => com.type !== 'title');
+      const sendForm = this.list.filter((com) => com.type === 'subtitle');
       const time = await andalComposingResource.store({
         analysis: sendForm,
         type: this.lastTime ? 'update' : 'new',
@@ -524,6 +553,20 @@ export default {
       } else {
         document.querySelector(`.comment-${id}`).classList.add('comment-hide');
       }
+    },
+    dampakPentingConclusion(importantTrait) {
+      if (importantTrait.length > 0) {
+        const dampakPenting = importantTrait.filter((im) => {
+          return im.important_trait === '+P' || im.important_trait === '-P';
+        });
+        if (dampakPenting.length > 0) {
+          return 'Dampak Penting';
+        } else {
+          return 'Dampak Tidak Penting';
+        }
+      }
+
+      return '';
     },
     // showFormTanggapan(id) {
     //   this.selectedTanggapanid = id;

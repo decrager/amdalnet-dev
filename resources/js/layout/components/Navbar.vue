@@ -7,7 +7,17 @@
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <lang-select class="right-menu-item hover-effect" />
-        <i class="el-icon-bell right-menu-item hover-effect" style="cursor: pointer; font-size: 18px; vertical-align: middle;" />
+        <el-dropdown class="right-menu-item hover-effect">
+          <el-badge is-dot :hidden="sumNotifUnread > 0">
+            <el-button icon="el-icon-bell" type="text" style="cursor: pointer; font-size: 18px; vertical-align: middle; color: white" @click="markAsRead" />
+            <!-- <i class="el-icon-bell" style="cursor: pointer; font-size: 18px; vertical-align: middle;" /> -->
+          </el-badge>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="notif in notifications" :key="notif.id">
+              {{ notif.data.createdUser.name }} baru saja mendaftar dengan email {{ notif.data.createdUser.email }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
         <search id="header-search" class="right-menu-item" />
 
         <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" />
@@ -16,7 +26,7 @@
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip> -->
       </template>
-
+      <el-button type="text" style="cursor: default; font-size: 18px; vertical-align: 15px; margin-right: 10px; color: white;">{{ getRole }}</el-button>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar || 'no-avatar.png'" class="user-avatar" @error="$event.target.src='no-avatar.png'">
@@ -38,13 +48,15 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <el-button type="text" style="cursor: default; font-size: 18px; vertical-align: 15px; margin-right: 10px; color: white;">{{ getRole }}</el-button>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+// import Echo from 'laravel-echo';
+import Resource from '@/api/resource';
+const markAsReadResource = new Resource('mark-all-read');
 import Breadcrumb from '@/components/Breadcrumb';
 import Hamburger from '@/components/Hamburger';
 // import Screenfull from '@/components/Screenfull';
@@ -68,22 +80,53 @@ export default {
       'avatar',
       'device',
       'userId',
+      'notifications',
     ]),
     getRole() {
       const roles = this.$store.getters.roles.map(value => {
-        if (value === 'initiator'){
-          value = 'pemrakarsa';
-        } else if (value === 'formulator'){
-          value = 'penyusun';
-        } else if (value === 'examiner'){
-          value = 'ahli';
-        }
-        return this.$options.filters.uppercaseFirst(value);
+        // if (value === 'initiator'){
+        //   value = 'pemrakarsa';
+        // } else if (value === 'formulator'){
+        //   value = 'penyusun';
+        // } else if (value === 'examiner'){
+        //   value = 'ahli';
+        // }
+        const translatedRole = this.$t('roles.title.' + value);
+        return this.$options.filters.uppercaseFirst(translatedRole);
       });
       return roles.join(' | ');
     },
+    sumNotifUnread(){
+      return this.notifications.filter(e => e.read_at === null).length === 0;
+    },
+  },
+  mounted(){
+    // console.log(this.$store.getters.token);
+    // window.Echo.join(`chat`)
+    //   .here((users) => {
+    //     //
+    //   })
+    //   .joining((user) => {
+    //     console.log(user.name);
+    //   })
+    //   .leaving((user) => {
+    //     console.log(user.name);
+    //   })
+    //   .error((error) => {
+    //     console.error(error);
+    //   });
+
+    window.Echo.channel('notif')
+      .listen('NotificationEvent', e => {
+        this.$store.dispatch('user/getInfo');
+        console.log(e);
+      });
   },
   methods: {
+    markAsRead(){
+      console.log('test');
+      markAsReadResource.get(this.userId);
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar');
     },
@@ -94,16 +137,23 @@ export default {
   },
 };
 </script>
-
+<style>
+.el-badge__content.is-fixed.is-dot {
+  right: 5px;
+  top: 10px;
+}
+</style>
 <style lang="scss" scoped>
 .navbar {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background: #099C4B;
+  background: #143b17; // #099C4B;
   //margin: 5px;
   //border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  margin: 0 0.5em 0.3em;
+  border-radius: 0.3em;
 
   .hamburger-container {
     line-height: 46px;

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="detailPengumuman">
+    <div class="detailPengumuman" style="margin-top:3.8rem;">
       <div class="wrapInDetail">
         <el-row :gutter="20">
           <el-col :span="24">
@@ -9,82 +9,82 @@
           <el-col :span="12">
             <table class="tableDetail tableDetail1" cellspacing="0" cellpadding="0" style="border:none">
               <tr>
-                <td style="width:40%">No. Re gistrasi</td>
-                <td v-html="selectedAnnouncement.project.id_project" />
+                <td style="width:40%">No. Registrasi</td>
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.registration_no : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Jenis Dokumen</td>
-                <td v-html="selectedAnnouncement.project.required_doc" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.required_doc : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Nama Kegiatan</td>
-                <td v-html="selectedAnnouncement.project.project_title" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.project_title : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Bidang Usaha/Kegiatan</td>
-                <td v-html="selectedAnnouncement.project.sector" />
+                <td v-html="selectedAnnouncement.project ? sector_name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Skala/Besaran</td>
-                <td v-html="selectedAnnouncement.project.scale_unit" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.scale +' '+ selectedAnnouncement.project.scale_unit : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat</td>
-                <td v-html="selectedAnnouncement.project.address" />
+                <td v-html="selectedAnnouncement.project.address ? selectedAnnouncement.project.address[0].address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Kewenangan</td>
-                <td v-html="selectedAnnouncement.project.authority" />
+                <td v-html="selectedAnnouncement.project && selectedAnnouncement.project.authority ? selectedAnnouncement.project.authority : 'Pusat'" />
               </tr>
               <tr>
                 <td style="width:40%">Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.pic_name" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.name : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Penanggung Jawab</td>
-                <td v-html="selectedAnnouncement.pic_name" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.pic : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Alamat Pemrakarsa</td>
-                <td v-html="selectedAnnouncement.cs_address" />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.address : ''" />
               </tr>
               <tr>
                 <td style="width:40%">No Telepon Pemrakarsa</td>
-                <td />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.phone : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Email Pemrakarsa</td>
-                <td />
+                <td v-html="selectedAnnouncement.initiator ? selectedAnnouncement.initiator.email : ''" />
               </tr>
               <tr>
                 <td style="width:40%">Provinsi/Kota</td>
-                <td v-html="selectedAnnouncement.project.province.name" />
+                <td v-html="selectedAnnouncement.project ? selectedAnnouncement.project.address[0].prov + '/' + selectedAnnouncement.project.address[0].district : ''" />
               </tr>
               <tr>
                 <td colspan="2">Deskripsi Kegiatan</td>
               </tr>
               <tr>
-                <td colspan="2" v-html="selectedAnnouncement.project.description" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.description : ''" />
               </tr>
             </table>
           </el-col>
           <el-col :span="12">
-            <table class="tableDetail" cellspacing="0" cellpadding="0" style="border:none">
+            <table class="tableDetail" cellspacing="0" cellpadding="0" style="border:none; width: 100%">
               <tr>
                 <td colspan="2" class="bg-white-custom">Lokasi</td>
               </tr>
               <tr class="bg-white-custom">
                 <td colspan="2">
                   <div class="detailLokasi">
-                    <div id="mapView" />
+                    <div id="mapView" style="width: 100%" />
                   </div>
                 </td>
               </tr>
               <tr class="bg-blue-custom">
-                <td colspan="2">Deskripsi Kegiatan</td>
+                <td colspan="2">Deskripsi Lokasi</td>
               </tr>
               <tr class="bg-white-custom">
-                <td colspan="2" v-html="selectedAnnouncement.project.description" />
+                <td colspan="2" v-html="selectedAnnouncement.project ? selectedAnnouncement.project.location_desc : ''" />
               </tr>
             </table>
           </el-col>
@@ -124,10 +124,12 @@
                     <div class="text-white fw-bold">Peran</div>
                     <el-form-item label="">
                       <el-select v-model="form.peran" placeholder="Pilih Peran" @change="handleChangeModal">
-                        <el-option label="Masyarakat Terkena Dampak Langsung" value="1" />
-                        <el-option label="Pemerhati Lingkungan Hidup" value="2" />
-                        <el-option label="LSM" value="3" />
-                        <el-option label="Masyarakat Berkepentingan Lainya" value="4" />
+                        <el-option
+                          v-for="item in responders"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        />
                       </el-select>
                     </el-form-item>
                   </el-form-item>
@@ -136,7 +138,7 @@
               <el-row :gutter="20">
                 <el-col :span="12">
                   <el-form-item>
-                    <div class="text-white fw-bold">Nik</div>
+                    <div class="text-white fw-bold">NIK</div>
                     <el-input v-model="form.id_card_number" placeholder="Nik" />
                   </el-form-item>
                 </el-col>
@@ -208,17 +210,10 @@
                     Tingkat kesetujuan Anda terhadap Kegiatan/Proyek Ini
                   </div>
                   <div style="display:flex">
-                    <div>
-                      <ul>
-                        <li class="fz8">1 Bintang : Sangat tidak setuju</li>
-                        <li class="fz8">2 Bintang : Tidak setuju</li>
-                        <li class="fz8">3 Bintang : Netral</li>
-                        <li class="fz8">4 Bintang : Setuju</li>
-                        <li class="fz8">5 Bintang : Sangat Setuju</li>
-                      </ul>
-                    </div>
-                    <div style="padding-left:1rem">
+                    <div class="rating">
+                      <span>Khawatir </span>
                       <el-rate v-model="ratings" @change="handleChange(ratings)" />
+                      <span> Harapan</span>
                     </div>
                   </div>
                 </el-col>
@@ -252,14 +247,23 @@
             <el-checkbox-group v-model="form.comunityType">
               <el-checkbox label="Kelompok Masyarakat Rentan" />
               <el-checkbox label="Kelompok Masyarakat Adat" />
-              <el-checkbox label="Kelompok Ke s etaraan Gender" />
+              <el-checkbox label="Kelompok Ke setaraan Gender" />
             </el-checkbox-group>
             <template>
               <el-radio v-model="form.comunityGender" label="1">Laki - laki</el-radio>
               <el-radio v-model="form.comunityGender" label="2">Perempuan</el-radio>
             </template>
+            <template>
+              <el-alert
+                v-show="warningDialog"
+                title="Silahkan Di Isi Salah Satu"
+                type="warning"
+                show-icon
+              />
+
+            </template>
             <span slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="centerDialogVisible = false">Simpan</el-button>
+              <el-button type="primary" @click="handleCloseModal()">Simpan</el-button>
             </span>
           </el-dialog>
         </el-form>
@@ -285,35 +289,23 @@
 </template>
 <script>
 import axios from 'axios';
+import Resource from '@/api/resource';
 import _ from 'lodash';
-import L from 'leaflet';
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import Home from '@arcgis/core/widgets/Home';
-import Compass from '@arcgis/core/widgets/Compass';
-import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
-import Expand from '@arcgis/core/widgets/Expand';
-import Legend from '@arcgis/core/widgets/Legend';
-import LayerList from '@arcgis/core/widgets/LayerList';
-import GroupLayer from '@arcgis/core/layers/GroupLayer';
+// import Expand from '@arcgis/core/widgets/Expand';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
+const kbliResource = new Resource('business');
 // import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 
 export default {
   name: 'Details',
-  components: {
-    // LMap,
-    // LTileLayer,
-    // LMarker,
-  },
   props: {
-    // showDetails: Boolean,
     selectedAnnouncement: {
       type: Object,
-      default: () => {},
+      default: () => null,
     },
     selectedProject: {
       type: Object,
@@ -340,198 +332,96 @@ export default {
         peran: '',
         envyCondition: null,
         localImpact: null,
-        comunityType: ['Kelompok Masyarakat Rentan', 'Kelompok Masyarakat Adat', 'Kelompok Ke setaraan Gender'],
+        comunityType: [],
         comunityGender: null,
       },
       responders: [],
       errorMessage: null,
       photo_filepath: null,
       ratings: null,
-      style: ['font-size: 50px'],
       url: '/images/avatar.png',
-      urlMap: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       zoom: 12,
       center: [-6.93, 107.60],
       bounds: null,
       basePath: window.location.origin,
-      icon: L.icon({
-        iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-        iconSize: [38, 95],
-        iconAnchor: [22, 94],
-      }),
       centerDialogVisible: false,
+      warningDialog: false,
       checkList: [],
       radio: '',
       selectedProject2: {},
+      sector_name: '',
     };
-  },
-  beforeUpdate() {
-    this.loadMap();
   },
   async created() {
     await this.getResponderType();
+    await this.loadBusiness();
+  },
+  mounted() {
+    this.loadMap();
   },
   methods: {
+    async loadBusiness(){
+      const business = await kbliResource.get(this.selectedAnnouncement.project.sector);
+      this.sector_name = business.value;
+    },
     loadMap() {
+      // console.log(this.selectedAnnouncement.project_id);
       const map = new Map({
         basemap: 'topo',
       });
 
-      const batasProv = new MapImageLayer({
-        url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
-        sublayers: [{
-          id: 0,
-          title: 'Batas Provinsi',
-        }],
-      });
+      axios.get('api/map/' + this.selectedAnnouncement.project_id)
+        .then(response => {
+          const projects = response.data;
+          for (let i = 0; i < projects.length; i++) {
+            if (projects[i].attachment_type === 'tapak') {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
 
-      const graticuleGrid = new MapImageLayer({
-        url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
-      });
+                const renderer = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'simple-fill',
+                    color: [0, 0, 0, 0.0],
+                    outline: {
+                      color: 'red',
+                      width: 2,
+                    },
+                  },
+                };
 
-      map.addMany([batasProv, graticuleGrid]);
-
-      const baseGroupLayer = new GroupLayer({
-        title: 'Base Layer',
-        visible: true,
-        layers: [batasProv, graticuleGrid],
-        opacity: 0.90,
-      });
-
-      map.add(baseGroupLayer);
-
-      const mapGeojsonArray = [];
-      const splitMap = this.selectedProject.map.split(',');
-
-      for (let i = 0; i < splitMap.length; i++) {
-        shp(window.location.origin + '/storage/map/' + splitMap[i]).then(data => {
-          if (data.length > 1) {
-            for (let i = 0; i < data.length; i++) {
-              const blob = new Blob([JSON.stringify(data[i])], {
-                type: 'application/json',
-              });
-              const url = URL.createObjectURL(blob);
-              const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
-                outFields: ['*'],
-                title: 'Layers',
-              });
-              mapView.on('layerview-create', (event) => {
-                mapView.goTo({
-                  target: geojsonLayerArray.fullExtent,
+                const geojsonLayer = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  title: 'Peta Tapak',
+                  renderer: renderer,
+                });
+                map.add(geojsonLayer);
+                mapView.on('layerview-create', (event) => {
+                  mapView.goTo({
+                    target: geojsonLayer.fullExtent,
+                  });
                 });
               });
-
-              mapGeojsonArray.push(geojsonLayerArray);
             }
-
-            const kegiatanGroupLayer = new GroupLayer({
-              title: this.project.project_title,
-              visible: true,
-              visibilityMode: 'exclusive',
-              layers: mapGeojsonArray,
-              opacity: 0.75,
-            });
-
-            map.add(kegiatanGroupLayer);
-          } else {
-            const blob = new Blob([JSON.stringify(data)], {
-              type: 'application/json',
-            });
-            const url = URL.createObjectURL(blob);
-            const geojsonLayer = new GeoJSONLayer({
-              url: url,
-              visible: true,
-              outFields: ['*'],
-              opacity: 0.75,
-              title: this.project.project_title,
-            });
-
-            map.add(geojsonLayer);
-            mapView.on('layerview-create', (event) => {
-              mapView.goTo({
-                target: geojsonLayer.fullExtent,
-              });
-            });
           }
         });
-      }
 
       const mapView = new MapView({
         container: 'mapView',
         map: map,
         center: [115.287, -1.588],
-        zoom: 6,
-      });
-      this.$parent.mapView = mapView;
-
-      const home = new Home({
-        view: mapView,
+        zoom: 4,
       });
 
-      mapView.popup.on('trigger-action', (event) => {
-        if (event.action.id === 'get-details') {
-          console.log('tbd');
-        }
-      });
-
-      mapView.ui.add(home, 'top-left');
-      const compass = new Compass({
-        view: mapView,
-      });
-      mapView.ui.add(compass, 'top-left');
-      const basemapToggle = new BasemapToggle({
-        view: mapView,
-        container: document.createElement('div'),
-        secondBasemap: 'satellite',
-      });
-      const expandBasemapToggler = new Expand({
-        view: mapView,
-        name: 'basemap',
-        content: basemapToggle.domNode,
-        expandIconClass: 'esri-icon-basemap',
-      });
-      mapView.ui.add(expandBasemapToggler, 'top-left');
       const attribution = new Attribution({
         view: mapView,
       });
       mapView.ui.add(attribution, 'manual');
-
-      const legend = new Legend({
-        view: mapView,
-        container: document.createElement('div'),
-      });
-      const layerList = new LayerList({
-        view: mapView,
-        container: document.createElement('div'),
-        listItemCreatedFunction: this.defineActions,
-      });
-
-      layerList.on('trigger-action', (event) => {
-        const id = event.action.id;
-        if (id === 'full-extent') {
-          mapView.goTo({
-            target: event.item.layer.fullExtent,
-          });
-        }
-      });
-
-      const legendExpand = new Expand({
-        view: mapView,
-        content: legend.domNode,
-        expandIconClass: 'esri-icon-collection',
-        expandTooltip: 'Legend',
-      });
-
-      // const layersExpand = new Expand({
-      //   view: mapView,
-      //   content: layerList.domNode,
-      //   expandIconClass: 'esri-icon-layer-list',
-      //   expandTooltip: 'Layers',
-      // });
-      mapView.ui.add(legendExpand, 'bottom-left');
-      mapView.ui.add(layerList, 'top-right');
     },
     formatDateStr(date) {
       const today = new Date(date);
@@ -586,13 +476,12 @@ export default {
       await axios
         .post('api/feedbacks', formData, { headers })
         .then((data) => {
-          console.log(data);
           this.$message({
             type: 'success',
             message: 'Successfully create a feedback',
             duration: 5 * 1000,
           });
-          this.$emit('handleSetTabs');
+          this.$emit('handleSetTabs', 'TABS');
           this.getAnnouncement();
         })
         .catch((error) => {
@@ -613,8 +502,17 @@ export default {
       this.$emit('handleCancelComponent', 'TABS');
     },
     handleChangeModal(){
-      if (this.form.peran === '1'){
+      if (this.form.peran === 1){
         this.centerDialogVisible = true;
+      }
+    },
+    handleCloseModal(){
+      if (this.form.comunityType.length === 0 && this.form.comunityGender === null) {
+        this.warningDialog = true;
+        this.centerDialogVisible = true;
+      } else {
+        this.warningDialog = false;
+        this.centerDialogVisible = false;
       }
     },
   },
@@ -626,7 +524,7 @@ export default {
   margin-top: 15px !important;
 }
 .detailPengumuman {
-  background: #365337;
+  background: #062307;
   padding: 1.5rem;
   border-radius: 10px;
   margin-top: 2rem;
@@ -694,7 +592,7 @@ table.table__striped tr:nth-child(odd) {
   align-items: center;
 }
 .wrapInDetail {
-  background-color: #365337;
+  background-color: #062307;
   padding-bottom: 2rem;
 }
 .wrapDetailRight {

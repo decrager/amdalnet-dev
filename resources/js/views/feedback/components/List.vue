@@ -3,6 +3,7 @@
     <div class="filter-container">
       <el-row type="flex" class="row-bg" justify="space-between">
         <el-button
+          v-if="!isExaminer"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -13,6 +14,7 @@
       </el-row>
     </div>
     <el-table
+      :key="showFeedback"
       v-loading="loading"
       :data="feedbacks"
       fit
@@ -66,6 +68,7 @@
             v-model="scope.row.rating"
             :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
             :max="5"
+            :disabled="disableRating"
             style="margin-top:8px;"
             @change="onChangeForm(scope.row.id, $event)"
           />
@@ -114,6 +117,14 @@ const responderTypeResource = new Resource('responder-types');
 export default {
   name: 'FeedbackList',
   components: { IdentityDialog, CreateFeedback },
+  props: {
+    disableRating: {
+      type: Boolean,
+      default: function(){
+        return false;
+      },
+    },
+  },
   data() {
     return {
       feedbacks: [],
@@ -126,7 +137,13 @@ export default {
       identityDialogImg: '',
       showIdDialog: false,
       showFeedback: false,
+      userInfo: {},
     };
+  },
+  computed: {
+    isExaminer() {
+      return this.$store.getters.roles.includes('examiner');
+    },
   },
   mounted() {
     this.relevantChoices = [
@@ -172,6 +189,7 @@ export default {
     handleCloseFeedbackDialog(){
       this.showFeedback = false;
       this.showIdDialog = false;
+      this.getFeedbacks();
     },
     handleCloseIdentityDialog(){
       this.showFeedback = false;

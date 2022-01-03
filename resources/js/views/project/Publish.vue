@@ -1,105 +1,107 @@
 <template>
-  <div v-loading="fullLoading" class="form-container" style="padding: 24px">
-    <workflow />
-    <el-row>
-      <el-col
-        :span="12"
-      ><h2>Informasi rencana Usaha/Kegiatan</h2>
-        <el-table
-          :data="list"
-          style="width: 100%"
-          :stripe="true"
-          :show-header="false"
-        >
-          <el-table-column prop="param" />
-          <el-table-column prop="value" />
-        </el-table>
-      </el-col>
-      <el-col :span="12">
-        <div>
-          <div id="mapView" />
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="4" style="padding-top: 32px">
-      <el-col :span="12">
-        <div><h3>Deskripsi Kegiatan</h3></div>
-        <div v-html="project.description" />
-      </el-col>
-      <el-col :span="12">
-        <div><h3>Deskripsi Lokasi</h3></div>
-        <div v-html="project.location_desc" />
-      </el-col>
-    </el-row>
-    <el-row :gutter="4">
-      <el-col :span="12">
-        <div>
-          <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-            <el-table-column
-              prop="no"
-              label="No."
-            />
-            <!-- <el-table-column
+
+  <div v-loading="fullLoading" class="form-container" style="margin: 2em;">
+    <el-card class="box-card">
+      <workflow />
+      <el-row :gutter="10">
+        <el-col
+          :span="12"
+        ><h2>Informasi rencana Usaha/Kegiatan</h2>
+          <el-table
+            :data="list"
+            style="width: 100%"
+            :stripe="true"
+            :show-header="false"
+          >
+            <el-table-column prop="param" />
+            <el-table-column prop="value" />
+          </el-table>
+        </el-col>
+        <el-col :span="12">
+          <div>
+            <div id="mapView" />
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="10" style="padding-top: 32px">
+        <el-col :span="12">
+          <div><h3>Deskripsi Kegiatan</h3></div>
+          <div v-html="project.description" />
+        </el-col>
+        <el-col :span="12">
+          <div><h3>Deskripsi Lokasi</h3></div>
+          <div v-html="project.location_desc" />
+        </el-col>
+      </el-row>
+      <el-row :gutter="10">
+        <el-col :span="12">
+          <div>
+            <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+              <el-table-column
+                prop="no"
+                label="No."
+              />
+              <!-- <el-table-column
               prop="kbli"
               label="KBLI"
             /> -->
-            <el-table-column
-              prop="kegiatan"
-              label="Kegiatan"
-            />
-            <el-table-column
-              prop="jenisKegiatan"
-              label="Jenis Kegiatan"
-            />
-            <el-table-column
-              prop="skala"
-              label="Skala Besaran"
-            />
-          <!-- <el-table-column
+              <el-table-column
+                prop="kegiatan"
+                label="Kegiatan"
+              />
+              <el-table-column
+                prop="jenisKegiatan"
+                label="Jenis Kegiatan"
+              />
+              <el-table-column
+                prop="skala"
+                label="Skala Besaran"
+              />
+              <!-- <el-table-column
             prop="hasil"
             label="Hasil"
           /> -->
-          </el-table>
-        </div>
-      </el-col>
-      <el-col :span="12">
-        <div>
-          <el-table :data="project.address" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-            <el-table-column
-              label="No."
-            >
-              <template slot-scope="scope">
-                {{ scope.$index + 1 }}
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="prov"
-              label="Provinsi"
-            />
-            <el-table-column
-              prop="district"
-              label="City"
-            />
-            <el-table-column
-              prop="address"
-              label="address"
-            />
-          </el-table>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="4">
-      <el-col :span="12">
-        <h2>Hasil Penapisan Rencana Kegiatan</h2>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
-          <el-col :span="12">1611182998277</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
-          <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
-          <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
-          <el-col :span="12">Pusat</el-col></el-row>
-        <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
+            </el-table>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div>
+            <el-table :data="project.address" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+              <el-table-column
+                label="No."
+              >
+                <template slot-scope="scope">
+                  {{ scope.$index + 1 }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="prov"
+                label="Provinsi"
+              />
+              <el-table-column
+                prop="district"
+                label="City"
+              />
+              <el-table-column
+                prop="address"
+                label="address"
+              />
+            </el-table>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="4">
+        <el-col :span="12">
+          <h2>Hasil Penapisan Rencana Kegiatan</h2>
+          <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
+            <el-col :span="12">1611182998277</el-col></el-row>
+          <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
+            <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
+          <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
+            <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
+          <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
+            <el-col :span="12">Pusat</el-col></el-row>
+          <!-- <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
           <el-col :span="12">
             <el-form
               ref="project"
@@ -113,7 +115,6 @@
                   v-model="project.type_formulator_team"
                   placeholder="Pilih"
                   :disabled="readonly"
-                  @change="onFormulatorTypeChange($event)"
                 >
                   <el-option
                     v-for="item in teamOptions"
@@ -124,40 +125,44 @@
                 </el-select>
               </el-form-item>
             </el-form>
-          </el-col></el-row>
-        <el-row v-if="getFormulatedTeam === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
-          <el-col :span="12">
-            <el-form
-              ref="project"
-              :model="project"
-              label-position="top"
-            >
-              <el-form-item prop="id_lpjp">
-                <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
-                  <el-option
-                    v-for="item in getLpjps"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-form>
-          </el-col></el-row>
-      </el-col>
-      <el-col :span="12" />
-      <div v-if="getFormulatedTeam === 'mandiri'">
-        <el-row style="padding-bottom: 16px">
-          <h2>Tambah Penyusun</h2>
-          <formulator-table
-            :list="listFormulatorTeam"
-            :loading="false"
-          />
-          <el-button
-            type="primary"
-            @click="handleAddFormulatorTable"
-          >+</el-button>
-        </el-row>
+          </el-col>
+        </el-row> -->
+          <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
+            <el-col :span="12">
+              <el-form
+                ref="project"
+                :model="project"
+                label-position="top"
+              >
+                <el-form-item prop="id_lpjp">
+                  <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
+                    <el-option
+                      v-for="item in getLpjps"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-form>
+            </el-col>
+          </el-row>
+        </el-col>
+        <el-col :span="12" />
+      </el-row>
+      <el-row>
+        <div v-if="project.type_formulator_team === 'mandiri'">
+          <el-row style="padding-bottom: 16px">
+            <h2>Tambah Penyusun</h2>
+            <formulator-table
+              :list="listFormulatorTeam"
+              :loading="false"
+            />
+            <el-button
+              type="primary"
+              @click="handleAddFormulatorTable"
+            >+</el-button>
+          </el-row>
         <!-- <el-row style="padding-bottom: 16px">
           <h2>Tambah Tenaga Ahli</h2>
           <expert-table
@@ -169,13 +174,13 @@
             @click="handleAddExpertTable"
           >+</el-button>
         </el-row> -->
+        </div>
+      </el-row>
+      <div class="dialog-footer">
+        <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
+        <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
       </div>
-
-    </el-row>
-    <div slot="footer" class="dialog-footer">
-      <el-button :disabled="readonly" @click="handleCancel()"> Batal </el-button>
-      <el-button type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
-    </div>
+    </el-card>
   </div>
 </template>
 
@@ -189,22 +194,18 @@ const districtResource = new Resource('districts');
 const provinceResource = new Resource('provinces');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
-const supportDocResource = new Resource('support-docs');
-const initiatorResource = new Resource('initiatorsByEmail');
-const formulatorResource = new Resource('formulators');
+// const supportDocResource = new Resource('support-docs');
+const initiatorByEmailResource = new Resource('initiatorsByEmail');
+const initiatorResource = new Resource('initiators');
+// const formulatorResource = new Resource('formulators');
 const formulatorTeamsResource = new Resource('formulator-teams');
 
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import Home from '@arcgis/core/widgets/Home';
-import Compass from '@arcgis/core/widgets/Compass';
-import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
-import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import Workflow from '@/components/Workflow';
@@ -223,12 +224,14 @@ export default {
       default: false,
     },
     mapUpload: {
-      type: Array,
-      default: () => [],
+      type: File,
+      default: () => null,
     },
   },
   data() {
     return {
+      geomFromGeojson: {},
+      geomProperties: {},
       kbliEnvParams: null,
       doc_req: 'SPPL',
       risk_level: 'Rendah',
@@ -250,6 +253,17 @@ export default {
       province: null,
       fullLoading: false,
     };
+  },
+  beforeRouteLeave(to, from, next) {
+    if (from.name === 'publishProject' && to.name === 'createProject') {
+      if (!to.params.project){
+        next(false);
+      } else {
+        next();
+      }
+    } else {
+      next();
+    }
   },
   computed: {
     getFormulatedTeam(){
@@ -274,18 +288,17 @@ export default {
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
-    await this.$store.dispatch('getLpjp');
-    await this.$store.dispatch('getFormulators', {
-      page: 1,
-      limit: 1000,
-      active: '',
-    });
-
     // data table for subproject
     this.setDataTables();
     this.setAddressDataTables();
     this.fullLoading = false;
     this.loadMap();
+    await this.$store.dispatch('getLpjp');
+    await this.$store.dispatch('getFormulators', {
+      page: 1,
+      limit: 1000,
+      active: 'true',
+    });
   },
   methods: {
     setAddressDataTables(){
@@ -302,8 +315,8 @@ export default {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
-          jenisKegiatan: e.sector,
-          skala: e.scale + ' ' + e.scale_unit,
+          jenisKegiatan: e.biz_name,
+          skala: e.scale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
@@ -312,8 +325,8 @@ export default {
           no: index + 1,
           kbli: e.kbli,
           kegiatan: e.name,
-          jenisKegiatan: e.sector,
-          skala: e.scale + ' ' + e.scale_unit,
+          jenisKegiatan: e.biz_name,
+          skala: e.scale + ' ' + (e.scale_unit || ''),
           hasil: e.result,
         };
       });
@@ -368,86 +381,40 @@ export default {
           basemap: 'topo',
         });
 
-        const batasProv = new MapImageLayer({
-          url: 'https://regionalinvestment.bkpm.go.id/gis/rest/services/Administrasi/batas_wilayah_provinsi/MapServer',
-          sublayers: [{
-            id: 0,
-            title: 'Batas Provinsi',
-          }],
-        });
-
-        const graticuleGrid = new MapImageLayer({
-          url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
-        });
-
-        map.addMany([batasProv, graticuleGrid]);
-
-        const baseGroupLayer = new GroupLayer({
-          title: 'Base Layer',
-          visible: true,
-          layers: [batasProv, graticuleGrid],
-          opacity: 0.90,
-        });
-
-        map.add(baseGroupLayer);
-
-        const mapGeojsonArray = [];
-
-        const getMapData = axios.get('api/map' + this.project.id);
-
-        for (let i = 0; i < getMapData.length; i++) {
-          shp(window.location.origin + '/storage/map/' + getMapData[i]).then(data => {
-            if (data.length > 1) {
-              for (let i = 0; i < data.length; i++) {
-                const blob = new Blob([JSON.stringify(data[i])], {
-                  type: 'application/json',
-                });
-                const url = URL.createObjectURL(blob);
-                const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
-                  outFields: ['*'],
-                  title: 'Layers',
-                });
-                mapView.on('layerview-create', (event) => {
-                  mapView.goTo({
-                    target: geojsonLayerArray.fullExtent,
-                  });
-                });
-
-                mapGeojsonArray.push(geojsonLayerArray);
-              }
-
-              const kegiatanGroupLayer = new GroupLayer({
-                title: this.project.project_title,
-                visible: true,
-                visibilityMode: 'exclusive',
-                layers: mapGeojsonArray,
-                opacity: 0.75,
-              });
-
-              map.add(kegiatanGroupLayer);
-            } else {
-              const blob = new Blob([JSON.stringify(data)], {
+        axios.get(`api/map-geojson/${this.idProject}?type=tapak`)
+          .then((response) => {
+            response.data.forEach((item) => {
+              const blob = new Blob([item.feature_layer], {
                 type: 'application/json',
               });
+              const rendererTapak = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  type: 'simple-fill',
+                  color: [200, 0, 0, 1],
+                  outline: {
+                    color: [200, 0, 0, 1],
+                    width: 2,
+                  },
+                },
+              };
               const url = URL.createObjectURL(blob);
-              const geojsonLayer = new GeoJSONLayer({
+              const geojsonLayerArray = new GeoJSONLayer({
                 url: url,
-                visible: true,
                 outFields: ['*'],
-                opacity: 0.75,
-                title: this.project.project_title,
+                visible: true,
+                title: 'Layer Tapak Proyek',
+                renderer: rendererTapak,
               });
-
-              map.add(geojsonLayer);
               mapView.on('layerview-create', (event) => {
                 mapView.goTo({
-                  target: geojsonLayer.fullExtent,
+                  target: geojsonLayerArray.fullExtent,
                 });
               });
-            }
+              map.add(geojsonLayerArray);
+            });
           });
-        }
 
         const mapView = new MapView({
           container: 'mapView',
@@ -457,33 +424,6 @@ export default {
         });
         this.$parent.mapView = mapView;
 
-        const home = new Home({
-          view: mapView,
-        });
-
-        mapView.popup.on('trigger-action', (event) => {
-          if (event.action.id === 'get-details') {
-            console.log('tbd');
-          }
-        });
-
-        mapView.ui.add(home, 'top-left');
-        const compass = new Compass({
-          view: mapView,
-        });
-        mapView.ui.add(compass, 'top-left');
-        const basemapToggle = new BasemapToggle({
-          view: mapView,
-          container: document.createElement('div'),
-          secondBasemap: 'satellite',
-        });
-        const expandBasemapToggler = new Expand({
-          view: mapView,
-          name: 'basemap',
-          content: basemapToggle.domNode,
-          expandIconClass: 'esri-icon-basemap',
-        });
-        mapView.ui.add(expandBasemapToggler, 'top-left');
         const attribution = new Attribution({
           view: mapView,
         });
@@ -515,14 +455,8 @@ export default {
           expandTooltip: 'Legend',
         });
 
-        const layersExpand = new Expand({
-          view: mapView,
-          content: layerList.domNode,
-          expandIconClass: 'esri-icon-layer-list',
-          expandTooltip: 'Layers',
-        });
         mapView.ui.add(legendExpand, 'bottom-left');
-        mapView.ui.add(layersExpand, 'top-right');
+        mapView.ui.add(layerList, 'top-right');
       } else {
         const map = new Map({
           basemap: 'topo',
@@ -531,7 +465,10 @@ export default {
         const fr = new FileReader();
         fr.onload = (event) => {
           const base = event.target.result;
-          shp(base).then(function(data) {
+          shp(base).then((data) => {
+            this.geomFromGeojson = data.features[0].geometry;
+            this.geomProperties = data.features[0].properties;
+
             const blob = new Blob([JSON.stringify(data)], {
               type: 'application/json',
             });
@@ -541,8 +478,9 @@ export default {
               field: '*',
               symbol: {
                 type: 'simple-fill',
+                color: [200, 0, 0, 1],
                 outline: {
-                  color: 'red',
+                  color: [200, 0, 0, 1],
                 },
               },
             };
@@ -594,8 +532,12 @@ export default {
       console.log(this.$store.getters.teamType);
     },
     async getInitiatorData(){
-      const data = await this.$store.dispatch('user/getInfo');
-      this.project.initiatorData = await initiatorResource.list({ email: data.email });
+      if (this.project.id_applicant){
+        this.project.initiatorData = await initiatorResource.get(this.project.id_applicant);
+      } else {
+        const data = await this.$store.dispatch('user/getInfo');
+        this.project.initiatorData = await initiatorByEmailResource.list({ email: data.email });
+      }
     },
     async getTeamOptions() {
       const { data } = await formulatorTeamResource.list({});
@@ -667,40 +609,41 @@ export default {
       this.calculatedProjectDoc();
     },
     handleCancel() {
+      // this.$router.back();
       this.$router.push({
         name: 'createProject',
         params: { project: this.project },
       });
     },
-    async createTimPenyusun(){
-      // insert all tim ahli
-      const listAhli = [];
+    // async createTimPenyusun(){
+    //   // insert all tim ahli
+    //   const listAhli = [];
 
-      await this.listExpertTeam.forEach(element => {
-        // make form data because we got file
-        const formData = new FormData();
+    //   await this.listExpertTeam.forEach(element => {
+    //     // make form data because we got file
+    //     const formData = new FormData();
 
-        // eslint-disable-next-line no-undef
-        _.each(element, (value, key) => {
-          formData.append(key, value);
-        });
+    //     // eslint-disable-next-line no-undef
+    //     _.each(element, (value, key) => {
+    //       formData.append(key, value);
+    //     });
 
-        // adding TA for membership_status
-        formData.append('membership_status', 'TA');
+    //     // adding TA for membership_status
+    //     formData.append('membership_status', 'TA');
 
-        formulatorResource
-          .store(formData)
-          .then((response) => {
-            this.element = {};
-            listAhli.push(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      });
+    //     formulatorResource
+    //       .store(formData)
+    //       .then((response) => {
+    //         this.element = {};
+    //         listAhli.push(response);
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    //   });
 
-      this.all = [...listAhli, this.listFormulatorTeam];
-    },
+    //   this.all = [...listAhli, this.listFormulatorTeam];
+    // },
     async createTeam(id){
       console.log('list tim ahli yang dibuat', this.all);
       // create tim using all list
@@ -719,6 +662,7 @@ export default {
         });
     },
     async handleSubmit() {
+      this.fullLoading = true;
       this.project.id_applicant = this.project.initiatorData.id ? this.project.initiatorData.id : 0;
 
       if (!this.project.id_project){
@@ -727,9 +671,11 @@ export default {
 
       // make form data because we got file
       const formData = new FormData();
+      formData.append('geomFromGeojson', JSON.stringify(this.geomFromGeojson));
+      formData.append('geomProperties', JSON.stringify(this.geomProperties));
 
       // for formulator team mandiri
-      if (this.getFormulatedTeam === 'mandiri') {
+      if (this.project.type_formulator_team === 'mandiri') {
         formData.append('formulatorTeams', JSON.stringify(this.listFormulatorTeam));
         for (var u = 0; u < this.listFormulatorTeam.length; u++){
           formData.append('listFormulatorTeam[' + u + ']', this.listFormulatorTeam[u]);
@@ -741,8 +687,6 @@ export default {
         }
       }
 
-      console.log(this.project);
-
       // eslint-disable-next-line no-undef
       _.each(this.project, (value, key) => {
         if (key === 'listSubProject' || key === 'address'){
@@ -752,71 +696,75 @@ export default {
         }
       });
 
-      console.log('project yang disubmit', formData);
+      console.log(formData);
 
-      this.$refs.project.validate(valid => {
-        if (valid) {
-          if (this.project.id !== undefined) {
-            // update
-            projectResource.updateMultipart(this.project.id, formData).then(response => {
-              const { data } = response;
-              this.saveSupportDocs(data.id);
-              this.$message({
-                type: 'success',
-                message: 'Project info has been updated successfully',
-                duration: 5 * 1000,
-              });
-              this.$router.push('/project');
-            }).catch(error => {
-              console.log(error);
-            });
-          } else {
-            projectResource
-              .store(formData)
-              .then((response) => {
-                // save supportdocs
-                const { data } = response;
+      // this.$refs.project.validate(valid => {
+      // if (this.project.type_formulator_team) {
+      if (this.project.id !== undefined) {
+        // update
+        projectResource.updateMultipart(this.project.id, formData).then(response => {
+          // const { data } = response;
+          // this.saveSupportDocs(data.id);
+          this.$message({
+            type: 'success',
+            message: 'Project info has been updated successfully',
+            duration: 5 * 1000,
+          });
+          this.fullLoading = false;
+          this.$router.push('/project');
+        }).catch(error => {
+          console.log(error);
+        });
+      } else {
+        projectResource
+          .store(formData)
+          .then((response) => {
+            // save supportdocs
+            // const { data } = response;
 
-                this.saveSupportDocs(data.id);
-                // this.createTeam(data.id);
-                this.$message({
-                  message:
+            // this.saveSupportDocs(data.id);
+            // this.createTeam(data.id);
+            this.$message({
+              message:
                     'New Project ' +
                     this.project.project_title +
                     ' has been created successfully.',
-                  type: 'success',
-                  duration: 5 * 1000,
-                });
-                this.$router.push('/project');
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            this.$router.push('/project');
+          })
+          .catch((error) => {
+            this.fullLoading = false;
+            console.log(error);
+          });
+      }
+      // } else {
+      //   console.log('error submit!!');
+      //   this.$alert('Mohon Pilih tim Penyusun', 'Title', {
+      //     confirmButtonText: 'OK',
+      //   });
+      // }
+      // });
     },
-    async saveSupportDocs(id_project){
-      this.project.listSupportDoc.forEach(element => {
-        element.id_project = id_project;
+    // async saveSupportDocs(id_project){
+    //   this.project.listSupportDoc.forEach(element => {
+    //     element.id_project = id_project;
 
-        // make form data because we got file
-        const formData = new FormData();
+    //     // make form data because we got file
+    //     const formData = new FormData();
 
-        // eslint-disable-next-line no-undef
-        _.each(element, (value, key) => {
-          formData.append(key, value);
-        });
-        if (element.id === undefined){
-          supportDocResource.store(formData);
-        } else {
-          supportDocResource.updateMultipart(element.id, formData);
-        }
-      });
-    },
+    //     // eslint-disable-next-line no-undef
+    //     _.each(element, (value, key) => {
+    //       formData.append(key, value);
+    //     });
+    //     if (element.id === undefined){
+    //       supportDocResource.store(formData);
+    //     } else {
+    //       supportDocResource.updateMultipart(element.id, formData);
+    //     }
+    //   });
+    // },
     async updateList() {
       console.log(this.project.address[0]);
       // await this.getKabKotName(this.project.address[0].id_district);
@@ -828,7 +776,7 @@ export default {
         },
         {
           param: 'Bidang Usaha/Kegiatan',
-          value: this.project.sector,
+          value: this.project.listSubProject[0].biz_name,
         },
         {
           param: 'Skala/Besaran',

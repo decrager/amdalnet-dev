@@ -3,9 +3,9 @@
     <el-card>
       <div class="filter-container">
         <el-row type="flex" class="row-bg" justify="space-between">
-          <div>
+          <el-col>
             <el-button
-              v-if="isInitiator"
+              v-if="couldCreateProject && !isScoping && !isDigiWork"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
@@ -13,58 +13,20 @@
             >
               {{ ' Kegiatan' }}
             </el-button>
-          </div>
-          <div>
-            <el-select
-              v-model="listQuery.document_type"
-              :placeholder="'Jenis Dokumen'"
-              clearable
-              class="filter-item"
-            >
-              <el-option
-                v-for="item in documentTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-            <el-select
-              v-model="listQuery.id_prov"
-              placeholder="Provinsi"
-              clearable
-              class="filter-item"
-              @change="changeProvince($event)"
-            >
-              <el-option
-                v-for="item in provinceOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-            <el-select
-              v-model="listQuery.id_district"
-              placeholder="Kab / Kota"
-              clearable
-              class="filter-item"
-            >
-              <el-option
-                v-for="item in cityOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                :disabled="cityOptions.length == 0"
-              />
-            </el-select>
-            <el-button
+          </el-col>
+          <el-col :span="6">
+            <el-input v-model="listQuery.search" placeholder="Please input" @change="handleFilter">
+              <el-button slot="append" icon="el-icon-search" @click="handleFilter" />
+            </el-input>
+            <!-- <el-button
               class="filter-item"
               type="primary"
               icon="el-icon-search"
               @click="handleFilter"
             >
               {{ $t('table.search') }}
-            </el-button>
-          </div>
+            </el-button> -->
+          </el-col>
         </el-row>
       </div>
       <el-table
@@ -72,7 +34,7 @@
         :data="filtered"
         fit
         highlight-current-row
-        :header-cell-style="{ background: '#3AB06F', color: 'white' }"
+        :header-cell-style="{ background: '#216221', color: 'white' }"
         style="width: 100%"
       >
         <el-table-column type="expand" class="row-detail">
@@ -98,7 +60,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="!scope.row.published && isInitiator"
+                  v-if="isInitiator && !isScoping && !isDigiWork"
                   type="text"
                   href="#"
                   icon="el-icon-user"
@@ -133,17 +95,17 @@
                 >
                   Delete
                 </el-button> -->
-                <!-- <el-button
-                  v-if="!isLpjp"
+                <el-button
+                  v-if="couldViewProject && !isScoping && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-view"
                   @click="handleViewForm(scope.row.id)"
                 >
-                  View Details
-                </el-button> -->
+                  Lihat Detil Penapisan
+                </el-button>
                 <el-button
-                  v-if="scope.row.published && isInitiator"
+                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork)"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -161,7 +123,7 @@
                   Tambah Tim LPJP
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -170,7 +132,16 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleKerangkaUklUpl(scope.row)"
+                >
+                  Formulir UKL UPL
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -179,13 +150,22 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleRklRpl(scope.row)"
                 >
                   RKL/RPL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && isFormulator && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleMatUklUpl(scope.row)"
+                >
+                  Matriks UKL/UPL
                 </el-button>
                 <el-button
                   v-if="isSubtance || isAdmin"
@@ -205,7 +185,7 @@
                 >
                   Uji Kelayakan
                 </el-button>
-                <el-button
+                <!-- <el-button
                   v-if="isFormulator"
                   href="#"
                   type="text"
@@ -213,9 +193,9 @@
                   @click="handleFlowChart(scope.row)"
                 >
                   Bagan Alir
-                </el-button>
+                </el-button> -->
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -224,13 +204,49 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isFormulator"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleWorkspaceRKLRPL(scope.row.id)"
                 >
                   Workspace RKL RPL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceUKLUPL(scope.row.id)"
+                >
+                  Workspace UKL UPL
+                </el-button>
+                <el-button
+                  v-if="isInitiator && !isScoping && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleGenerateSPPL(scope.row)"
+                >
+                  Unduh SPPL
+                </el-button>
+                <el-button
+                  v-if="scope.row.feasibility_test && isAmdal(scope.row)"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleRekomendasiUjiKelayakan(scope.row.id)"
+                >
+                  Surat Rekomendasi Uji Kelayakan
+                </el-button>
+                <el-button
+                  v-if="scope.row.feasibility_test"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleFeasibilityTest(scope.row.id)"
+                >
+                  SKKL
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -263,7 +279,7 @@
         </el-table-column>
         <el-table-column align="left" label="Lokasi" width="200">
           <template slot-scope="scope">
-            <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }}, {{ scope.row.address.length > 0 ? scope.row.address[0].province : scope.row.province }}</span>
+            <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district+'/ '+scope.row.address[0].prov : '' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="Tahap" class-name="status-col" width="100">
@@ -296,6 +312,11 @@
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import AnnouncementDialog from './components/AnnouncementDialog.vue';
+import Docxtemplater from 'docxtemplater';
+import PizZip from 'pizzip';
+import PizZipUtils from 'pizzip/utils/index.js';
+import { saveAs } from 'file-saver';
+import axios from 'axios';
 const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -305,6 +326,7 @@ const lpjpResource = new Resource('lpjpsByEmail');
 const formulatorResource = new Resource('formulatorsByEmail');
 const andalComposingResource = new Resource('andal-composing');
 const rklResource = new Resource('matriks-rkl');
+// const kbliResource = new Resource('business');
 
 export default {
   name: 'Project',
@@ -316,6 +338,7 @@ export default {
         roles: [],
       },
       filtered: [],
+      initiator: {},
       announcement: {},
       show: false,
       total: 0,
@@ -334,6 +357,12 @@ export default {
     };
   },
   computed: {
+    couldCreateProject(){
+      return this.$store.getters.permissions.includes('create project');
+    },
+    couldViewProject(){
+      return this.$store.getters.permissions.includes('read project');
+    },
     isLpjp() {
       return this.userInfo.roles.includes('lpjp');
     },
@@ -352,6 +381,15 @@ export default {
     isExaminer() {
       return this.userInfo.roles.includes('examiner');
     },
+    isScoping(){
+      return this.$route.name === 'scopingProject';
+    },
+    isDigiWork(){
+      return this.$route.name === 'digWorkProject';
+    },
+    isScreening(){
+      return this.$route.name === 'screeningProject';
+    },
   },
   async created() {
     this.getProvinces();
@@ -362,6 +400,7 @@ export default {
     } else if (this.userInfo.roles.includes('initiator')) {
       const initiator = await initiatorResource.list({ email: this.userInfo.email });
       this.listQuery.initiatorId = initiator.id;
+      this.initiator = initiator;
     } else if (this.userInfo.roles.includes('formulator')) {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
@@ -372,9 +411,24 @@ export default {
     // }
 
     this.getFiltered(this.listQuery);
-    console.log(this.userInfo);
+    console.log(this.$route.name);
   },
   methods: {
+    isUklUpl(project){
+      console.log(project.required_doc);
+      return project.required_doc === 'UKL-UPL';
+    },
+    isAmdal(project){
+      return project.required_doc === 'AMDAL';
+    },
+    toTitleCase(str) {
+      return str.replace(
+        /\w\S*/g,
+        function(txt) {
+          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+      );
+    },
     handleSubmitAnnouncement(fileProof){
       // this.announcement.fileProof = fileProof;
       console.log(this.announcement);
@@ -420,12 +474,15 @@ export default {
       });
     },
     async getFiltered(query) {
-      this.listLoading = true;
+      this.loading = true;
       const { data, total } = await projectResource.list(query);
-      this.filtered = data;
+      this.filtered = data.map(e => {
+        e.listSubProject = e.list_sub_project;
+        return e;
+      });
       this.total = total;
       console.log(this.filtered);
-      this.listLoading = false;
+      this.loading = false;
     },
     handleCreate() {
       this.$router.push({
@@ -486,13 +543,23 @@ export default {
     },
     handlePublishForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
+      const subProject = currentProject.list_sub_project.map(curr => {
+        return {
+          name: curr.name,
+          scale: curr.scale + ' ' + curr.scale_unit,
+        };
+      });
       console.log(currentProject);
+      this.announcement.sub_project = subProject;
+      this.announcement.pic_name = this.initiator.pic;
+      this.announcement.pic_address = this.initiator.address;
       this.announcement.project_id = currentProject.id;
       this.announcement.project_result = currentProject.required_doc;
       this.announcement.project_type = currentProject.project_title;
       this.announcement.project_scale =
         currentProject.scale + ' ' + currentProject.scale_unit;
       this.announcement.project_location = currentProject.address;
+      this.announcement.id_applicant = currentProject.id_applicant;
       this.show = true;
     },
     handleDelete(id, nama) {
@@ -530,6 +597,12 @@ export default {
         path: `/amdal/${project.id}/formulir`,
       });
     },
+    handleKerangkaUklUpl(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/formulir`,
+        // path: `/ukluplstatic/form`,
+      });
+    },
     handleUjiKa(project) {
       this.$router.push({
         path: `/dokumen-kegiatan/${project.id}/pengujian-ka`,
@@ -540,9 +613,67 @@ export default {
         path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
       });
     },
+    handleRekomendasiUjiKelayakan(id) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${id}/rekomendasi-uji-kelayakan`,
+      });
+    },
+    handleFeasibilityTest(id) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${id}/skkl`,
+      });
+    },
+    async handleGenerateSPPL(project) {
+      console.log(project);
+
+      project.listSubProject = project.listSubProject.map((e, i) => {
+        e.address = project.address[i] ? this.toTitleCase(project.address[i].address + ' ' + project.address[i].district + ' ' + project.address[i].prov) : '';
+        e.number = i + 1;
+        return e;
+      });
+
+      console.log(project.address[0].district);
+
+      PizZipUtils.getBinaryContent(
+        '/template_sppl.docx',
+        (error, content) => {
+          if (error) {
+            throw error;
+          }
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          doc.render({
+            initator_name: this.initiator.name,
+            nib: this.initiator.nib ? this.initiator.nib : 'Belum Terdaftar',
+            initiator_address: this.initiator.address,
+            phone: this.initiator.phone,
+            sub_projects: project.listSubProject,
+            pic: this.initiator.pic,
+            city: project.address[0].district,
+            publish_date: project.created_at.substring(0, 10),
+          });
+
+          const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          });
+
+          saveAs(out, 'SPPL-' + project.project_title + '.docx');
+          // this.docOutput = out;
+        }
+      );
+    },
     handleAndal(project) {
       this.$router.push({
         path: `/dokumen-kegiatan/${project.id}/penyusunan-andal`,
+      });
+    },
+    handleMatUklUpl(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/matriks`,
       });
     },
     handleRklRpl(project) {
@@ -551,10 +682,8 @@ export default {
       });
     },
     handleLpjpTeam(project) {
-      console.log(project);
       this.$router.push({
-        name: 'listLpjpTeam',
-        params: { project: project },
+        path: `/lpjp-team/${project.id}/daftar-anggota`,
       });
     },
     handleViewSpt(id) {
@@ -610,6 +739,18 @@ export default {
         params: {
           id: idProject,
           filename: `${idProject}-rkl-rpl.docx`,
+        },
+      });
+    },
+    async handleWorkspaceUKLUPL(idProject) {
+      const projectName = await axios.get(
+        `/api/dokumen-ukl-upl/${idProject}`
+      );
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: idProject,
+          filename: projectName.data,
         },
       });
     },
