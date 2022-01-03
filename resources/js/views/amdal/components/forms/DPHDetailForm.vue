@@ -9,22 +9,6 @@
 
         <el-button icon="el-icon-right" type="info" circle />
         -->
-
-          <el-popconfirm
-            :disabled="!data.hasChanges"
-            confirm-button-text="Iya, refresh!"
-            cancel-button-text="Tidak"
-            title="Ada perubahan yang belum disimpan. Yakin akan muat ulang data?"
-            icon-color="red"
-            @confirm="refresh()"
-          >
-            <el-button
-              slot="reference"
-              icon="el-icon-refresh"
-              :disabled="!data.hasChanges"
-            > Refresh data
-            </el-button>
-          </el-popconfirm>
         </el-col>
       </el-row>
 
@@ -105,6 +89,21 @@
         </el-col>
       </el-row>
       <div style="text-align: right; margin-top:2em;">
+        <el-popconfirm
+          :disabled="!data.hasChanges"
+          confirm-button-text="Iya, refresh!"
+          cancel-button-text="Tidak"
+          title="Ada perubahan yang belum disimpan. Yakin akan muat ulang data?"
+          icon-color="red"
+          @confirm="refresh()"
+        >
+          <el-button
+            slot="reference"
+            icon="el-icon-refresh"
+            :disabled="!data.hasChanges"
+          > Reset
+          </el-button>
+        </el-popconfirm> &nbsp;&nbsp;
         <el-button
           type="success"
           icon="el-icon-check"
