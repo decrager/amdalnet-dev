@@ -151,6 +151,19 @@ const masterRoutes = {
       meta: { title: 'Tambah Materi', icon: 'documentation', noCache: true },
     },
     {
+      path: 'peraturan',
+      component: () => import('@/views/peraturan/index'),
+      name: 'peraturan',
+      meta: { title: 'Peraturan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'peraturan/create',
+      component: () => import('@/views/peraturan/Create'),
+      name: 'addPeraturan',
+      hidden: true,
+      meta: { title: 'Tambah Peraturan', icon: 'documentation', noCache: true },
+    },
+    {
       path: 'kebijakan',
       component: () => import('@/views/kebijakan/index'),
       name: 'kebijakan',
