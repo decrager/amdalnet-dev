@@ -97,7 +97,7 @@
 // const appParamResource = new Resource('app-params');
 
 export default {
-  name: 'CreateParam',
+  name: 'AddKebijakan',
   props: {},
   data() {
     return {

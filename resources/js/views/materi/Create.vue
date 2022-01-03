@@ -56,7 +56,7 @@
 // const appParamResource = new Resource('app-params');
 
 export default {
-  name: 'CreateParam',
+  name: 'AddMateri',
   props: {},
   data() {
     return {

@@ -45,7 +45,7 @@ import ComponentTable from './components/ComponentTable.vue';
 // const appParamResource = new Resource('app-params');
 
 export default {
-  name: 'Materi',
+  name: 'Kebijakan',
   components: {
     // Pagination,
     ComponentTable,

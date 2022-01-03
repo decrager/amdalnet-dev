@@ -19,14 +19,14 @@
         <div class="d-flex pl-1">
           <p class="mb-1 fw-bold">Aksi :</p>
           <p class="mb-1 ml-1">
-            <el-button
+            <!-- <el-button
               type="text"
               href="#"
               icon="el-icon-view"
               @click="handleView(scope.row)"
             >
               View
-            </el-button>
+            </el-button> -->
             <el-button
               type="text"
               href="#"
