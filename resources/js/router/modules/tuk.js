@@ -3,7 +3,7 @@ import Layout from '@/layout';
 const tukRoutes = {
   path: '/tuk',
   component: Layout,
-  meta: { title: 'tuk', icon: 'zip', permissions: ['view menu examiner team'] },
+  meta: { title: 'tuk', icon: 'zip', roles: ['admin-standard'] },
   children: [
     {
       path: '',
@@ -13,7 +13,6 @@ const tukRoutes = {
         title: 'Manajemen TUK',
         icon: 'zip',
         noCache: true,
-        permissions: ['view menu examiner team'],
       },
     },
     {
