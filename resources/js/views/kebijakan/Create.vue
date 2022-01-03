@@ -13,19 +13,51 @@
             <div class="form-container">
               <el-form>
                 <el-row>
-                  <el-form-item label="Judul Materi">
-                    <el-input type="text" placeholder="Judul Materi" />
+                  <el-form-item label="Jenis Peraturan">
+                    <el-select
+                      v-model="value"
+                      placeholder="Jenis Peraturan"
+                      style="width: 100%"
+                    >
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
                   </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Deskripsi">
-                    <el-input type="text" placeholder="Deskripsi" />
+                  <el-form-item label="Kebijakan PPU">
+                    <el-input type="text" placeholder="Kebijakan PPU" />
                   </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
+                <el-row>
+                  <el-form-item label="Jenis PPU">
+                    <el-input type="text" placeholder="Jenis PPU" />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
+                  <el-form-item label="Bidang Kegiatan">
+                    <el-input type="text" placeholder="Bidang Kegiatan" />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
+                  <el-form-item label="Tentang">
+                    <el-input type="textarea" placeholder="Tentang" />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <!-- <el-form>
                 <el-form-item label="Taggal Terbit">
                   <el-date-picker
                     v-model="date"
@@ -33,11 +65,18 @@
                     placeholder="Tanggal"
                   />
                 </el-form-item>
+              </el-form> -->
+              <el-form>
+                <el-row>
+                  <el-form-item label="Taggal Terbit">
+                    <el-input type="date" placeholder="Taggal Terbit" />
+                  </el-form-item>
+                </el-row>
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Download">
-                    <el-input type="text" placeholder="Link Download" />
+                  <el-form-item label="Upload Document">
+                    <el-input type="file" placeholder="Upload Document" />
                   </el-form-item>
                 </el-row>
               </el-form>
@@ -62,14 +101,19 @@ export default {
   props: {},
   data() {
     return {
-      date: '',
+      options: [
+        {
+          value: 'Option1',
+          label: 'Option1',
+        },
+      ],
     };
   },
   mounted() {},
   methods: {
     handleCancel() {
       this.$router.push({
-        name: 'materi',
+        name: 'kebijakan',
       });
     },
   },

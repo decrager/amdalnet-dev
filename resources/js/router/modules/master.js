@@ -150,6 +150,19 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Tambah Materi', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'kebijakan',
+      component: () => import('@/views/kebijakan/index'),
+      name: 'kebijakan',
+      meta: { title: 'Kebijakan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'kebijakan/create',
+      component: () => import('@/views/kebijakan/Create'),
+      name: 'addKebijakan',
+      hidden: true,
+      meta: { title: 'Tambah Kebijakan', icon: 'documentation', noCache: true },
+    },
     // {
     //   path: 'master-data/params',
     //   component: () => import('@/views/params/index'),
