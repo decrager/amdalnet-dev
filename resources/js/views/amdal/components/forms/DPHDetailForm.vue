@@ -117,7 +117,7 @@
       </div>
     </div>
 
-    <Comment :impactidentification="data.id" commenttype="dpdphdm" :kolom="kolom" style="margin: auto;" />
+    <Comment :impactidentification="data.id" :commenttype="commentType[mode]" :kolom="kolom" style="margin: auto;" />
   </div>
 </template>
 <script>
@@ -170,6 +170,7 @@ export default {
       isSaving: false,
       isLoadingPie: false,
       dataChanged: false,
+      commentType: ['dpdph-ka', 'dpdph-andal'],
       kolom: [
         { label: 'Dampak Potensial', value: 'Dampak Potensial' },
         { label: 'Dampak Penting Hipotetik', value: 'Dampak Penting Hipotetik' },
