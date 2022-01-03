@@ -1,9 +1,9 @@
 # OpenStack Object Storage
 
 Container yang sudah disetup:
-- public
+- `public`
   Container object storage public yang dapat diakses siapapun tanpa menggunakan signature key
-- amdalnet
+- `amdalnet`
   Container object storage yang bersifat private, hanya dapat diakses dengan menggunakan key signature
   tempUrlKey=rahasia123456
 
