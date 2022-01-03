@@ -6,7 +6,7 @@ image: php:7.4-cli
 stages:
   # - test
   - dev
-  - cloud
+  - staging
   - production
 
 # unit_test:
@@ -43,42 +43,26 @@ deploy_dev:
   tags:
     - amdalnet
 
-deploy_cloud:
-  stage: cloud
-  script:
-    - cd /var/www/amdalnet/
-    - git reset --hard origin/master
-    - git pull
-    - composer install
-    - composer dump-autoload
-    - php artisan migrate
-    - npm install
-    - npm run production
-    #- PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql
-    #- PGPASSWORD=4md4lNET psql -h localhost -d amdalnet_bak -U postgres -f ~/amdalnet.sql
-  only:
-    - master
-  tags:
-    - cloud
-
-deploy_prod:
-  stage: production
-  script:
-    - cd /var/www/amdalnet/
-    - git reset --hard origin/master
-    - git pull
-    - composer install
-    - composer dump-autoload
-    - php artisan migrate
-    - npm install
-    - npm run production
-  only:
-    - tags
-  tags:
-    - prod
+# deploy_cloud:
+#   stage: cloud
+#   script:
+#     - cd /var/www/amdalnet/
+#     - git reset --hard origin/master
+#     - git pull
+#     - composer install
+#     - composer dump-autoload
+#     - php artisan migrate
+#     - npm install
+#     - npm run production
+#     #- PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql
+#     #- PGPASSWORD=4md4lNET psql -h localhost -d amdalnet_bak -U postgres -f ~/amdalnet.sql
+#   only:
+#     - master
+#   tags:
+#     - cloud
 
 deploy_api-dev_menlhk:
-  stage: production
+  stage: staging
   script:
     - cd /var/www/amdalnet/
     - git reset --hard origin/master
@@ -94,7 +78,7 @@ deploy_api-dev_menlhk:
     - amdalnet-api-dev-menlhk
 
 deploy_app-dev_menlhk:
-  stage: production
+  stage: staging
   script:
     - cd /var/www/amdalnet/
     - git reset --hard origin/master
@@ -127,6 +111,23 @@ deploy_api_menlhk:
     - master
   tags:
     - amdalnet-api-menlhk
+
+# deploy_prod:
+#   stage: production
+#   script:
+#     - cd /var/www/amdalnet/
+#     - git reset --hard origin/master
+#     - git pull
+#     - composer install
+#     - composer dump-autoload
+#     - php artisan migrate
+#     - npm install
+#     - npm run production
+#   only:
+#     - tags
+#   tags:
+#     - prod
+
 
 deploy_app_menlhk:
   stage: production
