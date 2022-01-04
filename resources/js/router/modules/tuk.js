@@ -3,7 +3,7 @@ import Layout from '@/layout';
 const tukRoutes = {
   path: '/tuk',
   component: Layout,
-  meta: { title: 'tuk', icon: 'zip', roles: ['admin-standard'] },
+  meta: { title: 'tuk', icon: 'zip', roles: ['examiner'] },
   children: [
     {
       path: '',
@@ -13,6 +13,7 @@ const tukRoutes = {
         title: 'Manajemen TUK',
         icon: 'zip',
         noCache: true,
+        roles: ['examiner'],
       },
     },
     {
@@ -24,6 +25,7 @@ const tukRoutes = {
         title: 'Tambah TUK',
         icon: 'documentation',
         noCache: true,
+        roles: ['examiner'],
       },
     },
     {
@@ -31,14 +33,24 @@ const tukRoutes = {
       component: () => import('@/views/tuk-management/Create'),
       name: 'editTuk',
       hidden: true,
-      meta: { title: 'Edit TUK', icon: 'documentation', noCache: true },
+      meta: {
+        title: 'Edit TUK',
+        icon: 'documentation',
+        noCache: true,
+        roles: ['examiner'],
+      },
     },
     {
       path: ':id/anggota',
       component: () => import('@/views/tuk-management/TeamMember'),
       name: 'kelolaTuk',
       hidden: true,
-      meta: { title: 'Kelola TUK', icon: 'documentation', noCache: true },
+      meta: {
+        title: 'Kelola TUK',
+        icon: 'documentation',
+        noCache: true,
+        roles: ['examiner'],
+      },
     },
   ],
 };
