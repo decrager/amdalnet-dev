@@ -15,15 +15,20 @@
       <div class="entry-title">
         <el-form label-position="top">
           <el-form-item label="Dampak Potensial">
-            <el-select v-model="data.id_change_type" placeholder="Pilih" :disabled="!isFormulator" @change="onChangeType">
-              <el-option
-                v-for="item in changeTypes"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
-            <el-input v-if="data.id_change_type === 0" v-model="data.change_type_name" type="text" style="width: 200px;" :readonly="!isFormulator" @change="hasChanges" />
+            <span v-if="isFormulator">
+              <el-select v-model="data.id_change_type" placeholder="Pilih" :disabled="!isFormulator" @change="onChangeType">
+                <el-option
+                  v-for="item in changeTypes"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+              <el-input v-if="data.id_change_type === 0" v-model="data.change_type_name" type="text" style="width: 200px;" :readonly="!isFormulator" @change="hasChanges" />
+            </span>
+            <span v-else style="font-size: inherit; font-size: 150%; color: red;">
+              {{ data.change_type_name || '*belum terdefinisi*' }}
+            </span>
             <span style="margin-left: 1em; font-size: inherit; font-size: 150%;">{{ data.rona_awal }} akibat {{ data.komponen }}</span>
           </el-form-item>
         </el-form>
@@ -67,14 +72,19 @@
               />
             </el-form-item>
             <el-form-item v-if="!(data.is_hypothetical_significant === false)" label="Batas Waktu Kajian">
-              <span style="margin-right: 1em">
-                <el-input-number
-                  v-model="data.study_length_year"
-                  size="small"
-                  :disabled="!isFormulator"
-                  @change="hasChanges"
-                /> &nbsp;&nbsp;tahun</span>
-              <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
+              <div v-if="isFormulator">
+                <span style="margin-right: 1em">
+                  <el-input-number
+                    v-model="data.study_length_year"
+                    size="small"
+                    :disabled="!isFormulator"
+                    @change="hasChanges"
+                  /> &nbsp;&nbsp;tahun</span>
+                <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
+              </div>
+              <div v-else>
+                <span style="margin-right: 1em;"><strong>{{ data.study_length_year }}</strong> tahun</span> <span><strong>{{ data.study_length_month }}</strong> bulan </span>
+              </div>
             </el-form-item>
           </el-form>
         </el-col>
