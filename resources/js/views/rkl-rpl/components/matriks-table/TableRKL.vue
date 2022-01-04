@@ -184,8 +184,21 @@
             type="textarea"
             :rows="2"
             :readonly="!isFormulator"
+            :class="{
+              'is-error': checkError(
+                scope.row.type,
+                scope.$index,
+                'impact_source'
+              ),
+            }"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'impact_source')"
+            style="color: #f56c6c"
+          >
+            Sumber Dampak Wajib Diisi
+          </small>
         </template>
       </el-table-column>
 
@@ -199,8 +212,21 @@
             type="textarea"
             :rows="2"
             :readonly="!isFormulator"
+            :class="{
+              'is-error': checkError(
+                scope.row.type,
+                scope.$index,
+                'success_indicator'
+              ),
+            }"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'success_indicator')"
+            style="color: #f56c6c"
+          >
+            Indikator Wajib Diisi
+          </small>
         </template>
       </el-table-column>
 
@@ -212,8 +238,17 @@
             type="textarea"
             :rows="2"
             :readonly="!isFormulator"
+            :class="{
+              'is-error': checkError(scope.row.type, scope.$index, 'form'),
+            }"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'form')"
+            style="color: #f56c6c"
+          >
+            Bentuk Pengelolaan Wajib Diisi
+          </small>
         </template>
       </el-table-column>
 
@@ -225,8 +260,17 @@
             type="textarea"
             :rows="2"
             :readonly="!isFormulator"
+            :class="{
+              'is-error': checkError(scope.row.type, scope.$index, 'location'),
+            }"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'location')"
+            style="color: #f56c6c"
+          >
+            Lokasi Pengelolaan Wajib Diisi
+          </small>
         </template>
       </el-table-column>
 
@@ -241,13 +285,33 @@
             :min="0"
             :disabled="!isFormulator"
             style="width: 100%"
+            :class="{
+              'is-error': checkError(
+                scope.row.type,
+                scope.$index,
+                'period_number'
+              ),
+            }"
           />
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'period_number')"
+            style="color: #f56c6c"
+          >
+            Jumlah Periode Wajib Diisi
+          </small>
           <span v-if="scope.row.type == 'subtitle'">x</span>
           <el-select
             v-if="scope.row.type == 'subtitle'"
             v-model="scope.row.period_description"
             placeholder="Pilihan"
             :disabled="!isFormulator"
+            :class="{
+              'is-error': checkError(
+                scope.row.type,
+                scope.$index,
+                'period_description'
+              ),
+            }"
           >
             <el-option
               v-for="item in periode"
@@ -257,6 +321,14 @@
             />
           </el-select>
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="
+              checkError(scope.row.type, scope.$index, 'period_description')
+            "
+            style="color: #f56c6c"
+          >
+            Periode Wajib Dipilih
+          </small>
         </template>
       </el-table-column>
 
@@ -268,8 +340,21 @@
             type="textarea"
             :rows="2"
             :readonly="!isFormulator"
+            :class="{
+              'is-error': checkError(
+                scope.row.type,
+                scope.$index,
+                'institution'
+              ),
+            }"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'institution')"
+            style="color: #f56c6c"
+          >
+            Institusi Pengelolaan Wajib Diisi
+          </small>
         </template>
       </el-table-column>
     </el-table>
@@ -283,7 +368,7 @@
         class="filter-item"
         type="primary"
         style="font-size: 0.8rem"
-        @click="handleSubmit"
+        @click="checkSubmit"
       >
         {{ 'Simpan Perubahan' }}
       </el-button>
@@ -310,6 +395,7 @@ export default {
       impactComment: null,
       impactColumnType: null,
       userInfo: {},
+      errors: [],
       periode: [
         {
           label: 'per Hari',
@@ -406,6 +492,52 @@ export default {
         type: 'success',
         duration: 5 * 1000,
       });
+    },
+    checkSubmit() {
+      let errors = 0;
+
+      this.errors = this.list.map((x) => {
+        if (x.type === 'subtitle') {
+          if (
+            !x.impact_source ||
+            !x.success_indicator ||
+            !x.form ||
+            !x.location ||
+            !x.period_number ||
+            !x.period_description ||
+            !x.institution
+          ) {
+            errors++;
+          }
+
+          return {
+            impact_source: !x.impact_source,
+            success_indicator: !x.success_indicator,
+            form: !x.form,
+            location: !x.location,
+            period_number: !x.period_number,
+            period_description: !x.period_description,
+            institution: !x.institution,
+          };
+        }
+
+        return {};
+      });
+
+      if (errors === 0) {
+        this.handleSubmit();
+      }
+    },
+    checkError(scopeType, idx, name) {
+      if (scopeType === 'subtitle') {
+        if (this.errors.length > 0) {
+          if (this.errors[idx][name]) {
+            return true;
+          }
+        }
+      }
+
+      return false;
     },
     async handleSubmit() {
       this.loadingSubmit = true;
@@ -596,5 +728,10 @@ export default {
   padding: 8px;
   color: white;
   border-radius: 3px;
+}
+.is-error .el-input__inner,
+.is-error .el-radio__inner,
+.is-error .el-textarea__inner {
+  border-color: #f56c6c;
 }
 </style>

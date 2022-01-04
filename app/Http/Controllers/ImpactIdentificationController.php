@@ -557,6 +557,7 @@ class ImpactIdentificationController extends Controller
         $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone' ];
         $tables = ['impact_identifications', 'impact_identification_clones' ];
         $ctStatement = ['COALESCE(ii.change_type_name, ct."name")', 'ct."name"'];
+        $comments = ['dpdph-ka', 'dpdph-andal'];
         $impacts = $impactClasses[$request->mode]::from($tables[$request->mode].' AS ii')
         ->selectRaw('ii.id, ii.id_change_type,
             '.$ctStatement[$request->mode].' as change_type_name,
@@ -569,23 +570,42 @@ class ImpactIdentificationController extends Controller
             ii.is_managed,
             ii.study_length_month,
             ii.study_length_year,
-            ii.study_location')
+            ii.study_location,
+            count(cm.id) as comment
+        ')
         ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
         ->leftJoin('sub_project_rona_awals AS spra', 'ii.id_sub_project_rona_awal', '=', 'spra.id')
         ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
         ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
         ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+        ->leftJoin('comments as cm', function ($join) use ($request, $comments) {
+            $join->on('cm.id_impact_identification', '=', 'ii.id')
+              ->on('cm.document_type', '=', DB::raw('\''.$comments[$request->mode].'\''));
+        })
         ->join('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'));
 
         if($request->id_project) {
-            return response($impacts->where('ii.id_project', $request->id_project)
+            /**
+             */
+            return response(
+            $impacts
+            ->where('ii.id_project', $request->id_project)
+            ->groupBy('ii.id', 'ct.name', 'c.id_project_stage',
+                'spc.id_project_stage', 'ps.name',
+                'c.name', 'spc.name',
+                'ra.name', 'spra.name')
             ->orderBy('ii.id', 'asc')
             ->get());
         //return response($impacts);
         }
         if($request->id)
         {
-            $res = $impacts->where('ii.id', $request->id)->first();
+            $res = $impacts->where('ii.id', $request->id)
+            ->groupBy('ii.id', 'ct.name', 'c.id_project_stage',
+                'spc.id_project_stage', 'ps.name',
+                'c.name', 'spc.name',
+                'ra.name', 'spra.name')
+            ->first();
             if($res) return response($res);
             return response('Dampak tidak ditemukan',404);
         }

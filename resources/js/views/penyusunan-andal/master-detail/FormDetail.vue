@@ -27,7 +27,11 @@
               type="textarea"
               :rows="2"
               :readonly="!isFormulator"
+              :class="{ 'is-error': errors.studies_condition }"
             />
+            <small v-if="errors.studies_condition" style="color: #f56c6c">
+              Kondisi Wajib Diisi
+            </small>
           </div>
           <div class="form-group">
             <label>
@@ -38,7 +42,11 @@
               type="textarea"
               :rows="2"
               :readonly="!isFormulator"
+              :class="{ 'is-error': errors.condition_dev_no_plan }"
             />
+            <small v-if="errors.condition_dev_no_plan" style="color: #f56c6c">
+              Kondisi Wajib Diisi
+            </small>
           </div>
           <div class="form-group">
             <label>
@@ -49,7 +57,11 @@
               type="textarea"
               :rows="2"
               :readonly="!isFormulator"
+              :class="{ 'is-error': errors.condition_dev_with_plan }"
             />
+            <small v-if="errors.condition_dev_with_plan" style="color: #f56c6c">
+              Kondisi Wajib Diisi
+            </small>
           </div>
           <div class="form-group">
             <label> 3. Selisih Besaran Dampak</label>
@@ -58,7 +70,11 @@
               type="textarea"
               :rows="2"
               :readonly="!isFormulator"
+              :class="{ 'is-error': errors.impact_size_difference }"
             />
+            <small v-if="errors.impact_size_difference" style="color: #f56c6c">
+              Selisih Besaran Dampak Wajib Diisi
+            </small>
           </div>
         </div>
       </div>
@@ -69,6 +85,7 @@
             v-model="andal.impact_type"
             placeholder="Pilih Jenis Dampak"
             :disabled="!isFormulator"
+            :class="{ 'is-error': errors.impact_type }"
           >
             <el-option
               v-for="item in jenisDampak"
@@ -77,6 +94,9 @@
               :value="item.value"
             />
           </el-select>
+          <small v-if="errors.impact_type" style="color: #f56c6c">
+            Jenis Dampak Wajib Dipilih
+          </small>
         </el-col>
         <el-col :md="12" :sm="24">
           <label>Hasil Evaluasi Dampak</label>
@@ -87,6 +107,7 @@
             v-model="andal.impact_eval_result"
             placeholder="Pilih Hasil Evaluasi Dampak"
             :disabled="!isFormulator"
+            :class="{ 'is-error': errors.impact_eval_result }"
           >
             <el-option
               v-for="item in hasilEvaluasiDampak"
@@ -95,6 +116,9 @@
               :value="item.value"
             />
           </el-select>
+          <small v-if="errors.impact_eval_result" style="color: #f56c6c">
+            Hasil Evaluasi Dampak Wajib Dipilih
+          </small>
         </el-col>
       </el-row>
     </el-col>
@@ -121,18 +145,55 @@
                 type="textarea"
                 :rows="2"
                 :readonly="!isFormulator"
+                :class="{ 'is-error': importantTraitError(index, 'desc') }"
               />
+              <small
+                v-if="importantTraitError(index, 'desc')"
+                style="color: #f56c6c"
+              >
+                Wajib Diisi
+              </small>
             </el-col>
             <el-col :md="8" :sm="24">
               <el-radio-group
                 v-model="andal.important_trait[index].important_trait"
                 style="display: grid; grid-template-columns: 0.5fr 0.5fr"
               >
-                <el-radio label="+P" :disabled="!isFormulator">+P</el-radio>
-                <el-radio label="-P" :disabled="!isFormulator">-P</el-radio>
-                <el-radio label="+TP" :disabled="!isFormulator">+TP</el-radio>
-                <el-radio label="-TP" :disabled="!isFormulator">-TP</el-radio>
+                <el-radio
+                  label="+P"
+                  :disabled="!isFormulator"
+                  :class="{ 'is-error': errors.status }"
+                >
+                  +P
+                </el-radio>
+                <el-radio
+                  label="-P"
+                  :disabled="!isFormulator"
+                  :class="{ 'is-error': errors.status }"
+                >
+                  -P
+                </el-radio>
+                <el-radio
+                  label="+TP"
+                  :disabled="!isFormulator"
+                  :class="{ 'is-error': errors.status }"
+                >
+                  +TP
+                </el-radio>
+                <el-radio
+                  label="-TP"
+                  :disabled="!isFormulator"
+                  :class="{ 'is-error': errors.status }"
+                >
+                  -TP
+                </el-radio>
               </el-radio-group>
+              <small
+                v-if="importantTraitError(index, 'important_trait')"
+                style="color: #f56c6c"
+              >
+                Sifat Penting Wajib Dipilih
+              </small>
             </el-col>
           </el-row>
         </div>
@@ -145,7 +206,7 @@
       style="text-align: right; margin-top: 10px"
     >
       <el-button @click="reset">Reset</el-button>
-      <el-button type="primary" :loading="loadingsubmit" @click="handleSubmit">
+      <el-button type="primary" :loading="loadingsubmit" @click="checkSubmit">
         Simpan
       </el-button>
     </el-col>
@@ -226,6 +287,16 @@ export default {
           value: 'Hasil Evaluasi Dampak',
         },
       ],
+      errors: {
+        impact_size: false,
+        impact_type: false,
+        impact_eval_result: false,
+        studies_condition: false,
+        condition_dev_no_plan: false,
+        condition_dev_with_plan: false,
+        impact_size_difference: false,
+        important_trait: [],
+      },
     };
   },
   computed: {
@@ -255,6 +326,49 @@ export default {
         this.andal.important_trait[i].important_trait = null;
       }
     },
+    resetError() {
+      // eslint-disable-next-line no-undef
+      _.each(this.errors, (value, key) => {
+        if (key === 'important_trait') {
+          this.errors[key] = [];
+        } else {
+          this.errors[key] = false;
+        }
+      });
+    },
+    checkSubmit() {
+      this.resetError();
+      let errors = 0;
+
+      // eslint-disable-next-line no-undef
+      _.each(this.andal.important_trait, (value, key) => {
+        if (!value.desc) {
+          errors++;
+        }
+
+        if (!value.important_trait) {
+          errors++;
+        }
+
+        this.errors.important_trait.push({
+          desc: !value.desc,
+          important_trait: !value.important_trait,
+        });
+      });
+      // eslint-disable-next-line no-undef
+      _.each(this.andal, (value, key) => {
+        if (key !== 'important_trait') {
+          if (!value) {
+            errors++;
+            this.errors[key] = true;
+          }
+        }
+      });
+
+      if (errors === 0) {
+        this.handleSubmit();
+      }
+    },
     handleSubmit() {
       this.$emit('handleSubmit');
     },
@@ -272,6 +386,13 @@ export default {
 
       return '';
     },
+    importantTraitError(idx, name) {
+      if (this.errors.important_trait.length < 1) {
+        return false;
+      }
+
+      return this.errors.important_trait[idx][name];
+    },
   },
 };
 </script>
@@ -283,5 +404,13 @@ export default {
 .wrapper-form {
   border: 1px solid black;
   padding: 8px;
+}
+</style>
+
+<style>
+.is-error .el-input__inner,
+.is-error .el-radio__inner,
+.is-error .el-textarea__inner {
+  border-color: #f56c6c;
 }
 </style>
