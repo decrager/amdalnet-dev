@@ -265,6 +265,7 @@ export default {
         duration: 5 * 1000,
       });
       this.loadingSubmitComment = false;
+      this.$emit('addComment', true);
     },
     handleCheckSubmitReply(index, id) {
       this.errorReply = {};

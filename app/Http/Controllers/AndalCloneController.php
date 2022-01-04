@@ -45,12 +45,14 @@ class AndalCloneController extends Controller
             'pc.name AS component_name',
             'ra.name AS rona_awal_name_master',
             'pra.name AS rona_awal_name',
+            'ps.name as stage',
             'ct.name AS change_type_name')
             ->leftJoin('sub_project_components AS pc', 'impact_identification_clones.id_sub_project_component', '=', 'pc.id')
             ->leftJoin('sub_project_rona_awals AS pra', 'impact_identification_clones.id_sub_project_rona_awal', '=', 'pra.id')
             ->leftJoin('change_types AS ct', 'impact_identification_clones.id_change_type', '=', 'ct.id')
             ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
             ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
+            ->join('project_stages as ps', 'ps.id', '=', 'pc.id_project_stage')
             ->where('impact_identification_clones.id_project', $request->id_project)
             ->orderBy('impact_identification_clones.id', 'asc')
             ->get();
@@ -97,7 +99,7 @@ class AndalCloneController extends Controller
                              if ($impact['id'] < 99999999) {
                                  //not dummy
                                  $num_impacts++;
-                                 
+
                                 $row = ImpactIdentificationClone::find($impact['id']);
 
                                  if ($row != null) {
@@ -127,7 +129,7 @@ class AndalCloneController extends Controller
                                      $row->save();
                                      // save impact_study
                                      $impact_study_saved = false;
- 
+
                                      if (isset($impact['impact_study'])) {
                                          $study = ImpactStudyClone::where('id_impact_identification_clone', $impact['id'])
                                              ->first();
@@ -147,13 +149,13 @@ class AndalCloneController extends Controller
                                              }
                                          }
                                      }
- 
+
                                      /** Potential Impact Evaluation */
                                      if(isset($impact['potential_impact_evaluation'])){
                                          foreach($impact['potential_impact_evaluation'] as $pie){
                                              $p = PotentialImpactEvalClone::where('id_impact_identification_clone', $impact['id'])
                                                  ->where('id_pie_param', $pie['id_pie_param'])->first();
- 
+
                                              if (!$p) {
                                                  $p = new PotentialImpactEvalClone();
                                                  $p->id_impact_identification_clone = $impact['id'];
@@ -163,7 +165,7 @@ class AndalCloneController extends Controller
                                              $p->save();
                                          }
                                      }
- 
+
                                      if ($impact_study_saved){
                                          array_push($response, new ImpactIdentificationCloneResource($row));
                                      }
@@ -190,7 +192,7 @@ class AndalCloneController extends Controller
                                      $impact_study_saved = true;
                                  }
                              }
- 
+
                              if ($impact_study_saved){
                                  array_push($response, new ImpactIdentificationCloneResource($row));
                              }
@@ -275,7 +277,7 @@ class AndalCloneController extends Controller
         $new_ids = [];
         foreach($new_impact as $ni) {
             $new_ids[] = $ni->id_impact_identification;
-        } 
+        }
 
         foreach($old_impact as $oi) {
             if(!in_array($oi->id, $new_ids)) {

@@ -256,7 +256,7 @@
         </el-table-column>
         <el-table-column label="No." width="54px">
           <template slot-scope="scope">
-            <span>{{ scope.$index + 1 }}</span>
+            <span>{{ ((listQuery.page-1) * listQuery.limit) + (scope.$index + 1) }}</span>
           </template>
         </el-table-column>
         <el-table-column align="left" label="No. Registrasi" width="200">

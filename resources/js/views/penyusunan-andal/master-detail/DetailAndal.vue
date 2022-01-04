@@ -6,7 +6,7 @@
           icon="el-icon-arrow-left"
           circle
           :disabled="currentPagePraKonstruksi === 1"
-          @click="currentPagePraKonstruksi--"
+          @click="handlePaginate('left', 'pra konstruksi')"
         />
         <el-input v-model="currentPagePraKonstruksi" class="input-page" />
         <span> / {{ totalPraKonstruksi }}</span>
@@ -14,10 +14,11 @@
           icon="el-icon-arrow-right"
           circle
           :disabled="currentPagePraKonstruksi === totalPraKonstruksi"
-          @click="currentPagePraKonstruksi++"
+          @click="handlePaginate('right', 'pra konstruksi')"
         />
       </div>
       <FormDetail
+        ref="formdetail"
         :andal="list[indexPraKonstruksi[currentPagePraKonstruksi - 1]]"
         :loadingsubmit="loadingsubmit"
         @handleSubmit="handleSubmit"
@@ -29,7 +30,7 @@
           icon="el-icon-arrow-left"
           circle
           :disabled="currentPageKonstruksi === 1"
-          @click="currentPageKonstruksi--"
+          @click="handlePaginate('left', 'konstruksi')"
         />
         <el-input v-model="currentPageKonstruksi" class="input-page" />
         <span> / {{ totalKonstruksi }}</span>
@@ -37,10 +38,11 @@
           icon="el-icon-arrow-right"
           circle
           :disabled="currentPageKonstruksi === totalKonstruksi"
-          @click="currentPageKonstruksi++"
+          @click="handlePaginate('right', 'konstruksi')"
         />
       </div>
       <FormDetail
+        ref="formdetail"
         :andal="list[indexKonstruksi[currentPageKonstruksi - 1]]"
         :loadingsubmit="loadingsubmit"
         @handleSubmit="handleSubmit"
@@ -52,7 +54,7 @@
           icon="el-icon-arrow-left"
           circle
           :disabled="currentPageOperasi === 1"
-          @click="currentPageOperasi--"
+          @click="handlePaginate('left', 'operasi')"
         />
         <el-input v-model="currentPageOperasi" class="input-page" />
         <span> / {{ totalOperasi }}</span>
@@ -60,10 +62,11 @@
           icon="el-icon-arrow-right"
           circle
           :disabled="currentPageOperasi === totalOperasi"
-          @click="currentPageOperasi++"
+          @click="handlePaginate('right', 'operasi')"
         />
       </div>
       <FormDetail
+        ref="formdetail"
         :andal="list[indexOperasi[currentPageOperasi - 1]]"
         :loadingsubmit="loadingsubmit"
         @handleSubmit="handleSubmit"
@@ -75,7 +78,7 @@
           icon="el-icon-arrow-left"
           circle
           :disabled="currentPagePascaOperasi === 1"
-          @click="currentPagePascaOperasi--"
+          @click="handlePaginate('left', 'pasca operasi')"
         />
         <el-input v-model="currentPagePascaOperasi" class="input-page" />
         <span> / {{ totalPascaOperasi }}</span>
@@ -83,10 +86,11 @@
           icon="el-icon-arrow-right"
           circle
           :disabled="currentPagePascaOperasi === totalPascaOperasi"
-          @click="currentPagePascaOperasi++"
+          @click="handlePaginate('right', 'pasca operasi')"
         />
       </div>
       <FormDetail
+        ref="formdetail"
         :andal="list[indexPascaOperasi[currentPagePascaOperasi - 1]]"
         :loadingsubmit="loadingsubmit"
         @handleSubmit="handleSubmit"
@@ -105,6 +109,10 @@ export default {
   },
   props: {
     list: {
+      type: Array,
+      default: () => [],
+    },
+    listBackup: {
       type: Array,
       default: () => [],
     },
@@ -211,7 +219,48 @@ export default {
       return idx;
     },
   },
+  watch: {
+    activeName() {
+      this.$refs.formdetail.resetError();
+    },
+    currentPagePraKonstruksi() {
+      this.$refs.formdetail.resetError();
+    },
+    currentPageKonstruksi() {
+      this.$refs.formdetail.resetError();
+    },
+    currentPageOperasi() {
+      this.$refs.formdetail.resetError();
+    },
+    currentPagePascaOperasi() {
+      this.$refs.formdetail.resetError();
+    },
+  },
   methods: {
+    handlePaginate(direction, stage) {
+      if (direction === 'left') {
+        if (stage === 'pra konstruksi') {
+          this.currentPagePraKonstruksi--;
+        } else if (stage === 'konstruksi') {
+          this.currentPageKonstruksi--;
+        } else if (stage === 'operasi') {
+          this.currentPageOperasi--;
+        } else if (stage === 'pasca operasi') {
+          this.currentPagePascaOperasi--;
+        }
+      } else if (direction === 'right') {
+        if (stage === 'pra konstruksi') {
+          this.currentPagePraKonstruksi++;
+        } else if (stage === 'konstruksi') {
+          this.currentPageKonstruksi++;
+        } else if (stage === 'operasi') {
+          this.currentPageOperasi++;
+        } else if (stage === 'pasca operasi') {
+          this.currentPagePascaOperasi++;
+        }
+      }
+      this.$emit('backuplist');
+    },
     setActiveAndal(stage, id) {
       const activeName = stage.toLowerCase().replace(' ', '-');
       this.activeName = activeName;
