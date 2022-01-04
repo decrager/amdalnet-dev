@@ -116,7 +116,7 @@
       </div>
     </div>
 
-    <Comment :impactidentification="data.id" :commenttype="commentType[mode]" :kolom="kolom" style="margin: auto;" />
+    <Comment :impactidentification="data.id" :commenttype="commentType[mode]" :kolom="kolom" style="margin: auto;" @addComment="onAddComment" />
   </div>
 </template>
 <script>
@@ -320,6 +320,9 @@ export default {
       }).finally(() => {
         this.isSaving = false;
       });
+    },
+    onAddComment(val){
+      this.data.comment++;
     },
   },
 };
