@@ -171,7 +171,7 @@ class ProjectMapAttachmentController extends Controller
         return response()->json($getProjectMap);
     }
 
-    public function getGeojson(Request $request, $id)
+    public function getGeojson(Request $request)
     {
         $getGeojson = DB::table('project_map_attachments')
             ->select(DB::raw("json_build_object(
@@ -198,9 +198,11 @@ class ProjectMapAttachmentController extends Controller
             ->when($request->has('type'), function ($query) use ($request) {
                 return $query->where('attachment_type', '=', $request->type);
             })
+            ->when($request->has('id'), function ($query) use ($request) {
+                return $query->where('id_project', '=', $request->id);
+            })
             ->whereNotNull('geom')
-            ->where('id_project', $id)
-            ->groupBy('attachment_type')
+            ->groupBy('id')
             ->get();
 
         return response()->json($getGeojson);
