@@ -309,7 +309,10 @@ export default {
         this.name = null;
       }
       this.currentData.authority = next;
-      this.teamName();
+
+      if (next === 'Pusat') {
+        this.teamName(null, 'Pusat');
+      }
     },
   },
   created() {
@@ -382,6 +385,10 @@ export default {
         this.address_districts = this.districts.filter(x => x.id_prov === id_province);
       }
       this.authority = this.currentData.authority;
+
+      const dataType = this.currentData.authority === 'Provinsi' ? 'province' : null;
+
+      this.teamName(id_province_name, dataType);
 
       this.loading = false;
     },
