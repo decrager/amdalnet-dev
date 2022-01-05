@@ -164,6 +164,13 @@ const masterRoutes = {
       meta: { title: 'Tambah Peraturan', icon: 'documentation', noCache: true },
     },
     {
+      path: 'peraturan/create',
+      component: () => import('@/views/peraturan/Edit'),
+      name: 'editPeraturan',
+      hidden: true,
+      meta: { title: 'Ubah Peraturan', icon: 'documentation', noCache: true },
+    },
+    {
       path: 'kebijakan',
       component: () => import('@/views/kebijakan/index'),
       name: 'kebijakan',
@@ -175,6 +182,13 @@ const masterRoutes = {
       name: 'addKebijakan',
       hidden: true,
       meta: { title: 'Tambah Kebijakan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'kebijakan/edit',
+      component: () => import('@/views/kebijakan/Edit'),
+      name: 'editKebijakan',
+      hidden: true,
+      meta: { title: 'Edit Kebijakan', icon: 'documentation', noCache: true },
     },
     // {
     //   path: 'master-data/params',

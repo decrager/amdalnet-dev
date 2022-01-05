@@ -14,72 +14,94 @@
       </div>
       <component-table
         :loading="loading"
-        :list="tableData"
+        :list="allData"
         @handleEditForm="handleEditForm($event)"
         @handleView="handleView($event)"
         @handleDelete="handleDelete($event)"
       />
-      <!-- <pagination
+      <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
         @pagination="handleFilter"
       />
-      <component-dialog
-        :component="component"
-        :show="show"
-        :list-view="listView"
-        :list-view-title="listViewTitle"
-        @handleCancelComponent="handleCancelComponent"
-      /> -->
     </el-card>
   </div>
 </template>
 
 <script>
-// import Resource from '@/api/resource';
-// import Pagination from '@/components/Pagination';
+import Pagination from '@/components/Pagination';
+import axios from 'axios';
 import ComponentTable from './components/ComponentTable.vue';
-// import ComponentDialog from './components/ComponentDialog.vue';
-// const appParamResource = new Resource('app-params');
 
 export default {
   name: 'AppParamtList',
   components: {
-    // Pagination,
+    Pagination,
     ComponentTable,
-    // ComponentDialog,
   },
   data() {
     return {
-      tableData: [
-        { peraturan: 'Ketetapan Majelis Permusyawaratan Rakyat (Tap MPR)' },
-      ],
+      loading: true,
+      allData: [],
+      total: 0,
+      listQuery: {
+        page: 1,
+        limit: 10,
+      },
+      sort: 'DESC',
     };
   },
   created() {
-    // this.getList();
+    this.getAll();
   },
   methods: {
-    // handleFilter() {
-    //   this.getList();
-    // },
-    // async getList() {
-    //   this.loading = true;
-    //   const { data, total } = await appParamResource.list(this.listQuery);
-    //   this.list = data;
-    //   this.total = total;
-    //   this.loading = false;
-    // },
-    // async getListView(name) {
-    //   const { data } = await appParamResource.get(name);
-    //   this.listView = data;
-    // },
+    handleFilter() {
+      this.getAll();
+    },
+    getAll(search, sort) {
+      this.loading = true;
+      axios
+        .get(
+          `/api/peraturan?page=${this.listQuery.page}&sort=${this.sort}`
+        )
+        .then((response) => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+          this.loading = false;
+        });
+    },
     handleCreate() {
       this.$router.push({
         name: 'addPeraturan',
       });
+    },
+    handleDelete({ rows }) {
+      this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Batal',
+        type: 'warning',
+      })
+        .then(() => {
+          axios.get(`/api/peraturan/delete/${rows.id}`)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Hapus Selesai',
+              });
+              this.getAll();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Hapus Digagalkan',
+          });
+        });
     },
     // handleEditForm(row) {
     //   const currentParam = this.list.find((element) => element.parameter_name === row.parameter_name);

@@ -9,7 +9,7 @@
                 <el-row>
                   <el-form-item label="Jenis Peraturan">
                     <el-select
-                      v-model="form.regulation_type"
+                      v-model="currentParam.regulation_type"
                       placeholder="Jenis Peraturan"
                       style="width: 100%"
                     >
@@ -18,6 +18,7 @@
                         :key="item.id"
                         :label="item.name"
                         :value="item.id"
+                        :selected="item.id == currentParam.regulation_type"
                       />
                     </el-select>
                   </el-form-item>
@@ -27,7 +28,7 @@
                 <el-row>
                   <el-form-item label="Kebijakan PPU">
                     <el-input
-                      v-model="form.regulation_no"
+                      v-model="currentParam.regulation_no"
                       type="text"
                       placeholder="Kebijakan PPU"
                     />
@@ -38,7 +39,7 @@
                 <el-row>
                   <el-form-item label="Bidang Kegiatan">
                     <el-input
-                      v-model="form.field_of_activity"
+                      v-model="currentParam.field_of_activity"
                       type="text"
                       placeholder="Bidang Kegiatan"
                     />
@@ -49,7 +50,7 @@
                 <el-row>
                   <el-form-item label="Tentang">
                     <el-input
-                      v-model="form.about"
+                      v-model="currentParam.about"
                       type="textarea"
                       placeholder="Tentang"
                     />
@@ -69,11 +70,23 @@
                 <el-row>
                   <el-form-item label="Taggal Terbit">
                     <el-input
-                      v-model="form.set"
+                      v-model="currentParam.set"
                       type="date"
                       placeholder="Taggal Terbit"
                     />
                   </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
+                  <el-input
+                    v-model="currentParam.id"
+                    type="hidden"
+                  />
+                  <el-input
+                    v-model="currentParam.link"
+                    type="hidden"
+                  />
                 </el-row>
               </el-form>
               <el-form>
@@ -118,19 +131,16 @@ export default {
   props: {},
   data() {
     return {
+      currentParam: {},
       regulations: [],
-      form: {
-        regulation_no: '',
-        regulation_type: null,
-        about: '',
-        set: '',
-        field_of_activity: '',
-      },
       link: '',
     };
   },
   created() {
     this.getRegulations();
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+    }
   },
   methods: {
     getRegulations() {
@@ -143,16 +153,17 @@ export default {
     },
     async saveKebijakan() {
       const formData = new FormData();
+      formData.append('id', this.currentParam.id);
       formData.append('link', this.link);
-      formData.append('regulation_no', this.form.regulation_no);
-      formData.append('regulation_type', this.form.regulation_type);
-      formData.append('about', this.form.about);
-      formData.append('set', this.form.set);
-      formData.append('field_of_activity', this.form.field_of_activity);
-
+      formData.append('regulation_no', this.currentParam.regulation_no);
+      formData.append('regulation_type', this.currentParam.regulation_type);
+      formData.append('about', this.currentParam.about);
+      formData.append('set', this.currentParam.set);
+      formData.append('field_of_activity', this.currentParam.field_of_activity);
+      formData.append('old_link', this.currentParam.link);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/policys', formData, { headers })
+        .post('api/policys/update', formData, { headers })
         .then(() => {
           this.$message({
             message: 'Kebijakan Berhasil Disimpan',

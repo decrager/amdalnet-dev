@@ -14,7 +14,7 @@
 
     <el-table-column label="Nama Peraturan">
       <template slot-scope="scope">
-        <span>{{ scope.row.peraturan }}</span>
+        <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
@@ -46,14 +46,19 @@ export default {
   name: 'ComponentTable',
   props: {
     list: {
-      type: Array,
+      type: Object,
       default: () => [],
     },
     loading: Boolean,
   },
   methods: {
     handleEditForm(row) {
-      this.$emit('handleEditForm', row);
+      const currentParam = row;
+      console.log(currentParam.name);
+      this.$router.push({
+        name: 'editPeraturan',
+        params: { row, appParams: currentParam },
+      });
     },
     handleDelete(rows) {
       this.$emit('handleDelete', { rows });

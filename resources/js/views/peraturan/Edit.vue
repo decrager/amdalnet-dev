@@ -13,7 +13,7 @@
               <el-form ref="paramsForm">
                 <el-row>
                   <el-form-item label="Nama Peraturan">
-                    <el-input v-model="form.name" type="text" placeholder="Nama Peraturan" />
+                    <el-input v-model="currentParam.name" type="text" placeholder="Nama Peraturan" />
                   </el-form-item>
                 </el-row>
               </el-form>
@@ -49,20 +49,27 @@ export default {
   props: {},
   data() {
     return {
+      currentParam: {},
       form: {
         name: '',
       },
     };
   },
 
-  mounted() {},
+  created() {
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+      console.log(this.currentParam);
+    }
+  },
   methods: {
     async savePeraturan() {
       const formData = new FormData();
-      formData.append('name', this.form.name);
+      formData.append('id', this.currentParam.id);
+      formData.append('name', this.currentParam.name);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/peraturan', formData, { headers })
+        .post('api/peraturan/update', formData, { headers })
         .then(() => {
           this.$message({
             message: 'Peraturan Berhasil Disimpan',

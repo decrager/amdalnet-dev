@@ -26,6 +26,8 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\KaCommentController;
 use App\Http\Controllers\TrackingDocumentController;
+use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\PeraturanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -304,6 +306,13 @@ Route::get('mark-all-read/{user}', function (User $user) {
 Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
 Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
 Route::apiResource('policys', 'PolicyController');
+Route::post('policys/update', [PolicyController::class, 'update']);
+Route::get('policys/delete/{id}', [PolicyController::class, 'destroy']);
+Route::get('peraturan', [PeraturanController::class, 'index']);
+Route::post('peraturan', [PeraturanController::class, 'store']);
+Route::post('peraturan/update', [PeraturanController::class, 'update']);
+Route::get('peraturan/delete/{id}', [PeraturanController::class, 'destroy']);
+
 Route::apiResource('regulations', 'RegulationsController');
 Route::apiResource('materials', 'MaterialController');
 
