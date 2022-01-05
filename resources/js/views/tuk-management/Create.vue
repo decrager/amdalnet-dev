@@ -105,16 +105,10 @@
             <el-col :md="7" :sm="7">
               <el-input-number
                 v-model="currentData.team_number"
-                :min="1"
+                :min="0"
                 :max="100"
                 style="width: 100%"
-                :class="{ 'is-error': errors.team_number }"
               />
-              <small v-if="errors.team_number" style="color: #f56c6c">
-                <span v-for="(error, index) in errors.team_number" :key="index">
-                  {{ error }}
-                </span>
-              </small>
             </el-col>
           </el-row>
         </el-col>

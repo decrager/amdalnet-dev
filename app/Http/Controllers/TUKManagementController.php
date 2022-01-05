@@ -184,7 +184,6 @@ class TUKManagementController extends Controller
             'id_province' => 'required',
             'id_district' => 'required',
             'address' => 'required',
-            'team_number' => 'required'
         ],[
             'authority.required' => 'Kewenangan Wajib Dipilih',
             'email.required' => 'Email Wajib Diisi',
@@ -192,7 +191,6 @@ class TUKManagementController extends Controller
             'id_province.required' => 'Provinsi Wajib Dipilih',
             'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
             'address.required' => 'Alamat Wajib Dipilih',
-            'team_number' => 'Nomor Tim Wajib Diisi'
         ]);
 
         if($validator->fails()) {
@@ -216,7 +214,12 @@ class TUKManagementController extends Controller
         $tuk->address = $request->address;
         $tuk->id_province_name = $request->id_province_name;
         $tuk->id_district_name = $request->id_district_name;
-        $tuk->team_number = $request->team_number;
+
+        if($request->team_number == 0 || $request->team_number == null) {
+            $tuk->team_number = null;
+        } else {
+            $tuk->team_number = $request->team_number;
+        }
 
         if($request->hasFile('assignment_file')) {
             $file = $request->file('assignment_file');
