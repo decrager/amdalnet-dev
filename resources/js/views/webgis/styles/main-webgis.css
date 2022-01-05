@@ -1,0 +1,90 @@
+@import '../../home/assets/css/style.css';
+
+.webgis__container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+  }
+  
+  div#input__select__kegiatan {
+      width: 100%;
+  }
+  
+  div#legend__drawer {
+      width: 100%;
+  }
+  
+  div#option__legend {
+      display: flex;
+      flex-direction: column;
+  }
+  
+  div#option__legend .el-checkbox {
+      margin-top: 10px;
+  }
+  
+  div#option__legend .el-checkbox img {
+      width: 20px;
+      vertical-align: middle;
+  }
+  
+  div#upload__shapefile {
+      width: 100%;
+  }
+  
+  input#inFile {
+      outline: seagreen;
+      border: 1px solid seagreen;
+      padding: 2px;
+      margin: 10px 0;
+  }
+  
+  div#layer__list {
+    width: 100%;
+  }
+  
+  div#list__item {
+    width: 100%;
+  }
+  
+  #calcite_list_item {
+    width: 100%;
+  }
+  
+  .inline-input {
+    width: 100%;
+    z-index: 100;
+  }
+  
+  #mapViewDiv {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .toggled {
+      color: white;
+      font-weight: 600;
+      background-color: seagreen;
+      padding: 10px;
+  }
+  
+  .toggled::after {
+      content: '[Selected]';
+  }
+  
+  .select__project:hover {
+    color: seagreen;
+    font-weight: 500;
+  }
+  
+  .esri-feature-content tr td {
+    padding: 5px !important;
+  }
+  
+  .esri-feature-content table {
+    margin-top: 10px !important;
+  }
