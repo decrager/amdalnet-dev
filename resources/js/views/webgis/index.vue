@@ -1,15 +1,128 @@
 <template>
   <div class="webgis__container">
     <DarkHeaderHome />
-    <div id="input__select__kegiatan">
-      <el-autocomplete
-        v-model="projectTitle"
-        class="inline-input"
-        :fetch-suggestions="querySearch"
-        placeholder="Cari Kegiatan..."
-        :trigger-on-focus="false"
-        @select="handleSelect"
-      />
+    <el-button id="open__drawer" type="primary" style="margin-left: 16px;" @click="drawer = true">
+      Layer Peta Tematik Dokumen Lingkungan
+    </el-button>
+    <el-drawer
+      title="Cari Layer Kegiatan"
+      :visible.sync="drawer"
+    >
+      <div style="padding: 10px">
+        <el-input
+          v-model="selectedProject"
+          placeholder="Pilih Kegiatan"
+        >
+          <i slot="prefix" class="el-input__icon el-icon-search" />
+        </el-input>
+        <div style="padding: 10px; width: 100%;">
+          <el-radio
+            v-for="item in filterByKegiatan"
+            :id="item.id_project"
+            :key="item.id_project"
+            v-model="radioProject"
+            :label="item.id_project"
+            style="margin-top: 10px; overflow-x: auto;"
+            @change="getIdProject($event)"
+          >{{ item.project_title }}</el-radio>
+        </div>
+      </div>
+    </el-drawer>
+    <div id="legend__drawer">
+      <calcite-accordion selection-mode="single">
+        <calcite-accordion-item
+          icon="collection"
+          item-title="Legends"
+          item-subtitle="Legend Peta Tematik"
+        >
+          <div id="option__legend" style="padding: 5px">
+            <el-checkbox id="layerKelolaCheckBox" v-model="checkedKelola"><img src="/titik_kelola.png" alt=""> Titik Pengelolaan</el-checkbox>
+            <el-checkbox id="layerPantauCheckBox" v-model="checkedPantau"><img src="/titik_pantau.png" alt=""> Titik Pemantauan</el-checkbox>
+            <el-checkbox id="layerTapakCheckBox" v-model="checkedTapak">
+              <div style="display: flex; flex-direction: row; column-gap: 5px;">
+                <div style="width: 20px; height: 20px; background-color: rgb(200, 0, 0); border-radius: 3px;" />
+                <div>Tapak Proyek</div>
+              </div>
+            </el-checkbox>
+            <el-checkbox id="layerEcologyCheckBox" v-model="checkedEcology">
+              <div style="display: flex; flex-direction: row; column-gap: 5px;">
+                <div style="width: 20px; height: 20px; border: 2px solid rgb(168, 112, 0); border-radius: 3px;" />
+                <div>Batas Ekologis</div>
+              </div>
+            </el-checkbox>
+            <el-checkbox id="layerSosialCheckBox" v-model="checkedSosial">
+              <div style="display: flex; flex-direction: row; column-gap: 5px;">
+                <div style="width: 20px; height: 20px; border: 2px solid rgb(0, 76, 115); border-radius: 3px;" />
+                <div>Batas Sosial</div>
+              </div>
+            </el-checkbox>
+            <el-checkbox id="layerStudiCheckBox" v-model="checkedStudi">
+              <div style="display: flex; flex-direction: row; column-gap: 5px;">
+                <div style="width: 20px; height: 20px; border: 2px solid rgb(255, 0, 255); border-radius: 3px;" />
+                <div>Batas Wilayah Studi</div>
+              </div>
+            </el-checkbox>
+            <el-checkbox id="layerKelolaPolyCheckBox" v-model="checkedKelolaPoly">
+              <div style="display: flex; flex-direction: row; column-gap: 5px;">
+                <div style="width: 20px; height: 20px; border: 2px solid rgb(255, 0, 0); border-radius: 3px;" />
+                <div>Lokasi Pengelolaan</div>
+              </div>
+            </el-checkbox>
+            <el-checkbox id="layerPantauPolyCheckBox" v-model="checkedPantauPoly">
+              <div style="display: flex; flex-direction: row; column-gap: 5px;">
+                <div style="width: 20px; height: 20px; border: 2px solid rgb(152, 230, 0); border-radius: 3px;" />
+                <div>Lokasi Pemantauan</div>
+              </div>
+            </el-checkbox>
+          </div>
+        </calcite-accordion-item>
+      </calcite-accordion>
+    </div>
+    <div id="layer__list">
+      <calcite-accordion selection-mode="single">
+        <calcite-accordion-item
+          icon="layers"
+          item-title="Layers"
+          item-subtitle="Layer List"
+        >
+          <div style="margin-top: 10px">
+            <h3>PETA RUPA BUMI</h3>
+          </div>
+          <div style="margin-top: 10px">
+            <el-checkbox id="layerRBICheckBox" v-model="checkedRBI">Peta Rupa Bumi</el-checkbox>
+          </div>
+        </calcite-accordion-item>
+      </calcite-accordion>
+    </div>
+    <div id="upload__shapefile">
+      <calcite-accordion selection-mode="single">
+        <calcite-accordion-item
+          icon="upload"
+          item-title="Upload Shapefile"
+          item-subtitle="Format data berbentuk .zip"
+        >
+          <div style="padding: 5px">
+            <form id="uploadForm" enctype="multipart/form-data" method="post">
+              <div class="field">
+                <label class="file-upload">
+                  <p><strong>Tambah Shapefile</strong></p>
+                  <input id="inFile" type="file" name="file">
+                </label>
+              </div>
+            </form>
+
+            <span
+              id="upload-status"
+              class="file-upload-status"
+              style="opacity:1;"
+            />
+            <div id="fileInfo" />
+            <div>
+              <el-button id="remove__layer" type="warning" @click="removeShapefile">Hapus Shapefile</el-button>
+            </div>
+          </div>
+        </calcite-accordion-item>
+      </calcite-accordion>
     </div>
     <div id="mapViewDiv" />
   </div>
@@ -25,16 +138,16 @@ import Compass from '@arcgis/core/widgets/Compass';
 import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import Attribution from '@arcgis/core/widgets/Attribution';
 import Expand from '@arcgis/core/widgets/Expand';
-import Legend from '@arcgis/core/widgets/Legend';
-import LayerList from '@arcgis/core/widgets/LayerList';
 import Print from '@arcgis/core/widgets/Print';
 import ScaleBar from '@arcgis/core/widgets/ScaleBar';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
-import shp from 'shpjs';
-import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
+import esriRequest from '@arcgis/core/request';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import Field from '@arcgis/core/layers/support/Field';
+import Graphic from '@arcgis/core/Graphic';
 // import rdtrMap from './mapRdtr';
 import rupabumis from './mapRupabumi';
 import rtrwProvMap from './mapRtrw';
@@ -46,17 +159,42 @@ export default {
   },
   data() {
     return {
+      tempLayer: null,
+      radioProject: null,
+      checkedEcology: false,
+      checkedKelola: true,
+      checkedPantau: true,
+      checkedTapak: false,
+      checkedSosial: false,
+      checkedStudi: false,
+      checkedKelolaPoly: false,
+      checkedPantauPoly: false,
+      checkedRBI: true,
+      layerRtrw: [],
       mapView: null,
       selectedFeedback: {},
       showIdDialog: false,
       mapGeojsonArray: [],
+      mapGeojsonArrayProject: [],
       projects: [],
       projectTitle: '',
       selectId: null,
       title: '',
       groupGeojson: [],
       rendererTapak: {},
+      selectedProject: '',
+      drawer: false,
+      idProjectItem: null,
+      mapInit: [],
+      isToggled: false,
     };
+  },
+  computed: {
+    filterByKegiatan() {
+      return this.projects.filter(item => {
+        return item.project_title.toLowerCase().includes(this.selectedProject);
+      });
+    },
   },
   mounted: function() {
     console.log('Map Component Mounted');
@@ -64,22 +202,270 @@ export default {
     this.getProjectData();
   },
   methods: {
-    querySearch(queryString, cb) {
-      var projects = this.projects;
-      var results = queryString ? projects.filter(this.createFilter(queryString)) : projects;
-      const mapResult = results.map((item) => {
-        return {
-          value: item.project_title,
-          id: item.id_project,
-        };
+    removeShapefile() {
+      this.tempLayer.forEach(item => {
+        this.mapInit.removeMany(item);
       });
-      cb(mapResult);
+      document.getElementById('inFile').value = '';
     },
-    createFilter(queryString) {
-      return (link) => {
-        const resultLink = link.project_title.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
-        return resultLink;
-      };
+    getIdProject(e) {
+      this.idProjectItem = e;
+
+      if (this.idProjectItem) {
+        this.drawer = false;
+        axios.get(`api/map-geojson?id=${this.idProjectItem}`)
+          .then((response) => {
+            response.data.forEach((item) => {
+              const getType = JSON.parse(item.feature_layer);
+              const propType = getType.features[0].properties.type;
+              const propFields = getType.features[0].properties.field;
+
+              // Popup
+              const arrayJsonTemplate = {
+                title: 'Keterangan',
+                content: '<table style="border-collapse: collapse !important">' +
+                                  '<thead>' +
+                                    '<tr style="margin: 5px 0;">' +
+                                      '<td style="width: 35%">FID</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.id + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                      '<td style="width: 35%">NAMA_PEMRAKARSA</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.pemrakarsa + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0;">' +
+                                      '<td style="width: 35%">LAYER</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.layer + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                      '<td style="width: 35%">NAMA_KEGIATAN</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.kegiatan + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0;">' +
+                                      '<td style="width: 35%">JENIS_DOKUMEN</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.dokumen + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                      '<td style="width: 35%">LOKASI</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.lokasi + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0;">' +
+                                      '<td style="width: 35%">LUAS</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.luas + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                      '<td style="width: 35%">SKALA_DATA</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.skala + '</td>' +
+                                    '</tr>' +
+                                  '</thead>' +
+                                '</table>',
+              };
+
+              // Tapak
+              if (propType === 'tapak') {
+                const blob = new Blob([item.feature_layer], {
+                  type: 'application/json',
+                });
+                const rendererTapak = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'simple-fill',
+                    color: [200, 0, 0, 1],
+                    outline: {
+                      color: [200, 0, 0, 1],
+                      width: 2,
+                    },
+                  },
+                };
+                const url = URL.createObjectURL(blob);
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Tapak Proyek',
+                  renderer: rendererTapak,
+                  popupTemplate: arrayJsonTemplate,
+                });
+
+                this.$parent.mapView.on('layerview-create', async(event) => {
+                  await this.$parent.mapView.goTo({
+                    target: event.layer.fullExtent,
+                  });
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+                this.checkedTapak = true;
+              }
+
+              // Ecology
+              if (propType === 'ecology') {
+                const blob = new Blob([item.feature_layer], {
+                  type: 'application/json',
+                });
+                const rendereEco = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'simple-fill',
+                    color: [0, 0, 0, 0.0],
+                    outline: {
+                      color: [168, 112, 0, 1],
+                      width: 2,
+                    },
+                  },
+                };
+                const url = URL.createObjectURL(blob);
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  title: 'Layer Batas Ekologis',
+                  visible: true,
+                  renderer: rendereEco,
+                  popupTemplate: arrayJsonTemplate,
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+                this.checkedEcology = true;
+              }
+
+              // Social
+              if (propType === 'social') {
+                const blob = new Blob([item.feature_layer], {
+                  type: 'application/json',
+                });
+                const rendererSocial = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'simple-fill',
+                    color: [0, 0, 0, 0.0],
+                    outline: {
+                      color: [0, 76, 115, 1],
+                      width: 2,
+                    },
+                  },
+                };
+                const url = URL.createObjectURL(blob);
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Batas Sosial',
+                  renderer: rendererSocial,
+                  popupTemplate: arrayJsonTemplate,
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+                this.checkedSosial = true;
+              }
+
+              // Study
+              if (propType === 'study') {
+                const blob = new Blob([item.feature_layer], {
+                  type: 'application/json',
+                });
+                const rendererStudy = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'simple-fill',
+                    color: [0, 0, 0, 0.0],
+                    outline: {
+                      color: [255, 0, 255, 1],
+                      width: 2,
+                    },
+                  },
+                };
+                const url = URL.createObjectURL(blob);
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Batas Studi',
+                  renderer: rendererStudy,
+                  popupTemplate: arrayJsonTemplate,
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+                this.checkedStudi = true;
+              }
+
+              // Pemantauan
+              if (propType === 'pemantauan') {
+                const blob = new Blob([item.feature_layer], {
+                  type: 'application/json',
+                });
+                const rendererPemantauan = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                    url: '/titik_pantau.png',
+                    width: '24px',
+                    height: '24px',
+                  },
+                };
+                const url = URL.createObjectURL(blob);
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Titik Pemantauan',
+                  renderer: rendererPemantauan,
+                  popupTemplate: arrayJsonTemplate,
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+                this.checkedPantau = true;
+              }
+
+              // Pengelolaan
+              if (propType === 'study') {
+                const blob = new Blob([item.feature_layer], {
+                  type: 'application/json',
+                });
+                const rendererPengelolaan = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                    url: '/titik_kelola.png',
+                    width: '24px',
+                    height: '24px',
+                  },
+                };
+                const url = URL.createObjectURL(blob);
+                const geojsonLayerArray = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  visible: true,
+                  title: 'Layer Titik Pengelolaan',
+                  renderer: rendererPengelolaan,
+                  popupTemplate: arrayJsonTemplate,
+                });
+
+                this.mapGeojsonArrayProject.push(geojsonLayerArray);
+                this.checkedKelola = true;
+              }
+              this.mapInit.addMany(this.mapGeojsonArrayProject);
+            });
+          });
+      } else {
+        this.mapInit.removeMany(this.mapGeojsonArrayProject);
+        this.checkedTapak = false;
+        this.checkedEcology = false;
+        this.checkedSosial = false;
+        this.checkedStudi = false;
+      }
     },
     getProjectData() {
       axios.get('api/project-maps')
@@ -115,402 +501,336 @@ export default {
         basemap: 'topo',
       });
 
+      this.mapInit = map;
+
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
 
       // const mapGeojsonArray = [];
+      axios.get(`api/map-geojson`)
+        .then((response) => {
+          response.data.forEach((item) => {
+            const getType = JSON.parse(item.feature_layer);
+            const propType = getType.features[0].properties.type;
+            const propFields = getType.features[0].properties.field;
 
-      axios.get('api/maps')
-        .then(response => {
-          const projects = response.data;
-          for (let i = 0; i < projects.length; i++) {
-            if (projects[i].stored_filename) {
-              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                const blob = new Blob([JSON.stringify(data)], {
-                  type: 'application/json',
-                });
+            // Popup
+            const arrayJsonTemplate = {
+              title: 'Keterangan',
+              content: '<table style="border-collapse: collapse !important">' +
+                                  '<thead>' +
+                                    '<tr style="margin: 5px 0;">' +
+                                      '<td style="width: 35%">FID</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.id + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                      '<td style="width: 35%">NAMA_PEMRAKARSA</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.pemrakarsa + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0;">' +
+                                      '<td style="width: 35%">LAYER</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.layer + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                      '<td style="width: 35%">NAMA_KEGIATAN</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.kegiatan + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0;">' +
+                                      '<td style="width: 35%">JENIS_DOKUMEN</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.dokumen + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                      '<td style="width: 35%">LOKASI</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.lokasi + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0;">' +
+                                      '<td style="width: 35%">LUAS</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.luas + '</td>' +
+                                    '</tr>' +
+                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                                      '<td style="width: 35%">SKALA_DATA</td>' +
+                                      '<td> : </td>' +
+                                      '<td>' + propFields.skala + '</td>' +
+                                    '</tr>' +
+                                  '</thead>' +
+                                '</table>',
+            };
 
-                const url = URL.createObjectURL(blob);
-                axios.get('api/projects/' + projects[i].id_project).then((response) => {
-                  const arrayJsonTemplate = {
-                    title: response.data.project_title + ' (' + response.data.project_year + ').',
-                    content: '<table style="border-collapse: collapse !important">' +
-                            '<thead>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">FID</td>' +
-                                '<td> : </td>' +
-                                '<td>' + data.features[0].properties.id + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">NAMA_PEMRAKARSA</td>' +
-                                '<td> : </td>' +
-                                '<td>' + data.features[0].properties.pemrakarsa + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">LAYER</td>' +
-                                '<td> : </td>' +
-                                '<td>' + data.features[0].properties.layer + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">NAMA_KEGIATAN</td>' +
-                                '<td> : </td>' +
-                                '<td>' + data.features[0].properties.kegiatan + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">JENIS_DOKUMEN</td>' +
-                                '<td> : </td>' +
-                                '<td>' + data.features[0].properties.dokumen + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">LOKASI</td>' +
-                                '<td> : </td>' +
-                                '<td>' + data.features[0].properties.lokasi + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0;">' +
-                                '<td style="width: 35%">LUAS</td>' +
-                                '<td> : </td>' +
-                                '<td>' + data.features[0].properties.luas + '</td>' +
-                              '</tr>' +
-                              '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                '<td style="width: 35%">SKALA_DATA</td>' +
-                                '<td> : </td>' +
-                                '<td>' + data.features[0].properties.skala + '</td>' +
-                              '</tr>' +
-                            '</thead>' +
-                          '</table>',
-                  };
+            // Pemantauan
+            if (propType === 'pemantauan') {
+              const blob = new Blob([item.feature_layer], {
+                type: 'application/json',
+              });
+              const rendererPemantauan = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                  url: '/titik_pantau.png',
+                  width: '24px',
+                  height: '24px',
+                },
+              };
+              const url = URL.createObjectURL(blob);
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: url,
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Titik Pemantauan',
+                renderer: rendererPemantauan,
+                popupTemplate: arrayJsonTemplate,
+              });
 
-                  if (projects[i].attachment_type === 'ecology') {
-                    this.title = 'Peta Batas Ekologi';
-                    this.rendererTapak = {
-                      type: 'simple',
-                      field: '*',
-                      symbol: {
-                        type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
-                        outline: {
-                          color: [168, 112, 0, 1],
-                          width: 2,
-                        },
-                      },
-                    };
-                  } else if (projects[i].attachment_type === 'social') {
-                    this.title = 'Peta Batas Sosial';
-                    this.rendererTapak = {
-                      type: 'simple',
-                      field: '*',
-                      symbol: {
-                        type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
-                        outline: {
-                          color: [0, 76, 115, 1],
-                          width: 2,
-                        },
-                      },
-                    };
-                  } else if (projects[i].attachment_type === 'study') {
-                    this.title = 'Peta Batas Wilayah Studi';
-                    this.rendererTapak = {
-                      type: 'simple',
-                      field: '*',
-                      symbol: {
-                        type: 'simple-fill',
-                        color: [0, 0, 0, 0.0],
-                        outline: {
-                          color: [255, 0, 255, 1],
-                          width: 2,
-                        },
-                      },
-                    };
-                  } else if (projects[i].attachment_type === 'tapak') {
-                    this.title = 'Peta Tapak';
-                    this.rendererTapak = {
-                      type: 'simple',
-                      field: '*',
-                      symbol: {
-                        type: 'simple-fill',
-                        color: [200, 0, 0, 1],
-                        outline: {
-                          color: [200, 0, 0, 1],
-                          width: 2,
-                        },
-                      },
-                    };
-                  }
+              this.mapGeojsonArray.push(geojsonLayerArray);
+              const toggle = document.getElementById('layerPantauCheckBox');
 
-                  const geojsonLayerArray = new GeoJSONLayer({
-                    url: url,
-                    outFields: ['*'],
-                    visible: false,
-                    title: projects[i].project_title,
-                    popupTemplate: arrayJsonTemplate,
-                    renderer: this.rendererTapak,
-                    maxScale: 5000,
-                  });
-
-                  this.mapGeojsonArray.push(geojsonLayerArray);
-
-                  // last loop
-                  if (i === projects.length - 1){
-                    const kegiatanGroupLayer = new GroupLayer({
-                      title: 'Peta Tematik AMDAL',
-                      visible: true,
-                      layers: this.mapGeojsonArray,
-                      opacity: 0.90,
-                    });
-
-                    map.add(kegiatanGroupLayer);
-                  }
-                });
+              toggle.addEventListener('change', () => {
+                if (this.checkedPantau === true) {
+                  geojsonLayerArray.visible = true;
+                } else {
+                  map.removeMany(this.mapGeojsonArrayProject);
+                  geojsonLayerArray.visible = false;
+                }
               });
             }
-          }
+
+            // Pengelolaan
+            if (propType === 'study') {
+              const blob = new Blob([item.feature_layer], {
+                type: 'application/json',
+              });
+              const rendererPengelolaan = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
+                  url: '/titik_kelola.png',
+                  width: '24px',
+                  height: '24px',
+                },
+              };
+              const url = URL.createObjectURL(blob);
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: url,
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Titik Pengelolaan',
+                renderer: rendererPengelolaan,
+                popupTemplate: arrayJsonTemplate,
+              });
+
+              this.mapGeojsonArray.push(geojsonLayerArray);
+              const toggle = document.getElementById('layerKelolaCheckBox');
+
+              toggle.addEventListener('change', () => {
+                if (this.checkedKelola === true) {
+                  geojsonLayerArray.visible = true;
+                } else {
+                  map.removeMany(this.mapGeojsonArrayProject);
+                  geojsonLayerArray.visible = false;
+                }
+              });
+            }
+
+            // Ecology
+            if (propType === 'ecology') {
+              const blob = new Blob([item.feature_layer], {
+                type: 'application/json',
+              });
+              const rendereEco = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  type: 'simple-fill',
+                  color: [0, 0, 0, 0.0],
+                  outline: {
+                    color: [168, 112, 0, 1],
+                    width: 2,
+                  },
+                },
+              };
+              const url = URL.createObjectURL(blob);
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: url,
+                outFields: ['*'],
+                title: 'Layer Batas Ekologis',
+                visible: false,
+                renderer: rendereEco,
+                popupTemplate: arrayJsonTemplate,
+              });
+
+              this.mapGeojsonArray.push(geojsonLayerArray);
+              const ecologyToggle = document.getElementById('layerEcologyCheckBox');
+
+              ecologyToggle.addEventListener('change', () => {
+                if (this.checkedEcology === true) {
+                  geojsonLayerArray.visible = true;
+                } else {
+                  map.removeMany(this.mapGeojsonArrayProject);
+                  geojsonLayerArray.visible = false;
+                }
+              });
+            }
+
+            // Social
+            if (propType === 'social') {
+              const blob = new Blob([item.feature_layer], {
+                type: 'application/json',
+              });
+              const rendererSocial = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  type: 'simple-fill',
+                  color: [0, 0, 0, 0.0],
+                  outline: {
+                    color: [0, 76, 115, 1],
+                    width: 2,
+                  },
+                },
+              };
+              const url = URL.createObjectURL(blob);
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: url,
+                outFields: ['*'],
+                visible: false,
+                title: 'Layer Batas Sosial',
+                renderer: rendererSocial,
+                popupTemplate: arrayJsonTemplate,
+              });
+
+              this.mapGeojsonArray.push(geojsonLayerArray);
+              const toggle = document.getElementById('layerSosialCheckBox');
+
+              toggle.addEventListener('change', () => {
+                if (this.checkedSosial === true) {
+                  geojsonLayerArray.visible = true;
+                } else {
+                  map.removeMany(this.mapGeojsonArrayProject);
+                  geojsonLayerArray.visible = false;
+                }
+              });
+            }
+
+            // Study
+            if (propType === 'study') {
+              const blob = new Blob([item.feature_layer], {
+                type: 'application/json',
+              });
+              const rendererStudy = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  type: 'simple-fill',
+                  color: [0, 0, 0, 0.0],
+                  outline: {
+                    color: [255, 0, 255, 1],
+                    width: 2,
+                  },
+                },
+              };
+              const url = URL.createObjectURL(blob);
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: url,
+                outFields: ['*'],
+                visible: false,
+                title: 'Layer Batas Studi',
+                renderer: rendererStudy,
+                popupTemplate: arrayJsonTemplate,
+              });
+
+              this.mapGeojsonArray.push(geojsonLayerArray);
+              const toggle = document.getElementById('layerStudiCheckBox');
+
+              toggle.addEventListener('change', () => {
+                if (this.checkedStudi === true) {
+                  geojsonLayerArray.visible = true;
+                } else {
+                  map.removeMany(this.mapGeojsonArrayProject);
+                  geojsonLayerArray.visible = false;
+                }
+              });
+            }
+
+            // Tapak
+            if (propType === 'tapak') {
+              const blob = new Blob([item.feature_layer], {
+                type: 'application/json',
+              });
+              const rendererTapak = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  type: 'simple-fill',
+                  color: [200, 0, 0, 1],
+                  outline: {
+                    color: [200, 0, 0, 1],
+                    width: 2,
+                  },
+                },
+              };
+              const url = URL.createObjectURL(blob);
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: url,
+                outFields: ['*'],
+                visible: false,
+                title: 'Layer Tapak Proyek',
+                renderer: rendererTapak,
+                popupTemplate: arrayJsonTemplate,
+              });
+
+              this.mapGeojsonArray.push(geojsonLayerArray);
+              const toggle = document.getElementById('layerTapakCheckBox');
+
+              toggle.addEventListener('change', () => {
+                if (this.checkedTapak === true) {
+                  geojsonLayerArray.visible = true;
+                } else {
+                  map.removeMany(this.mapGeojsonArrayProject);
+                  geojsonLayerArray.visible = false;
+                }
+              });
+            }
+
+            map.addMany(this.mapGeojsonArray);
+          });
         });
 
-      // axios.get('api/maps')
-      //   .then(response => {
-      //     const projects = response.data;
+      const rbiToggle = document.getElementById('layerRBICheckBox');
 
-      //     const dataEcology = {
-      //       type: 'FeatureCollection',
-      //       features: [],
-      //       fileName: 'ecology',
-      //     };
-      //     const dataSocial = {
-      //       type: 'FeatureCollection',
-      //       features: [],
-      //       fileName: 'social',
-      //     };
-      //     const dataStudy = {
-      //       type: 'FeatureCollection',
-      //       features: [],
-      //       fileName: 'study',
-      //     };
-      //     const dataTapak = {
-      //       type: 'FeatureCollection',
-      //       features: [],
-      //       fileName: 'tapak',
-      //     };
-
-      //     const titleEcology = 'Peta Batas Ekologi';
-      //     const titleSocial = 'Peta Batas Social';
-      //     const titleStudy = 'Peta Batas Study';
-      //     const titleTapak = 'Peta Batas Tapak';
-
-      //     const rendererEcology = {
-      //       type: 'simple',
-      //       field: '*',
-      //       symbol: {
-      //         type: 'simple-fill',
-      //         color: [0, 0, 0, 0.0],
-      //         outline: {
-      //           color: '#a87000',
-      //           width: 2,
-      //         },
-      //       },
-      //     };
-      //     const rendererSocial = {
-      //       type: 'simple',
-      //       field: '*',
-      //       symbol: {
-      //         type: 'simple-fill',
-      //         color: [0, 0, 0, 0.0],
-      //         outline: {
-      //           color: '#004c73',
-      //           width: 2,
-      //         },
-      //       },
-      //     };
-      //     const rendererStudy = {
-      //       type: 'simple',
-      //       field: '*',
-      //       symbol: {
-      //         type: 'simple-fill',
-      //         color: [0, 0, 0, 0.0],
-      //         outline: {
-      //           color: '#ff00ff',
-      //           width: 2,
-      //         },
-      //       },
-      //     };
-      //     const rendererTapak = {
-      //       type: 'simple',
-      //       field: '*',
-      //       symbol: {
-      //         type: 'simple-fill',
-      //         color: [200, 0, 0, 1],
-      //         outline: {
-      //           color: '#c80000',
-      //           width: 2,
-      //         },
-      //       },
-      //     };
-
-      //     for (let i = 0; i < projects.length; i++) {
-      //       if (projects[i].stored_filename) {
-      //         shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-      //           if (projects[i].attachment_type === 'tapak'){
-      //             dataTapak.features = [...dataTapak.features, ...data.features];
-      //           } else if (projects[i].attachment_type === 'social'){
-      //             dataSocial.features = [...dataSocial.features, ...data.features];
-      //           } else if (projects[i].attachment_type === 'ecology'){
-      //             dataEcology.features = [...dataEcology.features, ...data.features];
-      //           } else if (projects[i].attachment_type === 'study'){
-      //             dataStudy.features = [...dataStudy.features, ...data.features];
-      //           }
-      //         });
-      //       }
-      //     }
-
-      //     console.log(dataEcology);
-
-      //     // Blob untuk masing2 type
-      //     const blobEcology = new Blob([JSON.stringify(dataEcology)], {
-      //       type: 'application/json',
-      //     });
-      //     const urlEcology = URL.createObjectURL(blobEcology);
-
-      //     const blobdataSocial = new Blob([JSON.stringify(dataSocial)], {
-      //       type: 'application/json',
-      //     });
-      //     const urlSocial = URL.createObjectURL(blobdataSocial);
-
-      //     const blobStudy = new Blob([JSON.stringify(dataStudy)], {
-      //       type: 'application/json',
-      //     });
-      //     const urlStudy = URL.createObjectURL(blobStudy);
-
-      //     const blobTapak = new Blob([JSON.stringify(dataEcology)], {
-      //       type: 'application/json',
-      //     });
-      //     const urlTapack = URL.createObjectURL(blobTapak);
-
-      //     const arrayJsonTemplate = {
-      //       title: projects[0].project_title + ' (' + projects[0].project_year + ').',
-      //       content: '<table style="border-collapse: collapse !important">' +
-      //                       '<thead>' +
-      //                         '<tr style="margin: 5px 0;">' +
-      //                           '<td style="width: 35%">KBLI Code</td>' +
-      //                           '<td> : </td>' +
-      //                           '<td>' + projects[0].kbli + '</td>' +
-      //                         '</tr>' +
-      //                         '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-      //                           '<td style="width: 35%">No Registrasi</td>' +
-      //                           '<td> : </td>' +
-      //                           '<td>' + projects[0].registration_no + '</td>' +
-      //                         '</tr>' +
-      //                         '<tr style="margin: 5px 0;">' +
-      //                           '<td style="width: 35%">Tipe</td>' +
-      //                           '<td> : </td>' +
-      //                           '<td>' + projects[0].required_doc + '</td>' +
-      //                         '</tr>' +
-      //                         '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-      //                           '<td style="width: 35%">Deskripsi</td>' +
-      //                           '<td> : </td>' +
-      //                           '<td>' + projects[0].description + '</td>' +
-      //                         '</tr>' +
-      //                         '<tr style="margin: 5px 0;">' +
-      //                           '<td style="width: 35%">Skala</td>' +
-      //                           '<td> : </td>' +
-      //                           '<td>' + projects[0].scale + ' ' + projects[0].scale_unit + '</td>' +
-      //                         '</tr>' +
-      //                       '</thead>' +
-      //                     '</table>',
-      //     };
-
-      //     this.mapGeojsonArray.push(new GeoJSONLayer({
-      //       url: urlEcology,
-      //       outFields: ['*'],
-      //       visible: false,
-      //       title: titleEcology,
-      //       popupTemplate: arrayJsonTemplate,
-      //       renderer: rendererEcology,
-      //       maxScale: 5000,
-      //       geometryType: 'polygon',
-      //     }));
-      //     this.mapGeojsonArray.push(new GeoJSONLayer({
-      //       url: urlSocial,
-      //       outFields: ['*'],
-      //       visible: false,
-      //       title: titleSocial,
-      //       popupTemplate: arrayJsonTemplate,
-      //       renderer: rendererSocial,
-      //       maxScale: 5000,
-      //       geometryType: 'polygon',
-      //     }));
-      //     this.mapGeojsonArray.push(new GeoJSONLayer({
-      //       url: urlStudy,
-      //       outFields: ['*'],
-      //       visible: false,
-      //       title: titleStudy,
-      //       popupTemplate: arrayJsonTemplate,
-      //       renderer: rendererStudy,
-      //       maxScale: 5000,
-      //       geometryType: 'polygon',
-      //     }));
-      //     this.mapGeojsonArray.push(new GeoJSONLayer({
-      //       url: urlTapack,
-      //       outFields: ['*'],
-      //       visible: false,
-      //       title: titleTapak,
-      //       popupTemplate: arrayJsonTemplate,
-      //       renderer: rendererTapak,
-      //       maxScale: 5000,
-      //       geometryType: 'polygon',
-      //     }));
-
-      //     const kegiatanGroupLayer = new GroupLayer({
-      //       title: 'Peta Tematik AMDAL',
-      //       visible: true,
-      //       layers: this.mapGeojsonArray,
-      //       opacity: 0.90,
-      //     });
-
-      //     map.add(kegiatanGroupLayer);
-      //   });
-
-      // const kawasanHutan = new MapImageLayer({
-      //   url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
-      //   imageTransparency: true,
-      //   visible: false,
-      //   visibilityMode: '',
-      // });
-
-      // const batasKabupaten = new MapImageLayer({
-      //   title: 'Batas Kabupaten Indonesia',
-      //   url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Kabupaten_Kota_50K/MapServer',
-      //   imageTransparency: true,
-      //   visible: false,
-      //   visibilityMode: '',
-      // });
-
-      // const batasProvinsi = new MapImageLayer({
-      //   title: 'Batas Provinsi Indonesia',
-      //   url: 'https://sigap.menlhk.go.id/server/rest/services/Batas_Provinsi_Indonesia/MapServer',
-      //   imageTransparency: true,
-      //   visible: false,
-      //   visibilityMode: '',
-      // });
-
-      const rupabumiGroup = new GroupLayer({
-        title: 'Peta Rupa Bumi',
-        visible: true,
-        layers: rupabumis,
-        opacity: 0.90,
+      rbiToggle.addEventListener('change', () => {
+        if (this.checkedRBI === true) {
+          rupabumis.visible = true;
+        } else {
+          rupabumis.visible = false;
+        }
       });
 
-      map.add(rupabumiGroup);
+      map.add(rupabumis);
 
-      const rtrwProvGroup = new GroupLayer({
-        title: 'Peta RTRW Provinsi',
-        visible: true,
-        layers: rtrwProvMap,
-        opacity: 0.90,
-      });
-
-      map.add(rtrwProvGroup);
+      // const rtrwToggle = document.getElementById('check__rtrw');
+      // rtrwToggle.addEventListener('change', (e) => {
+      //   console.log(e);
+      // if (this.layerRtrw === true) {
+      //   for (let i = 0; i < rtrwProvMap.length; i++) {
+      //     rtrwProvMap[i].visible = true;
+      //   }
+      // } else {
+      //   for (let i = 0; i < rtrwProvMap.length; i++) {
+      //     rtrwProvMap[i].visible = false;
+      //   }
+      // }
+      // });
+      map.add(rtrwProvMap);
 
       const mapView = new MapView({
         container: 'mapViewDiv',
@@ -552,15 +872,15 @@ export default {
       });
       mapView.ui.add(attribution, 'manual');
 
-      const legend = new Legend({
-        view: mapView,
-        container: document.createElement('div'),
-      });
-      const layerList = new LayerList({
-        view: mapView,
-        container: document.createElement('div'),
-        listItemCreatedFunction: this.defineActions,
-      });
+      // const legend = new Legend({
+      //   view: mapView,
+      //   container: document.createElement('div'),
+      // });
+      // const layerList = new LayerList({
+      //   view: mapView,
+      //   container: document.createElement('div'),
+      //   listItemCreatedFunction: this.defineActions,
+      // });
 
       const print = new Print({
         view: mapView,
@@ -573,30 +893,118 @@ export default {
         content: print,
       });
 
-      layerList.on('trigger-action', (event) => {
-        const id = event.action.id;
-        console.log(event.item);
-        if (id === 'full-extent') {
-          mapView.goTo({
-            target: event.item.layer.fullExtent,
-          });
-        }
-      });
-
       const scaleBar = new ScaleBar({
         view: mapView,
         unit: 'metric', // The scale bar displays both metric and non-metric units.
       });
 
-      // Add the widget to the bottom left corner of the view
       mapView.ui.add(scaleBar, {
         position: 'bottom-left',
       });
 
-      mapView.ui.add(document.getElementById('input__select__kegiatan'), 'top-right');
+      document
+        .getElementById('uploadForm')
+        .addEventListener('change', (event) => {
+          const fileName = event.target.value.toLowerCase();
 
-      mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'top-right');
+          if (fileName.indexOf('.zip') !== -1) {
+            // is file a zip - if not notify user
+            generateFeatureCollection(fileName);
+          } else {
+            document.getElementById('upload-status').innerHTML =
+                '<p style="color:red">Add shapefile as .zip file</p>';
+          }
+        });
+
+      function generateFeatureCollection(fileName) {
+        let name = fileName.split('.');
+        // Chrome adds c:\fakepath to the value - we need to remove it
+        name = name[0].replace('c:\\fakepath\\', '');
+
+        document.getElementById('upload-status').innerHTML =
+            '<b>Loading </b>' + name;
+
+        // define the input params for generate see the rest doc for details
+        // https://developers.arcgis.com/rest/users-groups-and-items/generate.htm
+        const params = {
+          name: name,
+          targetSR: mapView.spatialReference,
+          maxRecordCount: 1000,
+          enforceInputFileSizeLimit: true,
+          enforceOutputJsonSizeLimit: true,
+        };
+
+        // generalize features to 10 meters for better performance
+        params.generalize = true;
+        params.maxAllowableOffset = 10;
+        params.reducePrecision = true;
+        params.numberOfDigitsAfterDecimal = 0;
+
+        const myContent = {
+          filetype: 'shapefile',
+          publishParameters: JSON.stringify(params),
+          f: 'json',
+        };
+
+        const portalUrl = 'https://www.arcgis.com';
+        esriRequest(portalUrl + '/sharing/rest/content/features/generate', {
+          query: myContent,
+          body: document.getElementById('uploadForm'),
+          responseType: 'json',
+        })
+          .then((response) => {
+            const layerName = response.data.featureCollection.layers[0].layerDefinition.name;
+            document.getElementById('upload-status').innerHTML = '<b>Loaded: </b>' + layerName;
+            addShapefileToMap(response.data.featureCollection);
+          })
+          .catch(errorHandler);
+      }
+
+      function errorHandler(error) {
+        document.getElementById('upload-status').innerHTML =
+            "<p style='color:red;max-width: 500px;'>" + error.message + '</p>';
+      }
+
+      var layerIn = [];
+
+      function addShapefileToMap(featureCollection) {
+        let sourceGraphics = [];
+
+        const layers = featureCollection.layers.map((layer) => {
+          const graphics = layer.featureSet.features.map((feature) => {
+            return Graphic.fromJSON(feature);
+          });
+          sourceGraphics = sourceGraphics.concat(graphics);
+          const featureLayer = new FeatureLayer({
+            objectIdField: 'FID',
+            source: graphics,
+            fields: layer.layerDefinition.fields.map((field) => {
+              return Field.fromJSON(field);
+            }),
+          });
+          return featureLayer;
+        });
+        map.addMany(layers);
+        mapView.goTo(sourceGraphics).catch((error) => {
+          if (error.name !== 'AbortError') {
+            console.error(error);
+          }
+        });
+
+        layerIn.push(layers);
+        document.getElementById('upload-status').innerHTML = '';
+      }
+
+      this.tempLayer = layerIn;
+
+      // mapView.ui.add(document.getElementById('input__select__kegiatan'), 'top-right');
+      mapView.ui.add(document.getElementById('open__drawer'), 'top-right');
+      mapView.ui.add(document.getElementById('legend__drawer'), 'top-right');
+      mapView.ui.add(document.getElementById('upload__shapefile'), 'top-right');
+      mapView.ui.add(document.getElementById('layer__list'), 'top-right');
+
+      // mapView.ui.add(layerList, 'top-right');
+      // mapView.ui.add(legend, 'top-right');
       mapView.ui.add(printExpand, 'top-left');
     },
   },
@@ -619,6 +1027,47 @@ div#input__select__kegiatan {
     width: 100%;
 }
 
+div#legend__drawer {
+    width: 100%;
+}
+
+div#option__legend {
+    display: flex;
+    flex-direction: column;
+}
+
+div#option__legend .el-checkbox {
+    margin-top: 10px;
+}
+
+div#option__legend .el-checkbox img {
+    width: 20px;
+    vertical-align: middle;
+}
+
+div#upload__shapefile {
+    width: 100%;
+}
+
+input#inFile {
+    outline: seagreen;
+    border: 1px solid seagreen;
+    padding: 2px;
+    margin: 10px 0;
+}
+
+div#layer__list {
+  width: 100%;
+}
+
+div#list__item {
+  width: 100%;
+}
+
+#calcite_list_item {
+  width: 100%;
+}
+
 .inline-input {
   width: 100%;
   z-index: 100;
@@ -627,6 +1076,22 @@ div#input__select__kegiatan {
 #mapViewDiv {
   width: 100%;
   height: 100%;
+}
+
+.toggled {
+    color: white;
+    font-weight: 600;
+    background-color: seagreen;
+    padding: 10px;
+}
+
+.toggled::after {
+    content: '[Selected]';
+}
+
+.select__project:hover {
+  color: seagreen;
+  font-weight: 500;
 }
 
 .esri-feature-content tr td {

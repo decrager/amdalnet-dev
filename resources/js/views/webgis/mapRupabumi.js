@@ -6,8 +6,6 @@ const rbiInaportal = new VectorTileLayer({
   visible: true,
 });
 
-const rupabumis = [
-  rbiInaportal,
-];
+const rupabumis = rbiInaportal;
 
 export default rupabumis;

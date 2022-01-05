@@ -1,6 +1,6 @@
 <template>
   <div>
-    <disclaimer v-if="isFirstVisit()" @closeDialog="onCloseDisclaimer" />
+    <disclaimer @closeDialog="onCloseDisclaimer" />
     <header-home @handleSetMenu="handleSetMenu" />
     <hero-home v-if="toggleMenu" />
     <steps-home v-if="toggleMenu" />

@@ -65,6 +65,13 @@ class ProjectMapAttachmentController extends Controller
 
                 $map->original_filename = $file->getClientOriginalName();
                 $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
+                if ($map->attachment_type === 'ecology') {
+                    $map->geom = $request->geomEcology;
+                } else if ($map->attachment_type === 'social') {
+                    $map->geom = $request->geomSocial;
+                } else if ($map->attachment_type === 'study') {
+                    $map->geom = $request->geomStudy;
+                }
 
                 if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
                     $map->save();
@@ -162,5 +169,73 @@ class ProjectMapAttachmentController extends Controller
             ->get();
 
         return response()->json($getProjectMap);
+    }
+
+    public function getGeojson(Request $request)
+    {
+        $getGeojson = DB::table('project_map_attachments')
+            ->select(DB::raw("json_build_object(
+                'type', 'FeatureCollection',
+                'crs',  json_build_object(
+                    'type',      'name', 
+                    'properties', json_build_object(
+                        'name', 'EPSG:4326'  
+                    )
+                ), 
+                'features', json_agg(
+                    json_build_object(
+                        'type', 'Feature',
+                        'id', id,
+                        'geometry', ST_AsGeoJSON(GEOM)::json,
+                        'properties', json_build_object(
+                            'id', id_project,
+                            'type', attachment_type,
+                            'field', properties
+                        )
+                    )
+                )
+            ) as feature_layer"))
+            ->when($request->has('type'), function ($query) use ($request) {
+                return $query->where('attachment_type', '=', $request->type);
+            })
+            ->when($request->has('id'), function ($query) use ($request) {
+                return $query->where('id_project', '=', $request->id);
+            })
+            ->whereNotNull('geom')
+            ->groupBy('id')
+            ->get();
+
+        return response()->json($getGeojson);
+    }
+
+    public function getMergeGeojson()
+    {
+        $getGeojson = DB::table('project_map_attachments')
+            ->select(DB::raw("json_build_object(
+                'type', 'FeatureCollection',
+                'crs',  json_build_object(
+                    'type',      'name', 
+                    'properties', json_build_object(
+                        'name', 'EPSG:4326'  
+                    )
+                ), 
+                'features', json_agg(
+                    json_build_object(
+                        'type', 'Feature',
+                        'id', id,
+                        'geometry', ST_AsGeoJSON(GEOM)::json,
+                        'properties', json_build_object(
+                            'id', id_project,
+                            'type', attachment_type,
+                            'field', properties
+                        )
+                    )
+                )
+            ) as feature_layer"))
+            ->whereNotNull('geom')
+            ->groupBy('attachment_type')
+            ->get();
+
+        return response()->json($getGeojson);
     }
 }
