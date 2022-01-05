@@ -66,11 +66,25 @@ class ProjectMapAttachmentController extends Controller
                 $map->original_filename = $file->getClientOriginalName();
                 $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
                 if ($map->attachment_type === 'ecology') {
-                    $map->geom = $request->geomEcology;
+                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomEcologyGeojson'), 4326)");
+                    $map->properties = $request->geomEcologyProperties;
+                    $map->id_styles = $request->geomEcologyStyles;
                 } else if ($map->attachment_type === 'social') {
-                    $map->geom = $request->geomSocial;
+                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomSocialGeojson'), 4326)");
+                    $map->properties = $request->geomSocialProperties;
+                    $map->id_styles = $request->geomSocialStyles;
                 } else if ($map->attachment_type === 'study') {
-                    $map->geom = $request->geomStudy;
+                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomStudyGeojson'), 4326)");
+                    $map->properties = $request->geomStudyProperties;
+                    $map->id_styles = $request->geomStudyStyles;
+                } else if ($map->attachment_type === 'pemantauan') {
+                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomPantauGeojson'), 4326)");
+                    $map->properties = $request->geomPantauProperties;
+                    $map->id_styles = $request->geomPantauStyles;
+                } else if ($map->attachment_type === 'pengelolaan') {
+                    $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomKelolaGeojson'), 4326)");
+                    $map->properties = $request->geomKelolaProperties;
+                    $map->id_styles = $request->geomKelolaStyles;
                 }
 
                 if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
@@ -185,24 +199,25 @@ class ProjectMapAttachmentController extends Controller
                 'features', json_agg(
                     json_build_object(
                         'type', 'Feature',
-                        'id', id,
+                        'id', project_map_attachments.id,
                         'geometry', ST_AsGeoJSON(GEOM)::json,
                         'properties', json_build_object(
                             'id', id_project,
                             'type', attachment_type,
-                            'field', properties
+                            'field', properties,
+                            'styles', map_styles.renderer
                         )
                     )
                 )
             ) as feature_layer"))
+            ->join('map_styles', 'project_map_attachments.id_styles', '=', 'map_styles.id')
             ->when($request->has('type'), function ($query) use ($request) {
                 return $query->where('attachment_type', '=', $request->type);
             })
             ->when($request->has('id'), function ($query) use ($request) {
                 return $query->where('id_project', '=', $request->id);
             })
-            ->whereNotNull('geom')
-            ->groupBy('id')
+            ->groupBy('project_map_attachments.id')
             ->get();
 
         return response()->json($getGeojson);
