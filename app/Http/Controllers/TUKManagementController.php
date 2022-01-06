@@ -18,6 +18,29 @@ class TUKManagementController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->type == 'listSelect') {
+            $tuks = [];
+            $teams = FeasibilityTestTeam::all();
+
+            foreach($teams as $tuk) {
+                $team_name = null;
+                if($tuk->authority == 'Pusat') {
+                    $team_name = 'Tim Uji Kelayakan Pusat ' . $tuk->team_number;
+                } else if($tuk->authority == 'Provinsi' && $tuk->provinceAuthority) {
+                    $team_name = 'Tim Uji kelayakan Provinsi ' . ucwords(strtolower($tuk->provinceAuthority->name)) . ' ' . $tuk->team_number;
+                } else if($tuk->authority == 'Kabupaten/Kota' && $tuk->districtAuthority) {
+                    $team_name = 'Tim Uji kelayakan ' . ucwords(strtolower($tuk->districtAuthority->name)) . ' ' . $tuk->team_number;
+                }
+
+                $tuks[] = [
+                    'id' => $tuk->id,
+                    'name' => $team_name
+                ];
+            }
+
+            return $tuks;
+        }
+
         if($request->type == 'members') {
             $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $request->id)->get();
             $team_members = [];
