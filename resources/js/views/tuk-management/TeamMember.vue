@@ -103,6 +103,7 @@ export default {
     async getExpertAndEmployee() {
       this.expertEmployee = await tukManagementResource.list({
         type: 'expertEmployee',
+        idTUK: this.$route.params.id,
       });
     },
     async getTeamMember() {

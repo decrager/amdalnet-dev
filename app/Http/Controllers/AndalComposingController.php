@@ -1487,7 +1487,7 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('penyusun_period', $penyusun_period);
         $templateProcessor->setValue('penyusun_address', $penyusun_address);
         $templateProcessor->setValue('penyusun_phone', $penyusun_phone);
-        $templateProcessor->cloneBlock('lpjp_pj_block', 1, true, false, $lpjp_pj_block);
+        $templateProcessor->cloneBlock('lpjp_pj_block', count($lpjp_pj_block), true, false, $lpjp_pj_block);
         $templateProcessor->setValue('konsul_publik_date', $konsul_publik_date);
         $templateProcessor->setValue('konsul_publik_lokasi', $konsul_publik_lokasi);
         $templateProcessor->setValue('konsul_publik_peserta', $konsul_publik_peserta);

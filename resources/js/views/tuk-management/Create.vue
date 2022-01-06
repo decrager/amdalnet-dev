@@ -175,7 +175,7 @@
           </el-row>
         </el-col>
       </el-row>
-      <el-row :gutter="32">
+      <!-- <el-row :gutter="32">
         <el-col :md="12" :sm="24">
           <el-row :gutter="32">
             <el-col :md="12" :sm="24">
@@ -231,7 +231,7 @@
             </el-col>
           </el-row>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row :gutter="32">
         <el-col :md="12" :sm="24">
           <div class="form-group">
@@ -374,16 +374,16 @@ export default {
       });
       this.currentData.assignment_file = null;
       const id_province_name = { ...this.currentData }.id_province_name;
-      const id_province = { ...this.currentData }.id_province;
+      // const id_province = { ...this.currentData }.id_province;
 
       if (id_province_name) {
         this.currentData.id_province_name = id_province_name;
         this.authority_districts = this.districts.filter(x => x.id_prov === id_province_name);
       }
-      if (id_province) {
-        const id_province = this.currentData.id_province;
-        this.address_districts = this.districts.filter(x => x.id_prov === id_province);
-      }
+      // if (id_province) {
+      //   const id_province = this.currentData.id_province;
+      //   this.address_districts = this.districts.filter(x => x.id_prov === id_province);
+      // }
       this.authority = this.currentData.authority;
 
       const dataType = this.currentData.authority === 'Provinsi' ? 'province' : null;
