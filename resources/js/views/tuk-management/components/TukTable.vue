@@ -54,8 +54,7 @@
     <el-table-column align="center" label="Alamat">
       <template slot-scope="scope">
         <span>
-          {{ scope.row.address }}, {{ scope.row.district.name | capitalize }},
-          {{ scope.row.province.name | capitalize }}
+          {{ scope.row.address }}
         </span>
       </template>
     </el-table-column>

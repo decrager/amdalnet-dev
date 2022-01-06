@@ -20,4 +20,9 @@ class LukMember extends Model
     {
         return $this->belongsTo(District::class, 'id_district', 'id');
     }
+
+    public function feasibilityTestTeamMember()
+    {
+        return $this->hasOne(FeasibilityTestTeamMember::class, 'id_luk_member', 'id');
+    }
 }
