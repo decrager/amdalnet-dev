@@ -60,7 +60,7 @@
         <el-col :sm="12" :md="12">
           <el-form-item label="Tim Uji Kelayakan">
             <el-select
-              v-model="meetings.expert_bank_team_id"
+              v-model="meetings.id_feasibility_test_team"
               placeholder="Pilih Tim"
               style="width: 100%"
               @change="handleChangeTimUji"
@@ -116,7 +116,7 @@
 
       <el-table-column label="Nama Anggota">
         <template slot-scope="scope">
-          <span v-if="scope.row.type == 'tuk'">{{ scope.row.name }} TUK</span>
+          <span v-if="scope.row.type == 'tuk'">{{ scope.row.name }}</span>
           <el-input v-else v-model="scope.row.name" />
         </template>
       </el-table-column>
@@ -173,7 +173,31 @@ export default {
       const data = await undanganRapatResource.list({
         expert_bank_team: 'true',
       });
-      this.timUjiKelayakan = data;
+      this.timUjiKelayakan = data.map((x) => {
+        let name = '';
+        const team_number = x.team_number ? x.team_number : '';
+
+        if (x.authority === 'Pusat') {
+          name = 'Tim Uji Kelayakan Pusat';
+        } else if (x.authority === 'Provinsi') {
+          if (x.province_authority) {
+            name = `Tim Uji Kelayakan Provinsi ${this.capitalize(
+              x.province_authority.name
+            )} ${team_number}`;
+          }
+        } else if (x.authority === 'Kabupaten/Kota') {
+          if (x.district_authority) {
+            name = `Tim Uji Kelayakan ${this.capitalize(
+              x.district_authority.name
+            )} ${team_number}`;
+          }
+        }
+
+        return {
+          id: x.id,
+          name,
+        };
+      });
     },
     async getPemrakarsa() {
       const data = await undanganRapatResource.list({ pemrakarsa: 'true' });
@@ -195,7 +219,21 @@ export default {
         name: null,
         email: null,
         type: 'other',
+        type_member: 'other',
       });
+    },
+    capitalize(mySentence) {
+      const words = mySentence.split(' ');
+
+      const newWords = words
+        .map((word) => {
+          return (
+            word.toLowerCase()[0].toUpperCase() +
+            word.toLowerCase().substring(1)
+          );
+        })
+        .join(' ');
+      return newWords;
     },
   },
 };
