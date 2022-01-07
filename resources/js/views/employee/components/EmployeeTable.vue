@@ -14,19 +14,6 @@
             <p><b>Email: </b>{{ scope.row.email }}</p>
             <p><b>Jenis Kelamin: </b>{{ scope.row.sex }}</p>
             <p><b>No. Telepon: </b>{{ scope.row.phone }}</p>
-            <p><b>No. Surat Keputusan: </b>{{ scope.row.decision_number }}</p>
-            <p>
-              <b>Surat Keputusan: </b>
-              <el-button
-                v-if="scope.row.decision_file"
-                type="text"
-                icon="el-icon-download"
-                @click="download(scope.row.decision_file)"
-              >
-                Download
-              </el-button>
-              <span v-else>-</span>
-            </p>
             <p>
               <b>Alamat: </b>{{ scope.row.address }},
               {{ scope.row.district.name | capitalize }},
