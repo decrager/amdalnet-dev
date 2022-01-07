@@ -30,18 +30,18 @@
       </el-table> -->
       <component-table
         :loading="loading"
-        :list="tableData"
+        :list="allData"
         @handleEditForm="handleEditForm($event)"
         @handleView="handleView($event)"
         @handleDelete="handleDelete($event)"
       />
-      <!-- <pagination
+      <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
         @pagination="handleFilter"
-      /> -->
+      />
       <!-- <component-dialog
         :component="component"
         :show="show"
@@ -54,38 +54,80 @@
 </template>
 
 <script>
-// import Resource from '@/api/resource';
-// import Pagination from '@/components/Pagination';
+import Pagination from '@/components/Pagination';
+import axios from 'axios';
 import ComponentTable from './components/ComponentTable.vue';
-// import ComponentDialog from './components/ComponentDialog.vue';
-// const appParamResource = new Resource('app-params');
 
 export default {
   name: 'Materi',
   components: {
-    // Pagination,
+    Pagination,
     ComponentTable,
     // ComponentDialog,
   },
   data() {
     return {
-      tableData: [
-        {
-          judul:
-            'Permenlhk NO P 23- 2018 Perubahan Izin Lingkungan di luar OSS',
-          deskripsi: 'Materi Bimtek Hotel Mercure Ancol, 25 Juli 2019',
-          tanggal: '27 Oktober 2021',
-          link: 'Download',
-        },
-      ],
+      loading: true,
+      allData: [],
+      total: 0,
+      listQuery: {
+        page: 1,
+        limit: 10,
+      },
+      optionValue: null,
+      sort: 'DESC',
     };
   },
-  created() {},
+  created() {
+    this.getAll();
+    this.loading = false;
+  },
   methods: {
+    handleFilter() {
+      this.getAll();
+    },
+    getAll(search, sort) {
+      this.loading = true;
+      axios
+        .get(
+          `/api/materials?page=${this.listQuery.page}&sort=${this.sort}`
+        )
+        .then((response) => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+          this.loading = false;
+        });
+    },
     handleCreate() {
       this.$router.push({
         name: 'addMateri',
       });
+    },
+    handleDelete({ rows }) {
+      this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Batal',
+        type: 'warning',
+      })
+        .then(() => {
+          axios.get(`/api/materials/delete/${rows.id}`)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Hapus Selesai',
+              });
+              this.getAll();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Hapus Digagalkan',
+          });
+        });
     },
   },
 };

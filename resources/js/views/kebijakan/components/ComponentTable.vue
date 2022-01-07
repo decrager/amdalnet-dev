@@ -10,7 +10,7 @@
       <template slot-scope="scope">
         <div class="d-flex pl-1">
           <p class="mb-1 fw-bold">Taggal Terbit :</p>
-          <p class="mb-1 ml-1">{{ scope.row.tanggal }}</p>
+          <p class="mb-1 ml-1">{{ formatDateStr(scope.row.set) }}</p>
         </div>
         <div class="d-flex pl-1">
           <p class="mb-1 fw-bold">Link Download :</p>
@@ -55,22 +55,22 @@
 
     <el-table-column label="Kebijakan PPU">
       <template slot-scope="scope">
-        <span>{{ scope.row.keb_pu }}</span>
+        <span>{{ scope.row.regulation_no }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Jenis PPU">
       <template slot-scope="scope">
-        <span>{{ scope.row.jen_pu }}</span>
+        <span>{{ scope.row.regulation.name }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Bidang Kegiatan">
       <template slot-scope="scope">
-        <span>{{ scope.row.kegiatan }}</span>
+        <span>{{ scope.row.field_of_activity }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Tentang">
       <template slot-scope="scope">
-        <span>{{ scope.row.tentang }}</span>
+        <span>{{ scope.row.about }}</span>
       </template>
     </el-table-column>
   </el-table>
@@ -91,10 +91,37 @@ export default {
       this.$emit('handleView', row);
     },
     handleEditForm(row) {
-      this.$emit('handleEditForm', row);
+      const currentParam = this.list.find((element) => element.parameter_name === row.parameter_name);
+      this.$router.push({
+        name: 'editKebijakan',
+        params: { row, appParams: currentParam },
+      });
     },
     handleDelete(rows) {
       this.$emit('handleDelete', { rows });
+    },
+    formatDateStr(date) {
+      const today = new Date(date);
+      var bulan = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
+      ];
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const day = today.getDate();
+      const monthID = bulan[month];
+      const finalDate = `${day} ${monthID} ${year}`;
+      return finalDate;
     },
   },
 };

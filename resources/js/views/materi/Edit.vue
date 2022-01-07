@@ -14,27 +14,31 @@
               <el-form>
                 <el-row>
                   <el-form-item label="Judul Materi">
-                    <el-input v-model="form.name" type="text" placeholder="Judul Materi" />
+                    <el-input v-model="currentParam.name" type="text" placeholder="Judul Materi" />
                   </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
                 <el-row>
                   <el-form-item label="Deskripsi">
-                    <el-input v-model="form.description" type="text" placeholder="Deskripsi" />
+                    <el-input v-model="currentParam.description" type="text" placeholder="Deskripsi" />
                   </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
                 <el-row>
                   <el-form-item label="Tanggal Terbit">
-                    <el-input v-model="form.raise_date" type="date" placeholder="Tanggal Terbit" style="width:50%" />
+                    <el-input v-model="currentParam.raise_date" type="date" placeholder="Tanggal Terbit" style="width:50%" />
                   </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
                 <el-row>
                   <el-form-item label="Upload Dokumen">
+                    <el-input
+                      v-model="currentParam.link"
+                      type="hidden"
+                    />
                     <input
                       ref="link"
                       type="file"
@@ -71,30 +75,31 @@ export default {
   props: {},
   data() {
     return {
-      form: {
-        name: '',
-        description: null,
-        raise_date: '',
-        link: '',
-      },
+      currentParam: {},
       link: '',
     };
   },
-  mounted() {},
+  created() {
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+    }
+  },
   methods: {
     handleFileUpload() {
       this.link = this.$refs.link.files[0];
     },
     async saveMateri() {
       const formData = new FormData();
+      formData.append('id', this.currentParam.id);
       formData.append('link', this.link);
-      formData.append('name', this.form.name);
-      formData.append('description', this.form.description);
-      formData.append('raise_date', this.form.raise_date);
+      formData.append('name', this.currentParam.name);
+      formData.append('description', this.currentParam.description);
+      formData.append('raise_date', this.currentParam.raise_date);
+      formData.append('old_link', this.currentParam.link);
 
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/materials', formData, { headers })
+        .post('api/materials/update', formData, { headers })
         .then(() => {
           this.$message({
             message: 'Materi Berhasil Disimpan',

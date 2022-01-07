@@ -2,7 +2,6 @@
   <div class="app-container" style="padding: 24px">
     <el-form
       ref="categoryForm"
-      :model="currentParam"
       label-position="top"
       label-width="200px"
       style="max-width: 100%"
@@ -11,46 +10,25 @@
         <el-row :gutter="20">
           <el-col :span="14">
             <div class="form-container">
-              <el-form>
+              <el-form ref="paramsForm">
                 <el-row>
-                  <el-form-item label="Judul Materi">
-                    <el-input v-model="form.name" type="text" placeholder="Judul Materi" />
-                  </el-form-item>
-                </el-row>
-              </el-form>
-              <el-form>
-                <el-row>
-                  <el-form-item label="Deskripsi">
-                    <el-input v-model="form.description" type="text" placeholder="Deskripsi" />
-                  </el-form-item>
-                </el-row>
-              </el-form>
-              <el-form>
-                <el-row>
-                  <el-form-item label="Tanggal Terbit">
-                    <el-input v-model="form.raise_date" type="date" placeholder="Tanggal Terbit" style="width:50%" />
-                  </el-form-item>
-                </el-row>
-              </el-form>
-              <el-form>
-                <el-row>
-                  <el-form-item label="Upload Dokumen">
-                    <input
-                      ref="link"
-                      type="file"
-                      class="el-input__inner"
-                      @change="handleFileUpload()"
-                    >
+                  <el-form-item label="Nama Peraturan">
+                    <el-input v-model="currentParam.name" type="text" placeholder="Nama Peraturan" />
                   </el-form-item>
                 </el-row>
               </el-form>
               <div class="" style="margin-top: 0.5rem; text-align: right">
-                <el-button type="danger" @click="handleCancel">Kembali</el-button>
+                <el-button
+                  type="danger"
+                  @click="handleCancel"
+                >
+                  Kembali
+                </el-button>
                 <el-button
                   type="submit"
                   size="mini"
                   icon="el-icon-s-claim"
-                  @click="saveMateri()"
+                  @click="savePeraturan()"
                 >
                   Simpan
                 </el-button>
@@ -67,42 +45,39 @@
 import axios from 'axios';
 
 export default {
-  name: 'AddMateri',
+  name: 'AddPeraturan',
   props: {},
   data() {
     return {
+      currentParam: {},
       form: {
         name: '',
-        description: null,
-        raise_date: '',
-        link: '',
       },
-      link: '',
     };
   },
-  mounted() {},
-  methods: {
-    handleFileUpload() {
-      this.link = this.$refs.link.files[0];
-    },
-    async saveMateri() {
-      const formData = new FormData();
-      formData.append('link', this.link);
-      formData.append('name', this.form.name);
-      formData.append('description', this.form.description);
-      formData.append('raise_date', this.form.raise_date);
 
+  created() {
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+      console.log(this.currentParam);
+    }
+  },
+  methods: {
+    async savePeraturan() {
+      const formData = new FormData();
+      formData.append('id', this.currentParam.id);
+      formData.append('name', this.currentParam.name);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/materials', formData, { headers })
+        .post('api/peraturan/update', formData, { headers })
         .then(() => {
           this.$message({
-            message: 'Materi Berhasil Disimpan',
+            message: 'Peraturan Berhasil Disimpan',
             type: 'success',
             duration: 5 * 1000,
           });
           this.$router.push({
-            name: 'materi',
+            name: 'peraturan',
           });
         })
         .catch((error) => {
@@ -116,7 +91,7 @@ export default {
     },
     handleCancel() {
       this.$router.push({
-        name: 'materi',
+        name: 'peraturan',
       });
     },
   },

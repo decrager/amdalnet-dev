@@ -13,7 +13,7 @@
               <el-form ref="paramsForm">
                 <el-row>
                   <el-form-item label="Nama Peraturan">
-                    <el-input type="text" placeholder="Nama Peraturan" />
+                    <el-input v-model="form.name" type="text" placeholder="Nama Peraturan" />
                   </el-form-item>
                 </el-row>
               </el-form>
@@ -24,7 +24,14 @@
                 >
                   Kembali
                 </el-button>
-                <el-button type="success">Simpan</el-button>
+                <el-button
+                  type="submit"
+                  size="mini"
+                  icon="el-icon-s-claim"
+                  @click="savePeraturan()"
+                >
+                  Simpan
+                </el-button>
               </div>
             </div>
           </el-col>
@@ -35,16 +42,46 @@
 </template>
 
 <script>
-// import Resource from '@/api/resource';
-// const appParamResource = new Resource('app-params');
+import axios from 'axios';
 
 export default {
   name: 'AddPeraturan',
   props: {},
-  data() {},
+  data() {
+    return {
+      form: {
+        name: '',
+      },
+    };
+  },
 
   mounted() {},
   methods: {
+    async savePeraturan() {
+      const formData = new FormData();
+      formData.append('name', this.form.name);
+      const headers = { 'Content-Type': 'multipart/form-data' };
+      await axios
+        .post('api/peraturan', formData, { headers })
+        .then(() => {
+          this.$message({
+            message: 'Peraturan Berhasil Disimpan',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          this.$router.push({
+            name: 'peraturan',
+          });
+        })
+        .catch((error) => {
+          this.errorMessage = error.message;
+          this.$message({
+            message: 'Ada Kesalahan, Pastikan Data Terisi',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+        });
+    },
     handleCancel() {
       this.$router.push({
         name: 'peraturan',
