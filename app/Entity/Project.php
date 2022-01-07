@@ -11,7 +11,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 class Project extends Model implements Auditable
 {
     use AuditableTrait;
-    
+
     use SoftDeletes;
 
     use WorkflowTrait;
@@ -60,7 +60,7 @@ class Project extends Model implements Auditable
     {
         return $this->hasMany(ImpactIdentification::class, 'id_project', 'id');
     }
-    
+
     public function impactIdentificationsClone()
     {
         return $this->hasMany(ImpactIdentificationClone::class, 'id_project', 'id');

@@ -27240,3 +27240,437 @@
 
  
 01-04-22 08:50:42 | POST detected
+ 
+01-05-22 14:26:47 | POST detected
+ 
+01-05-22 14:31:26 | POST detected
+ 
+01-05-22 14:33:16 | POST detected
+ 
+01-05-22 14:34:30 | POST detected
+ 
+01-05-22 14:34:51 | FILES detected
+ 
+01-05-22 14:34:51 | FILES detected
+ 
+01-05-22 14:45:06 | POST detected
+ 
+01-05-22 14:57:51 | POST detected
+ 
+01-05-22 15:17:03 | POST detected
+ 
+01-05-22 15:18:37 | POST detected
+ 
+01-05-22 15:20:15 | POST detected
+ 
+01-05-22 15:21:13 | POST detected
+ 
+01-05-22 15:22:35 | POST detected
+ 
+01-05-22 15:22:53 | FILES detected
+ 
+01-05-22 15:22:53 | FILES detected
+ 
+01-05-22 15:24:13 | FILES detected
+ 
+01-05-22 15:24:13 | FILES detected
+ 
+01-05-22 15:28:15 | FILES detected
+ 
+01-05-22 15:28:15 | FILES detected
+ 
+01-05-22 15:29:16 | FILES detected
+ 
+01-05-22 15:29:16 | FILES detected
+ 
+01-05-22 15:32:38 | POST detected
+ 
+01-05-22 15:33:06 | FILES detected
+ 
+01-05-22 15:33:06 | FILES detected
+ 
+01-05-22 15:34:55 | FILES detected
+ 
+01-05-22 15:34:55 | FILES detected
+ 
+01-05-22 15:35:37 | FILES detected
+ 
+01-05-22 15:35:37 | FILES detected
+ 
+01-05-22 15:36:12 | FILES detected
+ 
+01-05-22 15:36:12 | FILES detected
+ 
+01-05-22 15:36:51 | FILES detected
+ 
+01-05-22 15:36:51 | FILES detected
+ 
+01-05-22 15:48:22 | POST detected
+ 
+01-05-22 15:50:00 | POST detected
+ 
+01-05-22 15:59:00 | POST detected
+ 
+01-05-22 16:02:08 | POST detected
+ 
+01-05-22 16:07:04 | POST detected
+ 
+01-05-22 16:12:35 | POST detected
+ 
+01-05-22 16:13:58 | POST detected
+ 
+01-05-22 16:16:32 | POST detected
+ 
+01-05-22 16:20:35 | POST detected
+ 
+01-05-22 16:20:55 | FILES detected
+ 
+01-05-22 16:20:55 | FILES detected
+ 
+01-05-22 16:20:55 | FILES detected
+ 
+01-05-22 16:22:19 | POST detected
+ 
+01-05-22 16:22:42 | FILES detected
+ 
+01-05-22 16:22:42 | FILES detected
+ 
+01-05-22 16:22:42 | FILES detected
+ 
+01-05-22 17:05:04 | GET detected
+01-05-22 17:05:04 | Resource using ArcGIS Server security
+01-05-22 17:05:04 | Got token endpoint
+01-05-22 17:05:04 | Adding token to session
+01-05-22 17:05:04 | Ok to proxy
+01-05-22 17:05:04 | Proxy complete
+ 
+01-05-22 17:05:05 | GET detected
+01-05-22 17:05:05 | Using session token
+01-05-22 17:05:06 | Ok to proxy
+01-05-22 17:05:06 | Proxy complete
+ 
+01-05-22 17:05:48 | GET detected
+01-05-22 17:05:48 | Using session token
+01-05-22 17:05:48 | Ok to proxy
+01-05-22 17:05:48 | Proxy complete
+ 
+01-05-22 17:05:49 | GET detected
+01-05-22 17:05:49 | Using session token
+01-05-22 17:05:49 | Ok to proxy
+01-05-22 17:05:49 | Proxy complete
+ 
+01-05-22 17:06:35 | GET detected
+01-05-22 17:06:35 | Using session token
+01-05-22 17:06:35 | Ok to proxy
+01-05-22 17:06:35 | Proxy complete
+ 
+01-05-22 17:06:36 | GET detected
+01-05-22 17:06:36 | Using session token
+01-05-22 17:06:36 | Ok to proxy
+01-05-22 17:06:36 | Proxy complete
+ 
+01-05-22 17:08:16 | GET detected
+01-05-22 17:08:16 | Using session token
+01-05-22 17:08:16 | Ok to proxy
+01-05-22 17:08:16 | Proxy complete
+ 
+01-05-22 17:08:16 | GET detected
+01-05-22 17:08:16 | Using session token
+01-05-22 17:08:16 | Ok to proxy
+01-05-22 17:08:16 | Proxy complete
+ 
+01-05-22 17:09:08 | GET detected
+01-05-22 17:09:08 | Using session token
+01-05-22 17:09:08 | Ok to proxy
+01-05-22 17:09:08 | Proxy complete
+ 
+01-05-22 17:09:08 | GET detected
+01-05-22 17:09:08 | Using session token
+01-05-22 17:09:08 | Ok to proxy
+01-05-22 17:09:08 | Proxy complete
+ 
+01-05-22 17:15:08 | GET detected
+01-05-22 17:15:08 | Using session token
+01-05-22 17:15:08 | Ok to proxy
+01-05-22 17:15:08 | Proxy complete
+ 
+01-05-22 17:16:24 | GET detected
+01-05-22 17:16:24 | Using session token
+01-05-22 17:16:24 | Ok to proxy
+01-05-22 17:16:24 | Proxy complete
+ 
+01-05-22 17:17:02 | GET detected
+01-05-22 17:17:02 | Using session token
+01-05-22 17:17:02 | Ok to proxy
+01-05-22 17:17:02 | Proxy complete
+ 
+01-05-22 17:17:41 | GET detected
+01-05-22 17:17:41 | Using session token
+01-05-22 17:17:41 | Ok to proxy
+01-05-22 17:17:41 | Proxy complete
+ 
+01-05-22 17:18:36 | GET detected
+01-05-22 17:18:36 | Using session token
+01-05-22 17:18:36 | Ok to proxy
+01-05-22 17:18:36 | Proxy complete
+ 
+01-05-22 17:19:26 | GET detected
+01-05-22 17:19:26 | Using session token
+01-05-22 17:19:26 | Ok to proxy
+01-05-22 17:19:26 | Proxy complete
+ 
+01-05-22 17:20:37 | GET detected
+01-05-22 17:20:37 | Using session token
+01-05-22 17:20:38 | Ok to proxy
+01-05-22 17:20:38 | Proxy complete
+ 
+01-05-22 17:22:23 | GET detected
+01-05-22 17:22:23 | Using session token
+01-05-22 17:22:23 | Ok to proxy
+01-05-22 17:22:23 | Proxy complete
+ 
+01-05-22 17:35:22 | GET detected
+01-05-22 17:35:22 | Using session token
+01-05-22 17:35:22 | Ok to proxy
+01-05-22 17:35:22 | Proxy complete
+ 
+01-05-22 17:40:56 | GET detected
+01-05-22 17:40:56 | Using session token
+01-05-22 17:40:56 | Ok to proxy
+01-05-22 17:40:56 | Proxy complete
+ 
+01-05-22 17:44:44 | GET detected
+01-05-22 17:44:44 | Using session token
+01-05-22 17:44:44 | Ok to proxy
+01-05-22 17:44:44 | Proxy complete
+ 
+01-05-22 17:45:01 | GET detected
+01-05-22 17:45:01 | Using session token
+01-05-22 17:45:02 | Ok to proxy
+01-05-22 17:45:02 | Proxy complete
+ 
+01-05-22 17:46:15 | GET detected
+01-05-22 17:46:15 | Using session token
+01-05-22 17:46:15 | Ok to proxy
+01-05-22 17:46:15 | Proxy complete
+ 
+01-05-22 17:46:42 | GET detected
+01-05-22 17:46:42 | Using session token
+01-05-22 17:46:42 | Ok to proxy
+01-05-22 17:46:42 | Proxy complete
+ 
+01-05-22 17:49:05 | GET detected
+01-05-22 17:49:05 | Using session token
+01-05-22 17:49:06 | Ok to proxy
+01-05-22 17:49:06 | Proxy complete
+ 
+01-05-22 17:49:55 | GET detected
+01-05-22 17:49:55 | Using session token
+01-05-22 17:49:55 | Ok to proxy
+01-05-22 17:49:55 | Proxy complete
+ 
+01-05-22 17:50:34 | GET detected
+01-05-22 17:50:34 | Using session token
+01-05-22 17:50:34 | Ok to proxy
+01-05-22 17:50:34 | Proxy complete
+ 
+01-05-22 17:52:25 | GET detected
+01-05-22 17:52:25 | Using session token
+01-05-22 17:52:25 | Ok to proxy
+01-05-22 17:52:25 | Proxy complete
+ 
+01-05-22 17:55:19 | GET detected
+01-05-22 17:55:19 | Using session token
+01-05-22 17:55:20 | Ok to proxy
+01-05-22 17:55:20 | Proxy complete
+ 
+01-05-22 17:56:31 | GET detected
+01-05-22 17:56:31 | Using session token
+01-05-22 17:56:31 | Ok to proxy
+01-05-22 17:56:31 | Proxy complete
+ 
+01-05-22 17:57:24 | GET detected
+01-05-22 17:57:24 | Using session token
+01-05-22 17:57:25 | Ok to proxy
+01-05-22 17:57:25 | Proxy complete
+ 
+01-05-22 17:59:15 | GET detected
+01-05-22 17:59:15 | Using session token
+01-05-22 17:59:16 | Ok to proxy
+01-05-22 17:59:16 | Proxy complete
+ 
+01-05-22 17:59:40 | GET detected
+01-05-22 17:59:40 | Using session token
+01-05-22 17:59:40 | Ok to proxy
+01-05-22 17:59:40 | Proxy complete
+ 
+01-05-22 18:01:22 | GET detected
+01-05-22 18:01:22 | Using session token
+01-05-22 18:01:22 | Ok to proxy
+01-05-22 18:01:22 | Proxy complete
+ 
+01-05-22 18:04:30 | GET detected
+01-05-22 18:04:30 | Using session token
+01-05-22 18:04:33 | Ok to proxy
+01-05-22 18:04:33 | Proxy complete
+ 
+01-05-22 18:05:19 | GET detected
+01-05-22 18:05:19 | Using session token
+01-05-22 18:05:20 | Ok to proxy
+01-05-22 18:05:20 | Proxy complete
+ 
+01-05-22 18:05:43 | GET detected
+01-05-22 18:05:43 | Using session token
+01-05-22 18:05:44 | Ok to proxy
+01-05-22 18:05:44 | Proxy complete
+ 
+01-05-22 18:06:29 | GET detected
+01-05-22 18:06:29 | Using session token
+01-05-22 18:06:29 | Ok to proxy
+01-05-22 18:06:29 | Proxy complete
+ 
+01-05-22 18:42:26 | GET detected
+01-05-22 18:42:26 | Using session token
+01-05-22 18:42:26 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+01-05-22 18:42:26 | Retry attempt 1 of 3
+01-05-22 18:42:26 | Resource using ArcGIS Server security
+01-05-22 18:42:26 | Got token endpoint
+01-05-22 18:42:27 | Adding token to session
+01-05-22 18:42:27 | Using session token
+01-05-22 18:42:27 | Ok to proxy
+01-05-22 18:42:27 | Proxy complete
+ 
+01-05-22 18:42:27 | GET detected
+01-05-22 18:42:27 | Using session token
+01-05-22 18:42:27 | Ok to proxy
+01-05-22 18:42:27 | Proxy complete
+ 
+01-05-22 18:46:56 | GET detected
+01-05-22 18:46:56 | Using session token
+01-05-22 18:46:56 | Ok to proxy
+01-05-22 18:46:56 | Proxy complete
+ 
+01-05-22 18:46:56 | GET detected
+01-05-22 18:46:56 | Using session token
+01-05-22 18:46:56 | Ok to proxy
+01-05-22 18:46:56 | Proxy complete
+ 
+01-05-22 18:46:56 | GET detected
+01-05-22 18:46:56 | Using session token
+01-05-22 18:46:57 | Ok to proxy
+01-05-22 18:46:57 | Proxy complete
+ 
+01-05-22 18:46:57 | GET detected
+01-05-22 18:46:57 | Using session token
+01-05-22 18:46:57 | Ok to proxy
+01-05-22 18:46:57 | Proxy complete
+ 
+01-05-22 18:46:57 | GET detected
+01-05-22 18:46:57 | Using session token
+01-05-22 18:46:57 | Ok to proxy
+01-05-22 18:46:57 | Proxy complete
+ 
+01-05-22 18:46:57 | GET detected
+01-05-22 18:46:57 | Using session token
+01-05-22 18:46:57 | Ok to proxy
+01-05-22 18:46:57 | Proxy complete
+ 
+01-05-22 18:46:57 | GET detected
+01-05-22 18:46:57 | Using session token
+01-05-22 18:46:57 | Ok to proxy
+01-05-22 18:46:57 | Proxy complete
+ 
+01-05-22 18:48:49 | GET detected
+01-05-22 18:48:49 | Using session token
+01-05-22 18:48:49 | Ok to proxy
+01-05-22 18:48:49 | Proxy complete
+ 
+01-05-22 18:48:49 | GET detected
+01-05-22 18:48:49 | Using session token
+01-05-22 18:48:49 | Ok to proxy
+01-05-22 18:48:49 | Proxy complete
+ 
+01-05-22 18:48:49 | GET detected
+01-05-22 18:48:49 | Using session token
+01-05-22 18:48:49 | Ok to proxy
+01-05-22 18:48:49 | Proxy complete
+ 
+01-05-22 18:48:49 | GET detected
+01-05-22 18:48:49 | Using session token
+01-05-22 18:48:49 | Ok to proxy
+01-05-22 18:48:49 | Proxy complete
+ 
+01-05-22 18:48:49 | GET detected
+01-05-22 18:48:49 | Using session token
+01-05-22 18:48:49 | Ok to proxy
+01-05-22 18:48:49 | Proxy complete
+ 
+01-05-22 18:48:49 | GET detected
+01-05-22 18:48:49 | Using session token
+01-05-22 18:48:49 | Ok to proxy
+01-05-22 18:48:49 | Proxy complete
+ 
+01-05-22 18:48:49 | GET detected
+01-05-22 18:48:49 | Using session token
+01-05-22 18:48:50 | Ok to proxy
+01-05-22 18:48:50 | Proxy complete
+ 
+01-05-22 18:49:14 | GET detected
+01-05-22 18:49:14 | Using session token
+01-05-22 18:49:14 | Ok to proxy
+01-05-22 18:49:14 | Proxy complete
+ 
+01-05-22 18:49:42 | GET detected
+01-05-22 18:49:42 | Using session token
+01-05-22 18:49:42 | Ok to proxy
+01-05-22 18:49:42 | Proxy complete
+ 
+01-05-22 18:50:53 | GET detected
+01-05-22 18:50:53 | Using session token
+01-05-22 18:50:54 | Ok to proxy
+01-05-22 18:50:54 | Proxy complete
+ 
+01-05-22 18:55:08 | GET detected
+01-05-22 18:55:08 | Using session token
+01-05-22 18:55:08 | Ok to proxy
+01-05-22 18:55:08 | Proxy complete
+ 
+01-05-22 18:55:08 | GET detected
+01-05-22 18:55:08 | Using session token
+01-05-22 18:55:08 | Ok to proxy
+01-05-22 18:55:08 | Proxy complete
+ 
+01-05-22 18:55:08 | GET detected
+01-05-22 18:55:08 | Using session token
+01-05-22 18:55:08 | Ok to proxy
+01-05-22 18:55:08 | Proxy complete
+ 
+01-05-22 18:55:08 | GET detected
+01-05-22 18:55:08 | Using session token
+01-05-22 18:55:08 | Ok to proxy
+01-05-22 18:55:08 | Proxy complete
+ 
+01-05-22 18:55:08 | GET detected
+01-05-22 18:55:08 | Using session token
+01-05-22 18:55:09 | Ok to proxy
+01-05-22 18:55:09 | Proxy complete
+ 
+01-05-22 18:55:09 | GET detected
+01-05-22 18:55:09 | Using session token
+01-05-22 18:55:09 | Ok to proxy
+01-05-22 18:55:09 | Proxy complete
+ 
+01-05-22 18:55:09 | GET detected
+01-05-22 18:55:09 | Using session token
+01-05-22 18:55:09 | Ok to proxy
+01-05-22 18:55:09 | Proxy complete
+ 
+01-05-22 18:55:14 | GET detected
+01-05-22 18:55:14 | Using session token
+01-05-22 18:55:14 | Ok to proxy
+01-05-22 18:55:14 | Proxy complete
+ 
+01-05-22 18:55:16 | GET detected
+01-05-22 18:55:16 | Using session token
+01-05-22 18:55:16 | Ok to proxy
+01-05-22 18:55:16 | Proxy complete
