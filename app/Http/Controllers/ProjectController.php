@@ -57,6 +57,9 @@ class ProjectController extends Controller
                 ->where('registration_no', $request->registration_no)
                 ->orderBy('created_at', 'desc')
                 ->get());
+        } else if ($request->id){
+            // return one just one
+            return response()->json(ProjectController::getProject($request->id));
         }
 
         return Project::with(['address', 'listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
@@ -398,6 +401,45 @@ class ProjectController extends Controller
         // }
     }
 
+    private function getProject($id){
+
+/*
+select
+p.project_title ,
+p.registration_no,
+p.required_doc,
+p.description ,
+l.name as lpjp_name,
+concat(l.address,', ' , initcap(concat(d2."name", ', ', p2."name"))) as lpjp_address,
+pa.address
+from
+projects as p
+left join lpjp l on l.id = p.id_lpjp
+left join project_address pa on pa.id_project = p.id
+left join districts d2 on d2.id = l.id_district
+left join provinces p2 on p2.id = l.id_prov
+where p.id = ?
+*/
+
+        $project = Project::from('projects')
+        ->selectRaw('
+        projects.id,
+        projects.project_title,
+        projects.registration_no,
+        project_address.address,
+        projects.required_doc,
+        projects.description,
+        lpjp.name as lpjp_name,
+        lpjp.address as lpjp_address,
+        initcap(districts."name") as lpjp_address_district,
+        initcap(provinces."name") as lpjp_address_province')
+       ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+       ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
+       ->leftJoin('districts', 'districts.id','=', 'lpjp.id_district')
+       ->leftJoin('provinces', 'provinces.id','=', 'lpjp.id_prov');
+        return $project->where('projects.id', $id)->first();
+    }
+
     /**
      * Display the specified resource.
      *
@@ -408,6 +450,19 @@ class ProjectController extends Controller
     {
         return $project;
     }
+
+    /**
+     * Get one project.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    /* public function getProject(Request $request)
+    {
+
+        return response($request);
+    } */
+
 
     /**
      * Show the form for editing the specified resource.
