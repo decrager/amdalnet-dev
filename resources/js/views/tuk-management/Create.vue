@@ -316,10 +316,11 @@ export default {
     },
   },
   created() {
-    this.getProvince();
-    this.getDistrict();
     if (this.$route.name === 'editTuk') {
       this.getData();
+    } else {
+      this.getProvince();
+      this.getDistrict();
     }
   },
   methods: {
@@ -368,6 +369,10 @@ export default {
     },
     async getData() {
       this.loading = true;
+      const provinces = await provinceResource.list({});
+      this.provinces = provinces.data;
+      const districts = await districtResource.list({});
+      this.districts = districts.data;
       this.currentData = await tukManagementResource.list({
         type: 'edit',
         idTeam: this.$route.params.id,
