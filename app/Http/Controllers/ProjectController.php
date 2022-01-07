@@ -402,25 +402,6 @@ class ProjectController extends Controller
     }
 
     private function getProject($id){
-
-/*
-select
-p.project_title ,
-p.registration_no,
-p.required_doc,
-p.description ,
-l.name as lpjp_name,
-concat(l.address,', ' , initcap(concat(d2."name", ', ', p2."name"))) as lpjp_address,
-pa.address
-from
-projects as p
-left join lpjp l on l.id = p.id_lpjp
-left join project_address pa on pa.id_project = p.id
-left join districts d2 on d2.id = l.id_district
-left join provinces p2 on p2.id = l.id_prov
-where p.id = ?
-*/
-
         $project = Project::from('projects')
         ->selectRaw('
         projects.id,
