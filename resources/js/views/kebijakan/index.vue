@@ -26,25 +26,14 @@
         :limit.sync="listQuery.limit"
         @pagination="handleFilter"
       />
-      <!-- <component-dialog
-        :component="component"
-        :show="show"
-        :list-view="listView"
-        :list-view-title="listViewTitle"
-        @handleCancelComponent="handleCancelComponent"
-      /> -->
     </el-card>
   </div>
 </template>
 
 <script>
-// import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import axios from 'axios';
 import ComponentTable from './components/ComponentTable.vue';
-// import ComponentDialog from './components/ComponentDialog.vue';
-// const appParamResource = new Resource('app-params');
-
 export default {
   name: 'Kebijakan',
   components: {

@@ -57,15 +57,6 @@
                   </el-form-item>
                 </el-row>
               </el-form>
-              <!-- <el-form>
-                <el-form-item label="Taggal Terbit">
-                  <el-date-picker
-                    v-model="date"
-                    type="datetime"
-                    placeholder="Tanggal"
-                  />
-                </el-form-item>
-              </el-form> -->
               <el-form>
                 <el-row>
                   <el-form-item label="Taggal Terbit">
@@ -107,12 +98,11 @@
                   @click="handleCancel"
                 >Kembali</el-button>
                 <el-button
-                  type="submit"
-                  size="mini"
+                  type="primary"
                   icon="el-icon-s-claim"
                   @click="saveKebijakan()"
                 >
-                  Simpan
+                  Edit
                 </el-button>
               </div>
             </div>

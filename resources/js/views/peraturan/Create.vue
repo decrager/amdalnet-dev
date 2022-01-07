@@ -25,8 +25,7 @@
                   Kembali
                 </el-button>
                 <el-button
-                  type="submit"
-                  size="mini"
+                  type="primary"
                   icon="el-icon-s-claim"
                   @click="savePeraturan()"
                 >

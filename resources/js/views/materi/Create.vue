@@ -21,7 +21,7 @@
               <el-form>
                 <el-row>
                   <el-form-item label="Deskripsi">
-                    <el-input v-model="form.description" type="text" placeholder="Deskripsi" />
+                    <el-input v-model="form.description" type="textarea" placeholder="Deskripsi" />
                   </el-form-item>
                 </el-row>
               </el-form>
@@ -47,8 +47,7 @@
               <div class="" style="margin-top: 0.5rem; text-align: right">
                 <el-button type="danger" @click="handleCancel">Kembali</el-button>
                 <el-button
-                  type="submit"
-                  size="mini"
+                  type="primary"
                   icon="el-icon-s-claim"
                   @click="saveMateri()"
                 >
