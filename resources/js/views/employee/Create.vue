@@ -135,7 +135,7 @@
           </div>
         </el-col>
         <el-col :md="12" :sm="24">
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label>
               Unggah Surat Keputusan Pengangkatan Kelayakan Lingkungan Hidup
             </label>
@@ -160,6 +160,33 @@
                 </el-upload>
               </el-col>
             </el-row>
+          </div> -->
+          <div class="form-group">
+            <label>TUK</label>
+            <el-select
+              v-model="currentData.id_feasibility_test_team"
+              :filterable="true"
+              :class="{ 'is-error': errors.id_province }"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in tuk"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+            <small
+              v-if="errors.id_feasibility_test_team"
+              style="color: #f56c6c"
+            >
+              <span
+                v-for="(error, index) in errors.id_feasibility_test_team"
+                :key="index"
+              >
+                {{ error }}
+              </span>
+            </small>
           </div>
         </el-col>
       </el-row>
@@ -301,6 +328,7 @@ import Resource from '@/api/resource';
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const employeeTukResource = new Resource('employee-tuk');
+const tukManagementResource = new Resource('tuk-management');
 
 export default {
   name: 'CreateEmployee',
@@ -322,12 +350,14 @@ export default {
         id_province: null,
         id_district: null,
         address: null,
+        id_feasibility_test_team: null,
       },
       cvFileName: null,
       decisionFileName: null,
       errors: {},
       provinces: [],
       districts: [],
+      tuk: [],
       loadingSubmit: false,
       loading: false,
     };
@@ -335,6 +365,7 @@ export default {
   created() {
     this.getProvince();
     this.getDistrict();
+    this.getTuk();
     if (this.$route.name === 'editEmployeeTuk') {
       this.getData();
     }
@@ -374,6 +405,10 @@ export default {
       }
 
       this.loadingSubmit = false;
+    },
+    async getTuk() {
+      const tuk = await tukManagementResource.list({ type: 'listSelect' });
+      this.tuk = tuk;
     },
     async getProvince() {
       const provinces = await provinceResource.list({});

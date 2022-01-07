@@ -192,7 +192,8 @@ class ProjectController extends Controller
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomFromGeojson'), 4326)"),
-                    'properties' => $request->geomProperties
+                    'properties' => $request->geomProperties,
+                    'id_styles' => $request->geomStyles
                 ]);
             }
 

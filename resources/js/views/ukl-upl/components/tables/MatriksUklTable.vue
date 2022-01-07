@@ -281,7 +281,8 @@ export default {
       }
     },
     handleAddPlan(idImp) {
-      if (this.newEnvManagePlan[idImp] === null ||
+      if (this.newEnvManagePlan[idImp] === undefined ||
+        this.newEnvManagePlan[idImp] === null ||
         this.newEnvManagePlan[idImp].replace(/\s+/g, '').trim() === '') {
         this.$message({
           message: 'Bentuk Pengelolaan tidak boleh kosong',
@@ -303,6 +304,7 @@ export default {
               });
               // add new env_manage_plan to this.data
               this.addPlanToImpact(parseInt(idImp), response.data);
+              this.newEnvManagePlan[idImp] = '';
             }
           })
           .catch((err) => {

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\FeasibilityTestTeam;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\LukMember;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
@@ -22,6 +24,14 @@ class EmployeeTUKController extends Controller
     {
         if($request->type == 'edit') {
             $employee_tuk = LukMember::find($request->idEmployee);
+            $id_team = null;
+
+            if($employee_tuk->feasibilityTestTeamMember) {
+                $id_team = $employee_tuk->feasibilityTestTeamMember->id_feasibility_test_team;
+            }
+
+            $employee_tuk->setAttribute('id_feasibility_test_team', $id_team);
+
             return $employee_tuk;
         }
 
@@ -113,6 +123,22 @@ class EmployeeTUKController extends Controller
         if(!$saved) {
             DB::rollback();
         } else {
+             // CHECK IF EMPLOYEE ALREADY ASSIGNED TO TUK
+            $check_tuk = FeasibilityTestTeamMember::where('id_luk_member', $employee_tuk->id)->first();
+            if($check_tuk) {
+                $old_id_team = $check_tuk->id_feasibility_test_team;
+
+                if($old_id_team != $request->id_feasibility_test_team) {
+                    $check_tuk->id_feasibility_test_team = $request->id_feasibility_test_team;
+                    $check_tuk->position = null;
+                    $check_tuk->save();
+                }
+            } else {
+                $tuk_member = new FeasibilityTestTeamMember();
+                $tuk_member->id_feasibility_test_team = $request->id_feasibility_test_team;
+                $tuk_member->id_luk_member = $employee_tuk->id;
+                $tuk_member->save();
+            }
             DB::commit();
         }
 
@@ -181,7 +207,8 @@ class EmployeeTUKController extends Controller
             'sex' => 'required',
             'id_province' => 'required',
             'id_district' => 'required',
-            'address' => 'required'
+            'address' => 'required',
+            'id_feasibility_test_team' => 'required'
         ],[
             'status.required' => 'Status Wajib Dipilih',
             'nik.required' => 'NIK Wajib Diisi',
@@ -196,7 +223,8 @@ class EmployeeTUKController extends Controller
             'sex.required' => 'Jenis Kelamin Wajib Dipilih',
             'id_province.required' => 'Provinsi Wajib Dipilih',
             'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
-            'address.required' => 'Alamat Wajib Diisi'
+            'address.required' => 'Alamat Wajib Diisi',
+            'id_feasibility_test_team.required' => 'TUK Wajib Dipilih'
         ]);
 
         return $validator;
@@ -215,7 +243,8 @@ class EmployeeTUKController extends Controller
             'sex' => 'required',
             'id_province' => 'required',
             'id_district' => 'required',
-            'address' => 'required'
+            'address' => 'required',
+            'id_feasibility_test_team' => 'required'
         ],[
             'status.required' => 'Status Wajib Dipilih',
             'nik.required' => 'NIK Wajib Diisi',
@@ -230,7 +259,8 @@ class EmployeeTUKController extends Controller
             'sex.required' => 'Jenis Kelamin Wajib Dipilih',
             'id_province.required' => 'Provinsi Wajib Dipilih',
             'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
-            'address.required' => 'Alamat Wajib Diisi'
+            'address.required' => 'Alamat Wajib Diisi',
+            'id_feasibility_test_team.required' => 'TUK Wajib Dipilih'
         ]);
 
         return $validator;
