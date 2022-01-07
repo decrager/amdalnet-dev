@@ -20,4 +20,9 @@ class TestingMeeting extends Model
     {
         return $this->belongsTo(Project::class, 'id_project', 'id');
     }
+
+    public function feasibilityTestTeam()
+    {
+        return $this->belongsTo(FeasibilityTestTeam::class, 'id_feasibility_test_team', 'id');
+    }
 }
