@@ -17,6 +17,7 @@
           v-model="list[scope.$index].id_member"
           placeholder="Pilih Nama"
           style="width: 100%"
+          :filterable="true"
           @change="handleChangeMember($event, scope.$index)"
         >
           <el-option

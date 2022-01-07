@@ -49,13 +49,8 @@
             <label>NIP</label>
             <el-input
               v-model="currentData.nip"
-              :class="{ 'is-error': errors.nip }"
+              :disabled="currentData.status !== 'PNS'"
             />
-            <small v-if="errors.nip" style="color: #f56c6c">
-              <span v-for="(error, index) in errors.nip" :key="index">{{
-                error
-              }}</span>
-            </small>
           </div>
         </el-col>
       </el-row>
@@ -166,7 +161,6 @@
             <el-select
               v-model="currentData.id_feasibility_test_team"
               :filterable="true"
-              :class="{ 'is-error': errors.id_province }"
               style="width: 100%"
             >
               <el-option
@@ -176,17 +170,6 @@
                 :value="item.id"
               />
             </el-select>
-            <small
-              v-if="errors.id_feasibility_test_team"
-              style="color: #f56c6c"
-            >
-              <span
-                v-for="(error, index) in errors.id_feasibility_test_team"
-                :key="index"
-              >
-                {{ error }}
-              </span>
-            </small>
           </div>
         </el-col>
       </el-row>
@@ -231,6 +214,11 @@
                 {{ cvFileName }}
               </div>
             </el-upload>
+            <small v-if="errors.cv" style="color: #f56c6c">
+              <span v-for="(error, index) in errors.cv" :key="index">
+                {{ error }}
+              </span>
+            </small>
           </div>
         </el-col>
       </el-row>
@@ -244,6 +232,7 @@
                   v-model="currentData.id_province"
                   :filterable="true"
                   :class="{ 'is-error': errors.id_province }"
+                  @change="setDistricts"
                 >
                   <el-option
                     v-for="item in provinces"
@@ -271,7 +260,7 @@
                   :class="{ 'is-error': errors.id_district }"
                 >
                   <el-option
-                    v-for="item in districts"
+                    v-for="item in districtsByProv"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
@@ -357,17 +346,19 @@ export default {
       errors: {},
       provinces: [],
       districts: [],
+      districtsByProv: [],
       tuk: [],
       loadingSubmit: false,
       loading: false,
     };
   },
   created() {
-    this.getProvince();
-    this.getDistrict();
     this.getTuk();
     if (this.$route.name === 'editEmployeeTuk') {
       this.getData();
+    } else {
+      this.getProvince();
+      this.getDistrict();
     }
   },
   methods: {
@@ -420,12 +411,19 @@ export default {
     },
     async getData() {
       this.loading = true;
+      const provinces = await provinceResource.list({});
+      this.provinces = provinces.data;
+      const districts = await districtResource.list({});
+      this.districts = districts.data;
       this.currentData = await employeeTukResource.list({
         type: 'edit',
         idEmployee: this.$route.params.id,
       });
       this.currentData.cv = null;
       this.currentData.decision_file = null;
+      this.districtsByProv = this.districts.filter(
+        (x) => x.id_prov === this.currentData.id_province
+      );
       this.loading = false;
     },
     handleUploadDecision(file, fileList) {
@@ -435,6 +433,9 @@ export default {
     handleUploadCv(file, fileList) {
       this.cvFileName = file.name;
       this.currentData.cv = file.raw;
+    },
+    setDistricts(id) {
+      this.districtsByProv = this.districts.filter((x) => x.id_prov === id);
     },
   },
 };
