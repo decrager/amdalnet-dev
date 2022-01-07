@@ -151,6 +151,13 @@ const masterRoutes = {
       meta: { title: 'Tambah Materi', icon: 'documentation', noCache: true },
     },
     {
+      path: 'materi/edit',
+      component: () => import('@/views/materi/Edit'),
+      name: 'editMateri',
+      hidden: true,
+      meta: { title: 'Edit Materi', icon: 'documentation', noCache: true },
+    },
+    {
       path: 'peraturan',
       component: () => import('@/views/peraturan/index'),
       name: 'peraturan',

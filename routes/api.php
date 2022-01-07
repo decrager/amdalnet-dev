@@ -28,6 +28,7 @@ use App\Http\Controllers\KaCommentController;
 use App\Http\Controllers\TrackingDocumentController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PeraturanController;
+use App\Http\Controllers\MaterialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -312,12 +313,14 @@ Route::get('peraturan', [PeraturanController::class, 'index']);
 Route::post('peraturan', [PeraturanController::class, 'store']);
 Route::post('peraturan/update', [PeraturanController::class, 'update']);
 Route::get('peraturan/delete/{id}', [PeraturanController::class, 'destroy']);
-
 Route::apiResource('regulations', 'RegulationsController');
+
 Route::apiResource('materials', 'MaterialController');
+Route::post('materials', [MaterialController::class, 'store']);
+Route::post('materials/update', [MaterialController::class, 'update']);
+Route::get('materials/delete/{id}', [MaterialController::class, 'destroy']);
 
 Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index']);
-
 // dpdph master-detail
 Route::get('impacts', [ImpactIdentificationController::class, 'getImpacts']);
 Route::post('impact-id', [ImpactIdentificationController::class, 'saveImpact']);

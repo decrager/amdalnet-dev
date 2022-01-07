@@ -41,17 +41,17 @@
     </el-table-column>
     <el-table-column label="Judul Materi">
       <template slot-scope="scope">
-        <span>{{ scope.row.judul }}</span>
+        <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Deskripsi">
       <template slot-scope="scope">
-        <span>{{ scope.row.deskripsi }}</span>
+        <span>{{ scope.row.description }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Tanggal Terbit">
       <template slot-scope="scope">
-        <span>{{ scope.row.tanggal }}</span>
+        <span>{{ scope.row.raise_date }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Link">
@@ -77,7 +77,11 @@ export default {
       this.$emit('handleView', row);
     },
     handleEditForm(row) {
-      this.$emit('handleEditForm', row);
+      const currentParam = row;
+      this.$router.push({
+        name: 'editMateri',
+        params: { row, appParams: currentParam },
+      });
     },
     handleDelete(rows) {
       this.$emit('handleDelete', { rows });
