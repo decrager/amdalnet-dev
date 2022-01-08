@@ -628,6 +628,8 @@ class ImpactIdentificationController extends Controller
         $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
         $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
 
+        $pieIdName = $pieIdNames[$request['mode']];
+
         $saved = [];
         foreach($request['data'] as $imp){
             $id = $imp['id'];
@@ -664,9 +666,9 @@ class ImpactIdentificationController extends Controller
                         $p = $pieClasses[$request['mode']]::where($pieIdNames[$request['mode']], $imp['id'])
                             ->where('id_pie_param', $pie['id_pie_param'])->first();
 
-                        if (!$p) {
+                        if (Empty($p)) {
                             $p = new $pieClasses[$request['mode']]();
-                            $p->$pieIdNames[$request['mode']] = $imp['id'];
+                            $p->$pieIdName = $imp['id'];
                             $p->id_pie_param = $pie['id_pie_param'];
                         }
                         $p->text = $pie['text'];
