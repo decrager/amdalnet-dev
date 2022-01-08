@@ -3,12 +3,16 @@
     <el-collapse v-model="contextBar" class="collapse-context-bar">
       <el-collapse-item name="1" class="item-context-bar">
         <template slot="title">
-          <div class="context-bar-header">{{ data.lpjp_name || '*' }} : {{ data.project_title }}</div>
+          <div class="context-bar-header">{{ data.initiator_name || '*' }} : {{ data.project_title }}</div>
         </template>
         <el-row :gutter="20">
           <el-col :span="4">
-            <div class="block" style="width: 100%; height: 150px; background: #eee; border: 1px solid #e0e0e0; text-align: center;">
-              <el-image>
+            <div class="block" style="text-align: center;">
+              <el-image
+                style="width: 100%; height: 150px"
+                :src="data.logo"
+                fit="contain"
+              >
                 <div slot="error" class="image-slot">
                   <i class="el-icon-picture-outline" style="font-size: 500%; line-height: 230%;" />
                 </div>
@@ -21,8 +25,8 @@
               <p>{{ data.address }}</p>
             </div>
             <div class="context-bar-item project-lpjp">
-              <p>{{ data.lpjp_name || '' }}</p>
-              <p>{{ address() }}</p>
+              <p>{{ data.initiator_name || '' }}</p>
+              <p>{{ data.initiator_address }}</p>
             </div>
           </el-col>
           <el-col :span="6">

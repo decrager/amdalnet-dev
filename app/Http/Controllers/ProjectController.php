@@ -403,6 +403,10 @@ class ProjectController extends Controller
     }
 
     private function getProject($id){
+        /*
+
+        */
+
         $project = Project::from('projects')
         ->selectRaw('
         projects.id,
@@ -414,11 +418,16 @@ class ProjectController extends Controller
         lpjp.name as lpjp_name,
         lpjp.address as lpjp_address,
         initcap(districts."name") as lpjp_address_district,
-        initcap(provinces."name") as lpjp_address_province')
+        initcap(provinces."name") as lpjp_address_province,
+        initiators.name as initiator_name,
+        initiators.address as initiator_address,
+        users.avatar as logo')
        ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
        ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
        ->leftJoin('districts', 'districts.id','=', 'lpjp.id_district')
-       ->leftJoin('provinces', 'provinces.id','=', 'lpjp.id_prov');
+       ->leftJoin('provinces', 'provinces.id','=', 'lpjp.id_prov')
+       ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+       ->leftJoin('users', 'initiators.email', '=', 'users.email');
         return $project->where('projects.id', $id)->first();
     }
 

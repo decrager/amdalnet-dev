@@ -662,10 +662,10 @@ class ImpactIdentificationController extends Controller
                 array_push($saved, $impact);
 
                 if(isset($imp['pie']) && (!Empty($imp['pie']))){
+
                     foreach($imp['pie'] as $pie){
                         $p = $pieClasses[$request['mode']]::where($pieIdNames[$request['mode']], $imp['id'])
                             ->where('id_pie_param', $pie['id_pie_param'])->first();
-
                         if (Empty($p)) {
                             $p = new $pieClasses[$request['mode']]();
                             $p->$pieIdName = $imp['id'];
