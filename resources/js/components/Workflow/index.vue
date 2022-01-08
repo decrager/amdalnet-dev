@@ -8,17 +8,23 @@
     <el-step title="Rencana Usaha Kegiatan" />
     <el-step title="Hasil Penapisan" />
     <el-step title="SPT dari Masyarakat" />
-    <el-step title="Formulir KA" />
-    <el-step title="Penyusunan ANDAL" />
-    <el-step title="Penyusunan RKL RPL" />
-    <el-step title="Pengujian" />
-    <el-step title="Surat Keputusan" />
+    <el-step v-if="!isPenapisan" title="Formulir KA" />
+    <el-step v-if="!isPenapisan" title="Penyusunan ANDAL" />
+    <el-step v-if="!isPenapisan" title="Penyusunan RKL RPL" />
+    <el-step v-if="!isPenapisan" title="Pengujian" />
+    <el-step v-if="!isPenapisan" title="Surat Keputusan" />
   </el-steps>
 </template>
 
 <script>
 export default {
   name: 'Workflow',
+  props: {
+    isPenapisan: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {
     getStep() {
       console.log(this.$store.getters.step);
