@@ -213,7 +213,8 @@ export default {
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', `${getName}`);
+        const pdfName = `${getName}`.replaceAll('"', '');
+        fileLink.setAttribute('download', pdfName);
         document.body.appendChild(fileLink);
         fileLink.click();
       });

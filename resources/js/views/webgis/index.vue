@@ -85,7 +85,21 @@
           item-title="Layers"
           item-subtitle="Layer List"
         >
-          <div style="margin-top: 10px">
+          <div style="margin-top: 15px">
+            <h3>PETA RTRW PROPINSI</h3>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <el-radio
+              v-for="item in layerRtrw"
+              :id="item.id"
+              :key="item.id"
+              v-model="radioRTRW"
+              :label="item.id"
+              style="margin-top: 10px; overflow-x: auto;"
+              @change="getLayerRtrw($event)"
+            >{{ item.title }}</el-radio>
+          </div>
+          <div style="margin-top: 15px">
             <h3>PETA RUPA BUMI</h3>
           </div>
           <div style="margin-top: 10px">
@@ -133,24 +147,16 @@
 // import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import Home from '@arcgis/core/widgets/Home';
-import Compass from '@arcgis/core/widgets/Compass';
-import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
-import Attribution from '@arcgis/core/widgets/Attribution';
-import Expand from '@arcgis/core/widgets/Expand';
-import Print from '@arcgis/core/widgets/Print';
-import ScaleBar from '@arcgis/core/widgets/ScaleBar';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import axios from 'axios';
-import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import rupabumis from './scripts/mapRupabumi';
+import rtrwProvMap from './scripts/mapRtrw';
+import { generateFeatureCollection, layerIn } from './scripts/uploadShapefile';
+import widgetMap from './scripts/widgetMap';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
-import esriRequest from '@arcgis/core/request';
-import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import Field from '@arcgis/core/layers/support/Field';
-import Graphic from '@arcgis/core/Graphic';
-// import rdtrMap from './mapRdtr';
-import rupabumis from './mapRupabumi';
-import rtrwProvMap from './mapRtrw';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import popupTemplate from './scripts/popupTemplate';
+import urlBlob from './scripts/urlBlob';
 
 export default {
   name: 'WebGis',
@@ -161,6 +167,7 @@ export default {
     return {
       tempLayer: null,
       radioProject: null,
+      radioRTRW: null,
       checkedEcology: false,
       checkedKelola: true,
       checkedPantau: true,
@@ -187,6 +194,7 @@ export default {
       idProjectItem: null,
       mapInit: [],
       isToggled: false,
+      mapRtrwGroup: [],
     };
   },
   computed: {
@@ -202,103 +210,58 @@ export default {
     this.getProjectData();
   },
   methods: {
+    getLayerRtrw(e) {
+      const checked = document.getElementById(e);
+
+      if (checked) {
+        this.layerRtrw.forEach(item => {
+          if (item.id === e) {
+            const sub = item.sublayers.items;
+            for (let i = 0; i < sub.length; i++) {
+              const element = sub[i];
+              element.visible = true;
+              this.mapRtrwGroup.push(element);
+            }
+            this.mapInit.addMany(this.mapRtrwGroup);
+            console.log(this.mapRtrwGroup);
+          }
+        });
+      }
+    },
     removeShapefile() {
       this.tempLayer.forEach(item => {
         this.mapInit.removeMany(item);
       });
       document.getElementById('inFile').value = '';
     },
-    getIdProject(e) {
-      this.idProjectItem = e;
+    getIdProject(ids) {
+      this.idProjectItem = ids;
 
       if (this.idProjectItem) {
         this.drawer = false;
+
         axios.get(`api/map-geojson?id=${this.idProjectItem}`)
           .then((response) => {
             response.data.forEach((item) => {
               const getType = JSON.parse(item.feature_layer);
               const propType = getType.features[0].properties.type;
               const propFields = getType.features[0].properties.field;
-
-              // Popup
-              const arrayJsonTemplate = {
-                title: 'Keterangan',
-                content: '<table style="border-collapse: collapse !important">' +
-                                  '<thead>' +
-                                    '<tr style="margin: 5px 0;">' +
-                                      '<td style="width: 35%">FID</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.id + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                      '<td style="width: 35%">NAMA_PEMRAKARSA</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.pemrakarsa + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0;">' +
-                                      '<td style="width: 35%">LAYER</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.layer + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                      '<td style="width: 35%">NAMA_KEGIATAN</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.kegiatan + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0;">' +
-                                      '<td style="width: 35%">JENIS_DOKUMEN</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.dokumen + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                      '<td style="width: 35%">LOKASI</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.lokasi + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0;">' +
-                                      '<td style="width: 35%">LUAS</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.luas + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                      '<td style="width: 35%">SKALA_DATA</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.skala + '</td>' +
-                                    '</tr>' +
-                                  '</thead>' +
-                                '</table>',
-              };
+              const propStyles = getType.features[0].properties.styles;
 
               // Tapak
               if (propType === 'tapak') {
-                const blob = new Blob([item.feature_layer], {
-                  type: 'application/json',
-                });
-                const rendererTapak = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [200, 0, 0, 1],
-                    outline: {
-                      color: [200, 0, 0, 1],
-                      width: 2,
-                    },
-                  },
-                };
-                const url = URL.createObjectURL(blob);
                 const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
+                  url: urlBlob(item.feature_layer),
                   outFields: ['*'],
                   visible: true,
                   title: 'Layer Tapak Proyek',
-                  renderer: rendererTapak,
-                  popupTemplate: arrayJsonTemplate,
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
                 });
 
                 this.$parent.mapView.on('layerview-create', async(event) => {
                   await this.$parent.mapView.goTo({
-                    target: event.layer.fullExtent,
+                    target: geojsonLayerArray.fullExtent,
                   });
                 });
 
@@ -308,29 +271,13 @@ export default {
 
               // Ecology
               if (propType === 'ecology') {
-                const blob = new Blob([item.feature_layer], {
-                  type: 'application/json',
-                });
-                const rendereEco = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [0, 0, 0, 0.0],
-                    outline: {
-                      color: [168, 112, 0, 1],
-                      width: 2,
-                    },
-                  },
-                };
-                const url = URL.createObjectURL(blob);
                 const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
+                  url: urlBlob(item.feature_layer),
                   outFields: ['*'],
                   title: 'Layer Batas Ekologis',
                   visible: true,
-                  renderer: rendereEco,
-                  popupTemplate: arrayJsonTemplate,
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
@@ -339,29 +286,13 @@ export default {
 
               // Social
               if (propType === 'social') {
-                const blob = new Blob([item.feature_layer], {
-                  type: 'application/json',
-                });
-                const rendererSocial = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [0, 0, 0, 0.0],
-                    outline: {
-                      color: [0, 76, 115, 1],
-                      width: 2,
-                    },
-                  },
-                };
-                const url = URL.createObjectURL(blob);
                 const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
+                  url: urlBlob(item.feature_layer),
                   outFields: ['*'],
                   visible: true,
                   title: 'Layer Batas Sosial',
-                  renderer: rendererSocial,
-                  popupTemplate: arrayJsonTemplate,
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
@@ -370,29 +301,13 @@ export default {
 
               // Study
               if (propType === 'study') {
-                const blob = new Blob([item.feature_layer], {
-                  type: 'application/json',
-                });
-                const rendererStudy = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [0, 0, 0, 0.0],
-                    outline: {
-                      color: [255, 0, 255, 1],
-                      width: 2,
-                    },
-                  },
-                };
-                const url = URL.createObjectURL(blob);
                 const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
+                  url: urlBlob(item.feature_layer),
                   outFields: ['*'],
                   visible: true,
                   title: 'Layer Batas Studi',
-                  renderer: rendererStudy,
-                  popupTemplate: arrayJsonTemplate,
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
@@ -401,27 +316,13 @@ export default {
 
               // Pemantauan
               if (propType === 'pemantauan') {
-                const blob = new Blob([item.feature_layer], {
-                  type: 'application/json',
-                });
-                const rendererPemantauan = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-                    url: '/titik_pantau.png',
-                    width: '24px',
-                    height: '24px',
-                  },
-                };
-                const url = URL.createObjectURL(blob);
                 const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
+                  url: urlBlob(item.feature_layer),
                   outFields: ['*'],
                   visible: true,
                   title: 'Layer Titik Pemantauan',
-                  renderer: rendererPemantauan,
-                  popupTemplate: arrayJsonTemplate,
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
@@ -429,28 +330,14 @@ export default {
               }
 
               // Pengelolaan
-              if (propType === 'study') {
-                const blob = new Blob([item.feature_layer], {
-                  type: 'application/json',
-                });
-                const rendererPengelolaan = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-                    url: '/titik_kelola.png',
-                    width: '24px',
-                    height: '24px',
-                  },
-                };
-                const url = URL.createObjectURL(blob);
+              if (propType === 'pengelolaan') {
                 const geojsonLayerArray = new GeoJSONLayer({
-                  url: url,
+                  url: urlBlob(item.feature_layer),
                   outFields: ['*'],
                   visible: true,
                   title: 'Layer Titik Pengelolaan',
-                  renderer: rendererPengelolaan,
-                  popupTemplate: arrayJsonTemplate,
+                  renderer: propStyles,
+                  popupTemplate: popupTemplate(propFields),
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
@@ -500,7 +387,6 @@ export default {
       const map = new Map({
         basemap: 'topo',
       });
-
       this.mapInit = map;
 
       urlUtils.addProxyRule({
@@ -508,86 +394,23 @@ export default {
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
 
-      // const mapGeojsonArray = [];
       axios.get(`api/map-geojson`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
-
-            // Popup
-            const arrayJsonTemplate = {
-              title: 'Keterangan',
-              content: '<table style="border-collapse: collapse !important">' +
-                                  '<thead>' +
-                                    '<tr style="margin: 5px 0;">' +
-                                      '<td style="width: 35%">FID</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.id + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                      '<td style="width: 35%">NAMA_PEMRAKARSA</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.pemrakarsa + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0;">' +
-                                      '<td style="width: 35%">LAYER</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.layer + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                      '<td style="width: 35%">NAMA_KEGIATAN</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.kegiatan + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0;">' +
-                                      '<td style="width: 35%">JENIS_DOKUMEN</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.dokumen + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                      '<td style="width: 35%">LOKASI</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.lokasi + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0;">' +
-                                      '<td style="width: 35%">LUAS</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.luas + '</td>' +
-                                    '</tr>' +
-                                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                                      '<td style="width: 35%">SKALA_DATA</td>' +
-                                      '<td> : </td>' +
-                                      '<td>' + propFields.skala + '</td>' +
-                                    '</tr>' +
-                                  '</thead>' +
-                                '</table>',
-            };
+            const propStyles = getType.features[0].properties.styles;
 
             // Pemantauan
             if (propType === 'pemantauan') {
-              const blob = new Blob([item.feature_layer], {
-                type: 'application/json',
-              });
-              const rendererPemantauan = {
-                type: 'simple',
-                field: '*',
-                symbol: {
-                  type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-                  url: '/titik_pantau.png',
-                  width: '24px',
-                  height: '24px',
-                },
-              };
-              const url = URL.createObjectURL(blob);
               const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
+                url: urlBlob(item.feature_layer),
                 outFields: ['*'],
                 visible: true,
                 title: 'Layer Titik Pemantauan',
-                renderer: rendererPemantauan,
-                popupTemplate: arrayJsonTemplate,
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
               });
 
               this.mapGeojsonArray.push(geojsonLayerArray);
@@ -605,27 +428,13 @@ export default {
 
             // Pengelolaan
             if (propType === 'study') {
-              const blob = new Blob([item.feature_layer], {
-                type: 'application/json',
-              });
-              const rendererPengelolaan = {
-                type: 'simple',
-                field: '*',
-                symbol: {
-                  type: 'picture-marker', // autocasts as new SimpleMarkerSymbol()
-                  url: '/titik_kelola.png',
-                  width: '24px',
-                  height: '24px',
-                },
-              };
-              const url = URL.createObjectURL(blob);
               const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
+                url: urlBlob(item.feature_layer),
                 outFields: ['*'],
                 visible: true,
                 title: 'Layer Titik Pengelolaan',
-                renderer: rendererPengelolaan,
-                popupTemplate: arrayJsonTemplate,
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
               });
 
               this.mapGeojsonArray.push(geojsonLayerArray);
@@ -643,29 +452,13 @@ export default {
 
             // Ecology
             if (propType === 'ecology') {
-              const blob = new Blob([item.feature_layer], {
-                type: 'application/json',
-              });
-              const rendereEco = {
-                type: 'simple',
-                field: '*',
-                symbol: {
-                  type: 'simple-fill',
-                  color: [0, 0, 0, 0.0],
-                  outline: {
-                    color: [168, 112, 0, 1],
-                    width: 2,
-                  },
-                },
-              };
-              const url = URL.createObjectURL(blob);
               const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
+                url: urlBlob(item.feature_layer),
                 outFields: ['*'],
                 title: 'Layer Batas Ekologis',
                 visible: false,
-                renderer: rendereEco,
-                popupTemplate: arrayJsonTemplate,
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
               });
 
               this.mapGeojsonArray.push(geojsonLayerArray);
@@ -683,29 +476,13 @@ export default {
 
             // Social
             if (propType === 'social') {
-              const blob = new Blob([item.feature_layer], {
-                type: 'application/json',
-              });
-              const rendererSocial = {
-                type: 'simple',
-                field: '*',
-                symbol: {
-                  type: 'simple-fill',
-                  color: [0, 0, 0, 0.0],
-                  outline: {
-                    color: [0, 76, 115, 1],
-                    width: 2,
-                  },
-                },
-              };
-              const url = URL.createObjectURL(blob);
               const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
+                url: urlBlob(item.feature_layer),
                 outFields: ['*'],
                 visible: false,
                 title: 'Layer Batas Sosial',
-                renderer: rendererSocial,
-                popupTemplate: arrayJsonTemplate,
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
               });
 
               this.mapGeojsonArray.push(geojsonLayerArray);
@@ -723,29 +500,13 @@ export default {
 
             // Study
             if (propType === 'study') {
-              const blob = new Blob([item.feature_layer], {
-                type: 'application/json',
-              });
-              const rendererStudy = {
-                type: 'simple',
-                field: '*',
-                symbol: {
-                  type: 'simple-fill',
-                  color: [0, 0, 0, 0.0],
-                  outline: {
-                    color: [255, 0, 255, 1],
-                    width: 2,
-                  },
-                },
-              };
-              const url = URL.createObjectURL(blob);
               const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
+                url: urlBlob(item.feature_layer),
                 outFields: ['*'],
                 visible: false,
                 title: 'Layer Batas Studi',
-                renderer: rendererStudy,
-                popupTemplate: arrayJsonTemplate,
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
               });
 
               this.mapGeojsonArray.push(geojsonLayerArray);
@@ -763,29 +524,13 @@ export default {
 
             // Tapak
             if (propType === 'tapak') {
-              const blob = new Blob([item.feature_layer], {
-                type: 'application/json',
-              });
-              const rendererTapak = {
-                type: 'simple',
-                field: '*',
-                symbol: {
-                  type: 'simple-fill',
-                  color: [200, 0, 0, 1],
-                  outline: {
-                    color: [200, 0, 0, 1],
-                    width: 2,
-                  },
-                },
-              };
-              const url = URL.createObjectURL(blob);
               const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
+                url: urlBlob(item.feature_layer),
                 outFields: ['*'],
                 visible: false,
                 title: 'Layer Tapak Proyek',
-                renderer: rendererTapak,
-                popupTemplate: arrayJsonTemplate,
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
               });
 
               this.mapGeojsonArray.push(geojsonLayerArray);
@@ -817,6 +562,12 @@ export default {
 
       map.add(rupabumis);
 
+      for (let i = 0; i < rtrwProvMap.length; i++) {
+        this.layerRtrw.push(rtrwProvMap[i]);
+      }
+
+      map.addMany(this.layerRtrw);
+
       // const rtrwToggle = document.getElementById('check__rtrw');
       // rtrwToggle.addEventListener('change', (e) => {
       //   console.log(e);
@@ -830,7 +581,6 @@ export default {
       //   }
       // }
       // });
-      map.add(rtrwProvMap);
 
       const mapView = new MapView({
         container: 'mapViewDiv',
@@ -840,67 +590,6 @@ export default {
       });
       this.$parent.mapView = mapView;
       // Map widgets
-      const home = new Home({
-        view: mapView,
-      });
-
-      mapView.popup.on('trigger-action', (event) => {
-        if (event.action.id === 'get-details') {
-          console.log('tbd');
-        }
-      });
-
-      mapView.ui.add(home, 'top-left');
-      const compass = new Compass({
-        view: mapView,
-      });
-      mapView.ui.add(compass, 'top-left');
-      const basemapToggle = new BasemapToggle({
-        view: mapView,
-        container: document.createElement('div'),
-        secondBasemap: 'satellite',
-      });
-      const expandBasemapToggler = new Expand({
-        view: mapView,
-        name: 'basemap',
-        content: basemapToggle.domNode,
-        expandIconClass: 'esri-icon-basemap',
-      });
-      mapView.ui.add(expandBasemapToggler, 'top-left');
-      const attribution = new Attribution({
-        view: mapView,
-      });
-      mapView.ui.add(attribution, 'manual');
-
-      // const legend = new Legend({
-      //   view: mapView,
-      //   container: document.createElement('div'),
-      // });
-      // const layerList = new LayerList({
-      //   view: mapView,
-      //   container: document.createElement('div'),
-      //   listItemCreatedFunction: this.defineActions,
-      // });
-
-      const print = new Print({
-        view: mapView,
-        printServiceUrl:
-              'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task',
-      });
-
-      const printExpand = new Expand({
-        view: mapView,
-        content: print,
-      });
-
-      const scaleBar = new ScaleBar({
-        view: mapView,
-        unit: 'metric', // The scale bar displays both metric and non-metric units.
-      });
-
-      mapView.ui.add(scaleBar, {
-        position: 'bottom-left',
-      });
 
       document
         .getElementById('uploadForm')
@@ -908,197 +597,25 @@ export default {
           const fileName = event.target.value.toLowerCase();
 
           if (fileName.indexOf('.zip') !== -1) {
-            // is file a zip - if not notify user
-            generateFeatureCollection(fileName);
+            generateFeatureCollection(fileName, map, mapView);
           } else {
             document.getElementById('upload-status').innerHTML =
                 '<p style="color:red">Add shapefile as .zip file</p>';
           }
         });
 
-      function generateFeatureCollection(fileName) {
-        let name = fileName.split('.');
-        // Chrome adds c:\fakepath to the value - we need to remove it
-        name = name[0].replace('c:\\fakepath\\', '');
-
-        document.getElementById('upload-status').innerHTML =
-            '<b>Loading </b>' + name;
-
-        // define the input params for generate see the rest doc for details
-        // https://developers.arcgis.com/rest/users-groups-and-items/generate.htm
-        const params = {
-          name: name,
-          targetSR: mapView.spatialReference,
-          maxRecordCount: 1000,
-          enforceInputFileSizeLimit: true,
-          enforceOutputJsonSizeLimit: true,
-        };
-
-        // generalize features to 10 meters for better performance
-        params.generalize = true;
-        params.maxAllowableOffset = 10;
-        params.reducePrecision = true;
-        params.numberOfDigitsAfterDecimal = 0;
-
-        const myContent = {
-          filetype: 'shapefile',
-          publishParameters: JSON.stringify(params),
-          f: 'json',
-        };
-
-        const portalUrl = 'https://www.arcgis.com';
-        esriRequest(portalUrl + '/sharing/rest/content/features/generate', {
-          query: myContent,
-          body: document.getElementById('uploadForm'),
-          responseType: 'json',
-        })
-          .then((response) => {
-            const layerName = response.data.featureCollection.layers[0].layerDefinition.name;
-            document.getElementById('upload-status').innerHTML = '<b>Loaded: </b>' + layerName;
-            addShapefileToMap(response.data.featureCollection);
-          })
-          .catch(errorHandler);
-      }
-
-      function errorHandler(error) {
-        document.getElementById('upload-status').innerHTML =
-            "<p style='color:red;max-width: 500px;'>" + error.message + '</p>';
-      }
-
-      var layerIn = [];
-
-      function addShapefileToMap(featureCollection) {
-        let sourceGraphics = [];
-
-        const layers = featureCollection.layers.map((layer) => {
-          const graphics = layer.featureSet.features.map((feature) => {
-            return Graphic.fromJSON(feature);
-          });
-          sourceGraphics = sourceGraphics.concat(graphics);
-          const featureLayer = new FeatureLayer({
-            objectIdField: 'FID',
-            source: graphics,
-            fields: layer.layerDefinition.fields.map((field) => {
-              return Field.fromJSON(field);
-            }),
-          });
-          return featureLayer;
-        });
-        map.addMany(layers);
-        mapView.goTo(sourceGraphics).catch((error) => {
-          if (error.name !== 'AbortError') {
-            console.error(error);
-          }
-        });
-
-        layerIn.push(layers);
-        document.getElementById('upload-status').innerHTML = '';
-      }
-
       this.tempLayer = layerIn;
 
-      // mapView.ui.add(document.getElementById('input__select__kegiatan'), 'top-right');
       mapView.ui.add(document.getElementById('open__drawer'), 'top-right');
       mapView.ui.add(document.getElementById('legend__drawer'), 'top-right');
       mapView.ui.add(document.getElementById('upload__shapefile'), 'top-right');
       mapView.ui.add(document.getElementById('layer__list'), 'top-right');
 
-      // mapView.ui.add(layerList, 'top-right');
-      // mapView.ui.add(legend, 'top-right');
-      mapView.ui.add(printExpand, 'top-left');
+      widgetMap(mapView);
     },
   },
 };
 </script>
 <style>
-@import '../home/assets/css/style.css';
-
-.webgis__container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-}
-
-div#input__select__kegiatan {
-    width: 100%;
-}
-
-div#legend__drawer {
-    width: 100%;
-}
-
-div#option__legend {
-    display: flex;
-    flex-direction: column;
-}
-
-div#option__legend .el-checkbox {
-    margin-top: 10px;
-}
-
-div#option__legend .el-checkbox img {
-    width: 20px;
-    vertical-align: middle;
-}
-
-div#upload__shapefile {
-    width: 100%;
-}
-
-input#inFile {
-    outline: seagreen;
-    border: 1px solid seagreen;
-    padding: 2px;
-    margin: 10px 0;
-}
-
-div#layer__list {
-  width: 100%;
-}
-
-div#list__item {
-  width: 100%;
-}
-
-#calcite_list_item {
-  width: 100%;
-}
-
-.inline-input {
-  width: 100%;
-  z-index: 100;
-}
-
-#mapViewDiv {
-  width: 100%;
-  height: 100%;
-}
-
-.toggled {
-    color: white;
-    font-weight: 600;
-    background-color: seagreen;
-    padding: 10px;
-}
-
-.toggled::after {
-    content: '[Selected]';
-}
-
-.select__project:hover {
-  color: seagreen;
-  font-weight: 500;
-}
-
-.esri-feature-content tr td {
-  padding: 5px !important;
-}
-
-.esri-feature-content table {
-  margin-top: 10px !important;
-}
+@import './styles/main-webgis.css';
 </style>

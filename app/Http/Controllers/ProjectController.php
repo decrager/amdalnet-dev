@@ -57,6 +57,9 @@ class ProjectController extends Controller
                 ->where('registration_no', $request->registration_no)
                 ->orderBy('created_at', 'desc')
                 ->get());
+        } else if ($request->id){
+            // return one just one
+            return response()->json(ProjectController::getProject($request->id));
         }
 
         return Project::with(['address', 'listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
@@ -192,7 +195,8 @@ class ProjectController extends Controller
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomFromGeojson'), 4326)"),
-                    'properties' => $request->geomProperties
+                    'properties' => $request->geomProperties,
+                    'id_styles' => $request->geomStyles
                 ]);
             }
 
@@ -398,6 +402,34 @@ class ProjectController extends Controller
         // }
     }
 
+    private function getProject($id){
+        /*
+        lpjp.name as lpjp_name,
+        lpjp.address as lpjp_address,
+        initcap(districts."name") as lpjp_address_district,
+        initcap(provinces."name") as lpjp_address_province,
+       ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
+       ->leftJoin('districts', 'districts.id','=', 'lpjp.id_district')
+       ->leftJoin('provinces', 'provinces.id','=', 'lpjp.id_prov')
+        */
+
+        $project = Project::from('projects')
+        ->selectRaw('
+        projects.id,
+        projects.project_title,
+        projects.registration_no,
+        concat(initcap(project_address.district), \', \', initcap(project_address.prov)) as address,
+        projects.required_doc,
+        projects.description,
+        initiators.name as initiator_name,
+        initiators.address as initiator_address,
+        users.avatar as logo')
+       ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+       ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+       ->leftJoin('users', 'initiators.email', '=', 'users.email');
+        return $project->where('projects.id', $id)->first();
+    }
+
     /**
      * Display the specified resource.
      *
@@ -408,6 +440,19 @@ class ProjectController extends Controller
     {
         return $project;
     }
+
+    /**
+     * Get one project.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    /* public function getProject(Request $request)
+    {
+
+        return response($request);
+    } */
+
 
     /**
      * Show the form for editing the specified resource.

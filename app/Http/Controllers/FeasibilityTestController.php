@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Entity\EligibilityCriteria;
 use App\Entity\FeasibilityTest;
 use App\Entity\FeasibilityTestDetail;
+use App\Entity\FeasibilityTestTeamMember;
+use App\Entity\MeetingReport;
 use App\Entity\Project;
+use App\Entity\TestingMeeting;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use PhpOffice\PhpWord\IOFactory;
@@ -242,6 +245,24 @@ class FeasibilityTestController extends Controller
             }
         }
 
+        // GET TUK
+        $tuk = [
+            'kepala_sekretariat_tuk_name' => '',
+            'kepala_sekretariat_tuk_nip' => '',
+            'ketua_tuk_position' => '',
+            'ketua_tuk_name' => '',
+            'ketua_tuk_nip' => ''
+        ];
+        $testing_meeting = TestingMeeting::where('id_project', $project->id)->first();
+        if($testing_meeting) {
+            $tuk = $this->getTukData($testing_meeting, $tuk);
+        } else {
+            $meeting_report = MeetingReport::where('id_project', $project->id)->first();
+            if($meeting_report) {
+                $tuk = $this->getTukData($meeting_report, $tuk);
+            }
+        }
+
         $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
         $templateProcessor = new TemplateProcessor('template_kelayakan.docx');
@@ -259,10 +280,41 @@ class FeasibilityTestController extends Controller
         $templateProcessor->setValue('project_type', $project_type);
         $templateProcessor->setValue('pic', $pic);
         $templateProcessor->setValue('pemrakarsa_address', $pemrakarsa_address);
+        $templateProcessor->setValue('kepala_sekretariat_tuk_name', $tuk['kepala_sekretariat_tuk_name']);
+        $templateProcessor->setValue('kepala_sekretariat_tuk_nip', $tuk['kepala_sekretariat_tuk_nip']);
+        $templateProcessor->setValue('ketua_tuk_name', $tuk['ketua_tuk_name']);
+        $templateProcessor->setValue('ketua_tuk_position', $tuk['ketua_tuk_position']);
+        $templateProcessor->setValue('ketua_tuk_nip', $tuk['ketua_tuk_nip']);
 
         $templateProcessor->saveAs(storage_path('app/public/uji-kelayakan/' . $save_file_name));
 
         return $save_file_name;
+    }
+
+    private function getTukData($data, $tuk) {
+        if($data->id_feasibility_test_team) {
+            $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $data->id_feasibility_test_team],['position', 'Ketua']])->first();
+            if($ketua_tuk) {
+                if($ketua_tuk->expertBank) {
+                    $tuk['ketua_tuk_name'] = $ketua_tuk->expertBank->name;
+                } else if($ketua_tuk->lukMember) {
+                    $tuk['ketua_tuk_position'] = $ketua_tuk->lukMember->position;
+                    $tuk['ketua_tuk_name'] = $ketua_tuk->lukMember->name;
+                    $tuk['ketua_tuk_nip'] = $ketua_tuk->lukMember->nip ?? '';
+                }
+            }
+            $kepala_sekretariat = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $data->id_feasibility_test_team],['position', 'Kepala Sekretariat']])->first();
+            if($kepala_sekretariat) {
+                if($kepala_sekretariat->expertBank) {
+                    $tuk['kepala_sekretariat_tuk_name'] = $kepala_sekretariat->expertBank->name;
+                } else if($kepala_sekretariat->lukMember) {
+                    $tuk['kepala_sekretariat_tuk_name'] = $kepala_sekretariat->lukMember->name;
+                    $tuk['kepala_sekretariat_tuk_nip'] = $kepala_sekretariat->lukMember->nip ?? '';
+                }
+            }
+        }
+
+        return $tuk;
     }
 
     private function exportPDF($id_project) {

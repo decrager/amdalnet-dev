@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\FeasibilityTestTeam;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\LukMember;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
@@ -22,6 +24,14 @@ class EmployeeTUKController extends Controller
     {
         if($request->type == 'edit') {
             $employee_tuk = LukMember::find($request->idEmployee);
+            $id_team = null;
+
+            if($employee_tuk->feasibilityTestTeamMember) {
+                $id_team = $employee_tuk->feasibilityTestTeamMember->id_feasibility_test_team;
+            }
+
+            $employee_tuk->setAttribute('id_feasibility_test_team', $id_team);
+
             return $employee_tuk;
         }
 
@@ -86,19 +96,10 @@ class EmployeeTUKController extends Controller
         $employee_tuk->email = $request->email;
         $employee_tuk->position = $request->position;
         $employee_tuk->phone = $request->phone;
-        $employee_tuk->decision_number = $request->decision_number;
         $employee_tuk->sex = $request->sex;
         $employee_tuk->id_province = $request->id_province;
         $employee_tuk->id_district = $request->id_district;
         $employee_tuk->address = $request->address;
-
-        if($request->hasFile('decision_file')) {
-            $file = $request->file('decision_file');
-            $name = '/decision_letter/' . uniqid() . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
-
-            $employee_tuk->decision_file = Storage::url($name);
-        }
 
         if($request->hasFile('cv')) {
             $file = $request->file('cv');
@@ -113,6 +114,24 @@ class EmployeeTUKController extends Controller
         if(!$saved) {
             DB::rollback();
         } else {
+             // CHECK IF EMPLOYEE ALREADY ASSIGNED TO TUK
+             if($request->id_feasibility_test_team) {
+                 $check_tuk = FeasibilityTestTeamMember::where('id_luk_member', $employee_tuk->id)->first();
+                 if($check_tuk) {
+                     $old_id_team = $check_tuk->id_feasibility_test_team;
+     
+                     if($old_id_team != $request->id_feasibility_test_team) {
+                         $check_tuk->id_feasibility_test_team = $request->id_feasibility_test_team;
+                         $check_tuk->position = null;
+                         $check_tuk->save();
+                     }
+                 } else {
+                     $tuk_member = new FeasibilityTestTeamMember();
+                     $tuk_member->id_feasibility_test_team = $request->id_feasibility_test_team;
+                     $tuk_member->id_luk_member = $employee_tuk->id;
+                     $tuk_member->save();
+                 }
+             }
             DB::commit();
         }
 
@@ -172,7 +191,6 @@ class EmployeeTUKController extends Controller
         $validator = \Validator::make($data,[
             'status' => 'required',
             'nik' => 'required',
-            'nip' => 'required',
             'name' => 'required',
             'institution' => 'required',
             'email' => 'required|email|unique:luk_members,email',
@@ -181,11 +199,11 @@ class EmployeeTUKController extends Controller
             'sex' => 'required',
             'id_province' => 'required',
             'id_district' => 'required',
-            'address' => 'required'
+            'address' => 'required',
+            'cv' => 'max:1024'
         ],[
             'status.required' => 'Status Wajib Dipilih',
             'nik.required' => 'NIK Wajib Diisi',
-            'nip.required' => 'NIP Wajib Diisi',
             'name.required' => 'Nama Wajib Diisi',
             'institution.required' => 'Instansi Wajib Diisi',
             'email.required' => 'Email Wajib Diisi',
@@ -196,7 +214,8 @@ class EmployeeTUKController extends Controller
             'sex.required' => 'Jenis Kelamin Wajib Dipilih',
             'id_province.required' => 'Provinsi Wajib Dipilih',
             'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
-            'address.required' => 'Alamat Wajib Diisi'
+            'address.required' => 'Alamat Wajib Diisi',
+            'cv.max' => 'Ukuran file tidak boleh melebihi 1 MB'
         ]);
 
         return $validator;
@@ -206,7 +225,6 @@ class EmployeeTUKController extends Controller
         $validator = \Validator::make($data,[
             'status' => 'required',
             'nik' => 'required',
-            'nip' => 'required',
             'name' => 'required',
             'institution' => 'required',
             'email' => 'required|email',
@@ -215,11 +233,11 @@ class EmployeeTUKController extends Controller
             'sex' => 'required',
             'id_province' => 'required',
             'id_district' => 'required',
-            'address' => 'required'
+            'address' => 'required',
+            'cv' => 'max:1024'
         ],[
             'status.required' => 'Status Wajib Dipilih',
             'nik.required' => 'NIK Wajib Diisi',
-            'nip.required' => 'NIP Wajib Diisi',
             'name.required' => 'Nama Wajib Diisi',
             'institution.required' => 'Instansi Wajib Diisi',
             'email.required' => 'Email Wajib Diisi',
@@ -230,7 +248,8 @@ class EmployeeTUKController extends Controller
             'sex.required' => 'Jenis Kelamin Wajib Dipilih',
             'id_province.required' => 'Provinsi Wajib Dipilih',
             'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
-            'address.required' => 'Alamat Wajib Diisi'
+            'address.required' => 'Alamat Wajib Diisi',
+            'cv.max' => 'Ukuran file tidak boleh melebihi 1 MB'
         ]);
 
         return $validator;

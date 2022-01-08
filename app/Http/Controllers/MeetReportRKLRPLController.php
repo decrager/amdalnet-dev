@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Entity\ExpertBankTeam;
 use App\Entity\ExpertBankTeamMember;
+use App\Entity\FeasibilityTestTeam;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Initiator;
 use App\Entity\MeetingReport;
@@ -33,20 +35,35 @@ class MeetReportRKLRPLController extends Controller
         }
 
         if($request->expert_bank_team) {
-            return ExpertBankTeam::all();
+            return FeasibilityTestTeam::with(['provinceAuthority', 'districtAuthority'])->get();
         }
 
         if($request->tuk_member) {
-            $members = ExpertBankTeamMember::where('id_expert_bank_team', $request->tuk_id)->get();
+            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $request->tuk_id)->get();
             $newMembers = [];
             
             foreach($members as $m) {
+                $name = '';
+                $email = '';
+                $type_member = '';
+
+                if($m->expertBank) {
+                    $name = $m->expertBank->name;
+                    $email = $m->expertBank->email;
+                    $type_member = 'expert';
+                } else if($m->lukMember) {
+                    $name = $m->lukMember->name;
+                    $email = $m->lukMember->email;
+                    $type_member = 'employee';
+                }
+
                 $newMembers[] = [
                     'id' => $m->id,
                     'role' => $m->position,
-                    'name' => $m->expertBank->name,
-                    'email' => $m->expertBank->email,
-                    'type' => 'tuk'
+                    'name' => $name,
+                    'email' => $email,
+                    'type' => 'tuk',
+                    'type_member' => $type_member
                 ];
             }
 
@@ -123,7 +140,7 @@ class MeetReportRKLRPLController extends Controller
         $report->person_responsible = $data['person_responsible'];
         $report->location = $data['location'];
         $report->position = $data['position'];
-        $report->expert_bank_team_id = $data['expert_bank_team_id'];
+        $report->id_feasibility_test_team = $data['id_feasibility_test_team'];
         $report->project_name = $data['project_name'];
         $report->id_initiator = $data['id_initiator'];
         $report->save();
@@ -136,7 +153,7 @@ class MeetReportRKLRPLController extends Controller
         // Save meetings invitation members
         for($i = 0; $i < count($data['invitations']); $i++) {
             $invitation = new MeetingReportInvitation();
-            $invitation->id_expert_bank_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
+            $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
             $invitation->id_meeting_report = $report->id;
 
             if($data['invitations'][$i]['type'] == 'other') {
@@ -210,13 +227,28 @@ class MeetReportRKLRPLController extends Controller
 
         if($meeting->invitations->first()) {
             foreach($meeting->invitations as $i) {
-                if($i->id_expert_bank_team_member) {
+                if($i->id_feasibility_test_team_member) {
+                    $name = '';
+                    $email = '';
+                    $type_member = '';
+
+                    if($i->feasibilityTestTeamMember->id_expert_bank) {
+                        $name = $i->feasibilityTestTeamMember->expertBank->name;
+                        $email = $i->feasibilityTestTeamMember->expertBank->email;
+                        $type_member = 'expert';
+                    } else if($i->feasibilityTestTeamMember->id_luk_member) {
+                        $name = $i->feasibilityTestTeamMember->lukMember->name;
+                        $email = $i->feasibilityTestTeamMember->lukMember->email;
+                        $type_member = 'employee';
+                    }
+
                     $invitations[] = [
-                        'id' => $i->id_expert_bank_team_member,
-                        'role' => $i->expertBankTeamMember->position,
-                        'name' => $i->expertBankTeamMember->expertBank->name,
-                        'email' => $i->expertBankTeamMember->expertBank->email,
-                        'type' => 'tuk'
+                        'id' => $i->id_feasibility_test_team_member,
+                        'role' => $i->feasibilityTestTeamMember->position,
+                        'name' => $name,
+                        'email' => $email,
+                        'type' => 'tuk',
+                        'type_member' => $type_member
                     ];
                 } else {
                     $invitations[] = [
@@ -224,7 +256,8 @@ class MeetReportRKLRPLController extends Controller
                         'role' => $i->role,
                         'name' => $i->name,
                         'email' => $i->email,
-                        'type' => 'other'
+                        'type' => 'other',
+                        'type_member' => 'other'
                     ];
                 }
             }
@@ -247,6 +280,7 @@ class MeetReportRKLRPLController extends Controller
             'location' => $meeting->location,
             'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
+            'id_feasibility_test_team' => $meeting->id_feasibility_test_team,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations
         ];
@@ -261,13 +295,28 @@ class MeetReportRKLRPLController extends Controller
 
         if($report->invitations->first()) {
             foreach($report->invitations as $i) {
-                if($i->id_expert_bank_team_member) {
+                if($i->id_feasibility_test_team_member) {
+                    $name = '';
+                    $email = '';
+                    $type_member = '';
+
+                    if($i->feasibilityTestTeamMember->id_expert_bank) {
+                        $name = $i->feasibilityTestTeamMember->expertBank->name;
+                        $email = $i->feasibilityTestTeamMember->expertBank->email;
+                        $type_member = 'expert';
+                    } else if($i->feasibilityTestTeamMember->id_luk_member) {
+                        $name = $i->feasibilityTestTeamMember->lukMember->name;
+                        $email = $i->feasibilityTestTeamMember->lukMember->email;
+                        $type_member = 'employee';
+                    }
+
                     $invitations[] = [
-                        'id' => $i->id_expert_bank_team_member,
-                        'role' => $i->expertBankTeamMember->position,
-                        'name' => $i->expertBankTeamMember->expertBank->name,
-                        'email' => $i->expertBankTeamMember->expertBank->email,
-                        'type' => 'tuk'
+                        'id' => $i->id_feasibility_test_team_member,
+                        'role' => $i->feasibilityTestTeamMember->position,
+                        'name' => $name,
+                        'email' => $email,
+                        'type' => 'tuk',
+                        'type_member' => $type_member
                     ];
                 } else {
                     $invitations[] = [
@@ -275,7 +324,8 @@ class MeetReportRKLRPLController extends Controller
                         'role' => $i->role,
                         'name' => $i->name,
                         'email' => $i->email,
-                        'type' => 'other'
+                        'type' => 'other',
+                        'type_member' => 'other'
                     ];
                 }
             }
@@ -298,6 +348,7 @@ class MeetReportRKLRPLController extends Controller
             'location' => $report->location,
             'position' => $report->position,
             'expert_bank_team_id' => $report->expert_bank_team_id,
+            'id_feasibility_test_team' => $report->id_feasibility_test_team,
             'project_name' => $report->project->project_title,
             'invitations' => $invitations
         ];

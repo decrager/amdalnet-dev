@@ -44,7 +44,7 @@
                   v-model="currentData.id_province_name"
                   :filterable="true"
                   :class="{ 'is-error': errors.id_province_name }"
-                  @change="teamName"
+                  @change="teamName($event, 'province')"
                 >
                   <el-option
                     v-for="item in provinces"
@@ -74,10 +74,10 @@
                   v-model="currentData.id_district_name"
                   :filterable="true"
                   :class="{ 'is-error': errors.id_district_name }"
-                  @change="teamName"
+                  @change="teamName($event, 'district')"
                 >
                   <el-option
-                    v-for="item in districts"
+                    v-for="item in authority_districts"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
@@ -105,16 +105,10 @@
             <el-col :md="7" :sm="7">
               <el-input-number
                 v-model="currentData.team_number"
-                :min="1"
+                :min="0"
                 :max="100"
                 style="width: 100%"
-                :class="{ 'is-error': errors.team_number }"
               />
-              <small v-if="errors.team_number" style="color: #f56c6c">
-                <span v-for="(error, index) in errors.team_number" :key="index">
-                  {{ error }}
-                </span>
-              </small>
             </el-col>
           </el-row>
         </el-col>
@@ -181,7 +175,7 @@
           </el-row>
         </el-col>
       </el-row>
-      <el-row :gutter="32">
+      <!-- <el-row :gutter="32">
         <el-col :md="12" :sm="24">
           <el-row :gutter="32">
             <el-col :md="12" :sm="24">
@@ -191,6 +185,7 @@
                   v-model="currentData.id_province"
                   :filterable="true"
                   :class="{ 'is-error': errors.id_province }"
+                  @change="handleChangeProvince"
                 >
                   <el-option
                     v-for="item in provinces"
@@ -218,7 +213,7 @@
                   :class="{ 'is-error': errors.id_district }"
                 >
                   <el-option
-                    v-for="item in districts"
+                    v-for="item in address_districts"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
@@ -236,7 +231,7 @@
             </el-col>
           </el-row>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row :gutter="32">
         <el-col :md="12" :sm="24">
           <div class="form-group">
@@ -293,6 +288,8 @@ export default {
         address: null,
         team_number: null,
       },
+      authority_districts: [],
+      address_districts: [],
       assignmentFileName: null,
       errors: {},
       provinces: [],
@@ -305,15 +302,25 @@ export default {
   },
   watch: {
     authority(next, prev) {
+      if (prev !== null) {
+        this.authority_districts = [];
+        this.currentData.id_province_name = null;
+        this.currentData.id_district_name = null;
+        this.name = null;
+      }
       this.currentData.authority = next;
-      this.teamName();
+
+      if (next === 'Pusat') {
+        this.teamName(null, 'Pusat');
+      }
     },
   },
   created() {
-    this.getProvince();
-    this.getDistrict();
     if (this.$route.name === 'editTuk') {
       this.getData();
+    } else {
+      this.getProvince();
+      this.getDistrict();
     }
   },
   methods: {
@@ -362,12 +369,32 @@ export default {
     },
     async getData() {
       this.loading = true;
+      const provinces = await provinceResource.list({});
+      this.provinces = provinces.data;
+      const districts = await districtResource.list({});
+      this.districts = districts.data;
       this.currentData = await tukManagementResource.list({
         type: 'edit',
         idTeam: this.$route.params.id,
       });
       this.currentData.assignment_file = null;
+      const id_province_name = { ...this.currentData }.id_province_name;
+      // const id_province = { ...this.currentData }.id_province;
+
+      if (id_province_name) {
+        this.currentData.id_province_name = id_province_name;
+        this.authority_districts = this.districts.filter(x => x.id_prov === id_province_name);
+      }
+      // if (id_province) {
+      //   const id_province = this.currentData.id_province;
+      //   this.address_districts = this.districts.filter(x => x.id_prov === id_province);
+      // }
       this.authority = this.currentData.authority;
+
+      const dataType = this.currentData.authority === 'Provinsi' ? 'province' : null;
+
+      this.teamName(id_province_name, dataType);
+
       this.loading = false;
     },
     handleUploadAssignment(file, fileList) {
@@ -387,10 +414,12 @@ export default {
         .join(' ');
       return newWords;
     },
-    teamName() {
+    teamName(id_province, dataType) {
       if (this.authority === 'Pusat') {
+        this.id_district_name = null;
+        this.id_province_name = null;
         this.name = 'Tim Uji Kelayakan Pusat';
-      } else if (this.authority === 'Provinsi') {
+      } else if (this.authority === 'Provinsi' && dataType === 'province') {
         if (this.currentData.id_province_name) {
           const provinceIndex = this.provinces.findIndex(
             (prov) => prov.id === this.currentData.id_province_name
@@ -409,8 +438,17 @@ export default {
             this.capitalize(this.districts[districtIndex].name);
         }
       } else {
-        this.name = 'Tim Uji Kelayakan';
+        this.name = '';
       }
+
+      if (dataType === 'province') {
+        this.id_district_name = null;
+        this.authority_districts = this.districts.filter(x => x.id_prov === id_province);
+      }
+    },
+    handleChangeProvince(id_province) {
+      this.address_districts = this.districts.filter(x => x.id_prov === id_province);
+      this.currentData.id_district = null;
     },
   },
 };

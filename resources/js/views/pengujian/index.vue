@@ -52,11 +52,12 @@ export default {
   },
   async created() {
     this.userInfo = await this.$store.dispatch('user/getInfo');
-    this.$store.dispatch('getStep', 6);
     if (this.userInfo.roles.includes('examiner-substance')) {
       this.activeName = 'beritaacara';
+      this.$store.dispatch('getStep', 6);
     } else if (this.userInfo.roles.includes('examiner-administration')) {
       this.activeName = 'verifikasi';
+      this.$store.dispatch('getStep', 3);
     }
   },
 };
