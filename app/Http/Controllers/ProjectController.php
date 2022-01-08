@@ -404,7 +404,13 @@ class ProjectController extends Controller
 
     private function getProject($id){
         /*
-
+        lpjp.name as lpjp_name,
+        lpjp.address as lpjp_address,
+        initcap(districts."name") as lpjp_address_district,
+        initcap(provinces."name") as lpjp_address_province,
+       ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
+       ->leftJoin('districts', 'districts.id','=', 'lpjp.id_district')
+       ->leftJoin('provinces', 'provinces.id','=', 'lpjp.id_prov')
         */
 
         $project = Project::from('projects')
@@ -412,20 +418,13 @@ class ProjectController extends Controller
         projects.id,
         projects.project_title,
         projects.registration_no,
-        project_address.address,
+        concat(initcap(project_address.district), \', \', initcap(project_address.prov)) as address,
         projects.required_doc,
         projects.description,
-        lpjp.name as lpjp_name,
-        lpjp.address as lpjp_address,
-        initcap(districts."name") as lpjp_address_district,
-        initcap(provinces."name") as lpjp_address_province,
         initiators.name as initiator_name,
         initiators.address as initiator_address,
         users.avatar as logo')
        ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
-       ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
-       ->leftJoin('districts', 'districts.id','=', 'lpjp.id_district')
-       ->leftJoin('provinces', 'provinces.id','=', 'lpjp.id_prov')
        ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
        ->leftJoin('users', 'initiators.email', '=', 'users.email');
         return $project->where('projects.id', $id)->first();
