@@ -56,12 +56,7 @@ export default {
   },
   watch: {
     $route: function(){
-      const regex = new RegExp(this.keywords.join('|'));
-      if (regex.test(this.$route.path)) {
-        this.toShow();
-      } else {
-        this.clear();
-      }
+      this.toShow();
     },
   },
   mounted() {
@@ -69,8 +64,14 @@ export default {
   },
   methods: {
     toShow() {
-      const hasId = parseInt(this.$route.params && this.$route.params.id);
       this.clear();
+
+      const regex = new RegExp(this.keywords.join('|'));
+      if (!regex.test(this.$route.path)) {
+        return;
+      }
+
+      const hasId = parseInt(this.$route.params && this.$route.params.id);
       if (hasId) {
         this.projectId = hasId;
         this.isShown = true;
