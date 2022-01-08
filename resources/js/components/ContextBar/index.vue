@@ -24,7 +24,7 @@
               <p>{{ data.project_title }}</p>
               <p>{{ data.address }}</p>
             </div>
-            <div class="context-bar-item project-lpjp">
+            <div class="context-bar-item project-initiator">
               <p>{{ data.initiator_name || '' }}</p>
               <p>{{ data.initiator_address }}</p>
             </div>
@@ -156,8 +156,12 @@ div.context-bar-container + section.app-main .app-container:first-child{
     margin: 0 0 0 0 !important;
     }
 
-    &.project-lpjp, &.highlight{
-      font-weight: bold;
+    &.project {font-weight: 500;}
+    &.project-initiator { font-weight: bold; }
+
+    &.project, &.project-initiator {
+       p{line-height: 1.25em !important;}
+       p:first-child { margin-bottom: 0.5em !important;}
     }
     &.highlight{
       p{
