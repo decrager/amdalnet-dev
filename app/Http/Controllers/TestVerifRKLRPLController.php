@@ -81,7 +81,7 @@ class TestVerifRKLRPLController extends Controller
                 $form->id_testing_verification = $verification->id;
                 $form->id_ka_form = $data['ka_forms'][$i]['id_ka_form'];
             } else {
-                $form = ProjectKaForm::where([['id_testing_verification', $verification->id], ['id_ka_form', $data['ka_forms'][$i]['id_ka_form']]])->first();
+                $form = ProjectKaForm::findOrFail($data['ka_forms'][$i]['id_ka_form']);
             }
 
             $form->completeness = $data['ka_forms'][$i]['completeness'];

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Entity\ExpertBankTeam;
 use App\Entity\ExpertBankTeamMember;
+use App\Entity\FeasibilityTestTeam;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Initiator;
 use App\Entity\Project;
 use App\Entity\TestingMeeting;
@@ -24,20 +26,35 @@ class TestMeetRKLRPLController extends Controller
         }
 
         if($request->expert_bank_team) {
-            return ExpertBankTeam::all();
+            return FeasibilityTestTeam::with(['provinceAuthority', 'districtAuthority'])->get();
         }
 
         if($request->tuk_member) {
-            $members = ExpertBankTeamMember::where('id_expert_bank_team', $request->tuk_id)->get();
+            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $request->tuk_id)->get();
             $newMembers = [];
             
             foreach($members as $m) {
+                $name = '';
+                $email = '';
+                $type_member = '';
+
+                if($m->expertBank) {
+                    $name = $m->expertBank->name;
+                    $email = $m->expertBank->email;
+                    $type_member = 'expert';
+                } else if($m->lukMember) {
+                    $name = $m->lukMember->name;
+                    $email = $m->lukMember->email;
+                    $type_member = 'employee';
+                }
+
                 $newMembers[] = [
                     'id' => $m->id,
                     'role' => $m->position,
-                    'name' => $m->expertBank->name,
-                    'email' => $m->expertBank->email,
-                    'type' => 'tuk'
+                    'name' => $name,
+                    'email' => $email,
+                    'type' => 'tuk',
+                    'type_member' => $type_member
                 ];
             }
 
@@ -77,14 +94,14 @@ class TestMeetRKLRPLController extends Controller
 
         // Save meetings
         $meeting = null;
-        $oldExpertBankTeamId = null;
+        $oldTeamId = null;
         if($data['type'] == 'new') {
             $meeting = new TestingMeeting();
             $meeting->id_project = $request->idProject;
             $meeting->document_type = 'rkl-rpl';
         } else {
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
-            $oldExpertBankTeamId = $meeting->expert_bank_team_id;
+            $oldTeamId = $meeting->id_feasibility_test_team;
         }
 
 
@@ -93,15 +110,15 @@ class TestMeetRKLRPLController extends Controller
         $meeting->person_responsible = $data['person_responsible'];
         $meeting->location = $data['location'];
         $meeting->position = $data['position'];
-        $meeting->expert_bank_team_id = $data['expert_bank_team_id'];
+        $meeting->id_feasibility_test_team = $data['id_feasibility_test_team'];
         $meeting->project_name = $data['project_name'];
         $meeting->id_initiator = $data['id_initiator'];
         $meeting->save();
 
         // Delete existing invitations if expert bank team is different
         if($data['type'] == 'update') {
-            if($oldExpertBankTeamId != $data['expert_bank_team_id']) {
-                TestingMeetingInvitation::where([['id_testing_meeting', $meeting->id], ['id_expert_bank_team_member', '!=', null]])->delete();           
+            if($oldTeamId != $data['id_feasibility_test_team']) {
+                TestingMeetingInvitation::where([['id_testing_meeting', $meeting->id]])->delete();           
             }
         }
 
@@ -109,7 +126,7 @@ class TestMeetRKLRPLController extends Controller
         for($i = 0; $i < count($data['invitations']); $i++) {
             if($data['type'] == 'new') {
                 $invitation = new TestingMeetingInvitation();
-                $invitation->id_expert_bank_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
+                $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
                 $invitation->id_testing_meeting = $meeting->id;
 
                 if($data['invitations'][$i]['type'] == 'other') {
@@ -122,7 +139,7 @@ class TestMeetRKLRPLController extends Controller
             } else {
                 $invitation = new TestingMeetingInvitation();
 
-                if($data['invitations'][$i]['type'] == 'tuk' && $oldExpertBankTeamId == $data['expert_bank_team_id']) {
+                if($data['invitations'][$i]['type'] == 'tuk' && $oldTeamId == $data['id_feasibility_test_team']) {
                     continue;
                 }
 
@@ -138,7 +155,7 @@ class TestMeetRKLRPLController extends Controller
                     $invitation->email = $data['invitations'][$i]['email'];
                 }
 
-                $invitation->id_expert_bank_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
+                $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
                 $invitation->id_testing_meeting = $meeting->id;
                 $invitation->save();
             }
@@ -206,6 +223,7 @@ class TestMeetRKLRPLController extends Controller
             'location' => null,
             'position' => null,
             'expert_bank_team_id' => null,
+            'id_feasibility_test_team' => null,
             'project_name' => $project->project_title,
             'invitations' => []
         ];
@@ -220,13 +238,28 @@ class TestMeetRKLRPLController extends Controller
 
         if($meeting->invitations->first()) {
             foreach($meeting->invitations as $i) {
-                if($i->id_expert_bank_team_member) {
+                if($i->id_feasibility_test_team_member) {
+                    $name = '';
+                    $email = '';
+                    $type_member = '';
+
+                    if($i->feasibilityTestTeamMember->id_expert_bank) {
+                        $name = $i->feasibilityTestTeamMember->expertBank->name;
+                        $email = $i->feasibilityTestTeamMember->expertBank->email;
+                        $type_member = 'expert';
+                    } else if($i->feasibilityTestTeamMember->id_luk_member) {
+                        $name = $i->feasibilityTestTeamMember->lukMember->name;
+                        $email = $i->feasibilityTestTeamMember->lukMember->email;
+                        $type_member = 'employee';
+                    }
+
                     $invitations[] = [
-                        'id' => $i->id_expert_bank_team_member,
-                        'role' => $i->expertBankTeamMember->position,
-                        'name' => $i->expertBankTeamMember->expertBank->name,
-                        'email' => $i->expertBankTeamMember->expertBank->email,
-                        'type' => 'tuk'
+                        'id' => $i->id_feasibility_test_team_member,
+                        'role' => $i->feasibilityTestTeamMember->position,
+                        'name' => $name,
+                        'email' => $email,
+                        'type' => 'tuk',
+                        'type_member' => $type_member
                     ];
                 } else {
                     $invitations[] = [
@@ -234,7 +267,8 @@ class TestMeetRKLRPLController extends Controller
                         'role' => $i->role,
                         'name' => $i->name,
                         'email' => $i->email,
-                        'type' => 'other'
+                        'type' => 'other',
+                        'type_member' => 'other'
                     ];
                 }
             }
@@ -256,6 +290,7 @@ class TestMeetRKLRPLController extends Controller
             'location' => $meeting->location,
             'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
+            'id_feasibility_test_team' => $meeting->id_feasibility_test_team,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations
         ];

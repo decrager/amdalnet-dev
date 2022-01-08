@@ -26,6 +26,9 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\KaCommentController;
 use App\Http\Controllers\TrackingDocumentController;
+use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\PeraturanController;
+use App\Http\Controllers\MaterialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -304,11 +307,20 @@ Route::get('mark-all-read/{user}', function (User $user) {
 Route::get('get-districts-by-name', [DistrictController::class, 'getDistrictByName']);
 Route::get('announcement-by-filter', [AnnouncementController::class, 'getAnnouncementByFilter']);
 Route::apiResource('policys', 'PolicyController');
+Route::post('policys/update', [PolicyController::class, 'update']);
+Route::get('policys/delete/{id}', [PolicyController::class, 'destroy']);
+Route::get('peraturan', [PeraturanController::class, 'index']);
+Route::post('peraturan', [PeraturanController::class, 'store']);
+Route::post('peraturan/update', [PeraturanController::class, 'update']);
+Route::get('peraturan/delete/{id}', [PeraturanController::class, 'destroy']);
 Route::apiResource('regulations', 'RegulationsController');
+
 Route::apiResource('materials', 'MaterialController');
+Route::post('materials', [MaterialController::class, 'store']);
+Route::post('materials/update', [MaterialController::class, 'update']);
+Route::get('materials/delete/{id}', [MaterialController::class, 'destroy']);
 
 Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index']);
-
 // dpdph master-detail
 Route::get('impacts', [ImpactIdentificationController::class, 'getImpacts']);
 Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);

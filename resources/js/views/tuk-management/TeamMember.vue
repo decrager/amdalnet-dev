@@ -103,6 +103,7 @@ export default {
     async getExpertAndEmployee() {
       this.expertEmployee = await tukManagementResource.list({
         type: 'expertEmployee',
+        idTUK: this.$route.params.id,
       });
     },
     async getTeamMember() {
@@ -149,21 +150,22 @@ export default {
       });
     },
     checkSubmit() {
-      //   this.compositionError = false;
-      //   const ketua = this.members.filter((mem) => mem.position === 'Ketua');
-      //   const anggota = this.members.filter((mem) => mem.position === 'Anggota');
+      this.compositionError = false;
+      const ketua = this.members.filter((mem) => mem.role === 'Ketua');
+      const kepalaSekretariat = this.members.filter(
+        (mem) => mem.role === 'Kepala Sekretariat'
+      );
 
-      //   if (ketua.length === 1 && anggota.length >= 2) {
-      //     this.handleSubmit();
-      //   } else {
-      //     this.$alert(
-      //       'Tim Penyusun harus terdiri dari 1 Ketua dan minimal 2 Anggota',
-      //       '',
-      //       {
-      //         center: true,
-      //       }
-      //     );
-      //   }
+      if (ketua.length > 1 || kepalaSekretariat.length > 1) {
+        this.$alert(
+          'Tim Uji Kelayakan Hanya Diperbolehkan Memiliki 1 Ketua dan 1 Kepala Sekretariat',
+          '',
+          {
+            center: true,
+          }
+        );
+        return;
+      }
 
       const emptyMember = this.members.filter((mem) => mem.id_member === null);
       const emptyRole = this.members.filter((mem) => mem.role === null);

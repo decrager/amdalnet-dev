@@ -49,13 +49,8 @@
             <label>NIP</label>
             <el-input
               v-model="currentData.nip"
-              :class="{ 'is-error': errors.nip }"
+              :disabled="currentData.status !== 'PNS'"
             />
-            <small v-if="errors.nip" style="color: #f56c6c">
-              <span v-for="(error, index) in errors.nip" :key="index">{{
-                error
-              }}</span>
-            </small>
           </div>
         </el-col>
       </el-row>
@@ -135,7 +130,7 @@
           </div>
         </el-col>
         <el-col :md="12" :sm="24">
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label>
               Unggah Surat Keputusan Pengangkatan Kelayakan Lingkungan Hidup
             </label>
@@ -160,6 +155,21 @@
                 </el-upload>
               </el-col>
             </el-row>
+          </div> -->
+          <div class="form-group">
+            <label>TUK</label>
+            <el-select
+              v-model="currentData.id_feasibility_test_team"
+              :filterable="true"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in tuk"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
           </div>
         </el-col>
       </el-row>
@@ -204,6 +214,11 @@
                 {{ cvFileName }}
               </div>
             </el-upload>
+            <small v-if="errors.cv" style="color: #f56c6c">
+              <span v-for="(error, index) in errors.cv" :key="index">
+                {{ error }}
+              </span>
+            </small>
           </div>
         </el-col>
       </el-row>
@@ -217,6 +232,7 @@
                   v-model="currentData.id_province"
                   :filterable="true"
                   :class="{ 'is-error': errors.id_province }"
+                  @change="setDistricts"
                 >
                   <el-option
                     v-for="item in provinces"
@@ -244,7 +260,7 @@
                   :class="{ 'is-error': errors.id_district }"
                 >
                   <el-option
-                    v-for="item in districts"
+                    v-for="item in districtsByProv"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
@@ -301,6 +317,7 @@ import Resource from '@/api/resource';
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const employeeTukResource = new Resource('employee-tuk');
+const tukManagementResource = new Resource('tuk-management');
 
 export default {
   name: 'CreateEmployee',
@@ -322,21 +339,26 @@ export default {
         id_province: null,
         id_district: null,
         address: null,
+        id_feasibility_test_team: null,
       },
       cvFileName: null,
       decisionFileName: null,
       errors: {},
       provinces: [],
       districts: [],
+      districtsByProv: [],
+      tuk: [],
       loadingSubmit: false,
       loading: false,
     };
   },
   created() {
-    this.getProvince();
-    this.getDistrict();
+    this.getTuk();
     if (this.$route.name === 'editEmployeeTuk') {
       this.getData();
+    } else {
+      this.getProvince();
+      this.getDistrict();
     }
   },
   methods: {
@@ -375,6 +397,10 @@ export default {
 
       this.loadingSubmit = false;
     },
+    async getTuk() {
+      const tuk = await tukManagementResource.list({ type: 'listSelect' });
+      this.tuk = tuk;
+    },
     async getProvince() {
       const provinces = await provinceResource.list({});
       this.provinces = provinces.data;
@@ -385,12 +411,19 @@ export default {
     },
     async getData() {
       this.loading = true;
+      const provinces = await provinceResource.list({});
+      this.provinces = provinces.data;
+      const districts = await districtResource.list({});
+      this.districts = districts.data;
       this.currentData = await employeeTukResource.list({
         type: 'edit',
         idEmployee: this.$route.params.id,
       });
       this.currentData.cv = null;
       this.currentData.decision_file = null;
+      this.districtsByProv = this.districts.filter(
+        (x) => x.id_prov === this.currentData.id_province
+      );
       this.loading = false;
     },
     handleUploadDecision(file, fileList) {
@@ -400,6 +433,9 @@ export default {
     handleUploadCv(file, fileList) {
       this.cvFileName = file.name;
       this.currentData.cv = file.raw;
+    },
+    setDistricts(id) {
+      this.districtsByProv = this.districts.filter((x) => x.id_prov === id);
     },
   },
 };
