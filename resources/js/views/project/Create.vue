@@ -1,6 +1,6 @@
 <template>
   <div class="form-container" style="padding: 24px">
-    <workflow />
+    <workflow :is-penapisan="true" />
     <div v-if="preProject">
       <el-collapse v-model="activeName" :accordion="true">
         <el-collapse-item title="TAPAK PROYEK" name="1" disabled>
