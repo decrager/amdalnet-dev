@@ -9,9 +9,12 @@ use App\Entity\FormulatorTeamMember;
 use App\Entity\Lpjp;
 use App\Entity\Project;
 use App\Http\Resources\FormulatorResource;
+use App\Laravue\Models\User;
+use App\Notifications\FormulatorTeamAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -184,6 +187,8 @@ class FormulatorTeamController extends Controller
         } else {
             $params = $request->all();
 
+            $receiver = array();
+
             // check if project team exist
             $team = FormulatorTeam::where('id_project', $request->idProject)->first();
             if(!$team) {
@@ -213,6 +218,17 @@ class FormulatorTeamController extends Controller
 
                 $teamMember->position = $members[$i]['position'];
                 $teamMember->save();
+
+                // add to list notification receiver
+                $formulator = Formulator::find($members[$i]['id']);
+
+                if($formulator){
+                    $user = User::where('email', $formulator->email)->first();
+
+                    if($user) {
+                        array_push($receiver, $user);
+                    }
+                }
             }
 
             // create team members ahli
@@ -262,6 +278,9 @@ class FormulatorTeamController extends Controller
             for($b = 0; $b < count($deletedAhli); $b++) {
                 FormulatorTeamMember::destroy($deletedAhli[$b]);
             }
+
+            // send notif
+            Notification::send($receiver, new FormulatorTeamAssigned($team));
 
             return response()->json(['message' => 'success']);
         }
