@@ -7,14 +7,14 @@
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <lang-select class="right-menu-item hover-effect" />
-        <el-dropdown class="right-menu-item hover-effect">
+        <el-dropdown class="right-menu-item hover-effect" @command="handleNotif">
           <el-badge is-dot :hidden="sumNotifUnread > 0">
             <el-button icon="el-icon-bell" type="text" style="cursor: pointer; font-size: 18px; vertical-align: middle; color: white" @click="markAsRead" />
             <!-- <i class="el-icon-bell" style="cursor: pointer; font-size: 18px; vertical-align: middle;" /> -->
           </el-badge>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-for="notif in notifications" :key="notif.id">
-              {{ notif.data.createdUser.name }} baru saja mendaftar dengan email {{ notif.data.createdUser.email }}
+            <el-dropdown-item v-for="notif in notifications" :key="notif.id" :command="notif">
+              {{ notif.data.message }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -123,6 +123,13 @@ export default {
       });
   },
   methods: {
+    handleNotif(notif){
+      if (notif.data.path){
+        this.$router.push({
+          path: notif.data.path,
+        });
+      }
+    },
     markAsRead(){
       console.log('test');
       markAsReadResource.get(this.userId);

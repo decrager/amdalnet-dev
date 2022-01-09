@@ -2,26 +2,26 @@
 
 namespace App\Notifications;
 
-use App\Laravue\Models\User;
+use App\Entity\FormulatorTeam;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class UserRegistered extends Notification
+class FormulatorTeamAssigned extends Notification
 {
     use Queueable;
 
-    public $user;
+    public $formulatorTeam;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(FormulatorTeam $formulatorTeam)
     {
-        $this->user = $user;
+        $this->formulatorTeam = $formulatorTeam;
     }
 
     /**
@@ -58,9 +58,10 @@ class UserRegistered extends Notification
     public function toArray($notifiable)
     {
         return [
-            'createdUser' => $this->user,
-            'admin' => $notifiable,
-            'message' => $this->user->name.' baru saja mendaftar dengan email '.$this->user->email,
+            'formulatorTeam' => $this->formulatorTeam,
+            'formulator' => $notifiable,
+            'message' => 'Anda baru saja dimasukkan ke '.$this->formulatorTeam->name,
+            'path' => '/project',
         ];
     }
 }
