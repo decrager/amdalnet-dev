@@ -20,4 +20,9 @@ class FeasibilityTestTeamMember extends Model
     {
         return $this->belongsTo(ExpertBank::class, 'id_expert_bank', 'id');
     }
+
+    public function feasibilityTestTeam()
+    {
+        return $this->belongsTo(FeasibilityTestTeam::class, 'id_feasibility_test_team', 'id');
+    }
 }

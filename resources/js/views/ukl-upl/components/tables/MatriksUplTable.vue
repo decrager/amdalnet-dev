@@ -282,7 +282,8 @@ export default {
       }
     },
     handleAddPlan(idImp) {
-      if (this.newEnvMonitorPlan[idImp] === null ||
+      if (this.newEnvMonitorPlan[idImp] === undefined ||
+        this.newEnvMonitorPlan[idImp] === null ||
         this.newEnvMonitorPlan[idImp].replace(/\s+/g, '').trim() === '') {
         this.$message({
           message: 'Bentuk Pemantauan tidak boleh kosong',
@@ -304,6 +305,7 @@ export default {
               });
               // add new env_monitor_plan to this.data
               this.addPlanToImpact(parseInt(idImp), response.data);
+              this.newEnvMonitorPlan[idImp] = '';
             }
           })
           .catch((err) => {

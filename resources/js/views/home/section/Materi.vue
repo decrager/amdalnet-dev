@@ -44,9 +44,9 @@
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
-          <el-col :span="8" class="text-center py1 cp">
+          <el-col :span="8" class="py1 cp">
             <div
-              class="d-flex align-items-center justify-align-center"
+              class="d-flex align-items-center"
               @click="handleSort(sort)"
             >
               <span class="fz12 white fw">Deskripsi</span>
@@ -91,7 +91,7 @@
           </el-col>
           <el-col :span="3" class="py text-center">
             <a
-              :href="material.description"
+              :href="material.link"
               target="_blank"
               class="fz12 white cl-blue buttonDownload"
               download

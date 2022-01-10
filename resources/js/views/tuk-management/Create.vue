@@ -175,7 +175,7 @@
           </el-row>
         </el-col>
       </el-row>
-      <el-row :gutter="32">
+      <!-- <el-row :gutter="32">
         <el-col :md="12" :sm="24">
           <el-row :gutter="32">
             <el-col :md="12" :sm="24">
@@ -231,7 +231,7 @@
             </el-col>
           </el-row>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row :gutter="32">
         <el-col :md="12" :sm="24">
           <div class="form-group">
@@ -316,10 +316,11 @@ export default {
     },
   },
   created() {
-    this.getProvince();
-    this.getDistrict();
     if (this.$route.name === 'editTuk') {
       this.getData();
+    } else {
+      this.getProvince();
+      this.getDistrict();
     }
   },
   methods: {
@@ -368,22 +369,26 @@ export default {
     },
     async getData() {
       this.loading = true;
+      const provinces = await provinceResource.list({});
+      this.provinces = provinces.data;
+      const districts = await districtResource.list({});
+      this.districts = districts.data;
       this.currentData = await tukManagementResource.list({
         type: 'edit',
         idTeam: this.$route.params.id,
       });
       this.currentData.assignment_file = null;
       const id_province_name = { ...this.currentData }.id_province_name;
-      const id_province = { ...this.currentData }.id_province;
+      // const id_province = { ...this.currentData }.id_province;
 
       if (id_province_name) {
         this.currentData.id_province_name = id_province_name;
         this.authority_districts = this.districts.filter(x => x.id_prov === id_province_name);
       }
-      if (id_province) {
-        const id_province = this.currentData.id_province;
-        this.address_districts = this.districts.filter(x => x.id_prov === id_province);
-      }
+      // if (id_province) {
+      //   const id_province = this.currentData.id_province;
+      //   this.address_districts = this.districts.filter(x => x.id_prov === id_province);
+      // }
       this.authority = this.currentData.authority;
 
       const dataType = this.currentData.authority === 'Provinsi' ? 'province' : null;

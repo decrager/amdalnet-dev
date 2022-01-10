@@ -560,8 +560,28 @@ class AndalComposingController extends Controller
         // ======== TIM PENYUSUN AMDAL ========= //
         $formulator = [];
         $experts = [];
+        $sub_project_scale_block = [];
+        $total_sub_project_scale = 1;
+
+        if($project->listSubProject) {
+            if($project->listSubProject->first()) {
+                foreach($project->listSubProject as $li) {
+                    $sub_project_scale_block[] = [
+                        'desc' => $total_sub_project_scale . '. ' . $li->name . ' Seluas ' . $li->scale . ' ' . $li->scale_unit 
+                    ];
+                    $total_sub_project_scale++;
+                } 
+            }
+        }
 
         $formulator_team = FormulatorTeam::where('id_project', $id_project)->first();
+        $formulator_team_chairman = '';
+        $formulator_team_date_start = '';
+        $formulator_team_date_end = '';
+        $formulator_no_reg = '';
+        $formulator_team_period = '';
+        $formulator_team_address = '';
+        $formulator_team_phone = '';
         if ($formulator_team) {
             $total_formulator = 1;
             $total_ahli = 1;
@@ -578,6 +598,13 @@ class AndalComposingController extends Controller
                     $formulatorRegNo = $m->formulator->reg_no;
                     $formulatorExpired = $m->formulator->date_end ? Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_end)->isoFormat('D MMMM Y') : '';
                     $formulatorExpertise = $m->formulator->expertise;
+                    if($m->position == 'Ketua') {
+                        $formulator_team_chairman = $formulatorName;
+                        $formulator_no_reg = $formulatorRegNo;
+                        $formulator_team_date_start = $m->formulator->date_start ? Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_start)->isoFormat('D MMMM Y') : '';
+                        $formulator_team_date_end = $formulatorExpired;
+                        $formulator_team_period = $this->dateDifference($m->formulator_date_start, $m->formulator_date_end);
+                    }
                     $formulator[] = [
                         'tim_penyusun' => $total_formulator,
                         'name' => $formulatorName,
@@ -626,13 +653,50 @@ class AndalComposingController extends Controller
                 'reg_no' => $lpjp_data->reg_no,
                 'date_start' => $date_start->isoFormat('D MMMM Y'),
                 'date_end' => $date_end->isoFormat('D MMMM Y'),
-                'period' => 'period',
+                'period' => $this->dateDifference($lpjp_data->date_start, $lpjp_data->date_end),
                 'telephone' => $lpjp_data->phone_no,
                 'faksimili' => '',
                 'pic' => $lpjp_data->pic,
                 'position' => ''
             ];
         }
+
+        // ======== TIM PENYUSUN ======== //
+        $penyusun = '';
+        if(($project->type_formulator_team == 'lpjp') && $lpjp_data) {
+            $penyusun = 'Lembaga Penyedia Jasa Penyusun Dokumen AMDAL (LPJP) ' . $lpjp['name'];
+        } else if($project->type_formulator_team === 'mandiri') {
+            $penyusun = 'Penyusun Perseorangan yang diketuai oleh ' . $formulator_team_chairman;
+        }
+
+        $penyusun_name = '';
+        $penyusun_no_reg = '';
+        $penyusun_date_start = '';
+        $penyusun_date_end = '';
+        $penyusun_period = '';
+        $penyusun_address = '';
+        $penyusun_phone = '';
+        $lpjp_pj_block = [];
+        if($project->type_formulator_team == 'lpjp') {
+            $penyusun_name = $lpjp['name'];
+            $penyusun_no_reg = $lpjp['reg_no'];
+            $penyusun_date_start = $lpjp['date_start'];
+            $penyusun_date_end = $lpjp['date_end'];
+            $penyusun_period = $lpjp['period'];
+            $penyusun_address = $lpjp['address'];
+            $penyusun_phone = $lpjp['telephone'];
+            $lpjp_pj_block[] = [
+                'pic' => $lpjp['pic']
+            ];
+        } else {
+            $penyusun_name = $formulator_team_chairman;
+            $penyusun_no_reg = $formulator_no_reg;
+            $penyusun_date_start = $formulator_team_date_start;
+            $penyusun_date_end = $formulator_team_date_end;
+            $penyusun_period = $formulator_team_period;
+        }
+
+        $penyusun_type = $project->type_formulator_team == 'lpjp' ? 'LPJP' : 'Penyusun Perseorangan';
 
         // ============== KA DAN MATRIKS DPH ============= //
         $ids = [4, 1, 2, 3];
@@ -683,6 +747,12 @@ class AndalComposingController extends Controller
         $po_bwk = [];
         $dpg_pk_block = [];
         $dpg_pk_block_name = [];
+        $dpg_k_block = [];
+        $dpg_k_block_name = [];
+        $dpg_o_block = [];
+        $dpg_o_block_name = [];
+        $dpg_po_block = [];
+        $dpg_po_block_name = [];
 
         foreach ($stages as $s) {
             $total = 1;
@@ -765,6 +835,47 @@ class AndalComposingController extends Controller
                 $important_trait_6 = ['nilai' => '', 'keterangan' => ''];
                 $important_trait_7 = ['nilai' => '', 'keterangan' => ''];
 
+                $impact_result = '';
+                if($imp->is_hypothetical_significant) {
+                    if($imp->envImpactAnalysis) {
+                        $impact_result = $imp->envImpactAnalysis->impact_eval_result ?? '';
+                        $table_with_no_plan = [
+                            'studies' => $imp->envImpactAnalysis->studies_condition,
+                            'no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
+                            'with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
+                            'size_differ' => $imp->envImpactAnalysis->impact_size_difference
+                        ];
+                        if($imp->envImpactAnalysis->detail) {
+                            if($imp->envImpactAnalysis->detail->first()) {
+                                foreach($imp->envImpactAnalysis->detail as $det) {
+                                    if($det->id_important_trait == 1) {
+                                        $important_trait_1['nilai'] = $det->important_trait;
+                                        $important_trait_1['keterangan'] = $det->description;
+                                    } else if($det->id_important_trait == 2) {
+                                        $important_trait_2['nilai'] = $det->important_trait;
+                                        $important_trait_2['keterangan'] = $det->description;
+                                    } else if($det->id_important_trait == 3) {
+                                        $important_trait_3['nilai'] = $det->important_trait;
+                                        $important_trait_3['keterangan'] = $det->description;
+                                    } else if($det->id_important_trait == 4) {
+                                        $important_trait_4['nilai'] = $det->important_trait;
+                                        $important_trait_4['keterangan'] = $det->description;
+                                    } else if($det->id_important_trait == 5) {
+                                        $important_trait_5['nilai'] = $det->important_trait;
+                                        $important_trait_5['keterangan'] = $det->description;
+                                    } else if($det->id_important_trait == 6) {
+                                        $important_trait_6['nilai'] = $det->important_trait;
+                                        $important_trait_6['keterangan'] = $det->description;
+                                    } else if($det->id_important_trait == 7) {
+                                        $important_trait_7['nilai'] = $det->important_trait;
+                                        $important_trait_7['keterangan'] = $det->description;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if ($s->name == 'Pra Konstruksi') {
 
                     // MATRIKS DP
@@ -795,44 +906,6 @@ class AndalComposingController extends Controller
 
                     // PRAKIRAAN DAMPAK PENTING
                     if($imp->is_hypothetical_significant) {
-                        $impact_result = '';
-                        if($imp->envImpactAnalysis) {
-                            $impact_result = $imp->envImpactAnalysis->impact_eval_result ?? '';
-                            $table_with_no_plan = [
-                                'studies' => $imp->envImpactAnalysis->studies_condition,
-                                'no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
-                                'with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
-                                'size_differ' => $imp->envImpactAnalysis->impact_size_difference
-                            ];
-                            if($imp->envImpactAnalysis->detail) {
-                                if($imp->envImpactAnalysis->detail->first()) {
-                                    foreach($imp->envImpactAnalysis->detail as $det) {
-                                        if($det->id_important_trait == 1) {
-                                            $important_trait_1['nilai'] = $det->important_trait;
-                                            $important_trait_1['keterangan'] = $det->description;
-                                        } else if($det->id_important_trait == 2) {
-                                            $important_trait_2['nilai'] = $det->important_trait;
-                                            $important_trait_2['keterangan'] = $det->description;
-                                        } else if($det->id_important_trait == 3) {
-                                            $important_trait_3['nilai'] = $det->important_trait;
-                                            $important_trait_3['keterangan'] = $det->description;
-                                        } else if($det->id_important_trait == 4) {
-                                            $important_trait_4['nilai'] = $det->important_trait;
-                                            $important_trait_4['keterangan'] = $det->description;
-                                        } else if($det->id_important_trait == 5) {
-                                            $important_trait_5['nilai'] = $det->important_trait;
-                                            $important_trait_5['keterangan'] = $det->description;
-                                        } else if($det->id_important_trait == 6) {
-                                            $important_trait_6['nilai'] = $det->important_trait;
-                                            $important_trait_6['keterangan'] = $det->description;
-                                        } else if($det->id_important_trait == 7) {
-                                            $important_trait_7['nilai'] = $det->important_trait;
-                                            $important_trait_7['keterangan'] = $det->description;
-                                        }
-                                    }
-                                }
-                            }
-                        }
                         if(!in_array($component, $dpg_pk_block_name)) {
 
                             $dpg_pk_block_name[] = $component;
@@ -950,6 +1023,46 @@ class AndalComposingController extends Controller
                         ];
                     }
 
+                    // PRAKIRAAN DAMPAK PENTING
+                    if($imp->is_hypothetical_significant) {
+                        if(!in_array($component, $dpg_k_block_name)) {
+                            $dpg_k_block_name[] = $component;
+                            $dpg_k_block[] = [
+                                'dpg_k_component' => $component,
+                                'dpg_k_imp_block' => '${dpg_k_imp_block_'.count($dpg_k_block_name).'}',
+                                '/dpg_k_imp_block' => '${/dpg_k_imp_block_'.count($dpg_k_block_name).'}',
+                                'dampak' => [$change_type . ' ' . $ronaAwal],
+                                'table_with_no_plan' => [$table_with_no_plan],
+                                'impact_result' => [strtolower($impact_result)],
+                                'important_trait' => [
+                                    [
+                                        $important_trait_1,
+                                        $important_trait_2,
+                                        $important_trait_3,
+                                        $important_trait_4,
+                                        $important_trait_5,
+                                        $important_trait_6,
+                                        $important_trait_7
+                                    ]
+                                ]
+                            ];
+                        } else {
+                            $index = array_search($component, $dpg_k_block_name);
+                            $dpg_k_block[$index]['dampak'][] = $change_type . ' ' . $ronaAwal;
+                            $dpg_k_block[$index]['table_with_no_plan'][] = $table_with_no_plan;
+                            $dpg_k_block[$index]['impact_result'][] = strtolower($impact_result);
+                            $dpg_k_block[$index]['important_trait'][] = [
+                                $important_trait_1,
+                                $important_trait_2,
+                                $important_trait_3,
+                                $important_trait_4,
+                                $important_trait_5,
+                                $important_trait_6,
+                                $important_trait_7
+                            ];
+                        }
+                    }
+
                     // DESKRIPSI BATAS WILAYAH STUDI
                     if(strtolower($component_type) == 'geofisik kimia' || strtolower($component_type) == 'biologi') {
                         $k_bwk[] = [
@@ -1027,6 +1140,46 @@ class AndalComposingController extends Controller
                         ];
                     }
 
+                    // PRAKIRAAN DAMPAK PENTING
+                    if($imp->is_hypothetical_significant) {
+                        if(!in_array($component, $dpg_o_block_name)) {
+                            $dpg_o_block_name[] = $component;
+                            $dpg_o_block[] = [
+                                'dpg_o_component' => $component,
+                                'dpg_o_imp_block' => '${dpg_o_imp_block_'.count($dpg_o_block_name).'}',
+                                '/dpg_o_imp_block' => '${/dpg_o_imp_block_'.count($dpg_o_block_name).'}',
+                                'dampak' => [$change_type . ' ' . $ronaAwal],
+                                'table_with_no_plan' => [$table_with_no_plan],
+                                'impact_result' => [strtolower($impact_result)],
+                                'important_trait' => [
+                                    [
+                                        $important_trait_1,
+                                        $important_trait_2,
+                                        $important_trait_3,
+                                        $important_trait_4,
+                                        $important_trait_5,
+                                        $important_trait_6,
+                                        $important_trait_7
+                                    ]
+                                ]
+                            ];
+                        } else {
+                            $index = array_search($component, $dpg_o_block_name);
+                            $dpg_o_block[$index]['dampak'][] = $change_type . ' ' . $ronaAwal;
+                            $dpg_o_block[$index]['table_with_no_plan'][] = $table_with_no_plan;
+                            $dpg_o_block[$index]['impact_result'][] = strtolower($impact_result);
+                            $dpg_o_block[$index]['important_trait'][] = [
+                                $important_trait_1,
+                                $important_trait_2,
+                                $important_trait_3,
+                                $important_trait_4,
+                                $important_trait_5,
+                                $important_trait_6,
+                                $important_trait_7
+                            ];
+                        }
+                    }
+
                     // DESKRIPSI BATAS WILAYAH STUDI
                     if(strtolower($component_type) == 'geofisik kimia' || strtolower($component_type) == 'biologi') {
                         $o_bwk[] = [
@@ -1102,6 +1255,46 @@ class AndalComposingController extends Controller
                         $com_po[] = [
                             'com_po_name' => '2.4.' . count($com_po_name) . ' ' . $component
                         ];
+                    }
+
+                    // PRAKIRAAN DAMPAK PENTING
+                    if($imp->is_hypothetical_significant) {
+                        if(!in_array($component, $dpg_po_block_name)) {
+                            $dpg_po_block_name[] = $component;
+                            $dpg_po_block[] = [
+                                'dpg_po_component' => $component,
+                                'dpg_po_imp_block' => '${dpg_po_imp_block_'.count($dpg_po_block_name).'}',
+                                '/dpg_po_imp_block' => '${/dpg_po_imp_block_'.count($dpg_po_block_name).'}',
+                                'dampak' => [$change_type . ' ' . $ronaAwal],
+                                'table_with_no_plan' => [$table_with_no_plan],
+                                'impact_result' => [strtolower($impact_result)],
+                                'important_trait' => [
+                                    [
+                                        $important_trait_1,
+                                        $important_trait_2,
+                                        $important_trait_3,
+                                        $important_trait_4,
+                                        $important_trait_5,
+                                        $important_trait_6,
+                                        $important_trait_7
+                                    ]
+                                ]
+                            ];
+                        } else {
+                            $index = array_search($component, $dpg_po_block_name);
+                            $dpg_po_block[$index]['dampak'][] = $change_type . ' ' . $ronaAwal;
+                            $dpg_po_block[$index]['table_with_no_plan'][] = $table_with_no_plan;
+                            $dpg_po_block[$index]['impact_result'][] = strtolower($impact_result);
+                            $dpg_po_block[$index]['important_trait'][] = [
+                                $important_trait_1,
+                                $important_trait_2,
+                                $important_trait_3,
+                                $important_trait_4,
+                                $important_trait_5,
+                                $important_trait_6,
+                                $important_trait_7
+                            ];
+                        }
                     }
 
                     // DESKRIPSI BATAS WILAYAH STUDI
@@ -1266,6 +1459,7 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('project_title_s', strtolower($project->project_title));
         $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
+        $templateProcessor->setValue('project_location_desc', $project->location_desc);
         $templateProcessor->setValue('district', ucwords(strtolower($project_district)));
         $templateProcessor->setValue('province', ucwords(strtolower($project_province)));
         $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->pic);
@@ -1273,16 +1467,27 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('pemrakarsa_address', ucwords(strtolower($project->initiator->address)));
         $templateProcessor->setValue('pemrakarsa_phone', ucwords(strtolower($project->initiator->phone)));
         $templateProcessor->setValue('date_small', Carbon::now()->isoFormat('MMMM Y'));
-        $templateProcessor->setValue('lpjp_name', $lpjp['name']);
-        $templateProcessor->setValue('lpjp_address', $lpjp['address']);
-        $templateProcessor->setValue('lpjp_reg_no', $lpjp['reg_no']);
-        $templateProcessor->setValue('lpjp_date_start', $lpjp['date_start']);
-        $templateProcessor->setValue('lpjp_date_end', $lpjp['date_end']);
-        $templateProcessor->setValue('lpjp_period', $lpjp['period']);
-        $templateProcessor->setValue('lpjp_telephone', $lpjp['telephone']);
+        $templateProcessor->cloneBlock('sub_project_scale_block', count($sub_project_scale_block), true, false, $sub_project_scale_block);
+        // $templateProcessor->setValue('lpjp_name', $lpjp['name']);
+        // $templateProcessor->setValue('lpjp_address', $lpjp['address']);
+        // $templateProcessor->setValue('lpjp_reg_no', $lpjp['reg_no']);
+        // $templateProcessor->setValue('lpjp_date_start', $lpjp['date_start']);
+        // $templateProcessor->setValue('lpjp_date_end', $lpjp['date_end']);
+        // $templateProcessor->setValue('lpjp_period', $lpjp['period']);
+        // $templateProcessor->setValue('lpjp_telephone', $lpjp['telephone']);
         $templateProcessor->setValue('lpjp_faksimili', $lpjp['faksimili']);
-        $templateProcessor->setValue('lpjp_pic', $lpjp['pic']);
+        // $templateProcessor->setValue('lpjp_pic', $lpjp['pic']);
         $templateProcessor->setValue('lpjp_position', $lpjp['position']);
+        $templateProcessor->setValue('penyusun', $penyusun);
+        $templateProcessor->setValue('penyusun_name', $penyusun_name);
+        $templateProcessor->setValue('penyusun_type', $penyusun_type);
+        $templateProcessor->setValue('penyusun_no_reg', $penyusun_no_reg);
+        $templateProcessor->setValue('penyusun_date_start', $penyusun_date_start);
+        $templateProcessor->setValue('penyusun_date_end', $penyusun_date_end);
+        $templateProcessor->setValue('penyusun_period', $penyusun_period);
+        $templateProcessor->setValue('penyusun_address', $penyusun_address);
+        $templateProcessor->setValue('penyusun_phone', $penyusun_phone);
+        $templateProcessor->cloneBlock('lpjp_pj_block', count($lpjp_pj_block), true, false, $lpjp_pj_block);
         $templateProcessor->setValue('konsul_publik_date', $konsul_publik_date);
         $templateProcessor->setValue('konsul_publik_lokasi', $konsul_publik_lokasi);
         $templateProcessor->setValue('konsul_publik_peserta', $konsul_publik_peserta);
@@ -1333,6 +1538,39 @@ class AndalComposingController extends Controller
         }
         $templateProcessor->cloneBlock('dpg_pk_block', count($pdp), true, false, $pdp);
 
+        $pdp = [];
+        for($i = 0; $i < count($dpg_k_block); $i++) {
+            $pdp[] = [
+                'dpg_k_component_no' => '6.2.' . $i + 1 . '. ' . $dpg_k_block[$i]['dpg_k_component'],
+                'dpg_k_component' => $dpg_k_block[$i]['dpg_k_component'],
+                'dpg_k_imp_block' => $dpg_k_block[$i]['dpg_k_imp_block'],
+                '/dpg_k_imp_block' => $dpg_k_block[$i]['/dpg_k_imp_block'],
+            ];
+        }
+        $templateProcessor->cloneBlock('dpg_k_block', count($pdp), true, false, $pdp);
+
+        $pdp = [];
+        for($i = 0; $i < count($dpg_o_block); $i++) {
+            $pdp[] = [
+                'dpg_o_component_no' => '6.3.' . $i + 1 . '. ' . $dpg_o_block[$i]['dpg_o_component'],
+                'dpg_o_component' => $dpg_o_block[$i]['dpg_o_component'],
+                'dpg_o_imp_block' => $dpg_o_block[$i]['dpg_o_imp_block'],
+                '/dpg_o_imp_block' => $dpg_o_block[$i]['/dpg_o_imp_block'],
+            ];
+        }
+        $templateProcessor->cloneBlock('dpg_o_block', count($pdp), true, false, $pdp);
+
+        $pdp = [];
+        for($i = 0; $i < count($dpg_po_block); $i++) {
+            $pdp[] = [
+                'dpg_po_component_no' => '6.3.' . $i + 1 . '. ' . $dpg_po_block[$i]['dpg_po_component'],
+                'dpg_po_component' => $dpg_po_block[$i]['dpg_po_component'],
+                'dpg_po_imp_block' => $dpg_po_block[$i]['dpg_po_imp_block'],
+                '/dpg_po_imp_block' => $dpg_po_block[$i]['/dpg_po_imp_block'],
+            ];
+        }
+        $templateProcessor->cloneBlock('dpg_po_block', count($pdp), true, false, $pdp);
+
         // DAMPAK PADA PRAKIRAAN DAMPAK PENTING
         if(count($dpg_pk_block) > 0) {
             for($i = 0; $i < count($dpg_pk_block); $i++) {
@@ -1366,6 +1604,111 @@ class AndalComposingController extends Controller
                 }
                 $no = $i + 1;
                 $templateProcessor->cloneBlock('dpg_pk_imp_block_' . $no, count($dampak), true, false, $dampak);
+            }
+        }
+
+        if(count($dpg_k_block) > 0) {
+            for($i = 0; $i < count($dpg_k_block); $i++) {
+                $dampak = [];
+                for($a = 0; $a < count($dpg_k_block[$i]['dampak']); $a++) {
+                    $dampak[$a] = [
+                        'dpg_k_impact_no' => '6.2.' . $i + 1 . '.' . $a + 1 . '. ' . $dpg_k_block[$i]['dampak'][$a],
+                        'dpg_k_impact' => $dpg_k_block[$i]['dampak'][$a],
+                        'dpg_k_impact_small' => strtolower($dpg_k_block[$i]['dampak'][$a]),
+                        'dpg_k_studies' => $dpg_k_block[$i]['table_with_no_plan'][$a]['studies'],
+                        'dpg_k_no_plan' => $dpg_k_block[$i]['table_with_no_plan'][$a]['no_plan'],
+                        'dpg_k_with_plan' => $dpg_k_block[$i]['table_with_no_plan'][$a]['with_plan'],
+                        'dpg_k_size_differ' => $dpg_k_block[$i]['table_with_no_plan'][$a]['size_differ'],
+                        'dpg_k_imp_result' => $dpg_k_block[$i]['impact_result'][$a],
+                    ];
+
+                    $status = 'tidak penting';
+
+                    for($o = 1; $o < count($dpg_k_block[$i]['important_trait'][$a]) + 1; $o++) {
+                        $dampak[$a]['dpg_k_it_' . $o] = $dpg_k_block[$i]['important_trait'][$a][$o - 1]['nilai'];
+                        $dampak[$a]['dpg_k_itk_' . $o] = $dpg_k_block[$i]['important_trait'][$a][$o - 1]['keterangan'];
+
+                        if($status == 'tidak penting') {
+                            if($dampak[$a]['dpg_k_it_' . $o] == '+P' || $dampak[$a]['dpg_k_it_' . $o] == '-P') {
+                                $status = 'penting';
+                            }
+                        }
+                    }
+
+                    $dampak[$a]['dpg_k_imp_status'] = $status;
+                }
+                $no = $i + 1;
+                $templateProcessor->cloneBlock('dpg_k_imp_block_' . $no, count($dampak), true, false, $dampak);
+            }
+        }
+
+        if(count($dpg_o_block) > 0) {
+            for($i = 0; $i < count($dpg_o_block); $i++) {
+                $dampak = [];
+                for($a = 0; $a < count($dpg_o_block[$i]['dampak']); $a++) {
+                    $dampak[$a] = [
+                        'dpg_o_impact_no' => '6.3.' . $i + 1 . '.' . $a + 1 . '. ' . $dpg_o_block[$i]['dampak'][$a],
+                        'dpg_o_impact' => $dpg_o_block[$i]['dampak'][$a],
+                        'dpg_o_impact_small' => strtolower($dpg_o_block[$i]['dampak'][$a]),
+                        'dpg_o_studies' => $dpg_o_block[$i]['table_with_no_plan'][$a]['studies'],
+                        'dpg_o_no_plan' => $dpg_o_block[$i]['table_with_no_plan'][$a]['no_plan'],
+                        'dpg_o_with_plan' => $dpg_o_block[$i]['table_with_no_plan'][$a]['with_plan'],
+                        'dpg_o_size_differ' => $dpg_o_block[$i]['table_with_no_plan'][$a]['size_differ'],
+                        'dpg_o_imp_result' => $dpg_o_block[$i]['impact_result'][$a],
+                    ];
+
+                    $status = 'tidak penting';
+
+                    for($o = 1; $o < count($dpg_o_block[$i]['important_trait'][$a]) + 1; $o++) {
+                        $dampak[$a]['dpg_o_it_' . $o] = $dpg_o_block[$i]['important_trait'][$a][$o - 1]['nilai'];
+                        $dampak[$a]['dpg_o_itk_' . $o] = $dpg_o_block[$i]['important_trait'][$a][$o - 1]['keterangan'];
+
+                        if($status == 'tidak penting') {
+                            if($dampak[$a]['dpg_o_it_' . $o] == '+P' || $dampak[$a]['dpg_o_it_' . $o] == '-P') {
+                                $status = 'penting';
+                            }
+                        }
+                    }
+
+                    $dampak[$a]['dpg_o_imp_status'] = $status;
+                }
+                $no = $i + 1;
+                $templateProcessor->cloneBlock('dpg_o_imp_block_' . $no, count($dampak), true, false, $dampak);
+            }
+        }
+
+        if(count($dpg_po_block) > 0) {
+            for($i = 0; $i < count($dpg_po_block); $i++) {
+                $dampak = [];
+                for($a = 0; $a < count($dpg_po_block[$i]['dampak']); $a++) {
+                    $dampak[$a] = [
+                        'dpg_po_impact_no' => '6.4.' . $i + 1 . '.' . $a + 1 . '. ' . $dpg_po_block[$i]['dampak'][$a],
+                        'dpg_po_impact' => $dpg_po_block[$i]['dampak'][$a],
+                        'dpg_po_impact_small' => strtolower($dpg_po_block[$i]['dampak'][$a]),
+                        'dpg_po_studies' => $dpg_po_block[$i]['table_with_no_plan'][$a]['studies'],
+                        'dpg_po_no_plan' => $dpg_po_block[$i]['table_with_no_plan'][$a]['no_plan'],
+                        'dpg_po_with_plan' => $dpg_po_block[$i]['table_with_no_plan'][$a]['with_plan'],
+                        'dpg_po_size_differ' => $dpg_po_block[$i]['table_with_no_plan'][$a]['size_differ'],
+                        'dpg_po_imp_result' => $dpg_po_block[$i]['impact_result'][$a],
+                    ];
+
+                    $status = 'tidak penting';
+
+                    for($o = 1; $o < count($dpg_po_block[$i]['important_trait'][$a]) + 1; $o++) {
+                        $dampak[$a]['dpg_po_it_' . $o] = $dpg_po_block[$i]['important_trait'][$a][$o - 1]['nilai'];
+                        $dampak[$a]['dpg_po_itk_' . $o] = $dpg_po_block[$i]['important_trait'][$a][$o - 1]['keterangan'];
+
+                        if($status == 'tidak penting') {
+                            if($dampak[$a]['dpg_po_it_' . $o] == '+P' || $dampak[$a]['dpg_po_it_' . $o] == '-P') {
+                                $status = 'penting';
+                            }
+                        }
+                    }
+
+                    $dampak[$a]['dpg_po_imp_status'] = $status;
+                }
+                $no = $i + 1;
+                $templateProcessor->cloneBlock('dpg_po_imp_block_' . $no, count($dampak), true, false, $dampak);
             }
         }
 
@@ -1606,5 +1949,18 @@ class AndalComposingController extends Controller
         }
 
         return $comments;
+    }
+
+    private function dateDifference($date1, $date2) {
+        if(($date1 && $date2) && ($date2 > $date1)) {
+            $date1 = date_create(date('Y-m-d', strtotime($date1)));
+            $date2 = date_create(date('Y-m-d', strtotime($date2)));
+
+            $diff = date_diff($date1, $date2);
+
+            return $diff->y . ' Tahun ' . $diff->m . ' Bulan';
+        }
+
+        return '';
     }
 }

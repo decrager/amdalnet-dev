@@ -2,7 +2,7 @@
 
   <div v-loading="fullLoading" class="form-container" style="margin: 2em;">
     <el-card class="box-card">
-      <workflow />
+      <workflow :is-penapisan="true" />
       <el-row :gutter="10">
         <el-col
           :span="12"
