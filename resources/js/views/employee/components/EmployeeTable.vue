@@ -10,7 +10,7 @@
       <template slot-scope="scope">
         <div class="expand-container">
           <div>
-            <p><b>NIK: </b>{{ scope.row.nik }}</p>
+            <p><b>NIP: </b>{{ scope.row.nip ? scope.row.nip : '-' }}</p>
             <p><b>Email: </b>{{ scope.row.email }}</p>
             <p><b>Jenis Kelamin: </b>{{ scope.row.sex }}</p>
             <p><b>No. Telepon: </b>{{ scope.row.phone }}</p>
@@ -36,9 +36,35 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="NIP">
+    <el-table-column align="center" label="Instansi">
       <template slot-scope="scope">
-        <span>{{ scope.row.nip }}</span>
+        <span>{{ scope.row.institution }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column align="center" label="NIK">
+      <template slot-scope="scope">
+        <span>{{ scope.row.nik }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column align="center" label="TUK">
+      <template slot-scope="scope">
+        <span v-if="scope.row.feasibility_test_team_member !== null">
+          <span
+            v-if="
+              scope.row.feasibility_test_team_member.feasibility_test_team !== null
+            "
+          >
+            <span>{{
+              tukName(
+                scope.row.feasibility_test_team_member.feasibility_test_team
+              )
+            }}</span>
+          </span>
+          <span v-else>-</span>
+        </span>
+        <span v-else>-</span>
       </template>
     </el-table-column>
 
@@ -115,6 +141,30 @@ export default {
     },
     download(url) {
       window.open(url, '_blank').focus();
+    },
+    tukName(data) {
+      if (data.authority === 'Pusat') {
+        return 'Tim Uji Kelayakan Pusat';
+      } else if (data.authority === 'Provinsi') {
+        return `Tim Uji Kelayakan ${this.capitalize(data.province_authority.name)}`;
+      } else if (data.authority === 'Kabupaten/Kota') {
+        return `Tim Uji Kelayakan ${this.capitalize(data.district_authority.name)}`;
+      }
+
+      return '-';
+    },
+    capitalize(mySentence) {
+      const words = mySentence.split(' ');
+
+      const newWords = words
+        .map((word) => {
+          return (
+            word.toLowerCase()[0].toUpperCase() +
+            word.toLowerCase().substring(1)
+          );
+        })
+        .join(' ');
+      return newWords;
     },
   },
 };
