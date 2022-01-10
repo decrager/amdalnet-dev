@@ -16,9 +16,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        echo Storage::url('public/test/61c92bbba477f.txt');
-        echo Storage::disk('openstack')->temporaryUrl('public/test/61c92bbba477f.txt', Carbon::now()->addMinutes(30));
-        echo Storage::temporaryUrl('public/test/61c92bbba477f.txt', Carbon::now()->addMinutes(30));
+        echo Storage::disk('s3')->url('public/test/61dc1555d7782.docx');
+        echo '<br/>';
+        echo Storage::disk('openstack')->temporaryUrl('public/test/61dc1555d7782.docx', Carbon::now()->addMinutes(30));
+        echo '<br/>';
+        echo Storage::temporaryUrl('amdal.png', Carbon::now()->addMinutes(30));
+        echo '<br/>';
+        echo Storage::temporaryUrl('public/test/61dc1555d7782.docx', Carbon::now()->addMinutes(30));
     }
 
     /**
@@ -41,6 +45,7 @@ class HomeController extends Controller
     {
         //
         $file = $request->file('file');
+        // var_dump($file);
         $name = 'test/' . uniqid() . '.' . $file->extension();
         $file->storePubliclyAs('public', $name);
         echo Storage::url($name);
