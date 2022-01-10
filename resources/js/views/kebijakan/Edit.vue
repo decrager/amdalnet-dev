@@ -60,10 +60,13 @@
               <el-form>
                 <el-row>
                   <el-form-item label="Taggal Terbit">
-                    <el-input
+                    <el-date-picker
                       v-model="currentParam.set"
                       type="date"
-                      placeholder="Taggal Terbit"
+                      placeholder="yyyy-MM-dd"
+                      value-format="yyyy-MM-dd"
+
+                      style="width: 100%"
                     />
                   </el-form-item>
                 </el-row>

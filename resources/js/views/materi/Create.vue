@@ -28,7 +28,13 @@
               <el-form>
                 <el-row>
                   <el-form-item label="Tanggal Terbit">
-                    <el-input v-model="form.raise_date" type="date" placeholder="Tanggal Terbit" style="width:50%" />
+                    <el-date-picker
+                      v-model="form.raise_date"
+                      type="date"
+                      placeholder="yyyy-MM-dd"
+                      value-format="yyyy-MM-dd"
+                      style="width: 100%"
+                    />
                   </el-form-item>
                 </el-row>
               </el-form>
