@@ -101,7 +101,8 @@ export default {
             duration: 5 * 1000,
           });
           this.$router.push({
-            name: 'materi',
+            name: 'MateriDanKebijakan',
+            params: { tabActive: 'materi' },
           });
         })
         .catch((error) => {
@@ -115,7 +116,8 @@ export default {
     },
     handleCancel() {
       this.$router.push({
-        name: 'materi',
+        name: 'MateriDanKebijakan',
+        params: { tabActive: 'materi' },
       });
     },
   },

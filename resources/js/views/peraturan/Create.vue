@@ -69,7 +69,8 @@ export default {
             duration: 5 * 1000,
           });
           this.$router.push({
-            name: 'peraturan',
+            name: 'MateriDanKebijakan',
+            params: { tabActive: 'peraturan' },
           });
         })
         .catch((error) => {
@@ -83,7 +84,8 @@ export default {
     },
     handleCancel() {
       this.$router.push({
-        name: 'peraturan',
+        name: 'MateriDanKebijakan',
+        params: { tabActive: 'peraturan' },
       });
     },
   },

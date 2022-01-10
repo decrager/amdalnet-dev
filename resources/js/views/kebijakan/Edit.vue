@@ -161,7 +161,8 @@ export default {
             duration: 5 * 1000,
           });
           this.$router.push({
-            name: 'kebijakan',
+            name: 'MateriDanKebijakan',
+            params: { tabActive: 'kebijakan' },
           });
         })
         .catch((error) => {
@@ -175,7 +176,8 @@ export default {
     },
     handleCancel() {
       this.$router.push({
-        name: 'kebijakan',
+        name: 'MateriDanKebijakan',
+        params: { tabActive: 'kebijakan' },
       });
     },
   },
