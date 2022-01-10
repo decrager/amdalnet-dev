@@ -82,15 +82,18 @@ class EnvManageDocController extends Controller
         $params = $request->all();
         $type = '';
         $name = '';
+        $unique_name = '';
         if ($request->hasFile('sppl')) {
             //create file
             $file = $request->file('sppl');
-            $name = 'sppl/' . uniqid() . '.' . $file->extension();
+            $unique_name = uniqid() . '.' . $file->extension();
+            $name = 'sppl/' . $unique_name;
             $type = 'SPPL';
         } else if ($request->hasFile('dpt')) {
             //create file
             $file = $request->file('dpt');
-            $name = 'dpt/' . uniqid() . '.' . $file->extension();
+            $unique_name = uniqid() . '.' . $file->extension();
+            $name = 'dpt/' . $unique_name;
             $type = 'DPT';
         }
         DB::beginTransaction();
@@ -111,6 +114,7 @@ class EnvManageDocController extends Controller
                 ]);
             }
             DB::commit();
+            $envManageDoc['filename'] = $unique_name;
             return response()->json([
                 'status' => 200,
                 'code' => 200,

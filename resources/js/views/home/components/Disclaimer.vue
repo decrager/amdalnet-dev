@@ -3,6 +3,7 @@
     id="disclaimer"
     title="Disclaimer"
     :visible.sync="showDisclaimer"
+    :show-close="false"
     :close-on-click-modal="false"
     :destroy-on-close="true"
     width="45%"

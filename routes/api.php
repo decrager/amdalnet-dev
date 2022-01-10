@@ -244,7 +244,7 @@ Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('map-geojson-merge', [ProjectMapAttachmentController::class, 'getMergeGeojson']);
-Route::get('map-geojson/{id}', [ProjectMapAttachmentController::class, 'getGeojson']);
+Route::get('map-geojson', [ProjectMapAttachmentController::class, 'getGeojson']);
 Route::get('change-types', [ChangeTypeController::class, 'index']);
 Route::get('pie-params', [PieParamController::class, 'index']);
 Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
@@ -271,6 +271,8 @@ Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
 Route::get('dokumen-ukl-upl/{id}', [ExportDocument::class, 'uklUpl']);
 Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf']);
 Route::apiResource('ka-comment', 'KaCommentController');
+Route::apiResource('employee-tuk', 'EmployeeTUKController');
+Route::apiResource('tuk-management', 'TUKManagementController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
@@ -312,3 +314,4 @@ Route::get('impacts', [ImpactIdentificationController::class, 'getImpacts']);
 Route::post('impact-id', [ImpactIdentificationController::class, 'saveImpact']);
 Route::get('impact-id', [ImpactIdentificationController::class, 'getImpact']);
 Route::post('impact-ids', [ImpactIdentificationController::class, 'saveImpacts']);
+Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);

@@ -30,6 +30,7 @@
       :stages="stages"
       :total-changes="totalChanges"
       :loading="isLoading"
+      :mode="mode"
       @dataSelected="onDataSelected"
       @saveChanges="saveChanges"
     />
@@ -37,6 +38,7 @@
       :data="selectedData"
       :change-types="changeTypes"
       :pie-params="pieParams"
+      :mode="mode"
       @hasChanges="hasChanges"
       @saveData="onSaveData"
     />
@@ -55,6 +57,12 @@ const pieParamsResource = new Resource('pie-params');
 export default {
   name: 'DampakHipotetikMD',
   components: { DampakHipotetikDetailForm, DampakHipotetikMasterTable },
+  props: {
+    mode: {
+      type: Number,
+      default: 0,
+    },
+  },
   data() {
     return {
       id_project: 0,
@@ -65,6 +73,7 @@ export default {
       selectedData: null,
       pieParams: [],
       changeTypes: [],
+      impact_res_name: 'impacts',
     };
   },
   mounted(){
@@ -79,20 +88,23 @@ export default {
       this.isLoading = true;
       impactsResource.list({
         id_project: this.id_project,
+        mode: this.mode,
       }).then((res) => {
-        const imps = res.map((e) => {
+        res.map((e) => {
           e.hasChanges = false;
-          // console.log('inside map');
-          return e;
         });
-        // console.log('getPies: ', imps);
-        this.impacts = imps;
+        const order = [4, 1, 2, 3]; // stage's order
+        this.impacts = res.sort((a, b) => order.indexOf(a.project_stage) - order.indexOf(b.project_stage));
       }).finally(() => {
         this.isLoading = false;
       });
     },
     async getParams(){
       // console.log('getting params!');
+      await projectStagesResource.list({ ordered: true }).then((res) => {
+        this.stages = res.data;
+        console.log('get param stages', this.stages);
+      });
       await pieParamsResource.list({}).then((res) => {
         this.pieParams = res.data;
       });
@@ -102,10 +114,6 @@ export default {
           name: 'Lainnya',
           id: 0,
         });
-      });
-      await projectStagesResource.list({ ordered: true }).then((res) => {
-        this.stages = res;
-        // console.log('stages', this.stages);
       });
     },
     handlePie(obj){
@@ -127,10 +135,9 @@ export default {
       this.impacts = temp;
     },
     saveChanges(evt){
-      const imps = new Resource('impact-ids');
       const impstosave = this.impacts.filter(e => e.hasChanges === true);
       this.isLoading = true;
-      imps.store(impstosave).then((res) => {
+      impactsResource.store({ mode: this.mode, data: impstosave }).then((res) => {
         this.$message({
           message: 'Dampak Hipotetik berhasil disimpan',
           type: 'success',
@@ -145,6 +152,13 @@ export default {
     refresh(){
       this.totalChanges = 0;
       this.getImpacts();
+    },
+    sortImpacts(imps){
+      return imps.sort((a, b) => {
+        const ia = this.stages.findIndex(sa => a.project_stage === sa.id);
+        const ib = this.stages.findIndex(sb => b.project_stage === sb.id);
+        return ia - ib;
+      });
     },
   },
 };

@@ -252,6 +252,7 @@ export default {
       addressTableData: [],
       province: null,
       fullLoading: false,
+      geomStyles: 1,
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -381,7 +382,7 @@ export default {
           basemap: 'topo',
         });
 
-        axios.get(`api/map-geojson/${this.idProject}?type=tapak`)
+        axios.get(`api/map-geojson?id=${this.idProject}&type=tapak`)
           .then((response) => {
             response.data.forEach((item) => {
               const blob = new Blob([item.feature_layer], {
@@ -673,6 +674,7 @@ export default {
       const formData = new FormData();
       formData.append('geomFromGeojson', JSON.stringify(this.geomFromGeojson));
       formData.append('geomProperties', JSON.stringify(this.geomProperties));
+      formData.append('geomStyles', JSON.stringify(this.geomStyles));
 
       // for formulator team mandiri
       if (this.project.type_formulator_team === 'mandiri') {

@@ -42,9 +42,9 @@
           </div>
         </div>
         <div class="content" :hidden="!showPelingkupan" style="padding-top: 20px;">
-          <h3 class="sub-title"><img src="/images/docPlus.svg" style="width: 16px; height:16px" alt=""> Proses Persetujuan Lingkungan</h3>
-          <h3 class="sub-title" @click="showPubDialog"><img src="/images/pubques.svg" style="width: 16px; height:16px" alt=""> Pelayanan Public</h3>
-          <h3 class="sub-title" @click="showTrackingDialog"><img src="/images/search.svg" style="width: 16px; height:16px" alt=""> Tracking Dokumen</h3>
+          <h3 class="sub-title button"><img src="/images/docPlus.svg" style="width: 16px; height:16px" alt=""> Proses Persetujuan Lingkungan</h3>
+          <h3 class="sub-title button" @click="showPubDialog"><img src="/images/pubques.svg" style="width: 16px; height:16px" alt=""> Pelayanan Public</h3>
+          <h3 class="sub-title button" @click="showTrackingDialog"><img src="/images/search.svg" style="width: 16px; height:16px" alt=""> Tracking Dokumen</h3>
         </div>
 
         <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showDigi = !showDigi">
@@ -61,9 +61,9 @@
           </div>
         </div>
         <div class="content" :hidden="!showDigi" style="padding-top: 20px;">
-          <h3 class="sub-title"><img src="/images/digworkspace2.svg" style="width: 16px; height:16px" alt=""> AMDAL Digital</h3>
+          <h3 class="sub-title button"><img src="/images/digworkspace2.svg" style="width: 16px; height:16px" alt=""> AMDAL Digital</h3>
           <router-link to="/webgis">
-            <h3 class="sub-title"><img src="/images/map3.svg" style="width: 16px; height:16px" alt=""> WebGIS AMDAL</h3>
+            <h3 class="sub-title button"><img src="/images/map3.svg" style="width: 16px; height:16px" alt=""> WebGIS AMDAL</h3>
           </router-link>
         </div>
 
