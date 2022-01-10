@@ -58,7 +58,6 @@ export default {
   created() {
     if (this.$route.params.appParams) {
       this.currentParam = this.$route.params.appParams;
-      console.log(this.currentParam);
     }
   },
   methods: {
