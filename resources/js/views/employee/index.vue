@@ -8,7 +8,7 @@
           icon="el-icon-plus"
           @click="handleSubmitRoute"
         >
-          {{ 'Tambah Pegawai TUK' }}
+          {{ 'Tambah Anggota TUK' }}
         </el-button>
       </div>
       <EmployeeTable
