@@ -58,7 +58,6 @@ export default {
   created() {
     if (this.$route.params.appParams) {
       this.currentParam = this.$route.params.appParams;
-      console.log(this.currentParam);
     }
   },
   methods: {
@@ -76,7 +75,8 @@ export default {
             duration: 5 * 1000,
           });
           this.$router.push({
-            name: 'peraturan',
+            name: 'MateriDanKebijakan',
+            params: { tabActive: 'peraturan' },
           });
         })
         .catch((error) => {
@@ -90,7 +90,8 @@ export default {
     },
     handleCancel() {
       this.$router.push({
-        name: 'peraturan',
+        name: 'MateriDanKebijakan',
+        params: { tabActive: 'peraturan' },
       });
     },
   },

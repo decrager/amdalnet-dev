@@ -28,7 +28,13 @@
               <el-form>
                 <el-row>
                   <el-form-item label="Tanggal Terbit">
-                    <el-input v-model="currentParam.raise_date" type="date" placeholder="Tanggal Terbit" style="width:50%" />
+                    <el-date-picker
+                      v-model="currentParam.raise_date"
+                      type="date"
+                      placeholder="yyyy-MM-dd"
+                      value-format="yyyy-MM-dd"
+                      style="width: 100%"
+                    />
                   </el-form-item>
                 </el-row>
               </el-form>
@@ -106,7 +112,8 @@ export default {
             duration: 5 * 1000,
           });
           this.$router.push({
-            name: 'materi',
+            name: 'MateriDanKebijakan',
+            params: { tabActive: 'materi' },
           });
         })
         .catch((error) => {
@@ -120,7 +127,8 @@ export default {
     },
     handleCancel() {
       this.$router.push({
-        name: 'materi',
+        name: 'MateriDanKebijakan',
+        params: { tabActive: 'materi' },
       });
     },
   },

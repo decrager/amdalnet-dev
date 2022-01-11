@@ -452,46 +452,51 @@ export default {
       this.url = URL.createObjectURL(this.$refs.file.files[0]);
     },
     async saveFeedback() {
-      const formData = new FormData();
-      formData.append('photo_filepath', this.photo_filepath);
-      formData.append('name', this.form.name);
-      formData.append('id_card_number', this.form.id_card_number);
-      formData.append('phone', this.form.phone);
-      formData.append('email', this.form.email);
-      formData.append('responder_type_id', this.form.peran);
-      formData.append('concern', this.form.concern);
-      formData.append('expectation', this.form.expectation);
-      formData.append('rating', this.form.rating);
-      formData.append('announcement_id', this.selectedAnnouncement.id);
-      formData.append('environment_condition', this.form.envyCondition);
-      formData.append('local_impact', this.form.localImpact);
-      formData.append('community_type', this.form.comunityType);
-      formData.append('community_gender', this.form.comunityGender);
+      if (this.form.peran === 1 && this.form.comunityType.length === 0 && this.form.comunityGender === null) {
+        this.centerDialogVisible = true;
+      } else {
+        this.centerDialogVisible = false;
+        const formData = new FormData();
+        formData.append('photo_filepath', this.photo_filepath);
+        formData.append('name', this.form.name);
+        formData.append('id_card_number', this.form.id_card_number);
+        formData.append('phone', this.form.phone);
+        formData.append('email', this.form.email);
+        formData.append('responder_type_id', this.form.peran);
+        formData.append('concern', this.form.concern);
+        formData.append('expectation', this.form.expectation);
+        formData.append('rating', this.form.rating);
+        formData.append('announcement_id', this.selectedAnnouncement.id);
+        formData.append('environment_condition', this.form.envyCondition);
+        formData.append('local_impact', this.form.localImpact);
+        formData.append('community_type', this.form.comunityType);
+        formData.append('community_gender', this.form.comunityGender);
 
-      _.each(this.formData, (value, key) => {
-        formData.append(key, value);
-      });
-
-      const headers = { 'Content-Type': 'multipart/form-data' };
-      await axios
-        .post('api/feedbacks', formData, { headers })
-        .then((data) => {
-          this.$message({
-            type: 'success',
-            message: 'Successfully create a feedback',
-            duration: 5 * 1000,
-          });
-          this.$emit('handleSetTabs', 'TABS');
-          this.getAnnouncement();
-        })
-        .catch((error) => {
-          this.errorMessage = error.message;
-          this.$message({
-            type: 'error',
-            message: error.message,
-            duration: 5 * 1000,
-          });
+        _.each(this.formData, (value, key) => {
+          formData.append(key, value);
         });
+
+        const headers = { 'Content-Type': 'multipart/form-data' };
+        await axios
+          .post('api/feedbacks', formData, { headers })
+          .then((data) => {
+            this.$message({
+              type: 'success',
+              message: 'Successfully create a feedback',
+              duration: 5 * 1000,
+            });
+            this.$emit('handleSetTabs', 'TABS');
+            this.getAnnouncement();
+          })
+          .catch((error) => {
+            this.errorMessage = error.message;
+            this.$message({
+              type: 'error',
+              message: error.message,
+              duration: 5 * 1000,
+            });
+          });
+      }
     },
     async getResponderType() {
       await axios.get('api/responder-types').then((response) => {
@@ -507,6 +512,8 @@ export default {
       }
     },
     handleCloseModal(){
+      console.log(this.form.comunityType);
+      console.log(this.form.comunityGender);
       if (this.form.comunityType.length === 0 && this.form.comunityGender === null) {
         this.warningDialog = true;
         this.centerDialogVisible = true;

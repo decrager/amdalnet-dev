@@ -1,5 +1,6 @@
 
  
+<<<<<<< HEAD
 11-18-21 09:44:59 | GET detected
  
 11-18-21 09:44:59 | GET detected
@@ -27681,3 +27682,86 @@
 
  
 01-11-22 06:04:51 | POST detected
+=======
+01-10-22 13:47:41 | GET detected
+01-10-22 13:47:41 | Using session token
+01-10-22 13:47:41 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+01-10-22 13:47:41 | Retry attempt 1 of 3
+01-10-22 13:47:41 | Resource using ArcGIS Server security
+01-10-22 13:47:41 | Got token endpoint
+01-10-22 13:47:42 | Adding token to session
+01-10-22 13:47:42 | Using session token
+01-10-22 13:47:42 | Ok to proxy
+01-10-22 13:47:42 | Proxy complete
+ 
+01-10-22 13:47:42 | GET detected
+01-10-22 13:47:42 | Using session token
+01-10-22 13:47:42 | Ok to proxy
+01-10-22 13:47:42 | Proxy complete
+ 
+01-10-22 13:47:42 | GET detected
+01-10-22 13:47:42 | Using session token
+01-10-22 13:47:42 | Ok to proxy
+01-10-22 13:47:42 | Proxy complete
+ 
+01-10-22 13:47:42 | GET detected
+01-10-22 13:47:42 | Using session token
+01-10-22 13:47:42 | Ok to proxy
+01-10-22 13:47:42 | Proxy complete
+ 
+01-10-22 13:47:42 | GET detected
+01-10-22 13:47:42 | Using session token
+01-10-22 13:47:42 | Ok to proxy
+01-10-22 13:47:42 | Proxy complete
+ 
+01-10-22 13:47:42 | GET detected
+01-10-22 13:47:42 | Using session token
+01-10-22 13:47:42 | Ok to proxy
+01-10-22 13:47:42 | Proxy complete
+ 
+01-10-22 13:47:42 | GET detected
+01-10-22 13:47:42 | Using session token
+01-10-22 13:47:42 | Ok to proxy
+01-10-22 13:47:42 | Proxy complete
+ 
+01-10-22 17:17:58 | GET detected
+01-10-22 17:17:58 | Using session token
+01-10-22 17:17:58 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+01-10-22 17:17:58 | Retry attempt 1 of 3
+01-10-22 17:17:58 | Resource using ArcGIS Server security
+01-10-22 17:17:58 | Got token endpoint
+01-10-22 17:17:58 | Adding token to session
+01-10-22 17:17:58 | Using session token
+01-10-22 17:17:59 | Ok to proxy
+01-10-22 17:17:59 | Proxy complete
+ 
+01-10-22 17:17:59 | GET detected
+01-10-22 17:17:59 | Using session token
+01-10-22 17:17:59 | Ok to proxy
+01-10-22 17:17:59 | Proxy complete
+ 
+01-10-22 17:17:59 | GET detected
+01-10-22 17:17:59 | Using session token
+01-10-22 17:17:59 | Ok to proxy
+01-10-22 17:17:59 | Proxy complete
+ 
+01-10-22 17:17:59 | GET detected
+01-10-22 17:17:59 | Using session token
+01-10-22 17:17:59 | Ok to proxy
+01-10-22 17:17:59 | Proxy complete
+ 
+01-10-22 17:17:59 | GET detected
+01-10-22 17:17:59 | Using session token
+01-10-22 17:17:59 | Ok to proxy
+01-10-22 17:17:59 | Proxy complete
+ 
+01-10-22 17:17:59 | GET detected
+01-10-22 17:17:59 | Using session token
+01-10-22 17:17:59 | Ok to proxy
+01-10-22 17:17:59 | Proxy complete
+ 
+01-10-22 17:17:59 | GET detected
+01-10-22 17:17:59 | Using session token
+01-10-22 17:17:59 | Ok to proxy
+01-10-22 17:17:59 | Proxy complete
+>>>>>>> 65121d176c6753c0caf24fe49e2e4ec0a6e80ce1

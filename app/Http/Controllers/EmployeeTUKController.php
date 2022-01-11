@@ -36,7 +36,10 @@ class EmployeeTUKController extends Controller
         }
 
         if($request->type == 'list') {
-            $employees = LukMember::with(['province', 'district'])->orderBy('id', 'desc')->paginate($request->limit);
+            $employees = LukMember::with(['province', 'district', 'feasibilityTestTeamMember.feasibilityTestTeam' => function($q) {
+                $q->with('provinceAuthority');
+                $q->with('districtAuthority');
+            }])->orderBy('id', 'desc')->paginate($request->limit);
             return $employees;
         }
     }
