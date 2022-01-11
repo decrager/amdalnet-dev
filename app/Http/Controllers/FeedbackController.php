@@ -69,7 +69,7 @@ class FeedbackController extends Controller
             // $validator['photo_filepath'] = $nameWithPath;
 
             $file = $request->file('photo_filepath');
-            $name = 'spt/' . uniqid() . '.' . $file->extension();
+            $name = '/spt/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
             $validator['photo_filepath'] = Storage::url($name);
         };

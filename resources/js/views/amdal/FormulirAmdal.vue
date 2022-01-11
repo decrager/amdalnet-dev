@@ -2,20 +2,27 @@
   <div v-if="isProjectAmdal" class="app-container">
     <el-card style="padding: 24px">
       <workflow />
-      <h2>Formulir Kerangka Acuan</h2>
-      <span>
-        <el-button
-          v-if="isFormulator"
-          class="pull-right"
-          type="success"
-          size="small"
-          icon="el-icon-check"
-          :disabled="!isSubmitEnabled"
-          @click="handleSaveForm()"
-        >
-          Simpan & Lanjutkan
-        </el-button>
-      </span>
+
+      <el-tabs
+        v-model="tabName"
+        type="card"
+      >
+        <el-tab-pane label="Formulir Kerangka Acuan" name="fka" />
+      </el-tabs>
+      <el-button
+        v-if="isFormulator"
+        class="pull-right"
+        type="success"
+        size="small"
+        icon="el-icon-check"
+        :disabled="!isSubmitEnabled"
+        @click="handleSaveForm()"
+      >
+        Simpan & Lanjutkan
+      </el-button>
+      <div class="clearfix" style="margin-bottom:1em;" />
+      <!-- <h2>Formulir Kerangka Acuan</h2> -->
+
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="PELINGKUPAN">
           <pelingkupan
@@ -113,6 +120,7 @@ export default {
       dampakPentingHipotetikActive: false,
       metodeStudiActive: false,
       activeName: '1',
+      tabName: 'fka',
     };
   },
   computed: {

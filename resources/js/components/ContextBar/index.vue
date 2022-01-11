@@ -37,7 +37,7 @@
             </div>
           </el-col>
         </el-row>
-        <div class="context-bar-item"><p>{{ data.description }}</p></div>
+        <div class="context-bar-item" v-html="data.description" />
       </el-collapse-item>
     </el-collapse>
   </div>
@@ -90,7 +90,6 @@ export default {
     async getData(){
       this.data = null;
       projectResource.list({ id: this.projectId }).then((res) => {
-        console.log(res);
         this.data = res;
       }).finally({
 
@@ -157,7 +156,7 @@ div.context-bar-container + section.app-main .app-container:first-child{
     }
 
     &.project {font-weight: 500;}
-    &.project-initiator { font-weight: bold; }
+    &.project-initiator { font-weight: bold; margin-top: 2em !important;}
 
     &.project, &.project-initiator {
        p{line-height: 1.25em !important;}

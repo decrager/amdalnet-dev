@@ -5,7 +5,7 @@
         v-if="totalChanges > 0"
         confirm-button-text="Iya, refresh!"
         cancel-button-text="Tidak"
-        title="Ada perubahan yang belum disimpan. Yakin akan muat ulang data?"
+        title="Ada perubahan yang belum disimpan. Lanjutkan muat ulang data?"
         icon-color="red"
         @confirm="refresh()"
       >
