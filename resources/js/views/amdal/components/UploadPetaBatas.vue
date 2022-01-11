@@ -1,5 +1,9 @@
 <template>
   <el-form label-position="top" label-width="100px">
+    <div style="margin-bottom: 10px;">
+      <a href="/sample_map/Peta_Batas_Sample.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+    </div>
+
     <!-- ekologis -->
     <el-form-item label="Peta Batas Ekologis" :required="required">
       <el-col :span="11" style="margin-right:1em;">
@@ -121,6 +125,9 @@ import qs from 'qs';
 import esriRequest from '@arcgis/core/request';
 import urlBlob from '../../webgis/scripts/urlBlob';
 import popupTemplate from '../../webgis/scripts/popupTemplate';
+import popupTemplateBatas from '../../webgis/scripts/popupTemplateBatas';
+import validationBatas from '../../webgis/scripts/validationBatas';
+import Expand from '@arcgis/core/widgets/Expand';
 const uploadMaps = new Resource('project-map');
 // const unggahMaps = new Resource('upload-map');
 // const unduhMaps = new Resource('download-map');
@@ -320,8 +327,22 @@ export default {
         container: document.createElement('div'),
       });
 
-      mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layer-list',
+        expandTooltip: 'Layer List',
+        view: mapView,
+        content: layerList,
+      });
+
+      const legendExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap',
+        expandTooltip: 'Legend Layer',
+        view: mapView,
+        content: legend,
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendExpand, 'top-right');
     },
     async getData(){
       this.data = [];
@@ -412,7 +433,7 @@ export default {
         };
 
         esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
-          .then(response => response.text())
+          .then(response => response.json())
           .then(result => console.log(result))
           .catch(error => console.log('error', error));
       });
@@ -519,7 +540,10 @@ export default {
       const readerEkologis = new FileReader();
       readerEkologis.onload = (event) => {
         const base = event.target.result;
+
         shp(base).then((data) => {
+          validationBatas(data);
+
           this.geomEcologyGeojson = data.features[0].geometry;
           this.geomEcologyProperties = data.features[0].properties;
           this.geomEcologyStyles = 2;
@@ -548,6 +572,7 @@ export default {
             opacity: 0.75,
             title: 'Layer Batas Ekologis',
             renderer: renderer,
+            popupTemplate: popupTemplateBatas(this.geomEcologyProperties),
           });
 
           map.add(layerEkologis);
@@ -561,6 +586,8 @@ export default {
       readerSosial.onload = (event) => {
         const base = event.target.result;
         shp(base).then((data) => {
+          validationBatas(data);
+
           this.geomSocialGeojson = data.features[0].geometry;
           this.geomSocialProperties = data.features[0].properties;
           this.geomSocialStyles = 3;
@@ -590,6 +617,7 @@ export default {
             opacity: 0.75,
             title: 'Layer Batas Sosial',
             renderer: renderer,
+            popupTemplate: popupTemplateBatas(this.geomSocialProperties),
           });
 
           map.add(layerBatasSosial);
@@ -603,6 +631,8 @@ export default {
       readerWilayahStudi.onload = (event) => {
         const base = event.target.result;
         shp(base).then((data) => {
+          validationBatas(data);
+
           this.geomStudyGeojson = data.features[0].geometry;
           this.geomStudyProperties = data.features[0].properties;
           this.geomStudyStyles = 4;
@@ -631,6 +661,7 @@ export default {
             opacity: 0.75,
             title: 'Layer Batas Wilayah Studi',
             renderer: renderer,
+            popupTemplate: popupTemplateBatas(this.geomStudyProperties),
           });
 
           map.add(layerWilayahStudi);
@@ -648,6 +679,9 @@ export default {
       axios.get(`api/map-geojson?id=${projId}&type=tapak`)
         .then((response) => {
           response.data.forEach((item) => {
+            const getType = JSON.parse(item.feature_layer);
+            const propFields = getType.features[0].properties.field;
+
             const blob = new Blob([item.feature_layer], {
               type: 'application/json',
             });
@@ -670,6 +704,7 @@ export default {
               visible: true,
               title: 'Layer Tapak',
               renderer: rendererTapak,
+              popupTemplate: popupTemplate(propFields),
             });
             map.add(geojsonLayerArray);
           });
@@ -704,7 +739,7 @@ export default {
       });
 
       mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
+      mapView.ui.add(legend, 'top-right');
     },
     showMap(id){
       this.visible[id] = true;
@@ -714,3 +749,19 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.download__sample {
+  color: white;
+  padding: 7px;
+  background-color: orange;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.download__sample:hover {
+  background-color: orangered;
+  color: white;
+}
+</style>

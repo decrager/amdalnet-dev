@@ -1,5 +1,8 @@
 <template>
   <el-form label-position="top" label-width="100px">
+    <div style="margin-bottom: 10px;">
+      <a href="/sample_map/Sample_Peta_Kelola_Pantau.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+    </div>
     <!-- ekologis -->
     <el-form-item label="Peta Titik Pengelolaan" :required="required">
       <el-col :span="11" style="margin-right:1em;">
@@ -92,6 +95,8 @@ import qs from 'qs';
 import esriRequest from '@arcgis/core/request';
 import urlBlob from '../../webgis/scripts/urlBlob';
 import popupTemplate from '../../webgis/scripts/popupTemplate';
+import popupTemplateKelolaPantau from '../../webgis/scripts/popupTemplateKelolaPantau';
+import Expand from '@arcgis/core/widgets/Expand';
 const uploadMaps = new Resource('project-map');
 // const unggahMaps = new Resource('upload-map');
 // const unduhMaps = new Resource('download-map');
@@ -194,7 +199,7 @@ export default {
                 popupTemplate: popupTemplate(propFields),
               });
 
-              mapView.on('layerview-create', async(event) => {
+              mapView.on('layerview-create', async function() {
                 await mapView.goTo({
                   target: geojsonLayerArray.fullExtent,
                 });
@@ -308,6 +313,25 @@ export default {
       readerPengelolaan.onload = (event) => {
         const base = event.target.result;
         shp(base).then((data) => {
+          const valid = [
+            'ID',
+            'KETERANGAN',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'LAYER',
+            'TIPE_DOKUM',
+            'PROVINSI',
+            'KODE',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+
+          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+            alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            return;
+          }
+
           this.geomKelolaGeojson = data.features[0].geometry;
           this.geomKelolaProperties = data.features[0].properties;
           this.geomKelolaStyles = 6;
@@ -334,14 +358,10 @@ export default {
             opacity: 0.75,
             title: 'Layer Titik Pengelolaan',
             renderer: renderer,
+            popupTemplate: popupTemplateKelolaPantau(this.geomKelolaProperties),
           });
 
           map.add(layerPengelolaan);
-          mapView.on('layerview-create', async(event) => {
-            await mapView.goTo({
-              target: layerPengelolaan.fullExtent,
-            });
-          });
         });
       };
       readerPengelolaan.readAsArrayBuffer(mapPengelolaan);
@@ -352,6 +372,25 @@ export default {
       readerPemantauan.onload = (event) => {
         const base = event.target.result;
         shp(base).then((data) => {
+          const valid = [
+            'ID',
+            'KETERANGAN',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'LAYER',
+            'TIPE_DOKUM',
+            'PROVINSI',
+            'KODE',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+
+          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+            alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+            return;
+          }
+
           this.geomPantauGeojson = data.features[0].geometry;
           this.geomPantauProperties = data.features[0].properties;
           this.geomPantauStyles = 5;
@@ -378,6 +417,7 @@ export default {
             opacity: 0.75,
             title: 'Layer Titik Pemantauan',
             renderer: renderer,
+            popupTemplate: popupTemplateKelolaPantau(this.geomPantauProperties),
           });
 
           map.add(layerPemantauan);
@@ -418,8 +458,22 @@ export default {
         container: document.createElement('div'),
       });
 
-      mapView.ui.add(layerList, 'top-right');
-      mapView.ui.add(legend, 'bottom-left');
+      const layerListExpand = new Expand({
+        expandIconClass: 'esri-icon-layer-list',
+        expandTooltip: 'Layer List',
+        view: mapView,
+        content: layerList,
+      });
+
+      const legendExpand = new Expand({
+        expandIconClass: 'esri-icon-basemap',
+        expandTooltip: 'Legend Layer',
+        view: mapView,
+        content: legend,
+      });
+
+      mapView.ui.add(layerListExpand, 'top-right');
+      mapView.ui.add(legendExpand, 'top-right');
     },
     handleSubmit(){
       const formData = new FormData();
@@ -558,3 +612,19 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.download__sample {
+  color: white;
+  padding: 7px;
+  background-color: orange;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.download__sample:hover {
+  background-color: orangered;
+  color: white;
+}
+</style>
