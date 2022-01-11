@@ -28660,3 +28660,219 @@
 01-11-22 18:25:12 | Using session token
 01-11-22 18:25:12 | Ok to proxy
 01-11-22 18:25:12 | Proxy complete
+ 
+01-11-22 20:16:49 | GET detected
+01-11-22 20:16:49 | Using session token
+01-11-22 20:16:49 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+01-11-22 20:16:49 | Retry attempt 1 of 3
+01-11-22 20:16:49 | Resource using ArcGIS Server security
+01-11-22 20:16:49 | Got token endpoint
+01-11-22 20:16:50 | Adding token to session
+01-11-22 20:16:50 | Using session token
+01-11-22 20:16:50 | Ok to proxy
+01-11-22 20:16:50 | Proxy complete
+ 
+01-11-22 20:16:50 | GET detected
+01-11-22 20:16:50 | Using session token
+01-11-22 20:16:50 | Ok to proxy
+01-11-22 20:16:50 | Proxy complete
+ 
+01-11-22 20:16:50 | GET detected
+01-11-22 20:16:50 | Using session token
+01-11-22 20:16:50 | Ok to proxy
+01-11-22 20:16:50 | Proxy complete
+ 
+01-11-22 20:16:50 | GET detected
+01-11-22 20:16:50 | Using session token
+01-11-22 20:16:51 | Ok to proxy
+01-11-22 20:16:51 | Proxy complete
+ 
+01-11-22 20:16:51 | GET detected
+01-11-22 20:16:51 | Using session token
+01-11-22 20:16:51 | Ok to proxy
+01-11-22 20:16:51 | Proxy complete
+ 
+01-11-22 20:16:51 | GET detected
+01-11-22 20:16:51 | Using session token
+01-11-22 20:16:51 | Ok to proxy
+01-11-22 20:16:51 | Proxy complete
+ 
+01-11-22 20:16:51 | GET detected
+01-11-22 20:16:51 | Using session token
+01-11-22 20:16:52 | Ok to proxy
+01-11-22 20:16:52 | Proxy complete
+ 
+01-11-22 20:17:00 | GET detected
+01-11-22 20:17:00 | Using session token
+01-11-22 20:17:00 | Ok to proxy
+01-11-22 20:17:00 | Proxy complete
+ 
+01-11-22 20:17:00 | GET detected
+01-11-22 20:17:00 | Using session token
+01-11-22 20:17:01 | Ok to proxy
+01-11-22 20:17:01 | Proxy complete
+ 
+01-11-22 20:17:01 | GET detected
+01-11-22 20:17:01 | Using session token
+01-11-22 20:17:01 | Ok to proxy
+01-11-22 20:17:01 | Proxy complete
+ 
+01-11-22 20:17:01 | GET detected
+01-11-22 20:17:01 | Using session token
+01-11-22 20:17:01 | Ok to proxy
+01-11-22 20:17:01 | Proxy complete
+ 
+01-11-22 20:17:01 | GET detected
+01-11-22 20:17:01 | Using session token
+01-11-22 20:17:01 | Ok to proxy
+01-11-22 20:17:01 | Proxy complete
+ 
+01-11-22 20:17:01 | GET detected
+01-11-22 20:17:01 | Using session token
+01-11-22 20:17:01 | Ok to proxy
+01-11-22 20:17:01 | Proxy complete
+ 
+01-11-22 20:17:01 | GET detected
+01-11-22 20:17:01 | Using session token
+01-11-22 20:17:01 | Ok to proxy
+01-11-22 20:17:01 | Proxy complete
+ 
+01-11-22 20:17:55 | GET detected
+01-11-22 20:17:55 | Using session token
+01-11-22 20:17:55 | Ok to proxy
+01-11-22 20:17:55 | Proxy complete
+ 
+01-11-22 20:17:55 | GET detected
+01-11-22 20:17:55 | Using session token
+01-11-22 20:17:55 | Ok to proxy
+01-11-22 20:17:55 | Proxy complete
+ 
+01-11-22 20:17:55 | GET detected
+01-11-22 20:17:55 | Using session token
+01-11-22 20:17:55 | Ok to proxy
+01-11-22 20:17:55 | Proxy complete
+ 
+01-11-22 20:17:55 | GET detected
+01-11-22 20:17:55 | Using session token
+01-11-22 20:17:55 | Ok to proxy
+01-11-22 20:17:55 | Proxy complete
+ 
+01-11-22 20:17:55 | GET detected
+01-11-22 20:17:55 | Using session token
+01-11-22 20:17:55 | Ok to proxy
+01-11-22 20:17:55 | Proxy complete
+ 
+01-11-22 20:17:55 | GET detected
+01-11-22 20:17:55 | Using session token
+01-11-22 20:17:55 | Ok to proxy
+01-11-22 20:17:55 | Proxy complete
+ 
+01-11-22 20:17:55 | GET detected
+01-11-22 20:17:55 | Using session token
+01-11-22 20:17:55 | Ok to proxy
+01-11-22 20:17:55 | Proxy complete
+ 
+01-11-22 20:18:18 | GET detected
+01-11-22 20:18:18 | Using session token
+01-11-22 20:18:18 | Ok to proxy
+01-11-22 20:18:18 | Proxy complete
+ 
+01-11-22 20:18:18 | GET detected
+01-11-22 20:18:18 | Using session token
+01-11-22 20:18:18 | Ok to proxy
+01-11-22 20:18:18 | Proxy complete
+ 
+01-11-22 20:18:18 | GET detected
+01-11-22 20:18:18 | Using session token
+01-11-22 20:18:18 | Ok to proxy
+01-11-22 20:18:18 | Proxy complete
+ 
+01-11-22 20:18:18 | GET detected
+01-11-22 20:18:18 | Using session token
+01-11-22 20:18:18 | Ok to proxy
+01-11-22 20:18:18 | Proxy complete
+ 
+01-11-22 20:18:18 | GET detected
+01-11-22 20:18:18 | Using session token
+01-11-22 20:18:18 | Ok to proxy
+01-11-22 20:18:18 | Proxy complete
+ 
+01-11-22 20:18:18 | GET detected
+01-11-22 20:18:18 | Using session token
+01-11-22 20:18:18 | Ok to proxy
+01-11-22 20:18:18 | Proxy complete
+ 
+01-11-22 20:18:18 | GET detected
+01-11-22 20:18:18 | Using session token
+01-11-22 20:18:18 | Ok to proxy
+01-11-22 20:18:18 | Proxy complete
+ 
+01-11-22 20:18:43 | GET detected
+01-11-22 20:18:43 | Using session token
+01-11-22 20:18:43 | Ok to proxy
+01-11-22 20:18:43 | Proxy complete
+ 
+01-11-22 20:18:43 | GET detected
+01-11-22 20:18:43 | Using session token
+01-11-22 20:18:43 | Ok to proxy
+01-11-22 20:18:43 | Proxy complete
+ 
+01-11-22 20:18:43 | GET detected
+01-11-22 20:18:43 | Using session token
+01-11-22 20:18:43 | Ok to proxy
+01-11-22 20:18:43 | Proxy complete
+ 
+01-11-22 20:18:43 | GET detected
+01-11-22 20:18:43 | Using session token
+01-11-22 20:18:43 | Ok to proxy
+01-11-22 20:18:43 | Proxy complete
+ 
+01-11-22 20:18:43 | GET detected
+01-11-22 20:18:43 | Using session token
+01-11-22 20:18:44 | Ok to proxy
+01-11-22 20:18:44 | Proxy complete
+ 
+01-11-22 20:18:44 | GET detected
+01-11-22 20:18:44 | Using session token
+01-11-22 20:18:44 | Ok to proxy
+01-11-22 20:18:44 | Proxy complete
+ 
+01-11-22 20:18:44 | GET detected
+01-11-22 20:18:44 | Using session token
+01-11-22 20:18:44 | Ok to proxy
+01-11-22 20:18:44 | Proxy complete
+ 
+01-11-22 20:19:48 | GET detected
+01-11-22 20:19:48 | Using session token
+01-11-22 20:19:48 | Ok to proxy
+01-11-22 20:19:48 | Proxy complete
+ 
+01-11-22 20:19:48 | GET detected
+01-11-22 20:19:48 | Using session token
+01-11-22 20:19:48 | Ok to proxy
+01-11-22 20:19:48 | Proxy complete
+ 
+01-11-22 20:19:48 | GET detected
+01-11-22 20:19:48 | Using session token
+01-11-22 20:19:48 | Ok to proxy
+01-11-22 20:19:48 | Proxy complete
+ 
+01-11-22 20:19:48 | GET detected
+01-11-22 20:19:48 | Using session token
+01-11-22 20:19:48 | Ok to proxy
+01-11-22 20:19:48 | Proxy complete
+ 
+01-11-22 20:19:48 | GET detected
+01-11-22 20:19:48 | Using session token
+01-11-22 20:19:48 | Ok to proxy
+01-11-22 20:19:48 | Proxy complete
+ 
+01-11-22 20:19:48 | GET detected
+01-11-22 20:19:48 | Using session token
+01-11-22 20:19:48 | Ok to proxy
+01-11-22 20:19:48 | Proxy complete
+ 
+01-11-22 20:19:48 | GET detected
+01-11-22 20:19:48 | Using session token
+01-11-22 20:19:48 | Ok to proxy
+01-11-22 20:19:48 | Proxy complete
