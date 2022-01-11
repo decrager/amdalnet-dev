@@ -5,10 +5,10 @@
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane
           v-if="isAdmin"
-          label="Verifikasi & Rapat"
+          label="Pemeriksaan Berkas Administrasi Formulir KA"
           name="verifikasi"
         >
-          <VerifikasiRapat v-if="activeName === 'verifikasi'" />
+          <Verifikasi v-if="activeName === 'verifikasi'" />
         </el-tab-pane>
         <el-tab-pane
           v-else-if="isSubtance"
@@ -23,14 +23,14 @@
 </template>
 
 <script>
-import VerifikasiRapat from '@/views/pengujian/components/verifikasiRapat/index';
+import Verifikasi from '@/views/pengujian/components/verifikasi/index';
 import BeritaAcara from '@/views/pengujian/components/beritaAcara/index';
 import WorkFlow from '@/components/Workflow';
 
 export default {
   name: 'Dump',
   components: {
-    VerifikasiRapat,
+    Verifikasi,
     BeritaAcara,
     WorkFlow,
   },
