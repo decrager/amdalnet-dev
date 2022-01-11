@@ -51,7 +51,7 @@
               <el-tag v-if="scope.row.hasChanges === true" type="danger">~diubah</el-tag>
               <!--
   <el-button  v-if="scope.row.comment > 0" type="danger" icon="el-icon-s-comment" size="medium" plain circle> </el-button> -->
-              <i v-if="scope.row.comment > 0" class="el-icon-chat-line-square" style="font-size: 150%; line-height:0.8em;" />
+              <i v-if="scope.row.comment > 0" class="el-icon-s-comment" style="font-size: 150%; line-height:0.8em;" />
             </span>
           </div>
 
@@ -120,7 +120,7 @@ export default {
         { text: 'DPH', value: 2 },
         { text: 'DTPH', value: 3 },
         { text: 'Belum terdefinisi', value: 4 },
-        { text: 'Berkomentar', value: 5 },
+        { text: 'Bercatatan', value: 5 },
       ],
     };
   },
