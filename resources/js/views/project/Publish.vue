@@ -379,7 +379,7 @@ export default {
     loadMap() {
       if (this.readonly === true) {
         const map = new Map({
-          basemap: 'topo',
+          basemap: 'satellite',
         });
 
         axios.get(`api/map-geojson?id=${this.idProject}&type=tapak`)
@@ -460,7 +460,7 @@ export default {
         mapView.ui.add(layerList, 'top-right');
       } else {
         const map = new Map({
-          basemap: 'topo',
+          basemap: 'satellite',
         });
 
         const fr = new FileReader();

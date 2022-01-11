@@ -15,14 +15,14 @@
         >
           <i slot="prefix" class="el-input__icon el-icon-search" />
         </el-input>
-        <div style="padding: 10px; width: 100%;">
+        <div style="padding: 10px; width: 100%; display: flex; flex-direction: column;">
           <el-radio
             v-for="item in filterByKegiatan"
             :id="item.id_project"
             :key="item.id_project"
             v-model="radioProject"
             :label="item.id_project"
-            style="margin-top: 10px; overflow-x: auto;"
+            style="margin-top: 10px;"
             @change="getIdProject($event)"
           >{{ item.project_title }}</el-radio>
         </div>
@@ -62,18 +62,6 @@
                 <div>Batas Wilayah Studi</div>
               </div>
             </el-checkbox>
-            <el-checkbox id="layerKelolaPolyCheckBox" v-model="checkedKelolaPoly">
-              <div style="display: flex; flex-direction: row; column-gap: 5px;">
-                <div style="width: 20px; height: 20px; border: 2px solid rgb(255, 0, 0); border-radius: 3px;" />
-                <div>Lokasi Pengelolaan</div>
-              </div>
-            </el-checkbox>
-            <el-checkbox id="layerPantauPolyCheckBox" v-model="checkedPantauPoly">
-              <div style="display: flex; flex-direction: row; column-gap: 5px;">
-                <div style="width: 20px; height: 20px; border: 2px solid rgb(152, 230, 0); border-radius: 3px;" />
-                <div>Lokasi Pemantauan</div>
-              </div>
-            </el-checkbox>
           </div>
         </calcite-accordion-item>
       </calcite-accordion>
@@ -89,7 +77,7 @@
             <h3>PETA RTRW PROPINSI</h3>
           </div>
           <div style="display: flex; flex-direction: column;">
-            <el-radio
+            <el-checkbox
               v-for="item in layerRtrw"
               :id="item.id"
               :key="item.id"
@@ -97,7 +85,19 @@
               :label="item.id"
               style="margin-top: 10px; overflow-x: auto;"
               @change="getLayerRtrw($event)"
-            >{{ item.title }}</el-radio>
+            >{{ item.title }}</el-checkbox>
+          </div>
+          <div style="margin-top: 15px">
+            <h3>PETA TEMATIK STATUS</h3>
+          </div>
+          <div style="margin-top: 10px">
+            <el-checkbox id="layerPIPPIBCheckBox" v-model="checkedPIPPIB">Layer PIPPIB</el-checkbox>
+          </div>
+          <div style="margin-top: 10px">
+            <el-checkbox id="layerKawasanHutanCheckBox" v-model="checkedKawasanHutan">Layer Kawasan Hutan</el-checkbox>
+          </div>
+          <div style="margin-top: 10px">
+            <el-checkbox id="layerTutupanLahanCheckBox" v-model="checkedTutupanLahan">Layer Tutupan Lahan</el-checkbox>
           </div>
           <div style="margin-top: 15px">
             <h3>PETA RUPA BUMI</h3>
@@ -155,6 +155,7 @@ import { generateFeatureCollection, layerIn } from './scripts/uploadShapefile';
 import widgetMap from './scripts/widgetMap';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import popupTemplate from './scripts/popupTemplate';
 import urlBlob from './scripts/urlBlob';
 
@@ -174,9 +175,10 @@ export default {
       checkedTapak: false,
       checkedSosial: false,
       checkedStudi: false,
-      checkedKelolaPoly: false,
-      checkedPantauPoly: false,
-      checkedRBI: true,
+      checkedRBI: false,
+      checkedPIPPIB: false,
+      checkedKawasanHutan: false,
+      checkedTutupanLahan: false,
       layerRtrw: [],
       mapView: null,
       selectedFeedback: {},
@@ -266,7 +268,9 @@ export default {
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
-                this.checkedTapak = true;
+                if (this.checkedTapak === false) {
+                  this.checkedTapak = true;
+                }
               }
 
               // Ecology
@@ -281,7 +285,9 @@ export default {
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
-                this.checkedEcology = true;
+                if (this.checkedEcology === false) {
+                  this.checkedEcology = true;
+                }
               }
 
               // Social
@@ -296,7 +302,9 @@ export default {
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
-                this.checkedSosial = true;
+                if (this.checkedSosial === false) {
+                  this.checkedSosial = true;
+                }
               }
 
               // Study
@@ -311,38 +319,11 @@ export default {
                 });
 
                 this.mapGeojsonArrayProject.push(geojsonLayerArray);
-                this.checkedStudi = true;
+                if (this.checkedStudi === false) {
+                  this.checkedStudi = true;
+                }
               }
 
-              // Pemantauan
-              if (propType === 'pemantauan') {
-                const geojsonLayerArray = new GeoJSONLayer({
-                  url: urlBlob(item.feature_layer),
-                  outFields: ['*'],
-                  visible: true,
-                  title: 'Layer Titik Pemantauan',
-                  renderer: propStyles,
-                  popupTemplate: popupTemplate(propFields),
-                });
-
-                this.mapGeojsonArrayProject.push(geojsonLayerArray);
-                this.checkedPantau = true;
-              }
-
-              // Pengelolaan
-              if (propType === 'pengelolaan') {
-                const geojsonLayerArray = new GeoJSONLayer({
-                  url: urlBlob(item.feature_layer),
-                  outFields: ['*'],
-                  visible: true,
-                  title: 'Layer Titik Pengelolaan',
-                  renderer: propStyles,
-                  popupTemplate: popupTemplate(propFields),
-                });
-
-                this.mapGeojsonArrayProject.push(geojsonLayerArray);
-                this.checkedKelola = true;
-              }
               this.mapInit.addMany(this.mapGeojsonArrayProject);
             });
           });
@@ -385,7 +366,7 @@ export default {
     },
     loadMap() {
       const map = new Map({
-        basemap: 'topo',
+        basemap: 'satellite',
       });
       this.mapInit = map;
 
@@ -427,7 +408,7 @@ export default {
             }
 
             // Pengelolaan
-            if (propType === 'study') {
+            if (propType === 'pengelolaan') {
               const geojsonLayerArray = new GeoJSONLayer({
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
@@ -527,6 +508,7 @@ export default {
               const geojsonLayerArray = new GeoJSONLayer({
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
+                opacity: 0.7,
                 visible: false,
                 title: 'Layer Tapak Proyek',
                 renderer: propStyles,
@@ -581,6 +563,72 @@ export default {
       //   }
       // }
       // });
+
+      const penutupanLahan2020 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const penutupanLahanToggle = document.getElementById('layerTutupanLahanCheckBox');
+
+      penutupanLahanToggle.addEventListener('change', () => {
+        if (this.checkedTutupanLahan === true) {
+          penutupanLahan2020.visible = true;
+        } else {
+          penutupanLahan2020.visible = false;
+        }
+      });
+
+      map.add(penutupanLahan2020);
+
+      const kawasanHutanB = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const kawasanHutanToggle = document.getElementById('layerKawasanHutanCheckBox');
+
+      kawasanHutanToggle.addEventListener('change', () => {
+        if (this.checkedKawasanHutan === true) {
+          kawasanHutanB.visible = true;
+        } else {
+          kawasanHutanB.visible = false;
+        }
+      });
+
+      map.add(kawasanHutanB);
+
+      const pippib2021Periode2 = new MapImageLayer({
+        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
+        imageTransparency: true,
+        visible: false,
+        visibilityMode: '',
+      });
+
+      const pipbipToggle = document.getElementById('layerPIPPIBCheckBox');
+
+      pipbipToggle.addEventListener('change', () => {
+        if (this.checkedPIPPIB === true) {
+          pippib2021Periode2.visible = true;
+        } else {
+          pippib2021Periode2.visible = false;
+        }
+      });
+
+      map.add(pippib2021Periode2);
+
+      // const sigapLayer = new GroupLayer({
+      //   title: 'SIGAP KLHK',
+      //   visible: false,
+      //   layers: [penutupanLahan2020, kawasanHutanB, pippib2021Periode2],
+      //   opacity: 0.90,
+      // });
+
+      // map.add(sigapLayer);
 
       const mapView = new MapView({
         container: 'mapViewDiv',

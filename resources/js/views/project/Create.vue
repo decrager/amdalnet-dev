@@ -1025,7 +1025,7 @@ export default {
       // }
 
       const map = new Map({
-        basemap: 'topo',
+        basemap: 'imagery',
       });
 
       urlUtils.addProxyRule({
@@ -1044,7 +1044,7 @@ export default {
             },
           },
         ],
-        imageTransparency: true,
+        imageTransparency: false,
       });
 
       const tutupanLahan = new MapImageLayer({
@@ -1076,20 +1076,6 @@ export default {
         visibilityMode: '',
       });
 
-      const indikatifPPTPKH = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/Indikatif_PPTPKH/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      const piapsRevisi = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIAPS_Revisi_VI/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
       const pippib2021Periode2 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
         imageTransparency: true,
@@ -1100,7 +1086,7 @@ export default {
       const sigapLayer = new GroupLayer({
         title: 'SIGAP KLHK',
         visible: false,
-        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2],
+        layers: [penutupanLahan2020, kawasanHutanB, pippib2021Periode2],
         opacity: 0.90,
       });
 

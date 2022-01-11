@@ -210,7 +210,7 @@ export default {
   methods: {
     getMap() {
       const map = new Map({
-        basemap: 'topo',
+        basemap: 'satellite',
       });
 
       axios.get(`api/map-geojson?id=${this.idProjectItem}`)
@@ -511,7 +511,7 @@ export default {
     },
     uploadMap(){
       const map = new Map({
-        basemap: 'topo',
+        basemap: 'satellite',
       });
 
       //  Map Ekologis

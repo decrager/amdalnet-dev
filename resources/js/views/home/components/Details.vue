@@ -367,7 +367,7 @@ export default {
     loadMap() {
       // console.log(this.selectedAnnouncement.project_id);
       const map = new Map({
-        basemap: 'topo',
+        basemap: 'satellite',
       });
 
       axios.get('api/map/' + this.selectedAnnouncement.project_id)
