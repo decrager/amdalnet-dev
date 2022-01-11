@@ -14,7 +14,7 @@
     <el-table-column label="Nama">
       <template slot-scope="scope">
         <el-select
-          v-if="teamtype === 'mandiri'"
+          v-if="teamtype === 'mandiri' && !isadmin"
           v-model="list[scope.$index].name"
           filterable
           placeholder="Nama Tenaga Ahli"
@@ -34,7 +34,7 @@
     <el-table-column label="Posisi">
       <template slot-scope="scope">
         <el-select
-          v-if="teamtype === 'mandiri'"
+          v-if="teamtype === 'mandiri' && !isadmin"
           v-model="list[scope.$index].status"
           placeholder="Posisi"
           style="width: 100%"
@@ -53,7 +53,7 @@
     <el-table-column label="Keahlian">
       <template slot-scope="scope">
         <el-select
-          v-if="teamtype === 'mandiri'"
+          v-if="teamtype === 'mandiri' && !isadmin"
           v-model="list[scope.$index].expertise"
           filterable
           placeholder="Keahlian"
@@ -73,7 +73,7 @@
     <el-table-column label="File">
       <template slot-scope="scope">
         <el-upload
-          v-if="teamtype === 'mandiri'"
+          v-if="teamtype === 'mandiri' && !isadmin"
           class="upload-demo"
           :auto-upload="false"
           :on-change="handleUploadChange"
@@ -105,7 +105,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column v-if="teamtype === 'mandiri'" label="" width="80px">
+    <el-table-column v-if="teamtype === 'mandiri' && !isadmin" label="" width="80px">
       <template slot-scope="scope">
         <el-button
           type="danger"
@@ -140,6 +140,7 @@ export default {
       type: String,
       default: () => '',
     },
+    isadmin: Boolean,
   },
   data() {
     return {
