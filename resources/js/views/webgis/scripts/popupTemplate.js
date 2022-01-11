@@ -4,44 +4,44 @@ function popupTemplate(value) {
     content: '<table style="border-collapse: collapse !important">' +
                 '<thead>' +
                     '<tr style="margin: 5px 0;">' +
-                        '<td style="width: 35%">FID</td>' +
+                        '<td style="width: 35%">ID</td>' +
                         '<td> : </td>' +
-                        '<td>' + value.id + '</td>' +
+                        '<td>' + value.OBJECTID_1 + '</td>' +
                     '</tr>' +
                     '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
                         '<td style="width: 35%">NAMA_PEMRAKARSA</td>' +
                         '<td> : </td>' +
-                        '<td>' + value.pemrakarsa + '</td>' +
+                        '<td>' + value.PEMRAKARSA + '</td>' +
                     '</tr>' +
                     '<tr style="margin: 5px 0;">' +
-                        '<td style="width: 35%">LAYER</td>' +
-                        '<td> : </td>' +
-                        '<td>' + value.layer + '</td>' +
-                    '</tr>' +
-                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
                         '<td style="width: 35%">NAMA_KEGIATAN</td>' +
                         '<td> : </td>' +
-                        '<td>' + value.kegiatan + '</td>' +
-                    '</tr>' +
-                    '<tr style="margin: 5px 0;">' +
-                        '<td style="width: 35%">JENIS_DOKUMEN</td>' +
-                        '<td> : </td>' +
-                        '<td>' + value.dokumen + '</td>' +
+                        '<td>' + value.KEGIATAN + '</td>' +
                     '</tr>' +
                     '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                        '<td style="width: 35%">LOKASI</td>' +
+                        '<td style="width: 35%">TAHUN</td>' +
                         '<td> : </td>' +
-                        '<td>' + value.lokasi + '</td>' +
+                        '<td>' + value.TAHUN + '</td>' +
                     '</tr>' +
                     '<tr style="margin: 5px 0;">' +
-                        '<td style="width: 35%">LUAS</td>' +
+                        '<td style="width: 35%">PROVINSI</td>' +
                         '<td> : </td>' +
-                        '<td>' + value.luas + '</td>' +
+                        '<td>' + value.PROVINSI + '</td>' +
                     '</tr>' +
                     '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
-                        '<td style="width: 35%">SKALA_DATA</td>' +
+                        '<td style="width: 35%">KETERANGAN</td>' +
                         '<td> : </td>' +
-                        '<td>' + value.skala + '</td>' +
+                        '<td>' + value.KETERANGAN + '</td>' +
+                    '</tr>' +
+                    '<tr style="margin: 5px 0;">' +
+                        '<td style="width: 35%">LUAS_AREA</td>' +
+                        '<td> : </td>' +
+                        '<td>' + value.AREA + '</td>' +
+                    '</tr>' +
+                    '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
+                        '<td style="width: 35%">LAYER</td>' +
+                        '<td> : </td>' +
+                        '<td>' + value.LAYER + '</td>' +
                     '</tr>' +
                 '</thead>' +
                 '</table>',

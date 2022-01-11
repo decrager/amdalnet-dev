@@ -259,6 +259,7 @@ export default {
                   title: 'Layer Tapak Proyek',
                   renderer: propStyles,
                   popupTemplate: popupTemplate(propFields),
+                  opacity: 0.7,
                 });
 
                 this.$parent.mapView.on('layerview-create', async(event) => {

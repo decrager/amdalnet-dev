@@ -502,6 +502,7 @@ import * as urlUtils from '@arcgis/core/core/urlUtils';
 import Expand from '@arcgis/core/widgets/Expand';
 import esriRequest from '@arcgis/core/request';
 import qs from 'qs';
+import popupTemplate from '../webgis/scripts/popupTemplate';
 
 export default {
   name: 'CreateProject',
@@ -790,8 +791,8 @@ export default {
     });
 
     var data = qs.stringify({
-      'username': 'haris3',
-      'password': 'amdal123',
+      'username': 'Amdalnet',
+      'password': 'Amdalnet123',
       'client': 'requestip',
       'expiration': 20160,
       'f': 'json',
@@ -1025,7 +1026,7 @@ export default {
       // }
 
       const map = new Map({
-        basemap: 'imagery',
+        basemap: 'satellite',
       });
 
       urlUtils.addProxyRule({
@@ -1045,6 +1046,7 @@ export default {
           },
         ],
         imageTransparency: false,
+        visible: false,
       });
 
       const tutupanLahan = new MapImageLayer({
@@ -1055,7 +1057,7 @@ export default {
 
       const baseGroupLayer = new GroupLayer({
         title: 'Base Layer',
-        visible: true,
+        visible: false,
         layers: [featureLayer, tutupanLahan],
         opacity: 0.90,
       });
@@ -1097,20 +1099,22 @@ export default {
         const base = event.target.result;
         const datas = await shp(base);
         const mapSampleProperties = [
-          'id',
-          'pemrakarsa',
-          'kegiatan',
-          'layer',
-          'dokumen',
-          'lokasi',
-          'luas',
-          'skala',
+          'OBJECTID_1',
+          'PEMRAKARSA',
+          'KEGIATAN',
+          'TAHUN',
+          'PROVINSI',
+          'KETERANGAN',
+          'AREA',
+          'LAYER',
         ];
 
         const mapUploadProperties = Object.keys(datas.features[0].properties);
+        const propFields = datas.features[0].properties;
 
         if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
           alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
+          document.getElementById('fileMap').value = '';
           return;
         }
 
@@ -1137,10 +1141,12 @@ export default {
           opacity: 0.75,
           title: 'Peta Tapak Proyek',
           renderer: renderer,
+          popupTemplate: popupTemplate(propFields),
         });
 
         map.add(geojsonLayer);
         mapView.on('layerview-create', async function(event) {
+          console.log(event);
           await mapView.goTo({
             target: geojsonLayer.fullExtent,
           });
