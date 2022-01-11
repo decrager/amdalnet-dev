@@ -18,10 +18,10 @@
         <div style="padding: 10px; width: 100%; display: flex; flex-direction: column;">
           <el-radio
             v-for="item in filterByKegiatan"
-            :id="item.id_project"
-            :key="item.id_project"
+            :id="item.id"
+            :key="item.id"
             v-model="radioProject"
-            :label="item.id_project"
+            :label="item.id"
             style="margin-top: 10px;"
             @change="getIdProject($event)"
           >{{ item.project_title }}</el-radio>
@@ -197,11 +197,12 @@ export default {
       mapInit: [],
       isToggled: false,
       mapRtrwGroup: [],
+      mappedProject: [],
     };
   },
   computed: {
     filterByKegiatan() {
-      return this.projects.filter(item => {
+      return this.mappedProject.filter(item => {
         return item.project_title.toLowerCase().includes(this.selectedProject);
       });
     },
@@ -210,8 +211,15 @@ export default {
     console.log('Map Component Mounted');
     this.loadMap();
     this.getProjectData();
+    this.getMappedProject();
   },
   methods: {
+    getMappedProject() {
+      axios.get('api/projects-geom')
+        .then((response) => {
+          this.mappedProject = response.data;
+        });
+    },
     getLayerRtrw(e) {
       const checked = document.getElementById(e);
 

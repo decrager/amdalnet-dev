@@ -254,4 +254,16 @@ class ProjectMapAttachmentController extends Controller
 
         return response()->json($getGeojson);
     }
+
+    public function getProjectByGeom()
+    {
+        $getProjectByGeom = DB::table('projects')
+            ->select('projects.id', 'projects.project_title')
+            ->leftJoin('project_map_attachments', 'projects.id', 'project_map_attachments.id_project')
+            ->whereNotNull('project_map_attachments.geom')
+            ->groupBy('projects.id', 'projects.project_title')
+            ->get();
+
+        return response()->json($getProjectByGeom);
+    }
 }

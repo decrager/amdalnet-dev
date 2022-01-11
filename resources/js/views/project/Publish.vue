@@ -210,6 +210,7 @@ import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import shp from 'shpjs';
 import Workflow from '@/components/Workflow';
 import axios from 'axios';
+import popupTemplate from '../webgis/scripts/popupTemplate';
 
 export default {
   name: 'Publish',
@@ -385,6 +386,8 @@ export default {
         axios.get(`api/map-geojson?id=${this.project.id}&type=tapak`)
           .then((response) => {
             response.data.forEach((item) => {
+              const getType = JSON.parse(item.feature_layer);
+              const propFields = getType.features[0].properties.field;
               const blob = new Blob([item.feature_layer], {
                 type: 'application/json',
               });
@@ -407,6 +410,8 @@ export default {
                 visible: true,
                 title: 'Layer Tapak Proyek',
                 renderer: rendererTapak,
+                opacity: 0.7,
+                popupTemplate: popupTemplate(propFields),
               });
               mapView.on('layerview-create', (event) => {
                 mapView.goTo({
