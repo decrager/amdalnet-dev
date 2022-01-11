@@ -28619,3 +28619,44 @@
 01-11-22 18:09:36 | Using session token
 01-11-22 18:09:36 | Ok to proxy
 01-11-22 18:09:36 | Proxy complete
+ 
+01-11-22 18:25:10 | GET detected
+01-11-22 18:25:10 | Using session token
+01-11-22 18:25:10 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+01-11-22 18:25:10 | Retry attempt 1 of 3
+01-11-22 18:25:10 | Resource using ArcGIS Server security
+01-11-22 18:25:10 | Got token endpoint
+01-11-22 18:25:11 | Adding token to session
+01-11-22 18:25:11 | Using session token
+01-11-22 18:25:11 | Ok to proxy
+01-11-22 18:25:11 | Proxy complete
+ 
+01-11-22 18:25:11 | GET detected
+01-11-22 18:25:11 | Using session token
+01-11-22 18:25:11 | Ok to proxy
+01-11-22 18:25:11 | Proxy complete
+ 
+01-11-22 18:25:11 | GET detected
+01-11-22 18:25:11 | Using session token
+01-11-22 18:25:11 | Ok to proxy
+01-11-22 18:25:11 | Proxy complete
+ 
+01-11-22 18:25:11 | GET detected
+01-11-22 18:25:11 | Using session token
+01-11-22 18:25:11 | Ok to proxy
+01-11-22 18:25:11 | Proxy complete
+ 
+01-11-22 18:25:11 | GET detected
+01-11-22 18:25:11 | Using session token
+01-11-22 18:25:11 | Ok to proxy
+01-11-22 18:25:11 | Proxy complete
+ 
+01-11-22 18:25:11 | GET detected
+01-11-22 18:25:11 | Using session token
+01-11-22 18:25:12 | Ok to proxy
+01-11-22 18:25:12 | Proxy complete
+ 
+01-11-22 18:25:12 | GET detected
+01-11-22 18:25:12 | Using session token
+01-11-22 18:25:12 | Ok to proxy
+01-11-22 18:25:12 | Proxy complete
