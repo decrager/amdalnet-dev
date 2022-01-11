@@ -16,7 +16,7 @@
                 filterable
                 placeholder="Pilih Tim Penyusun"
                 style="width: 100%"
-                :disabled="isTeamExist"
+                :disabled="isTeamExist || isAdmin"
               >
                 <el-option
                   v-for="team in timPenyusun"
@@ -29,7 +29,7 @@
             <el-form-item v-if="teamType == 'mandiri'" prop="teamName">
               <el-input v-model="teamName" :readonly="true" />
             </el-form-item>
-            <el-form-item v-if="teamType === 'mandiri'">
+            <el-form-item v-if="teamType === 'mandiri' && !isAdmin">
               <el-row :gutter="32">
                 <el-col :sm="12" :md="20">
                   <el-select
@@ -66,7 +66,7 @@
                     filterable
                     placeholder="Lembaga Tim LPJP"
                     style="width: 100%"
-                    :disabled="isTeamExist"
+                    :disabled="isTeamExist || isAdmin"
                   >
                     <el-option
                       v-for="member in lpjp"
@@ -78,7 +78,7 @@
                 </el-col>
                 <el-col :sm="12" :md="2">
                   <el-button
-                    v-if="!isTeamExist"
+                    v-if="!isTeamExist && !isAdmin"
                     :loading="loadingLpjp"
                     type="primary"
                     @click.prevent="handleSaveLPJP"
@@ -104,13 +104,14 @@
         :loading="loadingTimPenyusun"
         :list="members"
         :teamtype="teamType"
+        :isadmin="isAdmin"
         @handleDelete="handleDeletePenyusun($event)"
       />
       <div style="display: flex; align-items: center">
         <h4>Daftar Tim Ahli</h4>
         <div style="margin-left: 2rem">
           <el-button
-            v-if="teamType === 'mandiri'"
+            v-if="teamType === 'mandiri' && !isAdmin"
             size="mini"
             type="primary"
             icon="el-icon-plus"
@@ -124,10 +125,11 @@
         :loading="loadingTimAhli"
         :list="membersAhli"
         :teamtype="teamType"
+        :isadmin="isAdmin"
         @handleDelete="handleDeleteAhli($event)"
       />
       <div
-        v-if="teamType === 'mandiri'"
+        v-if="teamType === 'mandiri' && !isAdmin"
         style="text-align: right; margin-top: 12px"
       >
         <el-button :loading="loadingSubmit" type="warning" @click="checkSubmit">
@@ -178,6 +180,7 @@ export default {
       membersAhli: [],
       formulators: [],
       compositionError: false,
+      userInfo: {},
       timPenyusun: [
         {
           label: 'Lembaga Penyedia Jasa Penyusun',
@@ -190,7 +193,13 @@ export default {
       ],
     };
   },
+  computed: {
+    isAdmin() {
+      return this.userInfo.roles.includes('examiner-administration');
+    },
+  },
   created() {
+    this.getUserInfo();
     this.getFormulators();
     this.getProjectName();
     this.getLpjp();
@@ -375,6 +384,9 @@ export default {
       }
       const oldData = [...this.membersAhli];
       this.membersAhli = oldData.filter((old) => old.num !== num);
+    },
+    async getUserInfo() {
+      this.userInfo = await this.$store.dispatch('user/getInfo');
     },
   },
 };
