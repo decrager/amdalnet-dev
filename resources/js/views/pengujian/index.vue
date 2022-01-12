@@ -8,13 +8,19 @@
           label="Pemeriksaan Berkas Administrasi Formulir KA"
           name="verifikasi"
         >
-          <Verifikasi v-if="activeName === 'verifikasi'" />
+          <Verifikasi
+            v-if="activeName === 'verifikasi'"
+            @changeIsComplete="changeIsComplete($event)"
+          />
         </el-tab-pane>
         <el-tab-pane
-          v-else-if="isSubtance"
-          label="Berita Acara"
-          name="beritaacara"
+          v-if="isAdmin && isComplete"
+          label="Undangan Rapat"
+          name="undanganrapat"
         >
+          <UndanganRapat v-if="activeName === 'undanganrapat'" />
+        </el-tab-pane>
+        <el-tab-pane v-if="isSubtance" label="Berita Acara" name="beritaacara">
           <BeritaAcara v-if="activeName === 'beritaacara'" />
         </el-tab-pane>
       </el-tabs>
@@ -24,13 +30,17 @@
 
 <script>
 import Verifikasi from '@/views/pengujian/components/verifikasi/index';
+import UndanganRapat from '@/views/pengujian/components/undanganRapat/index';
 import BeritaAcara from '@/views/pengujian/components/beritaAcara/index';
 import WorkFlow from '@/components/Workflow';
+import Resource from '@/api/resource';
+const verifikasiRapatResource = new Resource('testing-verification');
 
 export default {
   name: 'Dump',
   components: {
     Verifikasi,
+    UndanganRapat,
     BeritaAcara,
     WorkFlow,
   },
@@ -40,6 +50,7 @@ export default {
       userInfo: {
         roles: [],
       },
+      isComplete: false,
     };
   },
   computed: {
@@ -52,6 +63,10 @@ export default {
   },
   async created() {
     this.userInfo = await this.$store.dispatch('user/getInfo');
+    this.isComplete = await verifikasiRapatResource.list({
+      checkComplete: 'true',
+      idProject: this.$route.params.id,
+    });
     if (this.userInfo.roles.includes('examiner-substance')) {
       this.activeName = 'beritaacara';
       this.$store.dispatch('getStep', 6);
@@ -59,6 +74,17 @@ export default {
       this.activeName = 'verifikasi';
       this.$store.dispatch('getStep', 3);
     }
+  },
+  async checkIsComplete() {
+    this.isComplete = await verifikasiRapatResource.list({
+      checkComplete: 'true',
+      idProject: this.$route.params.id,
+    });
+  },
+  methods: {
+    changeIsComplete({ isComplete }) {
+      this.isComplete = isComplete;
+    },
   },
 };
 </script>

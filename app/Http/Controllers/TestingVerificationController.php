@@ -26,6 +26,21 @@ class TestingVerificationController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->checkComplete) {
+            $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
+            if($verification) {
+                if($verification->is_complete == null) {
+                    return 'false';
+                } else if($verification->is_complete == false) {
+                    return 'false';
+                } else if($verification->is_complete == true) {
+                    return 'true';
+                }
+            } else {
+                return 'false';
+            }
+        }
+
         if($request->exportNoDocx) {
             return $this->exportNoDocx($request->idProject);
         }

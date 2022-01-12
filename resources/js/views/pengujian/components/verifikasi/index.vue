@@ -357,6 +357,7 @@ export default {
         decision,
       });
       this.getVerifications();
+      this.$emit('changeIsComplete', { isComplete: (decision === 'ya') });
       this.loadingComplete = false;
     },
   },
