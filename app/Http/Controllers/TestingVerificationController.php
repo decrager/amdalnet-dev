@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Announcement;
+use App\Entity\FeasibilityTestTeam;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\FormulatorTeam;
 use App\Entity\KaForm;
 use App\Entity\Lpjp;
@@ -360,12 +362,29 @@ class TestingVerificationController extends Controller
         
         Carbon::setLocale('id');
 
-        $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
+        $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', $verification->updated_at)->isoFormat('D MMMM Y');
 
         $project_address = '';
         if($project->address) {
             if($project->address->first()) {
                 $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
+            }
+        }
+
+        // TUK PUSAT    
+        $ketua_tuk_name = '';
+        $ketua_tuk_nip = '';
+
+        $tuk_pusat = FeasibilityTestTeam::where('authority', 'Pusat')->first();
+        if($tuk_pusat) {
+            $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk_pusat->id],['position', 'Ketua']])->first();
+            if($ketua) {
+                if($ketua->expertBank) {
+                    $ketua_tuk_name = $ketua->expertBank->name;
+                } else if($ketua->lukMember) {
+                    $ketua_tuk_name = $ketua->lukMember->name;
+                    $ketua_tuk_nip = $ketua_tuk_name->lukMember->nip ?? '';
+                }
             }
         }
 
@@ -375,7 +394,9 @@ class TestingVerificationController extends Controller
             'pemrakarsa_address' => $project->initiator->address,
             'project_title' => $project->project_title,
             'project_address' => $project_address,
-            'notes' => $verification->notes
+            'notes' => $verification->notes,
+            'ketua_tuk_name' => $ketua_tuk_name,
+            'ketua_tuk_nip' => $ketua_tuk_nip
         ];
     }
 }

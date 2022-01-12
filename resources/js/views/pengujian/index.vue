@@ -20,7 +20,7 @@
         >
           <UndanganRapat v-if="activeName === 'undanganrapat'" />
         </el-tab-pane>
-        <el-tab-pane v-if="isSubtance" label="Berita Acara" name="beritaacara">
+        <el-tab-pane v-if="isSubtance && isComplete" label="Berita Acara" name="beritaacara">
           <BeritaAcara v-if="activeName === 'beritaacara'" />
         </el-tab-pane>
       </el-tabs>
@@ -74,12 +74,6 @@ export default {
       this.activeName = 'verifikasi';
       this.$store.dispatch('getStep', 3);
     }
-  },
-  async checkIsComplete() {
-    this.isComplete = await verifikasiRapatResource.list({
-      checkComplete: 'true',
-      idProject: this.$route.params.id,
-    });
   },
   methods: {
     changeIsComplete({ isComplete }) {

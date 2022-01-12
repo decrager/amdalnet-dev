@@ -179,7 +179,7 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
-const undanganRapatResource = new Resource('testing-meeting');
+const undanganRapatResource = new Resource('test-meet-rkl-rpl');
 
 export default {
   name: 'UndanganRapat',
@@ -310,7 +310,7 @@ export default {
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
-        '/template_berkas_adm_yes.docx',
+        '/template_berkas_adm_ar_yes.docx',
         (error, content) => {
           if (error) {
             throw error;
@@ -362,6 +362,12 @@ export default {
               this.docxData.forms.sistematika_penyusunan_no,
             sistematika_penyusunan_ket:
               this.docxData.forms.sistematika_penyusunan_ket,
+            pertek_yes: this.docxData.forms.pertek_yes,
+            pertek_no: this.docxData.forms.pertek_no,
+            pertek_ket: this.docxData.forms.pertek_ket,
+            peta_titik_yes: this.docxData.forms.peta_titik_yes,
+            peta_titik_no: this.docxData.forms.peta_titik_no,
+            peta_titik_ket: this.docxData.forms.peta_titik_ket,
             tim_penyusun: this.docxData.tim_penyusun,
             anggota_penyusun: this.docxData.anggota_penyusun,
             meeting_invitations: this.docxData.meeting_invitations,

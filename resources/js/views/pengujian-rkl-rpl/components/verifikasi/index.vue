@@ -13,7 +13,7 @@
     </div>
     <el-row :gutter="32">
       <el-col :sm="24" :md="12">
-        <h4 align="center">FORMULIR KELENGKAPAN ADMINISTRASI KERANGKA ACUAN</h4>
+        <h4 align="center">FORMULIR KELENGKAPAN ADMINISTRASI ANDAL RKL RPL</h4>
         <el-table
           v-loading="loadingverification"
           :data="verifications.ka_forms"
@@ -143,7 +143,7 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
-const verifikasiRapatResource = new Resource('testing-verification');
+const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
 
 export default {
   name: 'Verifikasi',
@@ -194,6 +194,8 @@ export default {
         cv_penyusun: 'CV Penyusun Amdal',
         sistematika_penyusunan:
           'Sistematika penyusunan dokumen sesuai dengan PP 22/2021',
+        pertek: 'Persetujuan Teknis',
+        peta_titik: 'Penambahan Peta Titik Pengelolaan dan Titik Pemantauan',
       },
     };
   },
@@ -322,7 +324,7 @@ export default {
             notes: this.docxData.notes,
             ketua_tuk_name: this.docxData.ketua_tuk_name,
             ketua_tuk_nip: this.docxData.ketua_tuk_nip,
-            document_type: 'KA',
+            document_type: 'ANDAL RKL-RPL',
           });
 
           const out = doc.getZip().generate({
