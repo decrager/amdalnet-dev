@@ -101,6 +101,16 @@
         @handleSubmitConfirmation="handleSubmitConfirmation"
         @handleCloseConfirmation="handleCloseConfirmation"
       />
+      <create-business
+        :show="showCreateBusiness"
+        @handleClose="handleCloseCreateBusiness"
+      />
+      <edit-business
+        :key="editBusinessKey"
+        :show="showEditBusiness"
+        :id-business="selectedId"
+        @handleClose="handleCloseEditBusiness"
+      />
     </el-card>
   </div>
 </template>
@@ -109,20 +119,24 @@
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
+import CreateBusiness from './Create.vue';
+import EditBusiness from './Edit.vue';
 const businessResource = new Resource('business');
 
 export default {
   name: 'BusinessList',
-  components: { Pagination, ConfirmationDialog },
+  components: { Pagination, ConfirmationDialog, CreateBusiness, EditBusiness },
   data() {
     return {
+      show: false,
       showConfirmation: false,
+      showCreateBusiness: false,
+      showEditBusiness: false,
       loading: false,
       userInfo: {
         roles: [],
       },
       filtered: [],
-      show: false,
       total: 0,
       listQuery: {
         page: 1,
@@ -131,6 +145,7 @@ export default {
       selectedId: 0,
       confirmMessage: '',
       warningMessage: '',
+      editBusinessKey: 1,
     };
   },
   computed: {
@@ -160,8 +175,12 @@ export default {
     handleDetail() {
     },
     handleCreate() {
+      this.showCreateBusiness = true;
     },
-    handleEdit() {
+    handleEdit(id) {
+      this.selectedId = id;
+      this.showEditBusiness = true;
+      this.editBusinessKey = this.editBusinessKey + 1;
     },
     handleDelete(id, code, sector, field) {
       // show confirmation popup
@@ -172,7 +191,6 @@ export default {
     },
     handleSubmitConfirmation(id) {
       // delete
-      // console.log('idObject = ' + id);
       businessResource
         .destroy(id)
         .then((response) => {
@@ -190,6 +208,12 @@ export default {
     },
     handleCloseConfirmation() {
       this.showConfirmation = false;
+    },
+    handleCloseCreateBusiness() {
+      this.showCreateBusiness = false;
+    },
+    handleCloseEditBusiness() {
+      this.showEditBusiness = false;
     },
   },
 };

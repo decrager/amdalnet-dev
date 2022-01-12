@@ -85,7 +85,41 @@ class BusinessController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $business = $request->business;
+        $parent_id = 0;
+        if ($business['description'] == 'field') {
+            // find available sector id
+            $kbli = Business::where('description', 'kbli_code')
+                ->where('value', $business['kbli_code'])
+                ->first();
+            if ($kbli) {
+               $sector = Business::where('parent_id', $kbli->id)->first();
+               if ($sector) {
+                   $parent_id = $sector->id;
+               }
+            }
+        }
+        DB::beginTransaction();
+        $created = Business::create([
+            'parent_id' => $parent_id,
+            'value' => $business['value'],
+            'description' => $business['description'],
+        ]);
+        if ($created) {
+            DB::commit();
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => $created,
+            ], 200);
+        } else {
+            DB::rollBack();
+            return response()->json([
+                'status' => 500,
+                'code' => 500,
+                'errors' => 'Failed to create Business',
+            ], 500);
+        }
     }
 
     /**
@@ -96,6 +130,17 @@ class BusinessController extends Controller
      */
     public function show(Business $business)
     {
+        if ($business->description == 'field') {
+            // get kbli_code & sector name
+            $sector = Business::find($business->parent_id);
+            if ($sector) {
+                $business->{"sector"} = $sector->value;
+                $kbli_code = Business::find($sector->parent_id);
+                if ($kbli_code) {
+                    $business->{"kbli_code"} = $kbli_code->value;
+                }
+            }
+        }
         return $business;
     }
 
@@ -119,7 +164,48 @@ class BusinessController extends Controller
      */
     public function update(Request $request, Business $business)
     {
-        //
+        $updatedBusiness = $request->business;
+        if ($business['description'] == 'field') {
+            $kbli = null;
+            $sector = Business::find($business->parent_id);
+            if ($sector) {
+                $kbli = Business::find($sector->parent_id);
+            }
+            if ($updatedBusiness['kbli_code'] != $kbli->value
+                || $updatedBusiness['sector'] != $sector->value) {
+                // find new sector id
+                $newKbli = Business::where('description', 'kbli_code')
+                    ->where('value', $updatedBusiness['kbli_code'])
+                    ->first();
+                if ($newKbli) {
+                    $newSector = Business::where('parent_id', $newKbli->id)
+                        ->where('value', $updatedBusiness['sector'])
+                        ->first();
+                    if ($newSector) {
+                        $business->parent_id = $newSector->id;
+                    }
+                }
+            }
+        }
+        $business->value = $updatedBusiness['value'];
+        DB::beginTransaction();
+        try {
+            $business->save();
+            DB::commit();
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => $business,
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 500,
+                'code' => 500,
+                // 'errors' => 'Failed to update Business',
+                'errors' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

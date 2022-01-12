@@ -3,7 +3,7 @@
 </template>
 <script>
 export default {
-  name: 'CreateBusinessEnvParam',
+  name: 'BusinessEnvParamForm',
   components: {},
 };
 </script>
