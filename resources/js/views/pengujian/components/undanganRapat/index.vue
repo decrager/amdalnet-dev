@@ -149,9 +149,24 @@
           >
             Unduh Hasil Pemeriksaan Berkas Administrasi
           </el-button>
-          <el-button type="primary" style="margin-top: 10px">
-            Unggah Validasi Hasil Pemeriksaan Berkas Administrasi
-          </el-button>
+          <el-upload
+            :auto-upload="false"
+            :on-change="handleUploadChange"
+            :show-file-list="false"
+            action=""
+          >
+            <el-button :loading="loadingUpload" type="primary" style="margin-top: 10px;">
+              Unggah Validasi Hasil Pemeriksaan Berkas Administrasi
+            </el-button>
+          </el-upload>
+          <small v-if="errors.dokumen_file" style="color: #f56c6c">
+            <span
+              v-for="(error, index) in errors.dokumen_file"
+              :key="index"
+            >
+              {{ error }}
+            </span>
+          </small>
         </div>
       </el-col>
     </el-row>
@@ -187,6 +202,8 @@ export default {
       loading: false,
       loadingSubmit: false,
       loadingDocx: false,
+      loadingUpload: false,
+      errors: {},
     };
   },
   created() {
@@ -265,6 +282,7 @@ export default {
         type_member: 'other',
         docxData: {},
         loadingDocx: false,
+        loadingUpload: false,
         out: '',
       });
     },
@@ -361,6 +379,35 @@ export default {
         }
       );
     },
+    async handleUploadChange(file, fileList) {
+      this.loadingUpload = true;
+      const formData = new FormData();
+      formData.append('idProject', this.idProject);
+      formData.append('dokumen_file', file.raw);
+      formData.append('file', 'true');
+      const isError = await undanganRapatResource.store(formData);
+      this.errors = isError.errors === null ? {} : isError.errors;
+      this.loadingUpload = false;
+      if (isError.errors === null) {
+        this.$message({
+          message: 'Dokumen sukses diupload',
+          type: 'success',
+          duration: 5 * 1000,
+        });
+      }
+    },
   },
 };
 </script>
+
+<style>
+.upload-demo {
+  font-size: 0.8rem;
+  background: #e2cd39;
+  padding: 8px;
+  color: white;
+  border-radius: 3px;
+  margin-top: 10px;
+  width: fit-content;
+}
+</style>

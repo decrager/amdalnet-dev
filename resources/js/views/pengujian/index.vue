@@ -75,12 +75,6 @@ export default {
       this.$store.dispatch('getStep', 3);
     }
   },
-  async checkIsComplete() {
-    this.isComplete = await verifikasiRapatResource.list({
-      checkComplete: 'true',
-      idProject: this.$route.params.id,
-    });
-  },
   methods: {
     changeIsComplete({ isComplete }) {
       this.isComplete = isComplete;

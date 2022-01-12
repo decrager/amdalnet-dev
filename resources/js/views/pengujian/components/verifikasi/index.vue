@@ -320,6 +320,9 @@ export default {
             project_title: this.docxData.project_title,
             project_address: this.docxData.project_address,
             notes: this.docxData.notes,
+            ketua_tuk_name: this.docxData.ketua_tuk_name,
+            ketua_tuk_nip: this.docxData.ketua_tuk_nip,
+            document_type: 'KA',
           });
 
           const out = doc.getZip().generate({

@@ -17,6 +17,7 @@ use App\Entity\TestingMeetingInvitation;
 use App\Entity\TestingVerification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TestingMeetingController extends Controller
 {
@@ -100,6 +101,35 @@ class TestingMeetingController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->file) {
+            $data = $request->all();
+            $validator = \Validator::make($data, [
+                'dokumen_file' => 'max:1024'
+            ],[
+                'dokumen_file.max' => 'Ukuran file tidak boleh melebihi 1 mb'
+            ]);
+
+            if($validator->fails()) {
+                return response()->json(['errors' => $validator->messages()]);
+            }
+
+            if($request->hasFile('dokumen_file')) {
+                $project = Project::findOrFail($request->idProject);
+                $file = $request->file('dokumen_file');
+                $name = '/verifikasi-ka/' . strtolower($project->project_title) . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+    
+                $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
+                $testing_meeting->file = Storage::url($name);
+                $testing_meeting->save();
+
+            } else {
+                return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
+            }
+
+            return response()->json(['errors' => null]);
+        }
+
         $data = $request->meetings;
 
         // Save meetings
