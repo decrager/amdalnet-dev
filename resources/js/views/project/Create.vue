@@ -44,6 +44,16 @@
               </el-col>
               <el-col :span="12">
                 <el-row>
+                  <el-form-item label="" prop="filePdf">
+                    <div slot="label">
+                      <span>Upload Peta PDF (Max 1MB)</span>
+                    </div>
+                    <classic-upload :name="filePdfName" :fid="'filePdf'" @handleFileUpload="handleFileTapakProyekPdfUpload" />
+                  </el-form-item>
+                </el-row>
+              </el-col>
+              <el-col :span="12" style="margin-top: 17px;">
+                <el-row>
                   <el-form-item label="" prop="fileMap">
                     <div slot="label">
                       <span>Upload Peta Tapak (File .ZIP Max 1MB)</span>
@@ -51,10 +61,13 @@
                     </div>
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
                   </el-form-item>
-                  <div id="mapView" style="height: 600px;" />
                 </el-row>
               </el-col>
             </el-row>
+
+            <div v-show="fileMap" id="mapView" style="height: 600px;" />
+
+            <!-- Alamat -->
             <el-row type="flex" justify="end" :gutter="4">
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
@@ -481,7 +494,6 @@
 </template>
 
 <script>
-// import Tinymce from '@/components/Tinymce';
 import Workflow from '@/components/Workflow';
 import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
@@ -507,8 +519,6 @@ import popupTemplate from '../webgis/scripts/popupTemplate';
 export default {
   name: 'CreateProject',
   components: {
-    // Tinymce,
-    // SupportTable,
     ClassicUpload,
     Workflow,
     SubProjectTable,
@@ -540,14 +550,12 @@ export default {
       }
       callback();
     };
-
-    // var validateFile = (rule, value, callback) => {
-    //   if (value.size > 1024 * 1024) {
-    //     callback(new Error('File Maximum 1 MB'));
-    //   }
-    //   callback();
-    // };
-
+    var validatePdfMap = (rule, value, callback) => {
+      if (!this.filePdf){
+        callback(new Error('File Peta Tapak PDF Belum Diunggah'));
+      }
+      callback();
+    };
     return {
       mismatchMapData: false,
       token: '',
@@ -564,9 +572,11 @@ export default {
       isUpload: 'Upload',
       fileName: 'No File Selected.',
       fileMap: null,
+      filePdf: null,
       isOss: true,
       fileKtrName: 'No File Selected',
       fileMapName: 'No File Selected',
+      filePdfName: 'No File Selected',
       filePreAgreementName: 'No File Selected',
       studyApproachOptions: [
         {
@@ -675,6 +685,9 @@ export default {
         ],
         fileKtr: [
           { validator: validateKtr, trigger: 'change' },
+        ],
+        filePdf: [
+          { validator: validatePdfMap, trigger: 'change' },
         ],
         fileMap: [
           { validator: validateMap, trigger: 'change' },
@@ -830,12 +843,15 @@ export default {
       this.currentProject = this.$route.params.project;
       this.listSubProject = this.currentProject.listSubProject;
       this.fileMap = this.currentProject.fileMap;
+      this.filePdf = this.currentProject.filePdf;
+      this.filePdfName = this.filePdf.name;
       this.fileMapName = this.fileMap.name;
       this.fileKtr = this.currentProject.fileKtr;
       this.fileKtrName = this.fileKtr.name;
       this.filePreAgreement = this.currentProject.filePreAgreement;
       this.filePreAgreementName = this.currentProject.filePreAgreement.name;
       this.handleFileTapakProyekMapUpload('a');
+      this.handleFileTapakProyekPdfUpload('pdf');
       // this.fileName = this.getFileName(this.currentProject.map);
       // this.fileMap = this.getFileName(this.currentProject.map);
       // this.listSupportTable = await this.getListSupporttable(
@@ -994,6 +1010,11 @@ export default {
         return;
       }
 
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
       this.fileKtr = e.target.files[0];
       this.currentProject.fileKtr = e.target.files[0];
       this.fileKtrName = e.target.files[0].name;
@@ -1006,6 +1027,24 @@ export default {
       this.filePreAgreement = e.target.files[0];
       this.filePreAgreementName = e.target.files[0].name;
       // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
+    },
+    handleFileTapakProyekPdfUpload(e){
+      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filePdf').resetField();
+
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
+      if (e !== 'pdf'){
+        this.filePdf = e.target.files[0];
+        this.filePdfName = e.target.files[0].name;
+      }
     },
     handleFileTapakProyekMapUpload(e){
       // reset validation
@@ -1020,11 +1059,6 @@ export default {
         this.fileMap = e.target.files[0];
         this.fileMapName = e.target.files[0].name;
       }
-      // if (this.$refs.fileMap.files[0]){
-      //   console.log(this.$refs.fileMap.files[0]);
-      //   this.fileMap = this.$refs.fileMap.files[0];
-      // }
-
       const map = new Map({
         basemap: 'satellite',
       });
@@ -1033,36 +1067,6 @@ export default {
         proxyUrl: 'proxy/proxy.php',
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
-
-      const featureLayer = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
-        sublayers: [
-          {
-            id: 0,
-            title: 'Layer Kawasan Hutan',
-            popupTemplate: {
-              title: 'Kawasan Hutan',
-            },
-          },
-        ],
-        imageTransparency: false,
-        visible: false,
-      });
-
-      const tutupanLahan = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
-        visible: false,
-      });
-      map.addMany([featureLayer, tutupanLahan]);
-
-      const baseGroupLayer = new GroupLayer({
-        title: 'Base Layer',
-        visible: false,
-        layers: [featureLayer, tutupanLahan],
-        opacity: 0.90,
-      });
-
-      map.add(baseGroupLayer);
 
       const penutupanLahan2020 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
@@ -1086,7 +1090,7 @@ export default {
       });
 
       const sigapLayer = new GroupLayer({
-        title: 'SIGAP KLHK',
+        title: 'Peta Tematik Status',
         visible: false,
         layers: [penutupanLahan2020, kawasanHutanB, pippib2021Periode2],
         opacity: 0.90,
@@ -1095,60 +1099,79 @@ export default {
       map.add(sigapLayer);
 
       const fr = new FileReader();
-      fr.onload = async function(event) {
+      fr.onload = (event) => {
         const base = event.target.result;
-        const datas = await shp(base);
-        const mapSampleProperties = [
-          'OBJECTID_1',
-          'PEMRAKARSA',
-          'KEGIATAN',
-          'TAHUN',
-          'PROVINSI',
-          'KETERANGAN',
-          'AREA',
-          'LAYER',
-        ];
+        shp(base).then((datas) => {
+          const mapSampleProperties = [
+            'OBJECTID_1',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'PROVINSI',
+            'KETERANGAN',
+            'AREA',
+            'LAYER',
+          ];
 
-        const mapUploadProperties = Object.keys(datas.features[0].properties);
-        const propFields = datas.features[0].properties;
+          const mapUploadProperties = Object.keys(datas.features[0].properties);
+          const propFields = datas.features[0].properties;
 
-        if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
-          alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
-          document.getElementById('fileMap').value = '';
-          return;
-        }
+          if (datas.features[0].geometry.type !== 'Polygon') {
+            document.getElementById('fileMap').value = '';
+            this.fileMapName = 'No File Selected';
+            return this.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
+              confirmButtonText: 'Confirm',
+            });
+          }
 
-        const blob = new Blob([JSON.stringify(datas)], {
-          type: 'application/json',
-        });
+          if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
+            document.getElementById('fileMap').value = '';
+            this.fileMapName = 'No File Selected';
+            return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+              confirmButtonText: 'Confirm',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
+          }
 
-        const renderer = {
-          type: 'simple',
-          field: '*',
-          symbol: {
-            type: 'simple-fill',
-            color: [200, 0, 0, 1],
-            outline: {
+          const blob = new Blob([JSON.stringify(datas)], {
+            type: 'application/json',
+          });
+
+          const renderer = {
+            type: 'simple',
+            field: '*',
+            symbol: {
+              type: 'simple-fill',
               color: [200, 0, 0, 1],
+              outline: {
+                color: [200, 0, 0, 1],
+              },
             },
-          },
-        };
-        const url = URL.createObjectURL(blob);
-        const geojsonLayer = new GeoJSONLayer({
-          url: url,
-          visible: true,
-          outFields: ['*'],
-          opacity: 0.75,
-          title: 'Peta Tapak Proyek',
-          renderer: renderer,
-          popupTemplate: popupTemplate(propFields),
-        });
+          };
+          const url = URL.createObjectURL(blob);
+          const geojsonLayer = new GeoJSONLayer({
+            url: url,
+            visible: true,
+            outFields: ['*'],
+            opacity: 0.75,
+            title: 'Peta Tapak Proyek',
+            renderer: renderer,
+            popupTemplate: popupTemplate(propFields),
+          });
 
-        map.add(geojsonLayer);
-        mapView.on('layerview-create', async function(event) {
-          console.log(event);
-          await mapView.goTo({
-            target: geojsonLayer.fullExtent,
+          map.add(geojsonLayer);
+          mapView.on('layerview-create', async(event) => {
+            await mapView.goTo({
+              target: geojsonLayer.fullExtent,
+            });
           });
         });
       };
@@ -1158,7 +1181,7 @@ export default {
         container: 'mapView',
         map: map,
         center: [115.287, -1.588],
-        zoom: 4,
+        zoom: 5,
       });
       this.$parent.mapView = mapView;
 
@@ -1255,6 +1278,7 @@ export default {
     },
     handleSubmit() {
       this.currentProject.fileMap = this.fileMap;
+      this.currentProject.filePdf = this.filePdf;
       this.currentProject.fileKtr = this.fileKtr;
       this.currentProject.filePreAgreement = this.filePreAgreement;
 
@@ -1267,7 +1291,7 @@ export default {
       // send to pubishProjectRoute
       this.$router.push({
         name: 'publishProject',
-        params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson },
+        params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson, mapUploadPdf: this.filePdf },
       });
       //   } else {
       //     console.log('error submit!!');
@@ -1288,6 +1312,7 @@ export default {
       formdatas.append('type', 'Feature Service');
       formdatas.append('title', this.currentProject.project_title + '_Peta Tapak Proyek');
       formdatas.append('file', this.currentProject.fileMap);
+      formdatas.append('filePdf', this.currentProject.filePdf);
       formdatas.append('fileName', this.currentProject.project_title + '_Peta Tapak Proyek');
 
       var requestOptions = {

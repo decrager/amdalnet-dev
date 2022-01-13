@@ -12,6 +12,12 @@
       </template>
     </el-table-column>
 
+    <el-table-column label="Nama">
+      <template slot-scope="scope">
+        <span>{{ scope.row.name }}</span>
+      </template>
+    </el-table-column>
+
     <el-table-column label="Kategori">
       <template slot-scope="scope">
         <span>{{ scope.row.category.category_name }}</span>
