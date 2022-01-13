@@ -66,6 +66,9 @@
             </el-row>
 
             <div v-show="fileMap" id="mapView" style="height: 600px;" />
+            <div style="margin-top: 10px">
+              <span v-if="full_address !== ''" style="font-style: italic; color: red">Provinsi: {{ full_address }}</span>
+            </div>
 
             <!-- Alamat -->
             <el-row type="flex" justify="end" :gutter="4">
@@ -515,6 +518,7 @@ import Expand from '@arcgis/core/widgets/Expand';
 import esriRequest from '@arcgis/core/request';
 import qs from 'qs';
 import popupTemplate from '../webgis/scripts/popupTemplate';
+import centroid from '@turf/centroid';
 
 export default {
   name: 'CreateProject',
@@ -557,6 +561,7 @@ export default {
       callback();
     };
     return {
+      full_address: '',
       mismatchMapData: false,
       token: '',
       refresh: 0,
@@ -1115,6 +1120,29 @@ export default {
 
           const mapUploadProperties = Object.keys(datas.features[0].properties);
           const propFields = datas.features[0].properties;
+
+          console.log(datas.features[0].geometry);
+
+          var centroids = centroid(datas.features[0]);
+          var getCoordinates = centroids.geometry.coordinates;
+
+          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.osm_type === 'way') {
+                fetch(`https://www.openstreetmap.org/api/0.6/way/${data.osm_id}.json`)
+                  .then(response => response.json())
+                  .then(state => {
+                    this.full_address = state.elements[0].tags.addr;
+                  });
+              } else if (data.osm_type === 'relation') {
+                fetch(`https://www.openstreetmap.org/api/0.6/relation/${data.osm_id}.json`)
+                  .then(response => response.json())
+                  .then(state => {
+                    this.full_address = state.elements[0].tags.name;
+                  });
+              }
+            });
 
           if (datas.features[0].geometry.type !== 'Polygon') {
             document.getElementById('fileMap').value = '';
