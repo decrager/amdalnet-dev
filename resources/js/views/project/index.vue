@@ -2,13 +2,6 @@
   <div class="app-container" style="padding: 24px">
 
     <el-card>
-      <el-tabs v-if="couldCreateProject && !isScoping && !isDigiWork" v-model="sectionHeader" type="card">
-        <el-tab-pane
-          key="tab-penapisan"
-          label="Kegiatan Penapisan"
-          name="list-penapisan"
-        />
-      </el-tabs>
       <div class="filter-container">
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col>
@@ -22,8 +15,8 @@
               {{ ' Kegiatan' }}
             </el-button>
           </el-col>
-          <el-col :span="6">
-            <el-input v-model="listQuery.search" placeholder="Please input" @change="handleFilter">
+          <el-col :span="10">
+            <el-input v-model="listQuery.search" placeholder="Pencarian" @change="handleFilter">
               <el-button slot="append" icon="el-icon-search" @click="handleFilter" />
             </el-input>
             <!-- <el-button
