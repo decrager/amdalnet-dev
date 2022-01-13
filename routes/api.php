@@ -246,6 +246,7 @@ Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
+Route::get('map-pdf', [ProjectMapAttachmentController::class, 'getMapPdf']);
 Route::get('map-geojson-merge', [ProjectMapAttachmentController::class, 'getMergeGeojson']);
 Route::get('map-geojson', [ProjectMapAttachmentController::class, 'getGeojson']);
 Route::get('projects-geom', [ProjectMapAttachmentController::class, 'getProjectByGeom']);
