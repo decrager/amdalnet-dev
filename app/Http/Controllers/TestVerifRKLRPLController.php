@@ -236,7 +236,7 @@ class TestVerifRKLRPLController extends Controller
                             $link = $project->ktr;
                         } else if($f->name == 'persetujuan_awal') {
                             $link = $project->pre_agreement_file;
-                        } else if($f->name == 'Peta') {
+                        } else if($f->name == 'peta') {
                             $link = $this->petaLink($peta_tapak, $peta_sosial, $peta_ekologis, $peta_wilayah_studi);
                         }
 
