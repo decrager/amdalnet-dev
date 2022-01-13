@@ -86,7 +86,7 @@
           >
             Simpan Perubahan
           </el-button>
-          <el-button type="primary">Kirim Undangan Rapat</el-button>
+          <el-button :loading="loadingSendInvitation" type="primary" @click="sendInvitation">Kirim Undangan Rapat</el-button>
         </div>
         <h5>Daftar Undangan</h5>
         <el-table
@@ -204,6 +204,7 @@ export default {
       loadingDocx: false,
       loadingUpload: false,
       errors: {},
+      loadingSendInvitation: false,
     };
   },
   created() {
@@ -283,6 +284,7 @@ export default {
         docxData: {},
         loadingDocx: false,
         loadingUpload: false,
+        loadingSendInvitation: false,
         out: '',
       });
     },
@@ -395,6 +397,35 @@ export default {
           duration: 5 * 1000,
         });
       }
+    },
+    async sendInvitation() {
+      this.loadingSendInvitation = true;
+      try {
+        const response = await undanganRapatResource.store({
+          invitation: 'true',
+          idProject: this.idProject,
+        });
+        if (response.error === 0) {
+          this.$message({
+            message: 'Undangan Berhasil Dikirim',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        } else if (response.error === 1) {
+          this.$message({
+            message: 'Undangan Gagal Dikirim',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+        }
+      } catch (error) {
+        this.$message({
+          message: 'Undangan Gagal Dikirim',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      }
+      this.loadingSendInvitation = false;
     },
   },
 };

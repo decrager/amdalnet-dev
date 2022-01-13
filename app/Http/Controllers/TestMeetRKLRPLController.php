@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Entity\ExpertBankTeam;
-use App\Entity\ExpertBankTeamMember;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\FormulatorTeam;
@@ -14,8 +12,11 @@ use App\Entity\Project;
 use App\Entity\TestingMeeting;
 use App\Entity\TestingMeetingInvitation;
 use App\Entity\TestingVerification;
+use App\Laravue\Models\User;
+use App\Notifications\MeetingInvitation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class TestMeetRKLRPLController extends Controller
@@ -100,6 +101,39 @@ class TestMeetRKLRPLController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->invitation) {
+            $receiver = [];
+            $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
+            if($meeting) {
+                $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
+                foreach($invitations as $i) {
+                    if($i->id_feasibility_test_team_member) {
+                        $member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
+                        $email = null;
+                        if($member->expertBank) {
+                            $email = $member->expertBank->email;
+                        } else if($member->lukMember) {
+                            $email = $member->lukMember->email;
+                        }
+
+                        if($email) {
+                            $user = User::where('email', $email)->first();
+                            if($user) {
+                                $receiver[] = $user;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(count($receiver) > 0) {
+                Notification::send($receiver, new MeetingInvitation($meeting));
+                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
+            }
+
+            return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
+        }
+
         if($request->file) {
             $data = $request->all();
             $validator = \Validator::make($data, [
