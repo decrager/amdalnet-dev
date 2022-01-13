@@ -432,11 +432,9 @@ export default {
     // }
 
     this.getFiltered(this.listQuery);
-    console.log(this.$route.name);
   },
   methods: {
     isUklUpl(project){
-      console.log(project.required_doc);
       return project.required_doc === 'UKL-UPL';
     },
     isAmdal(project){
@@ -451,9 +449,6 @@ export default {
       );
     },
     handleSubmitAnnouncement(fileProof){
-      // this.announcement.fileProof = fileProof;
-      console.log(this.announcement);
-
       // make form data because we got file
       const formData = new FormData();
 
@@ -502,7 +497,6 @@ export default {
         return e;
       });
       this.total = total;
-      console.log(this.filtered);
       this.loading = false;
     },
     handleCreate() {
@@ -529,7 +523,6 @@ export default {
       // change field to number and formulator team
       currentProject.field = Number(currentProject.field);
       currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
-      console.log(currentProject);
       this.$router.push({
         name: 'createProject',
         params: { project: currentProject },
@@ -555,7 +548,6 @@ export default {
     },
     handleTimPenyusunForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
-      console.log(currentProject);
       this.$router.push({
         name: 'timPenyusun',
         params: { project: currentProject, readonly: true, id: currentProject.id },
@@ -570,7 +562,6 @@ export default {
           scale: curr.scale + ' ' + curr.scale_unit,
         };
       });
-      console.log(currentProject);
       this.announcement.sub_project = subProject;
       this.announcement.pic_name = this.initiator.pic;
       this.announcement.pic_address = this.initiator.address;
@@ -645,15 +636,11 @@ export default {
       });
     },
     async handleGenerateSPPL(project) {
-      console.log(project);
-
       project.listSubProject = project.listSubProject.map((e, i) => {
         e.address = project.address[i] ? this.toTitleCase(project.address[i].address + ' ' + project.address[i].district + ' ' + project.address[i].prov) : '';
         e.number = i + 1;
         return e;
       });
-
-      console.log(project.address[0].district);
 
       PizZipUtils.getBinaryContent(
         '/template_sppl.docx',
@@ -719,7 +706,6 @@ export default {
       });
     },
     handleWorkspace(project) {
-      console.log(project);
       this.$router.push({
         name: 'editWorkspace',
         params: { id: project.id, project: project },

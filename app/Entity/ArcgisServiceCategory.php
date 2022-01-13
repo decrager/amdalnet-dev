@@ -13,7 +13,7 @@ class ArcgisServiceCategory extends Model
     protected $table = 'arcgis_service_category';
 
     protected $fillable = [
-        'category_name', 'active'
+        'category_name', 'active', 'id_provinsi'
     ];
 
     public function arcgisServices()

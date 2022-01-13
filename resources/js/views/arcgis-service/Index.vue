@@ -18,6 +18,14 @@
         >
           {{ 'Lihat Map Service Kategori' }}
         </el-button>
+        <el-button
+          class="filter-item"
+          type="success"
+          icon="el-icon-plus"
+          @click="handleCategoryCreate"
+        >
+          {{ 'Tambah Map Service Kategori' }}
+        </el-button>
       </div>
       <map-service-table
         :loading="loading"
@@ -46,6 +54,13 @@
         @handleSubmitComponent="handleSubmitComponent"
         @handleCancelComponent="handleCancelComponent"
       />
+      <map-service-category-create
+        :component="componentCreate"
+        :show-category-create="showCategoryCreate"
+        :provinces="provinces"
+        @handleSubmitComponent="handleSubmitComponentCreate"
+        @handleCancelComponent="handleCancelComponentCreate"
+      />
 
     </el-card>
   </div>
@@ -56,6 +71,7 @@ import Pagination from '@/components/Pagination';
 import MapServiceTable from './components/MapServiceTable.vue';
 import MapServiceCreate from './components/MapServiceCreate.vue';
 import MapServiceCategoryDialog from './components/MapServiceCategoryDialog.vue';
+import MapServiceCategoryCreate from './components/MapServiceCategoryCreate';
 
 import axios from 'axios';
 
@@ -65,6 +81,7 @@ export default {
     MapServiceTable,
     MapServiceCreate,
     MapServiceCategoryDialog,
+    MapServiceCategoryCreate,
   },
   data() {
     return {
@@ -77,8 +94,11 @@ export default {
       total: 0,
       show: false,
       showCategory: false,
+      showCategoryCreate: false,
       category: [],
       component: {},
+      componentCreate: {},
+      provinces: [],
     };
   },
   created() {
@@ -123,8 +143,21 @@ export default {
           });
       }
     },
+    handleSubmitComponentCreate(){
+
+    },
+    handleCancelComponentCreate(){
+      this.componentCreate = {};
+      this.showCategoryCreate = false;
+    },
     handleFilter() {
       this.getList();
+    },
+    getProvinsi() {
+      axios.get('api/provinces')
+        .then((response) => {
+          this.provinces = response.data.data;
+        });
     },
     getKategory() {
       axios.get('api/arcgis-service-categories')
@@ -147,6 +180,9 @@ export default {
     },
     handleCategory() {
       this.showCategory = true;
+    },
+    handleCategoryCreate() {
+      this.showCategoryCreate = true;
     },
     handleEditForm(id) {
       this.component = this.list.find((element) => element.id === id);
