@@ -18,6 +18,19 @@
         </div>
         <div class="content" :hidden="!showPenapisan">
           <h1 style="color: white">Simulasi Penapisan Dokumen</h1>
+          <el-select
+            v-model="study_approach"
+            placeholder="Pilih"
+            style="width: 25%; margin-bottom: 10px"
+            size="medium"
+          >
+            <el-option
+              v-for="item in studyApproachOptions"
+              :key="item.value.id"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
           <div>
             <sub-project-table :list="listSubProject" :list-kbli="getListKbli" @cancel="cancelParam" />
             <el-button
@@ -25,7 +38,7 @@
               @click="handleAddSubProjectTable"
             >+</el-button>
           </div>
-          <h2 style="color: white; margin-top: 20px">Hasil Akhir Penapisan {{ last_result }}</h2>
+          <h2 style="color: white; margin-top: 20px">Hasil penapisan dokumen lingkungan {{ last_result }}</h2>
         </div>
 
         <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showPelingkupan = !showPelingkupan">
@@ -161,6 +174,21 @@ export default {
   },
   data() {
     return {
+      study_approach: 'Tunggal',
+      studyApproachOptions: [
+        {
+          value: 'Terpadu',
+          label: 'Terpadu',
+        },
+        {
+          value: 'Tunggal',
+          label: 'Tunggal',
+        },
+        // {
+        //   value: 'Kawasan',
+        //   label: 'Kawasan',
+        // },
+      ],
       showPublicQues: false,
       showTrackingDocument: false,
       showTrackingDocumentDetail: false,
@@ -250,9 +278,27 @@ export default {
     },
     calculateChoosenProject(){
       // console.log('project tanpa filter', this.currentProject);
-      const listMainProjectAmdal = this.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
-      const listMainProjectUklUpl = this.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
-      const listMainProjectSppl = this.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
+      const listMainProjectAmdal = this.listSubProject.filter(e => {
+        if (this.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'AMDAL';
+        } else if (this.study_approach === 'Terpadu'){
+          return e.result === 'AMDAL';
+        }
+      });
+      const listMainProjectUklUpl = this.listSubProject.filter(e => {
+        if (this.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'UKL-UPL';
+        } else if (this.study_approach === 'Terpadu'){
+          return e.result === 'UKL-UPL';
+        }
+      });
+      const listMainProjectSppl = this.listSubProject.filter(e => {
+        if (this.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'SPPL';
+        } else if (this.study_approach === 'Terpadu'){
+          return e.result === 'SPPL';
+        }
+      });
 
       // console.log('listAmdal', listMainProjectAmdal);
       let choosenProject = '';
