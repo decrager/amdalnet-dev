@@ -272,6 +272,7 @@
         </el-table-column>
         <el-table-column
           prop="date"
+          align="center"
           label="Tanggal"
           sortable="custom"
           width="150px"
