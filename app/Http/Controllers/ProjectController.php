@@ -47,7 +47,11 @@ class ProjectController extends Controller
                 function ($query) use ($request) {
                     return $request->formulatorId ? $query->where('formulators.id', $request->formulatorId) : '';
                 }
-            )->where(
+            )
+            ->where(function($query) use ($request){
+                return $request->filters ? $query->where('projects.required_doc', $request->filters ) : '';
+            })
+            ->where(
                 function ($query) use ($request) {
                     return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
                 }
@@ -72,7 +76,11 @@ class ProjectController extends Controller
             function ($query) use ($request) {
                 return $request->initiatorId ? $query->where('projects.id_applicant', $request->initiatorId) : '';
             }
-        )->where(
+        )
+        ->where(function($query) use ($request){
+            return $request->filters ? $query->where('projects.required_doc', $request->filters ) : '';
+        })
+        ->where(
             function ($query) use ($request) {
                 return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
             }

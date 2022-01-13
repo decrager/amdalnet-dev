@@ -41,6 +41,7 @@
         v-loading="loading"
         :data="filtered"
         fit
+        :clear-filter="onClearFilter"
         highlight-current-row
         :header-cell-style="{ background: '#216221', color: 'white' }"
         style="width: 100%"
@@ -268,7 +269,7 @@
             <span>{{ ((listQuery.page-1) * listQuery.limit) + (scope.$index + 1) }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="No. Registrasi" width="200">
+        <el-table-column align="left" label="No. Registrasi" width="150">
           <template slot-scope="scope">
             <span>{{ scope.row.registration_no }}</span>
           <!-- <span>{{
@@ -280,6 +281,7 @@
           prop="date"
           label="Tanggal"
           sortable="custom"
+          width="150px"
         >
           <template slot-scope="scope">
             {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
@@ -290,7 +292,30 @@
             <span>{{ scope.row.project_title }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Dokumen" width="100">
+        <el-table-column
+          width="150px"
+
+          column-key="doc_type"
+          align="center"
+          label="Dokumen"
+        >
+
+          <template slot="header">
+            <el-select
+
+              v-model="listQuery.filters"
+              clearable
+              placeholder="Dokumen"
+              @change="onDocTypeFilter"
+            >
+              <el-option
+                v-for="item in [{text: 'AMDAL', value: 'AMDAL'}, {text: 'UKL-UPL', value: 'UKL-UPL'}, {text: 'SPPL', value: 'SPPL'}]"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value"
+              />
+            </el-select>
+          </template>
           <template slot-scope="scope">
             <span>{{ scope.row.required_doc }}</span>
           </template>
@@ -366,6 +391,7 @@ export default {
         limit: 10,
         orderBy: 'id',
         order: 'DESC',
+        filters: [],
       },
       provinceOptions: [],
       cityOptions: [],
@@ -775,7 +801,7 @@ export default {
         },
       });
     },
-    // sorting
+    // sorting, filtering
     onTableSort(sort) {
       switch (sort.prop) {
         case 'date':
@@ -787,6 +813,15 @@ export default {
       }
       this.listQuery.order = (sort.order === 'ascending') ? 'ASC' : 'DESC';
       this.handleFilter();
+    },
+    onDocTypeFilter(val, col, row){
+      console.log('filtering doctype!', val);
+      this.listQuery.page = 1;
+      this.listQuery.filters = val;
+      this.handleFilter();
+    },
+    onClearFilter(key){
+      console.log('clearing filter!', key);
     },
   },
 };
