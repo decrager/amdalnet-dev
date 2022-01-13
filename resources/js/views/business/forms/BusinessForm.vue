@@ -1,5 +1,15 @@
 <template>
   <div v-loading="loadingGetObject" class="app-container">
+    <span slot="title" style="font-size: 14pt; font-weight: bold;">{{ createOrEdit }} KBLI</span>
+    <span v-if="isEdit" class="pull-right">
+      <el-button
+        type="danger"
+        icon="el-icon-delete"
+        @click="handleDelete"
+      >
+        Hapus
+      </el-button>
+    </span>
     <el-form label-position="top" :model="business">
       <el-form-item label="Nomor KBLI">
         <el-autocomplete
@@ -52,6 +62,11 @@ export default {
       sectorList: [],
       loadingGetObject: true,
     };
+  },
+  computed: {
+    createOrEdit() {
+      return this.isEdit ? 'Edit' : 'Tambah';
+    },
   },
   async created() {
     this.getAutoCompleteData();
@@ -121,6 +136,9 @@ export default {
     handleClose() {
       this.$emit('handleClose');
       this.business = {};
+    },
+    handleDelete() {
+      this.$emit('handleDelete', this.business);
     },
     handleSubmit() {
       this.business['description'] = 'field';

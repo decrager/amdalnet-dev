@@ -4,11 +4,11 @@
     width="40%"
     :before-close="handleClose"
   >
-    <span slot="title" style="font-size: 14pt; font-weight: bold;">Edit KBLI</span>
     <business-form
       :is-edit="true"
       :id-business="idBusiness"
       @handleClose="handleClose"
+      @handleDelete="handleDelete"
     />
   </el-dialog>
 </template>
@@ -28,6 +28,9 @@ export default {
   methods: {
     handleClose() {
       this.$emit('handleClose');
+    },
+    handleDelete(business) {
+      this.$emit('handleDelete', business);
     },
   },
 };

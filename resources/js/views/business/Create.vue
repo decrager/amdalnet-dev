@@ -4,7 +4,6 @@
     width="40%"
     :before-close="handleClose"
   >
-    <span slot="title" style="font-size: 14pt; font-weight: bold;">Tambah KBLI</span>
     <business-form
       :is-edit="false"
       @handleClose="handleClose"

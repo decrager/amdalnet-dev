@@ -51,7 +51,6 @@
           <template slot-scope="scope">
             <span>
               <el-button
-                v-if="isAdmin"
                 type="text"
                 href="#"
                 icon="el-icon-view"
@@ -62,11 +61,10 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column align="right" label="Aksi" width="150">
+        <el-table-column v-if="isAdmin" align="right" label="Aksi" width="150">
           <template slot-scope="scope">
             <span style="margin-left: 10px">
               <el-button
-                v-if="isAdmin"
                 type="success"
                 size="mini"
                 href="#"
@@ -74,7 +72,6 @@
                 @click="handleEdit(scope.row.id)"
               />
               <el-button
-                v-if="isAdmin"
                 class="pull-right"
                 type="danger"
                 size="mini"
@@ -110,6 +107,7 @@
         :show="showEditBusiness"
         :id-business="selectedId"
         @handleClose="handleCloseEditBusiness"
+        @handleDelete="handleDeleteBusiness"
       />
     </el-card>
   </div>
@@ -183,10 +181,18 @@ export default {
       this.editBusinessKey = this.editBusinessKey + 1;
     },
     handleDelete(id, code, sector, field) {
-      // show confirmation popup
+      // delete from LIST
       this.showConfirmation = true;
       this.selectedId = id;
       this.confirmMessage = 'ingin menghapus KBLI: ' + code + ' ' + sector + ' ' + field;
+      this.warningMessage = 'Menghapus KBLI akan berdampak luas pada sistem, khususnya terkait Kegiatan.';
+    },
+    handleDeleteBusiness(business) {
+      // delete from EDIT form
+      this.showEditBusiness = false;
+      this.showConfirmation = true;
+      this.selectedId = business.id;
+      this.confirmMessage = 'ingin menghapus KBLI: ' + business.kbli_code + ' ' + business.sector + ' ' + business.value;
       this.warningMessage = 'Menghapus KBLI akan berdampak luas pada sistem, khususnya terkait Kegiatan.';
     },
     handleSubmitConfirmation(id) {
