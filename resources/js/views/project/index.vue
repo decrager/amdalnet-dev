@@ -1,6 +1,14 @@
 <template>
   <div class="app-container" style="padding: 24px">
+
     <el-card>
+      <el-tabs v-if="couldCreateProject && !isScoping && !isDigiWork" v-model="sectionHeader" type="card">
+        <el-tab-pane
+          key="tab-penapisan"
+          label="Kegiatan Penapisan"
+          name="list-penapisan"
+        />
+      </el-tabs>
       <div class="filter-container">
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col>
@@ -36,6 +44,7 @@
         highlight-current-row
         :header-cell-style="{ background: '#216221', color: 'white' }"
         style="width: 100%"
+        @sort-change="onTableSort"
       >
         <el-table-column type="expand" class="row-detail">
           <template slot-scope="scope">
@@ -55,7 +64,7 @@
                     <i class="fa fa-times" />
                   </a>
                 </span>
-                <span class="description">{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+                <span class="description">{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }}
                 </span>
               </div>
               <span class="action pull-right">
@@ -267,6 +276,15 @@
             }}</span> -->
           </template>
         </el-table-column>
+        <el-table-column
+          prop="date"
+          label="Tanggal"
+          sortable="custom"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="Nama Kegiatan" min-width="200">
           <template slot-scope="scope">
             <span>{{ scope.row.project_title }}</span>
@@ -334,6 +352,7 @@ export default {
   data() {
     return {
       loading: false,
+      sectionHeader: 'list-penapisan',
       userInfo: {
         roles: [],
       },
@@ -345,6 +364,8 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        orderBy: 'id',
+        order: 'DESC',
       },
       provinceOptions: [],
       cityOptions: [],
@@ -753,6 +774,19 @@ export default {
           filename: projectName.data,
         },
       });
+    },
+    // sorting
+    onTableSort(sort) {
+      switch (sort.prop) {
+        case 'date':
+          this.listQuery.orderBy = 'created_at';
+          console.log(this.listQuery);
+
+          break;
+        default:
+      }
+      this.listQuery.order = (sort.order === 'ascending') ? 'ASC' : 'DESC';
+      this.handleFilter();
     },
   },
 };
