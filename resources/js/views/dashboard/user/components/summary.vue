@@ -77,7 +77,7 @@ export default {
         { label: 'Adendum UKL-UPL', value: 0 },
       ],*/
       // summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 0, addendum_amdal: 0 },
-      summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum: 0 },
+      summary: { total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0 },
 
     };
   },
@@ -104,11 +104,14 @@ export default {
   },
   methods: {
     async getCount() {
-      const param = {
-        searchMode: this.isInitiator ? 0 : (this.isFormulator ? 1 : 2),
-        initiatorId: this.user.id,
-      };
-      console.log('getCount: ', this.user);
+      let param = null;
+      if (this.isInitiator) {
+        param = { initiatorId: this.user.id };
+      }
+      if (this.isFormulator) {
+        param = { formulatorId: this.user.id };
+      }
+
       await countResource.list(param).then((res) => {
         let total = 0;
         let doc = res.find((e) => e.required_doc === 'AMDAL');
@@ -144,6 +147,7 @@ export default {
         }
 
         this.summary.total = total;
+        console.log('getCount: ', this.summary);
       }).finally();
     },
   },
