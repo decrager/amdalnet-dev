@@ -4,23 +4,19 @@ const businessRoutes = {
   path: '/business',
   component: Layout,
   redirect: '/business',
-  alwaysShow: true,
-  hidden: true,
-  meta: { title: 'KBLI', icon: 'zip' },
+  meta: { title: 'masterKbli', icon: 'zip', roles: ['admin-standard'] },
   children: [
     {
       path: '',
       component: () => import('@/views/business/index'),
       name: 'ListBusiness',
-      hidden: false,
-      meta: { title: 'Master KBLI', icon: 'documentation' },
+      meta: { title: 'masterKbli', icon: 'documentation', roles: ['admin-standard'] },
     },
     {
       path: ':id(\\d+)',
       component: () => import('@/views/business/param/index'),
       name: 'ListBusinessEnvParam',
-      hidden: false,
-      meta: { title: 'Master Parameter KBLI', icon: 'documentation' },
+      meta: { title: 'masterParameterKbli', icon: 'documentation', roles: ['admin-standard'] },
     },
   ],
 };
