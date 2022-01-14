@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Param;
+use App\Http\Resources\ParamResource;
 use Illuminate\Http\Request;
 
 class ParamController extends Controller
@@ -14,7 +15,7 @@ class ParamController extends Controller
      */
     public function index()
     {
-        //
+        return ParamResource::collection(Param::all());
     }
 
     /**

@@ -34,6 +34,7 @@ import flowchartRoutes from './modules/flowchart';
 import scopingRoutes from './modules/scoping';
 import screeningRoutes from './modules/screening';
 import digWorkRoutes from './modules/digwork';
+import businessRoutes from './modules/business';
 // import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
@@ -265,6 +266,7 @@ export const asyncRoutes = [
   dokumenRoutes,
   errorRoutes,
   flowchartRoutes,
+  businessRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 
