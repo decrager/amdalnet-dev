@@ -55,6 +55,8 @@
   </div>
 </template>
 <script>
+import Resource from '@/api/resource';
+const countResource = new Resource('proposal-count');
 export default {
   name: 'UserSummary',
   props: {
@@ -79,8 +81,71 @@ export default {
 
     };
   },
+  computed: {
+    isFormulator(){
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isInitiator(){
+      return this.$store.getters.roles.includes('initiator');
+    },
+    isExaminer(){
+      return this.$store.getters.roles[0].split('-')[0] === 'examiner';
+    },
+  },
+  watch: {
+    user: function(val) {
+      console.log('user? ', val);
+      this.getCount();
+    },
+  },
   mounted() {
     this.isLoading = false;
+    console.log('user Summary');
+  },
+  methods: {
+    async getCount() {
+      const param = {
+        searchMode: this.isInitiator ? 0 : (this.isFormulator ? 1 : 2),
+        initiatorId: this.user.id,
+      };
+      console.log('getCount: ', this.user);
+      await countResource.list(param).then((res) => {
+        let total = 0;
+        let doc = res.find((e) => e.required_doc === 'AMDAL');
+        if (doc) {
+          this.summary.amdal = doc.total;
+          total = total + doc.total;
+        } else {
+          this.summary.amdal = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'UKL-UPL');
+        if (doc) {
+          this.summary.uklupl = doc.total;
+          total = total + doc.total;
+        } else {
+          this.summary.uklupl = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'SPPL');
+        if (doc) {
+          this.summary.sppl = doc.total;
+          total = total + doc.total;
+        } else {
+          this.summary.sppl = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'ADDENDUM');
+        if (doc) {
+          this.summary.addendum = doc.total;
+          total = total + doc.total;
+        } else {
+          this.summary.addendum = 0;
+        }
+
+        this.summary.total = total;
+      }).finally();
+    },
   },
 };
 </script>
