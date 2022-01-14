@@ -58,16 +58,29 @@
     <div style="margin-top: 10px">
       <el-button icon="el-icon-plus" circle @click.prevent="addTableRow" />
     </div>
+    <div style="margin-top: 13px;">
+      <h5>Ringkasan Rekomendasi Kelayakan dari Ahli</h5>
+      <Tinymce v-model="reports.notes" :height="200" />
+    </div>
   </div>
 </template>
 
 <script>
+import Tinymce from '@/components/Tinymce';
+
 export default {
   name: 'DaftarHadir',
+  components: {
+    Tinymce,
+  },
   props: {
     invitations: {
       type: Array,
       default: () => [],
+    },
+    reports: {
+      type: Object,
+      default: () => {},
     },
     loadingtuk: Boolean,
   },
