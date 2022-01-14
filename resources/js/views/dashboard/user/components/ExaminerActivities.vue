@@ -54,7 +54,7 @@
   </el-card>
 </template>
 <script>
-import Resource from '@/api/Resource';
+import Resource from '@/api/resource';
 const activitiesResource = new Resource('latest-activities');
 export default {
   name: 'ExaminerActivities',

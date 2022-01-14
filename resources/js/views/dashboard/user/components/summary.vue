@@ -5,7 +5,7 @@
         <span>Persetujuan</span>
       </div>
       <!-- flexbox -->
-      <el-skeleton v-if="isLoading" :rows="6" />
+      <el-skeleton v-if="isLoading || (summary === null)" :rows="6" />
       <div v-else class="user-summary-cards">
         <!-- -->
         <el-row>
@@ -76,8 +76,8 @@ export default {
         { label: 'Adendum AMDAL', value: 0 },
         { label: 'Adendum UKL-UPL', value: 0 },
       ],*/
-      // summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 0, addendum_amdal: 0 },
-      summary: { total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0 },
+      summary: null, // { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 0, addendum_amdal: 0 },
+      // summary: { total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0 },
 
     };
   },
@@ -104,6 +104,7 @@ export default {
   },
   methods: {
     async getCount() {
+      this.isLoading = true;
       let param = null;
       if (this.isInitiator) {
         param = { initiatorId: this.user.id };
@@ -114,41 +115,48 @@ export default {
 
       await countResource.list(param).then((res) => {
         let total = 0;
+        const summary = {
+          total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0,
+        };
         let doc = res.find((e) => e.required_doc === 'AMDAL');
         if (doc) {
-          this.summary.amdal = doc.total;
+          summary.amdal = doc.total;
           total = total + doc.total;
         } else {
-          this.summary.amdal = 0;
+          summary.amdal = 0;
         }
 
         doc = res.find((e) => e.required_doc === 'UKL-UPL');
         if (doc) {
-          this.summary.uklupl = doc.total;
+          summary.uklupl = doc.total;
           total = total + doc.total;
         } else {
-          this.summary.uklupl = 0;
+          summary.uklupl = 0;
         }
 
         doc = res.find((e) => e.required_doc === 'SPPL');
         if (doc) {
-          this.summary.sppl = doc.total;
+          summary.sppl = doc.total;
           total = total + doc.total;
         } else {
-          this.summary.sppl = 0;
+          summary.sppl = 0;
         }
 
         doc = res.find((e) => e.required_doc === 'ADDENDUM');
         if (doc) {
-          this.summary.addendum = doc.total;
+          summary.addendum = doc.total;
           total = total + doc.total;
         } else {
-          this.summary.addendum = 0;
+          summary.addendum = 0;
         }
 
-        this.summary.total = total;
+        summary.total = total;
+        this.summary = summary;
+        this.isLoading = false;
         console.log('getCount: ', this.summary);
-      }).finally();
+      }).finally((f) => {
+        this.isLoading = false;
+      });
     },
   },
 };
