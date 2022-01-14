@@ -55,6 +55,8 @@
   </div>
 </template>
 <script>
+import Resource from '@/api/resource';
+const countResource = new Resource('proposal-count');
 export default {
   name: 'UserSummary',
   props: {
@@ -75,12 +77,79 @@ export default {
         { label: 'Adendum UKL-UPL', value: 0 },
       ],*/
       // summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 0, addendum_amdal: 0 },
-      summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum: 0 },
+      summary: { total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0 },
 
     };
   },
+  computed: {
+    isFormulator(){
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isInitiator(){
+      return this.$store.getters.roles.includes('initiator');
+    },
+    isExaminer(){
+      return this.$store.getters.roles[0].split('-')[0] === 'examiner';
+    },
+  },
+  watch: {
+    user: function(val) {
+      console.log('user? ', val);
+      this.getCount();
+    },
+  },
   mounted() {
     this.isLoading = false;
+    console.log('user Summary');
+  },
+  methods: {
+    async getCount() {
+      let param = null;
+      if (this.isInitiator) {
+        param = { initiatorId: this.user.id };
+      }
+      if (this.isFormulator) {
+        param = { formulatorId: this.user.id };
+      }
+
+      await countResource.list(param).then((res) => {
+        let total = 0;
+        let doc = res.find((e) => e.required_doc === 'AMDAL');
+        if (doc) {
+          this.summary.amdal = doc.total;
+          total = total + doc.total;
+        } else {
+          this.summary.amdal = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'UKL-UPL');
+        if (doc) {
+          this.summary.uklupl = doc.total;
+          total = total + doc.total;
+        } else {
+          this.summary.uklupl = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'SPPL');
+        if (doc) {
+          this.summary.sppl = doc.total;
+          total = total + doc.total;
+        } else {
+          this.summary.sppl = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'ADDENDUM');
+        if (doc) {
+          this.summary.addendum = doc.total;
+          total = total + doc.total;
+        } else {
+          this.summary.addendum = 0;
+        }
+
+        this.summary.total = total;
+        console.log('getCount: ', this.summary);
+      }).finally();
+    },
   },
 };
 </script>

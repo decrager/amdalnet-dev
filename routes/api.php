@@ -29,6 +29,7 @@ use App\Http\Controllers\TrackingDocumentController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PeraturanController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -326,3 +327,6 @@ Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index'
 // dpdph master-detail
 Route::get('impacts', [ImpactIdentificationController::class, 'getImpacts']);
 Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
+// dashboard
+Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
+Route::get('latest-activities', [DashboardController::class, 'latestActivities']);

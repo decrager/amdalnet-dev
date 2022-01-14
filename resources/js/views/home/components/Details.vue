@@ -348,7 +348,7 @@ export default {
         id_card_number: [{ required: true, message: 'NIK wajib diisi' }, { type: 'number', message: 'NIK berupa angka' }],
         email: [
           { required: true, message: 'Alamat email wajib diisi', trigger: 'blur' },
-          { type: 'email', message: 'Format alamat email harus benar', trigger: ['blur', 'change'] }],
+          { type: 'email', message: 'Format alamat email tidak benar', trigger: ['blur', 'change'] }],
         phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
       },
       responders: [],

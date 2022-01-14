@@ -54,19 +54,45 @@
   </el-card>
 </template>
 <script>
+import Resource from '@/api/Resource';
+const activitiesResource = new Resource('latest-activities');
 export default {
   name: 'ExaminerActivities',
   data(){
     return {
-      list: [
+      list: [],
+      /* list: [
         { registration_no: '1613620053CT2021', title: 'Kegiatan Pengembangan Laporan Kaliberau Dalam, Blok Sakakemang', initiator: 'PT Pembangkit Tenaga', required_doc: 'AMDAL', location: 'Sumatera Selatan, Kab. Musi Banyuasin', stage: 'syarat administrasi' },
         { registration_no: '3453620092CT2021', title: 'Instalasi Pengolahan Limbah B3', initiator: 'PLLI', required_doc: 'AMDAL', location: 'Jawa Barat, Kab. Bekasi', stage: 'Andal' },
         { registration_no: '5432620092CT2021', title: 'Budidaya Ternak Sapi', initiator: 'PT Budaya Sejahtera', required_doc: 'AMDAL', location: 'Jawa Tengah, Kota Purwokerto', stage: 'Andal' },
         { registration_no: '0928120092CT2021', title: 'Pembangunan Pabrik Semen', initiator: 'PT Semenku', required_doc: 'AMDAL', location: 'Jawa Timur, Kab. Gresik', stage: 'Andal' },
         { registration_no: '8582020092CT2021', title: 'Perkebunan Kelapa Sawit ', initiator: 'PT Kelapa Maju', required_doc: 'AMDAL', location: 'Kalimantan Selatan, Kota Pontianak', stage: 'Andal' },
-      ],
+      ],*/
 
     };
+  },
+  mounted(){
+    this.getData();
+  },
+  methods: {
+    async getData() {
+      await activitiesResource.list().then((res) => {
+        if (res.data){
+          const act = [];
+          res.data.forEach(d => {
+            act.push({
+              registration_no: d.registration_no,
+              title: d.project_title,
+              initiator: d.applicant,
+              required_doc: d.required_doc,
+              location: d.address[0].prov + ', ' + d.address[0].district,
+              stage: '?' });
+          });
+          this.list = act;
+        }
+      }).finally();
+    },
+
   },
 
 };
