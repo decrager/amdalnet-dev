@@ -154,8 +154,7 @@ export default {
   },
   computed: {
     isAdmin() {
-      return this.userInfo.roles.includes('admin');
-      // return true; // for testing only
+      return this.userInfo.roles.includes('admin-standard');
     },
   },
   async created() {
