@@ -47,7 +47,7 @@ class BusinessController extends Controller
             ->where(
                 function ($query) use ($request) {
                     return $request->searchField ? 
-                        $query->where('business.value', 'ilike', $request->searchField . '%') : '';
+                        $query->where('business.value', 'ilike', '%' . $request->searchField . '%') : '';
                 }
             )
             ->paginate($request->limit);

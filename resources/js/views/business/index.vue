@@ -170,7 +170,8 @@ export default {
     handleFilter() {
       this.getFilteredData(this.listQuery);
     },
-    handleDetail() {
+    handleDetail(id) {
+      this.$router.push({ path: '/business/' + id });
     },
     handleCreate() {
       this.showCreateBusiness = true;
