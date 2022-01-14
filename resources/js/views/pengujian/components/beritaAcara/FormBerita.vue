@@ -1,18 +1,12 @@
 <template>
   <el-form label-position="top" label-width="200px" style="max-width: 100%">
     <el-row :gutter="32">
-      <el-col :sm="12" :md="12">
-        <el-form-item label="Tanggal Rapat">
-          <el-date-picker
-            v-model="reports.meeting_date"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="Pilih tanggal"
-            style="width: 100%"
-          />
+      <el-col :sm="24" :md="24">
+        <el-form-item label="Nama Usaha/Kegiatan">
+          <el-input v-model="reports.project_name" readonly />
         </el-form-item>
       </el-col>
-      <el-col :sm="12" :md="12">
+      <el-col :sm="24" :md="24">
         <el-form-item label="Pemrakarsa">
           <el-select
             v-model="reports.id_initiator"
@@ -30,6 +24,32 @@
         </el-form-item>
       </el-col>
       <el-col :sm="12" :md="12">
+        <el-form-item label="Penanggung Jawab">
+          <el-input v-model="reports.person_responsible" readonly />
+        </el-form-item>
+      </el-col>
+      <el-col :sm="12" :md="12">
+        <el-form-item label="Jabatan">
+          <el-input v-model="reports.position" />
+        </el-form-item>
+      </el-col>
+      <el-col :sm="24" :md="24">
+        <el-form-item label="Tempat Rapat">
+          <el-input v-model="reports.location" />
+        </el-form-item>
+      </el-col>
+      <el-col :sm="12" :md="12">
+        <el-form-item label="Tanggal Rapat">
+          <el-date-picker
+            v-model="reports.meeting_date"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="Pilih tanggal"
+            style="width: 100%"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :sm="12" :md="12">
         <el-form-item label="Waktu Rapat">
           <el-time-picker
             v-model="reports.meeting_time"
@@ -40,22 +60,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :sm="12" :md="12">
-        <el-form-item label="Penanggung Jawab">
-          <el-input v-model="reports.person_responsible" readonly />
-        </el-form-item>
-      </el-col>
-      <el-col :sm="12" :md="12">
-        <el-form-item label="Tempat Rapat">
-          <el-input v-model="reports.location" />
-        </el-form-item>
-      </el-col>
-      <el-col :sm="12" :md="12">
-        <el-form-item label="Jabatan">
-          <el-input v-model="reports.position" />
-        </el-form-item>
-      </el-col>
-      <el-col :sm="12" :md="12">
+      <el-col :sm="24" :md="24">
         <el-form-item label="Tim Uji Kelayakan">
           <el-select
             v-model="reports.id_feasibility_test_team"
@@ -70,11 +75,6 @@
               :value="item.id"
             />
           </el-select>
-        </el-form-item>
-      </el-col>
-      <el-col :sm="12" :md="12">
-        <el-form-item label="Nama Usaha/Kegiatan">
-          <el-input v-model="reports.project_name" readonly />
         </el-form-item>
       </el-col>
     </el-row>
