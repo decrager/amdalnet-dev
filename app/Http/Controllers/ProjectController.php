@@ -37,7 +37,9 @@ class ProjectController extends Controller
             return Project::with('feasibilityTest')->whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
-            return Project::with(['address', 'listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
+            return Project::with(['address', 'listSubProject', 'feasibilityTest'])
+            ->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
+            ->where(function ($query) use ($request) {
                 return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
             })->where(
                 function ($query) use ($request) {
@@ -53,9 +55,28 @@ class ProjectController extends Controller
             })
             ->where(
                 function ($query) use ($request) {
-                    return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
+                    if ($request->search){
+                        $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
+                        ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
+                        ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
+                        ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
+                        ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
+                        ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
+                        ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                        ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                        ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                    }
+                    return $query;
                 }
-            )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
+            )
+            ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+            ->leftJoin('users', 'initiators.email', '=', 'users.email')
+            ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
+            ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
+            ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
+            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
+
         } else if ($request->registration_no) {
             return ProjectResource::collection(Project::select('*')
                 ->where('registration_no', $request->registration_no)
@@ -82,9 +103,28 @@ class ProjectController extends Controller
         })
         ->where(
             function ($query) use ($request) {
-                return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
+                //return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
+
+                if ($request->search){
+                    $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
+                    ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
+                    ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
+                    ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
+                    ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
+                    ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
+                    ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%');
+                    //->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                    //->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                }
+                return $query;
             }
-        )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
+        )
+        ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+        ->leftJoin('users', 'initiators.email', '=', 'users.email')
+        ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
+        ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
+        ->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
+ 
     }
 
     /**
