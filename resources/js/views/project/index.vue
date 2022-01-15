@@ -17,7 +17,7 @@
           </el-col>
           <el-col :span="10">
             <el-input v-model="listQuery.search" prefix-icon="el-icon-search" placeholder="Pencarian" :readonly="loading" @keyup.enter.native="handleFilter">
-              <el-button slot="append" type="danger" icon="el-icon-close" :disabled="loading" @click="resetSearch" />
+              <el-button slot="append" icon="el-icon-close" :disabled="loading" @click="resetSearch" />
             </el-input>
 
             <!-- <el-button
@@ -280,8 +280,9 @@
         >
           <template slot-scope="scope">
             <div style="line-height: 1.1em;">
-              <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}</span><br>
-              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span>
+              <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}</span>
+              <!-- <br>
+              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span> -->
             </div>
           </template>
         </el-table-column>
