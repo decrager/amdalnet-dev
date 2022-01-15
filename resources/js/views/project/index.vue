@@ -296,8 +296,8 @@
 
           <template slot="header">
             <el-select
-
               v-model="listQuery.filters"
+              class="filter-header"
               clearable
               placeholder="Dokumen"
               @change="onDocTypeFilter"

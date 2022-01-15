@@ -87,6 +87,20 @@ div.el-tabs__item.is-active {
   }
 }
 
+.el-select.filter-header {
+  .el-input {
+    .el-select__caret.el-input__icon.el-icon-circle-close{
+      color: orangered !important;
+      font-size: 150% !important;
+    }
+  }
+
+  ::placeholder {
+    color:#216221 !important;
+    font-weight:bold;
+  }
+
+}
 
 //collapse
 .el-collapse-item__header {
