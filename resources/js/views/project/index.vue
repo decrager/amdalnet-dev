@@ -265,7 +265,7 @@
         </el-table-column>
         <el-table-column align="left" label="No. Registrasi" width="150">
           <template slot-scope="scope">
-            <span>{{ scope.row.registration_no }}</span>
+            <span>{{ scope.row.registration_no ? scope.row.registration_no.toUpperCase() : '' }}</span>
           <!-- <span>{{
               scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
             }}</span> -->
@@ -279,7 +279,10 @@
           width="150px"
         >
           <template slot-scope="scope">
-            {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+            <div style="line-height: 1.1em;">
+              <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}</span><br>
+              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="Nama Kegiatan" min-width="200">
@@ -803,8 +806,10 @@ export default {
     },
     onDocTypeFilter(val, col, row){
       console.log('filtering doctype!', val);
-      this.listQuery.page = 1;
+
       this.listQuery.filters = val;
+      this.listQuery.page = 1;
+
       this.handleFilter();
     },
     onClearFilter(key){
