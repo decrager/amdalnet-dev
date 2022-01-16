@@ -51,7 +51,7 @@ export function getLanguage() {
       return locale;
     }
   }
-  return 'en';
+  return 'id';
 }
 const i18n = new VueI18n({
   // set locale
