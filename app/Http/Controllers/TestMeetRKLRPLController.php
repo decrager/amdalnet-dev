@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Entity\ExpertBankTeam;
-use App\Entity\ExpertBankTeamMember;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\FormulatorTeam;
@@ -14,8 +12,11 @@ use App\Entity\Project;
 use App\Entity\TestingMeeting;
 use App\Entity\TestingMeetingInvitation;
 use App\Entity\TestingVerification;
+use App\Laravue\Models\User;
+use App\Notifications\MeetingInvitation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class TestMeetRKLRPLController extends Controller
@@ -27,6 +28,10 @@ class TestMeetRKLRPLController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->meetingInvitation) {
+            return $this->meetingInvitation($request->idProject);
+        }
+
         if($request->dokumen) {
             return $this->dokumen($request->idProject);
         }
@@ -100,6 +105,39 @@ class TestMeetRKLRPLController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->invitation) {
+            $receiver = [];
+            $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
+            if($meeting) {
+                $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
+                foreach($invitations as $i) {
+                    if($i->id_feasibility_test_team_member) {
+                        $member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
+                        $email = null;
+                        if($member->expertBank) {
+                            $email = $member->expertBank->email;
+                        } else if($member->lukMember) {
+                            $email = $member->lukMember->email;
+                        }
+
+                        if($email) {
+                            $user = User::where('email', $email)->first();
+                            if($user) {
+                                $receiver[] = $user;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(count($receiver) > 0) {
+                Notification::send($receiver, new MeetingInvitation($meeting));
+                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
+            }
+
+            return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
+        }
+
         if($request->file) {
             $data = $request->all();
             $validator = \Validator::make($data, [
@@ -494,6 +532,119 @@ class TestMeetRKLRPLController extends Controller
             'tim_penyusun' => $tim_penyusun,
             'anggota_penyusun' => $anggota_penyusun,
             'meeting_invitations' => $meeting_invitations
+        ];
+    }
+
+    private function meetingInvitation($id_project)
+    {
+        $project = Project::findOrFail($id_project);
+        $testing_meeting = TestingMeeting::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time')->where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
+        $invitations = TestingMeetingInvitation::where('id_testing_meeting', $testing_meeting->id)->get();
+        Carbon::setLocale('id');
+        
+        $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s', strtotime($testing_meeting->updated_at)))->isoFormat('MMMM Y');
+
+        $project_address = '';
+        if($project->address) {
+            if($project->address->first()) {
+                $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
+            }
+        }
+
+        // Meeting
+        $meeting_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d', strtotime($testing_meeting->meeting_date)))->isoFormat('D, MMMM Y');
+        $meeting_time = date('H:i', strtotime($testing_meeting->meeting_time));
+        $meeting_location = $testing_meeting->location;
+
+        // TUK
+        $authority_big_check = '';
+        $authority = '';
+        $authority_big = '';
+        $tuk_address = '';
+        $ketua_tuk_name = '';
+        $ketua_tuk_nip = '';
+
+
+        if($testing_meeting->id_feasibility_test_team) {
+            $team = FeasibilityTestTeam::find($testing_meeting->id_feasibility_test_team);
+            if($team) {
+                if($team->authority == 'Pusat') {
+                    $authority_big_check = 'PUSAT';
+                    $authority_big = 'PUSAT';
+                    $authority = 'Pusat';
+                } else if($team->authority == 'Provinsi') {
+                    $authority_big_check = 'PROVINSI' . strtoupper($team->provinceAuthority->name);
+                    $authority_big = 'PROVINSI' . strtoupper($team->provinceAuthority->name);
+                    $authority = 'Provinsi ' . ucwords(strtolower($team->provinceAuthority->name)); 
+                } else if($team->authority == 'Kabupaten/Kota') {
+                    $authority_big_check = strtoupper($team->districtAuthority->name);
+                    $authority_big = strtoupper($team->districtAuthority->name);
+                    $authority = ucwords(strtolower($team->districtAuthority->name));
+                }
+
+                $tuk_address = $team->address;
+
+                // KETUA TUK
+                $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $team->id],['position', 'Ketua']])->first();
+                if($ketua_tuk) {
+                    if($ketua_tuk->expertBank) {
+                        $ketua_tuk_name = $ketua_tuk->expertBank->name;
+                    } else if($ketua_tuk->lukMember) {
+                        $ketua_tuk_name = $ketua_tuk->lukMember->name;
+                        $ketua_tuk_nip = $ketua_tuk->lukMember->nip ? 'NIP. ' . $ketua_tuk->lukMember->nip : '';
+                    }
+                }
+
+
+            }
+
+        }
+        
+        $member = [];
+        $ahli = [];
+        
+        foreach($invitations as $i) {
+            if($i->id_feasibility_test_team_member) {
+                $tuk_member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
+                if($tuk_member) {
+                    if($tuk_member->position != 'Ketua') {
+                        if($tuk_member->expertBank) {
+                            $member[] = [
+                                'name' => count($member) + 1 . '. ' . $tuk_member->expertBank->name . ' (Pakar ' . $tuk_member->expertBank->expertise . ')'
+                            ];
+                        } else if($tuk_member->lukMember) {
+                            $member[] = [
+                                'name' => count($member) + 1 . '. ' . $tuk_member->lukMember->name . ', ' . $tuk_member->lukMember->position. ' ' . $tuk_member->lukMember->institution
+                            ];
+                        }
+                    }
+                }
+            } else {
+                if($i->role == 'Tenaga Ahli') {
+                    $member[] = [
+                        'name' => count($ahli) + 1 . '. ' . $i->name
+                    ];
+                }
+            }
+        }
+
+        return [
+            'project_title' => $project->project_title,
+            'project_address' => $project_address,
+            'pemrakarsa' => $project->initiator->name,
+            'pemrakarsa_address' => $project->initiator->address,
+            'docs_date' => $docs_date,
+            'meeting_date' => $meeting_date,
+            'meeting_time' => $meeting_time,
+            'meeting_location' => $meeting_location,
+            'authority_big_check' => $authority_big_check,
+            'authority_big' => $authority_big,
+            'tuk_address' => $tuk_address,
+            'authority' => $authority,
+            'ketua_tuk_name' => $ketua_tuk_name,
+            'ketua_tuk_nip' => $ketua_tuk_nip,
+            'tuk_member' => $member,
+            'pakar' => $ahli
         ];
     }
 }

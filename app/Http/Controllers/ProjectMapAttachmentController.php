@@ -266,4 +266,23 @@ class ProjectMapAttachmentController extends Controller
 
         return response()->json($getProjectByGeom);
     }
+
+    public function getMapPdf(Request $request)
+    {
+        $getMapPdf = DB::table('project_map_attachments')
+            ->select('project_map_attachments.id_project', 'project_map_attachments.file_type', 'projects.project_title', 'project_map_attachments.attachment_type', 'project_map_attachments.stored_filename')
+            ->when($request->has('file_type'), function ($query) use ($request) {
+                return $query->where('file_type', '=', $request->file_type);
+            })
+            ->when($request->has('att_type'), function ($query) use ($request) {
+                return $query->where('attachment_type', '=', $request->att_type);
+            })
+            ->when($request->has('id_project'), function ($query) use ($request) {
+                return $query->where('id_project', '=', $request->id_project);
+            })
+            ->leftJoin('projects', 'projects.id', '=', 'project_map_attachments.id_project')
+            ->get();
+
+        return response()->json($getMapPdf);
+    }
 }

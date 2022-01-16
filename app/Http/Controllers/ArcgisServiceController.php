@@ -80,6 +80,7 @@ class ArcgisServiceController extends Controller
             'url_service' => 'required',
             'source' => 'required',
             'organization' => 'required',
+            'name' => 'required',
         ]);
 
         $checkUrl = ArcgisService::where('url_service', '=', $request->url_service)->first();
@@ -104,6 +105,7 @@ class ArcgisServiceController extends Controller
             'url_service' => 'required',
             'source' => 'required',
             'organization' => 'required',
+            'name' => 'required',
         ]);
 
         try {

@@ -86,7 +86,8 @@
           >
             Simpan Perubahan
           </el-button>
-          <el-button type="primary">Kirim Undangan Rapat</el-button>
+          <el-button :loading="loadingInvitationDocx" type="primary" @click="handleDownloadInvitation">Undangan Rapat</el-button>
+          <el-button style="margin-top: 10px;" :loading="loadingSendInvitation" type="primary" @click="sendInvitation">Kirim Undangan Rapat</el-button>
         </div>
         <h5>Daftar Undangan</h5>
         <el-table
@@ -204,6 +205,12 @@ export default {
       loadingDocx: false,
       loadingUpload: false,
       errors: {},
+      loadingSendInvitation: false,
+      docxData: {},
+      invitationDocxData: {},
+      loadingInvitationDocx: false,
+      out: '',
+      outInvitation: '',
     };
   },
   created() {
@@ -280,10 +287,6 @@ export default {
         email: null,
         type: 'other',
         type_member: 'other',
-        docxData: {},
-        loadingDocx: false,
-        loadingUpload: false,
-        out: '',
       });
     },
     capitalize(mySentence) {
@@ -307,6 +310,15 @@ export default {
       });
       this.docxData = data;
       this.exportDocx();
+    },
+    async handleDownloadInvitation() {
+      this.loadingInvitationDocx = true;
+      const data = await undanganRapatResource.list({
+        meetingInvitation: 'true',
+        idProject: this.idProject,
+      });
+      this.invitationDocxData = data;
+      this.exportInvitationDocx();
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
@@ -385,6 +397,49 @@ export default {
         }
       );
     },
+    exportInvitationDocx() {
+      PizZipUtils.getBinaryContent(
+        '/template_undangan_rapat_arr.docx',
+        (error, content) => {
+          if (error) {
+            throw error;
+          }
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          doc.render({
+            project_title: this.invitationDocxData.project_title,
+            project_address: this.invitationDocxData.project_address,
+            pemrakarsa: this.invitationDocxData.pemrakarsa,
+            pemrakarsa_address: this.invitationDocxData.pemrakarsa_address,
+            docs_date: this.invitationDocxData.docs_date,
+            meeting_date: this.invitationDocxData.meeting_date,
+            meeting_time: this.invitationDocxData.meeting_time,
+            meeting_location: this.invitationDocxData.meeting_location,
+            authority_big_check: this.invitationDocxData.authority_big_check,
+            authority_big: this.invitationDocxData.authority_big,
+            tuk_address: this.invitationDocxData.tuk_address,
+            authority: this.invitationDocxData.authority,
+            ketua_tuk_name: this.invitationDocxData.ketua_tuk_name,
+            ketua_tuk_nip: this.invitationDocxData.ketua_tuk_nip,
+            tuk_member: this.invitationDocxData.tuk_member,
+            pakar: this.invitationDocxData.pakar,
+          });
+
+          const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType:
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          });
+
+          this.outInvitation = out;
+          saveAs(this.outInvitation, `${this.invitationDocxData.project_title.toLowerCase()}.docx`);
+          this.loadingInvitationDocx = false;
+        }
+      );
+    },
     async handleUploadChange(file, fileList) {
       this.loadingUpload = true;
       const formData = new FormData();
@@ -401,6 +456,35 @@ export default {
           duration: 5 * 1000,
         });
       }
+    },
+    async sendInvitation() {
+      this.loadingSendInvitation = true;
+      try {
+        const response = await undanganRapatResource.store({
+          invitation: 'true',
+          idProject: this.idProject,
+        });
+        if (response.error === 0) {
+          this.$message({
+            message: 'Undangan Berhasil Dikirim',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        } else if (response.error === 1) {
+          this.$message({
+            message: 'Undangan Gagal Dikirim',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+        }
+      } catch (error) {
+        this.$message({
+          message: 'Undangan Gagal Dikirim',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      }
+      this.loadingSendInvitation = false;
     },
   },
 };

@@ -105,6 +105,8 @@ export default {
     screeningProject: 'Penapisan',
     digWorkProject: 'Digital Workspace',
     scopingProject: 'Asistensi Pelingkupan',
+    masterKbli: 'Master KBLI',
+    masterParameterKbli: 'Master Parameter KBLI',
   },
   navbar: {
     logOut: 'Keluar',

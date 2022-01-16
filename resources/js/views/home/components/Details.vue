@@ -105,6 +105,8 @@
       <div class="wrapInDetail wrapInDetailBottom">
         <el-form
           ref="form"
+          :model="form"
+          :rules="rules"
           enctype="multipart/form-data"
           @submit.prevent="saveFeedback"
         >
@@ -114,13 +116,13 @@
               <h3 style="text-align:center; color:#fff;">Saran, Pendapat, dan Tanggapan untuk Kegiatan</h3>
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <el-form-item>
+                  <el-form-item prop="name">
                     <div class="text-white fw-bold">Nama</div>
                     <el-input v-model="form.name" placeholder="Nama" />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item>
+                  <el-form-item prop="peran">
                     <div class="text-white fw-bold">Peran</div>
                     <el-form-item label="">
                       <el-select v-model="form.peran" placeholder="Pilih Peran" @change="handleChangeModal">
@@ -137,28 +139,31 @@
               </el-row>
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <el-form-item>
+                  <el-form-item prop="id_card_number">
                     <div class="text-white fw-bold">NIK</div>
-                    <el-input v-model="form.id_card_number" placeholder="Nik" />
+                    <el-input v-model.number="form.id_card_number" placeholder="NIK" />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item>
+                  <el-form-item
+                    prop="phone"
+                  >
                     <div class="text-white fw-bold">No. Telepon/Handphone</div>
                     <el-input
-                      v-model="form.phone"
+                      v-model.number="form.phone"
                       placeholder="No. Telepon/Handphone"
-                    />
+                    >
+                      <template slot="prepend">+62</template>
+                    </el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row :gutter="20">
                 <el-col :span="24">
-                  <el-form-item>
+                  <el-form-item prop="email" label="">
                     <div class="text-white fw-bold">Email</div>
                     <el-input
                       v-model="form.email"
-                      type="email"
                       placeholder="Email"
                     />
                   </el-form-item>
@@ -166,11 +171,11 @@
               </el-row>
             </el-col>
             <el-col :span="12">
-              <el-form-item>
+              <el-form-item prop="file">
                 <div style="margin-top:2rem; display:block;">
                   <div class="text-white fw-bold" style="text-align:center">Unggah Foto Selfie</div>
-                  <div style="width:200px; height:200px; background:#d0d0d0 none repeat scroll 0% 0%; display:block; margin:auto; border-radius:50%;line-height: 307px;text-align: center;">
-                    <img v-if="url" :src="url" style="width:60%;height: 60%;object-fit: cover;">
+                  <div style="width:200px; height:200px; background:#d0d0d0 none repeat scroll 0% 0%; display:block; margin:auto; line-height: 307px;text-align: center;">
+                    <img v-if="url" :src="url" style="width:96%;height: 96%;object-fit: cover;">
                   </div>
                   <div style="text-align:center;">
                     <input
@@ -205,14 +210,16 @@
                       placeholder="Nilai Lokal  yang Berpotensi akan Terkena Dampak"
                     />
                   </el-form-item>
-                  <h3 class="fw-bold text-white">Rating</h3>
-                  <div class="text-white fw-bold" style="margin-bottom:1rem">
-                    Tingkat kesetujuan Anda terhadap Kegiatan/Proyek Ini
+                  <!-- <h3 class="fw-bold text-white">Rating</h3> -->
+
+                  <div class="text-white fw-bold" style="margin-top:2em; margin-bottom: 1em;">
+                    Tingkat Kekhawatiran atau Harapan terhadap Kegiatan Ini
+                    <!-- Tingkat kesetujuan Anda terhadap Kegiatan/Proyek Ini -->
                   </div>
                   <div style="display:flex">
                     <div class="rating">
                       <span>Khawatir </span>
-                      <el-rate v-model="ratings" @change="handleChange(ratings)" />
+                      <el-rate v-model="ratings" style="height:300px;" @change="handleChange(ratings)" />
                       <span> Harapan</span>
                     </div>
                   </div>
@@ -278,7 +285,7 @@
               <el-button
                 id="kirim"
                 type="primary"
-                @click="saveFeedback()"
+                @click="handleSubmit()"
               >Kirim</el-button>
             </div>
           </el-col>
@@ -334,6 +341,15 @@ export default {
         localImpact: null,
         comunityType: [],
         comunityGender: null,
+      },
+      rules: {
+        name: [{ required: true, message: 'Nama wajib diisi', trigger: 'blur' }],
+        peran: [{ required: true, message: 'Peran wajib diisi', trigger: 'blur' }],
+        id_card_number: [{ required: true, message: 'NIK wajib diisi' }, { type: 'number', message: 'NIK berupa angka' }],
+        email: [
+          { required: true, message: 'Alamat email wajib diisi', trigger: 'blur' },
+          { type: 'email', message: 'Format alamat email tidak benar', trigger: ['blur', 'change'] }],
+        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
       },
       responders: [],
       errorMessage: null,
@@ -451,51 +467,67 @@ export default {
       this.photo_filepath = this.$refs.file.files[0];
       this.url = URL.createObjectURL(this.$refs.file.files[0]);
     },
-    async saveFeedback() {
-      if (this.form.peran === 1 && this.form.comunityType.length === 0 && this.form.comunityGender === null) {
-        this.centerDialogVisible = true;
-      } else {
-        this.centerDialogVisible = false;
-        const formData = new FormData();
-        formData.append('photo_filepath', this.photo_filepath);
-        formData.append('name', this.form.name);
-        formData.append('id_card_number', this.form.id_card_number);
-        formData.append('phone', this.form.phone);
-        formData.append('email', this.form.email);
-        formData.append('responder_type_id', this.form.peran);
-        formData.append('concern', this.form.concern);
-        formData.append('expectation', this.form.expectation);
-        formData.append('rating', this.form.rating);
-        formData.append('announcement_id', this.selectedAnnouncement.id);
-        formData.append('environment_condition', this.form.envyCondition);
-        formData.append('local_impact', this.form.localImpact);
-        formData.append('community_type', this.form.comunityType);
-        formData.append('community_gender', this.form.comunityGender);
-
-        _.each(this.formData, (value, key) => {
-          formData.append(key, value);
-        });
-
-        const headers = { 'Content-Type': 'multipart/form-data' };
-        await axios
-          .post('api/feedbacks', formData, { headers })
-          .then((data) => {
-            this.$message({
-              type: 'success',
-              message: 'Successfully create a feedback',
-              duration: 5 * 1000,
-            });
-            this.$emit('handleSetTabs', 'TABS');
-            this.getAnnouncement();
-          })
-          .catch((error) => {
-            this.errorMessage = error.message;
-            this.$message({
-              type: 'error',
-              message: error.message,
-              duration: 5 * 1000,
-            });
+    handleSubmit() {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          this.saveFeedback();
+        } else {
+          this.$message({
+            type: 'warning',
+            message: 'Masukan dalam Formulir Tanggapan tidak lengkap',
+            duration: 5 * 1000,
           });
+          return false;
+        }
+      });
+    },
+    async saveFeedback() {
+      if (this.$) {
+        if (this.form.peran === 1 && this.form.comunityType.length === 0 && this.form.comunityGender === null) {
+          this.centerDialogVisible = true;
+        } else {
+          this.centerDialogVisible = false;
+          const formData = new FormData();
+          formData.append('photo_filepath', this.photo_filepath);
+          formData.append('name', this.form.name);
+          formData.append('id_card_number', this.form.id_card_number);
+          formData.append('phone', this.form.phone);
+          formData.append('email', this.form.email);
+          formData.append('responder_type_id', this.form.peran);
+          formData.append('concern', this.form.concern);
+          formData.append('expectation', this.form.expectation);
+          formData.append('rating', this.form.rating);
+          formData.append('announcement_id', this.selectedAnnouncement.id);
+          formData.append('environment_condition', this.form.envyCondition);
+          formData.append('local_impact', this.form.localImpact);
+          formData.append('community_type', this.form.comunityType);
+          formData.append('community_gender', this.form.comunityGender);
+
+          _.each(this.formData, (value, key) => {
+            formData.append(key, value);
+          });
+
+          const headers = { 'Content-Type': 'multipart/form-data' };
+          await axios
+            .post('api/feedbacks', formData, { headers })
+            .then((data) => {
+              this.$message({
+                type: 'success',
+                message: 'Successfully create a feedback',
+                duration: 5 * 1000,
+              });
+              this.$emit('handleSetTabs', 'TABS');
+              this.getAnnouncement();
+            })
+            .catch((error) => {
+              this.errorMessage = error.message;
+              this.$message({
+                type: 'error',
+                message: error.message,
+                duration: 5 * 1000,
+              });
+            });
+        }
       }
     },
     async getResponderType() {

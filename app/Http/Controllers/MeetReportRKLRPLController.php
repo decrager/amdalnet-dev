@@ -143,6 +143,7 @@ class MeetReportRKLRPLController extends Controller
         $report->id_feasibility_test_team = $data['id_feasibility_test_team'];
         $report->project_name = $data['project_name'];
         $report->id_initiator = $data['id_initiator'];
+        $report->notes = $data['notes'];
         $report->save();
 
         // Delete existing invitations
@@ -282,7 +283,8 @@ class MeetReportRKLRPLController extends Controller
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
             'id_feasibility_test_team' => $meeting->id_feasibility_test_team,
             'project_name' => $meeting->project->project_title,
-            'invitations' => $invitations
+            'invitations' => $invitations,
+            'notes' => null
         ];
 
         return $data;
@@ -350,160 +352,119 @@ class MeetReportRKLRPLController extends Controller
             'expert_bank_team_id' => $report->expert_bank_team_id,
             'id_feasibility_test_team' => $report->id_feasibility_test_team,
             'project_name' => $report->project->project_title,
-            'invitations' => $invitations
+            'invitations' => $invitations,
+            'notes' => $report->notes
         ];
 
         return $data;
     }
 
     private function getDocs($id_project) {
-        Carbon::setLocale('id');
-        $isExist = MeetingReport::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->count();
         $project = Project::findOrFail($id_project);
-        $report = null;
+        $meeting = MeetingReport::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes', 'position')->where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
+        $invitations = MeetingReportInvitation::where('id_meeting_report', $meeting->id)->get();
+        Carbon::setLocale('id');
+        
+        $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s', strtotime($meeting->updated_at)))->isoFormat('MMMM Y');
 
-        if($isExist > 0) {
-            $report = MeetingReport::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
-        } else {
-            $report = TestingMeeting::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
-        }
-
-        $district = '';
-        $province = '';
-        $ketua_tuk = '';
-        $ketua_tuk_institution = '';
-        $team_member = [];
-
+        $project_address = '';
         if($project->address) {
             if($project->address->first()) {
-                $district = $project->address->first()->district;
-                $province = 'provinsi ' . $project->address->first()->province;
+                $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
             }
         }
 
-        if($report->expert_bank_team_id) {
-            $leader = ExpertBankTeamMember::where([['id_expert_bank_team', $report->expert_bank_team_id],['position', 'Ketua']])->first();
-            if($leader) {
-                $ketua_tuk = $leader->expertBank->name;
-                $ketua_tuk_institution = $leader->expertBank->institution;
-            }
-        }
+        // Meeting
+        $meeting_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d', strtotime($meeting->meeting_date)))->isoFormat('D, MMMM Y');
+        $meeting_time = date('H:i', strtotime($meeting->meeting_time));
+        $meeting_location = $meeting->location;
 
-        if($report->invitations) {
-            if($report->invitations->first()) {
-                $alphabet_order = 'a';
-                foreach($report->invitations as $inv) {
-                    if($inv->id_expert_bank_team_member) {
-                        $member = ExpertBankTeamMember::find($inv->id_expert_bank_team_member);
-                        if($member) {
-                            if($member->position != 'Ketua') {
-                                $team_member[] = [
-                                    'no' => $alphabet_order . '.',
-                                    'name' => $member->expertBank->name . ' (Pakar '. $member->expertBank->expertise . ');'
-                                ];
-                                $alphabet_order++;
-                            }
+        // TUK
+        $authority = '';
+        $authority_big = '';
+        $tuk_address = '';
+        $ketua_tuk_name = '';
+        $ketua_tuk_nip = '';
+        $ketua_tuk_position = '';
+
+
+        if($meeting->id_feasibility_test_team) {
+            $team = FeasibilityTestTeam::find($meeting->id_feasibility_test_team);
+            if($team) {
+                if($team->authority == 'Pusat') {
+                    $authority_big = 'PUSAT';
+                    $authority = 'Pusat';
+                } else if($team->authority == 'Provinsi') {
+                    $authority_big = 'PROVINSI' . strtoupper($team->provinceAuthority->name);
+                    $authority = 'Provinsi ' . ucwords(strtolower($team->provinceAuthority->name)); 
+                } else if($team->authority == 'Kabupaten/Kota') {
+                    $authority_big = strtoupper($team->districtAuthority->name);
+                    $authority = ucwords(strtolower($team->districtAuthority->name));
+                }
+
+                $tuk_address = $team->address;
+
+                // KETUA TUK
+                $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $team->id],['position', 'Ketua']])->first();
+                if($ketua_tuk) {
+                    if($ketua_tuk->expertBank) {
+                        $ketua_tuk_name = $ketua_tuk->expertBank->name;
+                    } else if($ketua_tuk->lukMember) {
+                        $ketua_tuk_name = $ketua_tuk->lukMember->name;
+                        $ketua_tuk_nip = $ketua_tuk->lukMember->nip ? 'NIP. ' . $ketua_tuk->lukMember->nip : '';
+                        $ketua_tuk_position = $ketua_tuk->lukMember->position;
+                    }
+                }
+
+
+            }
+
+        }
+        
+        $member = [];
+        $ahli = [];
+        
+        foreach($invitations as $i) {
+            if($i->id_feasibility_test_team_member) {
+                $tuk_member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
+                if($tuk_member) {
+                    if($tuk_member->position != 'Ketua') {
+                        if($tuk_member->expertBank) {
+                            $member[] = [
+                                'name' => count($member) + 1 . '. ' . $tuk_member->expertBank->name . ' (Pakar ' . $tuk_member->expertBank->expertise . ')'
+                            ];
+                        } else if($tuk_member->lukMember) {
+                            $member[] = [
+                                'name' => count($member) + 1 . '. ' . $tuk_member->lukMember->name . ', ' . $tuk_member->lukMember->position. ' ' . $tuk_member->lukMember->institution
+                            ];
                         }
-                    } else {
-                        $team_member[] = [
-                            'no' => $alphabet_order . '.',
-                            'name' => 'Wakil dari ' . $inv->role . ';'
-                        ];
-                        $alphabet_order++;
                     }
                 }
-            }
-        }
-
-        $ids = [4, 1, 2, 3];
-        $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
-            return array_search($model->getKey(), $ids);
-        });
-
-        // DAMPAK PENTING HIPOTETIK
-        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant', 'study_length_year', 'study_length_month')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
-        $pra_konstruksi = [];
-        $konstruksi = [];
-        $operasi = [];
-        $pasca_operasi = [];
-
-        foreach ($stages as $s) {
-            $total = 1;
-
-            foreach ($impactIdentifications as $imp) {
-                $ronaAwal = '';
-                $component = '';
-
-                // check stages
-                $id_stages = null;
-
-                if ($imp->subProjectComponent) {
-                    if ($imp->subProjectComponent->id_project_stage) {
-                        $id_stages = $imp->subProjectComponent->id_project_stage;
-                    } else {
-                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
-                    }
-
-                    if ($id_stages == $s->id) {
-                        if ($imp->subProjectRonaAwal) {
-                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                        } else {
-                            continue;
-                        }
-                    } else {
-                        continue;
-                    }
-                } else {
-                    continue;
+            } else {
+                if($i->role == 'Tenaga Ahli') {
+                    $member[] = [
+                        'name' => count($ahli) + 1 . '. ' . $i->name
+                    ];
                 }
-
-                $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-
-                $current_stage = strtolower(($s->name));
-                $data = [
-                    'no' => $total . '.',
-                    'dph' => "$changeType $ronaAwal akibat $component",
-                    'batas_waktu' => $imp->study_length_year . ' Tahun ' . $imp->study_length_month . ' Bulan'
-                ];
-
-                if($current_stage == 'pra konstruksi') {
-                    $pra_konstruksi[] = $data;
-                } else if($current_stage == 'konstruksi') {
-                    $konstruksi[] = $data;
-                }  else if($current_stage == 'operasi') {
-                    $operasi[] = $data;
-                } else {
-                    $pasca_operasi[] = $data;
-                }
-
-                $total++;
             }
         }
 
         return [
-            'document_type_big' => 'RENCANA PENGELOLAAN LINGKUNGAN HIDUP DAN RENCANA PEMANTAUAN LINGKUNGAN HIDUP (RKL-RPL)',
-            'document_type' => 'Rencana Pengelolaan Lingkungan Hidup dan Rencana Pemantauan Lingkungan Hidup (RKL-RPL)',
+            'project_title' => $project->project_title,
             'project_title_big' => strtoupper($project->project_title),
-            'project_address_big' => strtoupper($district . ' ' . $province),
+            'pemrakarsa' => $project->initiator->name,
             'pemrakarsa_big' => strtoupper($project->initiator->name),
-            'meeting_date' =>  $report->meeting_date ? Carbon::createFromFormat('Y-m-d', $report->meeting_date)->isoFormat('dddd/D MMMM Y') : '',
-            'meeting_location' => $report->location,
-            'pemrakarsa' => $project->initiator->name,
             'pic' => $project->initiator->pic,
-            'position' => $report->position,
-            'leader' => $ketua_tuk,
-            'team_member' => $team_member,
-            'project_title' => ucwords(strtolower($project->project_title)),
-            'project_address' => ucwords(strtolower($district . ' ' . $province)),
-            'pemrakarsa' => $project->initiator->name,
-            'meeting_lead' => $ketua_tuk,
-            'meeting_lead_institution' => $ketua_tuk_institution,
-            'pra_konstruksi' => $pra_konstruksi,
-            'konstruksi' => $konstruksi,
-            'operasi' => $operasi,
-            'pasca_operasi' => $pasca_operasi 
+            'pic_position' => $meeting->position,
+            'ketua_tuk_position' => $ketua_tuk_position,
+            'authority' => $authority,
+            'authority_big' => $authority_big,
+            'tuk_member' => $member,
+            'notes' => $meeting->notes,
+            'ketua_tuk_name' => $ketua_tuk_name,
+            'meeting_date' => $meeting_date,
+            'meeting_location' => $meeting_location,
+            'year' => date('Y', strtotime($meeting->updated_at))
         ];
-
     }
 }

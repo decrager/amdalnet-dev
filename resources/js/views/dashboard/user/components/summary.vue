@@ -5,7 +5,7 @@
         <span>Persetujuan</span>
       </div>
       <!-- flexbox -->
-      <el-skeleton v-if="isLoading" :rows="6" />
+      <el-skeleton v-if="isLoading || (summary === null)" :rows="6" />
       <div v-else class="user-summary-cards">
         <!-- -->
         <el-row>
@@ -55,6 +55,8 @@
   </div>
 </template>
 <script>
+import Resource from '@/api/resource';
+const countResource = new Resource('proposal-count');
 export default {
   name: 'UserSummary',
   props: {
@@ -74,13 +76,88 @@ export default {
         { label: 'Adendum AMDAL', value: 0 },
         { label: 'Adendum UKL-UPL', value: 0 },
       ],*/
-      // summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 0, addendum_amdal: 0 },
-      summary: { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum: 0 },
+      summary: null, // { total: 18, amdal: 3, uklupl: 5, sppl: 7, addendum_uklupl: 0, addendum_amdal: 0 },
+      // summary: { total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0 },
 
     };
   },
+  computed: {
+    isFormulator(){
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isInitiator(){
+      return this.$store.getters.roles.includes('initiator');
+    },
+    isExaminer(){
+      return this.$store.getters.roles[0].split('-')[0] === 'examiner';
+    },
+  },
+  watch: {
+    user: function(val) {
+      console.log('user? ', val);
+      this.getCount();
+    },
+  },
   mounted() {
     this.isLoading = false;
+    console.log('user Summary');
+  },
+  methods: {
+    async getCount() {
+      this.isLoading = true;
+      let param = null;
+      if (this.isInitiator) {
+        param = { initiatorId: this.user.id };
+      }
+      if (this.isFormulator) {
+        param = { formulatorId: this.user.id };
+      }
+
+      await countResource.list(param).then((res) => {
+        let total = 0;
+        const summary = {
+          total: 0, amdal: 0, uklupl: 0, sppl: 0, addendum: 0,
+        };
+        let doc = res.find((e) => e.required_doc === 'AMDAL');
+        if (doc) {
+          summary.amdal = doc.total;
+          total = total + doc.total;
+        } else {
+          summary.amdal = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'UKL-UPL');
+        if (doc) {
+          summary.uklupl = doc.total;
+          total = total + doc.total;
+        } else {
+          summary.uklupl = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'SPPL');
+        if (doc) {
+          summary.sppl = doc.total;
+          total = total + doc.total;
+        } else {
+          summary.sppl = 0;
+        }
+
+        doc = res.find((e) => e.required_doc === 'ADDENDUM');
+        if (doc) {
+          summary.addendum = doc.total;
+          total = total + doc.total;
+        } else {
+          summary.addendum = 0;
+        }
+
+        summary.total = total;
+        this.summary = summary;
+        this.isLoading = false;
+        console.log('getCount: ', this.summary);
+      }).finally((f) => {
+        this.isLoading = false;
+      });
+    },
   },
 };
 </script>

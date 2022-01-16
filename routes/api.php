@@ -29,6 +29,7 @@ use App\Http\Controllers\TrackingDocumentController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PeraturanController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -196,6 +197,7 @@ Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
 Route::apiResource('business', 'BusinessController');
 Route::apiResource('kbli-env-params', 'BusinessEnvParamController');
+Route::apiResource('business-env-params', 'BusinessEnvParamController');
 Route::apiResource('projects', 'ProjectController');
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
@@ -246,6 +248,7 @@ Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
+Route::get('map-pdf', [ProjectMapAttachmentController::class, 'getMapPdf']);
 Route::get('map-geojson-merge', [ProjectMapAttachmentController::class, 'getMergeGeojson']);
 Route::get('map-geojson', [ProjectMapAttachmentController::class, 'getGeojson']);
 Route::get('projects-geom', [ProjectMapAttachmentController::class, 'getProjectByGeom']);
@@ -325,3 +328,6 @@ Route::get('tracking-document/{id}', [TrackingDocumentController::class, 'index'
 // dpdph master-detail
 Route::get('impacts', [ImpactIdentificationController::class, 'getImpacts']);
 Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
+// dashboard
+Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
+Route::get('latest-activities', [DashboardController::class, 'latestActivities']);

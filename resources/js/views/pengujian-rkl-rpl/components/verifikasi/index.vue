@@ -32,13 +32,14 @@
               <a
                 v-if="scope.row.type === 'download'"
                 :href="scope.row.link"
-                download
+                target="_blank"
+                class="click"
               >
                 {{ formLabel[scope.row.name] }}
               </a>
               <span v-else>
                 <span v-if="isRedirect(scope.row.name)">
-                  <a href="#" @click.prevent="handleRedirect(scope.row.name)">{{
+                  <a href="#" class="click" @click.prevent="handleRedirect(scope.row.name)">{{
                     formLabel[scope.row.name]
                   }}</a>
                 </span>
@@ -46,7 +47,7 @@
                   {{ formLabel[scope.row.name] }}
                   <span v-if="scope.row.name === 'peta'">
                     <li v-for="(link, index) in scope.row.link" :key="index">
-                      <a :href="scope.row.link[index].link" download>
+                      <a :href="scope.row.link[index].link" target="_blank" class="click">
                         {{ scope.row.link[index].name }}
                       </a>
                     </li>
@@ -106,7 +107,7 @@
         <p><b>No Registrasi:</b>  {{ lpjp.reg_no }}</p>
         <p>
           <b>Dokumen Sertifikat:</b>
-          <a :href="lpjp.cert_file" style="color: #216221" download><i class="el-icon-download" /> Download</a>
+          <a :href="lpjp.cert_file" style="color: #216221" target="_blank">Lihat</a>
         </p>
       </div>
       <div v-else-if="penyusunMandiri !== null">
@@ -123,7 +124,7 @@
           <div v-for="(docs, index) in publicConsultationDocs" :key="index">
             <p>
               <b>{{ docs.doc_type }}:</b>
-              <a :href="docs.filepath" style="color: #216221" download><i class="el-icon-download" /> Download</a>
+              <a :href="docs.filepath" style="color: #216221" target="_blank">Lihat</a>
             </p>
           </div>
         </div>
@@ -368,3 +369,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.click {
+  color: #5688e4;
+}
+</style>

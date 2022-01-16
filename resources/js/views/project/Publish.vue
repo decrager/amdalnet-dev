@@ -80,11 +80,11 @@
               />
               <el-table-column
                 prop="district"
-                label="City"
+                label="Kota"
               />
               <el-table-column
                 prop="address"
-                label="address"
+                label="Alamat"
               />
             </el-table>
           </div>
@@ -101,32 +101,6 @@
             <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
             <el-col :span="12">Pusat</el-col></el-row>
-          <!-- <el-row style="padding-bottom: 16px"><el-col :span="12">Pilih Tim Penyusun</el-col>
-          <el-col :span="12">
-            <el-form
-              ref="project"
-              :model="project"
-              label-position="top"
-              label-width="200px"
-              style="max-width: 100%"
-            >
-              <el-form-item prop="type_formulator_team">
-                <el-select
-                  v-model="project.type_formulator_team"
-                  placeholder="Pilih"
-                  :disabled="readonly"
-                >
-                  <el-option
-                    v-for="item in teamOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </el-row> -->
           <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
             <el-col :span="12">
               <el-form
@@ -163,17 +137,6 @@
               @click="handleAddFormulatorTable"
             >+</el-button>
           </el-row>
-        <!-- <el-row style="padding-bottom: 16px">
-          <h2>Tambah Tenaga Ahli</h2>
-          <expert-table
-            :list="listExpertTeam"
-            :loading="false"
-          />
-          <el-button
-            type="primary"
-            @click="handleAddExpertTable"
-          >+</el-button>
-        </el-row> -->
         </div>
       </el-row>
       <div class="dialog-footer">
@@ -187,17 +150,13 @@
 <script>
 import Resource from '@/api/resource';
 import FormulatorTable from './components/formulatorTable.vue';
-// import ExpertTable from './components/expertTable.vue';
-
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const provinceResource = new Resource('provinces');
 const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
-// const supportDocResource = new Resource('support-docs');
 const initiatorByEmailResource = new Resource('initiatorsByEmail');
 const initiatorResource = new Resource('initiators');
-// const formulatorResource = new Resource('formulators');
 const formulatorTeamsResource = new Resource('formulator-teams');
 
 import Map from '@arcgis/core/Map';
@@ -228,6 +187,10 @@ export default {
       type: File,
       default: () => null,
     },
+    mapUploadPdf: {
+      type: File,
+      default: () => null,
+    },
   },
   data() {
     return {
@@ -254,6 +217,7 @@ export default {
       province: null,
       fullLoading: false,
       geomStyles: 1,
+      mapPdf: '',
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -274,23 +238,14 @@ export default {
     getLpjps(){
       return this.$store.getters.lpjps;
     },
-    // getProjectField() {
-    //   const pfield = this.$store.getters.projectFieldOptions;
-    //   console.log(pfield);
-    //   return pfield.filter(e => e.value === this.project.field)[0].label;
-    // },
   },
   async mounted() {
-    console.log(this.project);
     this.fullLoading = true;
     // for step
     this.$store.dispatch('getStep', 1);
-    // await this.getProjectFields();
-    // await this.getKbliEnvParams();
     await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
-    // data table for subproject
     this.setDataTables();
     this.setAddressDataTables();
     this.fullLoading = false;
@@ -301,6 +256,7 @@ export default {
       limit: 1000,
       active: 'true',
     });
+    this.getMapPdf();
   },
   methods: {
     setAddressDataTables(){
@@ -332,8 +288,6 @@ export default {
           hasil: e.result,
         };
       });
-      console.log('main', mainArr);
-      console.log('sup', suppArr);
 
       if (mainArr.length > 0){
         mainArr.unshift({
@@ -350,7 +304,6 @@ export default {
       }
 
       this.tableData = [...mainArr, ...suppArr];
-      console.log('all', this.tableData);
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.scale) {
@@ -374,9 +327,6 @@ export default {
         ],
       ];
     },
-    // async getProjectFields() {
-    //   await this.$store.dispatch('getProjectFields');
-    // },
     loadMap() {
       if (this.readonly === true) {
         const map = new Map({
@@ -535,7 +485,6 @@ export default {
     },
     onFormulatorTypeChange(value){
       this.$store.dispatch('getTeamType', value);
-      console.log(this.$store.getters.teamType);
     },
     async getInitiatorData(){
       if (this.project.id_applicant){
@@ -553,12 +502,10 @@ export default {
     },
     async getKabKotName(id) {
       const data = await districtResource.get(id);
-      console.log(data);
       this.kabkot = data.name;
     },
     async getProvince(id) {
       const data = await provinceResource.get(id);
-      console.log(data);
       this.province = data.name;
     },
     calculatedProjectDoc() {
@@ -621,37 +568,7 @@ export default {
         params: { project: this.project },
       });
     },
-    // async createTimPenyusun(){
-    //   // insert all tim ahli
-    //   const listAhli = [];
-
-    //   await this.listExpertTeam.forEach(element => {
-    //     // make form data because we got file
-    //     const formData = new FormData();
-
-    //     // eslint-disable-next-line no-undef
-    //     _.each(element, (value, key) => {
-    //       formData.append(key, value);
-    //     });
-
-    //     // adding TA for membership_status
-    //     formData.append('membership_status', 'TA');
-
-    //     formulatorResource
-    //       .store(formData)
-    //       .then((response) => {
-    //         this.element = {};
-    //         listAhli.push(response);
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //       });
-    //   });
-
-    //   this.all = [...listAhli, this.listFormulatorTeam];
-    // },
     async createTeam(id){
-      console.log('list tim ahli yang dibuat', this.all);
       // create tim using all list
       const submitData = {
         id_project: id,
@@ -703,15 +620,9 @@ export default {
         }
       });
 
-      console.log(formData);
-
-      // this.$refs.project.validate(valid => {
-      // if (this.project.type_formulator_team) {
       if (this.project.id !== undefined) {
         // update
         projectResource.updateMultipart(this.project.id, formData).then(response => {
-          // const { data } = response;
-          // this.saveSupportDocs(data.id);
           this.$message({
             type: 'success',
             message: 'Project info has been updated successfully',
@@ -726,11 +637,6 @@ export default {
         projectResource
           .store(formData)
           .then((response) => {
-            // save supportdocs
-            // const { data } = response;
-
-            // this.saveSupportDocs(data.id);
-            // this.createTeam(data.id);
             this.$message({
               message:
                     'New Project ' +
@@ -746,36 +652,16 @@ export default {
             console.log(error);
           });
       }
-      // } else {
-      //   console.log('error submit!!');
-      //   this.$alert('Mohon Pilih tim Penyusun', 'Title', {
-      //     confirmButtonText: 'OK',
-      //   });
-      // }
-      // });
     },
-    // async saveSupportDocs(id_project){
-    //   this.project.listSupportDoc.forEach(element => {
-    //     element.id_project = id_project;
-
-    //     // make form data because we got file
-    //     const formData = new FormData();
-
-    //     // eslint-disable-next-line no-undef
-    //     _.each(element, (value, key) => {
-    //       formData.append(key, value);
-    //     });
-    //     if (element.id === undefined){
-    //       supportDocResource.store(formData);
-    //     } else {
-    //       supportDocResource.updateMultipart(element.id, formData);
-    //     }
-    //   });
-    // },
+    getMapPdf() {
+      axios.get(`api/map-pdf?file_type=PDF&attachment_type=tapak?id_project=${this.project.id}`)
+        .then((response) => {
+          response.data.forEach((item) => {
+            this.mapPdf = item.stored_filename;
+          });
+        });
+    },
     async updateList() {
-      console.log(this.project.address[0]);
-      // await this.getKabKotName(this.project.address[0].id_district);
-      // await this.getProvince(this.project.address[0].id_prov);
       this.list = [
         {
           param: 'Nama Kegiatan',

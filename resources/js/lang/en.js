@@ -105,6 +105,8 @@ export default {
     screeningProject: 'Screening Project',
     digWorkProject: 'Digital Workspace Project',
     scopingProject: 'Scoping Project',
+    masterKbli: 'Master KBLI',
+    masterParameterKbli: 'Master Parameter KBLI',
   },
   navbar: {
     logOut: 'Log Out',
