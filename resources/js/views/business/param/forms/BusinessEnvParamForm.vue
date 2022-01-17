@@ -15,9 +15,12 @@
         <el-autocomplete
           v-model="businessEnvParam.param_name"
           class="inline-input"
+          autosize
           :fetch-suggestions="searchParam"
           placeholder="Parameter"
           :trigger-on-focus="false"
+          type="textarea"
+          style="width: 595px"
           @select="handleSelectParam"
         />
         <el-input
@@ -32,9 +35,12 @@
         <el-autocomplete
           v-model="businessEnvParam.unit_name"
           class="inline-input"
+          autosize
           :fetch-suggestions="searchUnit"
           placeholder="Unit"
           :trigger-on-focus="false"
+          type="textarea"
+          style="width: 595px"
           @select="handleSelectUnit"
         />
         <el-input
