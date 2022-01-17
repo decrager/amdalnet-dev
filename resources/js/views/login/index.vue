@@ -56,11 +56,13 @@
           </el-col>
         </el-row>
         <el-row type="flex" justify="space-between" style="margin-bottom: 20px">
-          <el-radio v-model="user_type" style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio>
-          <el-radio v-model="user_type" style="width: 250px" label="Pemerintah" border>Pemrakarsa Pemerintah</el-radio>
-          <el-radio v-model="user_type" style="width: 250px" label="Penyusun" border>Penyusun</el-radio>
+          <el-radio-group v-model="user_type" @change="onChangeRadioUserType">
+            <el-radio style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio>
+            <el-radio style="width: 250px" label="Pemerintah" border>Pemrakarsa Pemerintah</el-radio>
+            <el-radio style="width: 250px" label="Penyusun" border>Penyusun</el-radio>
+          </el-radio-group>
         </el-row>
-        <el-row v-if="user_type === 'pemrakarsa'">
+        <el-row v-if="user_type === 'Pemrakarsa'">
           <el-form ref="regPemrakarsa" :model="registrationForm" :rules="regPemrakarsaRules">
             <el-row>
               <el-col>
@@ -215,7 +217,7 @@
             </el-row>
           </el-form>
         </el-row>
-        <el-row v-else-if="user_type === 'pemerintah'">
+        <el-row v-else-if="user_type === 'Pemerintah'">
           <el-form ref="regPemerintah" :model="registrationForm" :rules="regPemerintahRules">
             <el-row :gutter="24">
               <el-col :span="12">
@@ -358,7 +360,101 @@
             </el-row>
           </el-form>
         </el-row>
-        <el-row v-else-if="user_type === 'penyusun'">penyuusun</el-row>
+        <el-row v-else-if="user_type === 'Penyusun'">
+          <el-form ref="regPenyusun" :model="registrationForm" :rules="regPenyusunRules">
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="name" :label="$t('login.name')">
+                  <el-input v-model="registrationForm.name" name="name" type="text" auto-complete="on" :placeholder="$t('login.name')" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="name" :label="$t('login.nik')">
+                  <el-input v-model="registrationForm.nik" name="nik" type="text" auto-complete="on" :placeholder="$t('login.nik')" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item prop="address" :label="$t('login.address')">
+                <el-input v-model="registrationForm.address" name="name" type="textarea" auto-complete="on" :placeholder="$t('login.address')" />
+              </el-form-item>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="province" :label="$t('login.province')">
+                  <el-select
+                    v-model="registrationForm.province"
+                    name="province"
+                    :placeholder="$t('login.province')"
+                    style="width: 100%"
+                    @change="changeProvince"
+                  >
+                    <el-option
+                      v-for="item in provinceOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="district" :label="$t('login.district')">
+                  <el-select
+                    v-model="registrationForm.district"
+                    name="district"
+                    :placeholder="$t('login.district')"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in districtOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="email" :label="$t('login.email')">
+                  <el-input v-model="registrationForm.email" name="name" type="text" auto-complete="on" :placeholder="$t('login.email')" suffix-icon="el-icon-message" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="password" :label="$t('login.password')">
+                  <el-input
+                    v-model="registrationForm.password"
+                    name="password"
+                    auto-complete="on"
+                    placeholder="password"
+                    :type="pwdType"
+                  >
+                    <span slot="append" class="show-pwd" @click="showPwd">
+                      <svg-icon icon-class="eye" />
+                    </span>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="phone" :label="$t('login.phone')">
+                  <el-input
+                    v-model.number="registrationForm.phone"
+                    name="phone"
+                    auto-complete="on"
+                    placeholder="Nomor Telepon"
+                    suffix-icon="el-icon-phone"
+                  >
+                    <template slot="prepend">+62</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-row>
         <el-row type="flex" justify="space-between">
           <el-col :span="10">
             <el-button type="text" style="background-color: transparent; color: blue;" @click="handleCancelReg">Sudah Memiliki Akun?</el-button>
@@ -424,6 +520,7 @@ import Resource from '@/api/resource';
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
 const initiatorResource = new Resource('initiators');
+const formulatorResource = new Resource('formulators');
 
 const logo = require('@/assets/login/logo-amdal.png').default;
 
@@ -440,7 +537,7 @@ export default {
     };
     const validateFileAgencyUpload = (rule, value, callback) => {
       if (!this.registrationForm.fileAgencyUpload) {
-        callback(new Error('Anda Belum Upload Logo Instansi Anda'));
+        callback(new Error('Anda Belum Upload Logo Anda'));
       } else {
         callback();
       }
@@ -454,16 +551,13 @@ export default {
     };
     return {
       user_type: 'Pemrakarsa',
-      loginForm: {
-        email: 'adminpusat@amdalnet.dev',
-        password: 'amdalnet',
-      },
+      loginForm: {},
       loginRules: {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }],
       },
       regPemrakarsaRules: {
-        agency_type: [{ required: true, trigger: 'change', message: 'Jenis Instansi Dibutuhkan' }],
+        agency_type: [{ required: true, trigger: 'change', message: 'Jenis Perusahaan Dibutuhkan' }],
         province: [{ required: true, trigger: 'change', message: 'Provinsi Dibutuhkan' }],
         district: [{ required: true, trigger: 'change', message: 'Kabupaten Dibutuhkan' }],
         name: [{ required: true, trigger: 'blur', message: 'Nama Instansi Dibutuhkan' }],
@@ -472,9 +566,22 @@ export default {
         address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
-        password: [{ required: true, trigger: 'blur', message: 'Password Dibutuhkan' }],
+        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
         nib: [{ required: true, trigger: 'blur', message: 'NIB Dibutuhkan' }],
         // phone: [{ required: true, trigger: 'blur', message: 'Silahkan Masukan Nomor Telepon Yang Benar' }],
+        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
+      },
+      regPenyusunRules: {
+        province: [{ required: true, trigger: 'change', message: 'Provinsi Dibutuhkan' }],
+        district: [{ required: true, trigger: 'change', message: 'Kabupaten Dibutuhkan' }],
+        name: [{ required: true, trigger: 'blur', message: 'Nama Penyusun Dibutuhkan' }],
+        nik: [{ required: true, trigger: 'blur', message: 'NIK Dibutuhkan' }],
+        // pic: [{ required: true, trigger: 'blur', message: 'Penanggung Jawab Dibutuhkan' }],
+        // picRole: [{ required: true, trigger: 'blur', message: 'Jabatan Dibutuhkan' }],
+        address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
+        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
+        // fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
+        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
         phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
       },
       regPemerintahRules: {
@@ -487,9 +594,7 @@ export default {
         address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
-        password: [{ required: true, trigger: 'blur', message: 'Password Dibutuhkan' }],
-        // phone: [{ required: true, trigger: 'blur', message: 'Silahkan Masukan Nomor Telepon Yang Benar' }],
-        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
+        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
       },
       registrationRules: {
         user_type: [{ required: true, trigger: 'change', message: 'Pilih Jenis User' }],
@@ -541,6 +646,17 @@ export default {
     this.getProvinces();
   },
   methods: {
+    onChangeRadioUserType(){
+      console.log('masuk');
+      this.registrationForm = {};
+      if (this.user_type === 'Pemerintah'){
+        this.$refs['regPemerintah'].resetFields();
+      } else if (this.user_type === 'Pemrakarsa'){
+        this.$refs['regPemrakarsa'].resetFields();
+      } else if (this.user_type === 'Penyusun'){
+        this.$refs['regPenyusun'].resetFields();
+      }
+    },
     handleAgencyLogoUpload(file, filelist){
       this.imageUrl = URL.createObjectURL(file.raw);
 
@@ -721,35 +837,48 @@ export default {
             return false;
           }
         });
+      } else if (this.user_type === 'Penyusun'){
+        this.$refs.regPenyusun.validate(valid => {
+          if (valid) {
+            console.log(this.registrationForm);
+            this.registrationForm.user_type = this.user_type;
+            this.registrationForm.expertise = 'penyusun';
+
+            // make form data because we got file
+            const formData = new FormData();
+
+            // eslint-disable-next-line no-undef
+            _.each(this.registrationForm, (value, key) => {
+              formData.append(key, value);
+            });
+
+            this.loading = true;
+            csrf().then(() => {
+              formulatorResource
+                .store(formData)
+                .then((response) => {
+                  this.$message({
+                    message:
+                'User Dengan Email ' +
+                this.registrationForm.email +
+                ' Berhasil Dibuat',
+                    type: 'success',
+                    duration: 5 * 1000,
+                  });
+                  this.loading = false;
+                  this.form = 'login';
+                  this.registrationForm = {};
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
       }
-      // this.$refs.registrationForm.validate(valid => {
-      //   if (valid) {
-      //     this.loading = true;
-      //     csrf().then(() => {
-      //       initiatorResource
-      //         .store(this.registrationForm)
-      //         .then((response) => {
-      //           this.$message({
-      //             message:
-      //           'User Dengan Email ' +
-      //           this.registrationForm.email +
-      //           ' Berhasil Dibuat',
-      //             type: 'success',
-      //             duration: 5 * 1000,
-      //           });
-      //           this.loading = false;
-      //           this.form = 'login';
-      //           this.registrationForm = {};
-      //         })
-      //         .catch((error) => {
-      //           console.log(error);
-      //         });
-      //     });
-      //   } else {
-      //     console.log('error submit!!');
-      //     return false;
-      //   }
-      // });
     },
   },
 };

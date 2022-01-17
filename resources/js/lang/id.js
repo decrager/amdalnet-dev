@@ -141,6 +141,7 @@ export default {
     agencyLogo: 'Logo Instansi',
     companyLogo: 'Logo Perusahaan',
     nib: 'NIB',
+    nik: 'NIK',
   },
   documentation: {
     documentation: 'Dokumentasi',

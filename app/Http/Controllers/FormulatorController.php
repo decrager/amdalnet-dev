@@ -97,7 +97,7 @@ class FormulatorController extends Controller
                 $user = User::create([
                     'name' => ucfirst($params['name']),
                     'email' => $params['email'],
-                    'password' => Hash::make('amdalnet')
+                    'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
                 ]);
                 $user->syncRoles($formulatorRole);
             }
@@ -115,6 +115,11 @@ class FormulatorController extends Controller
                 'id_institution'    => isset($params['id_institution']) ? $params['id_institution'] : null,
                 'membership_status' => isset($params['membership_status']) ? $params['membership_status'] : null,
                 'id_lsp'            => isset($params['id_lsp']) ? $params['id_lsp'] : null,
+                'nik'               => isset($params['nik']) ? $params['nik'] : null,
+                'district'          => isset($params['district']) ? $params['district'] : null,
+                'province'          => isset($params['province']) ? $params['province'] : null,
+                'phone'             => isset($params['phone']) ? $params['phone'] : null,
+                'address'           => isset($params['address']) ? $params['address'] : null,
                 'email'             => $params['email'],
             ]);
 
