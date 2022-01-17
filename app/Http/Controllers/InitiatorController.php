@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class InitiatorController extends Controller
 {
@@ -65,6 +66,8 @@ class InitiatorController extends Controller
         } else {
             $params = $request->all();
 
+            // return $params['password'];
+
             DB::beginTransaction();
             
             $initiatorRole = Role::findByName(Acl::ROLE_INITIATOR);
@@ -72,18 +75,33 @@ class InitiatorController extends Controller
             $user = User::create([
                 'name' => ucfirst($params['name']),
                 'email' => $params['email'],
-                'password' => Hash::make('amdalnet')
+                'password' => Hash::make($params['password'])
             ]);
             $user->syncRoles($initiatorRole);
 
-            //create rona awal
+            //create Initiator
+
+            //logo
+            $logoName = '';
+            if ($request->file('fileAgencyUpload')) {
+                $fileAgencyUpload = $request->file('fileAgencyUpload');
+                $logoName = 'project/fileAgencyUpload/' . uniqid() . '.' . $fileAgencyUpload->extension();
+                $fileAgencyUpload->storePubliclyAs('public', $logoName);
+            }
+
             $initiator = Initiator::create([
-                'name'      =>  $params['name'],
-                'pic'       =>  $params['pic'],
-                'email'     =>  $params['email'],
-                'phone'     =>  $params['phone'],
-                'address'   =>  $params['address'],
-                'user_type' =>  $params['user_type'],
+                'name'        =>  $params['name'],
+                'pic'         =>  $params['pic'],
+                'email'       =>  $params['email'],
+                'phone'       =>  $params['phone'],
+                'address'     =>  $params['address'],
+                'user_type'   =>  $params['user_type'],
+                'agency_type' =>  isset($params['agency_type']) ? $params['agency_type'] : null,
+                'province'    =>  isset($params['province']) ? $params['province'] : null,
+                'district'    =>  isset($params['district']) ? $params['district'] : null,
+                'pic_role'    =>  isset($params['picRole']) ? $params['picRole'] : null,
+                'nib'    =>  isset($params['nib']) ? $params['nib'] : null,
+                'logo'        =>  Storage::url($logoName),
             ]);
 
 

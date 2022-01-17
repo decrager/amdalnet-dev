@@ -6,7 +6,7 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <lang-select class="right-menu-item hover-effect" />
+        <!-- <lang-select class="right-menu-item hover-effect" /> -->
         <el-dropdown class="right-menu-item hover-effect" @command="handleNotif">
           <el-badge is-dot :hidden="sumNotifUnread > 0">
             <el-button icon="el-icon-bell" type="text" style="cursor: pointer; font-size: 18px; vertical-align: middle; color: white" @click="markAsRead" />
@@ -18,7 +18,7 @@
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <search id="header-search" class="right-menu-item" />
+        <!-- <search id="header-search" class="right-menu-item" /> -->
 
         <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
@@ -61,8 +61,8 @@ import Breadcrumb from '@/components/Breadcrumb';
 import Hamburger from '@/components/Hamburger';
 // import Screenfull from '@/components/Screenfull';
 // import SizeSelect from '@/components/SizeSelect';
-import LangSelect from '@/components/LangSelect';
-import Search from '@/components/HeaderSearch';
+// import LangSelect from '@/components/LangSelect';
+// import Search from '@/components/HeaderSearch';
 
 export default {
   components: {
@@ -70,8 +70,7 @@ export default {
     Hamburger,
     // Screenfull,
     // SizeSelect,
-    LangSelect,
-    Search,
+    // LangSeles
   },
   computed: {
     ...mapGetters([
