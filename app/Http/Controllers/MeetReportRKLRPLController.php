@@ -16,6 +16,7 @@ use App\Entity\TestingMeeting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class MeetReportRKLRPLController extends Controller
 {
@@ -103,6 +104,35 @@ class MeetReportRKLRPLController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->file) {
+            $data = $request->all();
+            $validator = \Validator::make($data, [
+                'dokumen_file' => 'max:1024'
+            ],[
+                'dokumen_file.max' => 'Ukuran file tidak boleh melebihi 1 mb'
+            ]);
+
+            if($validator->fails()) {
+                return response()->json(['errors' => $validator->messages()]);
+            }
+
+            if($request->hasFile('dokumen_file')) {
+                $project = Project::findOrFail($request->idProject);
+                $file = $request->file('dokumen_file');
+                $name = '/berita-acara-rkl-rpl/' . strtolower($project->project_title) . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+    
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'rkl-rpl']])->first();
+                $meeting_report->file = Storage::url($name);
+                $meeting_report->save();
+
+            } else {
+                return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
+            }
+
+            return response()->json(['errors' => null]);
+        }
+
         if ($request->formulir) {
             $project_title = strtolower(Project::findOrFail($request->idProject)->project_title);
             if (File::exists(storage_path('app/public/berita-acara/ba-rkl-rpl-' . $project_title . '.docx'))) {
