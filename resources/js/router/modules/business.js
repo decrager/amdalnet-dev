@@ -16,6 +16,7 @@ const businessRoutes = {
       path: ':id(\\d+)',
       component: () => import('@/views/business/param/index'),
       name: 'ListBusinessEnvParam',
+      hidden: true,
       meta: { title: 'masterParameterKbli', icon: 'documentation', roles: ['admin-standard'] },
     },
   ],
