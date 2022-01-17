@@ -45,16 +45,434 @@
             <el-button type="text" style="background-color: transparent; color: blue;">Lupa Kata Sandi?</el-button>
             <el-button type="text" style="background-color: transparent; color: blue;" @click="handleOpenRegister">Tidak Memiliki Akun? <span style="color: red">Buat Akun Baru</span> </el-button>
           </el-row>
-          <!-- <div class="tips">
-            <span style="margin-right:20px;">Email: admin@amdalnet.dev</span>
-            <span>Password: amdalnet</span>
-          </div> -->
         </el-form>
       </div>
     </div>
     <div v-else class="registration-container">
+      <el-card shadow="always">
+        <el-row type="flex" justify="center">
+          <el-col :span="8">
+            <h2>{{ $t('login.registrationForm') }}</h2>
+          </el-col>
+        </el-row>
+        <el-row type="flex" justify="space-between" style="margin-bottom: 20px">
+          <el-radio-group v-model="user_type" @change="onChangeRadioUserType">
+            <el-radio style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio>
+            <el-radio style="width: 250px" label="Pemerintah" border>Pemrakarsa Pemerintah</el-radio>
+            <el-radio style="width: 250px" label="Penyusun" border>Penyusun</el-radio>
+          </el-radio-group>
+        </el-row>
+        <el-row v-if="user_type === 'Pemrakarsa'">
+          <el-form ref="regPemrakarsa" :model="registrationForm" :rules="regPemrakarsaRules">
+            <el-row>
+              <el-col>
+                <el-form-item prop="nib" :label="$t('login.nib')">
+                  <el-input v-model="registrationForm.nib" name="nib" type="text" auto-complete="on" :placeholder="$t('login.nib')">
+                    <template slot="append">
+                      <el-button>Periksa NIB</el-button>
+                    </template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="agency_type" :label="$t('login.companyType')">
+                  <el-select
+                    v-model="registrationForm.agency_type"
+                    name="agency_type"
+                    :placeholder="$t('login.companyType')"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in companyTypeoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="name" :label="$t('login.companyName')">
+                  <el-input v-model="registrationForm.name" name="name" type="text" auto-complete="on" :placeholder="$t('login.companyName')" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item prop="address" :label="$t('login.address')">
+                <el-input v-model="registrationForm.address" name="name" type="textarea" auto-complete="on" :placeholder="$t('login.address')" />
+              </el-form-item>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="province" :label="$t('login.province')">
+                  <el-select
+                    v-model="registrationForm.province"
+                    name="province"
+                    :placeholder="$t('login.province')"
+                    style="width: 100%"
+                    @change="changeProvince"
+                  >
+                    <el-option
+                      v-for="item in provinceOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="district" :label="$t('login.district')">
+                  <el-select
+                    v-model="registrationForm.district"
+                    name="district"
+                    :placeholder="$t('login.district')"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in districtOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="email" :label="$t('login.email')">
+                  <el-input v-model="registrationForm.email" name="name" type="text" auto-complete="on" :placeholder="$t('login.email')" suffix-icon="el-icon-message" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="password" :label="$t('login.password')">
+                  <el-input
+                    v-model="registrationForm.password"
+                    name="password"
+                    auto-complete="on"
+                    placeholder="password"
+                    :type="pwdType"
+                  >
+                    <span slot="append" class="show-pwd" @click="showPwd">
+                      <svg-icon icon-class="eye" />
+                    </span>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="pic" :label="$t('login.pic')">
+                  <el-input v-model="registrationForm.pic" name="name" type="text" auto-complete="on" :placeholder="$t('login.pic')" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="picRole" :label="$t('login.picRole')">
+                  <el-input
+                    v-model="registrationForm.picRole"
+                    name="pic"
+                    auto-complete="on"
+                    :placeholder="$t('login.picRole')"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="fileAgencyUpload" :label="$t('login.companyLogo')">
+                  <el-upload
+                    drag
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :auto-upload="false"
+                    :on-change="handleAgencyLogoUpload"
+                    :before-upload="beforeAvatarUpload"
+                  >
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <div v-else>
+                      <i class="el-icon-upload" />
+                      <div class="el-upload__text">Taruh File disini atau <em>tekan untuk unggah</em></div>
+                      <div slot="tip" class="el-upload__tip">jpg/png files dengan ukuran kurang dari 2MB</div>
+                    </div>
+                  </el-upload>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="phone" :label="$t('login.phone')">
+                  <el-input
+                    v-model.number="registrationForm.phone"
+                    name="phone"
+                    auto-complete="on"
+                    placeholder="Nomor Telepon"
+                    suffix-icon="el-icon-phone"
+                  >
+                    <template slot="prepend">+62</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-row>
+        <el-row v-else-if="user_type === 'Pemerintah'">
+          <el-form ref="regPemerintah" :model="registrationForm" :rules="regPemerintahRules">
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="agency_type" :label="$t('login.agencyType')">
+                  <el-select
+                    v-model="registrationForm.agency_type"
+                    name="agency_type"
+                    :placeholder="$t('login.agencyType')"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in agencyTypeoptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="name" :label="$t('login.agencyName')">
+                  <el-input v-model="registrationForm.name" name="name" type="text" auto-complete="on" :placeholder="$t('login.agencyName')" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item prop="address" :label="$t('login.address')">
+                <el-input v-model="registrationForm.address" name="name" type="textarea" auto-complete="on" :placeholder="$t('login.address')" />
+              </el-form-item>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="province" :label="$t('login.province')">
+                  <el-select
+                    v-model="registrationForm.province"
+                    name="province"
+                    :placeholder="$t('login.province')"
+                    style="width: 100%"
+                    @change="changeProvince"
+                  >
+                    <el-option
+                      v-for="item in provinceOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="district" :label="$t('login.district')">
+                  <el-select
+                    v-model="registrationForm.district"
+                    name="district"
+                    :placeholder="$t('login.district')"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in districtOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="email" :label="$t('login.email')">
+                  <el-input v-model="registrationForm.email" name="name" type="text" auto-complete="on" :placeholder="$t('login.email')" suffix-icon="el-icon-message" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="password" :label="$t('login.password')">
+                  <el-input
+                    v-model="registrationForm.password"
+                    name="password"
+                    auto-complete="on"
+                    placeholder="password"
+                    :type="pwdType"
+                  >
+                    <span slot="append" class="show-pwd" @click="showPwd">
+                      <svg-icon icon-class="eye" />
+                    </span>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="pic" :label="$t('login.pic')">
+                  <el-input v-model="registrationForm.pic" name="name" type="text" auto-complete="on" :placeholder="$t('login.pic')" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="picRole" :label="$t('login.picRole')">
+                  <el-input
+                    v-model="registrationForm.picRole"
+                    name="pic"
+                    auto-complete="on"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="fileAgencyUpload" :label="$t('login.agencyLogo')">
+                  <el-upload
+                    drag
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :auto-upload="false"
+                    :on-change="handleAgencyLogoUpload"
+                    :before-upload="beforeAvatarUpload"
+                  >
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <div v-else>
+                      <i class="el-icon-upload" />
+                      <div class="el-upload__text">Taruh File disini atau <em>tekan untuk unggah</em></div>
+                      <div slot="tip" class="el-upload__tip">jpg/png files dengan ukuran kurang dari 2MB</div>
+                    </div>
+                  </el-upload>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="phone" :label="$t('login.phone')">
+                  <el-input
+                    v-model.number="registrationForm.phone"
+                    name="phone"
+                    auto-complete="on"
+                    placeholder="Nomor Telepon"
+                    suffix-icon="el-icon-phone"
+                  >
+                    <template slot="prepend">+62</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-row>
+        <el-row v-else-if="user_type === 'Penyusun'">
+          <el-form ref="regPenyusun" :model="registrationForm" :rules="regPenyusunRules">
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="name" :label="$t('login.name')">
+                  <el-input v-model="registrationForm.name" name="name" type="text" auto-complete="on" :placeholder="$t('login.name')" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="name" :label="$t('login.nik')">
+                  <el-input v-model="registrationForm.nik" name="nik" type="text" auto-complete="on" :placeholder="$t('login.nik')" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item prop="address" :label="$t('login.address')">
+                <el-input v-model="registrationForm.address" name="name" type="textarea" auto-complete="on" :placeholder="$t('login.address')" />
+              </el-form-item>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="province" :label="$t('login.province')">
+                  <el-select
+                    v-model="registrationForm.province"
+                    name="province"
+                    :placeholder="$t('login.province')"
+                    style="width: 100%"
+                    @change="changeProvince"
+                  >
+                    <el-option
+                      v-for="item in provinceOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="district" :label="$t('login.district')">
+                  <el-select
+                    v-model="registrationForm.district"
+                    name="district"
+                    :placeholder="$t('login.district')"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in districtOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="email" :label="$t('login.email')">
+                  <el-input v-model="registrationForm.email" name="name" type="text" auto-complete="on" :placeholder="$t('login.email')" suffix-icon="el-icon-message" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="password" :label="$t('login.password')">
+                  <el-input
+                    v-model="registrationForm.password"
+                    name="password"
+                    auto-complete="on"
+                    placeholder="password"
+                    :type="pwdType"
+                  >
+                    <span slot="append" class="show-pwd" @click="showPwd">
+                      <svg-icon icon-class="eye" />
+                    </span>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="phone" :label="$t('login.phone')">
+                  <el-input
+                    v-model.number="registrationForm.phone"
+                    name="phone"
+                    auto-complete="on"
+                    placeholder="Nomor Telepon"
+                    suffix-icon="el-icon-phone"
+                  >
+                    <template slot="prepend">+62</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-row>
+        <el-row type="flex" justify="space-between">
+          <el-col :span="10">
+            <el-button type="text" style="background-color: transparent; color: blue;" @click="handleCancelReg">Sudah Memiliki Akun?</el-button>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="warning" :loading="loading" size="mini" @click="handleReg">Buat</el-button>
+          </el-col>
+        </el-row>
+      </el-card>
+    </div>
+    <!-- <div v-else class="registration-container">
       <el-form ref="registrationForm" :model="registrationForm" :rules="registrationRules" class="registration-form" auto-complete="on" label-position="top">
         <h2>{{ $t('login.registrationForm') }}</h2>
+        <div>
+          <el-radio v-model="user_type" label="pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio>
+          <el-radio v-model="user_type" label="pemerintah" border>Pemrakarsa Pemerintah</el-radio>
+          <el-radio v-model="user_type" label="penyusun" border>Penyusun</el-radio>
+        </div>
         <el-form-item prop="user_type" :label="$t('login.userType')">
           <el-select
             v-model="registrationForm.user_type"
@@ -90,7 +508,7 @@
           <el-button type="warning" :loading="loading" size="mini" @click="handleReg">Buat</el-button>
         </el-row>
       </el-form>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -99,17 +517,27 @@
 import { validEmail } from '@/utils/validate';
 import { csrf } from '@/api/auth';
 import Resource from '@/api/resource';
+const provinceResource = new Resource('provinces');
+const districtResource = new Resource('districts');
 const initiatorResource = new Resource('initiators');
+const formulatorResource = new Resource('formulators');
 
 const logo = require('@/assets/login/logo-amdal.png').default;
 
 export default {
   name: 'Login',
-  // components: { LangSelect },
+  components: {},
   data() {
     const validateEmail = (rule, value, callback) => {
       if (!validEmail(value)) {
-        callback(new Error('Please enter the correct email'));
+        callback(new Error('Silakan masukkan email yang benar'));
+      } else {
+        callback();
+      }
+    };
+    const validateFileAgencyUpload = (rule, value, callback) => {
+      if (!this.registrationForm.fileAgencyUpload) {
+        callback(new Error('Anda Belum Upload Logo Anda'));
       } else {
         callback();
       }
@@ -122,13 +550,51 @@ export default {
       }
     };
     return {
-      loginForm: {
-        email: 'adminpusat@amdalnet.dev',
-        password: 'amdalnet',
-      },
+      user_type: 'Pemrakarsa',
+      loginForm: {},
       loginRules: {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }],
+      },
+      regPemrakarsaRules: {
+        agency_type: [{ required: true, trigger: 'change', message: 'Jenis Perusahaan Dibutuhkan' }],
+        province: [{ required: true, trigger: 'change', message: 'Provinsi Dibutuhkan' }],
+        district: [{ required: true, trigger: 'change', message: 'Kabupaten Dibutuhkan' }],
+        name: [{ required: true, trigger: 'blur', message: 'Nama Instansi Dibutuhkan' }],
+        pic: [{ required: true, trigger: 'blur', message: 'Penanggung Jawab Dibutuhkan' }],
+        picRole: [{ required: true, trigger: 'blur', message: 'Jabatan Dibutuhkan' }],
+        address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
+        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
+        fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
+        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
+        nib: [{ required: true, trigger: 'blur', message: 'NIB Dibutuhkan' }],
+        // phone: [{ required: true, trigger: 'blur', message: 'Silahkan Masukan Nomor Telepon Yang Benar' }],
+        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
+      },
+      regPenyusunRules: {
+        province: [{ required: true, trigger: 'change', message: 'Provinsi Dibutuhkan' }],
+        district: [{ required: true, trigger: 'change', message: 'Kabupaten Dibutuhkan' }],
+        name: [{ required: true, trigger: 'blur', message: 'Nama Penyusun Dibutuhkan' }],
+        nik: [{ required: true, trigger: 'blur', message: 'NIK Dibutuhkan' }],
+        // pic: [{ required: true, trigger: 'blur', message: 'Penanggung Jawab Dibutuhkan' }],
+        // picRole: [{ required: true, trigger: 'blur', message: 'Jabatan Dibutuhkan' }],
+        address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
+        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
+        // fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
+        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
+        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
+      },
+      regPemerintahRules: {
+        agency_type: [{ required: true, trigger: 'change', message: 'Jenis Instansi Dibutuhkan' }],
+        province: [{ required: true, trigger: 'change', message: 'Provinsi Dibutuhkan' }],
+        district: [{ required: true, trigger: 'change', message: 'Kabupaten Dibutuhkan' }],
+        name: [{ required: true, trigger: 'blur', message: 'Nama Instansi Dibutuhkan' }],
+        pic: [{ required: true, trigger: 'blur', message: 'Penanggung Jawab Dibutuhkan' }],
+        picRole: [{ required: true, trigger: 'blur', message: 'Jabatan Dibutuhkan' }],
+        address: [{ required: true, trigger: 'blur', message: 'Alamat Dibutuhkan' }],
+        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
+        fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
+        password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
       },
       registrationRules: {
         user_type: [{ required: true, trigger: 'change', message: 'Pilih Jenis User' }],
@@ -144,17 +610,24 @@ export default {
       otherQuery: {},
       logo: logo,
       registrationForm: {},
-      userTypeoptions: [
+      provinceOptions: [],
+      districtOptions: [],
+      agencyTypeoptions: [
         {
-          value: 'Pemrakarsa',
-          label: 'Pelaku Usaha',
+          value: 'Kementrian',
+          label: 'Kementrian',
         },
+      ],
+      companyTypeoptions: [
         {
-          value: 'Pemerintah',
-          label: 'Pemerintah',
+          value: 'pt',
+          label: 'Perseroan Terbatas (PT)',
         },
       ],
       form: 'login',
+      fileAgencyUpload: null,
+      fileAgencyUploadName: '',
+      imageUrl: null,
     };
   },
   watch: {
@@ -169,7 +642,62 @@ export default {
       immediate: true,
     },
   },
+  mounted() {
+    this.getProvinces();
+  },
   methods: {
+    onChangeRadioUserType(){
+      console.log('masuk');
+      this.registrationForm = {};
+      if (this.user_type === 'Pemerintah'){
+        this.$refs['regPemerintah'].resetFields();
+      } else if (this.user_type === 'Pemrakarsa'){
+        this.$refs['regPemrakarsa'].resetFields();
+      } else if (this.user_type === 'Penyusun'){
+        this.$refs['regPenyusun'].resetFields();
+      }
+    },
+    handleAgencyLogoUpload(file, filelist){
+      this.imageUrl = URL.createObjectURL(file.raw);
+
+      if (file.raw.size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
+      // this.fileAgencyUpload = e.target.files[0];
+      this.registrationForm.fileAgencyUpload = file.raw;
+    },
+    showFileAlert(){
+      this.$alert('File Yang Diupload Melebihi 1 MB', {
+        confirmButtonText: 'OK',
+      });
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('Avatar picture must be JPG format!');
+      }
+      if (!isLt2M) {
+        this.$message.error('Avatar picture size can not exceed 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
+    handleFileAgencyLogoUpload(e){
+      // reset validation
+      // this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKtr').resetField();
+
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
+      // this.fileAgencyUpload = e.target.files[0];
+      this.registrationForm.fileAgencyUpload = e.target.files[0];
+      this.fileAgencyUploadName = e.target.files[0].name;
+    },
     showPwd() {
       if (this.pwdType === 'password') {
         this.pwdType = '';
@@ -212,35 +740,145 @@ export default {
     handleOpenRegister(){
       this.form = 'register';
     },
+    async changeProvince(value) {
+      // change all district by province
+      this.getDistricts(value);
+    },
+    async getDistricts(idProv) {
+      const { data } = await districtResource.list({ idProv });
+      this.districtOptions = data.map((i) => {
+        return { value: i.id, label: i.name };
+      });
+    },
+    async getProvinces() {
+      const { data } = await provinceResource.list({});
+      this.provinceOptions = data.map((i) => {
+        return { value: i.id, label: i.name };
+      });
+    },
     handleReg(){
-      this.$refs.registrationForm.validate(valid => {
-        if (valid) {
-          this.loading = true;
-          csrf().then(() => {
-            initiatorResource
-              .store(this.registrationForm)
-              .then((response) => {
-                this.$message({
-                  message:
+      if (this.user_type === 'Pemerintah'){
+        this.$refs.regPemerintah.validate(valid => {
+          if (valid) {
+            console.log(this.registrationForm);
+            this.registrationForm.user_type = this.user_type;
+
+            // make form data because we got file
+            const formData = new FormData();
+
+            // eslint-disable-next-line no-undef
+            _.each(this.registrationForm, (value, key) => {
+              formData.append(key, value);
+            });
+
+            this.loading = true;
+            csrf().then(() => {
+              initiatorResource
+                .store(formData)
+                .then((response) => {
+                  this.$message({
+                    message:
                 'User Dengan Email ' +
                 this.registrationForm.email +
                 ' Berhasil Dibuat',
-                  type: 'success',
-                  duration: 5 * 1000,
+                    type: 'success',
+                    duration: 5 * 1000,
+                  });
+                  this.loading = false;
+                  this.form = 'login';
+                  this.registrationForm = {};
+                })
+                .catch((error) => {
+                  console.log(error);
                 });
-                this.loading = false;
-                this.form = 'login';
-                this.registrationForm = {};
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      } else if (this.user_type === 'Pemrakarsa'){
+        this.$refs.regPemrakarsa.validate(valid => {
+          if (valid) {
+            console.log(this.registrationForm);
+            this.registrationForm.user_type = this.user_type;
+
+            // make form data because we got file
+            const formData = new FormData();
+
+            // eslint-disable-next-line no-undef
+            _.each(this.registrationForm, (value, key) => {
+              formData.append(key, value);
+            });
+
+            this.loading = true;
+            csrf().then(() => {
+              initiatorResource
+                .store(formData)
+                .then((response) => {
+                  this.$message({
+                    message:
+                'User Dengan Email ' +
+                this.registrationForm.email +
+                ' Berhasil Dibuat',
+                    type: 'success',
+                    duration: 5 * 1000,
+                  });
+                  this.loading = false;
+                  this.form = 'login';
+                  this.registrationForm = {};
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      } else if (this.user_type === 'Penyusun'){
+        this.$refs.regPenyusun.validate(valid => {
+          if (valid) {
+            console.log(this.registrationForm);
+            this.registrationForm.user_type = this.user_type;
+            this.registrationForm.expertise = 'penyusun';
+
+            // make form data because we got file
+            const formData = new FormData();
+
+            // eslint-disable-next-line no-undef
+            _.each(this.registrationForm, (value, key) => {
+              formData.append(key, value);
+            });
+
+            this.loading = true;
+            csrf().then(() => {
+              formulatorResource
+                .store(formData)
+                .then((response) => {
+                  this.$message({
+                    message:
+                'User Dengan Email ' +
+                this.registrationForm.email +
+                ' Berhasil Dibuat',
+                    type: 'success',
+                    duration: 5 * 1000,
+                  });
+                  this.loading = false;
+                  this.form = 'login';
+                  this.registrationForm = {};
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      }
     },
   },
 };
@@ -277,6 +915,9 @@ $light_gray:#5F6368;
     border-radius: 5px;
     color: #454545;
   }
+}
+.el-upload-dragger{
+   width: auto;
 }
 </style>
 
@@ -424,5 +1065,34 @@ $textColor:#eee;
       border-radius: 20px;
     }
   }
+}
+.el-row {
+  margin-bottom: 5px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

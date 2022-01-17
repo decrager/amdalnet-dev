@@ -963,10 +963,31 @@ export default {
       });
     },
     calculateChoosenProject(){
+      const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => {
+        if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'AMDAL';
+        } else if (this.currentProject.study_approach === 'Terpadu'){
+          return e.result === 'AMDAL';
+        }
+      });
+      const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => {
+        if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'UKL-UPL';
+        } else if (this.currentProject.study_approach === 'Terpadu'){
+          return e.result === 'UKL-UPL';
+        }
+      });
+      const listMainProjectSppl = this.currentProject.listSubProject.filter(e => {
+        if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'SPPL';
+        } else if (this.currentProject.study_approach === 'Terpadu'){
+          return e.result === 'SPPL';
+        }
+      });
       // console.log('project tanpa filter', this.currentProject);
-      const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
-      const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
-      const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
+      // const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
+      // const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
+      // const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
 
       // console.log('listAmdal', listMainProjectAmdal);
       let choosenProject = '';
