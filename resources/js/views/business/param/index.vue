@@ -139,6 +139,13 @@ export default {
       userInfo: {
         roles: [],
       },
+      adminRoles: [
+        'admin',
+        'admin-standard',
+        'admin-system',
+        'admin-regional',
+        'admin-central',
+      ],
       business: {},
       filtered: [],
       total: 0,
@@ -154,7 +161,7 @@ export default {
   },
   computed: {
     isAdmin() {
-      return this.userInfo.roles.includes('admin-standard');
+      return this.userInfo.roles.some(r => this.adminRoles.includes(r));
     },
   },
   async created() {

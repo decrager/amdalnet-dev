@@ -58,15 +58,40 @@
     <div style="margin-top: 10px">
       <el-button icon="el-icon-plus" circle @click.prevent="addTableRow" />
     </div>
-    <div style="margin-top: 13px;">
+    <div style="margin-top: 13px">
       <h5>Ringkasan Rekomendasi Kelayakan dari Ahli</h5>
       <Tinymce v-model="reports.notes" :height="200" />
     </div>
+    <el-upload
+      :auto-upload="false"
+      :on-change="handleUploadChange"
+      :show-file-list="false"
+      action=""
+      style="text-align: right"
+    >
+      <el-button
+        :loading="loadingUpload"
+        type="warning"
+        style="margin-top: 10px"
+      >
+        Unggah BA Final
+      </el-button>
+    </el-upload>
+    <small
+      v-if="errors.dokumen_file"
+      style="color: #f56c6c; display: block; text-align: right; margin-top: 5px"
+    >
+      <span v-for="(error, index) in errors.dokumen_file" :key="index">
+        {{ error }}
+      </span>
+    </small>
   </div>
 </template>
 
 <script>
 import Tinymce from '@/components/Tinymce';
+import Resource from '@/api/resource';
+const meetingReportResource = new Resource('meet-report-rkl-rpl');
 
 export default {
   name: 'DaftarHadir',
@@ -96,6 +121,8 @@ export default {
           value: 'Masyarakat',
         },
       ],
+      errors: {},
+      loadingUpload: false,
     };
   },
   methods: {
@@ -110,6 +137,23 @@ export default {
     },
     deleteRow(id, personType) {
       this.$emit('deleteinvitation', { id, personType });
+    },
+    async handleUploadChange(file, fileList) {
+      this.loadingUpload = true;
+      const formData = new FormData();
+      formData.append('idProject', this.$route.params.id);
+      formData.append('dokumen_file', file.raw);
+      formData.append('file', 'true');
+      const isError = await meetingReportResource.store(formData);
+      this.errors = isError.errors === null ? {} : isError.errors;
+      this.loadingUpload = false;
+      if (isError.errors === null) {
+        this.$message({
+          message: 'BA Final sukses diupload',
+          type: 'success',
+          duration: 5 * 1000,
+        });
+      }
     },
   },
 };
