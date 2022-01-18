@@ -93,7 +93,10 @@ class BusinessController extends Controller
                 ->where('value', $business['kbli_code'])
                 ->first();
             if ($kbli) {
-               $sector = Business::where('parent_id', $kbli->id)->first();
+               $sector = Business::where('description', 'sector')
+                ->where('value', $business['sector'])
+                ->where('parent_id', $kbli->id)
+                ->first();
                if ($sector) {
                    $parent_id = $sector->id;
                }

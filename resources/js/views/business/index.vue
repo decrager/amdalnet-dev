@@ -224,9 +224,11 @@ export default {
     },
     handleCloseCreateBusiness() {
       this.showCreateBusiness = false;
+      this.getFilteredData(this.listQuery);
     },
     handleCloseEditBusiness() {
       this.showEditBusiness = false;
+      this.getFilteredData(this.listQuery);
     },
   },
 };
