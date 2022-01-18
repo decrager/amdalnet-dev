@@ -74,10 +74,10 @@ class ProjectController extends Controller
             ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
             ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
             ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
-            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            // ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
             //->distinct()
             //->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id')
-            //->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
+            ->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
 
         } else if ($request->registration_no) {
             return ProjectResource::collection(Project::select('*')
