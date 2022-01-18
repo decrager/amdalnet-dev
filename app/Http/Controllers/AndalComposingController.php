@@ -8,6 +8,7 @@ use App\Entity\ComponentType;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
+use App\Entity\FormulatorTeamMember;
 use App\Entity\HolisticEvaluation;
 use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
@@ -32,6 +33,7 @@ use PhpOffice\PhpWord\Shared\Html;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use PDF;
 
 class AndalComposingController extends Controller
 {
@@ -1901,20 +1903,120 @@ class AndalComposingController extends Controller
 
     private function exportKAPDF($idProject)
     {
-        $domPdfPath = base_path('vendor/dompdf/dompdf');
-        Settings::setPdfRendererPath($domPdfPath);
-        Settings::setPdfRendererName('DomPDF');
+        $ids = [4, 1, 2, 3];
+        $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
+            return array_search($model->getKey(), $ids);
+        });
         $project = Project::findOrFail($idProject);
+        $formulator_team = FormulatorTeam::where('id_project', $project->id)->first();
+        $team_member = null;
+        if($formulator_team) {
+            $team_member = FormulatorTeamMember::where('id_formulator_team', $formulator_team->id)->orderBy('position', 'desc')->get();
+        }
+        $public_consultation = PublicConsultation::select('id', 'project_id', 'positive_feedback_summary', 'negative_feedback_summary')
+            ->where('project_id', $project->id)->get();
 
-        //Load word file
-        $Content = IOFactory::load(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.docx'));
+        $pelingkupan = [];
+        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+            ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        $total_ms = 0;
+        foreach ($stages as $s) {
+            $total = 0;
+            $pelingkupan[str_replace(' ', '_', strtolower($s->name))] = [];
+            foreach ($im as $pA) {
+                $ronaAwal = '';
+                $component = '';
 
-        //Save it into PDF
-        $PDFWriter = IOFactory::createWriter($Content, 'PDF');
+                $data = $this->getComponentRonaAwal($pA, $s->id);
 
-        $PDFWriter->save(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.pdf'));
+                if ($data['component'] && $data['ronaAwal']) {
+                    $ronaAwal = $data['ronaAwal'];
+                    $component = $data['component'];
+                } else {
+                    continue;
+                }
 
-        return response()->download(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.pdf'))->deleteFileAfterSend(false);
+                $changeType = $pA->id_change_type ? $pA->changeType->name : '';
+
+                // ======= POTENTIAL IMPACT EVALUATIONS ======= //
+                $ed_besaran_rencana_title = '';
+                $ed_besaran_rencana = '';
+                $ed_kondisi_rona_title = '';
+                $ed_kondisi_rona = '';
+                $ed_pengaruh_rencana_title = '';
+                $ed_pengaruh_rencana = '';
+                $ed_intensitas_perhatian_title = '';
+                $ed_intensitas_perhatian = '';
+                $ed_kesimpulan_title = '';
+                $ed_kesimpulan = '';
+
+                if ($pA->is_hypothetical_significant && $pA->potentialImpactEvaluation) {
+                    foreach ($pA->potentialImpactEvaluation as $po) {
+                        if ($po->id_pie_param == 1) {
+                            $ed_besaran_rencana_title = $po->pieParam->name;
+                            $ed_besaran_rencana = $po->text;
+                        } else if ($po->id_pie_param == 2) {
+                            $ed_kondisi_rona_title = $po->pieParam->name;
+                            $ed_kondisi_rona = $po->text;
+                        } else if ($po->id_pie_param == 3) {
+                            $ed_pengaruh_rencana_title = $po->pieParam->name;
+                            $ed_pengaruh_rencana = $po->text;
+                        } else if ($po->id_pie_param == 4) {
+                            $ed_intensitas_perhatian_title = $po->pieParam->name;
+                            $ed_intensitas_perhatian = $po->text;
+                        } else if ($po->id_pie_param == 5) {
+                            $ed_kesimpulan_title = $po->pieParam->name;
+                            $ed_kesimpulan = $po->text;
+                        }
+                    }
+                }
+
+                $pelingkupan[str_replace(' ', '_', strtolower($s->name))][] = [
+                    'no' => $total + 1,
+                    'component_name' => "$changeType $ronaAwal akibat $component",
+                    'rencana' => $pA->initial_study_plan ?? '',
+                    'rona_lingkungan' => $ronaAwal,
+                    'dampak_potensial' => "$changeType $ronaAwal akibat $component",
+                    'ed_besaran_rencana_title' => $ed_besaran_rencana_title,
+                    'ed_besaran_rencana' => $ed_besaran_rencana,
+                    'ed_kondisi_rona_title' => $ed_kondisi_rona_title,
+                    'ed_kondisi_rona' => $ed_kondisi_rona,
+                    'ed_pengaruh_rencana_title' => $ed_pengaruh_rencana_title,
+                    'ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+                    'ed_intensitas_perhatian_title' => $ed_intensitas_perhatian_title,
+                    'ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+                    'ed_kesimpulan_title' => $ed_kesimpulan_title,
+                    'ed_kesimpulan' => $ed_kesimpulan,
+                    'dph' => $pA->is_hypothetical_significant ? 'DPH' : 'DTPH',
+                    'batas_wilayah' => $pA->study_location ?? '',
+                    'batas_waktu' => $pA->study_length_year . ' tahun ' . $pA->study_length_month . ' bulan'
+                ];
+
+                if ($pA->impactStudy) {
+                    $pelingkupan['metode_studi'][] = [
+                        'no' => $total_ms + 1,
+                        'potential_impact_evaluation' => "$changeType $ronaAwal akibat $component",
+                        'required_information' => $pA->impactStudy->required_information ?? '',
+                        'data_gathering_method' => $pA->impactStudy->data_gathering_method ?? '',
+                        'analysis_method' =>  $pA->impactStudy->analysis_method ?? '',
+                        'forecast_method' => $pA->impactStudy->forecast_method ?? '',
+                        'evaluation_method' => $pA->impactStudy->evaluation_method ?? ''
+                    ];
+                    $total_ms++;
+                }
+                $total++;
+            }
+        }
+
+        $pdf = PDF::loadView('document.template_ka_andal', 
+            compact(
+                'project',
+                'team_member',
+                'public_consultation',
+                'pelingkupan'
+            ));
+
+        return $pdf->download('hehey.pdf');
     }
 
     private function getComments($id)

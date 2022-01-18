@@ -3,7 +3,12 @@
     <el-card v-loading="loading">
       <h2>Formulir Kerangka Acuan</h2>
       <div>
-        <el-button v-if="showDocument" type="danger" @click="exportPdf">
+        <el-button
+          v-if="showDocument"
+          :loading="loadingPDF"
+          type="danger"
+          @click="exportPdf"
+        >
           Export to .PDF
         </el-button>
         <el-button v-if="showDocument" type="primary" @click="downloadDocx">
@@ -58,6 +63,7 @@ export default {
       idProject: 0,
       projects: '',
       loading: false,
+      loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
       metode_studi: [],
       pra_konstruksi: [],
@@ -173,6 +179,7 @@ export default {
         `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
     },
     async exportPdf() {
+      this.loadingPDF = true;
       axios({
         url: `api/andal-composing`,
         method: 'GET',
@@ -194,6 +201,7 @@ export default {
         );
         document.body.appendChild(fileLink);
         fileLink.click();
+        this.loadingPDF = false;
       });
     },
   },
