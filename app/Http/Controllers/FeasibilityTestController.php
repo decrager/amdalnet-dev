@@ -8,6 +8,7 @@ use App\Entity\FeasibilityTestDetail;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\MeetingReport;
 use App\Entity\Project;
+use App\Entity\ProjectAddress;
 use App\Entity\TestingMeeting;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
@@ -15,6 +16,7 @@ use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use PDF;
 
 class FeasibilityTestController extends Controller
 {
@@ -318,19 +320,36 @@ class FeasibilityTestController extends Controller
     }
 
     private function exportPDF($id_project) {
-        $domPdfPath = base_path('vendor/dompdf/dompdf');
-        Settings::setPdfRendererPath($domPdfPath);
-        Settings::setPdfRendererName('DomPDF');
         $project = Project::findOrFail($id_project);
+        $project_address = ProjectAddress::where('id_project', $project->id)->first();
+        $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
-        //Load word file
-        $Content = IOFactory::load(storage_path('app/public/uji-kelayakan/' . 'uji-kelayakan-' . strtolower($project->project_title) . '.docx'));
+        // GET TUK
+        $tuk = [
+            'kepala_sekretariat_tuk_name' => '',
+            'kepala_sekretariat_tuk_nip' => '',
+            'ketua_tuk_position' => '',
+            'ketua_tuk_name' => '',
+            'ketua_tuk_nip' => ''
+        ];
+        $testing_meeting = TestingMeeting::where('id_project', $project->id)->first();
+        if($testing_meeting) {
+            $tuk = $this->getTukData($testing_meeting, $tuk);
+        } else {
+            $meeting_report = MeetingReport::where('id_project', $project->id)->first();
+            if($meeting_report) {
+                $tuk = $this->getTukData($meeting_report, $tuk);
+            }
+        }
 
-        //Save it into PDF
-        $PDFWriter = IOFactory::createWriter($Content, 'PDF');
+        $pdf = PDF::loadView('document.template_kelayakan', 
+            compact(
+                'project',
+                'project_address',
+                'docs_date',
+                'tuk'
+            ));
 
-        $PDFWriter->save(storage_path('app/public/uji-kelayakan/' . 'uji-kelayakan-' . strtolower($project->project_title) . '.pdf'));
-
-        return response()->download(storage_path('app/public/uji-kelayakan/' . 'uji-kelayakan-' . strtolower($project->project_title) . '.pdf'))->deleteFileAfterSend(true);
+        return $pdf->download('hehey.pdf');
     }
 }
