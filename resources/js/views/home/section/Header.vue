@@ -4,7 +4,6 @@
       <a href="#" class="nav__logo" @click="handleSetMenu('LOGO')">
         <img src="/images/logo-amdal-white.png" alt="">
       </a>
-
       <div id="nav-menu" class="nav__menu">
         <ul class="nav__list">
           <li class="nav__item">

@@ -17,7 +17,6 @@
             </div>
             <div class="actions__box__links__desc">
               <h2 class="actions__box__links__desc__title"><span class="title__primary">Penapisan</span> Otomatis</h2>
-              <!-- <span class="actions__box__links__desc__subtitle">Pengajuan Persetujuan lingkungan untuk usaha dan kegiatan</span> -->
             </div>
             <div>
               <img v-show="!showPenapisan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
@@ -63,7 +62,6 @@
             </div>
             <div class="actions__box__links__desc">
               <h2 class="actions__box__links__desc__title"><span class="title__primary">Asistensi</span> Pelingkupan</h2>
-              <!-- <span class="actions__box__links__desc__subtitle">Peta tematik penyebaran daerah yang sudah mendapat izin AMDAL</span> -->
             </div>
             <div>
               <img v-show="!showPelingkupan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
@@ -90,7 +88,6 @@
             </div>
             <div class="actions__box__links__desc">
               <h2 class="actions__box__links__desc__title"><span class="title__primary">AMDAL</span> Digital Workspace</h2>
-              <!-- <span class="actions__box__links__desc__subtitle">Konsultasi untuk pengajuan izin lingkungan</span> -->
             </div>
             <div>
               <img v-show="!showDigi" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
@@ -111,17 +108,6 @@
         </el-col>
       </el-row>
     </div>
-    <!-- <div class="simulations__box__links__wrapper">
-      <h1 style="color: white">Simulasi Penapisan Dokumen</h1>
-      <div>
-        <sub-project-table :list="listSubProject" :list-kbli="getListKbli" @cancel="cancelParam" />
-        <el-button
-          type="primary"
-          @click="handleAddSubProjectTable"
-        >+</el-button>
-      </div>
-      <h2 style="color: white; margin-top: 20px">Hasil Akhir Penapisan {{ last_result }}</h2>
-    </div> -->
     <public-question-dialog :show="showPublicQues" @cancel="() => showPublicQues = false" />
     <tracking-document-dialog
       :show="showTrackingDocument"
