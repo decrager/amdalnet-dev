@@ -22,6 +22,7 @@ use App\Entity\RonaAwal;
 use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
+use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -29,7 +30,6 @@ use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\Shared\Html;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -1447,10 +1447,10 @@ class AndalComposingController extends Controller
 
         // ======= EVALUASI HOLISTIK ====== //
         $holistic_evaluations = '';
-        // $hol_eval = HolisticEvaluation::where('id_project', $id_project)->first();
-        // if($hol_eval) {
-        //     $holistic_evaluations = $hol_eval->description;
-        // }
+        $hol_eval = HolisticEvaluation::where('id_project', $id_project)->first();
+        if($hol_eval) {
+            $holistic_evaluations = $hol_eval->description;
+        }
         $holEvalTable = new Table();
         $holEvalTable->addRow();
         $cell = $holEvalTable->addCell();
