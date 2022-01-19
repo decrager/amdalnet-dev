@@ -473,7 +473,7 @@ export default {
           this.saveFeedback();
         } else {
           this.$message({
-            type: 'warning',
+            type: 'info',
             message: 'Masukan dalam Formulir Tanggapan tidak lengkap',
             duration: 5 * 1000,
           });
@@ -482,7 +482,8 @@ export default {
       });
     },
     async saveFeedback() {
-      if (this.$) {
+      if (this.$refs.form) {
+        console.log('saveFeedback');
         if (this.form.peran === 1 && this.form.comunityType.length === 0 && this.form.comunityGender === null) {
           this.centerDialogVisible = true;
         } else {

@@ -821,26 +821,28 @@ input {
 
 .footer__mitra {
     background: var(--white-color);
-    width: 87px;
-    height: 87px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     text-align: center;
     line-height: 50px;
     vertical-align: middle;
     padding: 13px;
     margin-right: var(--mb-1-25);
+    object-fit: contain;
 }
 
 .footer__mitra:hover {
     background: #F6993F;
-    width: 87px;
-    height: 87px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     text-align: center;
     line-height: 50px;
     vertical-align: middle;
     padding: 11px;
     margin-right: var(--mb-1-25);
+    object-position: center;
 }
 
 .footer__subtitle {
