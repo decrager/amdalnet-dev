@@ -114,9 +114,9 @@ class ProjectController extends Controller
                     ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
                     ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
                     ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%');
-                    //->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
-                    //->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                    ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                    ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                    ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
                 }
                 return $query;
             }
@@ -125,9 +125,9 @@ class ProjectController extends Controller
         ->leftJoin('users', 'initiators.email', '=', 'users.email')
         ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
         ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
-        //->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
-        //->distinct()
-        //->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
+        ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+        ->distinct()
+        ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
         ->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
  
     }
