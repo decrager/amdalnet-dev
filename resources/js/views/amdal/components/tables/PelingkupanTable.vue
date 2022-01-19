@@ -55,83 +55,85 @@
       </el-table>
     </el-col>
     <el-col v-loading="loadingKomponen" :span="18" :xs="24">
-      <table :key="tableKey" class="title" style="border-collapse: collapse; width:100%;">
-        <thead>
-          <tr>
-            <th rowspan="2">Komponen Kegiatan</th>
-            <th colspan="6">Komponen Lingkungan</th>
-          </tr>
-          <tr>
-            <th>Geofisika Kimia</th>
-            <th>Biologi</th>
-            <th>Sosial Ekonomi Budaya</th>
-            <th>Kesehatan Masyarakat</th>
-            <th>Kegiatan Lain Sekitar</th>
-            <th>Lainnya</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
-                <el-row>
-                  <el-tooltip class="item" effect="dark" placement="top-start">
-                    <div slot="content">
-                      {{ comp.description_specific }}
-                    </div>
-                    <el-button
-                      type="default"
-                      size="medium"
-                      :style="componentButtonStyle(comp.id)"
-                      @click="handleViewRonaAwals(comp.id)"
-                    >
-                      <el-button
-                        v-if="!isAndal && isFormulator"
-                        type="danger"
-                        size="mini"
-                        icon="el-icon-close"
-                        style="margin-left: 0px; margin-right: 10px;"
-                        class="button-action-mini"
-                        @click="handleDeleteComponent(comp.id)"
-                      />
-                      <span>{{ comp.name }}</span>
+      <div style="overflow: auto">
+        <table :key="tableKey" class="title" style="border-collapse: collapse; width:100%;">
+          <thead>
+            <tr>
+              <th rowspan="2">Komponen Kegiatan</th>
+              <th colspan="6">Komponen Lingkungan</th>
+            </tr>
+            <tr>
+              <th>Geofisika Kimia</th>
+              <th>Biologi</th>
+              <th>Sosial Ekonomi Budaya</th>
+              <th>Kesehatan Masyarakat</th>
+              <th>Kegiatan Lain Sekitar</th>
+              <th>Lainnya</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
+                  <el-row>
+                    <el-tooltip class="item" effect="dark" placement="top-start">
+                      <div slot="content">
+                        {{ comp.description_specific }}
+                      </div>
                       <el-button
                         type="default"
-                        size="mini"
-                        class="pull-right button-action-mini"
-                        icon="el-icon-edit"
-                        @click="handleEditComponent(comp.id)"
-                      />
-                    </el-button>
+                        size="medium"
+                        :style="componentButtonStyle(comp.id)"
+                        @click="handleViewRonaAwals(comp.id)"
+                      >
+                        <el-button
+                          v-if="!isAndal && isFormulator"
+                          type="danger"
+                          size="mini"
+                          icon="el-icon-close"
+                          style="margin-left: 0px; margin-right: 10px;"
+                          class="button-action-mini"
+                          @click="handleDeleteComponent(comp.id)"
+                        />
+                        <span>{{ comp.name }}</span>
+                        <el-button
+                          type="default"
+                          size="mini"
+                          class="pull-right button-action-mini"
+                          icon="el-icon-edit"
+                          @click="handleEditComponent(comp.id)"
+                        />
+                      </el-button>
+                    </el-tooltip>
+                  </el-row>
+                </div>
+
+                <el-button v-if="!isAndal && isFormulator" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
+              </td>
+              <td v-for="i in 6" :key="i">
+                <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                  <el-tooltip class="item" effect="dark" placement="top-start">
+                    <div slot="content">
+                      {{ ra.description_specific }}
+                    </div>
+                    <el-tag key="ra.id" type="info" :closable="closable && !isAndal && isFormulator" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                   </el-tooltip>
-                </el-row>
-              </div>
+                </div>
 
-              <el-button v-if="!isAndal && isFormulator" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
-            </td>
-            <td v-for="i in 6" :key="i">
-              <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" style="margin:.5em 0;">
-                <el-tooltip class="item" effect="dark" placement="top-start">
-                  <div slot="content">
-                    {{ ra.description_specific }}
-                  </div>
-                  <el-tag key="ra.id" type="info" :closable="closable && !isAndal && isFormulator" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                </el-tooltip>
-              </div>
-
-              <el-button
-                v-if="!isAndal && isFormulator"
-                icon="el-icon-plus"
-                circle
-                style="margin-top:3em;display:block;"
-                round
-                :disabled="currentIdSubProjectComponent === 0"
-                @click="handleAddRonaAwal(i)"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <el-button
+                  v-if="!isAndal && isFormulator"
+                  icon="el-icon-plus"
+                  circle
+                  style="margin-top:3em;display:block;"
+                  round
+                  :disabled="currentIdSubProjectComponent === 0"
+                  @click="handleAddRonaAwal(i)"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </el-col>
     <add-component-dialog
       v-if="!isAndal && isFormulator"
