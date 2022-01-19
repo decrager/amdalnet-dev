@@ -20,7 +20,7 @@
           placeholder="Parameter"
           :trigger-on-focus="false"
           type="textarea"
-          style="width: 595px"
+          style="width: 100%"
           @select="handleSelectParam"
         />
         <el-input
@@ -40,7 +40,7 @@
           placeholder="Unit"
           :trigger-on-focus="false"
           type="textarea"
-          style="width: 595px"
+          style="width: 100%"
           @select="handleSelectUnit"
         />
         <el-input

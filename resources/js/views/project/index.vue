@@ -517,15 +517,19 @@ export default {
     },
     async getFiltered(query) {
       this.loading = true;
+      this.filtered = [];
+      console.log('getFiltered', query);
       await projectResource.list(query)
         .then((res) => {
           const { data, total } = res;
-          this.filtered = data.map(e => {
+          const mapped = data.map(e => {
             e.listSubProject = e.list_sub_project;
             return e;
           });
+          this.filtered = mapped;
           this.total = total;
           this.loading = false;
+          console.log(data, this.filtered);
         }).finally(() => {
           this.loading = false;
         });
@@ -818,7 +822,7 @@ export default {
     },
     doSearch(){
       this.listQuery.page = 1;
-      this.handleFilter();
+      this.getFiltered(this.listQuery);
     },
     resetSearch(){
       this.listQuery.search = '';
