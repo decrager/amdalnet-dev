@@ -11,6 +11,56 @@
             <a href="#" class="nav__link active-link" @click="handleSetMenu('MATERI')">Materi</a>
           </li>
           <li class="nav__item">
+            <a href="#" class="nav__link" @click="handleSetMenu('FORMULIR')">
+              Formulir dan Standart
+              <template v-if="isActive">
+                <i class="el-icon-arrow-up" />
+              </template>
+              <template v-else>
+                <i class="el-icon-arrow-down" />
+              </template>
+            </a>
+            <ul v-if="isActive" class="left-4">
+              <li>
+                <a href="">Template Persetujuan Perlingkupan</a>
+              </li>
+              <li>
+                <a href="">Formulir KA Amdal Standar Spesifik</a>
+              </li>
+              <li>
+                <a href="">UKL-UPL Standar Spesifik</a>
+              </li>
+              <li>
+                <a href="">Lainnya...</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav__item">
+            <a href="#" class="nav__link" @click="handleSetMenu('STATIC')">
+              Daftar dan Statik
+              <template v-if="isActiveDaftar">
+                <i class="el-icon-arrow-up" />
+              </template>
+              <template v-else>
+                <i class="el-icon-arrow-down" />
+              </template>
+            </a>
+            <ul v-if="isActiveDaftar" class="left0">
+              <li>
+                <a href="">Daftar Izin</a>
+              </li>
+              <li>
+                <a href="">Startistik Izin</a>
+              </li>
+              <li>
+                <a href="">Daftar LPJP</a>
+              </li>
+              <li>
+                <a href="">Lainnya...</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav__item">
             <a href="#" class="nav__link" @click="handleSetMenu('KEBIJAKAN')">Kebijakan</a>
           </li>
           <li class="nav__item">
@@ -23,7 +73,6 @@
 
         <i id="nav-close" class="ri-close-line nav__close" />
       </div>
-
       <div id="nav-toggle" class="nav__toggle">
         <i class="ri-function-line" />
       </div>
@@ -37,6 +86,8 @@ export default {
   data() {
     return {
       loading: false,
+      isActive: false,
+      isActiveDaftar: false,
     };
   },
   mounted() {
@@ -78,12 +129,26 @@ export default {
       return this.$router.push('/login');
     },
     handleSetMenu(e){
-      this.$emit('handleSetMenu', e);
+      if (e !== 'FORMULIR' && e !== 'DAFTAR'){
+        this.$emit('handleSetMenu', e);
+      }
+      if (e === 'FORMULIR'){
+        this.isActive = !this.isActive;
+      }
+      if (e === 'STATIC'){
+        this.isActiveDaftar = !this.isActiveDaftar;
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-
+.nav__link {font-size: 0.7rem;}
+  .nav__item{position: relative;}
+  .nav__item ul{position: absolute;top: 1.8rem;background: black;  padding: 1rem;border: 1px solid #847a7a;border-radius: 5px;width: 254px;font-size: 0.7rem;}
+  .nav__item ul li{padding: 0.5rem;}
+  .nav__item ul li a{color: #fff;}
+  .left-4{left: -4rem;}
+  .left0{left: 0;}
 </style>
