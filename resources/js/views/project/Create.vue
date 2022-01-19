@@ -313,6 +313,7 @@
                     style="width: 100%"
                     size="medium"
                     @change="changeProjectType($event)"
+                    @clear="removePreAgreement"
                   >
                     <el-option
                       v-for="item in preAgreementOptions"
@@ -1003,7 +1004,7 @@ export default {
       // console.log('choosenProject', choosenProject);
 
       // add choosen project to current project
-      this.currentProject.kbli = choosenProject.kbli;
+      this.currentProject.kbli = choosenProject.kbli ? choosenProject.kbli : 'non kbli';
       this.currentProject.required_doc = choosenProject.result;
       this.currentProject.risk_level = choosenProject.result_risk;
       this.currentProject.result_risk = choosenProject.result_risk;
@@ -1326,16 +1327,24 @@ export default {
       this.$router.push('/project');
     },
     handleSubmit() {
-      this.currentProject.fileMap = this.fileMap;
-      this.currentProject.filePdf = this.filePdf;
-      this.currentProject.fileKtr = this.fileKtr;
-      this.currentProject.filePreAgreement = this.filePreAgreement;
+      if (this.fileMap){
+        this.currentProject.fileMap = this.fileMap;
+      }
+      if (this.filePdf){
+        this.currentProject.filePdf = this.filePdf;
+      }
+      if (this.fileKtr){
+        this.currentProject.fileKtr = this.fileKtr;
+      }
+      if (this.filePreAgreement) {
+        this.currentProject.filePreAgreement = this.filePreAgreement;
+      }
 
       // this.$refs.currentProject.validate((valid) => {
       //   if (valid) {
-      this.currentProject.listSupportDoc = this.listSupportTable.filter(
-        (item) => item.name && item.file
-      );
+      // this.currentProject.listSupportDoc = this.listSupportTable.filter(
+      //   (item) => item.name && item.file
+      // );
 
       // send to pubishProjectRoute
       this.$router.push({
@@ -1389,6 +1398,9 @@ export default {
     },
     changeStatus(value) {
 
+    },
+    removePreAgreement(){
+      delete this.currentProject.pre_agreement;
     },
     changeProjectType(value) {
       const temp = 'Upload Dokumen ';
