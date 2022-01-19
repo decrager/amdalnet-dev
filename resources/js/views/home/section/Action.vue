@@ -115,17 +115,17 @@
       <div class="actions__data__video">
         <h2 class="section__title actions__title__video">Video</h2>
         <div class="actions__video__wrapper">
-          <img src="/images/no-video.png" alt="">
+          <img src="/images/penapisan.jpeg" alt="">
         </div>
         <div class="actions__video__wrapper">
-          <img src="/images/no-video.png" alt="">
+          <img src="/images/ka.jpeg" alt="">
         </div>
         <div class="actions__video__wrapper">
-          <img src="/images/no-video.png" alt="">
+          <img src="/images/login.jpeg" alt="">
         </div>
-        <div class="actions__video__wrapper">
+        <!-- <div class="actions__video__wrapper">
           <img src="/images/no-video.png" alt="">
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- <div class="simulations__box__links__wrapper">
