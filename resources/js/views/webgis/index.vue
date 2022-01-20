@@ -144,18 +144,20 @@
 </template>
 
 <script>
-// import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+// Arcgis Module
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import DarkHeaderHome from '../home/section/DarkHeader';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import * as urlUtils from '@arcgis/core/core/urlUtils';
+
+// Script
 import axios from 'axios';
 import rupabumis from './scripts/mapRupabumi';
 import rtrwProvMap from './scripts/mapRtrw';
 import { generateFeatureCollection, layerIn } from './scripts/uploadShapefile';
 import widgetMap from './scripts/widgetMap';
-import * as urlUtils from '@arcgis/core/core/urlUtils';
-import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import popupTemplate from './scripts/popupTemplate';
 import urlBlob from './scripts/urlBlob';
 
