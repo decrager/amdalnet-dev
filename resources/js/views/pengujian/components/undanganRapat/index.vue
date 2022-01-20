@@ -309,7 +309,11 @@ export default {
         idProject: this.idProject,
       });
       this.docxData = data;
-      this.exportDocx();
+      const a = document.createElement('a');
+      a.href = window.location.origin + `/storage/adm/berkas-adm-${data}.docx`;
+      a.setAttribute('download', `berkas-adm-${data}.docx`);
+      a.click();
+      this.loadingDocx = false;
     },
     async handleDownloadInvitation() {
       this.loadingInvitationDocx = true;

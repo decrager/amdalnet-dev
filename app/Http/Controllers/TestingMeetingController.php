@@ -14,8 +14,12 @@ use App\Entity\TestingMeetingInvitation;
 use App\Entity\TestingVerification;
 use App\Laravue\Models\User;
 use App\Notifications\MeetingInvitation;
+use App\Utils\Html;
+use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\Element\Table;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
@@ -378,6 +382,10 @@ class TestingMeetingController extends Controller
     }
 
     private function dokumen($id_project) {
+        if (!File::exists(storage_path('app/public/adm/'))) {
+            File::makeDirectory(storage_path('app/public/adm/'));
+        }
+
         $project = Project::findOrFail($id_project);
         $testing_meeting = TestingMeeting::where([['id_project', $id_project], ['document_type', 'ka']])->first();
         $verification = TestingVerification::where([['id_project', $id_project], ['document_type', 'ka']])->first();
@@ -431,20 +439,29 @@ class TestingMeetingController extends Controller
          $anggota_penyusun = [];
          $formulator_team = FormulatorTeam::where('id_project', $id_project)->first();
          if($formulator_team) {
-             $formulator_member = FormulatorTeamMember::where('id_formulator_team', $formulator_team->id)->get();
-             $total = 1;
+             $formulator_member = FormulatorTeamMember::where('id_formulator_team', $formulator_team->id)->orderBy('position', 'desc')->get();
+             $total = 0;
+             $ahli = [];
              foreach($formulator_member as $f) {
                  if($f->formulator) {
+                     $total++;
                      $anggota_penyusun[] = [
                          'penyusun' => $total . '. ' .  $f->formulator->name . ' (' . $f->position . ')' 
                      ];
                  } else if($f->expert) {
-                    $anggota_penyusun[] = [
-                        'penyusun' => $total . '. ' . $f->expert->name . ' (Anggota Ahli)' 
-                    ];
+                    $ahli[] = $f->expert->name . ' (Anggota Ahli)';
                  }
-                 $total++;
-             } 
+             }
+
+             if(count($ahli) > 0) {
+                 $total = count($anggota_penyusun) + 1;
+                 for($i = 0; $i < count($ahli); $i++) {
+                    $anggota_penyusun[] = [
+                         'penyusun' => $total . '. ' . $ahli[$i]
+                        ];
+                    $total++;
+                } 
+             }
          }
 
          $meeting_invitations = [];
@@ -471,62 +488,38 @@ class TestingMeetingController extends Controller
              }
              $total++;
          }
- 
 
-        $data = [
-            'tata_ruang_yes' => '',
-            'tata_ruang_no' => '',
-            'tata_ruang_ket' => '',
-            'persetujuan_awal_yes' => '',
-            'persetujuan_awal_no' => '',
-            'persetujuan_awal_ket' => '',
-            'hasil_penapisan_yes' => '',
-            'hasil_penapisan_no' => '',
-            'hasil_penapisan_ket' => '',
-            'surat_penyusun_yes' => '',
-            'surat_penyusun_no' => '',
-            'surat_penyusun_ket' => '',
-            'sertifikasi_penyusun_yes' => '',
-            'sertifikasi_penyusun_no' => '',
-            'sertifikasi_penyusun_ket' => '',
-            'peta_yes' => '',
-            'peta_no' => '',
-            'peta_ket' => '',
-            'konsul_publik_yes' => '',
-            'konsul_publik_no' => '',
-            'konsul_publik_ket' => '',
-            'cv_penyusun_yes' => '',
-            'cv_penyusun_no' => '',
-            'cv_penyusun_ket' => '',
-            'sistematika_penyusunan_yes' => '',
-            'sistematika_penyusunan_no' => '',
-            'sistematika_penyusunan_ket' => '',
-        ];
+        $templateProcessor = new TemplateProcessor('template_berkas_adm_yes.docx');
+        $templateProcessor->setValue('project_title', $project->project_title);
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('project_description', $project->description);
+        $templateProcessor->setValue('project_location', $project_address);
+        $templateProcessor->setValue('meeting_time', $meeting_time . ' ' . $meeting_date);
+        $templateProcessor->setValue('docs_date', $docs_date);
+        $templateProcessor->setValue('ketua_tuk', $ketua_tuk);
+        $templateProcessor->setValue('tim_penyusun', $tim_penyusun);
+        $templateProcessor->cloneBlock('anggota_penyusun', count($anggota_penyusun), true, false, $anggota_penyusun);
+        $templateProcessor->cloneBlock('meeting_invitations', count($meeting_invitations), true, false, $meeting_invitations);
 
         if($verification->forms) {
             if($verification->forms->first()) {
                 foreach($verification->forms as $f) {
-                    $data[$f->name . '_yes'] = $f->suitability == 'Sesuai' ? 'V' : '';
-                    $data[$f->name . '_no'] = $f->suitability == 'Tidak Sesuai' ? 'V' : '';
-                    $data[$f->name . '_ket'] = $f->description;
+                    $templateProcessor->setValue($f->name . '_yes', $f->suitability == 'Sesuai' ? 'V' : '');
+                    $templateProcessor->setValue($f->name . '_no', $f->suitability == 'Tidak Sesuai' ? 'V' : '');
+                    $templateProcessor->setValue($f->name . '_ket', $f->description);
                 }
             }
         }
 
-        return [
-            'project_title' => $project->project_title,
-            'pemrakarsa' => $project->initiator->name,
-            'project_description' => $project->description,
-            'project_location' => $project_address,
-            'meeting_time' => $meeting_time . ' ' . $meeting_date,
-            'docs_date' => $docs_date,
-            'ketua_tuk' => $ketua_tuk,
-            'notes' => $verification->notes,
-            'forms' => $data,
-            'tim_penyusun' => $tim_penyusun,
-            'anggota_penyusun' => $anggota_penyusun,
-            'meeting_invitations' => $meeting_invitations
-        ];
+        $notesTable = new Table();
+        $notesTable->addRow();
+        $cell = $notesTable->addCell(6000);
+        Html::addHtml($cell, $verification->notes);
+
+        $templateProcessor->setComplexBlock('notes', $notesTable);
+        $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-' . strtolower($project->project_title) . '.docx'));
+
+        return strtolower($project->project_title);
     }
 
     private function meetingInvitation($id_project)
