@@ -11,9 +11,14 @@
         >
           Export to .PDF
         </el-button>
-        <el-button v-if="showDocument" type="primary" @click="downloadDocx">
+        <a
+          v-if="showDocument"
+          class="btn-docx"
+          :href="'/storage/formulir/' + downloadDocxPath"
+          download
+        >
           Export to .DOCX
-        </el-button>
+        </a>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16">
@@ -79,6 +84,7 @@ export default {
       penyusun: [],
       out: '',
       showDocument: false,
+      downloadDocxPath: '',
     };
   },
   created() {
@@ -88,24 +94,14 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
-      const data = await andalComposingResource.list({
+      this.downloadDocxPath = await andalComposingResource.list({
         idProject: this.$route.params.id,
         formulir: 'true',
       });
-      console.log(data);
-      this.metode_studi = data.metode_studi;
-      this.konstruksi = data.konstruksi;
-      this.pra_konstruksi = data.pra_konstruksi;
-      this.operasi = data.operasi;
-      this.pasca_operasi = data.pasca_operasi;
-      this.project_title = data.project_title;
-      this.pic = data.pic;
-      this.description = data.description;
-      this.location_desc = data.location_desc;
-      this.negative = data.negative;
-      this.positive = data.positive;
-      this.penyusun = data.penyusun;
-      this.exportDocx();
+      this.projects =
+        window.location.origin + `/storage/formulir/${this.downloadDocxPath}`;
+      this.showDocument = true;
+      this.loading = false;
     },
     async exportDocxPhpWord() {
       await andalComposingResource.list({
@@ -235,5 +231,24 @@ export default {
   width: 32px;
   border-radius: 50%;
   border: 2px solid #099c4b;
+}
+.btn-docx {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #ffffff;
+  background-color: #216221;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid #216221;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: 0.1s;
+  font-weight: 400;
 }
 </style>
