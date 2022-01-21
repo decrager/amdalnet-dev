@@ -2016,7 +2016,10 @@ class AndalComposingController extends Controller
 
         $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
 
-        return $save_file_name;
+        return [
+            'file_name' => $save_file_name,
+            'project_title' => strtolower($project->project_title)
+        ];
     }
 
     private function getFormulirIm(
