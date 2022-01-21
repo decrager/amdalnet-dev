@@ -97,6 +97,7 @@ export default {
       this.downloadDocxPath = await andalComposingResource.list({
         idProject: this.$route.params.id,
         formulir: 'true',
+        type: 'andal',
       });
       this.projects =
         window.location.origin + `/storage/formulir/${this.downloadDocxPath}`;
@@ -183,6 +184,7 @@ export default {
         params: {
           pdf: 'true',
           idProject: this.$route.params.id,
+          type: 'andal',
         },
       }).then((response) => {
         // const getHeaders = response.headers['content-disposition'].split('; ');
