@@ -97,6 +97,19 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/oss-auth',
+    component: () => import('@/views/oss-auth/index'),
+    hidden: true,
+    name: 'OssAuth',
+  },
+  {
+    path: '/oss-auth/register',
+    component: () => import('@/views/oss-auth/Register'),
+    props: true,
+    hidden: true,
+    name: 'OssAuthRegister',
+  },
+  {
     path: '/auth-redirect',
     component: () => import('@/views/login/AuthRedirect'),
     hidden: true,
