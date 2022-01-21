@@ -77,7 +77,11 @@ export default {
         docs: 'true',
       });
       this.docs = data;
-      this.exportDocx();
+      const a = document.createElement('a');
+      a.href = window.location.origin + `/storage/ba-ka/ba-ka-${data}.docx`;
+      a.setAttribute('download', `ba-ka-${data}.docx`);
+      a.click();
+      this.loadingDocs = false;
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
