@@ -94,10 +94,13 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
-      this.downloadDocxPath = await andalComposingResource.list({
+      const data = await andalComposingResource.list({
         idProject: this.$route.params.id,
         formulir: 'true',
+        type: 'andal',
       });
+      this.downloadDocxPath = data.file_name;
+      this.project_title = data.project_title;
       this.projects =
         window.location.origin + `/storage/formulir/${this.downloadDocxPath}`;
       this.showDocument = true;
@@ -183,6 +186,7 @@ export default {
         params: {
           pdf: 'true',
           idProject: this.$route.params.id,
+          type: 'andal',
         },
       }).then((response) => {
         // const getHeaders = response.headers['content-disposition'].split('; ');

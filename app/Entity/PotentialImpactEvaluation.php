@@ -13,4 +13,9 @@ class PotentialImpactEvaluation extends Model
         'id_pie_param',
         'text'
     ];
+
+    public function pieParam()
+    {
+        return $this->belongsTo(MasterPotentialImpactEvaluationParam::class, 'id_pie_param', 'id');
+    }
 }

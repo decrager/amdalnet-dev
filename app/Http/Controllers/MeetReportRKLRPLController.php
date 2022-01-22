@@ -13,8 +13,11 @@ use App\Entity\MeetingReportInvitation;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\TestingMeeting;
+use App\Utils\Html;
+use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -390,6 +393,10 @@ class MeetReportRKLRPLController extends Controller
     }
 
     private function getDocs($id_project) {
+        if (!File::exists(storage_path('app/public/ba-andal-rkl-rpl/'))) {
+            File::makeDirectory(storage_path('app/public/ba-andal-rkl-rpl/'));
+        }
+
         $project = Project::findOrFail($id_project);
         $meeting = MeetingReport::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes', 'position')->where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
         $invitations = MeetingReportInvitation::where('id_meeting_report', $meeting->id)->get();
@@ -479,22 +486,30 @@ class MeetReportRKLRPLController extends Controller
             }
         }
 
-        return [
-            'project_title' => $project->project_title,
-            'project_title_big' => strtoupper($project->project_title),
-            'pemrakarsa' => $project->initiator->name,
-            'pemrakarsa_big' => strtoupper($project->initiator->name),
-            'pic' => $project->initiator->pic,
-            'pic_position' => $meeting->position,
-            'ketua_tuk_position' => $ketua_tuk_position,
-            'authority' => $authority,
-            'authority_big' => $authority_big,
-            'tuk_member' => $member,
-            'notes' => $meeting->notes,
-            'ketua_tuk_name' => $ketua_tuk_name,
-            'meeting_date' => $meeting_date,
-            'meeting_location' => $meeting_location,
-            'year' => date('Y', strtotime($meeting->updated_at))
-        ];
+        $templateProcessor = new TemplateProcessor('template_berita_acara_arr.docx');
+        $templateProcessor->setValue('project_title', $project->project_title);
+        $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
+        $templateProcessor->setValue('pic', $project->initiator->pic);
+        $templateProcessor->setValue('pic_position', $meeting->position);
+        $templateProcessor->setValue('ketua_tuk_position', $ketua_tuk_position);
+        $templateProcessor->setValue('authority', $authority);
+        $templateProcessor->setValue('authority_big', $authority_big);
+        $templateProcessor->setValue('ketua_tuk_name', $ketua_tuk_name);
+        $templateProcessor->setValue('meeting_date', $meeting_date);
+        $templateProcessor->setValue('meeting_location', $meeting_location);
+        $templateProcessor->setValue('year', date('Y', strtotime($meeting->updated_at)));
+        $templateProcessor->cloneBlock('tuk_member', count($member), true, false, $member);
+
+        $notesTable = new Table();
+        $notesTable->addRow();
+        $cell = $notesTable->addCell();
+        Html::addHtml($cell, $meeting->notes);
+
+        $templateProcessor->setComplexBlock('notes', $notesTable);
+        $templateProcessor->saveAs(storage_path('app/public/ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower($project->project_title) . '.docx'));
+
+        return strtolower($project->project_title);
     }
 }

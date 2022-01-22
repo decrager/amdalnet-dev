@@ -149,8 +149,10 @@ import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import Graphic from '@arcgis/core/Graphic';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
+import centroid from '@turf/centroid';
 
 // Script
 import axios from 'axios';
@@ -172,9 +174,9 @@ export default {
       radioProject: null,
       radioRTRW: null,
       checkedEcology: false,
-      checkedKelola: true,
-      checkedPantau: true,
-      checkedTapak: false,
+      checkedKelola: false,
+      checkedPantau: false,
+      checkedTapak: true,
       checkedSosial: false,
       checkedStudi: false,
       checkedRBI: false,
@@ -393,13 +395,14 @@ export default {
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
             const propStyles = getType.features[0].properties.styles;
+            const geomFields = getType.features[0];
 
             // Pemantauan
             if (propType === 'pemantauan') {
               const geojsonLayerArray = new GeoJSONLayer({
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
-                visible: true,
+                visible: false,
                 title: 'Layer Titik Pemantauan',
                 renderer: propStyles,
                 popupTemplate: popupTemplate(propFields),
@@ -423,7 +426,7 @@ export default {
               const geojsonLayerArray = new GeoJSONLayer({
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
-                visible: true,
+                visible: false,
                 title: 'Layer Titik Pengelolaan',
                 renderer: propStyles,
                 popupTemplate: popupTemplate(propFields),
@@ -520,11 +523,39 @@ export default {
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
                 opacity: 0.7,
-                visible: false,
+                visible: true,
                 title: 'Layer Tapak Proyek',
                 renderer: propStyles,
                 popupTemplate: popupTemplate(propFields),
+                minScale: 500000,
               });
+
+              var centroids = centroid(geomFields);
+              var getCoordinates = centroids.geometry.coordinates;
+
+              const point = {
+                type: 'point',
+                longitude: getCoordinates[0],
+                latitude: getCoordinates[1],
+              };
+
+              const markerSymbol = {
+                type: 'simple-marker',
+                color: [226, 119, 40],
+                outline: {
+                  color: [255, 255, 255],
+                  width: 2,
+                },
+              };
+
+              const pointGraphic = new Graphic({
+                geometry: point,
+                symbol: markerSymbol,
+                visible: true,
+                maxScale: 500000,
+              });
+
+              mapView.graphics.add(pointGraphic);
 
               this.mapGeojsonArray.push(geojsonLayerArray);
               const toggle = document.getElementById('layerTapakCheckBox');

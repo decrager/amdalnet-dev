@@ -55,11 +55,11 @@ class AndalComposingController extends Controller
         }
 
         if ($request->pdf) {
-            return $this->exportKAPDF($request->idProject);
+            return $this->exportKAPDF($request->idProject, $request->type);
         }
 
         if ($request->formulir) {
-            return $this->formulirKa($request->idProject);
+            return $this->formulirKa($request->idProject, $request->type);
             // return $this->formulirKaPhpWord($request->idProject);
         }
 
@@ -1738,7 +1738,7 @@ class AndalComposingController extends Controller
         return $component_type;
     }
 
-    private function formulirKa($id_project)
+    private function formulirKa($id_project, $type)
     {
         if (!File::exists(storage_path('app/public/formulir/'))) {
             File::makeDirectory(storage_path('app/public/formulir/'));
@@ -1751,7 +1751,11 @@ class AndalComposingController extends Controller
         });
         
         $project = Project::findOrFail($id_project);
+
         $save_file_name = 'ka-andal-' . strtolower($project->project_title) . '.docx';
+        if($type != 'andal') {
+            $save_file_name = 'ka-' . strtolower($project->project_title) . '.docx';
+        }
 
         $fomulator_team = FormulatorTeam::where('id_project', $project->id)->first();
         $fomulator_team_member = FormulatorTeamMember::where('id_formulator_team', $fomulator_team->id)->orderBy('position', 'desc')->get();
@@ -1803,8 +1807,15 @@ class AndalComposingController extends Controller
             }
         }
 
-        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-            ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        $im = null;
+
+        if($type == 'andal') {
+            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+                ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        } else {
+            $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+                ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        }
 
         $total_ms = 0;
         $pra_konstruksi = [];
@@ -1961,6 +1972,7 @@ class AndalComposingController extends Controller
         }
 
         $templateProcessor = new TemplateProcessor('template_ka_andal.docx');
+
         $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
         $templateProcessor->setValue('pic', $project->initiator->name);
         $templateProcessor->setValue('description', $project->description);
@@ -2004,7 +2016,10 @@ class AndalComposingController extends Controller
 
         $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
 
-        return $save_file_name;
+        return [
+            'file_name' => $save_file_name,
+            'project_title' => strtolower($project->project_title)
+        ];
     }
 
     private function getFormulirIm(
@@ -2073,7 +2088,7 @@ class AndalComposingController extends Controller
         ];
     }
 
-    private function exportKAPDF($idProject)
+    private function exportKAPDF($idProject, $type)
     {
         $ids = [4, 1, 2, 3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
@@ -2089,8 +2104,17 @@ class AndalComposingController extends Controller
             ->where('project_id', $project->id)->get();
 
         $pelingkupan = [];
-        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-            ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+
+        $im = null;
+
+        if($type == 'andal') {
+            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+                ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        } else {
+            $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+                ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        }
+
         $total_ms = 0;
         foreach ($stages as $s) {
             $total = 0;

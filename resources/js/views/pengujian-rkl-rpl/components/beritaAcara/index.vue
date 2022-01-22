@@ -77,7 +77,11 @@ export default {
         docs: 'true',
       });
       this.docs = data;
-      this.exportDocx();
+      const a = document.createElement('a');
+      a.href = window.location.origin + `/storage/ba-andal-rkl-rpl/ba-andal-rkl-rpl-${data}.docx`;
+      a.setAttribute('download', `ba-andal-rkl-rpl-${data}.docx`);
+      a.click();
+      this.loadingDocs = false;
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
