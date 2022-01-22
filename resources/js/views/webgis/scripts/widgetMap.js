@@ -25,7 +25,7 @@ function widgetMap(mapView) {
   const basemapToggle = new BasemapToggle({
     view: mapView,
     container: document.createElement('div'),
-    secondBasemap: 'satellite',
+    secondBasemap: 'topo',
   });
   const expandBasemapToggler = new Expand({
     view: mapView,
