@@ -81,58 +81,53 @@
           </div>
         </el-col>
       </el-row>
-      <!-- <el-row
-          v-for="(regulation, index) in allData"
-          :key="regulation.id"
-          :gutter="20"
-          style="display: flex; align-items: center"
-          class="bb bg-custom tb-hover"
-        > -->
       <el-row
+        v-for="(ijin, index) in allData"
+        :key="ijin.id"
         :gutter="20"
         style="display: flex; align-items: center"
         class="bb bg-custom tb-hover"
       >
         <el-col :span="2" class="text-center py">
-          <span class="fz12 white fw">1</span>
+          <span class="fz12 white fw">{{ index + 1 }}</span>
         </el-col>
         <el-col :span="4" class="py">
-          <span class="fz12 white">"Setia Bakti" Efendi Suprayitno</span>
+          <span class="fz12 white">"{{ ijin.pemarkasa_name }}</span>
         </el-col>
         <el-col :span="5" class="py">
-          <span class="fz12 white">Industri Pembiatan Kertas Karton</span>
+          <span class="fz12 white">{{ ijin.kegiatan_name }}</span>
         </el-col>
         <el-col :span="4" class="py">
-          <span class="fz12 white">660/402/409.103/2005</span>
+          <span class="fz12 white">{{ ijin.sk_number }}</span>
         </el-col>
         <el-col :span="4" class="py1">
-          <span class="fz12 white">19 Jul 2005</span>
+          <span class="fz12 white">{{ formatDateStr(ijin.date) }}</span>
         </el-col>
         <el-col :span="3" class="py1">
-          <span class="fz12 white">Bupati / Walikota</span>
+          <span class="fz12 white">{{ ijin.publisher }}</span>
         </el-col>
         <el-col :span="2" class="py text-center">
-          <!-- <a
-              :href="regulation.link"
-              target="_blank"
-              class="fz9 white cl-blue buttonDownload"
-              download
-            >
-              <i class="el-icon-download" /> Download
-            </a> -->
+          <a
+            :href="ijin.file"
+            target="_blank"
+            class="fz9 white cl-blue buttonDownload"
+            download
+          >
+            <i class="el-icon-download" /> Download
+          </a>
           -
         </el-col>
       </el-row>
-      <!-- <div class="block" style="text-align: right">
-          <pagination
-            v-show="total > 0"
-            :auto-scroll="false"
-            :total="total"
-            :page.sync="listQuery.page"
-            :limit.sync="listQuery.limit"
-            @pagination="getAll"
-          />
-        </div> -->
+      <div class="block" style="text-align: right">
+        <pagination
+          v-show="total > 0"
+          :auto-scroll="false"
+          :total="total"
+          :page.sync="listQuery.page"
+          :limit.sync="listQuery.limit"
+          @pagination="getAll"
+        />
+      </div>
       <!-- </template> -->
       <!-- <template v-else>
         <el-row :gutter="20">
@@ -151,12 +146,12 @@
 
 <script>
 import axios from 'axios';
-// import Pagination from '@/components/Pagination';
+import Pagination from '@/components/Pagination';
 
 export default {
-  name: 'Kebijakan',
+  name: 'Ijin',
   components: {
-    // Pagination,
+    Pagination,
   },
   data() {
     return {
@@ -219,25 +214,20 @@ export default {
     getAll(search, sort) {
       axios
         .get(
-          `/api/policys?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}`
+          `/api/environmental-permit?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}`
         )
         .then((response) => {
           this.allData = response.data.data;
           this.total = response.data.total;
         });
     },
-    // getKewenangan() {
-    //   axios.get(`/api/regulations`).then((response) => {
-    //     this.regulations = response.data;
-    //   });
-    // },
     handleSearch() {
       this.getAll(this.keyword);
     },
     handleFilter() {
       axios
         .get(
-          `/api/policys?type=${this.optionValue}&page=${this.listQuery.page}`
+          `/api/environmental-permit?keyword=${this.optionValue}&page=${this.listQuery.page}`
         )
         .then((response) => {
           this.allData = response.data.data;
