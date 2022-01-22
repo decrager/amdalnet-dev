@@ -149,8 +149,8 @@ import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import DarkHeaderHome from '../home/section/DarkHeader';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
-import Graphic from '@arcgis/core/Graphic';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
 import centroid from '@turf/centroid';
 
@@ -533,29 +533,67 @@ export default {
               var centroids = centroid(geomFields);
               var getCoordinates = centroids.geometry.coordinates;
 
-              const point = {
-                type: 'point',
-                longitude: getCoordinates[0],
-                latitude: getCoordinates[1],
-              };
-
               const markerSymbol = {
-                type: 'simple-marker',
-                color: [226, 119, 40],
-                outline: {
-                  color: [255, 255, 255],
-                  width: 2,
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  url: '/titi_tapak.png',
+                  type: 'picture-marker',
+                  width: '24px',
+                  height: '24px',
                 },
               };
 
-              const pointGraphic = new Graphic({
-                geometry: point,
-                symbol: markerSymbol,
-                visible: true,
+              var features = [
+                {
+                  geometry: {
+                    type: 'point',
+                    x: getCoordinates[0],
+                    y: getCoordinates[1],
+                  },
+                  attributes: {
+                    ObjectID: geomFields.id,
+                  },
+                },
+              ];
+
+              const tapakPoint = new FeatureLayer({
+                source: features,
+                renderer: markerSymbol,
                 maxScale: 500000,
+                visible: true,
+                popupTemplate: popupTemplate(propFields),
+                fields: [
+                  {
+                    name: 'ObjectID',
+                    alias: 'ObjectID',
+                    type: 'oid',
+                  },
+                ],
+                objectIdField: 'ObjectID',
+                featureReduction: {
+                  type: 'cluster',
+                  clusterRadius: '100px',
+                  labelingInfo: [{
+                    deconflictionStrategy: 'none',
+                    labelExpressionInfo: {
+                      expression: "Text($feature.cluster_count, '#,###')",
+                    },
+                    symbol: {
+                      type: 'text',
+                      color: '#004a5d',
+                      font: {
+                        weight: 'bold',
+                        family: 'Noto Sans',
+                        size: '12px',
+                      },
+                    },
+                    labelPlacement: 'center-center',
+                  }],
+                },
               });
 
-              mapView.graphics.add(pointGraphic);
+              map.add(tapakPoint);
 
               this.mapGeojsonArray.push(geojsonLayerArray);
               const toggle = document.getElementById('layerTapakCheckBox');
@@ -589,22 +627,6 @@ export default {
       for (let i = 0; i < rtrwProvMap.length; i++) {
         this.layerRtrw.push(rtrwProvMap[i]);
       }
-
-      map.addMany(this.layerRtrw);
-
-      // const rtrwToggle = document.getElementById('check__rtrw');
-      // rtrwToggle.addEventListener('change', (e) => {
-      //   console.log(e);
-      // if (this.layerRtrw === true) {
-      //   for (let i = 0; i < rtrwProvMap.length; i++) {
-      //     rtrwProvMap[i].visible = true;
-      //   }
-      // } else {
-      //   for (let i = 0; i < rtrwProvMap.length; i++) {
-      //     rtrwProvMap[i].visible = false;
-      //   }
-      // }
-      // });
 
       const penutupanLahan2020 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
@@ -662,15 +684,6 @@ export default {
       });
 
       map.add(pippib2021Periode2);
-
-      // const sigapLayer = new GroupLayer({
-      //   title: 'SIGAP KLHK',
-      //   visible: false,
-      //   layers: [penutupanLahan2020, kawasanHutanB, pippib2021Periode2],
-      //   opacity: 0.90,
-      // });
-
-      // map.add(sigapLayer);
 
       const mapView = new MapView({
         container: 'mapViewDiv',
