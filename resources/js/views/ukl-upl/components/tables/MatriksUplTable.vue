@@ -48,31 +48,36 @@
           <template slot-scope="scope">
             <div v-if="!scope.row.is_stage">
               <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
-                <el-button
-                  type="default"
-                  size="medium"
-                  :style="formButtonStyle(plan)"
-                  @click="handleViewPlans(scope.row, plan)"
-                >
+                <el-tooltip class="item" effect="dark" placement="top-start">
+                  <div slot="content">
+                    {{ plan.form }}
+                  </div>
                   <el-button
-                    v-if="isFormulator"
-                    type="danger"
-                    size="mini"
-                    icon="el-icon-close"
-                    style="margin-left: 0px; margin-right: 10px;"
-                    class="button-action-mini"
-                    @click="handleDeletePlan(scope.row.id, plan.id)"
-                  />
-                  <span>{{ plan.form }}</span>
-                  <!-- <el-button
-                    v-if="isFormulator"
                     type="default"
-                    size="mini"
-                    class="pull-right button-action-mini"
-                    icon="el-icon-edit"
-                    @click="handleEditComponent(comp.id)"
-                  /> -->
-                </el-button>
+                    size="medium"
+                    :style="formButtonStyle(plan)"
+                    @click="handleViewPlans(scope.row, plan)"
+                  >
+                    <el-button
+                      v-if="isFormulator"
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-close"
+                      style="margin-left: 0px; margin-right: 10px;"
+                      class="button-action-mini"
+                      @click="handleDeletePlan(scope.row.id, plan.id)"
+                    />
+                    <span>{{ trimForm(plan.form) }}</span>
+                    <!-- <el-button
+                      v-if="isFormulator"
+                      type="default"
+                      size="mini"
+                      class="pull-right button-action-mini"
+                      icon="el-icon-edit"
+                      @click="handleEditComponent(comp.id)"
+                    /> -->
+                  </el-button>
+                </el-tooltip>
               </div>
               <el-input v-model="newEnvMonitorPlan[scope.row.id]" placeholder="Bentuk Pemantauan..." type="textarea" :rows="2" />
               <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round @click="handleAddPlan(scope.row.id)" />
@@ -216,6 +221,9 @@ export default {
           this.loading = false;
         });
     },
+    trimForm(form) {
+      return form.length < 10 ? form : form.substring(0, 9) + '...';
+    },
     formButtonStyle(plan) {
       if (plan.is_selected) {
         return { backgroundColor: '#facd7a', color: '#000000', marginBottom: '5px' };
@@ -274,7 +282,8 @@ export default {
       }
     },
     handleAddPlan(idImp) {
-      if (this.newEnvMonitorPlan[idImp] === null ||
+      if (this.newEnvMonitorPlan[idImp] === undefined ||
+        this.newEnvMonitorPlan[idImp] === null ||
         this.newEnvMonitorPlan[idImp].replace(/\s+/g, '').trim() === '') {
         this.$message({
           message: 'Bentuk Pemantauan tidak boleh kosong',
@@ -296,6 +305,7 @@ export default {
               });
               // add new env_monitor_plan to this.data
               this.addPlanToImpact(parseInt(idImp), response.data);
+              this.newEnvMonitorPlan[idImp] = '';
             }
           })
           .catch((err) => {

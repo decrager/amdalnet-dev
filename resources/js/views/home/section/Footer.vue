@@ -60,22 +60,17 @@
           <ul class="footer__mitra__item">
             <li class="footer__item">
               <a href="#" target="_blank">
-                <img src="/images/logo-investasi.svg" alt="" class="footer__mitra">
+                <img src="/images/logo-atr-bpn.png" alt="" class="footer__mitra">
               </a>
             </li>
             <li class="footer__item">
               <a href="#" target="_blank">
-                <img src="/images/logo-atr-bpn.svg" alt="" class="footer__mitra">
+                <img src="/images/kementrian-bkpm.svg" alt="" class="footer__mitra">
               </a>
             </li>
             <li class="footer__item">
               <a href="#" target="_blank">
-                <img src="/images/logo-big.svg" alt="" class="footer__mitra">
-              </a>
-            </li>
-            <li class="footer__item">
-              <a href="#" target="_blank">
-                <img src="/images/logo-kelautan.svg" alt="" class="footer__mitra">
+                <img src="/images/logo-kkp.png" alt="" class="footer__mitra">
               </a>
             </li>
           </ul>

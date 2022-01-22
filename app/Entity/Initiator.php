@@ -9,13 +9,15 @@ class Initiator extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
-        'name',
-        'pic',
-        'email',
-        'phone',
-        'address',
-        'user_type',
-        'nib',
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'pic',
+    //     'email',
+    //     'phone',
+    //     'address',
+    //     'user_type',
+    //     'nib',
+    // ];
+
+    protected $guarded = [];
 }

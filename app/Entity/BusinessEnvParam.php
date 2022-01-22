@@ -21,6 +21,10 @@ class BusinessEnvParam extends Model
 
     public $timestamps = false;
 
+    public function business(){
+        return $this->belongsTo(Business::class, 'business_id');
+    }
+
     public function param(){
         return $this->hasOne(Param::class, 'id', 'id_param');
     }

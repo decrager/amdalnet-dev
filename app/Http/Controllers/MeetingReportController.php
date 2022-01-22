@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Entity\ExpertBankTeam;
 use App\Entity\ExpertBankTeamMember;
+use App\Entity\FeasibilityTestTeam;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Initiator;
 use App\Entity\MeetingReport;
@@ -11,9 +13,13 @@ use App\Entity\MeetingReportInvitation;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\TestingMeeting;
+use App\Utils\Html;
+use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class MeetingReportController extends Controller
 {
@@ -24,7 +30,6 @@ class MeetingReportController extends Controller
      */
     public function index(Request $request)
     {
-
         if($request->docs) {
             return $this->getDocs($request->idProject);
         }
@@ -34,20 +39,35 @@ class MeetingReportController extends Controller
         }
 
         if($request->expert_bank_team) {
-            return ExpertBankTeam::all();
+            return FeasibilityTestTeam::with(['provinceAuthority', 'districtAuthority'])->get();
         }
 
         if($request->tuk_member) {
-            $members = ExpertBankTeamMember::where('id_expert_bank_team', $request->tuk_id)->get();
+            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $request->tuk_id)->get();
             $newMembers = [];
             
             foreach($members as $m) {
+                $name = '';
+                $email = '';
+                $type_member = '';
+
+                if($m->expertBank) {
+                    $name = $m->expertBank->name;
+                    $email = $m->expertBank->email;
+                    $type_member = 'expert';
+                } else if($m->lukMember) {
+                    $name = $m->lukMember->name;
+                    $email = $m->lukMember->email;
+                    $type_member = 'employee';
+                }
+
                 $newMembers[] = [
                     'id' => $m->id,
                     'role' => $m->position,
-                    'name' => $m->expertBank->name,
-                    'email' => $m->expertBank->email,
-                    'type' => 'tuk'
+                    'name' => $name,
+                    'email' => $email,
+                    'type' => 'tuk',
+                    'type_member' => $type_member
                 ];
             }
 
@@ -87,6 +107,35 @@ class MeetingReportController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->file) {
+            $data = $request->all();
+            $validator = \Validator::make($data, [
+                'dokumen_file' => 'max:1024'
+            ],[
+                'dokumen_file.max' => 'Ukuran file tidak boleh melebihi 1 mb'
+            ]);
+
+            if($validator->fails()) {
+                return response()->json(['errors' => $validator->messages()]);
+            }
+
+            if($request->hasFile('dokumen_file')) {
+                $project = Project::findOrFail($request->idProject);
+                $file = $request->file('dokumen_file');
+                $name = '/berita-acara-ka/' . strtolower($project->project_title) . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+    
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
+                $meeting_report->file = Storage::url($name);
+                $meeting_report->save();
+
+            } else {
+                return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
+            }
+
+            return response()->json(['errors' => null]);
+        }
+
         if ($request->formulir) {
             $project_title = strtolower(Project::findOrFail($request->idProject)->project_title);
             if (File::exists(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'))) {
@@ -124,9 +173,10 @@ class MeetingReportController extends Controller
         $report->person_responsible = $data['person_responsible'];
         $report->location = $data['location'];
         $report->position = $data['position'];
-        $report->expert_bank_team_id = $data['expert_bank_team_id'];
+        $report->id_feasibility_test_team = $data['id_feasibility_test_team'];
         $report->project_name = $data['project_name'];
         $report->id_initiator = $data['id_initiator'];
+        $report->notes = $data['notes'];
         $report->save();
 
         // Delete existing invitations
@@ -137,7 +187,7 @@ class MeetingReportController extends Controller
         // Save meetings invitation members
         for($i = 0; $i < count($data['invitations']); $i++) {
             $invitation = new MeetingReportInvitation();
-            $invitation->id_expert_bank_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
+            $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
             $invitation->id_meeting_report = $report->id;
 
             if($data['invitations'][$i]['type'] == 'other') {
@@ -211,13 +261,28 @@ class MeetingReportController extends Controller
 
         if($meeting->invitations->first()) {
             foreach($meeting->invitations as $i) {
-                if($i->id_expert_bank_team_member) {
+                if($i->id_feasibility_test_team_member) {
+                    $name = '';
+                    $email = '';
+                    $type_member = '';
+
+                    if($i->feasibilityTestTeamMember->id_expert_bank) {
+                        $name = $i->feasibilityTestTeamMember->expertBank->name;
+                        $email = $i->feasibilityTestTeamMember->expertBank->email;
+                        $type_member = 'expert';
+                    } else if($i->feasibilityTestTeamMember->id_luk_member) {
+                        $name = $i->feasibilityTestTeamMember->lukMember->name;
+                        $email = $i->feasibilityTestTeamMember->lukMember->email;
+                        $type_member = 'employee';
+                    }
+
                     $invitations[] = [
-                        'id' => $i->id_expert_bank_team_member,
-                        'role' => $i->expertBankTeamMember->position,
-                        'name' => $i->expertBankTeamMember->expertBank->name,
-                        'email' => $i->expertBankTeamMember->expertBank->email,
-                        'type' => 'tuk'
+                        'id' => $i->id_feasibility_test_team_member,
+                        'role' => $i->feasibilityTestTeamMember->position,
+                        'name' => $name,
+                        'email' => $email,
+                        'type' => 'tuk',
+                        'type_member' => $type_member
                     ];
                 } else {
                     $invitations[] = [
@@ -225,7 +290,8 @@ class MeetingReportController extends Controller
                         'role' => $i->role,
                         'name' => $i->name,
                         'email' => $i->email,
-                        'type' => 'other'
+                        'type' => 'other',
+                        'type_member' => 'other'
                     ];
                 }
             }
@@ -248,8 +314,10 @@ class MeetingReportController extends Controller
             'location' => $meeting->location,
             'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
+            'id_feasibility_test_team' => $meeting->id_feasibility_test_team,
             'project_name' => $meeting->project->project_title,
-            'invitations' => $invitations
+            'invitations' => $invitations,
+            'notes' => null
         ];
 
         return $data;
@@ -262,13 +330,28 @@ class MeetingReportController extends Controller
 
         if($report->invitations->first()) {
             foreach($report->invitations as $i) {
-                if($i->id_expert_bank_team_member) {
+                if($i->id_feasibility_test_team_member) {
+                    $name = '';
+                    $email = '';
+                    $type_member = '';
+
+                    if($i->feasibilityTestTeamMember->id_expert_bank) {
+                        $name = $i->feasibilityTestTeamMember->expertBank->name;
+                        $email = $i->feasibilityTestTeamMember->expertBank->email;
+                        $type_member = 'expert';
+                    } else if($i->feasibilityTestTeamMember->id_luk_member) {
+                        $name = $i->feasibilityTestTeamMember->lukMember->name;
+                        $email = $i->feasibilityTestTeamMember->lukMember->email;
+                        $type_member = 'employee';
+                    }
+
                     $invitations[] = [
-                        'id' => $i->id_expert_bank_team_member,
-                        'role' => $i->expertBankTeamMember->position,
-                        'name' => $i->expertBankTeamMember->expertBank->name,
-                        'email' => $i->expertBankTeamMember->expertBank->email,
-                        'type' => 'tuk'
+                        'id' => $i->id_feasibility_test_team_member,
+                        'role' => $i->feasibilityTestTeamMember->position,
+                        'name' => $name,
+                        'email' => $email,
+                        'type' => 'tuk',
+                        'type_member' => $type_member
                     ];
                 } else {
                     $invitations[] = [
@@ -276,7 +359,8 @@ class MeetingReportController extends Controller
                         'role' => $i->role,
                         'name' => $i->name,
                         'email' => $i->email,
-                        'type' => 'other'
+                        'type' => 'other',
+                        'type_member' => 'other'
                     ];
                 }
             }
@@ -299,161 +383,133 @@ class MeetingReportController extends Controller
             'location' => $report->location,
             'position' => $report->position,
             'expert_bank_team_id' => $report->expert_bank_team_id,
+            'id_feasibility_test_team' => $report->id_feasibility_test_team,
             'project_name' => $report->project->project_title,
-            'invitations' => $invitations
+            'invitations' => $invitations,
+            'notes' => $report->notes
         ];
 
         return $data;
     }
 
     private function getDocs($id_project) {
-        Carbon::setLocale('id');
-        $isExist = MeetingReport::where([['id_project', $id_project],['document_type', 'ka']])->count();
-        $project = Project::findOrFail($id_project);
-        $report = null;
-
-        if($isExist > 0) {
-            $report = MeetingReport::where([['id_project', $id_project],['document_type', 'ka']])->first();
-        } else {
-            $report = TestingMeeting::where([['id_project', $id_project],['document_type', 'ka']])->first();
+        if (!File::exists(storage_path('app/public/ba-ka/'))) {
+            File::makeDirectory(storage_path('app/public/ba-ka/'));
         }
 
-        $district = '';
-        $province = '';
-        $ketua_tuk = '';
-        $ketua_tuk_institution = '';
-        $team_member = [];
+        $project = Project::findOrFail($id_project);
+        $meeting = MeetingReport::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes', 'position')->where([['id_project', $id_project],['document_type', 'ka']])->first();
+        $invitations = MeetingReportInvitation::where('id_meeting_report', $meeting->id)->get();
+        Carbon::setLocale('id');
+        
+        $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s', strtotime($meeting->updated_at)))->isoFormat('MMMM Y');
 
+        $project_address = '';
         if($project->address) {
             if($project->address->first()) {
-                $district = $project->address->first()->district;
-                $province = 'provinsi ' . $project->address->first()->province;
+                $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
             }
         }
 
-        if($report->expert_bank_team_id) {
-            $leader = ExpertBankTeamMember::where([['id_expert_bank_team', $report->expert_bank_team_id],['position', 'Ketua']])->first();
-            if($leader) {
-                $ketua_tuk = $leader->expertBank->name;
-                $ketua_tuk_institution = $leader->expertBank->institution;
-            }
-        }
+        // Meeting
+        $meeting_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d', strtotime($meeting->meeting_date)))->isoFormat('D, MMMM Y');
+        $meeting_time = date('H:i', strtotime($meeting->meeting_time));
+        $meeting_location = $meeting->location;
 
-        if($report->invitations) {
-            if($report->invitations->first()) {
-                $alphabet_order = 'a';
-                foreach($report->invitations as $inv) {
-                    if($inv->id_expert_bank_team_member) {
-                        $member = ExpertBankTeamMember::find($inv->id_expert_bank_team_member);
-                        if($member) {
-                            if($member->position != 'Ketua') {
-                                $team_member[] = [
-                                    'no' => $alphabet_order . '.',
-                                    'name' => $member->expertBank->name . ' (Pakar '. $member->expertBank->expertise . ');'
-                                ];
-                                $alphabet_order++;
-                            }
+        // TUK
+        $authority = '';
+        $authority_big = '';
+        $tuk_address = '';
+        $ketua_tuk_name = '';
+        $ketua_tuk_nip = '';
+        $ketua_tuk_position = '';
+
+
+        if($meeting->id_feasibility_test_team) {
+            $team = FeasibilityTestTeam::find($meeting->id_feasibility_test_team);
+            if($team) {
+                if($team->authority == 'Pusat') {
+                    $authority_big = 'PUSAT';
+                    $authority = 'Pusat';
+                } else if($team->authority == 'Provinsi') {
+                    $authority_big = 'PROVINSI' . strtoupper($team->provinceAuthority->name);
+                    $authority = 'Provinsi ' . ucwords(strtolower($team->provinceAuthority->name)); 
+                } else if($team->authority == 'Kabupaten/Kota') {
+                    $authority_big = strtoupper($team->districtAuthority->name);
+                    $authority = ucwords(strtolower($team->districtAuthority->name));
+                }
+
+                $tuk_address = $team->address;
+
+                // KETUA TUK
+                $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $team->id],['position', 'Ketua']])->first();
+                if($ketua_tuk) {
+                    if($ketua_tuk->expertBank) {
+                        $ketua_tuk_name = $ketua_tuk->expertBank->name;
+                    } else if($ketua_tuk->lukMember) {
+                        $ketua_tuk_name = $ketua_tuk->lukMember->name;
+                        $ketua_tuk_nip = $ketua_tuk->lukMember->nip ? 'NIP. ' . $ketua_tuk->lukMember->nip : '';
+                        $ketua_tuk_position = $ketua_tuk->lukMember->position;
+                    }
+                }
+
+
+            }
+
+        }
+        
+        $member = [];
+        $ahli = [];
+        
+        foreach($invitations as $i) {
+            if($i->id_feasibility_test_team_member) {
+                $tuk_member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
+                if($tuk_member) {
+                    if($tuk_member->position != 'Ketua') {
+                        if($tuk_member->expertBank) {
+                            $member[] = [
+                                'name' => count($member) + 1 . '. ' . $tuk_member->expertBank->name . ' (Pakar ' . $tuk_member->expertBank->expertise . ')'
+                            ];
+                        } else if($tuk_member->lukMember) {
+                            $member[] = [
+                                'name' => count($member) + 1 . '. ' . $tuk_member->lukMember->name . ', ' . $tuk_member->lukMember->position. ' ' . $tuk_member->lukMember->institution
+                            ];
                         }
-                    } else {
-                        $team_member[] = [
-                            'no' => $alphabet_order . '.',
-                            'name' => 'Wakil dari ' . $inv->role . ';'
-                        ];
-                        $alphabet_order++;
                     }
+                }
+            } else {
+                if($i->role == 'Tenaga Ahli') {
+                    $member[] = [
+                        'name' => count($ahli) + 1 . '. ' . $i->name
+                    ];
                 }
             }
         }
 
-        $ids = [4, 1, 2, 3];
-        $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
-            return array_search($model->getKey(), $ids);
-        });
+        $templateProcessor = new TemplateProcessor('template_berita_acara.docx');
+        $templateProcessor->setValue('project_title', $project->project_title);
+        $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
+        $templateProcessor->setValue('pic', $project->initiator->pic);
+        $templateProcessor->setValue('pic_position', $meeting->position);
+        $templateProcessor->setValue('ketua_tuk_position', $ketua_tuk_position);
+        $templateProcessor->setValue('authority', $authority);
+        $templateProcessor->setValue('authority_big', $authority_big);
+        $templateProcessor->setValue('ketua_tuk_name', $ketua_tuk_name);
+        $templateProcessor->setValue('meeting_date', $meeting_date);
+        $templateProcessor->setValue('meeting_location', $meeting_location);
+        $templateProcessor->setValue('year', date('Y', strtotime($meeting->updated_at)));
+        $templateProcessor->cloneBlock('tuk_member', count($member), true, false, $member);
 
-        // DAMPAK PENTING HIPOTETIK
-        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant', 'study_length_year', 'study_length_month')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
-        $pra_konstruksi = [];
-        $konstruksi = [];
-        $operasi = [];
-        $pasca_operasi = [];
+        $notesTable = new Table();
+        $notesTable->addRow();
+        $cell = $notesTable->addCell();
+        Html::addHtml($cell, $meeting->notes);
 
-        foreach ($stages as $s) {
-            $total = 1;
+        $templateProcessor->setComplexBlock('notes', $notesTable);
+        $templateProcessor->saveAs(storage_path('app/public/ba-ka/ba-ka-' . strtolower($project->project_title) . '.docx'));
 
-            foreach ($impactIdentifications as $imp) {
-                $ronaAwal = '';
-                $component = '';
-
-                // check stages
-                $id_stages = null;
-
-                if ($imp->subProjectComponent) {
-                    if ($imp->subProjectComponent->id_project_stage) {
-                        $id_stages = $imp->subProjectComponent->id_project_stage;
-                    } else {
-                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
-                    }
-
-                    if ($id_stages == $s->id) {
-                        if ($imp->subProjectRonaAwal) {
-                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                        } else {
-                            continue;
-                        }
-                    } else {
-                        continue;
-                    }
-                } else {
-                    continue;
-                }
-
-                $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-
-                $current_stage = strtolower(($s->name));
-                $data = [
-                    'no' => $total . '.',
-                    'dph' => "$changeType $ronaAwal akibat $component",
-                    'batas_waktu' => $imp->study_length_year . ' Tahun ' . $imp->study_length_month . ' Bulan'
-                ];
-
-                if($current_stage == 'pra konstruksi') {
-                    $pra_konstruksi[] = $data;
-                } else if($current_stage == 'konstruksi') {
-                    $konstruksi[] = $data;
-                }  else if($current_stage == 'operasi') {
-                    $operasi[] = $data;
-                } else {
-                    $pasca_operasi[] = $data;
-                }
-
-                $total++;
-            }
-        }
-
-        return [
-            'document_type_big' => 'FORMULIR KERANGKA ACUAN ANALISIS DAMPAK LINGKUNGAN (KA-ANDAL)',
-            'document_type' => 'Formulir Kerangka Acuan Analisis Dampak Lingkungan (KA-ANDAL)',
-            'project_title_big' => strtoupper($project->project_title),
-            'project_address_big' => strtoupper($district . ' ' . $province),
-            'pemrakarsa_big' => strtoupper($project->initiator->name),
-            'meeting_date' =>  $report->meeting_date ? Carbon::createFromFormat('Y-m-d', $report->meeting_date)->isoFormat('dddd/D MMMM Y') : '',
-            'meeting_location' => $report->location,
-            'pemrakarsa' => $project->initiator->name,
-            'pic' => $project->initiator->pic,
-            'position' => $report->position,
-            'leader' => $ketua_tuk,
-            'team_member' => $team_member,
-            'project_title' => ucwords(strtolower($project->project_title)),
-            'project_address' => ucwords(strtolower($district . ' ' . $province)),
-            'pemrakarsa' => $project->initiator->name,
-            'meeting_lead' => $ketua_tuk,
-            'meeting_lead_institution' => $ketua_tuk_institution,
-            'pra_konstruksi' => $pra_konstruksi,
-            'konstruksi' => $konstruksi,
-            'operasi' => $operasi,
-            'pasca_operasi' => $pasca_operasi 
-        ];
-
+        return strtolower($project->project_title);
     }
 }

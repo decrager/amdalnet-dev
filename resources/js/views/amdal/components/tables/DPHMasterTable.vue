@@ -4,7 +4,7 @@
     <div style="text-align: right; margin-bottom: 0.5em;">Total: <span style="font-weight: bold">{{ impacts.length }}</span></div>
     <el-table
       :data="impacts"
-      height="250"
+      max-height="300"
       highlight-current-row
       header-row-class-name="dpdph-table"
       style="width: 100%"
@@ -49,6 +49,9 @@
               <el-tag v-else-if="scope.row.is_hypothetical_significant === false" type="info" class="dtph">DTPH</el-tag>
               <el-tag v-if="(scope.row.is_hypothetical_significant === false) && (scope.row.is_managed === true)" type="info" class="dph">Dikelola</el-tag>
               <el-tag v-if="scope.row.hasChanges === true" type="danger">~diubah</el-tag>
+              <!--
+  <el-button  v-if="scope.row.comment > 0" type="danger" icon="el-icon-s-comment" size="medium" plain circle> </el-button> -->
+              <i v-if="scope.row.comment > 0" class="el-icon-s-comment" style="font-size: 150%; line-height:0.8em;" />
             </span>
           </div>
 
@@ -117,6 +120,7 @@ export default {
         { text: 'DPH', value: 2 },
         { text: 'DTPH', value: 3 },
         { text: 'Belum terdefinisi', value: 4 },
+        { text: 'Bercatatan', value: 5 },
       ],
     };
   },
@@ -153,6 +157,9 @@ export default {
         return (row.id_change_type === null) || ((row.change_type_name).trim() === '');
       }
 
+      if (value === 5) {
+        return (row.comment > 0);
+      }
       return false;
     },
     onFilterChange(e){

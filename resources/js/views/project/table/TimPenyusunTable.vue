@@ -33,7 +33,7 @@
       <template slot-scope="scope">
         <el-select
           v-if="
-            teamtype === 'mandiri' && scope.row.membership_status !== 'ATPA'
+            teamtype === 'mandiri' && scope.row.membership_status !== 'ATPA' && !isadmin
           "
           v-model="scope.row.position"
           placeholder="Pilih Jabatan"
@@ -67,11 +67,20 @@
         >
           CV
         </el-button>
+        <el-button
+          type="text"
+          size="medium"
+          icon="el-icon-download"
+          style="color: blue"
+          @click.prevent="download(scope.row.certificate)"
+        >
+          Sertifikat
+        </el-button>
       </template>
     </el-table-column>
 
     <el-table-column
-      v-if="teamtype === 'mandiri'"
+      v-if="teamtype === 'mandiri' && !isadmin"
       label=""
       width="80px"
       align="center"
@@ -102,6 +111,7 @@ export default {
       type: String,
       default: () => '',
     },
+    isadmin: Boolean,
   },
   data() {
     return {

@@ -60,6 +60,7 @@ class UserRegistered extends Notification
         return [
             'createdUser' => $this->user,
             'admin' => $notifiable,
+            'message' => $this->user->name.' baru saja mendaftar dengan email '.$this->user->email,
         ];
     }
 }

@@ -1,17 +1,17 @@
 <template>
   <div class="form-container" style="padding: 24px">
-    <workflow />
-    <el-form
-      ref="currentProject"
-      :model="currentProject"
-      :rules="currentProjectRules"
-      label-position="top"
-      label-width="200px"
-      style="max-width: 100%"
-    >
-      <div v-if="preProject">
-        <el-collapse v-model="activeName" :accordion="true">
-          <el-collapse-item title="TAPAK PROYEK" name="1">
+    <workflow :is-penapisan="true" />
+    <div v-if="preProject">
+      <el-collapse v-model="activeName" :accordion="true">
+        <el-collapse-item title="TAPAK PROYEK" name="1" disabled>
+          <el-form
+            ref="tapakProyek"
+            :model="currentProject"
+            :rules="tapakProyekRules"
+            label-position="top"
+            label-width="200px"
+            style="max-width: 100%"
+          >
             <el-row :gutter="4">
               <el-col :span="12">
                 <el-form-item
@@ -24,7 +24,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 1MB)" prop="project_type">
+                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 1MB)" prop="fileKtr">
                   <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -32,34 +32,46 @@
             <el-row :gutter="4">
               <el-col :span="12">
                 <el-row>
-                  <el-form-item label="Deskripsi Kegiatan">
+                  <el-form-item label="Deskripsi Kegiatan" prop="description">
                     <el-input v-model="currentProject.description" size="medium" type="textarea" />
                   </el-form-item>
                 </el-row>
                 <el-row>
-                  <el-form-item label="Deskripsi Lokasi">
+                  <el-form-item label="Deskripsi Lokasi" prop="location_desc">
                     <el-input v-model="currentProject.location_desc" size="medium" type="textarea" />
                   </el-form-item>
                 </el-row>
               </el-col>
               <el-col :span="12">
                 <el-row>
-                  <el-form-item label="">
+                  <el-form-item label="" prop="filePdf">
+                    <div slot="label">
+                      <span>Upload Peta PDF (Max 1MB)</span>
+                    </div>
+                    <classic-upload :name="filePdfName" :fid="'filePdf'" @handleFileUpload="handleFileTapakProyekPdfUpload" />
+                  </el-form-item>
+                </el-row>
+              </el-col>
+              <el-col :span="12" style="margin-top: 17px;">
+                <el-row>
+                  <el-form-item label="" prop="fileMap">
                     <div slot="label">
                       <span>Upload Peta Tapak (File .ZIP Max 1MB)</span>
                       <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
                     </div>
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
-                    <!-- <input id="fileMap" ref="fileMap" type="file" class="el-input__inner" @change="handleFileTapakProyekMapUpload"> -->
                   </el-form-item>
-                  <div id="mapView" style="height: 600px;" />
                 </el-row>
               </el-col>
             </el-row>
+
+            <div v-show="fileMap" id="mapView" style="height: 600px;" />
+            <div style="margin-top: 10px">
+              <span v-if="full_address !== ''" style="font-style: italic; color: red">Provinsi: {{ full_address }}</span>
+            </div>
+
+            <!-- Alamat -->
             <el-row type="flex" justify="end" :gutter="4">
-              <!-- <el-col :span="12">
-                <el-col :span="12" />
-              </el-col> -->
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
                   <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
@@ -68,7 +80,6 @@
                         {{ scope.$index + 1 }}
                       </template>
                     </el-table-column>
-
                     <el-table-column label="Provinsi" width="200px">
                       <template slot-scope="scope">
                         <el-select
@@ -87,7 +98,6 @@
                         </el-select>
                       </template>
                     </el-table-column>
-
                     <el-table-column label="Kota/Kabupaten" width="300px">
                       <template slot-scope="scope">
                         <el-select
@@ -128,59 +138,26 @@
                     @click="handleAddAddressTable"
                   >+</el-button>
                 </el-form-item>
-
-                <!-- <el-col :span="12">
-                  <el-form-item label="Provinsi" prop="id_prov">
-                    <el-select
-                      v-model="currentProject.id_prov"
-                      placeholder="Pilih"
-                      style="width: 100%"
-                      @change="changeProvince($event)"
-                    >
-                      <el-option
-                        v-for="item in getProvinceOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="Kab / Kota" prop="id_district">
-                    <el-select
-                      v-model="currentProject.id_district"
-                      placeholder="Pilih"
-                      style="width: 100%"
-                    >
-                      <el-option
-                        v-for="item in getCityOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-col> -->
-              </el-col>
-            </el-row>
-            <el-row type="flex" justify="end">
-              <el-col :span="12">
-                <!-- <el-form-item label="Alamat" prop="address">
-                  <el-input v-model="currentProject.address" />
-                </el-form-item> -->
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
               <el-col :span="2">
-                <el-button size="medium" type="primary" @click="activeName = '2'">
+                <el-button size="medium" type="primary" @click="goToPendekatanStudi">
                   Lanjutkan
                 </el-button>
               </el-col>
             </el-row>
-          </el-collapse-item>
-          <el-collapse-item title="PENDEKATAN STUDI" name="2">
+          </el-form>
+        </el-collapse-item>
+        <el-collapse-item title="PENDEKATAN STUDI" name="2" disabled>
+          <el-form
+            ref="pendekatanStudi"
+            :model="currentProject"
+            :rules="pendekatanStudiRules"
+            label-position="top"
+            label-width="200px"
+            style="max-width: 100%"
+          >
             <el-row>
               <el-col :span="12">
                 <el-form-item
@@ -205,23 +182,37 @@
               </el-col>
             </el-row>
             <el-row>
-              <keep-alive>
-                <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
-              </keep-alive>
-              <el-button
-                type="primary"
-                @click="handleAddSubProjectTable"
-              >+</el-button>
+              <el-form-item prop="listSubProject">
+                <keep-alive>
+                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+                </keep-alive>
+                <el-button
+                  type="primary"
+                  @click="handleAddSubProjectTable"
+                >+</el-button>
+              </el-form-item>
             </el-row>
             <el-row type="flex" justify="end">
-              <el-col :span="2">
+              <el-col :span="5" style="padding-right: 0px">
+                <el-button size="medium" @click="activeName = '1'">
+                  Kembali
+                </el-button>
                 <el-button size="medium" type="primary" @click="handleStudyAccord">
                   Lanjutkan
                 </el-button>
               </el-col>
             </el-row>
-          </el-collapse-item>
-          <el-collapse-item title="STATUS KEGIATAN" name="3">
+          </el-form>
+        </el-collapse-item>
+        <el-collapse-item title="STATUS KEGIATAN" name="3" disabled>
+          <el-form
+            ref="statusKegiatan"
+            :model="currentProject"
+            :rules="statusKegiatanRules"
+            label-position="top"
+            label-width="200px"
+            style="max-width: 100%"
+          >
             <el-row>
               <el-col :span="12">
                 <el-form-item
@@ -246,14 +237,25 @@
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
-              <el-col :span="2">
-                <el-button size="medium" type="primary" @click="activeName = '4'">
+              <el-col :span="5">
+                <el-button size="medium" @click="activeName = '2'">
+                  Kembali
+                </el-button>
+                <el-button size="medium" type="primary" @click="goToJenisKegiatan">
                   Lanjutkan
                 </el-button>
               </el-col>
             </el-row>
-          </el-collapse-item>
-          <el-collapse-item title="JENIS KEGIATAN" name="4">
+          </el-form></el-collapse-item>
+        <el-collapse-item title="JENIS KEGIATAN" name="4" disabled>
+          <el-form
+            ref="jenisKegiatan"
+            :model="currentProject"
+            :rules="jenisKegiatanRules"
+            label-position="top"
+            label-width="200px"
+            style="max-width: 100%"
+          >
             <el-row>
               <el-col :span="12">
                 <el-form-item
@@ -278,14 +280,26 @@
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
-              <el-col :span="2">
-                <el-button size="medium" type="primary" @click="activeName = '5'">
+              <el-col :span="5">
+                <el-button size="medium" @click="activeName = '3'">
+                  Kembali
+                </el-button>
+                <el-button size="medium" type="primary" @click="goToPersetujuanAwal">
                   Lanjutkan
                 </el-button>
               </el-col>
             </el-row>
-          </el-collapse-item>
-          <el-collapse-item title="PERSETUJUAN AWAL" name="5">
+          </el-form>
+        </el-collapse-item>
+        <el-form
+          ref="currentProject"
+          :model="currentProject"
+          :rules="currentProjectRules"
+          label-position="top"
+          label-width="200px"
+          style="max-width: 100%"
+        >
+          <el-collapse-item title="PERSETUJUAN AWAL" name="5" disabled>
             <el-row>
               <el-col :span="12">
                 <el-form-item
@@ -294,10 +308,12 @@
                 >
                   <el-select
                     v-model="currentProject.pre_agreement"
+                    clearable
                     placeholder="Pilih"
                     style="width: 100%"
                     size="medium"
                     @change="changeProjectType($event)"
+                    @clear="removePreAgreement"
                   >
                     <el-option
                       v-for="item in preAgreementOptions"
@@ -320,14 +336,17 @@
               </el-col>
             </el-row>
             <el-row type="flex" justify="end">
-              <el-col :span="2">
+              <el-col :span="5">
+                <el-button size="medium" @click="activeName = '4'">
+                  Kembali
+                </el-button>
                 <el-button size="medium" type="primary" @click="activeName = '6'">
                   Lanjutkan
                 </el-button>
               </el-col>
             </el-row>
           </el-collapse-item>
-          <el-collapse-item title="PERSETUJUAN TEKNIS(PERTEK)" name="6">
+          <el-collapse-item title="PERSETUJUAN TEKNIS(PERTEK)" name="6" disabled>
             <el-row>
               <el-col :span="24">
                 <el-form-item
@@ -465,159 +484,20 @@
             </el-row>
             <el-row type="flex" justify="end">
               <el-col :span="5">
-                <el-button size="medium" @click="handleCancel()"> Batalkan </el-button>
+                <el-button size="medium" @click="activeName = '5'"> Kembali </el-button>
                 <el-button size="medium" type="primary" @click="handleSubmit"> Lanjutkan </el-button>
               </el-col>
             </el-row>
           </el-collapse-item>
-        </el-collapse>
-      </div>
-
-      <div v-else>
-        <el-row :gutter="4">
-          <el-col :span="12" :xs="24">
-            <el-row>
-              <el-form-item
-                label="Nama Usaha / Kegiatan"
-                prop="project_title"
-              >
-                <el-input v-model="currentProject.project_title" disabled />
-              </el-form-item>
-            </el-row>
-            <el-row :gutter="4">
-              <el-col :span="4">
-                <el-form-item label="KBLI" prop="kbli">
-                  <!-- <el-input v-model="currentProject.kbli" /> -->
-                  <el-autocomplete
-                    v-model="currentProject.kbli"
-                    class="inline-input"
-                    :fetch-suggestions="kbliSearch"
-                    placeholder="Masukan"
-                    :trigger-on-focus="false"
-                    disabled
-                    @select="handleKbliSelect"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="Tingkat Resiko" prop="risk_level">
-                  <el-input v-model="currentProject.risk_level" disabled />
-                </el-form-item>
-              </el-col>
-              <el-col :span="6" :xs="24">
-                <el-form-item label="Kewenangan" prop="authority">
-                  <el-input v-model="currentProject.authority" disabled />
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="Sektor(PP 5/2021)" prop="field">
-                  <el-select
-                    v-model="currentProject.field"
-                    placeholder="Pilih"
-                    style="width: 100%"
-                  >
-                    <el-option
-                      v-for="item in getProjectFieldOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="4">
-              <el-col :span="12">
-                <el-form-item label="Bidang Kegiatan (Permen LHK 4 /2021)" prop="sector">
-                  <el-select
-                    v-model="currentProject.sector"
-                    placeholder="Pilih"
-                    style="width: 100%"
-                    disabled
-                  >
-                    <el-option
-                      v-for="item in getSectorOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="Jenis Rencana Kegiatan" prop="plan_type">
-                  <el-input v-model="currentProject.plan_type" disabled />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-table
-                :header-cell-style="{ background: '#099C4B', color: 'white' }"
-                :data="currentProject.listSubProjectParams"
-                fit
-                highlight-current-row
-              >
-                <el-table-column label="Skala Besaran" align="center">
-                  <el-table-column label="Parameter">
-                    <template slot-scope="scope">
-                      {{ scope.row.param }}
-                    </template>
-                  </el-table-column>
-
-                  <el-table-column label="Besaran">
-                    <template slot-scope="scope">
-                      {{ scope.row.scale }}
-                    </template>
-                  </el-table-column>
-
-                  <el-table-column label="Satuan">
-                    <template slot-scope="scope">
-                      {{ scope.row.scale_unit }}
-                    </template>
-                  </el-table-column>
-
-                  <el-table-column label="Hasil">
-                    <template slot-scope="scope">
-                      {{ scope.row.result }}
-                    </template>
-                  </el-table-column>
-                </el-table-column>
-              </el-table>
-            </el-row>
-            <!-- <el-row :gutter="4">
-              <el-col :span="12" :xs="24">
-                <el-form-item
-                  prop="dokumenPendukung"
-                  label="Dokumen Pendukung"
-                ><support-table
-                   :list="listSupportTable"
-                   :loading="loadingSupportTable"
-                 />
-                  <el-button
-                    type="primary"
-                    @click="handleAddSupportTable"
-                  >+</el-button>
-                </el-form-item>
-              </el-col>
-            </el-row> -->
-          </el-col>
-          <el-col :span="12" :xs="24">
-            <div id="mapView" style="height: 400px; border: 1px solid red; border-radius: 5px;" />
-          </el-col>
-        </el-row>
-      </div>
-    </el-form>
-
-    <div v-if="!preProject" slot="footer" class="dialog-footer">
-      <el-button @click="preProject = true"> Batalkan </el-button>
-      <el-button type="primary" @click="handleSubmit()"> Lanjutkan </el-button>
+        </el-form>
+      </el-collapse>
     </div>
+
   </div>
 
 </template>
 
 <script>
-// import Tinymce from '@/components/Tinymce';
 import Workflow from '@/components/Workflow';
 import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
@@ -638,12 +518,12 @@ import * as urlUtils from '@arcgis/core/core/urlUtils';
 import Expand from '@arcgis/core/widgets/Expand';
 import esriRequest from '@arcgis/core/request';
 import qs from 'qs';
+import popupTemplate from '../webgis/scripts/popupTemplate';
+import centroid from '@turf/centroid';
 
 export default {
   name: 'CreateProject',
   components: {
-    // Tinymce,
-    // SupportTable,
     ClassicUpload,
     Workflow,
     SubProjectTable,
@@ -655,15 +535,34 @@ export default {
       }
       callback();
     };
+    var validateListSubProject = (rule, value, callback) => {
+      if (this.listSubProject.length < 1) {
+        callback(new Error('Mohon Masukan 1 Kegiatan'));
+      }
+      callback();
+    };
 
-    // var validateFile = (rule, value, callback) => {
-    //   if (value.size > 1024 * 1024) {
-    //     callback(new Error('File Maximum 1 MB'));
-    //   }
-    //   callback();
-    // };
+    var validateKtr = (rule, value, callback) => {
+      if (!this.currentProject.fileKtr){
+        callback(new Error('File KTR Belum Diunggah'));
+      }
+      callback();
+    };
 
+    var validateMap = (rule, value, callback) => {
+      if (!this.fileMap){
+        callback(new Error('File Peta Tapak Belum Diunggah'));
+      }
+      callback();
+    };
+    var validatePdfMap = (rule, value, callback) => {
+      if (!this.filePdf){
+        callback(new Error('File Peta Tapak PDF Belum Diunggah'));
+      }
+      callback();
+    };
     return {
+      full_address: '',
       mismatchMapData: false,
       token: '',
       refresh: 0,
@@ -678,10 +577,12 @@ export default {
       loadingSupportTable: false,
       isUpload: 'Upload',
       fileName: 'No File Selected.',
-      fileMap: [],
+      fileMap: null,
+      filePdf: null,
       isOss: true,
       fileKtrName: 'No File Selected',
       fileMapName: 'No File Selected',
+      filePdfName: 'No File Selected',
       filePreAgreementName: 'No File Selected',
       studyApproachOptions: [
         {
@@ -775,6 +676,47 @@ export default {
           label: 'Lainnya',
         },
       ],
+      tapakProyekRules: {
+        project_title: [
+          { required: true, trigger: 'change', message: 'Nama Kegiatan Belum Diisi' },
+        ],
+        address: [
+          { validator: validateAddress, trigger: 'blur' },
+        ],
+        location_desc: [
+          { required: true, trigger: 'blur', message: 'Data Lokasi Kegiatan Belum Diisi' },
+        ],
+        description: [
+          { required: true, trigger: 'blur', message: 'Data Deskripsi Kegiatan Belum Diisi' },
+        ],
+        fileKtr: [
+          { validator: validateKtr, trigger: 'change' },
+        ],
+        filePdf: [
+          { validator: validatePdfMap, trigger: 'change' },
+        ],
+        fileMap: [
+          { validator: validateMap, trigger: 'change' },
+        ],
+      },
+      pendekatanStudiRules: {
+        study_approach: [
+          { required: true, trigger: 'change', message: 'Mohon Pilih Pendekatan Studi' },
+        ],
+        listSubProject: [
+          { validator: validateListSubProject, trigger: 'blur' },
+        ],
+      },
+      statusKegiatanRules: {
+        status: [
+          { required: true, trigger: 'change', message: 'Mohon Pilih Status Kegiatan' },
+        ],
+      },
+      jenisKegiatanRules: {
+        project_type: [
+          { required: true, trigger: 'change', message: 'Mohon Pilih Status Kegiatan' },
+        ],
+      },
       currentProjectRules: {
         project_title: [
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
@@ -868,8 +810,8 @@ export default {
     });
 
     var data = qs.stringify({
-      'username': 'haris3',
-      'password': 'amdal123',
+      'username': 'Amdalnet',
+      'password': 'Amdalnet123',
       'client': 'requestip',
       'expiration': 20160,
       'f': 'json',
@@ -879,20 +821,18 @@ export default {
       method: 'post',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Keep-Alive': 'timeout=60',
-        'X-Content-Type-Options': 'nosniff',
         'Connection': 'keep-alive',
         'Content-Encoding': 'gzip',
-        'Strict-Transport-Security': 'max-age=31536000',
       },
       body: data,
+      responseType: 'json',
     };
 
     esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
-      .then(response => response.json())
-      .then(data => {
-        this.token = data.token;
+      .then(response => {
+        this.token = response.data.token;
       });
+
     // for step
     this.$store.dispatch('getStep', 0);
 
@@ -909,12 +849,15 @@ export default {
       this.currentProject = this.$route.params.project;
       this.listSubProject = this.currentProject.listSubProject;
       this.fileMap = this.currentProject.fileMap;
+      this.filePdf = this.currentProject.filePdf;
+      this.filePdfName = this.filePdf.name;
       this.fileMapName = this.fileMap.name;
       this.fileKtr = this.currentProject.fileKtr;
       this.fileKtrName = this.fileKtr.name;
       this.filePreAgreement = this.currentProject.filePreAgreement;
       this.filePreAgreementName = this.currentProject.filePreAgreement.name;
       this.handleFileTapakProyekMapUpload('a');
+      this.handleFileTapakProyekPdfUpload('pdf');
       // this.fileName = this.getFileName(this.currentProject.map);
       // this.fileMap = this.getFileName(this.currentProject.map);
       // this.listSupportTable = await this.getListSupporttable(
@@ -925,6 +868,46 @@ export default {
     this.getAllData();
   },
   methods: {
+    goToPendekatanStudi(){
+      this.$refs.tapakProyek.validate((valid) => {
+        if (valid) {
+          this.activeName = '2';
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    goToStatusKegiatan(){
+      this.$refs.pendekatanStudi.validate((valid) => {
+        if (valid) {
+          this.activeName = '3';
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    goToJenisKegiatan(){
+      this.$refs.statusKegiatan.validate((valid) => {
+        if (valid) {
+          this.activeName = '4';
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    goToPersetujuanAwal(){
+      this.$refs.jenisKegiatan.validate((valid) => {
+        if (valid) {
+          this.activeName = '5';
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.scale) {
         if (columnIndex === 1) {
@@ -981,10 +964,31 @@ export default {
       });
     },
     calculateChoosenProject(){
+      const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => {
+        if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'AMDAL';
+        } else if (this.currentProject.study_approach === 'Terpadu'){
+          return e.result === 'AMDAL';
+        }
+      });
+      const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => {
+        if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'UKL-UPL';
+        } else if (this.currentProject.study_approach === 'Terpadu'){
+          return e.result === 'UKL-UPL';
+        }
+      });
+      const listMainProjectSppl = this.currentProject.listSubProject.filter(e => {
+        if (!this.currentProject.study_approach || this.currentProject.study_approach === 'Tunggal'){
+          return e.type === 'utama' && e.result === 'SPPL';
+        } else if (this.currentProject.study_approach === 'Terpadu'){
+          return e.result === 'SPPL';
+        }
+      });
       // console.log('project tanpa filter', this.currentProject);
-      const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
-      const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
-      const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
+      // const listMainProjectAmdal = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'AMDAL');
+      // const listMainProjectUklUpl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'UKL-UPL');
+      // const listMainProjectSppl = this.currentProject.listSubProject.filter(e => e.type === 'utama' && e.result === 'SPPL');
 
       // console.log('listAmdal', listMainProjectAmdal);
       let choosenProject = '';
@@ -1000,7 +1004,7 @@ export default {
       // console.log('choosenProject', choosenProject);
 
       // add choosen project to current project
-      this.currentProject.kbli = choosenProject.kbli;
+      this.currentProject.kbli = choosenProject.kbli ? choosenProject.kbli : 'non kbli';
       this.currentProject.required_doc = choosenProject.result;
       this.currentProject.risk_level = choosenProject.result_risk;
       this.currentProject.result_risk = choosenProject.result_risk;
@@ -1014,7 +1018,7 @@ export default {
     handleStudyAccord(){
       this.calculateListSubProjectResult();
       this.calculateChoosenProject();
-      this.activeName = '3';
+      this.goToStatusKegiatan();
     },
     checkMapFile() {
       document.querySelector('#ktrFile').click();
@@ -1024,18 +1028,22 @@ export default {
         confirmButtonText: 'OK',
       });
     },
-    showMapAlert(){
-      this.$alert('Peta yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!', {
-        confirmButtonText: 'OK',
-      });
-    },
     handleFileKtrUpload(e){
+      // reset validation
+      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKtr').resetField();
+
       if (e.target.files[0].size > 1048576){
         this.showFileAlert();
         return;
       }
 
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
       this.fileKtr = e.target.files[0];
+      this.currentProject.fileKtr = e.target.files[0];
       this.fileKtrName = e.target.files[0].name;
     },
     handleFilePreAgreementUpload(e){
@@ -1047,86 +1055,45 @@ export default {
       this.filePreAgreementName = e.target.files[0].name;
       // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
+    handleFileTapakProyekPdfUpload(e){
+      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filePdf').resetField();
+
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
+      if (e !== 'pdf'){
+        this.filePdf = e.target.files[0];
+        this.filePdfName = e.target.files[0].name;
+      }
+    },
     handleFileTapakProyekMapUpload(e){
+      // reset validation
+      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileMap').resetField();
+
       if (e.target.files[0].size > 1048576){
         this.showFileAlert();
         return;
       }
 
       if (e !== 'a'){
-        console.log(e.target.files[0]);
         this.fileMap = e.target.files[0];
         this.fileMapName = e.target.files[0].name;
       }
-      // if (this.$refs.fileMap.files[0]){
-      //   console.log(this.$refs.fileMap.files[0]);
-      //   this.fileMap = this.$refs.fileMap.files[0];
-      // }
-
       const map = new Map({
-        basemap: 'topo',
+        basemap: 'satellite',
       });
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
-
-      const featureLayer = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Kawasan_Hutan/MapServer',
-        sublayers: [
-          {
-            id: 0,
-            title: 'Layer Kawasan Hutan',
-            popupTemplate: {
-              title: 'Kawasan Hutan',
-            },
-          },
-        ],
-        imageTransparency: true,
-      });
-
-      const graticuleGrid = new MapImageLayer({
-        url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/graticule/MapServer',
-      });
-
-      const ekoregion = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Ekoregion_Darat_dan_Laut/MapServer',
-        visible: false,
-        sublayers: [
-          {
-            id: 1,
-            visible: false,
-            visibility: 'exclusive',
-            title: 'Ekoregion Laut',
-          }, {
-            id: 0,
-            visible: false,
-            visibility: 'exclusive',
-            title: 'Ekoregion Darat',
-          },
-        ],
-      });
-
-      const ppib = new MapImageLayer({
-        url: 'https://geoportal.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Revision_1st/MapServer',
-        visible: false,
-      });
-
-      const tutupanLahan = new MapImageLayer({
-        url: 'https://dbgis.menlhk.go.id/arcgis/rest/services/KLHK/Penutupan_Lahan_Tahun_2020/MapServer',
-        visible: false,
-      });
-      map.addMany([featureLayer, tutupanLahan, ekoregion, ppib, graticuleGrid]);
-
-      const baseGroupLayer = new GroupLayer({
-        title: 'Base Layer',
-        visible: true,
-        layers: [featureLayer, tutupanLahan, ekoregion, ppib, graticuleGrid],
-        opacity: 0.90,
-      });
-
-      map.add(baseGroupLayer);
 
       const penutupanLahan2020 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
@@ -1142,20 +1109,6 @@ export default {
         visibilityMode: '',
       });
 
-      const indikatifPPTPKH = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/Indikatif_PPTPKH/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
-      const piapsRevisi = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIAPS_Revisi_VI/MapServer',
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-      });
-
       const pippib2021Periode2 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
         imageTransparency: true,
@@ -1164,9 +1117,9 @@ export default {
       });
 
       const sigapLayer = new GroupLayer({
-        title: 'SIGAP KLHK',
+        title: 'Peta Tematik Status',
         visible: false,
-        layers: [penutupanLahan2020, kawasanHutanB, indikatifPPTPKH, piapsRevisi, pippib2021Periode2],
+        layers: [penutupanLahan2020, kawasanHutanB, pippib2021Periode2],
         opacity: 0.90,
       });
 
@@ -1175,26 +1128,68 @@ export default {
       const fr = new FileReader();
       fr.onload = (event) => {
         const base = event.target.result;
-        shp(base).then(function(data) {
+        shp(base).then((datas) => {
           const mapSampleProperties = [
-            'id',
-            'pemrakarsa',
-            'kegiatan',
-            'layer',
-            'dokumen',
-            'lokasi',
-            'luas',
-            'skala',
+            'OBJECTID_1',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'PROVINSI',
+            'KETERANGAN',
+            'AREA',
+            'LAYER',
           ];
 
-          const mapUploadProperties = Object.keys(data.features[0].properties);
+          const mapUploadProperties = Object.keys(datas.features[0].properties);
+          const propFields = datas.features[0].properties;
 
-          if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
-            this.showMapAlert();
-            return;
+          var centroids = centroid(datas.features[0]);
+          var getCoordinates = centroids.geometry.coordinates;
+
+          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.osm_type === 'way') {
+                fetch(`https://www.openstreetmap.org/api/0.6/way/${data.osm_id}.json`)
+                  .then(response => response.json())
+                  .then(state => {
+                    this.full_address = state.elements[0].tags.addr;
+                  });
+              } else if (data.osm_type === 'relation') {
+                fetch(`https://www.openstreetmap.org/api/0.6/relation/${data.osm_id}.json`)
+                  .then(response => response.json())
+                  .then(state => {
+                    this.full_address = state.elements[0].tags.name;
+                  });
+              }
+            });
+
+          if (datas.features[0].geometry.type !== 'Polygon') {
+            document.getElementById('fileMap').value = '';
+            this.fileMapName = 'No File Selected';
+            return this.$alert('SHP yang dimasukkan harus Polygon!', 'Format Salah', {
+              confirmButtonText: 'Confirm',
+            });
           }
 
-          const blob = new Blob([JSON.stringify(data)], {
+          if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
+            document.getElementById('fileMap').value = '';
+            this.fileMapName = 'No File Selected';
+            return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+              confirmButtonText: 'Confirm',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+                window.open('sample_map/Peta_Tapak_Sample_Amdalnet.zip', '_blank');
+              },
+            });
+          }
+
+          const blob = new Blob([JSON.stringify(datas)], {
             type: 'application/json',
           });
 
@@ -1217,11 +1212,12 @@ export default {
             opacity: 0.75,
             title: 'Peta Tapak Proyek',
             renderer: renderer,
+            popupTemplate: popupTemplate(propFields),
           });
 
           map.add(geojsonLayer);
-          mapView.on('layerview-create', (event) => {
-            mapView.goTo({
+          mapView.on('layerview-create', async(event) => {
+            await mapView.goTo({
               target: geojsonLayer.fullExtent,
             });
           });
@@ -1233,7 +1229,7 @@ export default {
         container: 'mapView',
         map: map,
         center: [115.287, -1.588],
-        zoom: 4,
+        zoom: 5,
       });
       this.$parent.mapView = mapView;
 
@@ -1329,26 +1325,35 @@ export default {
       this.$router.push('/project');
     },
     handleSubmit() {
-      this.currentProject.fileMap = this.fileMap;
-      this.currentProject.fileKtr = this.fileKtr;
-      this.currentProject.filePreAgreement = this.filePreAgreement;
+      if (this.fileMap){
+        this.currentProject.fileMap = this.fileMap;
+      }
+      if (this.filePdf){
+        this.currentProject.filePdf = this.filePdf;
+      }
+      if (this.fileKtr){
+        this.currentProject.fileKtr = this.fileKtr;
+      }
+      if (this.filePreAgreement) {
+        this.currentProject.filePreAgreement = this.filePreAgreement;
+      }
 
-      this.$refs.currentProject.validate((valid) => {
-        if (valid) {
-          this.currentProject.listSupportDoc = this.listSupportTable.filter(
-            (item) => item.name && item.file
-          );
+      // this.$refs.currentProject.validate((valid) => {
+      //   if (valid) {
+      // this.currentProject.listSupportDoc = this.listSupportTable.filter(
+      //   (item) => item.name && item.file
+      // );
 
-          // send to pubishProjectRoute
-          this.$router.push({
-            name: 'publishProject',
-            params: { project: this.currentProject, mapUpload: this.fileMap },
-          });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
+      // send to pubishProjectRoute
+      this.$router.push({
+        name: 'publishProject',
+        params: { project: this.currentProject, mapUpload: this.fileMap, geomFromGeojson: this.geomFromGeojson, mapUploadPdf: this.filePdf },
       });
+      //   } else {
+      //     console.log('error submit!!');
+      //     return false;
+      //   }
+      // });
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
@@ -1362,18 +1367,20 @@ export default {
       formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
       formdatas.append('type', 'Feature Service');
       formdatas.append('title', this.currentProject.project_title + '_Peta Tapak Proyek');
-      formdatas.append('file', this.fileMap);
+      formdatas.append('file', this.currentProject.fileMap);
+      formdatas.append('filePdf', this.currentProject.filePdf);
+      formdatas.append('fileName', this.currentProject.project_title + '_Peta Tapak Proyek');
 
       var requestOptions = {
         method: 'POST',
         headers: myHeaders,
         body: formdatas,
-        redirect: 'follow',
+        responseType: 'json',
+        multipart: true,
       };
 
       esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
+        .then(response => response.data)
         .catch(error => console.log('error', error));
     },
     async changeProvince(row) {
@@ -1389,6 +1396,9 @@ export default {
     },
     changeStatus(value) {
 
+    },
+    removePreAgreement(){
+      delete this.currentProject.pre_agreement;
     },
     changeProjectType(value) {
       const temp = 'Upload Dokumen ';

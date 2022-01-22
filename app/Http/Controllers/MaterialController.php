@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Entity\Material;
+use App\Http\Resources\KebijakanResource;
+use Validator;
+use DB;
+use Storage;
 
 class MaterialController extends Controller
 {
@@ -50,7 +54,46 @@ class MaterialController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //validate request
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required',
+                'description' => 'required',
+                'raise_date' => 'required',
+                'link' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $params = $request->all();
+
+            //create file
+            $file = $request->file('link');
+            $name = '/materi/' . uniqid() . '.' . $file->extension();
+            $file->storePubliclyAs('public', $name);
+
+            DB::beginTransaction();
+
+            //create Kebijakan
+            $materi = Material::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'raise_date' => $request->raise_date,
+                'link' => Storage::url($name),
+            ]);
+
+
+            if (!$materi) {
+                DB::rollback();
+            } else {
+                DB::commit();
+            }
+
+            return new KebijakanResource($materi);
+        }
     }
 
     /**
@@ -82,9 +125,55 @@ class MaterialController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+         //validate request
+         $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required',
+                'description' => 'required',
+                'raise_date' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+
+            //create file
+            if(!empty($request->file('link'))) {
+                $file = $request->file('link');
+                $name = '/materi/' . uniqid() . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+                $name = Storage::url($name);
+            } else {
+                $name = $request->old_link;
+            }
+
+
+            //create Kebijakan
+            $materi = Material::where('id', $request->id)->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'raise_date' => $request->raise_date,
+                'link' => $name,
+            ]);
+
+            if ($materi) {
+                return response()->json([
+                    'message' => 'Berhasil mengubah data materi',
+                    'status' => 200
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'Gagal mengubah data materi',
+                'status' => 400
+            ], 403);
+
+
+        }
     }
 
     /**
@@ -95,6 +184,11 @@ class MaterialController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $appParam = Material::where('id', $id);
+            return $appParam->delete();
+        } catch (\Exception $ex) {
+            return response()->json(['error' => $ex->getMessage()], 403);
+        }
     }
 }

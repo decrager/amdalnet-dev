@@ -64,7 +64,7 @@ export default {
       axios.get('api/map/' + this.idProject)
         .then((response) => {
           const map = new Map({
-            basemap: 'topo',
+            basemap: 'satellite',
           });
 
           const projects = response.data;

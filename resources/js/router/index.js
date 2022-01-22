@@ -25,7 +25,7 @@ import ukluplRoutes from './modules/uklupl';
 // import initiatorRoutes from './modules/initiator';
 // import formulatorRoutes from './modules/formulator';
 // import lukRoutes from './modules/luk';
-// import tukRoutes from './modules/tuk';
+import tukRoutes from './modules/tuk';
 // import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
@@ -34,6 +34,7 @@ import flowchartRoutes from './modules/flowchart';
 import scopingRoutes from './modules/scoping';
 import screeningRoutes from './modules/screening';
 import digWorkRoutes from './modules/digwork';
+import businessRoutes from './modules/business';
 // import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
@@ -243,6 +244,7 @@ export const asyncRoutes = [
   masterRoutes,
   // paramRoutes,
   independentFormulatorTeamRoutes,
+  tukRoutes,
   announcementRoutes,
   feedbackRoutes,
   // workspaceRoutes,
@@ -265,6 +267,7 @@ export const asyncRoutes = [
   dokumenRoutes,
   errorRoutes,
   flowchartRoutes,
+  businessRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 

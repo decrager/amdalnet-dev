@@ -13,8 +13,10 @@
           <el-row :key="'user_project_' + idx" class="item">
             <el-col :span="20">
               <span class="title">{{ project.title }}</span>
-              <span class="location">{{ project.location }}</span>
+              <span class="location">{{ project.location.toLowerCase() }}</span>
+              <span class="registration">{{ project.registration_no }}</span>
               <span :class="'doctype ' + project.doc">{{ project.doc }}</span>
+
             </el-col>
             <el-col :span="4" style="text-align:right;">
               <el-button :class="'button-'+project.doc" circle />
@@ -26,33 +28,77 @@
   </div>
 </template>
 <script>
+import Resource from '@/api/resource';
+const activitiesResource = new Resource('latest-activities');
 export default {
   name: 'UserActivities',
+  props: {
+    user: {
+      type: Object,
+      default: null,
+    },
+  },
   data(){
     return {
       isLoading: false,
-      list: [
-        { title: 'Pembangunan Pabrik Pupuk Organik', location: 'Semarang - Jawa Tengah', doc: 'AMDAL' },
-        { title: 'Pembangunan Gudang Pupuk Organik', location: 'Sidoarjo - Jawa Timur', doc: 'UKL-UPL' },
-        { title: 'Pembangunan Lahan Parkir', location: 'Semarang - Jawa Tengah', doc: 'SPPL' },
-      ],
+      list: [],
     };
   },
+  computed: {
+    isFormulator(){
+      return this.$store.getters.roles.includes('formulator');
+    },
+    isInitiator(){
+      return this.$store.getters.roles.includes('initiator');
+    },
+    isExaminer(){
+      return this.$store.getters.roles[0].split('-')[0] === 'examiner';
+    },
+  },
+  watch: {
+    user: function(val) {
+      console.log('user? ', val);
+      this.getData();
+    },
+  },
   mounted(){
-    this.getData();
+    // this.getData();
   },
   methods: {
     async getData(){
+      let param = null;
+      if (this.isInitiator) {
+        param = { initiatorId: this.user.id };
+      }
+      if (this.isFormulator) {
+        param = { formulatorId: this.user.id };
+      }
+      await activitiesResource.list(param).then((res) => {
+        if (res.data){
+          const activities = [];
+          res.data.forEach((d, idx) => {
+            console.log(d);
+            activities.push({
+              title: d.project_title,
+              location: (d.address.length > 0) ? d.address[0].district + ', ' + d.address[0].prov : d.district + ', ' + d.prov,
+              doc: d.required_doc,
+              registration_no: d.registration_no,
+            });
+          });
+          this.list = activities;
+        }
+      }).finally({
 
+      });
     },
   },
 };
 </script>
 <style lang="scss" scoped>
 .item {
-  padding: 1em ;
+  padding: 0.5em ;
   border: 1px solid #e0e0e0;
-  margin: 0 0 1.5em;
+  margin: 0 0 1em;
   border-radius: 0.5em;
 
   span {
@@ -60,7 +106,8 @@ export default {
     line-height: 150%;
   }
   .title { font-weight: bold; }
-  .location { font-size:80%; margin-bottom: 1em;}
+  .location { font-size:80%; text-transform: capitalize;}
+  .registration { font-size:76%; font-weight:bold; margin-bottom: 1em; text-transform: uppercase;}
   .doctype {
     display: inline-block;
     font-weight: 500;

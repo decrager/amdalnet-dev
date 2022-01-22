@@ -1,6 +1,6 @@
 <template>
   <div>
-    <disclaimer v-if="isFirstVisit()" @closeDialog="onCloseDisclaimer" />
+    <disclaimer @closeDialog="onCloseDisclaimer" />
     <header-home @handleSetMenu="handleSetMenu" />
     <hero-home v-if="toggleMenu" />
     <steps-home v-if="toggleMenu" />
@@ -30,7 +30,6 @@ import CounterHome from './section/Counter.vue';
 import AnnouncementHome from './section/Announce.vue';
 import FooterHome from './section/Footer.vue';
 import Disclaimer from './components/Disclaimer.vue';
-
 import Cookies from 'js-cookie';
 
 export default {
@@ -57,9 +56,7 @@ export default {
   created() {
     this.$store.dispatch('getKblis', { kblis: true });
   },
-  mounted(){
-
-  },
+  mounted(){},
   methods: {
     handleSetMenu(e) {
       this.toggleMenuMateri = false;

@@ -5,13 +5,20 @@
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane
           v-if="isAdmin"
-          label="Verifikasi & Rapat"
+          label="Pemeriksaan Berkas Administrasi Formulir Andal RKL RPL"
           name="verifikasi"
         >
-          <VerifikasiRapat v-if="activeName === 'verifikasi'" />
+          <Verifikasi v-if="activeName === 'verifikasi'" @changeIsComplete="changeIsComplete($event)" />
         </el-tab-pane>
         <el-tab-pane
-          v-else-if="isSubtance"
+          v-if="isAdmin && isComplete"
+          label="Undangan Rapat"
+          name="undanganrapat"
+        >
+          <UndanganRapat v-if="activeName === 'undanganrapat'" />
+        </el-tab-pane>
+        <el-tab-pane
+          v-else-if="isSubtance && isComplete"
           label="Berita Acara"
           name="beritaacara"
         >
@@ -30,15 +37,19 @@
 </template>
 
 <script>
-import VerifikasiRapat from '@/views/pengujian-rkl-rpl/components/verifikasiRapat/index';
+import Verifikasi from '@/views/pengujian-rkl-rpl/components/verifikasi/index';
+import UndanganRapat from '@/views/pengujian-rkl-rpl/components/undanganRapat/index';
 import BeritaAcara from '@/views/pengujian-rkl-rpl/components/beritaAcara/index';
 import UjiKelayakan from '@/views/pengujian-rkl-rpl/components/ujiKelayakan/index';
 import WorkFlow from '@/components/Workflow';
+import Resource from '@/api/resource';
+const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
 
 export default {
   name: 'PengujianRKLRPL',
   components: {
-    VerifikasiRapat,
+    Verifikasi,
+    UndanganRapat,
     BeritaAcara,
     UjiKelayakan,
     WorkFlow,
@@ -49,6 +60,7 @@ export default {
       userInfo: {
         roles: [],
       },
+      isComplete: false,
     };
   },
   computed: {
@@ -67,6 +79,10 @@ export default {
   },
   async created() {
     this.userInfo = await this.$store.dispatch('user/getInfo');
+    this.isComplete = await verifikasiRapatResource.list({
+      checkComplete: 'true',
+      idProject: this.$route.params.id,
+    });
     this.$store.dispatch('getStep', 6);
     if (this.userInfo.roles.includes('examiner-substance')) {
       this.activeName = 'beritaacara';
@@ -77,6 +93,11 @@ export default {
     } else if (this.userInfo.roles.includes('formulator')) {
       this.activeName = 'ujikelayakan';
     }
+  },
+  methods: {
+    changeIsComplete({ isComplete }) {
+      this.isComplete = isComplete;
+    },
   },
 };
 </script>

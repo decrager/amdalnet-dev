@@ -1,5 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
+
     <el-card>
       <div class="filter-container">
         <el-row type="flex" class="row-bg" justify="space-between">
@@ -14,10 +15,11 @@
               {{ ' Kegiatan' }}
             </el-button>
           </el-col>
-          <el-col :span="6">
-            <el-input v-model="listQuery.search" placeholder="Please input" @change="handleFilter">
-              <el-button slot="append" icon="el-icon-search" @click="handleFilter" />
+          <el-col :span="10">
+            <el-input v-model="listQuery.search" prefix-icon="el-icon-search" placeholder="Pencarian" :readonly="loading" @keyup.enter.native="handleFilter">
+              <el-button slot="append" icon="el-icon-close" :disabled="loading" @click="resetSearch" />
             </el-input>
+
             <!-- <el-button
               class="filter-item"
               type="primary"
@@ -33,9 +35,11 @@
         v-loading="loading"
         :data="filtered"
         fit
+        :clear-filter="onClearFilter"
         highlight-current-row
         :header-cell-style="{ background: '#216221', color: 'white' }"
         style="width: 100%"
+        @sort-change="onTableSort"
       >
         <el-table-column type="expand" class="row-detail">
           <template slot-scope="scope">
@@ -55,7 +59,7 @@
                     <i class="fa fa-times" />
                   </a>
                 </span>
-                <span class="description">{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+                <span class="description">{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }}
                 </span>
               </div>
               <span class="action pull-right">
@@ -256,15 +260,30 @@
         </el-table-column>
         <el-table-column label="No." width="54px">
           <template slot-scope="scope">
-            <span>{{ scope.$index + 1 }}</span>
+            <span>{{ ((listQuery.page-1) * listQuery.limit) + (scope.$index + 1) }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="No. Registrasi" width="200">
+        <el-table-column align="left" label="No. Registrasi" width="150">
           <template slot-scope="scope">
-            <span>{{ scope.row.registration_no }}</span>
+            <span>{{ scope.row.registration_no ? scope.row.registration_no.toUpperCase() : '' }}</span>
           <!-- <span>{{
               scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
             }}</span> -->
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="date"
+          align="center"
+          label="Tanggal"
+          sortable="custom"
+          width="150px"
+        >
+          <template slot-scope="scope">
+            <div style="line-height: 1.1em;">
+              <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}</span>
+              <!-- <br>
+              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span> -->
+            </div>
           </template>
         </el-table-column>
         <el-table-column align="left" label="Nama Kegiatan" min-width="200">
@@ -272,7 +291,30 @@
             <span>{{ scope.row.project_title }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Dokumen" width="100">
+        <el-table-column
+          width="150px"
+
+          column-key="doc_type"
+          align="center"
+          label="Dokumen"
+        >
+
+          <template slot="header">
+            <el-select
+              v-model="listQuery.filters"
+              class="filter-header"
+              clearable
+              placeholder="Dokumen"
+              @change="onDocTypeFilter"
+            >
+              <el-option
+                v-for="item in [{text: 'AMDAL', value: 'AMDAL'}, {text: 'UKL-UPL', value: 'UKL-UPL'}, {text: 'SPPL', value: 'SPPL'}]"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value"
+              />
+            </el-select>
+          </template>
           <template slot-scope="scope">
             <span>{{ scope.row.required_doc }}</span>
           </template>
@@ -333,7 +375,9 @@ export default {
   components: { Pagination, AnnouncementDialog },
   data() {
     return {
-      loading: false,
+      loading: true,
+      searchString: '',
+      sectionHeader: 'list-penapisan',
       userInfo: {
         roles: [],
       },
@@ -345,6 +389,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        orderBy: 'id',
+        order: 'DESC',
+        filters: '',
       },
       provinceOptions: [],
       cityOptions: [],
@@ -411,11 +458,9 @@ export default {
     // }
 
     this.getFiltered(this.listQuery);
-    console.log(this.$route.name);
   },
   methods: {
     isUklUpl(project){
-      console.log(project.required_doc);
       return project.required_doc === 'UKL-UPL';
     },
     isAmdal(project){
@@ -430,9 +475,6 @@ export default {
       );
     },
     handleSubmitAnnouncement(fileProof){
-      // this.announcement.fileProof = fileProof;
-      console.log(this.announcement);
-
       // make form data because we got file
       const formData = new FormData();
 
@@ -475,14 +517,22 @@ export default {
     },
     async getFiltered(query) {
       this.loading = true;
-      const { data, total } = await projectResource.list(query);
-      this.filtered = data.map(e => {
-        e.listSubProject = e.list_sub_project;
-        return e;
-      });
-      this.total = total;
-      console.log(this.filtered);
-      this.loading = false;
+      this.filtered = [];
+      console.log('getFiltered', query);
+      await projectResource.list(query)
+        .then((res) => {
+          const { data, total } = res;
+          const mapped = data.map(e => {
+            e.listSubProject = e.list_sub_project;
+            return e;
+          });
+          this.filtered = mapped;
+          this.total = total;
+          this.loading = false;
+          console.log(data, this.filtered);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     handleCreate() {
       this.$router.push({
@@ -508,7 +558,6 @@ export default {
       // change field to number and formulator team
       currentProject.field = Number(currentProject.field);
       currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
-      console.log(currentProject);
       this.$router.push({
         name: 'createProject',
         params: { project: currentProject },
@@ -534,7 +583,6 @@ export default {
     },
     handleTimPenyusunForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
-      console.log(currentProject);
       this.$router.push({
         name: 'timPenyusun',
         params: { project: currentProject, readonly: true, id: currentProject.id },
@@ -549,7 +597,6 @@ export default {
           scale: curr.scale + ' ' + curr.scale_unit,
         };
       });
-      console.log(currentProject);
       this.announcement.sub_project = subProject;
       this.announcement.pic_name = this.initiator.pic;
       this.announcement.pic_address = this.initiator.address;
@@ -624,15 +671,11 @@ export default {
       });
     },
     async handleGenerateSPPL(project) {
-      console.log(project);
-
       project.listSubProject = project.listSubProject.map((e, i) => {
         e.address = project.address[i] ? this.toTitleCase(project.address[i].address + ' ' + project.address[i].district + ' ' + project.address[i].prov) : '';
         e.number = i + 1;
         return e;
       });
-
-      console.log(project.address[0].district);
 
       PizZipUtils.getBinaryContent(
         '/template_sppl.docx',
@@ -698,7 +741,6 @@ export default {
       });
     },
     handleWorkspace(project) {
-      console.log(project);
       this.$router.push({
         name: 'editWorkspace',
         params: { id: project.id, project: project },
@@ -753,6 +795,39 @@ export default {
           filename: projectName.data,
         },
       });
+    },
+    // sorting, filtering
+    onTableSort(sort) {
+      switch (sort.prop) {
+        case 'date':
+          this.listQuery.orderBy = 'created_at';
+          console.log(this.listQuery);
+
+          break;
+        default:
+      }
+      this.listQuery.order = (sort.order === 'ascending') ? 'ASC' : 'DESC';
+      this.handleFilter();
+    },
+    onDocTypeFilter(val, col, row){
+      console.log('filtering doctype!', val);
+
+      this.listQuery.filters = val;
+      this.listQuery.page = 1;
+
+      this.handleFilter();
+    },
+    onClearFilter(key){
+      console.log('clearing filter!', key);
+    },
+    doSearch(){
+      this.listQuery.page = 1;
+      this.getFiltered(this.listQuery);
+    },
+    resetSearch(){
+      this.listQuery.search = '';
+      this.listQuery.page = 1;
+      this.handleFilter();
     },
   },
 };

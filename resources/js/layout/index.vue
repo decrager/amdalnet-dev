@@ -7,6 +7,7 @@
         <navbar />
         <tags-view v-if="needTagsView" hidden />
       </div>
+      <context-bar />
       <app-main />
       <!-- right-panel v-if="showSettings">
         <settings />
@@ -19,6 +20,7 @@
 // import RightPanel from '@/components/RightPanel';
 import TagsView from '@/layout/components/TagsView';
 import { Navbar, Sidebar, AppMain } from './components'; //, Settings
+import ContextBar from '@/components/ContextBar';
 import ResizeMixin from './mixin/resize-handler.js';
 import { mapState } from 'vuex';
 
@@ -27,6 +29,7 @@ export default {
   components: {
     AppMain,
     Navbar,
+    ContextBar,
     // RightPanel,
     // Settings,
     Sidebar,

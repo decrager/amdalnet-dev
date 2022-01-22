@@ -10,6 +10,7 @@
         {{ 'Simpan Perubahan' }}
       </el-button>
       <el-button
+        v-if="reports.type === 'update'"
         :loading="loadingDocs"
         type="info"
         style="font-size: 0.8rem"
@@ -21,26 +22,13 @@
     <el-row :gutter="32">
       <el-col :sm="24" :md="12">
         <FormBerita :reports="reports" :loadingtuk="loadingTuk" />
+      </el-col>
+      <el-col :sm="24" :md="12">
         <DaftarHadir
           :invitations="reports.invitations"
+          :reports="reports"
           :loadingtuk="loadingTuk"
           @deleteinvitation="deleteInvitation($event)"
-        />
-      </el-col>
-      <el-col
-        v-loading="loadingDocs"
-        :sm="24"
-        :md="12"
-        :class="{ 'mt-col': loadingDocs }"
-      >
-        <iframe
-          v-if="showDocument"
-          :src="
-            'https://docs.google.com/gview?url=' + projects + '&embedded=true'
-          "
-          width="100%"
-          height="723px"
-          frameborder="0"
         />
       </el-col>
     </el-row>
@@ -79,23 +67,21 @@ export default {
   },
   created() {
     this.handleChange(this.idProject);
-    this.getData();
+    // this.getData();
   },
   methods: {
-    async getData() {
+    async downloadDocx() {
       this.loadingDocs = true;
       const data = await meetingReportResource.list({
         idProject: this.$route.params.id,
         docs: 'true',
       });
       this.docs = data;
-      this.exportDocx();
-    },
-    downloadDocx() {
-      saveAs(
-        this.out,
-        `ba-ka-andal-${this.docs.project_title.toLowerCase()}.docx`
-      );
+      const a = document.createElement('a');
+      a.href = window.location.origin + `/storage/ba-ka/ba-ka-${data}.docx`;
+      a.setAttribute('download', `ba-ka-${data}.docx`);
+      a.click();
+      this.loadingDocs = false;
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
@@ -110,26 +96,21 @@ export default {
             linebreaks: true,
           });
           doc.render({
-            document_type_big: this.docs.document_type_big,
-            document_type: this.docs.document_type,
+            project_title: this.docs.project_title,
             project_title_big: this.docs.project_title_big,
-            project_address_big: this.docs.project_address_big,
+            pemrakarsa: this.docs.pemrakarsa,
             pemrakarsa_big: this.docs.pemrakarsa_big,
+            pic: this.docs.pic,
+            pic_position: this.docs.pic_position,
+            ketua_tuk_position: this.docs.ketua_tuk_position,
+            authority: this.docs.authority,
+            authority_big: this.docs.authority_big,
+            tuk_member: this.docs.tuk_member,
+            notes: this.docs.notes,
+            ketua_tuk_name: this.docs.ketua_tuk_name,
             meeting_date: this.docs.meeting_date,
             meeting_location: this.docs.meeting_location,
-            pemrakarsa: this.docs.pemrakarsa,
-            pic: this.docs.pic,
-            position: this.docs.position,
-            leader: this.docs.leader,
-            team_member: this.docs.team_member,
-            project_title: this.docs.project_title,
-            project_address: this.docs.project_address,
-            pra_konstruksi: this.docs.pra_konstruksi,
-            konstruksi: this.docs.konstruksi,
-            operasi: this.docs.operasi,
-            pasca_operasi: this.docs.pasca_operasi,
-            meeting_lead: this.docs.meeting_lead,
-            meeting_lead_institution: this.docs.meeting_lead_institution,
+            year: this.docs.year,
           });
 
           const out = doc.getZip().generate({
@@ -138,25 +119,13 @@ export default {
               'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
 
-          const formData = new FormData();
-          formData.append('docx', out);
-          formData.append('formulir', 'true');
-          formData.append('idProject', this.$route.params.id);
-
-          meetingReportResource
-            .store(formData)
-            .then((response) => {
-              this.showDocument = true;
-              this.projects =
-                window.location.origin +
-                `/storage/formulir/ba-ka-andal-${this.docs.project_title.toLowerCase()}.docx`;
-              this.loadingDocs = false;
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-
           this.out = out;
+
+          saveAs(
+            this.out,
+            `ba-ka-${this.docs.project_title.toLowerCase()}.docx`
+          );
+          this.loadingDocs = false;
         }
       );
     },
@@ -186,7 +155,7 @@ export default {
       });
       await this.handleChange(this.idProject);
       this.$message({
-        message: 'Data is saved Successfully',
+        message: 'Data sukses tersimpan',
         type: 'success',
         duration: 5 * 1000,
       });

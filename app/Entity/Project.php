@@ -5,9 +5,13 @@ namespace App\Entity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Project extends Model
+class Project extends Model implements Auditable
 {
+    use AuditableTrait;
+
     use SoftDeletes;
 
     use WorkflowTrait;
@@ -56,7 +60,7 @@ class Project extends Model
     {
         return $this->hasMany(ImpactIdentification::class, 'id_project', 'id');
     }
-    
+
     public function impactIdentificationsClone()
     {
         return $this->hasMany(ImpactIdentificationClone::class, 'id_project', 'id');
