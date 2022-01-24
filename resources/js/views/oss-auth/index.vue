@@ -30,27 +30,41 @@ export default {
       });
       this.$router.push({ path: '/' });
     }
-    this.getUserInfo()
+    this.validateToken()
       .then(response => {
-        this.isEmailRegistered()
-          .then(response => {
-            this.validateToken()
-              .then(response => {
-                console.log('this.isUserExists = ' + this.isUserExists);
-                console.log('this.isTokenValid = ' + this.isTokenValid);
-                this.redirect()
+        if (this.isTokenValid) {
+          this.getUserInfo()
+            .then(response => {
+              if (this.userInfo.email === undefined) {
+                this.$message({
+                  message: 'User tidak valid',
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
+                this.$router.push({ path: '/' });
+              } else {
+                this.isEmailRegistered()
                   .then(response => {
-                    this.fullscreenLoading = false;
+                    this.redirect()
+                      .then(response => {
+                        this.fullscreenLoading = false;
+                      });
                   });
-              });
+              }
+            });
+        } else {
+          this.$message({
+            message: 'Token telah kedaluarsa. Silakan login kembali di website OSS',
+            type: 'error',
+            duration: 5 * 1000,
           });
+          this.$router.push({ path: '/' });
+        }
       });
   },
   methods: {
     async redirect() {
       if (this.isUserExists && this.isTokenValid) {
-        // const isL = isLogged();
-        // console.log('isL = ' + isL);
         if (isLogged()) {
           // logout
           this.$store.dispatch('user/logout')
@@ -128,7 +142,7 @@ export default {
         token: this.token,
       })
         .then(response => {
-          if (response.status === 200) {
+          if (parseInt(response.data.status) === 200) {
             this.isTokenValid = true;
           }
         });
@@ -136,7 +150,7 @@ export default {
     async getUserInfo() {
       await axios.get('api/auth/userinfo-oss?token=' + this.token)
         .then(response => {
-          if (response.status === 200) {
+          if (parseInt(response.data.status) === 200) {
             this.userInfo = response.data.data;
           }
         });
