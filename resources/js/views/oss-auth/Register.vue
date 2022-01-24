@@ -117,13 +117,13 @@ export default {
                     type: 'success',
                     duration: 5 * 1000,
                   });
-                  // login & go to dashboard
+                  // login & go to user profile
                   this.$store.dispatch('user/login', {
                     email: this.regForm.email,
                     password: this.regForm.password,
                   })
                     .then(() => {
-                      this.$router.push({ path: '/dashboard' }, onAbort => {});
+                      this.$router.push({ path: '/profile/edit' }, onAbort => {});
                       this.loading = false;
                       window.location.reload();
                     })
