@@ -30,6 +30,7 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PeraturanController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EnvironmentalPermitController;
 
 /*
 |--------------------------------------------------------------------------
@@ -339,3 +340,8 @@ Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
 // dashboard
 Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
 Route::get('latest-activities', [DashboardController::class, 'latestActivities']);
+
+Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);
+Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);
+Route::post('environmental-permit/update', [EnvironmentalPermitController::class, 'update']);
+Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);
