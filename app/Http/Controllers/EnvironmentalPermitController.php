@@ -73,11 +73,16 @@ class EnvironmentalPermitController extends Controller
             $params = $request->all();
 
             //create file
-            $file = $request->file('file');
-            $name = '/environmental-permit/' . uniqid() . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
+            if (!empty($request->file('file'))) {
+                $file = $request->file('file');
+                $name = '/environmental-permit/' . uniqid() . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+            } else {
+                $name = NULL;
+            }
+            
 
-            //create environmental expert
+            //create environmental permits
             $permit = new EnvironmentalPermit();
             $permit->pemarkasa_name = $params['pemarkasa_name'];
             $permit->authority = $params['authority'];
@@ -88,7 +93,7 @@ class EnvironmentalPermitController extends Controller
             $permit->file = Storage::url($name);
             $permit->save();
 
-            return new EnvironmentalExpertResource($expert);
+            return new EnvironmentalExpertResource($permit);
         }
     }
 
@@ -121,7 +126,7 @@ class EnvironmentalPermitController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $validator = Validator::make(
             $request->all(),
@@ -138,7 +143,7 @@ class EnvironmentalPermitController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            $permit = EnvironmentalPermit::findOrFail($id);
+            $permit = EnvironmentalPermit::findOrFail($request->id);
 
             $params = $request->all();
 
@@ -148,6 +153,8 @@ class EnvironmentalPermitController extends Controller
                 $name = '/environmental-permit/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
                 $permit->file = Storage::url($name);
+            } else {
+                $name = $request->file('old_file');
             }
             $permit->pemarkasa_name = $params['pemarkasa_name'];
             $permit->authority = $params['authority'];

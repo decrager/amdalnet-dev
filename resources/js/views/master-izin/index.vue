@@ -100,7 +100,7 @@ export default {
     },
     handleCreate() {
       this.$router.push({
-        name: 'addMateri',
+        name: 'AddIzin',
       });
     },
     handleDelete({ rows }) {
@@ -110,7 +110,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          axios.get(`/api/materials/delete/${rows.id}`)
+          axios.get(`/api/environmental-permit/delete/${rows.id}`)
             .then((response) => {
               this.$message({
                 type: 'success',

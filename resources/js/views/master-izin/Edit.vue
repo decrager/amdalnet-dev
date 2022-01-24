@@ -9,7 +9,7 @@
                 <el-row>
                   <el-form-item label="Nama Pemrakarsa">
                     <el-input
-                      v-model="form.pemarkasa_name"
+                      v-model="currentParam.pemarkasa_name"
                       type="text"
                       placeholder="Nama Pemrakarsa"
                     />
@@ -20,7 +20,7 @@
                 <el-row>
                   <el-form-item label="Kewenangan">
                     <el-input
-                      v-model="form.authority"
+                      v-model="currentParam.authority"
                       type="text"
                       placeholder="Kewenangan"
                     />
@@ -31,7 +31,7 @@
                 <el-row>
                   <el-form-item label="Nama Usaha/Kegiatan">
                     <el-input
-                      v-model="form.kegiatan_name"
+                      v-model="currentParam.kegiatan_name"
                       type="textarea"
                       placeholder="Nama Usaha/Kegiatan"
                     />
@@ -42,7 +42,7 @@
                 <el-row>
                   <el-form-item label="Nomor SK">
                     <el-input
-                      v-model="form.sk_number"
+                      v-model="currentParam.sk_number"
                       type="text"
                       placeholder="Nomor SK"
                     />
@@ -53,7 +53,7 @@
                 <el-row>
                   <el-form-item label="Tanggal Berlaku SK">
                     <el-date-picker
-                      v-model="form.date"
+                      v-model="currentParam.date"
                       type="date"
                       placeholder="yyyy-MM-dd"
                       value-format="yyyy-MM-dd"
@@ -66,7 +66,7 @@
                 <el-row>
                   <el-form-item label="Penerbit SK">
                     <el-input
-                      v-model="form.publisher"
+                      v-model="currentParam.publisher"
                       type="text"
                       placeholder="Penerbit SK"
                     />
@@ -83,6 +83,18 @@
                       @change="handleFileUpload()"
                     >
                   </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
+                  <el-input
+                    v-model="currentParam.id"
+                    type="hidden"
+                  />
+                  <el-input
+                    v-model="currentParam.file"
+                    type="hidden"
+                  />
                 </el-row>
               </el-form>
               <div class="" style="margin-top: 0.5rem; text-align: right">
@@ -114,38 +126,37 @@ export default {
   props: {},
   data() {
     return {
-      form: {
-        pemarkasa_name: '',
-        authority: '',
-        kegiatan_name: '',
-        sk_number: '',
-        date: '',
-        publisher: '',
-      },
+      currentParam: {},
       file: '',
     };
   },
-  mounted() {},
+  created() {
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+    }
+  },
   methods: {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
     async saveIjinLingkungan() {
       const formData = new FormData();
+      formData.append('id', this.currentParam.id);
       formData.append('file', this.file);
-      formData.append('pemarkasa_name', this.form.pemarkasa_name);
-      formData.append('authority', this.form.authority);
-      formData.append('kegiatan_name', this.form.kegiatan_name);
-      formData.append('sk_number', this.form.sk_number);
-      formData.append('date', this.form.date);
-      formData.append('publisher', this.form.publisher);
+      formData.append('old_file', this.file);
+      formData.append('pemarkasa_name', this.currentParam.pemarkasa_name);
+      formData.append('authority', this.currentParam.authority);
+      formData.append('kegiatan_name', this.currentParam.kegiatan_name);
+      formData.append('sk_number', this.currentParam.sk_number);
+      formData.append('date', this.currentParam.date);
+      formData.append('publisher', this.currentParam.publisher);
 
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/environmental-permit', formData, { headers })
+        .post('api/environmental-permit/update', formData, { headers })
         .then(() => {
           this.$message({
-            message: 'Ijin Berhasil Disimpan',
+            message: 'Ijin Berhasil Diubah',
             type: 'success',
             duration: 5 * 1000,
           });

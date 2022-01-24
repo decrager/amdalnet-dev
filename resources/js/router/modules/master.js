@@ -216,6 +216,13 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Tambah Izin Baru', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'daftar-izin/edit',
+      component: () => import('@/views/master-izin/edit'),
+      name: 'EditIzin',
+      hidden: true,
+      meta: { title: 'Ubah Ijin Lingkungan', icon: 'documentation', noCache: true },
+    },
     // {
     //   path: 'create-params',
     //   component: () => import('@/views/params/Create'),

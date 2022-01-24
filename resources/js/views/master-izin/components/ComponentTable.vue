@@ -73,7 +73,7 @@ export default {
     handleEditForm(row) {
       const currentParam = row;
       this.$router.push({
-        name: 'editMateri',
+        name: 'EditIzin',
         params: { row, appParams: currentParam },
       });
     },
