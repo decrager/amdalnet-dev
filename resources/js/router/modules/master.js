@@ -173,7 +173,7 @@ const masterRoutes = {
     {
       path: 'materi-kebijakan/peraturan/create',
       component: () => import('@/views/peraturan/Edit'),
-      name: 'editPeraturan',
+      name: 'DaftarIzin',
       hidden: true,
       meta: { title: 'Ubah Peraturan', icon: 'documentation', noCache: true },
     },
@@ -202,6 +202,12 @@ const masterRoutes = {
       component: () => import('@/views/materi-kebijakan/index'),
       name: 'MateriDanKebijakan',
       meta: { title: 'Materi dan Kebijakan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'daftar-izin',
+      component: () => import('@/views/master-izin/index'),
+      name: 'daftarIzin',
+      meta: { title: 'Daftar Izin', icon: 'documentation', noCache: true },
     },
     // {
     //   path: 'create-params',
