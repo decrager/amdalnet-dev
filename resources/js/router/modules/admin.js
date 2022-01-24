@@ -25,14 +25,14 @@ const adminRoutes = {
       path: 'users',
       component: () => import('@/views/users/List'),
       name: 'UserList',
-      meta: { title: 'Users', icon: 'user', permissions: ['manage user'] },
+      meta: { title: 'Users', icon: 'users', permissions: ['manage user'] },
     },
     /** Role and permission */
     {
       path: 'roles',
       component: () => import('@/views/role-permission/List'),
       name: 'RoleList',
-      meta: { title: 'Role Permission', icon: 'role', permissions: ['manage permission'] },
+      meta: { title: 'Role Permission', icon: 'chart-tree', permissions: ['manage permission'] },
     },
     // {
     //   path: 'articles/create',

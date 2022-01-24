@@ -70,7 +70,6 @@ export default {
     Hamburger,
     // Screenfull,
     // SizeSelect,
-    // LangSeles
   },
   computed: {
     ...mapGetters([
@@ -157,7 +156,7 @@ export default {
   background: #143b17; // #099C4B;
   //margin: 5px;
   //border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 4px 4px rgba(0,21,41,.3);
   margin: 0 0.5em 0.3em;
   border-radius: 0.3em;
 
