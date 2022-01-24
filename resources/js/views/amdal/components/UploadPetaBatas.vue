@@ -184,8 +184,8 @@ export default {
     });
 
     var data = qs.stringify({
-      'username': 'haris3',
-      'password': 'amdal123',
+      'username': 'Amdalnet',
+      'password': 'Amdal123',
       'client': 'requestip',
       'expiration': 20160,
       'f': 'json',
@@ -220,7 +220,7 @@ export default {
         basemap: 'satellite',
       });
 
-      axios.get(`api/map-geojson?id=${this.idProjectItem}`)
+      axios.get(`api/map-geojson?id=${this.idProject}`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
