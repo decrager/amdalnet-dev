@@ -48,7 +48,7 @@ export default {
     height: 50px;
     line-height: 50px;
     // background: #2b2f3a;
-    // background: #183b13; //#012210;
+    background: #033022;
     text-align: center;
     overflow: hidden;
 
@@ -77,6 +77,8 @@ export default {
     &.collapse {
       .sidebar-logo {
         margin-right: 0px;
+        width: 32px;
+        height: 32px;
       }
     }
   }

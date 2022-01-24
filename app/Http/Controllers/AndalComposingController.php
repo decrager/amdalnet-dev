@@ -22,6 +22,7 @@ use App\Entity\RonaAwal;
 use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
+use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -29,7 +30,6 @@ use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\Shared\Html;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -55,11 +55,11 @@ class AndalComposingController extends Controller
         }
 
         if ($request->pdf) {
-            return $this->exportKAPDF($request->idProject);
+            return $this->exportKAPDF($request->idProject, $request->type);
         }
 
         if ($request->formulir) {
-            return $this->formulirKa($request->idProject);
+            return $this->formulirKa($request->idProject, $request->type);
             // return $this->formulirKaPhpWord($request->idProject);
         }
 
@@ -1447,10 +1447,10 @@ class AndalComposingController extends Controller
 
         // ======= EVALUASI HOLISTIK ====== //
         $holistic_evaluations = '';
-        // $hol_eval = HolisticEvaluation::where('id_project', $id_project)->first();
-        // if($hol_eval) {
-        //     $holistic_evaluations = $hol_eval->description;
-        // }
+        $hol_eval = HolisticEvaluation::where('id_project', $id_project)->first();
+        if($hol_eval) {
+            $holistic_evaluations = $hol_eval->description;
+        }
         $holEvalTable = new Table();
         $holEvalTable->addRow();
         $cell = $holEvalTable->addCell();
@@ -1738,14 +1738,43 @@ class AndalComposingController extends Controller
         return $component_type;
     }
 
-    private function formulirKa($id_project)
+    private function formulirKa($id_project, $type)
     {
+        if (!File::exists(storage_path('app/public/formulir/'))) {
+            File::makeDirectory(storage_path('app/public/formulir/'));
+        }
+
+        
         $ids = [4, 1, 2, 3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
             return array_search($model->getKey(), $ids);
         });
-
+        
         $project = Project::findOrFail($id_project);
+
+        $save_file_name = 'ka-andal-' . strtolower($project->project_title) . '.docx';
+        if($type != 'andal') {
+            $save_file_name = 'ka-' . strtolower($project->project_title) . '.docx';
+        }
+
+        $fomulator_team = FormulatorTeam::where('id_project', $project->id)->first();
+        $fomulator_team_member = FormulatorTeamMember::where('id_formulator_team', $fomulator_team->id)->orderBy('position', 'desc')->get();
+        $penyusun = [];
+
+        foreach($fomulator_team_member as $member) {
+            if($member->formulator) {
+                $penyusun[] = [
+                    'name' => count($penyusun) + 1 . '. ' . $member->formulator->name,
+                    'position' => $member->position
+                ];
+            } else if($member->expert) {
+                $penyusun[] = [
+                    'name' => count($penyusun) + 1 . '. ' . $member->expert->name,
+                    'position' => $member->position
+                ];
+            }
+        }
+
         $results = [
             'project_title' => $project->project_title,
             'pic' => $project->initiator->pic,
@@ -1753,36 +1782,47 @@ class AndalComposingController extends Controller
             'location_desc' => $project->location_desc
         ];
 
-        $results['penyusun'] = [];
-        $formulator = FormulatorTeam::where('id_project', $id_project)->with('member')->first();
-
-        if ($formulator && $formulator->member) {
-            foreach ($formulator->member as $f) {
-                $formulator_data = Formulator::find($f->id_formulator);
-                if ($formulator_data) {
-                    $results['penyusun'][] = [
-                        'name' => $formulator_data->name,
-                        'position' => $f->position
-                    ];
-                }
-            }
-        }
-
         $publicConsultation = PublicConsultation::select('id', 'project_id', 'positive_feedback_summary', 'negative_feedback_summary')
             ->where('project_id', $id_project)->get();
 
         $results['positive'] = [];
         $results['negative'] = [];
+        $positive = [];
+        $negative = [];
 
+        $positive_number = 0;
+        $negative_number = 0;
         foreach ($publicConsultation as $p) {
             $results['positive'][] = ['val' => $p->positive_feedback_summary ?? ''];
             $results['negative'][] = ['val' => $p->negative_feedback_summary ?? ''];
+
+            if($p->positive_feedback_summary) {
+                $positive[] = ['val' => "$" . "{" . 'positive-' . $positive_number . "}"];
+                $positive_number++;
+            }
+
+            if($p->negative_feedback_summary) {
+                $negative[] = ['val' => "$" . "{" . 'negative-' . $negative_number . "}"];
+                $negative_number++;
+            }
         }
 
-        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-            ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        $im = null;
+
+        if($type == 'andal') {
+            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+                ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        } else {
+            $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+                ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        }
 
         $total_ms = 0;
+        $pra_konstruksi = [];
+        $konstruksi = [];
+        $operasi = [];
+        $pasca_operasi = [];
+        $metode_studi = [];
         foreach ($stages as $s) {
             $total = 0;
             $results[str_replace(' ', '_', strtolower($s->name))] = [];
@@ -1834,30 +1874,83 @@ class AndalComposingController extends Controller
                     }
                 }
 
-                $results[str_replace(' ', '_', strtolower($s->name))][] = [
-                    'no' => $total + 1,
-                    'component_name' => "$changeType $ronaAwal akibat $component",
-                    'rencana' => $pA->initial_study_plan ?? '',
-                    'rona_lingkungan' => $ronaAwal,
-                    'dampak_potensial' => "$changeType $ronaAwal akibat $component",
-                    'ed_besaran_rencana_title' => $ed_besaran_rencana_title,
-                    'ed_besaran_rencana' => $ed_besaran_rencana,
-                    'ed_kondisi_rona_title' => $ed_kondisi_rona_title,
-                    'ed_kondisi_rona' => $ed_kondisi_rona,
-                    'ed_pengaruh_rencana_title' => $ed_pengaruh_rencana_title,
-                    'ed_pengaruh_rencana' => $ed_pengaruh_rencana,
-                    'ed_intensitas_perhatian_title' => $ed_intensitas_perhatian_title,
-                    'ed_intensitas_perhatian' => $ed_intensitas_perhatian,
-                    'ed_kesimpulan_title' => $ed_kesimpulan_title,
-                    'ed_kesimpulan' => $ed_kesimpulan,
-                    'dph' => $pA->is_hypothetical_significant ? 'DPH' : 'DTPH',
-                    'batas_wilayah' => $pA->study_location ?? '',
-                    'batas_waktu' => $pA->study_length_year . ' tahun ' . $pA->study_length_month . ' bulan'
-                ];
+                if($s->name == 'Pra Konstruksi') {
+                    $pra_konstruksi[] = $this->getFormulirIm(
+                        $s,
+                        $total, 
+                        $changeType, 
+                        $ronaAwal, 
+                        $component, 
+                        $pA, 
+                        $ed_besaran_rencana_title,
+                        $ed_besaran_rencana,
+                        $ed_kondisi_rona_title,
+                        $ed_kondisi_rona,
+                        $ed_pengaruh_rencana_title,
+                        $ed_pengaruh_rencana,
+                        $ed_intensitas_perhatian_title,
+                        $ed_intensitas_perhatian,
+                        $ed_kesimpulan_title,
+                        $ed_kesimpulan);
+                } else if ($s->name == 'Konstruksi') {
+                    $konstruksi[] = $this->getFormulirIm(
+                        $s,
+                        $total, 
+                        $changeType, 
+                        $ronaAwal, 
+                        $component, 
+                        $pA, 
+                        $ed_besaran_rencana_title,
+                        $ed_besaran_rencana,
+                        $ed_kondisi_rona_title,
+                        $ed_kondisi_rona,
+                        $ed_pengaruh_rencana_title,
+                        $ed_pengaruh_rencana,
+                        $ed_intensitas_perhatian_title,
+                        $ed_intensitas_perhatian,
+                        $ed_kesimpulan_title,
+                        $ed_kesimpulan);
+                } else if ($s->name == 'Operasi') {
+                    $operasi[] = $this->getFormulirIm(
+                        $s,
+                        $total, 
+                        $changeType, 
+                        $ronaAwal, 
+                        $component, 
+                        $pA, 
+                        $ed_besaran_rencana_title,
+                        $ed_besaran_rencana,
+                        $ed_kondisi_rona_title,
+                        $ed_kondisi_rona,
+                        $ed_pengaruh_rencana_title,
+                        $ed_pengaruh_rencana,
+                        $ed_intensitas_perhatian_title,
+                        $ed_intensitas_perhatian,
+                        $ed_kesimpulan_title,
+                        $ed_kesimpulan);
+                } else {
+                    $pasca_operasi[] = $this->getFormulirIm(
+                        $s,
+                        $total, 
+                        $changeType, 
+                        $ronaAwal, 
+                        $component, 
+                        $pA, 
+                        $ed_besaran_rencana_title,
+                        $ed_besaran_rencana,
+                        $ed_kondisi_rona_title,
+                        $ed_kondisi_rona,
+                        $ed_pengaruh_rencana_title,
+                        $ed_pengaruh_rencana,
+                        $ed_intensitas_perhatian_title,
+                        $ed_intensitas_perhatian,
+                        $ed_kesimpulan_title,
+                        $ed_kesimpulan);
+                }
 
                 if ($pA->impactStudy) {
-                    $results['metode_studi'][] = [
-                        'no' => $total_ms + 1,
+                    $metode_studi[] = [
+                        'metode_studi' => $total_ms + 1,
                         'potential_impact_evaluation' => "$changeType $ronaAwal akibat $component",
                         'required_information' => $pA->impactStudy->required_information ?? '',
                         'data_gathering_method' => $pA->impactStudy->data_gathering_method ?? '',
@@ -1871,7 +1964,101 @@ class AndalComposingController extends Controller
             }
         }
 
-        return $results;
+        $project_address = '';
+        if($project->address) {
+            if($project->address->first()) {
+                $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
+            }
+        }
+
+        $templateProcessor = new TemplateProcessor('template_ka_andal.docx');
+
+        $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
+        $templateProcessor->setValue('pic', $project->initiator->name);
+        $templateProcessor->setValue('description', $project->description);
+        $templateProcessor->setValue('project_address', $project_address);
+        $templateProcessor->cloneBlock('penyusun', count($penyusun), true, false, $penyusun);
+        $templateProcessor->cloneBlock('positive', count($positive), true, false, $positive);
+        $templateProcessor->cloneBlock('negative', count($negative), true, false, $negative);
+
+        $positive_no_html = 0;
+        $negative_no_html = 0;
+        foreach ($publicConsultation as $p) {
+            
+            if($p->positive_feedback_summary) {
+                $positive_feedback = $p->positive_feedback_summary;
+                $positiveTable = new Table();
+                $positiveTable->addRow();
+                $cell = $positiveTable->addCell();
+                Html::addHtml($cell, $positive_feedback);
+
+                $templateProcessor->setComplexBlock('positive-' . $positive_no_html, $positiveTable);
+                $positive_no_html++;
+            }
+
+            if($p->negative_feedback_summary) {
+                $negative_feedback = $p->negative_feedback_summary;
+                $negativeTable = new Table();
+                $negativeTable->addRow();
+                $cell = $negativeTable->addCell();
+                Html::addHtml($cell, $negative_feedback);
+
+                $templateProcessor->setComplexBlock('negative-' . $negative_no_html, $negativeTable);
+                $negative_no_html;
+            }
+        }
+
+        $templateProcessor->cloneRowAndSetValues('pra_konstruksi', $pra_konstruksi);
+        $templateProcessor->cloneRowAndSetValues('konstruksi', $konstruksi);
+        $templateProcessor->cloneRowAndSetValues('operasi', $operasi);
+        $templateProcessor->cloneRowAndSetValues('pasca_operasi', $pasca_operasi);
+        $templateProcessor->cloneRowAndSetValues('metode_studi', $metode_studi);
+
+        $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
+
+        return [
+            'file_name' => $save_file_name,
+            'project_title' => strtolower($project->project_title)
+        ];
+    }
+
+    private function getFormulirIm(
+                        $s,
+                        $total, 
+                        $changeType, 
+                        $ronaAwal, 
+                        $component, 
+                        $pA, 
+                        $ed_besaran_rencana_title,
+                        $ed_besaran_rencana,
+                        $ed_kondisi_rona_title,
+                        $ed_kondisi_rona,
+                        $ed_pengaruh_rencana_title,
+                        $ed_pengaruh_rencana,
+                        $ed_intensitas_perhatian_title,
+                        $ed_intensitas_perhatian,
+                        $ed_kesimpulan_title,
+                        $ed_kesimpulan) {
+        return [
+            str_replace(' ', '_', strtolower($s->name)) => $total + 1,
+            'component_name' => "$changeType $ronaAwal akibat $component",
+            'rencana' => $pA->initial_study_plan ?? '',
+            'rona_lingkungan' => $ronaAwal,
+            'dampak_potensial' => "$changeType $ronaAwal akibat $component",
+            'ed_besaran_rencana_title' => $ed_besaran_rencana_title,
+            'ed_besaran_rencana' => $ed_besaran_rencana,
+            'ed_kondisi_rona_title' => $ed_kondisi_rona_title,
+            'ed_kondisi_rona' => $ed_kondisi_rona,
+            'ed_pengaruh_rencana_title' => $ed_pengaruh_rencana_title,
+            'ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+            'ed_intensitas_perhatian_title' => $ed_intensitas_perhatian_title,
+            'ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+            'ed_kesimpulan_title' => $ed_kesimpulan_title,
+            'ed_kesimpulan' => $ed_kesimpulan,
+            'dph' => $pA->is_hypothetical_significant ? 'DPH' : 'DTPH',
+            'batas_wilayah' => $pA->study_location ?? '',
+            'batas_waktu' => $pA->study_length_year . ' tahun ' . $pA->study_length_month . ' bulan'
+        ];
     }
 
     private function getComponentRonaAwal($imp, $id_project_stage)
@@ -1901,7 +2088,7 @@ class AndalComposingController extends Controller
         ];
     }
 
-    private function exportKAPDF($idProject)
+    private function exportKAPDF($idProject, $type)
     {
         $ids = [4, 1, 2, 3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
@@ -1917,8 +2104,17 @@ class AndalComposingController extends Controller
             ->where('project_id', $project->id)->get();
 
         $pelingkupan = [];
-        $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-            ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+
+        $im = null;
+
+        if($type == 'andal') {
+            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+                ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        } else {
+            $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+                ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+        }
+
         $total_ms = 0;
         foreach ($stages as $s) {
             $total = 0;

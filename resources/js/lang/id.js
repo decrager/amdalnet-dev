@@ -72,7 +72,7 @@ export default {
     userProfile: 'Profile Pengguna',
     project: 'Kegiatan',
     listProject: 'Daftar Kegiatan',
-    listProjectPre: 'Belum Pengajuan PL',
+    listProjectPre: 'Kegiatan Baru',
     listProjectPost: 'Dalam Pengajuan PL',
     listProjectProcess: 'Dalam Pengujian',
     listProjectIssued: 'Sudah Terbit PL',

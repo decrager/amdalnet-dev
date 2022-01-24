@@ -345,11 +345,11 @@ export default {
       rules: {
         name: [{ required: true, message: 'Nama wajib diisi', trigger: 'blur' }],
         peran: [{ required: true, message: 'Peran wajib diisi', trigger: 'blur' }],
-        id_card_number: [{ required: true, message: 'NIK wajib diisi' }, { type: 'number', message: 'NIK berupa angka' }],
+        id_card_number: [{ required: true, message: 'NIK wajib diisi' }, { pattern: /([1-9][0-9])(\d{4})(\d{6})(\d{4})/, message: 'NIK tidak valid', trigger: ['blur', 'change'] }],
         email: [
           { required: true, message: 'Alamat email wajib diisi', trigger: 'blur' },
           { type: 'email', message: 'Format alamat email tidak benar', trigger: ['blur', 'change'] }],
-        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
+        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { pattern: /\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{2})\D*/, message: 'Nomor Telepon tidak valid', trigger: ['blur', 'change'] }],
       },
       responders: [],
       errorMessage: null,

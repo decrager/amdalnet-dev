@@ -121,7 +121,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', noCache: false },
+        meta: { title: 'dashboard', icon: 'chart-pie-alt', noCache: false },
       },
     ],
   },
@@ -173,19 +173,20 @@ export const asyncRoutes = [
   // chartsRoutes,
   // nestedRoutes,
   // tableRoutes,
-  // {
-  //   path: '/theme',
-  //   component: Layout,
-  //   redirect: 'noredirect',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/theme/index'),
-  //       name: 'Theme',
-  //       meta: { title: 'theme', icon: 'theme' },
-  //     },
-  //   ],
-  // },
+  {
+    path: '/theme',
+    component: Layout,
+    redirect: 'noredirect',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/theme/index'),
+        name: 'Theme',
+        meta: { title: 'theme', icon: 'theme' },
+      },
+    ],
+  },
   // {
   //   path: '/clipboard',
   //   component: Layout,
@@ -204,13 +205,13 @@ export const asyncRoutes = [
     path: '/profile',
     component: Layout,
     redirect: '/profile/edit',
-    meta: { title: 'userProfile', icon: 'user', permissions: ['view menu profile'] },
+    meta: { title: 'userProfile', icon: 'el-icon-user', permissions: ['view menu profile'] },
     children: [
       {
         path: 'edit',
         component: () => import('@/views/users/SelfProfile'),
         name: 'SelfProfile',
-        meta: { title: 'userProfile', icon: 'user', noCache: true, permissions: ['view menu profile'] },
+        meta: { title: 'userProfile', icon: 'user-outline', noCache: true, permissions: ['view menu profile'] },
       },
     ],
   },

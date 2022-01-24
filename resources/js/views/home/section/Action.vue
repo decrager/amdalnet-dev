@@ -1,144 +1,113 @@
 <template>
   <section id="actions" class="actions section">
-    <div class="actions__container container grid">
-      <div class="actions__data__links">
-        <h2 class="section__title actions__title__links">Layanan AMDALNET</h2>
-        <div class="actions__box__links__wrapper" style="margin-bottom: 0" @click="() => showPenapisan = !showPenapisan">
-          <div class="actions__box__links__icon">
-            <img src="/images/list2.svg" alt="">
+    <div class="container">
+      <el-row :gutter="20">
+        <el-col :span="20">
+          <h2 class="section__title actions__title__links">Layanan AMDALNET</h2>
+        </el-col>
+        <el-col :span="4">
+          <h2 class="section__title actions__title__video">Video</h2>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="20">
+          <div class="actions__box__links__wrapper" @click="() => showPenapisan = !showPenapisan">
+            <div class="actions__box__links__icon">
+              <img src="/images/list2.svg" alt="">
+            </div>
+            <div class="actions__box__links__desc">
+              <h2 class="actions__box__links__desc__title"><span class="title__primary">Penapisan</span> Otomatis</h2>
+            </div>
+            <div>
+              <img v-show="!showPenapisan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
+              <img v-show="showPenapisan" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
+            </div>
           </div>
-          <div class="actions__box__links__desc">
-            <h2 class="actions__box__links__desc__title"><span class="title__primary">Penapisan</span> Otomatis</h2>
-            <!-- <span class="actions__box__links__desc__subtitle">Pengajuan Persetujuan lingkungan untuk usaha dan kegiatan</span> -->
+          <div class="content" :hidden="!showPenapisan">
+            <h1 style="color: white">Simulasi Penapisan Dokumen</h1>
+            <el-select
+              v-model="study_approach"
+              placeholder="Pilih"
+              style="width: 25%; margin-bottom: 10px"
+              size="medium"
+            >
+              <el-option
+                v-for="item in studyApproachOptions"
+                :key="item.value.id"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <div>
+              <sub-project-table :list="listSubProject" :list-kbli="getListKbli" @cancel="cancelParam" />
+              <el-button
+                type="primary"
+                @click="handleAddSubProjectTable"
+              >+</el-button>
+            </div>
+            <h2 style="color: white; margin-top: 20px">Hasil penapisan dokumen lingkungan {{ last_result }}</h2>
           </div>
-          <div>
-            <img v-show="!showPenapisan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
-            <img v-show="showPenapisan" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
+        </el-col>
+        <el-col :span="4">
+          <div class="thumbnailVideo">
+            <img src="/images/penapisan.jpeg" alt="">
           </div>
-        </div>
-        <div class="content" :hidden="!showPenapisan">
-          <h1 style="color: white">Simulasi Penapisan Dokumen</h1>
-          <el-select
-            v-model="study_approach"
-            placeholder="Pilih"
-            style="width: 25%; margin-bottom: 10px"
-            size="medium"
-          >
-            <el-option
-              v-for="item in studyApproachOptions"
-              :key="item.value.id"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <div>
-            <sub-project-table :list="listSubProject" :list-kbli="getListKbli" @cancel="cancelParam" />
-            <el-button
-              type="primary"
-              @click="handleAddSubProjectTable"
-            >+</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="20">
+          <div class="actions__box__links__wrapper" @click="() => showPelingkupan = !showPelingkupan">
+            <div class="actions__box__links__icon">
+              <img src="/images/docPlus.svg" alt="">
+            </div>
+            <div class="actions__box__links__desc">
+              <h2 class="actions__box__links__desc__title"><span class="title__primary">Asistensi</span> Pelingkupan</h2>
+            </div>
+            <div>
+              <img v-show="!showPelingkupan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
+              <img v-show="showPelingkupan" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
+            </div>
           </div>
-          <h2 style="color: white; margin-top: 20px">Hasil penapisan dokumen lingkungan {{ last_result }}</h2>
-        </div>
-
-        <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showPelingkupan = !showPelingkupan">
-          <div class="actions__box__links__icon">
-            <img src="/images/docPlus.svg" alt="">
+          <div class="content" :hidden="!showPelingkupan" style="padding-top: 20px;">
+            <h3 class="sub-title button"><img src="/images/docPlus.svg" style="width: 16px; height:16px" alt=""> Proses Persetujuan Lingkungan</h3>
+            <h3 class="sub-title button" @click="showPubDialog"><img src="/images/pubques.svg" style="width: 16px; height:16px" alt=""> Pelayanan Public</h3>
+            <h3 class="sub-title button" @click="showTrackingDialog"><img src="/images/search.svg" style="width: 16px; height:16px" alt=""> Tracking Dokumen</h3>
           </div>
-          <div class="actions__box__links__desc">
-            <h2 class="actions__box__links__desc__title"><span class="title__primary">Asistensi</span> Pelingkupan</h2>
-            <!-- <span class="actions__box__links__desc__subtitle">Peta tematik penyebaran daerah yang sudah mendapat izin AMDAL</span> -->
+        </el-col>
+        <el-col :span="4">
+          <div class="thumbnailVideo">
+            <img src="/images/ka.jpeg" alt="">
           </div>
-          <div>
-            <img v-show="!showPelingkupan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
-            <img v-show="showPelingkupan" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="20">
+          <div class="actions__box__links__wrapper" @click="() => showDigi = !showDigi">
+            <div class="actions__box__links__icon">
+              <img src="/images/digworkspace.svg" alt="">
+            </div>
+            <div class="actions__box__links__desc">
+              <h2 class="actions__box__links__desc__title"><span class="title__primary">AMDAL</span> Digital Workspace</h2>
+            </div>
+            <div>
+              <img v-show="!showDigi" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
+              <img v-show="showDigi" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
+            </div>
           </div>
-        </div>
-        <div class="content" :hidden="!showPelingkupan" style="padding-top: 20px;">
-          <h3 class="sub-title button"><img src="/images/docPlus.svg" style="width: 16px; height:16px" alt=""> Proses Persetujuan Lingkungan</h3>
-          <h3 class="sub-title button" @click="showPubDialog"><img src="/images/pubques.svg" style="width: 16px; height:16px" alt=""> Pelayanan Public</h3>
-          <h3 class="sub-title button" @click="showTrackingDialog"><img src="/images/search.svg" style="width: 16px; height:16px" alt=""> Tracking Dokumen</h3>
-        </div>
-
-        <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showDigi = !showDigi">
-          <div class="actions__box__links__icon">
-            <img src="/images/digworkspace.svg" alt="">
+          <div class="content" :hidden="!showDigi" style="padding-top: 20px;">
+            <h3 class="sub-title button"><img src="/images/digworkspace2.svg" style="width: 16px; height:16px" alt=""> AMDAL Digital</h3>
+            <router-link to="/webgis">
+              <h3 class="sub-title button"><img src="/images/map3.svg" style="width: 16px; height:16px" alt=""> WebGIS AMDAL</h3>
+            </router-link>
           </div>
-          <div class="actions__box__links__desc">
-            <h2 class="actions__box__links__desc__title"><span class="title__primary">AMDAL</span> Digital Workspace</h2>
-            <!-- <span class="actions__box__links__desc__subtitle">Konsultasi untuk pengajuan izin lingkungan</span> -->
+        </el-col>
+        <el-col :span="4">
+          <div class="thumbnailVideo">
+            <img src="/images/login.jpeg" alt="">
           </div>
-          <div>
-            <img v-show="!showDigi" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
-            <img v-show="showDigi" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
-          </div>
-        </div>
-        <div class="content" :hidden="!showDigi" style="padding-top: 20px;">
-          <h3 class="sub-title button"><img src="/images/digworkspace2.svg" style="width: 16px; height:16px" alt=""> AMDAL Digital</h3>
-          <router-link to="/webgis">
-            <h3 class="sub-title button"><img src="/images/map3.svg" style="width: 16px; height:16px" alt=""> WebGIS AMDAL</h3>
-          </router-link>
-        </div>
-
-        <!-- <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showMateri = !showMateri">
-          <div class="actions__box__links__icon">
-            <img src="/images/digworkspace.svg" alt="">
-          </div>
-          <div class="actions__box__links__desc">
-            <h2 class="actions__box__links__desc__title"><span class="title__primary">Materi </span> AMDALNET</h2>
-          </div>
-          <div>
-            <img v-show="!showMateri" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
-            <img v-show="showMateri" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
-          </div>
-        </div>
-        <div class="content" :hidden="!showMateri" style="padding-top: 20px;">
-          <Materi />
-        </div>
-        <div class="actions__box__links__wrapper" style="margin-top: 20px; margin-bottom: 0" @click="() => showKebijakan = !showKebijakan">
-          <div class="actions__box__links__icon">
-            <img src="/images/digworkspace.svg" alt="">
-          </div>
-          <div class="actions__box__links__desc">
-            <h2 class="actions__box__links__desc__title"><span class="title__primary">Kebijakan </span> AMDALNET</h2>
-          </div>
-          <div>
-            <img v-show="!showKebijakan" src="/images/right-arrow.svg" alt="" style="width: 70px; height: 85px;">
-            <img v-show="showKebijakan" src="/images/down-arrow.svg" alt="" style="width: 70px; height: 85px;">
-          </div>
-        </div>
-        <div class="content" :hidden="!showKebijakan" style="padding-top: 20px;">
-          <Kebijakan />
-        </div> -->
-      </div>
-
-      <div class="actions__data__video">
-        <h2 class="section__title actions__title__video">Video</h2>
-        <div class="actions__video__wrapper">
-          <img src="/images/penapisan.jpeg" alt="">
-        </div>
-        <div class="actions__video__wrapper">
-          <img src="/images/ka.jpeg" alt="">
-        </div>
-        <div class="actions__video__wrapper">
-          <img src="/images/login.jpeg" alt="">
-        </div>
-        <!-- <div class="actions__video__wrapper">
-          <img src="/images/no-video.png" alt="">
-        </div> -->
-      </div>
+        </el-col>
+      </el-row>
     </div>
-    <!-- <div class="simulations__box__links__wrapper">
-      <h1 style="color: white">Simulasi Penapisan Dokumen</h1>
-      <div>
-        <sub-project-table :list="listSubProject" :list-kbli="getListKbli" @cancel="cancelParam" />
-        <el-button
-          type="primary"
-          @click="handleAddSubProjectTable"
-        >+</el-button>
-      </div>
-      <h2 style="color: white; margin-top: 20px">Hasil Akhir Penapisan {{ last_result }}</h2>
-    </div> -->
     <public-question-dialog :show="showPublicQues" @cancel="() => showPublicQues = false" />
     <tracking-document-dialog
       :show="showTrackingDocument"
@@ -346,4 +315,5 @@ export default {
     cursor: pointer;
     color: #F6993F;
   }
+  .thumbnailVideo img{height: 121px;width: 100%;margin-top: 0.2rem;}
 </style>

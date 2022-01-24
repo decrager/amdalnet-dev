@@ -6,7 +6,7 @@ const masterRoutes = {
   alwaysShow: true,
   meta: {
     title: 'masterData',
-    icon: 'el-icon-reading',
+    icon: 'cube',
     roles: ['admin-standard'],
   },
   children: [

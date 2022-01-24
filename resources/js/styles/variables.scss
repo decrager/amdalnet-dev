@@ -10,18 +10,17 @@ $panGreen: #30B08F;
 
 //sidebar
 $menuText:#bfcbd9;
-// $menuActiveText:#409EFF;
-$menuActiveText: #fff; // #4E9E51;
-$subMenuActiveText:#f4f4f5; //https://github.com/ElemeFE/element/issues/12951
+// $menuActiveText:#409EFF; //#4E9E51;
+$menuActiveText: #41cf46; 
+$subMenuActiveText:#41cf46; //https://github.com/ElemeFE/element/issues/12951
 
-// $menuBg:#304156;
-// $menuBg:#2C2C2C;
-$menuBg:#012210;
-$menuHover:#195736; // #263445;
+// $menuBg:#304156; //#2C2C2C
+$menuBg: #033022;
+$menuHover:#044833; //#263445;
 
-// $subMenuBg:#1f2d3d;
-$subMenuBg:#012210; // #195334; //#012210; //#2f2f2f;
-$subMenuHover:#195736; // #001528;
+// $subMenuBg:#1f2d3d; //#2f2f2f 
+$subMenuBg:#033022; 
+$subMenuHover:#044833; //#001528;
 
 $sideBarWidth: 300px;
 

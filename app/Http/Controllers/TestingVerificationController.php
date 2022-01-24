@@ -13,9 +13,11 @@ use App\Entity\ProjectKaForm;
 use App\Entity\ProjectMapAttachment;
 use App\Entity\PublicConsultation;
 use App\Entity\TestingVerification;
+use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -357,6 +359,10 @@ class TestingVerificationController extends Controller
 
     private function exportNoDocx($id_project)
     {
+        if (!File::exists(storage_path('app/public/adm-no/'))) {
+            File::makeDirectory(storage_path('app/public/adm-no/'));
+        }
+
         $project = Project::findOrFail($id_project);
         $verification = TestingVerification::where([['id_project', $id_project],['document_type', 'ka']])->first();
         
@@ -388,15 +394,24 @@ class TestingVerificationController extends Controller
             }
         }
 
-        return [
-            'docs_date' => $docs_date,
-            'pemrakarsa' => $project->initiator->name,
-            'pemrakarsa_address' => $project->initiator->address,
-            'project_title' => $project->project_title,
-            'project_address' => $project_address,
-            'notes' => $verification->notes,
-            'ketua_tuk_name' => $ketua_tuk_name,
-            'ketua_tuk_nip' => $ketua_tuk_nip
-        ];
+        $templateProcessor = new TemplateProcessor('template_berkas_adm_no.docx');
+        $templateProcessor->setValue('docs_date', $docs_date);
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
+        $templateProcessor->setValue('project_title', $project->project_title);
+        $templateProcessor->setValue('project_address', $project_address);
+        $templateProcessor->setValue('ketua_tuk_name', $ketua_tuk_name);
+        $templateProcessor->setValue('ketua_tuk_nip', $ketua_tuk_nip);
+        $templateProcessor->setValue('document_type', 'kerangka acuan');
+
+        $notesTable = new Table();
+        $notesTable->addRow();
+        $cell = $notesTable->addCell();
+        Html::addHtml($cell, $verification->notes);
+
+        $templateProcessor->setComplexBlock('notes', $notesTable);
+        $templateProcessor->saveAs(storage_path('app/public/adm-no/hasil-adm-' . strtolower($project->project_title) . '.docx'));
+
+        return strtolower($project->project_title);
     }
 }

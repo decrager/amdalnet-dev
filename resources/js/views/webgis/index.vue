@@ -144,18 +144,22 @@
 </template>
 
 <script>
-// import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+// Arcgis Module
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import DarkHeaderHome from '../home/section/DarkHeader';
+import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import * as urlUtils from '@arcgis/core/core/urlUtils';
+import centroid from '@turf/centroid';
+
+// Script
 import axios from 'axios';
 import rupabumis from './scripts/mapRupabumi';
 import rtrwProvMap from './scripts/mapRtrw';
 import { generateFeatureCollection, layerIn } from './scripts/uploadShapefile';
 import widgetMap from './scripts/widgetMap';
-import * as urlUtils from '@arcgis/core/core/urlUtils';
-import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import popupTemplate from './scripts/popupTemplate';
 import urlBlob from './scripts/urlBlob';
 
@@ -170,9 +174,9 @@ export default {
       radioProject: null,
       radioRTRW: null,
       checkedEcology: false,
-      checkedKelola: true,
-      checkedPantau: true,
-      checkedTapak: false,
+      checkedKelola: false,
+      checkedPantau: false,
+      checkedTapak: true,
       checkedSosial: false,
       checkedStudi: false,
       checkedRBI: false,
@@ -391,13 +395,14 @@ export default {
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
             const propStyles = getType.features[0].properties.styles;
+            const geomFields = getType.features[0];
 
             // Pemantauan
             if (propType === 'pemantauan') {
               const geojsonLayerArray = new GeoJSONLayer({
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
-                visible: true,
+                visible: false,
                 title: 'Layer Titik Pemantauan',
                 renderer: propStyles,
                 popupTemplate: popupTemplate(propFields),
@@ -421,7 +426,7 @@ export default {
               const geojsonLayerArray = new GeoJSONLayer({
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
-                visible: true,
+                visible: false,
                 title: 'Layer Titik Pengelolaan',
                 renderer: propStyles,
                 popupTemplate: popupTemplate(propFields),
@@ -518,11 +523,77 @@ export default {
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
                 opacity: 0.7,
-                visible: false,
+                visible: true,
                 title: 'Layer Tapak Proyek',
                 renderer: propStyles,
                 popupTemplate: popupTemplate(propFields),
+                minScale: 500000,
               });
+
+              var centroids = centroid(geomFields);
+              var getCoordinates = centroids.geometry.coordinates;
+
+              const markerSymbol = {
+                type: 'simple',
+                field: '*',
+                symbol: {
+                  url: '/titi_tapak.png',
+                  type: 'picture-marker',
+                  width: '24px',
+                  height: '24px',
+                },
+              };
+
+              var features = [
+                {
+                  geometry: {
+                    type: 'point',
+                    x: getCoordinates[0],
+                    y: getCoordinates[1],
+                  },
+                  attributes: {
+                    ObjectID: geomFields.id,
+                  },
+                },
+              ];
+
+              const tapakPoint = new FeatureLayer({
+                source: features,
+                renderer: markerSymbol,
+                maxScale: 500000,
+                visible: true,
+                popupTemplate: popupTemplate(propFields),
+                fields: [
+                  {
+                    name: 'ObjectID',
+                    alias: 'ObjectID',
+                    type: 'oid',
+                  },
+                ],
+                objectIdField: 'ObjectID',
+                featureReduction: {
+                  type: 'cluster',
+                  clusterRadius: '100px',
+                  labelingInfo: [{
+                    deconflictionStrategy: 'none',
+                    labelExpressionInfo: {
+                      expression: "Text($feature.cluster_count, '#,###')",
+                    },
+                    symbol: {
+                      type: 'text',
+                      color: '#004a5d',
+                      font: {
+                        weight: 'bold',
+                        family: 'Noto Sans',
+                        size: '12px',
+                      },
+                    },
+                    labelPlacement: 'center-center',
+                  }],
+                },
+              });
+
+              map.add(tapakPoint);
 
               this.mapGeojsonArray.push(geojsonLayerArray);
               const toggle = document.getElementById('layerTapakCheckBox');
@@ -556,22 +627,6 @@ export default {
       for (let i = 0; i < rtrwProvMap.length; i++) {
         this.layerRtrw.push(rtrwProvMap[i]);
       }
-
-      map.addMany(this.layerRtrw);
-
-      // const rtrwToggle = document.getElementById('check__rtrw');
-      // rtrwToggle.addEventListener('change', (e) => {
-      //   console.log(e);
-      // if (this.layerRtrw === true) {
-      //   for (let i = 0; i < rtrwProvMap.length; i++) {
-      //     rtrwProvMap[i].visible = true;
-      //   }
-      // } else {
-      //   for (let i = 0; i < rtrwProvMap.length; i++) {
-      //     rtrwProvMap[i].visible = false;
-      //   }
-      // }
-      // });
 
       const penutupanLahan2020 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
@@ -629,15 +684,6 @@ export default {
       });
 
       map.add(pippib2021Periode2);
-
-      // const sigapLayer = new GroupLayer({
-      //   title: 'SIGAP KLHK',
-      //   visible: false,
-      //   layers: [penutupanLahan2020, kawasanHutanB, pippib2021Periode2],
-      //   opacity: 0.90,
-      // });
-
-      // map.add(sigapLayer);
 
       const mapView = new MapView({
         container: 'mapViewDiv',

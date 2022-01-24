@@ -1143,8 +1143,6 @@ export default {
           const mapUploadProperties = Object.keys(datas.features[0].properties);
           const propFields = datas.features[0].properties;
 
-          console.log(datas.features[0].geometry);
-
           var centroids = centroid(datas.features[0]);
           var getCoordinates = centroids.geometry.coordinates;
 

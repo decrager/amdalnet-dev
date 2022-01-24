@@ -11,7 +11,7 @@ const tukRoutes = {
       name: 'tuk',
       meta: {
         title: 'Manajemen TUK',
-        icon: 'zip',
+        icon: 'id-badge',
         noCache: true,
         roles: ['examiner'],
       },

@@ -302,7 +302,11 @@ export default {
         idProject: this.idProject,
       });
       this.docxData = data;
-      this.exportDocx();
+      const a = document.createElement('a');
+      a.href = window.location.origin + `/storage/adm-no/hasil-adm-${data}.docx`;
+      a.setAttribute('download', `hasil-adm-${data}.docx`);
+      a.click();
+      this.loadingDocx = false;
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(

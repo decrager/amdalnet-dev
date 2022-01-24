@@ -73,11 +73,6 @@
                 <img src="/images/logo-kkp.png" alt="" class="footer__mitra">
               </a>
             </li>
-            <!-- <li class="footer__item">
-              <a href="#" target="_blank">
-                <img src="/images/logo-kelautan.svg" alt="" class="footer__mitra">
-              </a>
-            </li> -->
           </ul>
         </div>
       </div>
