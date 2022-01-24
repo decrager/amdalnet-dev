@@ -5,7 +5,7 @@ const formulatorTeamRoutes = {
   component: Layout,
   redirect: '/tim-penyusun-mandiri',
   alwaysShow: true,
-  meta: { title: 'Tim Penyusun Mandiri', icon: 'nested', roles: ['iniator'] },
+  meta: { title: 'Tim Penyusun Mandiri', icon: 'incognito', roles: ['iniator'] },
   children: [
     {
       path: 'daftar-anggota',

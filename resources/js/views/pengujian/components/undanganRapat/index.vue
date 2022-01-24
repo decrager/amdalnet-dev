@@ -322,7 +322,11 @@ export default {
         idProject: this.idProject,
       });
       this.invitationDocxData = data;
-      this.exportInvitationDocx();
+      const a = document.createElement('a');
+      a.href = window.location.origin + `/storage/meet-inv/ka-${data}.docx`;
+      a.setAttribute('download', `ka-${data}.docx`);
+      a.click();
+      this.loadingInvitationDocx = false;
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(

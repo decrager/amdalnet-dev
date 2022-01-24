@@ -184,7 +184,7 @@ $light_gray:#5F6368;
     height: 47px;
     width: 85%;
     input {
-      background: transparent;
+      // background: transparent;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
