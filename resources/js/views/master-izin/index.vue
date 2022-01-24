@@ -35,13 +35,13 @@
         @handleView="handleView($event)"
         @handleDelete="handleDelete($event)"
       />
-      <!-- <pagination
+      <pagination
         v-show="total > 0"
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
         @pagination="handleFilter"
-      /> -->
+      />
       <!-- <component-dialog
         :component="component"
         :show="show"
@@ -54,92 +54,82 @@
 </template>
 
 <script>
-// import Pagination from '@/components/Pagination';
-// import axios from 'axios';
+import Pagination from '@/components/Pagination';
+import axios from 'axios';
 import ComponentTable from './components/ComponentTable.vue';
 
 export default {
   name: 'DaftarIzin',
   components: {
-    // Pagination,
+    Pagination,
     ComponentTable,
     // ComponentDialog,
   },
   data() {
     return {
       loading: true,
-      allData: [
-        {
-          nama: 'Premier Oil Andaman Ltd',
-          usaha:
-            'Persetujuan Pernyataan Kesanggupan Pengelolaan Lingkungan Hidup Kegiatan Pengeboran Sumur Eksplorasi',
-          nomor: 'SK.227/Menlhk/Setjen/PLA 4/5/2021',
-          tanggal: '17 May 2021',
-          sk: 'Menteri',
-          file: '-',
-        },
-      ],
-      // total: 0,
-      // listQuery: {
-      //   page: 1,
-      //   limit: 10,
-      // },
-      // optionValue: null,
-      // sort: 'DESC',
+      allData: [],
+      total: 0,
+      listQuery: {
+        page: 1,
+        limit: 10,
+      },
+      optionValue: null,
+      sort: 'DESC',
     };
   },
   created() {
-    // this.getAll();
+    this.getAll();
     this.loading = false;
   },
-  // methods: {
-  //   handleFilter() {
-  //     this.getAll();
-  //   },
-  //   getAll(search, sort) {
-  //     this.loading = true;
-  //     axios
-  //       .get(
-  //         `/api/materials?page=${this.listQuery.page}&sort=${this.sort}`
-  //       )
-  //       .then((response) => {
-  //         this.allData = response.data.data;
-  //         this.total = response.data.total;
-  //         this.loading = false;
-  //       });
-  //   },
-  //   handleCreate() {
-  //     this.$router.push({
-  //       name: 'addMateri',
-  //     });
-  //   },
-  //   handleDelete({ rows }) {
-  //     this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
-  //       confirmButtonText: 'OK',
-  //       cancelButtonText: 'Batal',
-  //       type: 'warning',
-  //     })
-  //       .then(() => {
-  //         axios.get(`/api/materials/delete/${rows.id}`)
-  //           .then((response) => {
-  //             this.$message({
-  //               type: 'success',
-  //               message: 'Hapus Selesai',
-  //             });
-  //             this.getAll();
-  //           })
-  //           .catch((error) => {
-  //             console.log(error);
-  //           });
-  //       })
-  //       .catch(() => {
-  //         this.$message({
-  //           type: 'info',
-  //           message: 'Hapus Digagalkan',
-  //         });
-  //       });
-  //   },
-  // },
+  methods: {
+    handleFilter() {
+      this.getAll();
+    },
+    getAll(search, sort) {
+      this.loading = true;
+      axios
+        .get(
+          `/api/environmental-permit?page=${this.listQuery.page}&sort=${this.sort}`
+        )
+        .then((response) => {
+          this.allData = response.data.data;
+          this.total = response.data.total;
+          this.loading = false;
+        });
+    },
+    handleCreate() {
+      this.$router.push({
+        name: 'addMateri',
+      });
+    },
+    handleDelete({ rows }) {
+      this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Batal',
+        type: 'warning',
+      })
+        .then(() => {
+          axios.get(`/api/materials/delete/${rows.id}`)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Hapus Selesai',
+              });
+              this.getAll();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Hapus Digagalkan',
+          });
+        });
+    },
+  },
 };
 </script>
 
