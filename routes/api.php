@@ -47,6 +47,14 @@ Route::apiResource('webgis', 'WebgisController');
 
 Route::namespace('Api')->group(function () {
     Route::post('auth/login', 'AuthController@login');
+    // check user by email
+    Route::get('auth/is-email-registered', 'AuthController@isEmailRegistered');
+    // OSS routes
+    Route::post('auth/validate-token', 'AuthController@validateToken');
+    Route::get('auth/userinfo-oss', 'AuthController@getUserInfo');
+    Route::post('auth/login-oss', 'AuthController@loginOss');
+    Route::post('auth/register-oss', 'AuthController@registerOss');
+    
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
         Route::get('auth/user', 'AuthController@user');

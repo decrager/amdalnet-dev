@@ -75,7 +75,8 @@ class InitiatorController extends Controller
             $user = User::create([
                 'name' => ucfirst($params['name']),
                 'email' => $params['email'],
-                'password' => Hash::make($params['password'])
+                'password' => Hash::make($params['password']),
+                'oss_username' => isset($params['username']) ? $params['username'] : null,
             ]);
             $user->syncRoles($initiatorRole);
 

@@ -119,6 +119,7 @@ export default {
   login: {
     title: 'Log in to your dashboard',
     logIn: 'Log in',
+    register: 'Register',
     username: 'Username',
     password: 'Password',
     any: 'any',
