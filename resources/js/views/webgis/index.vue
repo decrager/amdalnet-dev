@@ -537,10 +537,13 @@ export default {
                 type: 'simple',
                 field: '*',
                 symbol: {
-                  url: '/titi_tapak.png',
-                  type: 'picture-marker',
-                  width: '24px',
-                  height: '24px',
+                  type: 'simple-marker',
+                  size: 6,
+                  color: '#69dcff',
+                  outline: {
+                    color: 'rgba(0, 139, 174, 0.5)',
+                    width: 5,
+                  },
                 },
               };
 
@@ -560,9 +563,10 @@ export default {
               const tapakPoint = new FeatureLayer({
                 source: features,
                 renderer: markerSymbol,
-                maxScale: 500000,
+                // maxScale: 500000,
                 visible: true,
                 popupTemplate: popupTemplate(propFields),
+                objectIdField: 'ObjectID',
                 fields: [
                   {
                     name: 'ObjectID',
@@ -570,10 +574,11 @@ export default {
                     type: 'oid',
                   },
                 ],
-                objectIdField: 'ObjectID',
                 featureReduction: {
                   type: 'cluster',
-                  clusterRadius: '100px',
+                  clusterRadius: 100,
+                  clusterMinSize: 20,
+                  clusterMaxSize: 64,
                   labelingInfo: [{
                     deconflictionStrategy: 'none',
                     labelExpressionInfo: {
@@ -592,6 +597,8 @@ export default {
                   }],
                 },
               });
+
+              console.log(tapakPoint);
 
               map.add(tapakPoint);
 
