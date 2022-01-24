@@ -489,7 +489,24 @@ class TestMeetRKLRPLController extends Controller
              $total++;
          }
 
+        //  AUTHORITY
+        $authority = '';
+        if($testing_meeting->id_feasibility_test_team) {
+             $team = FeasibilityTestTeam::find($testing_meeting->id_feasibility_test_team);
+             if($team) {
+                 if($team->authority == 'Pusat') {
+                     $authority = 'PUSAT';
+                 } else if($team->authority == 'Provinsi') {
+                     $authority = 'PROVINSI' . strtoupper($team->provinceAuthority->name);
+                 } else if($team->authority == 'Kabupaten/Kota') {
+                     $authority = strtoupper($team->districtAuthority->name);
+                 }
+             }
+ 
+         }
+
         $templateProcessor = new TemplateProcessor('template_berkas_adm_ar_yes.docx');
+        $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('project_description', $project->description);
