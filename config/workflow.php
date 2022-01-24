@@ -267,7 +267,7 @@ return [
                     'from' => 'amdal.form-ka-submitted',
                     'to' => 'amdal.form-ka-adm-review',
                 ],
-                  'return-amdal-form-ka' => [
+                  'return-amdal-form-ka-review' => [
                       'from' => 'amdal.form-ka-adm-review',
                       'to' => 'amdal.form-ka-adm-returned',
                   ],
