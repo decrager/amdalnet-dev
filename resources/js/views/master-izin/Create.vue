@@ -13,21 +13,28 @@
             <div class="form-container">
               <el-form>
                 <el-row>
-                  <el-form-item label="Judul Materi">
-                    <el-input v-model="form.name" type="text" placeholder="Judul Materi" />
+                  <el-form-item label="Nama Pemrakarsa">
+                    <el-input type="text" placeholder="Nama Pemrakarsa" />
                   </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Deskripsi">
-                    <el-input v-model="form.description" type="textarea" placeholder="Deskripsi" />
+                  <el-form-item label="Nama Usaha/Kegiatan">
+                    <el-input type="textarea" placeholder="Nama Usaha/Kegiatan" />
                   </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Tanggal Terbit">
+                  <el-form-item label="Nomor SK">
+                    <el-input type="text" placeholder="Nomor SK" />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
+                  <el-form-item label="Tanggal Berlaku SK">
                     <el-date-picker
                       v-model="form.raise_date"
                       type="date"
@@ -40,7 +47,14 @@
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Upload Dokumen">
+                  <el-form-item label="Penerbit SK">
+                    <el-input type="text" placeholder="Penerbit SK" />
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
+                  <el-form-item label="File">
                     <input
                       ref="link"
                       type="file"
@@ -69,16 +83,14 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 
 export default {
-  name: 'AddMateri',
+  name: 'AddIzin',
   props: {},
   data() {
     return {
       form: {
-        name: '',
-        description: null,
         raise_date: '',
         link: '',
       },
@@ -91,39 +103,39 @@ export default {
       this.link = this.$refs.link.files[0];
     },
     async saveMateri() {
-      const formData = new FormData();
-      formData.append('link', this.link);
-      formData.append('name', this.form.name);
-      formData.append('description', this.form.description);
-      formData.append('raise_date', this.form.raise_date);
+      // const formData = new FormData();
+      // formData.append('link', this.link);
+      // formData.append('name', this.form.name);
+      // formData.append('description', this.form.description);
+      // formData.append('raise_date', this.form.raise_date);
 
-      const headers = { 'Content-Type': 'multipart/form-data' };
-      await axios
-        .post('api/materials', formData, { headers })
-        .then(() => {
-          this.$message({
-            message: 'Materi Berhasil Disimpan',
-            type: 'success',
-            duration: 5 * 1000,
-          });
-          this.$router.push({
-            name: 'MateriDanKebijakan',
-            params: { tabActive: 'materi' },
-          });
-        })
-        .catch((error) => {
-          this.errorMessage = error.message;
-          this.$message({
-            message: 'Ada Kesalahan, Pastikan Data Terisi',
-            type: 'error',
-            duration: 5 * 1000,
-          });
-        });
+      // const headers = { 'Content-Type': 'multipart/form-data' };
+      // await axios
+      //   .post('api/materials', formData, { headers })
+      //   .then(() => {
+      //     this.$message({
+      //       message: 'Materi Berhasil Disimpan',
+      //       type: 'success',
+      //       duration: 5 * 1000,
+      //     });
+      //     this.$router.push({
+      //       name: 'MateriDanKebijakan',
+      //       params: { tabActive: 'materi' },
+      //     });
+      //   })
+      //   .catch((error) => {
+      //     this.errorMessage = error.message;
+      //     this.$message({
+      //       message: 'Ada Kesalahan, Pastikan Data Terisi',
+      //       type: 'error',
+      //       duration: 5 * 1000,
+      //     });
+      //   });
+      alert('submit');
     },
     handleCancel() {
       this.$router.push({
-        name: 'MateriDanKebijakan',
-        params: { tabActive: 'materi' },
+        name: 'DaftarIzins',
       });
     },
   },

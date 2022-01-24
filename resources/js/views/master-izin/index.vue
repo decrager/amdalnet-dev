@@ -59,7 +59,7 @@ import axios from 'axios';
 import ComponentTable from './components/ComponentTable.vue';
 
 export default {
-  name: 'DaftarIzin',
+  name: 'DaftarIzins',
   components: {
     Pagination,
     ComponentTable,

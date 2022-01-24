@@ -206,8 +206,15 @@ const masterRoutes = {
     {
       path: 'daftar-izin',
       component: () => import('@/views/master-izin/index'),
-      name: 'daftarIzin',
+      name: 'DaftarIzins',
       meta: { title: 'Daftar Izin', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'daftar-izin/create',
+      component: () => import('@/views/master-izin/create'),
+      name: 'AddIzin',
+      hidden: true,
+      meta: { title: 'Tambah Izin Baru', icon: 'documentation', noCache: true },
     },
     // {
     //   path: 'create-params',
