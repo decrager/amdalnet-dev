@@ -80,16 +80,6 @@ class TestVerifRKLRPLController extends Controller
     {
         $data = $request->verifications;
 
-        if($request->complete) {
-            if($data['type'] == 'update') {
-                $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
-                $verification->is_complete = $request->decision == 'ya' ? true : false;
-                $verification->save();
-                return response()->json(['message' => 'Data saved successfully']);
-            }
-        }
-
-
         $verification = null;
 
         // Save verifications
