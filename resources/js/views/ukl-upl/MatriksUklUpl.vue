@@ -15,7 +15,7 @@
           Simpan & Lanjutkan
         </el-button>
       </span>
-      <el-collapse v-model="activeName" :accordion="true">
+      <el-collapse v-model="activeName" :accordion="true" @change="checkIfFormComplete">
         <el-collapse-item name="1" title="MATRIKS UKL">
           <matriks-ukl-table v-if="activeName === '1'" />
         </el-collapse-item>
@@ -29,6 +29,7 @@
           <upload-peta-batas-ukl-upl
             v-if="activeName === '4'"
             @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan"
+            @handlePetaBatasUploaded="handlePetaBatasUploaded"
           />
         </el-collapse-item>
       </el-collapse>
@@ -62,6 +63,7 @@ export default {
       uklActive: true,
       uplActive: false,
       activeName: '1',
+      petaBatasUploaded: false,
     };
   },
   mounted() {
@@ -99,11 +101,14 @@ export default {
       const idProject = parseInt(this.$route.params && this.$route.params.id);
       await axios.get('api/matriks-ukl-upl/is-form-complete/' + idProject)
         .then(response => {
-          this.isSubmitEnabled = response.data.data;
+          this.isSubmitEnabled = response.data.data && this.petaBatasUploaded;
         });
     },
     handleEnableSimpanLanjutkan() {
       this.checkIfFormComplete();
+    },
+    handlePetaBatasUploaded() {
+      this.petaBatasUploaded = true;
     },
     handleSaveForm() {
       const id = this.$route.params && this.$route.params.id;

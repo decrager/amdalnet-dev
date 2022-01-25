@@ -537,6 +537,7 @@ export default {
               message: 'Berhasil menyimpan file ', //  + this.files[0].name,
               type: 'success',
             });
+            this.$emit('handlePetaBatasUploaded');
             this.$emit('handleEnableSimpanLanjutkan');
           }
         });
