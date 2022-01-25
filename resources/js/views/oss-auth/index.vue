@@ -131,7 +131,7 @@ export default {
       this.isUserExists = false;
       await axios.get('api/auth/is-email-registered?email=' + this.userInfo.email)
         .then(response => {
-          if (response.status === 200) {
+          if (parseInt(response.data.status) === 200) {
             this.isUserExists = true;
           }
         });

@@ -83,7 +83,7 @@ class AuthController extends BaseController
                 'status' => 404,
                 'code' => 404,
                 'data' => false,
-            ], 404);
+            ], 200);
         }
     }
 
