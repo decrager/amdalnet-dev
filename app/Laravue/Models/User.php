@@ -106,11 +106,12 @@ class User extends Authenticatable
     {
         parent::boot();
         static::created(function ($user) {
-            $admins = User::all()->filter(function($user) {
-                return $user->hasRole('admin');
-            });
+            // $admins = User::all()->filter(function($user) {
+            //     return $user->hasRole('admin');
+            // });
 
-            Notification::send($admins, new UserRegistered($user));
+            // Notification::send($admins, new UserRegistered($user));
+            Notification::send($user, new UserRegistered($user));
             event(new \App\Events\NotificationEvent());
         });
     }
