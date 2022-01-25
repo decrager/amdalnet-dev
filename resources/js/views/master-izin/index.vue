@@ -15,7 +15,6 @@
         :loading="loading"
         :list="allData"
         @handleEditForm="handleEditForm($event)"
-        @handleView="handleView($event)"
         @handleDelete="handleDelete($event)"
       />
       <pagination
@@ -55,7 +54,6 @@ export default {
   },
   created() {
     this.getAll();
-    this.loading = false;
   },
   methods: {
     handleFilter() {
