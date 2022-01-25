@@ -122,7 +122,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'AddIzin',
+  name: 'EditIzin',
   props: {},
   data() {
     return {

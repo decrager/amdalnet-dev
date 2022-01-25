@@ -15,7 +15,6 @@
         :loading="loading"
         :list="allData"
         @handleEditForm="handleEditForm($event)"
-        @handleView="handleView($event)"
         @handleDelete="handleDelete($event)"
       />
       <pagination
@@ -62,7 +61,6 @@ export default {
       this.getAll();
     },
     getAll(search, sort) {
-      this.loading = true;
       axios
         .get(
           `/api/environmental-permit?page=${this.listQuery.page}&sort=${this.sort}`
