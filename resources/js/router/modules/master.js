@@ -211,14 +211,14 @@ const masterRoutes = {
     },
     {
       path: 'daftar-izin/create',
-      component: () => import('@/views/master-izin/create'),
+      component: () => import('@/views/master-izin/Create'),
       name: 'AddIzin',
       hidden: true,
       meta: { title: 'Tambah Izin Baru', icon: 'documentation', noCache: true },
     },
     {
       path: 'daftar-izin/edit',
-      component: () => import('@/views/master-izin/edit'),
+      component: () => import('@/views/master-izin/Edit'),
       name: 'EditIzin',
       hidden: true,
       meta: { title: 'Ubah Ijin Lingkungan', icon: 'documentation', noCache: true },
