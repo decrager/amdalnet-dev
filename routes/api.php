@@ -30,6 +30,7 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PeraturanController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EnvironmentalPermitController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,14 @@ Route::apiResource('webgis', 'WebgisController');
 
 Route::namespace('Api')->group(function () {
     Route::post('auth/login', 'AuthController@login');
+    // check user by email
+    Route::get('auth/is-email-registered', 'AuthController@isEmailRegistered');
+    // OSS routes
+    Route::post('auth/validate-token', 'AuthController@validateToken');
+    Route::get('auth/userinfo-oss', 'AuthController@getUserInfo');
+    Route::post('auth/login-oss', 'AuthController@loginOss');
+    Route::post('auth/register-oss', 'AuthController@registerOss');
+    
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
         Route::get('auth/user', 'AuthController@user');
@@ -331,3 +340,8 @@ Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
 // dashboard
 Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
 Route::get('latest-activities', [DashboardController::class, 'latestActivities']);
+
+Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);
+Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);
+Route::post('environmental-permit/update', [EnvironmentalPermitController::class, 'update']);
+Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);

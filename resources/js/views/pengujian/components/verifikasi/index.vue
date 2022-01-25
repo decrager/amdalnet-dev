@@ -82,6 +82,7 @@
                 type="textarea"
                 :placeholder="getPlaceholder(scope.row.suitability)"
                 :readonly="verifications.is_complete !== null"
+                :class="{'is-error' : errors[`form-${scope.$index}`]}"
               />
             </template>
           </el-table-column>
@@ -89,6 +90,7 @@
       </el-col>
       <el-col :sm="24" :md="12">
         <h4>Catatan<span style="color: red">*</span></h4>
+        <small v-if="errors.notes" style="color: #f56c6c;">Catatan Wajib Diisi</small>
         <Tinymce v-if="verifications.is_complete === null" v-model="verifications.notes" :height="200" />
         <div v-else v-html="verifications.notes" />
         <div v-if="verifications.is_complete === null">
@@ -169,6 +171,7 @@ export default {
       loadingComplete: false,
       loadingDocx: false,
       out: '',
+      errors: {},
       kesesuaian: [
         {
           label: 'Sesuai',
@@ -348,7 +351,24 @@ export default {
         cancelButtonText: 'Tidak',
         type: 'warning',
       }).then(() => {
-        this.handleSaveComplete(decision);
+        let error = 0;
+        this.errors = {};
+        if (!this.verifications.notes) {
+          error++;
+          this.errors.notes = true;
+        }
+
+        const forms = this.verifications.ka_forms;
+        for (let i = 0; i < forms.length; i++) {
+          if (forms[i].suitability === 'Tidak Sesuai' && !forms[i].description) {
+            error++;
+            this.errors[`form-${i}`] = true;
+          }
+        }
+
+        if (error === 0) {
+          this.handleSaveComplete(decision);
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -375,5 +395,13 @@ export default {
 <style scoped>
 .click {
   color: #5688e4;
+}
+</style>
+
+<style>
+.is-error .el-input__inner,
+.is-error .el-radio__inner,
+.is-error .el-textarea__inner {
+  border-color: #f56c6c;
 }
 </style>

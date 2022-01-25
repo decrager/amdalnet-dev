@@ -19,7 +19,7 @@
                 <i class="el-icon-arrow-down" />
               </template>
             </a>
-            <ul v-if="isActive" class="left-4">
+            <ul v-if="isActive" class="left-4 top-1-8">
               <li>
                 <a href="">Template Persetujuan Perlingkupan</a>
               </li>
@@ -34,9 +34,9 @@
               </li>
             </ul>
           </li>
-          <li class="nav__item">
+          <li class="nav__item" style="margin-top:2.2rem">
             <a href="#" class="nav__link" @click="handleSetMenu('STATIC')">
-              Daftar dan Statik
+              Data & Informasi<br>Persetujuan<br>Lingkungan
               <template v-if="isActiveDaftar">
                 <i class="el-icon-arrow-up" />
               </template>
@@ -44,9 +44,9 @@
                 <i class="el-icon-arrow-down" />
               </template>
             </a>
-            <ul v-if="isActiveDaftar" class="left0">
+            <ul v-if="isActiveDaftar" class="left0 top4">
               <li>
-                <a href="">Daftar Izin</a>
+                <a href="#" @click="handleSetMenu('IZIN')">Daftar Izin</a>
               </li>
               <li>
                 <a href="">Startistik Izin</a>
@@ -137,6 +137,10 @@ export default {
       if (e === 'STATIC'){
         this.isActiveDaftar = !this.isActiveDaftar;
       }
+      if (e === 'IZIN'){
+        this.isActiveDaftar = false;
+        this.isActive = false;
+      }
     },
   },
 };
@@ -145,9 +149,11 @@ export default {
 <style scoped>
 .nav__link {font-size: 0.7rem;}
   .nav__item{position: relative;}
-  .nav__item ul{position: absolute;top: 1.8rem;background: black;  padding: 1rem;border: 1px solid #847a7a;border-radius: 5px;width: 254px;font-size: 0.7rem;}
+  .nav__item ul{position: absolute;background: black;  padding: 1rem;border: 1px solid #847a7a;border-radius: 5px;width: 254px;font-size: 0.7rem;}
   .nav__item ul li{padding: 0.5rem;}
   .nav__item ul li a{color: #fff;}
   .left-4{left: -4rem;}
   .left0{left: 0;}
+  .top-1-8{top: 1.8rem;}
+  .top4{top: 4rem;}
 </style>

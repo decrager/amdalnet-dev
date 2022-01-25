@@ -119,6 +119,7 @@ export default {
   login: {
     title: 'Masuk ke Dasbor Anda',
     logIn: 'Masuk',
+    register: 'Daftar',
     username: 'Nama pengguna',
     password: 'Password',
     any: 'apa saja',
