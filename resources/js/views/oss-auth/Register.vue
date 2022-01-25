@@ -129,6 +129,7 @@ export default {
                     })
                     .catch(() => {
                       this.loading = false;
+                      this.$router.push({ path: '/profile/edit' });
                     });
                 }
               });
