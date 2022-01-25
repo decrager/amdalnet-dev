@@ -23,10 +23,13 @@
           <matriks-upl-table v-if="activeName === '2'" />
         </el-collapse-item>
         <el-collapse-item name="3" title="DOKUMEN PENDUKUNG">
-          <dokumen-pendukung v-if="activeName === '3'" @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan" />
+          <dokumen-pendukung v-if="activeName === '3'" />
         </el-collapse-item>
         <el-collapse-item name="4" title="PETA TITIK PEMANTAUAN & PENGELOLAAN">
-          <upload-peta-batas-ukl-upl v-if="activeName === '4'" />
+          <upload-peta-batas-ukl-upl
+            v-if="activeName === '4'"
+            @handleEnableSimpanLanjutkan="handleEnableSimpanLanjutkan"
+          />
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -100,7 +103,7 @@ export default {
         });
     },
     handleEnableSimpanLanjutkan() {
-      this.isSubmitEnabled = true;
+      this.checkIfFormComplete();
     },
     handleSaveForm() {
       const id = this.$route.params && this.$route.params.id;
