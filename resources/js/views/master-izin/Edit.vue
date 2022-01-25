@@ -18,25 +18,25 @@
               </el-form>
               <el-form>
                 <el-row>
-                  <!-- <el-form-item label="Kewenangan">
-                    <el-input
+                  <el-form-item label="Kewenangan">
+                    <!-- <el-input
                       v-model="currentParam.authority"
                       type="text"
                       placeholder="Kewenangan"
-                    />
-                  </el-form-item> -->
-                  <el-select
-                    v-model="form.regulation_type"
-                    placeholder="Kewenangan"
-                    style="width: 100%"
-                  >
-                    <el-option
-                      v-for="(item, i) in kewenangan"
-                      :key="i"
-                      :label="item.name"
-                      :value="item.name"
-                    />
-                  </el-select>
+                    /> -->
+                    <el-select
+                      v-model="currentParam.authority"
+                      placeholder="Kewenangan"
+                      style="width: 100%"
+                    >
+                      <el-option
+                        v-for="(item, i) in kewenangan"
+                        :key="i"
+                        :label="item.name.toUpperCase()"
+                        :value="item.name"
+                      />
+                    </el-select>
+                  </el-form-item>
                 </el-row>
               </el-form>
               <el-form>
@@ -141,10 +141,10 @@ export default {
       currentParam: {},
       file: '',
       kewenangan: [
-        { name: 'Semua' },
-        { name: 'Pusat' },
-        { name: 'Provinsi' },
-        { name: 'Kab/Kota' },
+        { name: 'semua' },
+        { name: 'pusat' },
+        { name: 'provinsi' },
+        { name: 'kab/kota' },
       ],
     };
   },

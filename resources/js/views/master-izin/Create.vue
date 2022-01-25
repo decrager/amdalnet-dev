@@ -27,14 +27,14 @@
                   </el-form-item> -->
                   <el-form-item label="Kewenangan">
                     <el-select
-                      v-model="form.regulation_type"
+                      v-model="form.authority"
                       placeholder="Kewenangan"
                       style="width: 100%"
                     >
                       <el-option
                         v-for="(item, i) in kewenangan"
                         :key="i"
-                        :label="item.name"
+                        :label="item.name.toUpperCase()"
                         :value="item.name"
                       />
                     </el-select>
@@ -135,10 +135,10 @@ export default {
       },
       file: '',
       kewenangan: [
-        { name: 'Semua' },
-        { name: 'Pusat' },
-        { name: 'Provinsi' },
-        { name: 'Kab/Kota' },
+        { name: 'semua' },
+        { name: 'pusat' },
+        { name: 'provinsi' },
+        { name: 'kab/kota' },
       ],
     };
   },

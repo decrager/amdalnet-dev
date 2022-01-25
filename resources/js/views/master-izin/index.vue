@@ -54,13 +54,13 @@ export default {
   },
   created() {
     this.getAll();
-    this.loading = false;
   },
   methods: {
     handleFilter() {
       this.getAll();
     },
     getAll(search, sort) {
+      this.loading = true;
       axios
         .get(
           `/api/environmental-permit?page=${this.listQuery.page}&sort=${this.sort}`
