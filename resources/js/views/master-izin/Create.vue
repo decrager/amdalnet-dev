@@ -18,12 +18,26 @@
               </el-form>
               <el-form>
                 <el-row>
-                  <el-form-item label="Kewenangan">
+                  <!-- <el-form-item label="Kewenangan">
                     <el-input
                       v-model="form.authority"
                       type="text"
                       placeholder="Kewenangan"
                     />
+                  </el-form-item> -->
+                  <el-form-item label="Kewenangan">
+                    <el-select
+                      v-model="form.regulation_type"
+                      placeholder="Kewenangan"
+                      style="width: 100%"
+                    >
+                      <el-option
+                        v-for="(item, i) in kewenangan"
+                        :key="i"
+                        :label="item.name"
+                        :value="item.name"
+                      />
+                    </el-select>
                   </el-form-item>
                 </el-row>
               </el-form>
@@ -86,10 +100,7 @@
                 </el-row>
               </el-form>
               <div class="" style="margin-top: 0.5rem; text-align: right">
-                <el-button
-                  type="danger"
-                  @click="handleCancel"
-                >Kembali</el-button>
+                <el-button type="danger" @click="handleCancel">Kembali</el-button>
                 <el-button
                   type="primary"
                   icon="el-icon-s-claim"
@@ -123,6 +134,12 @@ export default {
         publisher: '',
       },
       file: '',
+      kewenangan: [
+        { name: 'Semua' },
+        { name: 'Pusat' },
+        { name: 'Provinsi' },
+        { name: 'Kab/Kota' },
+      ],
     };
   },
   mounted() {},
