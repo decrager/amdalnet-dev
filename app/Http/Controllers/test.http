@@ -14,6 +14,8 @@ GET http://localhost:8000/api/districts?idProv=12
 ###
 GET http://localhost:8000/api/districts/12
 ###
+GET http://localhost:8000/api/testemail
+###
 GET http://localhost:8000/api/kblis?sectors=true
 ###
 GET http://localhost:8000/api/business/2
