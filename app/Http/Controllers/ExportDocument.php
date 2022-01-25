@@ -12,6 +12,7 @@ use App\Entity\ImpactIdentification;
 use App\Entity\ImpactStudy;
 use App\Entity\MeetingReport;
 use App\Entity\Project;
+use App\Entity\ProjectFilter;
 use App\Entity\ProjectStage;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
@@ -21,6 +22,7 @@ use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class ExportDocument extends Controller
 {
@@ -463,9 +465,9 @@ class ExportDocument extends Controller
 
         $save_file_name = 'ukl-upl-' . strtolower($project->project_title) . '.docx';
 
-        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-            return $save_file_name;
-        }
+        // if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        //     return $save_file_name;
+        // }
 
         $project_title_big = strtoupper($project->project_title);
         $pemrakarsa = $project->initiator->name;
@@ -516,6 +518,7 @@ class ExportDocument extends Controller
 
         $dl_pasca_operasi = [];
         $com_konstruksi = [];
+        $com_operasi = [];
         $pk = [];
         $kgk = [];
         $kb = [];
@@ -530,6 +533,7 @@ class ExportDocument extends Controller
         $ols = [];
         $oll = [];
         $po = [];
+        $pertek_block = [];
 
         foreach($stages as $s) {
             foreach($impact_identification as $imp) {
@@ -564,6 +568,13 @@ class ExportDocument extends Controller
                 // component type
                 $component_type = $this->getComponentType($imp);
 
+                $komponen_desc = '';
+                if($imp->subProjectRonaAwal->description_common) {
+                    $komponen_desc = $imp->subProjectRonaAwal->description_common . '</w:t><w:p/><w:t>' . $imp->subProjectRonaAwal->description_specific;
+                } else {
+                    $komponen_desc = $imp->subProjectRonaAwal->description_specific;
+                }
+
                 if($s->name  == 'Pra Konstruksi') {
                     $pk[] = $this->getUklUplData($imp, 'pk', $component, $change_type, $ronaAwal);
                 }
@@ -572,7 +583,8 @@ class ExportDocument extends Controller
                 if($s->name == 'Konstruksi') {
                     if(array_search($component, array_column($com_konstruksi, 'com_konstruksi_name')) === false) {
                         $com_konstruksi[] = [
-                            'com_konstruksi_name' => $component
+                            'com_konstruksi_name' => $component,
+                            'com_konstruksi_desc' => $komponen_desc
                         ];
                     }
 
@@ -593,6 +605,13 @@ class ExportDocument extends Controller
                 }
 
                 if($s->name == 'Operasi') {
+                    if(array_search($component, array_column($com_operasi, 'com_operasi_name')) === false) {
+                        $com_operasi[] = [
+                            'com_operasi_name' => $component,
+                            'com_operasi_desc' => $komponen_desc
+                        ];
+                    }
+
                     if(strtolower($component_type) == 'geofisik kimia') {
                         $ogk[] = $this->getUklUplData($imp, 'ogk', $component, $change_type, $ronaAwal);
                     } else if(strtolower($component_type) == 'biologi') {
@@ -618,6 +637,53 @@ class ExportDocument extends Controller
             }
         }
 
+        // ========= PERTEK ======= //
+        $pertek_columns = Schema::getColumnListing('project_filters');
+        $pertek_columns = array_filter($pertek_columns, function($x) {
+            return !(
+                        $x == 'id' || 
+                        $x == 'id_project' || 
+                        $x == 'nothing' || 
+                        $x == 'created_at' || 
+                        $x == 'updated_at' || 
+                        $x == 'high_pollution' || 
+                        $x == 'high_emission' || 
+                        $x == 'low_traffic' || 
+                        $x == 'mid_traffic' || 
+                        $x == 'high_traffic'
+                    );
+        });
+
+        $pertek_list = '';
+        $pertek = ProjectFilter::where('id_project', $project->id)->first();
+        if($pertek) {
+            $pertek = $pertek->toArray();
+            $pertek_no = 'a';
+            foreach($pertek_columns as $key => $value) {
+                if($pertek[$value]) {
+                    $pertek_block[] = [
+                        'pertek_name' => $pertek_no . '. ' . $this->pertekColumnIndoName($value)
+                    ];
+                    $pertek_list .= $this->pertekColumnIndoName($value) . ', ';
+                    $pertek_no++;
+                }
+            }
+        }
+
+        if(strlen($pertek_list) > 0) {
+            $pertek_list = strtolower(substr($pertek_list, 0, -2));
+        }
+
+        $exp_pertek_list = explode(', ', $pertek_list);
+        if(count($exp_pertek_list) > 1) {
+            if(count($exp_pertek_list) == 2) {
+                $pertek_list = $exp_pertek_list[0] . ' dan ' . $exp_pertek_list[1];
+            } else {
+                $exp_pertek_list[count($exp_pertek_list) - 1] = 'dan ' . $exp_pertek_list[count($exp_pertek_list) - 1];
+                $pertek_list = join(', ', $exp_pertek_list);
+            }
+        }
+
         $doc_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
         $templateProcessor = new TemplateProcessor('template_ukl_upl.docx');
@@ -639,8 +705,11 @@ class ExportDocument extends Controller
         $templateProcessor->setValue('project_province', $project_province);
         $templateProcessor->setValue('project_year', $project_year);
         $templateProcessor->setValue('doc_date', $doc_date);
+        $templateProcessor->setValue('pertek_list', $pertek_list);
+        $templateProcessor->cloneBlock('pertek_block', count($pertek_block), true, false, $pertek_block);
         $templateProcessor->cloneBlock('dl_pasca_operasi_block', count($dl_pasca_operasi), true, false, $dl_pasca_operasi);
         $templateProcessor->cloneBlock('com_konstruksi_block', count($com_konstruksi), true, false, $com_konstruksi);
+        $templateProcessor->cloneBlock('com_operasi_block', count($com_operasi), true, false, $com_operasi);
         $templateProcessor->cloneRowAndSetValues('pk', $pk);
         $templateProcessor->cloneRowAndSetValues('kgk', $kgk);
         $templateProcessor->cloneRowAndSetValues('kb', $kb);
@@ -750,5 +819,58 @@ class ExportDocument extends Controller
             $st . '_pengawas' => $upl_pengawas,
             $st . '_pelaporan' => $upl_pelaporan
         ];
+    }
+
+    private function pertekColumnIndoName($column) {
+        $name = '';
+
+        switch ($column) {
+            case 'wastewater':
+                $name = 'Air Limbah';
+                break;
+            case 'disposal_wastewater':
+                $name = 'Pembuangan Air Limbah';
+                break;
+            case 'utilization_wastewater':
+                $name = 'Pemanfaatan Air Limbah';
+                break;
+            case 'emission':
+                $name = 'Emisi Gas Buang';
+                break;
+            case 'chimney':
+                $name = 'Melalui Cerobong Asap';
+                break;
+            case 'genset':
+                $name = 'Pembuangan Emisi Gas Buang Dari Genset';
+                break;
+            case 'b3':
+                $name = 'Limbah B3';
+                break;
+            case 'collect_b3':
+                $name = 'Pengumpulan Limbah B3';
+                break;
+            case 'hoard_b3':
+                $name = 'Penimbunan Limbah B3';
+                break;
+            case 'process_b3':
+                $name = 'Pengolahan Limbah B3';
+                break;
+            case 'utilization_b3':
+                $name = 'Pemanfaatan Limbah B3';
+                break;
+            case 'dumping_b3':
+                $name = 'Dumping Limbah B3';
+                break;
+            case 'tps':
+                $name = 'TPS';
+                break;
+            case 'traffic':
+                $name = 'Gangguan Lalu Lintas';
+                break;
+            default:
+                break;
+        }
+
+        return $name;
     }
 }
