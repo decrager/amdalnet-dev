@@ -16,7 +16,7 @@
           icon="el-icon-view"
           @click="handleCategory"
         >
-          {{ 'Lihat Map Service Kategori' }}
+          {{ 'Lihat Kategori' }}
         </el-button>
       </div>
       <map-service-table
@@ -46,6 +46,7 @@
         :show-category="showCategory"
         :category="category"
         @handleSubmitCategory="handleSubmitCategory"
+        @handleCancelCategory="handleCancelCategory"
       />
     </el-card>
   </div>
@@ -93,6 +94,9 @@ export default {
     handleCancelComponent(){
       this.component = {};
       this.show = false;
+    },
+    handleCancelCategory(){
+      this.showCategory = false;
     },
     handleSubmitCategory() {
       if (this.createCategory.id !== undefined) {
@@ -161,10 +165,6 @@ export default {
           });
       }
     },
-    handleCancelComponentCreate(){
-      this.componentCreate = {};
-      this.showCategoryCreate = false;
-    },
     handleFilter() {
       this.getList();
     },
@@ -195,9 +195,6 @@ export default {
     },
     handleCategory() {
       this.showCategory = true;
-    },
-    handleCategoryCreate() {
-      this.showCategoryCreate = true;
     },
     handleEditForm(id) {
       this.component = this.list.find((element) => element.id === id);

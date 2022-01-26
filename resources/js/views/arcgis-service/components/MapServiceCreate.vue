@@ -82,8 +82,8 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="handleCancelComponent()"> Cancel </el-button>
-        <el-button type="primary" @click="handleSubmitComponent()"> Confirm </el-button>
+        <el-button type="warning" @click="handleCancelComponent()"> Tutup </el-button>
+        <el-button type="primary" @click="handleSubmitComponent()"> Simpan </el-button>
       </div>
     </div>
   </el-dialog>

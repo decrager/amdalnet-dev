@@ -1,6 +1,9 @@
 <template>
-  <el-dialog :title="'Map Service Kategori'" :visible.sync="showCategory" :close-on-click-modal="false" :show-close="true">
-    <div style="background-color: #eaeaea; padding: 10px; margin-bottom: 10px;">
+  <el-dialog :title="'Map Service Kategori'" :visible.sync="showCategory" :close-on-click-modal="false" :show-close="false">
+    <div style="margin-bottom: 20px">
+      <el-button v-show="showCreate === false" type="primary" icon="el-icon-arrow-down" @click="createNew">Tambah Kategori Baru</el-button>
+    </div>
+    <div v-show="showCreate" style="background-color: #eaeaea; padding: 10px; margin-bottom: 10px;">
       <h3>Tambah Kategori Baru</h3>
       <el-form ref="categoryForm" :model="createCategory">
         <el-row>
@@ -23,7 +26,7 @@
         <el-row />
       </el-form>
       <div style="margin: 10px 0;">
-        <el-button type="primary" @click="handleSubmitCategory()"> Tambah Kategori </el-button>
+        <el-button type="primary" icon="el-icon-circle-check" @click="handleSubmitCategory()"> Simpan Kategori </el-button>
       </div>
     </div>
     <el-table
@@ -35,7 +38,9 @@
     >
       <el-table-column label="No." width="54px">
         <template slot-scope="scope">
-          <span>{{ scope.$index + 1 }}</span>
+          <div style="text-align: center">
+            <span>{{ scope.$index + 1 }}</span>
+          </div>
         </template>
       </el-table-column>
 
@@ -47,7 +52,9 @@
 
       <el-table-column label="Status">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.active === 1 ? 'success' : 'danger'">{{ scope.row.active === 1 ? 'Active' : 'Tidak Aktif' }}</el-tag>
+          <div style="text-align: center">
+            <el-tag effect="dark" :type="scope.row.active === 1 ? 'success' : 'danger'">{{ scope.row.active === 1 ? 'Active' : 'Tidak Aktif' }}</el-tag>
+          </div>
         </template>
       </el-table-column>
 
@@ -72,7 +79,9 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <div style="margin-top: 20px; display: flex; justify-content: end">
+      <el-button icon="el-icon-close" type="warning" @click="handleCancelCategory()"> Tutup </el-button>
+    </div>
   </el-dialog>
 </template>
 
@@ -91,9 +100,20 @@ export default {
       default: () => [],
     },
   },
+  data() {
+    return {
+      showCreate: false,
+    };
+  },
   methods: {
+    createNew() {
+      this.showCreate = true;
+    },
     handleSubmitCategory() {
       this.$emit('handleSubmitCategory');
+    },
+    handleCancelCategory() {
+      this.$emit('handleCancelCategory');
     },
     handleDeleteCategory(id, category_name) {
       this.$confirm('Apakah anda yakin akan menghapus kategori ' + category_name + '. ?', 'Peringatan', {
