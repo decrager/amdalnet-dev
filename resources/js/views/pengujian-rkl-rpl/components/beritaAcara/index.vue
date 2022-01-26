@@ -29,6 +29,7 @@
           :reports="reports"
           :loadingtuk="loadingTuk"
           @deleteinvitation="deleteInvitation($event)"
+          @updateuploadfile="updateUploadFile($event)"
         />
       </el-col>
     </el-row>
@@ -165,6 +166,9 @@ export default {
       this.reports.invitations = this.reports.invitations.filter((inv) => {
         return !(inv.id === id && inv.type === personType);
       });
+    },
+    updateUploadFile({ name }) {
+      this.reports.file = name;
     },
   },
 };
