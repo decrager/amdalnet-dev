@@ -122,7 +122,8 @@ class AuthController extends BaseController
             'name' => ucfirst($validated['name']),
             'email' => $validated['email'],
             'oss_username' => $validated['username'],
-            'password' => Hash::make($validated['password'])
+            'password' => Hash::make($validated['password']),
+            'active' => 1,
         ]);
         $user->syncRoles($initiatorRole);
         $initiator = Initiator::create([
