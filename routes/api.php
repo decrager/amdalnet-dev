@@ -55,7 +55,7 @@ Route::namespace('Api')->group(function () {
     Route::get('auth/userinfo-oss', 'AuthController@getUserInfo');
     Route::post('auth/login-oss', 'AuthController@loginOss');
     Route::post('auth/register-oss', 'AuthController@registerOss');
-    
+
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
         Route::get('auth/user', 'AuthController@user');
@@ -299,7 +299,7 @@ Route::post('arcgis-service', [ArcgisServiceController::class, 'createArcgisServ
 Route::post('arcgis-service-category', [ArcgisServiceController::class, 'createArcgisServiceCategory']);
 Route::patch('arcgis-service/{id}', [ArcgisServiceController::class, 'updateArcgisService']);
 Route::delete('arcgis-service/{id}', [ArcgisServiceController::class, 'deleteAcrgisService']);
-Route::delete('arcgis-service/{id}', [ArcgisServiceController::class, 'deleteAcrgisServiceCategory']);
+Route::delete('arcgis-service-category/{id}', [ArcgisServiceController::class, 'deleteAcrgisServiceCategory']);
 
 Route::get('besaran-dampak/list/{id}', [BesaranDampakController::class, 'getList']);
 Route::get('matriks-ukl-upl/table-ukl/{id}', [MatriksUklUplController::class, 'getTableUkl']);
@@ -347,20 +347,20 @@ Route::post('environmental-permit/update', [EnvironmentalPermitController::class
 Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);
 
 
-Route::get('/testemail', function () {
+// Route::get('/testemail', function () {
 
-    $data = User::find(236);
+//     $data = User::find(236);
   
-        $billData = [
-            'name' => '#007 Bill',
-            'body' => 'You have received a new bill.',
-            'thanks' => 'Thank you',
-            'text' => '$600',
-            'offer' => url('/'),
-            'bill_id' => 30061
-        ];
+//         $billData = [
+//             'name' => '#007 Bill',
+//             'body' => 'You have received a new bill.',
+//             'thanks' => 'Thank you',
+//             'text' => '$600',
+//             'offer' => url('/'),
+//             'bill_id' => 30061
+//         ];
   
-        Notification::send($data, new BillingNotification($billData));
+//         Notification::send($data, new BillingNotification($billData));
    
-        dd('Bill notification has been sent!');
-});
+//         dd('Bill notification has been sent!');
+// });
