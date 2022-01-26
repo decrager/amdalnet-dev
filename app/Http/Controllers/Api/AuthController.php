@@ -123,7 +123,6 @@ class AuthController extends BaseController
             'email' => $validated['email'],
             'oss_username' => $validated['username'],
             'password' => Hash::make($validated['password']),
-            'active' => 1,
         ]);
         $user->syncRoles($initiatorRole);
         $initiator = Initiator::create([
@@ -137,6 +136,7 @@ class AuthController extends BaseController
         ]);
         if ($user && $initiator) {
             DB::commit();
+            $this->setUserAsActive($user->id);
             return response()->json([
                 'status' => 200,
                 'code' => 200,
@@ -149,6 +149,15 @@ class AuthController extends BaseController
                 'code' => 500,
                 'message' => 'Failed to create User',
             ], 500);
+        }
+    }
+
+    private function setUserAsActive($id)
+    {
+        $user = User::find($id);
+        if ($user) {
+            $user->active = 1;
+            $user->save();
         }
     }
 
