@@ -67,9 +67,6 @@ export default {
     loading: Boolean,
   },
   methods: {
-    handleView(row) {
-      this.$emit('handleView', row);
-    },
     handleEditForm(row) {
       const currentParam = row;
       this.$router.push({

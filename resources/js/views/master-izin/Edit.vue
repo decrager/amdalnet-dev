@@ -19,11 +19,23 @@
               <el-form>
                 <el-row>
                   <el-form-item label="Kewenangan">
-                    <el-input
+                    <!-- <el-input
                       v-model="currentParam.authority"
                       type="text"
                       placeholder="Kewenangan"
-                    />
+                    /> -->
+                    <el-select
+                      v-model="currentParam.authority"
+                      placeholder="Kewenangan"
+                      style="width: 100%"
+                    >
+                      <el-option
+                        v-for="(item, i) in kewenangan"
+                        :key="i"
+                        :label="item.name.toUpperCase()"
+                        :value="item.name"
+                      />
+                    </el-select>
                   </el-form-item>
                 </el-row>
               </el-form>
@@ -122,12 +134,18 @@
 import axios from 'axios';
 
 export default {
-  name: 'AddIzin',
+  name: 'EditIzin',
   props: {},
   data() {
     return {
       currentParam: {},
       file: '',
+      kewenangan: [
+        { name: 'semua' },
+        { name: 'pusat' },
+        { name: 'provinsi' },
+        { name: 'kab/kota' },
+      ],
     };
   },
   created() {
