@@ -72,6 +72,14 @@ export default {
       type: Object,
       default: () => {},
     },
+    to: {
+      type: String,
+      default: () => '/',
+    },
+    token: {
+      type: String,
+      default: () => '',
+    },
   },
   data() {
     const validatePass = (rule, value, callback) => {
@@ -128,7 +136,8 @@ export default {
                     })
                     .catch(() => {
                       this.loading = false;
-                      this.$router.push({ path: '/profile/edit' });
+                      const toPath = '/oss-auth?to=' + this.to + '&token=' + this.token;
+                      this.$router.push({ path: toPath });
                     });
                 }
               });
