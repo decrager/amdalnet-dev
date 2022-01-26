@@ -42,10 +42,10 @@
       />
 
       <map-service-category-dialog
+        :create-category="createCategory"
         :show-category="showCategory"
         :category="category"
-        @handleSubmitComponent="handleSubmitComponent"
-        @handleCancelComponent="handleCancelComponent"
+        @handleSubmitCategory="handleSubmitCategory"
       />
     </el-card>
   </div>
@@ -77,11 +77,11 @@ export default {
       total: 0,
       show: false,
       showCategory: false,
-      showCategoryCreate: false,
       category: [],
       component: {},
       componentCreate: {},
       provinces: [],
+      createCategory: {},
     };
   },
   created() {
@@ -93,6 +93,40 @@ export default {
     handleCancelComponent(){
       this.component = {};
       this.show = false;
+    },
+    handleSubmitCategory() {
+      if (this.createCategory.id !== undefined) {
+        axios.patch(`api/arcgis-service-category/${this.createCategory.id}`, this.createCategory)
+          .then((response) => {
+            this.$message({
+              type: 'success',
+              message: 'Map Service Kategori Berhasil Diupdate',
+              duration: 5 * 1000,
+            });
+            this.showCategory = false;
+            this.getKategory();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        axios.post('api/arcgis-service-category', this.createCategory)
+          .then((response) => {
+            console.log(response);
+            this.$message({
+              message:
+                'Map Service Kategori Berhasil Dibuat',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            this.showCategory = false;
+            this.createCategory = {};
+            this.getKategory();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
     handleSubmitComponent(){
       if (this.component.id !== undefined) {
@@ -126,9 +160,6 @@ export default {
             console.log(error);
           });
       }
-    },
-    handleSubmitComponentCreate(){
-
     },
     handleCancelComponentCreate(){
       this.componentCreate = {};
@@ -199,5 +230,6 @@ export default {
         });
     },
   },
+
 };
 </script>

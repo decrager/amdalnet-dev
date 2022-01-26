@@ -69,7 +69,7 @@ class ArcgisServiceController extends Controller
             ]);
         }
 
-        ArcgisService::create($request->all());
+        ArcgisServiceCategory::create($request->all());
 
         return response()->json([
             'message' => 'success'
@@ -149,7 +149,7 @@ class ArcgisServiceController extends Controller
     public function deleteAcrgisServiceCategory($id)
     {
         try {
-            $data = ArcgisService::find($id);
+            $data = ArcgisServiceCategory::find($id);
             $data->delete();
             return response()->json([
                 'message' => 'Sukses'
