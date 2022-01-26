@@ -147,6 +147,7 @@ export default {
       this.list[idx].position = this.expertemployee[indx].position;
       this.list[idx].institution = this.expertemployee[indx].institution;
       this.list[idx].cv = this.expertemployee[indx].cv;
+      this.list[idx].email = this.expertemployee[indx].email;
     },
     download(url) {
       window.open(url, '_blank').focus();

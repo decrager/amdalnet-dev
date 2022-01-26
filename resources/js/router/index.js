@@ -228,6 +228,24 @@ export const asyncRoutes = [
       },
     ],
   },
+  {
+    path: '/tuk-profile',
+    component: Layout,
+    meta: { title: 'Profil TUK', icon: 'zip', roles: ['examiner-secretary'] },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/tuk-management/Profile.vue'),
+        name: 'tukProfile',
+        meta: {
+          title: 'Profil TUK',
+          icon: 'user',
+          noCache: true,
+          roles: ['examiner-secretary'],
+        },
+      },
+    ],
+  },
   // {
   //   path: '/fka',
   //   component: Layout,
