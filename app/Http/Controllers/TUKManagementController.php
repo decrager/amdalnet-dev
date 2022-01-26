@@ -6,6 +6,9 @@ use App\Entity\ExpertBank;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\LukMember;
+use App\Laravue\Acl;
+use App\Laravue\Models\Role;
+use App\Laravue\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,6 +21,71 @@ class TUKManagementController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->type == 'profileMember') {
+            $id_team = $this->getIdTeamByMemberEmail($request->email);
+            if($id_team == null) {
+                return [];
+            }
+
+            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $id_team)->get();
+            $member = [];
+
+            foreach($members as $m) {
+                $cv = null;
+
+                if($m->lukMember) {
+                    $cv = $m->lukMember->cv;
+                } else if($m->expertBank) {
+                    $cv = $m->expertBank->cv_file;
+                }
+
+                $member[] = [
+                    'id' => $m->id,
+                    'name' => $m->lukMember ? $m->lukMember->name : $m->expertBank->name,
+                    'nik' => $m->lukMember ? $m->lukMember->nik : '-',
+                    'position' => $m->position . ' Tim Uji Kelayakan' ,
+                    'institution' => $m->lukMember ? $m->lukMember->institution : $m->expertBank->institution,
+                    'cv' => $cv
+                ];
+            }
+
+            return $member;
+        }
+
+        if($request->type == 'profile') {
+            $id_team = $this->getIdTeamByMemberEmail($request->email);
+            $team = FeasibilityTestTeam::find($id_team);
+
+            if($team) {
+                $team_name = null;
+                if($team->authority == 'Pusat') {
+                    $team_name = 'Tim Uji Kelayakan Pusat ' . $team->team_number;
+                } else if($team->authority == 'Provinsi' && $team->provinceAuthority) {
+                    $team_name = 'Tim Uji kelayakan Provinsi ' . ucwords(strtolower($team->provinceAuthority->name)) . ' ' . $team->team_number;
+                } else if($team->authority == 'Kabupaten/Kota' && $team->districtAuthority) {
+                    $team_name = 'Tim Uji kelayakan ' . ucwords(strtolower($team->districtAuthority->name)) . ' ' . $team->team_number;
+                }
+    
+                return [
+                    'id' => $team->id,
+                    'name' => $team_name,
+                    'email' => $team->email,
+                    'phone' => $team->phone,
+                    'address' => $team->address,
+                    'logo' => $team->logo
+                ];
+            } else {
+                return [
+                    'id' => null,
+                    'name' => null,
+                    'email' => null,
+                    'phone' => null,
+                    'address' => null,
+                    'logo' => null
+                ];
+            }
+        }
+
         if($request->type == 'listSelect') {
             $tuks = [];
             $teams = FeasibilityTestTeam::all();
@@ -51,15 +119,18 @@ class TUKManagementController extends Controller
                 $institution = null;
                 $cv = null;
                 $position = '-';
+                $email = '';
 
                 if($m->lukMember) {
                     $nik = $m->lukMember->nik;
                     $institution = $m->lukMember->institution;
                     $cv = $m->lukMember->cv;
+                    $email = $m->lukMember->email;
                     $position = $m->lukMember->position;
                 } else if($m->expertBank) {
                     $institution = $m->expertBank->institution;
                     $cv = $m->expertBank->cv_file;
+                    $email = $m->expertBank->email;
                 }
 
                 $team_members[] = [
@@ -70,9 +141,11 @@ class TUKManagementController extends Controller
                     'type' => $m->id_expert_bank != null ? 'expert' : 'employee',
                     'nik' => $nik,
                     'role' => $m->position,
+                    'old_role' => $m->position,
                     'position' => $position,
                     'institution' => $institution,
-                    'cv' => $cv
+                    'cv' => $cv,
+                    'email' => $email
                 ];
 
                 $num++;
@@ -84,8 +157,8 @@ class TUKManagementController extends Controller
         if($request->type == 'expertEmployee') {
             $expertEmployee = [];
 
-            $experts = ExpertBank::select('id', 'name', 'institution', 'cv_file')->orderBy('name')->get();
-            $employees = LukMember::select('id', 'nik', 'name', 'institution', 'position', 'cv')->whereDoesntHave('feasibilityTestTeamMember')->orderBy('name')->get();
+            $experts = ExpertBank::select('id', 'name', 'institution', 'cv_file', 'email')->orderBy('name')->get();
+            $employees = LukMember::select('id', 'nik', 'name', 'institution', 'position', 'cv', 'email')->whereDoesntHave('feasibilityTestTeamMember')->orderBy('name')->get();
 
             $existing_employees = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $request->idTUK],['id_luk_member', '!=', null]])->get();
             
@@ -97,7 +170,8 @@ class TUKManagementController extends Controller
                     'nik' => '-',
                     'position' => '-',
                     'institution' => $ex->institution,
-                    'cv' => $ex->cv_file
+                    'cv' => $ex->cv_file,
+                    'email' => $ex->email
                 ];
             }
 
@@ -109,7 +183,8 @@ class TUKManagementController extends Controller
                     'nik' => $em->nik,
                     'position' => $em->position,
                     'institution' => $em->institution,
-                    'cv' => $em->cv
+                    'cv' => $em->cv,
+                    'email' => $em->email
                 ];
             }
 
@@ -122,7 +197,8 @@ class TUKManagementController extends Controller
                         'nik' => $exe->lukMember->nik,
                         'position' => $exe->lukMember->position,
                         'institution' => $exe->lukMember->institution,
-                        'cv' => $exe->lukMember->cv
+                        'cv' => $exe->lukMember->cv,
+                        'email' => $exe->lukMember->email
                     ];
                 }
             }
@@ -178,6 +254,54 @@ class TUKManagementController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->profile) {
+            $data = $request->all();
+            $validator = \Validator::make($data, [
+                'email' => 'required|email',
+                'phone' => 'required',
+                'address' => 'required',
+                'logo' => 'max:1024'
+            ],[
+                'email.required' => 'Email Wajib Diisi',
+                'email.email' => 'Email Tidak Valid',
+                'phone.required' => 'No. Telepon Wajib Diisi',
+                'address.required' => 'Alamat Wajib Diisi',
+                'logo.max' => 'Ukuran file tidak boleh melebihi 1 MB',
+            ]);
+
+            if($validator->fails()) {
+                return response()->json(['errors' => $validator->messages()]);
+            }
+
+            $tuk = FeasibilityTestTeam::findOrFail($request->idTeam);
+            $tuk->email = $data['email'];
+            $tuk->phone = $data['phone'];
+            $tuk->address = $data['address'];
+
+            if($request->hasFile('logo')) {
+                $validator = \Validator::make($data, [
+                    'logo' => 'image'
+                ],[
+                    'logo.image' => 'Logo Tidak Valid'
+                ]);
+
+                if($validator->fails()) {
+                    return response()->json(['errors' => $validator->messages()]);
+                }
+
+                $file = $request->file('logo');
+                $name = '/logo_tuk/' . uniqid() . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+                $tuk->logo = Storage::url($name);
+            }
+
+            $tuk->save();
+
+            return response()->json(['errors' => null, 'message' => 'success']);
+
+
+        }
+
         if($request->member) {
             $members = $request->members;
             $deleted = $request->deleted;
@@ -205,10 +329,53 @@ class TUKManagementController extends Controller
                 }
     
                 $member->save();
+
+                // ====== CHANGE USER ROLE ======= //
+            
+                if($members[$i]['id']) {
+                    if($members[$i]['role'] == 'Kepala Sekretariat') {
+                        if($members[$i]['old_role'] != 'Kepala Sekretariat') {
+                            $user = User::where('email', $members[$i]['email'])->count();
+                            if($user > 0) {
+                                $user = User::where('email', $members[$i]['email'])->first();
+                                $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SECRETARY);
+                                $user->syncRoles($valsubRole);
+                            }
+                        }
+                    } else {
+                        if($members[$i]['old_role'] == 'Kepala Sekretariat') {
+                            $user = User::where('email', $members[$i]['email'])->count();
+                            if($user > 0) {
+                                $user = User::where('email', $members[$i]['email'])->first();
+                                $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
+                                $user->syncRoles($valsubRole);
+                            }
+                        }
+                    }
+                } else {
+                    if($members[$i]['role'] == 'Kepala Sekretariat') {
+                        $user = User::where('email', $members[$i]['email'])->count();
+                        if($user > 0) {
+                            $user = User::where('email', $members[$i]['email'])->first();
+                            $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SECRETARY);
+                            $user->syncRoles($valsubRole);
+                        }
+                    }
+                }
             }
 
             for($a = 0; $a < count($deleted); $a++) {
-                FeasibilityTestTeamMember::destroy($deleted[$a]);
+                FeasibilityTestTeamMember::destroy($deleted[$a]['id']);
+                if($deleted[$a]['role'] == 'Kepala Sekretariat') {
+                    if($deleted[$a]['email']) {
+                        $user = User::where('email', $deleted[$a]['email'])->count();
+                        if($user > 0) {
+                            $user = User::where('email', $deleted[$a]['email'])->first();
+                            $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
+                            $user->syncRoles($valsubRole);
+                        }
+                    }
+                }
             }
 
             return response()->json(['message' => 'success']);
@@ -311,5 +478,26 @@ class TUKManagementController extends Controller
     {
         FeasibilityTestTeam::destroy($id);
         return response()->json(['message' => 'Data successfully deleted']);
+    }
+
+    private function getIdTeamByMemberEmail($email) {
+        $id_team = null;
+
+        $team_member = FeasibilityTestTeamMember::whereHas('lukMember', function($q) use($email) {
+            $q->where('email', $email);
+        })->first();
+
+        if($team_member) {
+            $id_team = $team_member->id_feasibility_test_team;
+        } else {
+            $team_member = FeasibilityTestTeamMember::whereHas('expertBank', function($q) use($email) {
+                $q->where('email', $email);
+            })->first();
+            if($team_member) {
+                $id_team = $team_member->id_feasibility_test_team;
+            }
+        }
+        
+        return $id_team;
     }
 }
