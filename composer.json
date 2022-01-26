@@ -21,6 +21,7 @@
         "php": "^8.0",
         "barryvdh/laravel-dompdf": "^0.9.0",
         "doctrine/dbal": "^3.2",
+        "edwinmugendi/hashdigest": "^1.0",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "gasparesganga/php-shapefile": "^3.4",
