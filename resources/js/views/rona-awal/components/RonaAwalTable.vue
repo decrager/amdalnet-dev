@@ -8,7 +8,7 @@
   >
     <el-table-column label="No." width="54px">
       <template slot-scope="scope">
-        <span>{{ scope.$index + 1 + page * limit - limit }}</span>
+        <span>{{ scope.$index + 1 }}</span>
       </template>
     </el-table-column>
 

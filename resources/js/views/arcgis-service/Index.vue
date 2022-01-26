@@ -22,6 +22,8 @@
       <map-service-table
         :loading="loading"
         :list="list"
+        :page="listQuery.page"
+        :limit="listQuery.limit"
         @handleEditForm="handleEditForm($event)"
         @handleDelete="handleDelete($event)"
       />
@@ -182,9 +184,10 @@ export default {
     },
     async getList() {
       this.loading = true;
-      axios.get('api/arcgis-services')
+      axios.get(`api/arcgis-services?page=${this.listQuery.page}&limit=${this.listQuery.limit}`)
         .then((response) => {
           this.list = response.data.data;
+          console.log(this.list);
           this.total = response.data.total;
         });
       this.loading = false;
