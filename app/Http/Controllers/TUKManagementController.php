@@ -313,29 +313,33 @@ class TUKManagementController extends Controller
                 $member->save();
 
                 // ====== CHANGE USER ROLE ======= //
+            
                 if($members[$i]['id']) {
                     if($members[$i]['role'] == 'Kepala Sekretariat') {
                         if($members[$i]['old_role'] != 'Kepala Sekretariat') {
-                            $user = User::where('email', $members[$i]['email'])->first();
-                            if($user) {
+                            $user = User::where('email', $members[$i]['email'])->count();
+                            if($user > 0) {
+                                $user = User::where('email', $members[$i]['email'])->first();
                                 $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SECRETARY);
                                 $user->syncRoles($valsubRole);
                             }
                         }
                     } else {
                         if($members[$i]['old_role'] == 'Kepala Sekretariat') {
-                            $user = User::where('email', $members[$i]['email'])->first();
-                            if($user) {
-                                $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SECRETARY);
+                            $user = User::where('email', $members[$i]['email'])->count();
+                            if($user > 0) {
+                                $user = User::where('email', $members[$i]['email'])->first();
+                                $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
                                 $user->syncRoles($valsubRole);
                             }
                         }
                     }
                 } else {
                     if($members[$i]['role'] == 'Kepala Sekretariat') {
-                        $user = User::where('email', $members[$i]['email'])->first();
-                        if($user) {
-                            $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
+                        $user = User::where('email', $members[$i]['email'])->count();
+                        if($user > 0) {
+                            $user = User::where('email', $members[$i]['email'])->first();
+                            $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SECRETARY);
                             $user->syncRoles($valsubRole);
                         }
                     }
@@ -346,8 +350,9 @@ class TUKManagementController extends Controller
                 FeasibilityTestTeamMember::destroy($deleted[$a]['id']);
                 if($deleted[$a]['role'] == 'Kepala Sekretariat') {
                     if($deleted[$a]['email']) {
-                        $user = User::where('email', $deleted[$a]['email'])->first();
-                        if($user) {
+                        $user = User::where('email', $deleted[$a]['email'])->count();
+                        if($user > 0) {
+                            $user = User::where('email', $deleted[$a]['email'])->first();
                             $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
                             $user->syncRoles($valsubRole);
                         }
