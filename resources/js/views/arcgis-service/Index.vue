@@ -18,14 +18,6 @@
         >
           {{ 'Lihat Map Service Kategori' }}
         </el-button>
-        <el-button
-          class="filter-item"
-          type="success"
-          icon="el-icon-plus"
-          @click="handleCategoryCreate"
-        >
-          {{ 'Tambah Map Service Kategori' }}
-        </el-button>
       </div>
       <map-service-table
         :loading="loading"
@@ -44,6 +36,7 @@
         :component="component"
         :show="show"
         :category="category"
+        :provinces="provinces"
         @handleSubmitComponent="handleSubmitComponent"
         @handleCancelComponent="handleCancelComponent"
       />
@@ -54,14 +47,6 @@
         @handleSubmitComponent="handleSubmitComponent"
         @handleCancelComponent="handleCancelComponent"
       />
-      <map-service-category-create
-        :component="componentCreate"
-        :show-category-create="showCategoryCreate"
-        :provinces="provinces"
-        @handleSubmitComponent="handleSubmitComponentCreate"
-        @handleCancelComponent="handleCancelComponentCreate"
-      />
-
     </el-card>
   </div>
 </template>
@@ -71,7 +56,6 @@ import Pagination from '@/components/Pagination';
 import MapServiceTable from './components/MapServiceTable.vue';
 import MapServiceCreate from './components/MapServiceCreate.vue';
 import MapServiceCategoryDialog from './components/MapServiceCategoryDialog.vue';
-import MapServiceCategoryCreate from './components/MapServiceCategoryCreate';
 
 import axios from 'axios';
 
@@ -81,7 +65,6 @@ export default {
     MapServiceTable,
     MapServiceCreate,
     MapServiceCategoryDialog,
-    MapServiceCategoryCreate,
   },
   data() {
     return {
@@ -104,6 +87,7 @@ export default {
   created() {
     this.getList();
     this.getKategory();
+    this.getProvinsi();
   },
   methods: {
     handleCancelComponent(){

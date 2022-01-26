@@ -30829,3 +30829,289 @@
 01-24-22 17:16:51 | FILES detected
  
 01-24-22 17:16:58 | POST detected
+ 
+01-26-22 10:34:45 | GET detected
+01-26-22 10:34:45 | Using session token
+01-26-22 10:34:46 | Authorization failed : {"error":{"code":498,"message":"Invalid Token","details":[]}}
+01-26-22 10:34:46 | Retry attempt 1 of 3
+01-26-22 10:34:46 | Resource using ArcGIS Server security
+01-26-22 10:34:46 | Got token endpoint
+01-26-22 10:34:46 | Adding token to session
+01-26-22 10:34:46 | Using session token
+01-26-22 10:34:46 | Ok to proxy
+01-26-22 10:34:46 | Proxy complete
+ 
+01-26-22 10:34:47 | GET detected
+01-26-22 10:34:47 | Using session token
+01-26-22 10:34:47 | Ok to proxy
+01-26-22 10:34:47 | Proxy complete
+ 
+01-26-22 10:34:53 | GET detected
+01-26-22 10:34:53 | Using session token
+01-26-22 10:34:53 | Ok to proxy
+01-26-22 10:34:53 | Proxy complete
+ 
+01-26-22 10:35:14 | GET detected
+01-26-22 10:35:14 | Using session token
+01-26-22 10:35:14 | Ok to proxy
+01-26-22 10:35:14 | Proxy complete
+ 
+01-26-22 10:35:15 | GET detected
+01-26-22 10:35:15 | Using session token
+01-26-22 10:35:15 | Ok to proxy
+01-26-22 10:35:15 | Proxy complete
+ 
+01-26-22 10:37:18 | GET detected
+01-26-22 10:37:18 | Using session token
+01-26-22 10:37:18 | Ok to proxy
+01-26-22 10:37:18 | Proxy complete
+ 
+01-26-22 10:37:19 | GET detected
+01-26-22 10:37:19 | Using session token
+01-26-22 10:37:19 | Ok to proxy
+01-26-22 10:37:19 | Proxy complete
+ 
+01-26-22 10:37:53 | GET detected
+01-26-22 10:37:53 | Using session token
+01-26-22 10:37:53 | Ok to proxy
+01-26-22 10:37:53 | Proxy complete
+ 
+01-26-22 10:39:04 | GET detected
+01-26-22 10:39:04 | Using session token
+01-26-22 10:39:04 | Ok to proxy
+01-26-22 10:39:04 | Proxy complete
+ 
+01-26-22 10:43:52 | GET detected
+01-26-22 10:43:52 | Using session token
+01-26-22 10:43:52 | Ok to proxy
+01-26-22 10:43:52 | Proxy complete
+ 
+01-26-22 10:43:52 | GET detected
+01-26-22 10:43:52 | Using session token
+01-26-22 10:43:55 | Ok to proxy
+01-26-22 10:43:55 | Proxy complete
+ 
+01-26-22 10:44:01 | GET detected
+01-26-22 10:44:01 | Using session token
+01-26-22 10:44:04 | Ok to proxy
+01-26-22 10:44:04 | Proxy complete
+ 
+01-26-22 10:47:05 | GET detected
+01-26-22 10:47:05 | Using session token
+01-26-22 10:47:05 | Ok to proxy
+01-26-22 10:47:05 | Proxy complete
+ 
+01-26-22 10:47:05 | GET detected
+01-26-22 10:47:05 | Using session token
+01-26-22 10:47:10 | Ok to proxy
+01-26-22 10:47:10 | Proxy complete
+ 
+01-26-22 10:47:18 | GET detected
+01-26-22 10:47:18 | Using session token
+01-26-22 10:47:18 | Ok to proxy
+01-26-22 10:47:18 | Proxy complete
+ 
+01-26-22 10:47:18 | GET detected
+01-26-22 10:47:18 | Using session token
+01-26-22 10:47:21 | Ok to proxy
+01-26-22 10:47:21 | Proxy complete
+ 
+01-26-22 10:50:19 | GET detected
+01-26-22 10:50:19 | Using session token
+01-26-22 10:50:19 | Ok to proxy
+01-26-22 10:50:19 | Proxy complete
+ 
+01-26-22 10:50:19 | GET detected
+01-26-22 10:50:19 | Using session token
+01-26-22 10:50:24 | Ok to proxy
+01-26-22 10:50:24 | Proxy complete
+ 
+01-26-22 10:56:40 | GET detected
+01-26-22 10:56:40 | Using session token
+01-26-22 10:56:40 | Ok to proxy
+01-26-22 10:56:40 | Proxy complete
+ 
+01-26-22 10:56:40 | GET detected
+01-26-22 10:56:40 | Using session token
+01-26-22 10:56:44 | Ok to proxy
+01-26-22 10:56:44 | Proxy complete
+ 
+01-26-22 10:56:47 | GET detected
+01-26-22 10:56:47 | Using session token
+01-26-22 10:56:47 | Ok to proxy
+01-26-22 10:56:47 | Proxy complete
+ 
+01-26-22 10:56:47 | GET detected
+01-26-22 10:56:47 | Using session token
+01-26-22 10:56:50 | Ok to proxy
+01-26-22 10:56:50 | Proxy complete
+ 
+01-26-22 11:02:44 | GET detected
+01-26-22 11:02:44 | Using session token
+01-26-22 11:02:44 | Ok to proxy
+01-26-22 11:02:44 | Proxy complete
+ 
+01-26-22 11:02:44 | GET detected
+01-26-22 11:02:44 | Using session token
+01-26-22 11:02:48 | Ok to proxy
+01-26-22 11:02:48 | Proxy complete
+ 
+01-26-22 11:04:13 | GET detected
+01-26-22 11:04:13 | Using session token
+01-26-22 11:04:14 | Ok to proxy
+01-26-22 11:04:14 | Proxy complete
+ 
+01-26-22 11:04:14 | GET detected
+01-26-22 11:04:14 | Using session token
+01-26-22 11:04:18 | Ok to proxy
+01-26-22 11:04:18 | Proxy complete
+ 
+01-26-22 11:07:14 | GET detected
+01-26-22 11:07:14 | Using session token
+01-26-22 11:07:14 | Ok to proxy
+01-26-22 11:07:14 | Proxy complete
+ 
+01-26-22 11:07:15 | GET detected
+01-26-22 11:07:15 | Using session token
+01-26-22 11:07:19 | Ok to proxy
+01-26-22 11:07:19 | Proxy complete
+ 
+01-26-22 11:07:20 | GET detected
+01-26-22 11:07:20 | Using session token
+01-26-22 11:07:25 | Ok to proxy
+01-26-22 11:07:25 | Proxy complete
+ 
+01-26-22 11:07:27 | GET detected
+01-26-22 11:07:27 | Using session token
+01-26-22 11:07:28 | Ok to proxy
+01-26-22 11:07:28 | Proxy complete
+ 
+01-26-22 11:07:28 | GET detected
+01-26-22 11:07:28 | Using session token
+01-26-22 11:07:31 | Ok to proxy
+01-26-22 11:07:31 | Proxy complete
+ 
+01-26-22 11:08:40 | GET detected
+01-26-22 11:08:40 | Using session token
+01-26-22 11:08:40 | Ok to proxy
+01-26-22 11:08:40 | Proxy complete
+ 
+01-26-22 11:08:40 | GET detected
+01-26-22 11:08:40 | Using session token
+01-26-22 11:08:44 | Ok to proxy
+01-26-22 11:08:44 | Proxy complete
+ 
+01-26-22 11:08:53 | GET detected
+01-26-22 11:08:53 | Using session token
+01-26-22 11:08:53 | Ok to proxy
+01-26-22 11:08:53 | Proxy complete
+ 
+01-26-22 11:08:54 | GET detected
+01-26-22 11:08:54 | Using session token
+01-26-22 11:08:56 | Ok to proxy
+01-26-22 11:08:56 | Proxy complete
+ 
+01-26-22 11:09:38 | GET detected
+01-26-22 11:09:38 | Using session token
+01-26-22 11:09:38 | Ok to proxy
+01-26-22 11:09:38 | Proxy complete
+ 
+01-26-22 11:09:39 | GET detected
+01-26-22 11:09:39 | Using session token
+01-26-22 11:09:43 | Ok to proxy
+01-26-22 11:09:43 | Proxy complete
+ 
+01-26-22 11:09:49 | GET detected
+01-26-22 11:09:49 | Using session token
+01-26-22 11:09:49 | Ok to proxy
+01-26-22 11:09:49 | Proxy complete
+ 
+01-26-22 11:09:49 | GET detected
+01-26-22 11:09:49 | Using session token
+01-26-22 11:09:52 | Ok to proxy
+01-26-22 11:09:52 | Proxy complete
+ 
+01-26-22 11:10:20 | GET detected
+01-26-22 11:10:20 | Using session token
+01-26-22 11:10:20 | Ok to proxy
+01-26-22 11:10:20 | Proxy complete
+ 
+01-26-22 11:10:21 | GET detected
+01-26-22 11:10:21 | Using session token
+01-26-22 11:10:25 | Ok to proxy
+01-26-22 11:10:25 | Proxy complete
+ 
+01-26-22 11:10:31 | GET detected
+01-26-22 11:10:31 | Using session token
+01-26-22 11:10:31 | Ok to proxy
+01-26-22 11:10:31 | Proxy complete
+ 
+01-26-22 11:10:32 | GET detected
+01-26-22 11:10:32 | Using session token
+01-26-22 11:10:34 | Ok to proxy
+01-26-22 11:10:34 | Proxy complete
+ 
+01-26-22 11:18:35 | GET detected
+01-26-22 11:18:35 | Using session token
+01-26-22 11:18:35 | Ok to proxy
+01-26-22 11:18:35 | Proxy complete
+ 
+01-26-22 11:20:41 | GET detected
+01-26-22 11:20:41 | Using session token
+01-26-22 11:20:41 | Ok to proxy
+01-26-22 11:20:41 | Proxy complete
+ 
+01-26-22 11:20:41 | GET detected
+01-26-22 11:20:41 | Using session token
+01-26-22 11:20:46 | Ok to proxy
+01-26-22 11:20:46 | Proxy complete
+ 
+01-26-22 11:21:34 | GET detected
+01-26-22 11:21:34 | Using session token
+01-26-22 11:21:34 | Ok to proxy
+01-26-22 11:21:34 | Proxy complete
+ 
+01-26-22 11:21:34 | GET detected
+01-26-22 11:21:34 | Using session token
+01-26-22 11:21:39 | Ok to proxy
+01-26-22 11:21:39 | Proxy complete
+ 
+01-26-22 11:23:00 | GET detected
+01-26-22 11:23:00 | Using session token
+01-26-22 11:23:01 | Ok to proxy
+01-26-22 11:23:01 | Proxy complete
+ 
+01-26-22 11:23:01 | GET detected
+01-26-22 11:23:01 | Using session token
+01-26-22 11:23:05 | Ok to proxy
+01-26-22 11:23:05 | Proxy complete
+ 
+01-26-22 11:23:14 | GET detected
+01-26-22 11:23:14 | Using session token
+01-26-22 11:23:15 | Ok to proxy
+01-26-22 11:23:15 | Proxy complete
+ 
+01-26-22 11:23:15 | GET detected
+01-26-22 11:23:15 | Using session token
+01-26-22 11:23:18 | Ok to proxy
+01-26-22 11:23:18 | Proxy complete
+ 
+01-26-22 11:24:08 | GET detected
+01-26-22 11:24:08 | Using session token
+01-26-22 11:24:08 | Ok to proxy
+01-26-22 11:24:08 | Proxy complete
+ 
+01-26-22 11:24:09 | GET detected
+01-26-22 11:24:09 | Using session token
+01-26-22 11:24:13 | Ok to proxy
+01-26-22 11:24:13 | Proxy complete
+ 
+01-26-22 11:24:17 | GET detected
+01-26-22 11:24:17 | Using session token
+01-26-22 11:24:18 | Ok to proxy
+01-26-22 11:24:18 | Proxy complete
+ 
+01-26-22 11:24:18 | GET detected
+01-26-22 11:24:18 | Using session token
+01-26-22 11:24:20 | Ok to proxy
+01-26-22 11:24:20 | Proxy complete
