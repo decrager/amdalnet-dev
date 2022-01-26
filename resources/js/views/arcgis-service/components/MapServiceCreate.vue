@@ -20,6 +20,28 @@
           </el-form-item>
         </el-row>
         <el-row>
+          <el-form-item label="Provinsi" prop="mapProvince">
+            <el-select
+              v-model="component.id_province"
+              filterable
+              placeholder="Select"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in provinces"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="Nama" prop="name">
+            <el-input v-model="component.name" type="text" />
+          </el-form-item>
+        </el-row>
+        <el-row>
           <el-form-item label="URL Service" prop="urlService">
             <el-input v-model="component.url_service" type="text" />
           </el-form-item>
@@ -76,6 +98,10 @@ export default {
     },
     show: Boolean,
     category: {
+      type: Array,
+      default: () => [],
+    },
+    provinces: {
       type: Array,
       default: () => [],
     },

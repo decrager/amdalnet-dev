@@ -14,6 +14,9 @@ class ArcgisServiceController extends Controller
             ->when($request->has('is_proxy'), function ($query) use ($request) {
                 return $query->where('is_proxy', '=', $request->is_proxy);
             })
+            ->when($request->has('id_province'), function ($query) use ($request) {
+                return $query->where('id_province', '=', $request->id_province);
+            })
             ->paginate(10);
 
         return response()->json($getArcgisService);
