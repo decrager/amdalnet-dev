@@ -21,7 +21,7 @@ export default {
   mounted() {
     // TODO: eliminate email & username from query
     this.fullscreenLoading = true;
-    if (this.$route.query.to === undefined || this.$route.query.token === undefined) {
+    if (this.$route.query.token === undefined) {
       this.fullscreenLoading = false;
       this.$message({
         message: 'Link tidak valid. Silakan coba lagi.',
@@ -29,6 +29,9 @@ export default {
         duration: 5 * 1000,
       });
       this.$router.push({ path: '/' });
+    }
+    if (this.$route.query.to === '' || this.$route.query.to === undefined) {
+      this.to = '/dashboard';
     }
     this.validateToken()
       .then(response => {

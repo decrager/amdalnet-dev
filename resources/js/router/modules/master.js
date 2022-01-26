@@ -137,12 +137,6 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Edit Anggota TUK', icon: 'documentation', noCache: true },
     },
-    // {
-    //   path: 'materi',
-    //   component: () => import('@/views/materi/index'),
-    //   name: 'materi',
-    //   meta: { title: 'Materi', icon: 'documentation', noCache: true },
-    // },
     {
       path: 'materi-kebijakan/materi/create',
       component: () => import('@/views/materi/Create'),
@@ -157,12 +151,6 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Edit Materi', icon: 'documentation', noCache: true },
     },
-    // {
-    //   path: 'peraturan',
-    //   component: () => import('@/views/peraturan/index'),
-    //   name: 'peraturan',
-    //   meta: { title: 'Peraturan', icon: 'documentation', noCache: true },
-    // },
     {
       path: 'materi-kebijakan/peraturan/create',
       component: () => import('@/views/peraturan/Create'),
@@ -177,12 +165,6 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Ubah Peraturan', icon: 'documentation', noCache: true },
     },
-    // {
-    //   path: 'kebijakan',
-    //   component: () => import('@/views/kebijakan/index'),
-    //   name: 'kebijakan',
-    //   meta: { title: 'Kebijakan', icon: 'documentation', noCache: true },
-    // },
     {
       path: 'materi-kebijakan/kebijakan/create',
       component: () => import('@/views/kebijakan/Create'),
@@ -221,7 +203,7 @@ const masterRoutes = {
       component: () => import('@/views/master-izin/Edit'),
       name: 'EditIzin',
       hidden: true,
-      meta: { title: 'Ubah Ijin Lingkungan', icon: 'documentation', noCache: true },
+      meta: { title: 'Ubah Izin', icon: 'documentation', noCache: true },
     },
     // {
     //   path: 'create-params',

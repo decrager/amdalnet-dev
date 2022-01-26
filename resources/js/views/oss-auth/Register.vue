@@ -123,12 +123,12 @@ export default {
                     password: this.regForm.password,
                   })
                     .then(() => {
-                      this.$router.push({ path: '/profile/edit' }, onAbort => {});
                       this.loading = false;
-                      window.location.reload();
+                      this.$router.push({ path: '/profile/edit' }, onAbort => {});
                     })
                     .catch(() => {
                       this.loading = false;
+                      this.$router.push({ path: '/profile/edit' });
                     });
                 }
               });
