@@ -345,3 +345,22 @@ Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index
 Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);
 Route::post('environmental-permit/update', [EnvironmentalPermitController::class, 'update']);
 Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);
+
+
+Route::get('/testemail', function () {
+
+    $data = User::find(236);
+  
+        $billData = [
+            'name' => '#007 Bill',
+            'body' => 'You have received a new bill.',
+            'thanks' => 'Thank you',
+            'text' => '$600',
+            'offer' => url('/'),
+            'bill_id' => 30061
+        ];
+  
+        Notification::send($data, new BillingNotification($billData));
+   
+        dd('Bill notification has been sent!');
+});
