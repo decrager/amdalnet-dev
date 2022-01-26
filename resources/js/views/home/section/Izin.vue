@@ -92,7 +92,7 @@
           <span class="fz12 white fw">{{ index + 1 }}</span>
         </el-col>
         <el-col :span="4" class="py">
-          <span class="fz12 white">"{{ ijin.pemarkasa_name }}</span>
+          <span class="fz12 white">{{ ijin.pemarkasa_name }}</span>
         </el-col>
         <el-col :span="5" class="py">
           <span class="fz12 white">{{ ijin.kegiatan_name }}</span>
