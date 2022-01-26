@@ -489,8 +489,9 @@ class TestMeetRKLRPLController extends Controller
              $total++;
          }
 
-        //  AUTHORITY
+        //  AUTHORITY && LOGO
         $authority = '';
+        $tuk_logo = null;
         if($testing_meeting->id_feasibility_test_team) {
              $team = FeasibilityTestTeam::find($testing_meeting->id_feasibility_test_team);
              if($team) {
@@ -501,11 +502,19 @@ class TestMeetRKLRPLController extends Controller
                  } else if($team->authority == 'Kabupaten/Kota') {
                      $authority = strtoupper($team->districtAuthority->name);
                  }
+                 $tuk_logo = $team->logo;
              }
  
          }
 
         $templateProcessor = new TemplateProcessor('template_berkas_adm_ar_yes.docx');
+
+        if($tuk_logo) {
+            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+        } else {
+            $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+        }
+
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
@@ -571,6 +580,7 @@ class TestMeetRKLRPLController extends Controller
         $tuk_address = '';
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
+        $tuk_logo = null;
 
 
         if($testing_meeting->id_feasibility_test_team) {
@@ -591,6 +601,7 @@ class TestMeetRKLRPLController extends Controller
                 }
 
                 $tuk_address = $team->address;
+                $tuk_logo = $team->logo;
 
                 // KETUA TUK
                 $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $team->id],['position', 'Ketua']])->first();
@@ -637,7 +648,13 @@ class TestMeetRKLRPLController extends Controller
         }
 
         $templateProcessor = new TemplateProcessor('template_undangan_rapat_arr.docx');
-        $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+
+        if($tuk_logo) {
+            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+        } else {
+            $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+        }
+
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('project_address', $project_address);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
