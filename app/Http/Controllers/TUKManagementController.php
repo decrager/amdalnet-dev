@@ -22,7 +22,12 @@ class TUKManagementController extends Controller
     public function index(Request $request)
     {
         if($request->type == 'profileMember') {
-            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', 6)->get();
+            $id_team = $this->getIdTeamByMemberEmail($request->email);
+            if($id_team == null) {
+                return [];
+            }
+
+            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $id_team)->get();
             $member = [];
 
             foreach($members as $m) {
@@ -48,24 +53,37 @@ class TUKManagementController extends Controller
         }
 
         if($request->type == 'profile') {
-            $team = FeasibilityTestTeam::find(6);
-            $team_name = null;
-            if($team->authority == 'Pusat') {
-                $team_name = 'Tim Uji Kelayakan Pusat ' . $team->team_number;
-            } else if($team->authority == 'Provinsi' && $team->provinceAuthority) {
-                $team_name = 'Tim Uji kelayakan Provinsi ' . ucwords(strtolower($team->provinceAuthority->name)) . ' ' . $team->team_number;
-            } else if($team->authority == 'Kabupaten/Kota' && $team->districtAuthority) {
-                $team_name = 'Tim Uji kelayakan ' . ucwords(strtolower($team->districtAuthority->name)) . ' ' . $team->team_number;
-            }
+            $id_team = $this->getIdTeamByMemberEmail($request->email);
+            $team = FeasibilityTestTeam::find($id_team);
 
-            return [
-                'id' => $team->id,
-                'name' => $team_name,
-                'email' => $team->email,
-                'phone' => $team->phone,
-                'address' => $team->address,
-                'logo' => $team->logo
-            ];
+            if($team) {
+                $team_name = null;
+                if($team->authority == 'Pusat') {
+                    $team_name = 'Tim Uji Kelayakan Pusat ' . $team->team_number;
+                } else if($team->authority == 'Provinsi' && $team->provinceAuthority) {
+                    $team_name = 'Tim Uji kelayakan Provinsi ' . ucwords(strtolower($team->provinceAuthority->name)) . ' ' . $team->team_number;
+                } else if($team->authority == 'Kabupaten/Kota' && $team->districtAuthority) {
+                    $team_name = 'Tim Uji kelayakan ' . ucwords(strtolower($team->districtAuthority->name)) . ' ' . $team->team_number;
+                }
+    
+                return [
+                    'id' => $team->id,
+                    'name' => $team_name,
+                    'email' => $team->email,
+                    'phone' => $team->phone,
+                    'address' => $team->address,
+                    'logo' => $team->logo
+                ];
+            } else {
+                return [
+                    'id' => null,
+                    'name' => null,
+                    'email' => null,
+                    'phone' => null,
+                    'address' => null,
+                    'logo' => null
+                ];
+            }
         }
 
         if($request->type == 'listSelect') {
@@ -255,7 +273,7 @@ class TUKManagementController extends Controller
                 return response()->json(['errors' => $validator->messages()]);
             }
 
-            $tuk = FeasibilityTestTeam::findOrFail(6);
+            $tuk = FeasibilityTestTeam::findOrFail($request->idTeam);
             $tuk->email = $data['email'];
             $tuk->phone = $data['phone'];
             $tuk->address = $data['address'];
@@ -460,5 +478,26 @@ class TUKManagementController extends Controller
     {
         FeasibilityTestTeam::destroy($id);
         return response()->json(['message' => 'Data successfully deleted']);
+    }
+
+    private function getIdTeamByMemberEmail($email) {
+        $id_team = null;
+
+        $team_member = FeasibilityTestTeamMember::whereHas('lukMember', function($q) use($email) {
+            $q->where('email', $email);
+        })->first();
+
+        if($team_member) {
+            $id_team = $team_member->id_feasibility_test_team;
+        } else {
+            $team_member = FeasibilityTestTeamMember::whereHas('expertBank', function($q) use($email) {
+                $q->where('email', $email);
+            })->first();
+            if($team_member) {
+                $id_team = $team_member->id_feasibility_test_team;
+            }
+        }
+        
+        return $id_team;
     }
 }
