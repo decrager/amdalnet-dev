@@ -67,12 +67,11 @@ export default {
       checkComplete: 'true',
       idProject: this.$route.params.id,
     });
+    this.$store.dispatch('getStep', 3);
     if (this.userInfo.roles.includes('examiner-substance')) {
       this.activeName = 'beritaacara';
-      this.$store.dispatch('getStep', 6);
     } else if (this.userInfo.roles.includes('examiner-administration')) {
       this.activeName = 'verifikasi';
-      this.$store.dispatch('getStep', 3);
     }
   },
   methods: {

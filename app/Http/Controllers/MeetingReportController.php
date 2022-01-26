@@ -133,7 +133,7 @@ class MeetingReportController extends Controller
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
             }
 
-            return response()->json(['errors' => null]);
+            return response()->json(['errors' => null, 'name' => $meeting_report->file]);
         }
 
         if ($request->formulir) {
@@ -317,7 +317,8 @@ class MeetingReportController extends Controller
             'id_feasibility_test_team' => $meeting->id_feasibility_test_team,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
-            'notes' => null
+            'notes' => null,
+            'file' => null
         ];
 
         return $data;
@@ -386,7 +387,8 @@ class MeetingReportController extends Controller
             'id_feasibility_test_team' => $report->id_feasibility_test_team,
             'project_name' => $report->project->project_title,
             'invitations' => $invitations,
-            'notes' => $report->notes
+            'notes' => $report->notes,
+            'file' => $report->file
         ];
 
         return $data;
