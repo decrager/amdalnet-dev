@@ -63,7 +63,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/environmental-permit?page=${this.listQuery.page}&sort=${this.sort}`
+          `/api/environmental-approval?page=${this.listQuery.page}&sort=${this.sort}`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -83,7 +83,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          axios.get(`/api/environmental-permit/delete/${rows.id}`)
+          axios.get(`/api/environmental-approval/delete/${rows.id}`)
             .then((response) => {
               this.$message({
                 type: 'success',

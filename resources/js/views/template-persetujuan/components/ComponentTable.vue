@@ -13,17 +13,17 @@
     </el-table-column>
     <el-table-column label="Jenis Template">
       <template slot-scope="scope">
-        <span>{{ scope.row.pemarkasa_name }}</span>
+        <span>{{ scope.row.template_type }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Deskripsi">
       <template slot-scope="scope">
-        <span>{{ scope.row.kegiatan_name }}</span>
+        <span>{{ scope.row.description }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Download/File">
       <template slot-scope="scope">
-        <span>{{ scope.row.sk_number }}</span>
+        <span>{{ scope.row.file }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Aksi">
