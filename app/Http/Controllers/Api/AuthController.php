@@ -123,6 +123,7 @@ class AuthController extends BaseController
             'email' => $validated['email'],
             'oss_username' => $validated['username'],
             'password' => Hash::make($validated['password']),
+            'active' => 1,
         ]);
         $user->syncRoles($initiatorRole);
         $initiator = Initiator::create([
@@ -136,11 +137,13 @@ class AuthController extends BaseController
         ]);
         if ($user && $initiator) {
             DB::commit();
-            $this->setUserAsActive($user->id);
+            $user2 = $this->setUserAsActive($user->id);
             return response()->json([
                 'status' => 200,
                 'code' => 200,
                 'data' => $user,
+                'active' => $user->active, // via insert
+                'active_2' => $user2->active, // via update
             ], 200);
         } else {
             DB::rollBack();
@@ -159,6 +162,7 @@ class AuthController extends BaseController
             $user->active = 1;
             $user->save();
         }
+        return $user;
     }
 
     private function getValidateToken($accessToken)
