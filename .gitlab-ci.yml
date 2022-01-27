@@ -31,8 +31,7 @@ deploy_dev:
     - docker-compose exec -T laravel composer dump-autoload
     - docker-compose exec -T laravel php artisan migrate
     - docker-compose exec -T laravel php artisan cache:clear
-    - docker-compose exec -T laravel php artisan config:clear
-    - docker-compose exec -T laravel php artisan route:clear
+    - docker-compose exec -T laravel php artisan optimize
     - docker-compose exec -T laravel npm install
     - docker-compose exec -T laravel npm run production
     # - docker-compose restart laravel
@@ -74,8 +73,7 @@ deploy_api-dev_menlhk:
     - composer dump-autoload
     - php artisan migrate
     - php artisan cache:clear
-    - php artisan config:clear
-    - php artisan route:clear
+    - php artisan optimize
     - npm install
     - npm run production
   only:
@@ -93,8 +91,7 @@ deploy_app-dev_menlhk:
     - composer dump-autoload
     - php artisan migrate
     - php artisan cache:clear
-    - php artisan config:clear
-    - php artisan route:clear
+    - php artisan optimize
     - npm install
     - npm run production
     #- echo "update app server"
@@ -115,8 +112,7 @@ deploy_api_menlhk:
     - composer dump-autoload
     - php artisan migrate
     - php artisan cache:clear
-    - php artisan config:clear
-    - php artisan route:clear
+    - php artisan optimize
     - npm install
     - npm run production
   only:
@@ -151,8 +147,7 @@ deploy_app_menlhk:
     - composer dump-autoload
     - php artisan migrate
     - php artisan cache:clear
-    - php artisan config:clear
-    - php artisan route:clear
+    - php artisan optimize
     - npm install
     - npm run production
     #- echo "update app server"
