@@ -60,8 +60,8 @@
           </el-col>
         </el-row>
         <el-row
-          v-for="(material, index) in allData"
-          :key="material.id"
+          v-for="(approval, index) in allData"
+          :key="approval.id"
           :gutter="20"
           style="display: flex; align-items: center"
           class="bb bg-custom tb-hover"
@@ -70,14 +70,14 @@
             <span class="fz12 white fw">{{ index + 1 }}</span>
           </el-col>
           <el-col :span="8" class="py">
-            <span class="fz12 white">{{ material.name }}</span>
+            <span class="fz12 white">{{ approval.template_type }}</span>
           </el-col>
           <el-col :span="11" class="py">
-            <span class="fz12 white">{{ material.description }}</span>
+            <span class="fz12 white">{{ approval.description }}</span>
           </el-col>
           <el-col :span="3" class="py text-center">
             <a
-              :href="material.link"
+              :href="approval.file"
               target="_blank"
               class="fz12 white cl-blue buttonDownload"
               download
@@ -143,14 +143,12 @@ export default {
       ],
       search: '',
       allData: [],
-      regulations: [],
       total: 0,
       listQuery: {
         page: 1,
         limit: 10,
       },
       keyword: '',
-      optionValue: null,
       sort: 'ASC',
       limit: 10,
     };
@@ -185,7 +183,7 @@ export default {
     getAll(search, sort, limit) {
       axios
         .get(
-          `/api/materials?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
+          `/api/environmental-approval?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -198,7 +196,7 @@ export default {
     handleFilter() {
       axios
         .get(
-          `/api/policys?type=${this.optionValue}&page=${this.listQuery.page}`
+          `/api/environmental-approval?page=${this.listQuery.page}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
