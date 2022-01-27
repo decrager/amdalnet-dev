@@ -21,7 +21,7 @@
             </a>
             <ul v-if="isActive" class="left-4 top-1-8">
               <li>
-                <a href="">Template Persetujuan Perlingkupan</a>
+                <a href="#" @click="handleSetMenu('TEMPLATE')">Template Persetujuan Perlingkupan</a>
               </li>
               <li>
                 <a href="">Formulir KA Amdal Standar Spesifik</a>
@@ -137,7 +137,7 @@ export default {
       if (e === 'STATIC'){
         this.isActiveDaftar = !this.isActiveDaftar;
       }
-      if (e === 'IZIN'){
+      if (e === 'IZIN' || e === 'TEMPLATE'){
         this.isActiveDaftar = false;
         this.isActive = false;
       }

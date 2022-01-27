@@ -31,6 +31,8 @@ use App\Http\Controllers\PeraturanController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalPermitController;
+use App\Http\Controllers\EnvironmentalApprovalController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -345,6 +347,11 @@ Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index
 Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);
 Route::post('environmental-permit/update', [EnvironmentalPermitController::class, 'update']);
 Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);
+
+Route::get('environmental-approval', [EnvironmentalApprovalController::class, 'index']);
+Route::post('environmental-approval', [EnvironmentalApprovalController::class, 'store']);
+Route::post('environmental-approval/update', [EnvironmentalApprovalController::class, 'update']);
+Route::get('environmental-approval/delete/{id}', [EnvironmentalApprovalController::class, 'destroy']);
 
 // Route::put('activateUser/{user}', 'UserController@updateActive');
 Route::put('activateUser/{user}', function (User $user) {
