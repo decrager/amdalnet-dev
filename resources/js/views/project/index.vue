@@ -263,7 +263,7 @@
             <span>{{ ((listQuery.page-1) * listQuery.limit) + (scope.$index + 1) }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="No. Registrasi" width="150">
+        <el-table-column prop="registration_no" align="left" label="No. Registrasi" width="150" sortable="custom">
           <template slot-scope="scope">
             <span>{{ scope.row.registration_no ? scope.row.registration_no.toUpperCase() : '' }}</span>
           <!-- <span>{{
@@ -272,7 +272,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="date"
+          prop="created_at"
           align="center"
           label="Tanggal"
           sortable="custom"
@@ -286,7 +286,13 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="Nama Kegiatan" min-width="200">
+        <el-table-column
+          prop="project_title"
+          align="left"
+          label="Nama Kegiatan"
+          sortable="custom"
+          min-width="200"
+        >
           <template slot-scope="scope">
             <span>{{ scope.row.project_title }}</span>
           </template>
@@ -798,14 +804,16 @@ export default {
     },
     // sorting, filtering
     onTableSort(sort) {
-      switch (sort.prop) {
+      /* switch (sort.prop) {
         case 'date':
           this.listQuery.orderBy = 'created_at';
           console.log(this.listQuery);
-
           break;
+        case 'title':
+          this.listQuery.orderBy = 'project_title';
         default:
-      }
+      }*/
+      this.listQuery.orderBy = sort.prop;
       this.listQuery.order = (sort.order === 'ascending') ? 'ASC' : 'DESC';
       this.handleFilter();
     },

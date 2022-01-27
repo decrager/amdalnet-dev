@@ -25,9 +25,9 @@ class DashboardController extends Controller
 
         if($request->formulatorId){
             $proposals = $q
-            ->join('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
+            ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
             ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
-            ->join('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
+            ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
             ->where('formulators.id', $request->formulatorId)->groupBy('projects.required_doc')->get();
             return response($proposals);
         }
