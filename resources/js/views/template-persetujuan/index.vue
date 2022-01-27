@@ -77,7 +77,7 @@ export default {
       });
     },
     handleDelete({ rows }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
+      this.$confirm('apakah anda yakin akan menghapus ' + rows.template_type + '. ?', 'Peringatan', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
         type: 'warning',

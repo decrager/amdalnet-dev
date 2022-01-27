@@ -218,20 +218,6 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Tambah Persetujuan Lingkungan', icon: 'documentation', noCache: true },
     },
-    // {
-    //   path: 'create-params',
-    //   component: () => import('@/views/params/Create'),
-    //   name: 'addParams',
-    //   hidden: true,
-    //   meta: { title: 'Tambah Parameter Aplikasi', icon: 'documentation', noCache: true },
-    // },
-    // {
-    //   path: 'update-params',
-    //   component: () => import('@/views/params/Create'),
-    //   name: 'updateParams',
-    //   hidden: true,
-    //   meta: { title: 'Tambah Parameter Aplikasi', icon: 'documentation', noCache: true },
-    // },
   ],
 };
 
