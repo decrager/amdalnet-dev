@@ -43,14 +43,14 @@ class UserRegistered extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = url("/login");
+        $url = url("/#/activate/".$this->user->id);
         return (new MailMessage)
                         ->subject('Pendaftaran Akun AMDALNET')
                         ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
-                        ->line('Hai'.$this->user->name)
+                        ->line('Hai '.$this->user->name)
                         ->line('')
                         ->line('Akun AMDALNET anda telah berhasil dibuat silahkan aktivasi akun dengan menekan tombol dibawah ini.')
-                        ->action('aktivasi Akun Anda', $url);
+                        ->action('Aktivasi Akun Anda', $url);
     }
 
     /**

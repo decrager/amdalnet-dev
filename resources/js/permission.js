@@ -17,6 +17,7 @@ const whiteList = [
   '/webgis',
   '/announce',
   '/doc-uklupl',
+  '/activate/:id',
 ]; // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
