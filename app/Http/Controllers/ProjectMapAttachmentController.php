@@ -202,15 +202,18 @@ class ProjectMapAttachmentController extends Controller
                         'id', project_map_attachments.id,
                         'geometry', ST_AsGeoJSON(GEOM)::json,
                         'properties', json_build_object(
-                            'id', id_project,
+                            'id', project_map_attachments.id_project,
                             'type', attachment_type,
                             'field', properties,
-                            'styles', map_styles.renderer
+                            'styles', map_styles.renderer,
+                            'sector', sub_projects.sector_name
                         )
                     )
                 )
             ) as feature_layer"))
             ->join('map_styles', 'project_map_attachments.id_styles', '=', 'map_styles.id')
+            ->leftJoin('projects', 'projects.id', '=', 'project_map_attachments.id_project')
+            ->leftJoin('sub_projects', 'sub_projects.id_project', '=', 'projects.id')
             ->when($request->has('type'), function ($query) use ($request) {
                 return $query->where('attachment_type', '=', $request->type);
             })

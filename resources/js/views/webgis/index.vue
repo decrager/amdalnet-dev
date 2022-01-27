@@ -423,6 +423,7 @@ export default {
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
             const propStyles = getType.features[0].properties.styles;
+            // const propSector = getType.features[0].properties.sector;
             const geomFields = getType.features[0];
 
             // Pemantauan
@@ -566,7 +567,7 @@ export default {
                 field: '*',
                 symbol: {
                   type: 'simple-marker',
-                  size: 10,
+                  size: 4,
                   color: '#69dcff',
                   outline: {
                     color: 'rgba(0, 139, 174, 0.5)',
@@ -588,26 +589,13 @@ export default {
                 },
               ];
 
-              const tapakPoint = new FeatureLayer({
-                source: features,
-                renderer: markerSymbol,
-                maxScale: 500000,
-                visible: true,
-                popupTemplate: popupTemplate(propFields),
-                objectIdField: 'ObjectID',
-                fields: [
+              const clusterConfig = {
+                type: 'cluster',
+                clusterRadius: '100px',
+                clusterMinSize: '24px',
+                clusterMaxSize: '60px',
+                labelingInfo: [
                   {
-                    name: 'ObjectID',
-                    alias: 'ObjectID',
-                    type: 'oid',
-                  },
-                ],
-                featureReduction: {
-                  type: 'cluster',
-                  clusterRadius: 100,
-                  clusterMinSize: 20,
-                  clusterMaxSize: 64,
-                  labelingInfo: [{
                     deconflictionStrategy: 'none',
                     labelExpressionInfo: {
                       expression: "Text($feature.cluster_count, '#,###')",
@@ -622,8 +610,25 @@ export default {
                       },
                     },
                     labelPlacement: 'center-center',
-                  }],
-                },
+                  },
+                ],
+              };
+
+              const tapakPoint = new FeatureLayer({
+                source: features,
+                renderer: markerSymbol,
+                maxScale: 500000,
+                visible: true,
+                popupTemplate: popupTemplate(propFields),
+                objectIdField: 'ObjectID',
+                fields: [
+                  {
+                    name: 'ObjectID',
+                    alias: 'ObjectID',
+                    type: 'oid',
+                  },
+                ],
+                featureReduction: clusterConfig,
               });
 
               map.add(tapakPoint);
