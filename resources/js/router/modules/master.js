@@ -205,6 +205,19 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Ubah Izin', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'template-persetujuan',
+      component: () => import('@/views/template-persetujuan/index'),
+      name: 'DaftarPersetujuan',
+      meta: { title: 'Persetujuan Lingkungan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'template-persetujuan/create',
+      component: () => import('@/views/template-persetujuan/Create'),
+      name: 'AddDaftarPersetujuan',
+      hidden: true,
+      meta: { title: 'Tambah Persetujuan Lingkungan', icon: 'documentation', noCache: true },
+    },
     // {
     //   path: 'create-params',
     //   component: () => import('@/views/params/Create'),
