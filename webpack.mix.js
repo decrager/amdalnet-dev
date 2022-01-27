@@ -42,13 +42,13 @@ mix
     'vue-router',
     'vue-i18n',
     'element-ui',
-    'echarts',
+    // 'echarts',
     'highlight.js',
     'sortablejs',
     'dropzone',
     'xlsx',
-    'tui-editor',
-    'codemirror',
+    // 'tui-editor',
+    // 'codemirror',
   ])
   .options({
     processCssUrls: false,

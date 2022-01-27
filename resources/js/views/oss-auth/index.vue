@@ -98,6 +98,8 @@ export default {
               address: this.userInfo.alamat,
               nib: this.userInfo.data_nib[0],
             },
+            to: this.to,
+            token: this.token,
           },
         });
       }

@@ -122,7 +122,8 @@ class AuthController extends BaseController
             'name' => ucfirst($validated['name']),
             'email' => $validated['email'],
             'oss_username' => $validated['username'],
-            'password' => Hash::make($validated['password'])
+            'password' => Hash::make($validated['password']),
+            'active' => 1,
         ]);
         $user->syncRoles($initiatorRole);
         $initiator = Initiator::create([
@@ -136,10 +137,13 @@ class AuthController extends BaseController
         ]);
         if ($user && $initiator) {
             DB::commit();
+            $user2 = $this->setUserAsActive($user->id);
             return response()->json([
                 'status' => 200,
                 'code' => 200,
                 'data' => $user,
+                'active' => $user->active, // via insert
+                'active_2' => $user2->active, // via update
             ], 200);
         } else {
             DB::rollBack();
@@ -149,6 +153,16 @@ class AuthController extends BaseController
                 'message' => 'Failed to create User',
             ], 500);
         }
+    }
+
+    private function setUserAsActive($id)
+    {
+        $user = User::find($id);
+        if ($user) {
+            $user->active = 1;
+            $user->save();
+        }
+        return $user;
     }
 
     private function getValidateToken($accessToken)

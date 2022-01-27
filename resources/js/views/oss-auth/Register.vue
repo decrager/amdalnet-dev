@@ -72,6 +72,14 @@ export default {
       type: Object,
       default: () => {},
     },
+    to: {
+      type: String,
+      default: () => '/',
+    },
+    token: {
+      type: String,
+      default: () => '',
+    },
   },
   data() {
     const validatePass = (rule, value, callback) => {
@@ -118,18 +126,23 @@ export default {
                     duration: 5 * 1000,
                   });
                   // login & go to user profile
-                  this.$store.dispatch('user/login', {
-                    email: this.regForm.email,
-                    password: this.regForm.password,
-                  })
-                    .then(() => {
-                      this.loading = false;
-                      this.$router.push({ path: '/profile/edit' }, onAbort => {});
-                    })
-                    .catch(() => {
-                      this.loading = false;
-                      this.$router.push({ path: '/profile/edit' });
-                    });
+                  // this.$store.dispatch('user/login', {
+                  //   email: this.regForm.email,
+                  //   password: this.regForm.password,
+                  // })
+                  //   .then(() => {
+                  //     this.loading = false;
+                  //     this.$router.push({ path: '/profile/edit' }, onAbort => {});
+                  //   })
+                  //   .catch(() => {
+                  //     this.loading = false;
+                  //     const toPath = '/oss-auth?to=' + this.to + '&token=' + this.token;
+                  //     this.$router.push({ path: toPath });
+                  //   });
+                  this.loading = false;
+                  const toPath = '/oss-auth?to=' + this.to + '&token=' + this.token;
+                  // const toPath = '/oss-auth?to=/profile/edit&token=' + this.token;
+                  this.$router.push({ path: toPath });
                 }
               });
           });

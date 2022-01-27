@@ -67,7 +67,7 @@ return [
             'type' => 'multiple_state',
             'property' => 'marking',
         ],
-        'supports' => ['App\Entity\Project'],
+        'supports' => ['App\Entity\ProjectX'],
         'events_to_dispatch' => [
             'workflow.enter',
             'workflow.leave',

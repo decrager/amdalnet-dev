@@ -207,8 +207,14 @@ export default {
       });
     },
     handleDelete({ id, num }) {
+      const idx = this.members.findIndex((x) => x.num === num);
+      const member = this.members[idx];
       if (id) {
-        this.deletedTuk.push(id);
+        this.deletedTuk.push({
+          id,
+          email: member.email,
+          role: member.role,
+        });
       }
       const oldData = [...this.members];
       this.members = oldData.filter((old) => old.num !== num);

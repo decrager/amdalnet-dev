@@ -77,15 +77,22 @@
             <h3>PETA RTRW PROPINSI</h3>
           </div>
           <div style="display: flex; flex-direction: column;">
-            <el-checkbox
-              v-for="item in layerRtrw"
-              :id="item.id"
-              :key="item.id"
-              v-model="radioRTRW"
-              :label="item.id"
-              style="margin-top: 10px; overflow-x: auto;"
-              @change="getLayerRtrw($event)"
-            >{{ item.title }}</el-checkbox>
+            <div style="margin-top: 10px;">
+              <el-select
+                v-model="province"
+                placeholder="Pilih"
+                style="width: 100%"
+                filterable
+                @change="getLayerRtrw($event)"
+              >
+                <el-option
+                  v-for="item in provinces"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+            </div>
           </div>
           <div style="margin-top: 15px">
             <h3>PETA TEMATIK STATUS</h3>
@@ -157,7 +164,6 @@ import centroid from '@turf/centroid';
 // Script
 import axios from 'axios';
 import rupabumis from './scripts/mapRupabumi';
-import rtrwProvMap from './scripts/mapRtrw';
 import { generateFeatureCollection, layerIn } from './scripts/uploadShapefile';
 import widgetMap from './scripts/widgetMap';
 import popupTemplate from './scripts/popupTemplate';
@@ -202,6 +208,8 @@ export default {
       isToggled: false,
       mapRtrwGroup: [],
       mappedProject: [],
+      provinces: [],
+      province: '',
     };
   },
   computed: {
@@ -216,6 +224,9 @@ export default {
     this.loadMap();
     this.getProjectData();
     this.getMappedProject();
+    axios.get('api/provinces').then((result) => {
+      this.provinces = result.data.data;
+    });
   },
   methods: {
     getMappedProject() {
@@ -225,22 +236,39 @@ export default {
         });
     },
     getLayerRtrw(e) {
-      const checked = document.getElementById(e);
+      axios.get(`api/arcgis-services?id_province=${e}`)
+        .then((response) => {
+          this.layerRtrw = response.data.data;
+          if (this.layerRtrw.length > 0) {
+            this.layerRtrw.forEach((item) => {
+              if (item.is_proxy === true) {
+                urlUtils.addProxyRule({
+                  proxyUrl: 'proxy/proxy.php',
+                  urlPrefix: 'https://gistaru.atrbpn.go.id/',
+                });
+              }
 
-      if (checked) {
-        this.layerRtrw.forEach(item => {
-          if (item.id === e) {
-            const sub = item.sublayers.items;
-            for (let i = 0; i < sub.length; i++) {
-              const element = sub[i];
-              element.visible = true;
-              this.mapRtrwGroup.push(element);
-            }
-            this.mapInit.addMany(this.mapRtrwGroup);
-            console.log(this.mapRtrwGroup);
+              const rtrwLayer = new MapImageLayer({
+                url: item.url_service,
+                imageTransparency: true,
+                visible: true,
+              });
+
+              if (rtrwLayer.loaded === true) {
+                this.mapInit.leyers.remove(rtrwLayer);
+              }
+
+              this.mapInit.add(rtrwLayer);
+            });
+          } else {
+            return this.$notify({
+              type: 'warning',
+              title: 'Perhatian!',
+              message: 'Peta RTRW tidak / belum tersedia!',
+              duration: 5000,
+            });
           }
         });
-      }
     },
     removeShapefile() {
       this.tempLayer.forEach(item => {
@@ -395,6 +423,7 @@ export default {
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
             const propStyles = getType.features[0].properties.styles;
+            // const propSector = getType.features[0].properties.sector;
             const geomFields = getType.features[0];
 
             // Pemantauan
@@ -538,7 +567,7 @@ export default {
                 field: '*',
                 symbol: {
                   type: 'simple-marker',
-                  size: 6,
+                  size: 4,
                   color: '#69dcff',
                   outline: {
                     color: 'rgba(0, 139, 174, 0.5)',
@@ -560,26 +589,13 @@ export default {
                 },
               ];
 
-              const tapakPoint = new FeatureLayer({
-                source: features,
-                renderer: markerSymbol,
-                // maxScale: 500000,
-                visible: true,
-                popupTemplate: popupTemplate(propFields),
-                objectIdField: 'ObjectID',
-                fields: [
+              const clusterConfig = {
+                type: 'cluster',
+                clusterRadius: '100px',
+                clusterMinSize: '24px',
+                clusterMaxSize: '60px',
+                labelingInfo: [
                   {
-                    name: 'ObjectID',
-                    alias: 'ObjectID',
-                    type: 'oid',
-                  },
-                ],
-                featureReduction: {
-                  type: 'cluster',
-                  clusterRadius: 100,
-                  clusterMinSize: 20,
-                  clusterMaxSize: 64,
-                  labelingInfo: [{
                     deconflictionStrategy: 'none',
                     labelExpressionInfo: {
                       expression: "Text($feature.cluster_count, '#,###')",
@@ -594,11 +610,26 @@ export default {
                       },
                     },
                     labelPlacement: 'center-center',
-                  }],
-                },
-              });
+                  },
+                ],
+              };
 
-              console.log(tapakPoint);
+              const tapakPoint = new FeatureLayer({
+                source: features,
+                renderer: markerSymbol,
+                maxScale: 500000,
+                visible: true,
+                popupTemplate: popupTemplate(propFields),
+                objectIdField: 'ObjectID',
+                fields: [
+                  {
+                    name: 'ObjectID',
+                    alias: 'ObjectID',
+                    type: 'oid',
+                  },
+                ],
+                featureReduction: clusterConfig,
+              });
 
               map.add(tapakPoint);
 
@@ -630,10 +661,6 @@ export default {
       });
 
       map.add(rupabumis);
-
-      for (let i = 0; i < rtrwProvMap.length; i++) {
-        this.layerRtrw.push(rtrwProvMap[i]);
-      }
 
       const penutupanLahan2020 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
