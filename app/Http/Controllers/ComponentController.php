@@ -28,7 +28,9 @@ class ComponentController extends Controller
         } else {
             return Component::select('components.*', 'project_stages.name as project_stage')->where(function ($query) use ($request) {
                 return $request->idProjectStage ? $query->where('id_project_stage', $request->idProjectStage) : '';
-            })->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')->orderBy('components.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
+            })->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')
+            ->orderBy(($request->orderBy ? 'components.'.$request->orderBy : 'components.id'), ($request->orderBy ? $request->order : 'DESC'))
+            ->paginate($request->limit ? $request->limit : 10);
         }
     }
 

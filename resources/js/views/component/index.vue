@@ -14,6 +14,11 @@
       <component-table
         :loading="loading"
         :list="list"
+        :page="listQuery.page"
+        :limit="listQuery.limit"
+        :options="componentOptions"
+        @sort="onTableSort"
+        @projectStageFilter="onProjectStageFilter"
         @handleEditForm="handleEditForm($event)"
         @handleDelete="handleDelete($event)"
       />
@@ -161,6 +166,17 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    onProjectStageFilter(val){
+      // console.log('projectStageFilter: ', val);
+      // this.listQuery.filter = val; idProjectStage
+      this.listQuery.idProjectStage = val;
+      this.handleFilter();
+    },
+    onTableSort(sort) {
+      this.listQuery.order = sort.order;
+      this.listQuery.orderBy = sort.prop;
+      this.handleFilter();
     },
   },
 };
