@@ -92,6 +92,11 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/activate/:id',
+    component: () => import('@/views/activate/index'),
+    hidden: true,
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,

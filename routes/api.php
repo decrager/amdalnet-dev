@@ -346,6 +346,22 @@ Route::post('environmental-permit', [EnvironmentalPermitController::class, 'stor
 Route::post('environmental-permit/update', [EnvironmentalPermitController::class, 'update']);
 Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);
 
+// Route::put('activateUser/{user}', 'UserController@updateActive');
+Route::put('activateUser/{user}', function (User $user) {
+    if ($user === null) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+
+    if ($user->active == 1){
+        return response()->json(['error' => 'User not active not found'], 404);
+    }
+
+    $user->active = 1;
+    $user->save();
+    
+    return response(['message' => 'done']);
+});
+
 
 Route::get('/testemail', function () {
 
