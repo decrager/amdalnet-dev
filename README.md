@@ -117,7 +117,7 @@ docker-compose exec laravel bash
 # Php installation
 ```
 sudo apt-get install -y graphviz libmcrypt-dev libjpeg-dev libpng-dev libfreetype6-dev libbz2-dev libonig-dev libzip-dev libpq-dev
-sudo apt-get install php-mbstring php-xml php-pgsql php-gd php-zip 
+sudo apt-get install php-mbstring php-xml php-pgsql php-gd php-zip php-curl
 ```
 
 ```
@@ -129,6 +129,5 @@ sudo php /var/www/amdal/artisan octane:start --server=swoole --port=8000
 PGPASSWORD=SemangatT3rus pg_dump -h localhost -U amdaldevs -d amdalnet -c > ~/amdalnet.sql
 PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet -U postgres -f ~/amdalnet.sql
 ```
-
 
 <iframe name="embed_readwrite" src="http://192.168.7.23:9001/p/6?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>
