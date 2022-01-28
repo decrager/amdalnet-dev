@@ -9,7 +9,7 @@
                 <el-row>
                   <el-form-item label="Jenis Template">
                     <el-input
-                      v-model="form.template_type"
+                      v-model="currentParam.template_type"
                       type="text"
                       placeholder="Jenis Template"
                     />
@@ -20,7 +20,7 @@
                 <el-row>
                   <el-form-item label="Deskripsi">
                     <el-input
-                      v-model="form.description"
+                      v-model="currentParam.description"
                       type="textarea"
                       placeholder="Deskripsi"
                     />
@@ -39,6 +39,18 @@
                   </el-form-item>
                 </el-row>
               </el-form>
+              <el-form>
+                <el-row>
+                  <el-input
+                    v-model="currentParam.id"
+                    type="hidden"
+                  />
+                  <el-input
+                    v-model="currentParam.file"
+                    type="hidden"
+                  />
+                </el-row>
+              </el-form>
               <div class="" style="margin-top: 0.5rem; text-align: right">
                 <el-button type="danger" @click="handleCancel">Kembali</el-button>
                 <el-button
@@ -46,7 +58,7 @@
                   icon="el-icon-s-claim"
                   @click="saveApprovalLingkungan()"
                 >
-                  Simpan
+                  Edit
                 </el-button>
               </div>
             </div>
@@ -65,27 +77,30 @@ export default {
   props: {},
   data() {
     return {
-      form: {
-        template_type: '',
-        description: '',
-      },
+      currentParam: {},
       file: '',
     };
   },
-  mounted() {},
+  created() {
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+    }
+  },
   methods: {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
     async saveApprovalLingkungan() {
       const formData = new FormData();
+      formData.append('id', this.currentParam.id);
       formData.append('file', this.file);
-      formData.append('template_type', this.form.template_type);
-      formData.append('description', this.form.description);
+      formData.append('old_file', this.currentParam.file);
+      formData.append('template_type', this.currentParam.template_type);
+      formData.append('description', this.currentParam.description);
 
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/environmental-approval', formData, { headers })
+        .post('api/environmental-approval/update', formData, { headers })
         .then(() => {
           this.$message({
             message: 'Ijin Berhasil Disimpan',

@@ -63,7 +63,7 @@ export default {
     handleEditForm(row) {
       const currentParam = row;
       this.$router.push({
-        name: 'EditIzin',
+        name: 'EditDaftarPersetujuan',
         params: { row, appParams: currentParam },
       });
     },

@@ -161,7 +161,7 @@ export default {
       const formData = new FormData();
       formData.append('id', this.currentParam.id);
       formData.append('file', this.file);
-      formData.append('old_file', this.file);
+      formData.append('old_file', this.currentParam.file);
       formData.append('pemarkasa_name', this.currentParam.pemarkasa_name);
       formData.append('authority', this.currentParam.authority);
       formData.append('kegiatan_name', this.currentParam.kegiatan_name);
