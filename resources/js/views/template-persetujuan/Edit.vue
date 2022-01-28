@@ -58,7 +58,7 @@
                   icon="el-icon-s-claim"
                   @click="saveApprovalLingkungan()"
                 >
-                  Simpan
+                  Edit
                 </el-button>
               </div>
             </div>
