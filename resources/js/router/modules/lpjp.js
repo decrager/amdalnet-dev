@@ -25,6 +25,17 @@ const announcementRoutes = {
         noCache: true,
       },
     },
+    {
+      path: ':id(\\d+)/anggota-penyusun',
+      component: () => import('@/views/lpjp/Member'),
+      name: 'lpjpFormulatorMember',
+      hidden: true,
+      meta: {
+        title: 'Daftar Penyusun LPJP',
+        icon: 'documentation',
+        noCache: true,
+      },
+    },
   ],
 };
 
