@@ -30,6 +30,9 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PeraturanController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EnvironmentalPermitController;
+use App\Http\Controllers\EnvironmentalApprovalController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +50,14 @@ Route::apiResource('webgis', 'WebgisController');
 
 Route::namespace('Api')->group(function () {
     Route::post('auth/login', 'AuthController@login');
+    // check user by email
+    Route::get('auth/is-email-registered', 'AuthController@isEmailRegistered');
+    // OSS routes
+    Route::post('auth/validate-token', 'AuthController@validateToken');
+    Route::get('auth/userinfo-oss', 'AuthController@getUserInfo');
+    Route::post('auth/login-oss', 'AuthController@loginOss');
+    Route::post('auth/register-oss', 'AuthController@registerOss');
+
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
         Route::get('auth/user', 'AuthController@user');
@@ -290,7 +301,7 @@ Route::post('arcgis-service', [ArcgisServiceController::class, 'createArcgisServ
 Route::post('arcgis-service-category', [ArcgisServiceController::class, 'createArcgisServiceCategory']);
 Route::patch('arcgis-service/{id}', [ArcgisServiceController::class, 'updateArcgisService']);
 Route::delete('arcgis-service/{id}', [ArcgisServiceController::class, 'deleteAcrgisService']);
-Route::delete('arcgis-service/{id}', [ArcgisServiceController::class, 'deleteAcrgisServiceCategory']);
+Route::delete('arcgis-service-category/{id}', [ArcgisServiceController::class, 'deleteAcrgisServiceCategory']);
 
 Route::get('besaran-dampak/list/{id}', [BesaranDampakController::class, 'getList']);
 Route::get('matriks-ukl-upl/table-ukl/{id}', [MatriksUklUplController::class, 'getTableUkl']);
@@ -331,3 +342,48 @@ Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
 // dashboard
 Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
 Route::get('latest-activities', [DashboardController::class, 'latestActivities']);
+
+Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);
+Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);
+Route::post('environmental-permit/update', [EnvironmentalPermitController::class, 'update']);
+Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);
+
+Route::get('environmental-approval', [EnvironmentalApprovalController::class, 'index']);
+Route::post('environmental-approval', [EnvironmentalApprovalController::class, 'store']);
+Route::post('environmental-approval/update', [EnvironmentalApprovalController::class, 'update']);
+Route::get('environmental-approval/delete/{id}', [EnvironmentalApprovalController::class, 'destroy']);
+
+// Route::put('activateUser/{user}', 'UserController@updateActive');
+Route::put('activateUser/{user}', function (User $user) {
+    if ($user === null) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+
+    if ($user->active == 1){
+        return response()->json(['error' => 'User not active not found'], 404);
+    }
+
+    $user->active = 1;
+    $user->save();
+    
+    return response(['message' => 'done']);
+});
+
+
+// Route::get('/testemail', function () {
+
+//     $data = User::find(236);
+  
+//         $billData = [
+//             'name' => '#007 Bill',
+//             'body' => 'You have received a new bill.',
+//             'thanks' => 'Thank you',
+//             'text' => '$600',
+//             'offer' => url('/'),
+//             'bill_id' => 30061
+//         ];
+  
+//         Notification::send($data, new BillingNotification($billData));
+   
+//         dd('Bill notification has been sent!');
+// });

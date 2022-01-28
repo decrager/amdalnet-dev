@@ -204,6 +204,33 @@ class UserController extends BaseController
         }
     }
 
+    public function updateActive(Request $request, User $user)
+    {
+        if ($user === null) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        if ($user->active == 1){
+            return response()->json(['error' => 'User not active not found'], 404);
+        }
+
+        if ($user->isAdmin()) {
+            return response()->json(['error' => 'Admin can not be modified'], 403);
+        }
+
+        $currentUser = Auth::user();
+        if (!$currentUser->isAdmin()
+            && $currentUser->id !== $user->id
+            && !$currentUser->hasPermission(\App\Laravue\Acl::PERMISSION_MANAGE_USER)
+        ) {
+            return response()->json(['error' => 'Permission denied'], 403);
+        }
+
+        $user->active = 1;
+        $user->save();
+        return new UserResource($user);
+    }
+
     /**
      * Update the specified resource in storage.
      *

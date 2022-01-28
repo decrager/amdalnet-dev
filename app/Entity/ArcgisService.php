@@ -13,7 +13,7 @@ class ArcgisService extends Model
     protected $table = 'arcgis_service';
 
     protected $fillable = [
-        'id_category', 'name', 'url_service', 'source', 'organization', 'active', 'is_proxy'
+        'id_category', 'name', 'url_service', 'source', 'organization', 'active', 'is_proxy', 'id_province'
     ];
 
     public function category()

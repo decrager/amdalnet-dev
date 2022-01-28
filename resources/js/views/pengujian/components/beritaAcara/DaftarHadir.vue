@@ -59,10 +59,11 @@
       <el-button icon="el-icon-plus" circle @click.prevent="addTableRow" />
     </div>
     <div style="margin-top: 13px">
-      <h5>Ringkasan Rekomendasi Kelayakan dari Ahli</h5>
+      <h5>Ringkasan Masukan dan Komentar</h5>
       <Tinymce v-model="reports.notes" :height="200" />
     </div>
     <el-upload
+      v-if="!reports.file"
       :auto-upload="false"
       :on-change="handleUploadChange"
       :show-file-list="false"
@@ -77,6 +78,17 @@
         Unggah BA Final
       </el-button>
     </el-upload>
+    <div v-else style="text-align: right;">
+      <el-button
+        type="text"
+        size="medium"
+        icon="el-icon-download"
+        style="color: blue"
+        @click.prevent="download(reports.file)"
+      >
+        {{ baFileName }}
+      </el-button>
+    </div>
     <small
       v-if="errors.dokumen_file"
       style="color: #f56c6c; display: block; text-align: right; margin-top: 5px"
@@ -125,6 +137,12 @@ export default {
       loadingUpload: false,
     };
   },
+  computed: {
+    baFileName() {
+      const arrName = this.reports.file.split('/');
+      return arrName[arrName.length - 1];
+    },
+  },
   methods: {
     addTableRow() {
       this.invitations.push({
@@ -144,16 +162,20 @@ export default {
       formData.append('idProject', this.$route.params.id);
       formData.append('dokumen_file', file.raw);
       formData.append('file', 'true');
-      const isError = await meetingReportResource.store(formData);
-      this.errors = isError.errors === null ? {} : isError.errors;
+      const data = await meetingReportResource.store(formData);
+      this.errors = data.errors === null ? {} : data.errors;
       this.loadingUpload = false;
-      if (isError.errors === null) {
+      if (data.errors === null) {
+        this.$emit('updateuploadfile', { name: data.name });
         this.$message({
           message: 'BA Final sukses diupload',
           type: 'success',
           duration: 5 * 1000,
         });
       }
+    },
+    download(url) {
+      window.open(url, '_blank').focus();
     },
   },
 };

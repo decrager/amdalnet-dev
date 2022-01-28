@@ -126,7 +126,6 @@ import esriRequest from '@arcgis/core/request';
 import urlBlob from '../../webgis/scripts/urlBlob';
 import popupTemplate from '../../webgis/scripts/popupTemplate';
 import popupTemplateBatas from '../../webgis/scripts/popupTemplateBatas';
-import validationBatas from '../../webgis/scripts/validationBatas';
 import Expand from '@arcgis/core/widgets/Expand';
 const uploadMaps = new Resource('project-map');
 // const unggahMaps = new Resource('upload-map');
@@ -184,8 +183,8 @@ export default {
     });
 
     var data = qs.stringify({
-      'username': 'haris3',
-      'password': 'amdal123',
+      'username': 'Amdalnet',
+      'password': 'Amdal123',
       'client': 'requestip',
       'expiration': 20160,
       'f': 'json',
@@ -220,7 +219,7 @@ export default {
         basemap: 'satellite',
       });
 
-      axios.get(`api/map-geojson?id=${this.idProjectItem}`)
+      axios.get(`api/map-geojson?id=${this.idProject}`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
@@ -542,7 +541,33 @@ export default {
         const base = event.target.result;
 
         shp(base).then((data) => {
-          validationBatas(data);
+          const valid = [
+            'OBJECTID_1',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'PROVINSI',
+            'KETERANGAN',
+            'AREA',
+            'LAYER',
+            'TIPE_DOKUM',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+
+          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+            return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+              confirmButtonText: 'Confirm',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+              },
+            });
+          }
 
           this.geomEcologyGeojson = data.features[0].geometry;
           this.geomEcologyProperties = data.features[0].properties;
@@ -586,7 +611,33 @@ export default {
       readerSosial.onload = (event) => {
         const base = event.target.result;
         shp(base).then((data) => {
-          validationBatas(data);
+          const valid = [
+            'OBJECTID_1',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'PROVINSI',
+            'KETERANGAN',
+            'AREA',
+            'LAYER',
+            'TIPE_DOKUM',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+
+          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+            return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+              confirmButtonText: 'Confirm',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+              },
+            });
+          }
 
           this.geomSocialGeojson = data.features[0].geometry;
           this.geomSocialProperties = data.features[0].properties;
@@ -631,7 +682,33 @@ export default {
       readerWilayahStudi.onload = (event) => {
         const base = event.target.result;
         shp(base).then((data) => {
-          validationBatas(data);
+          const valid = [
+            'OBJECTID_1',
+            'PEMRAKARSA',
+            'KEGIATAN',
+            'TAHUN',
+            'PROVINSI',
+            'KETERANGAN',
+            'AREA',
+            'LAYER',
+            'TIPE_DOKUM',
+          ];
+
+          const uploaded = Object.keys(data.features[0].properties);
+
+          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+            return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
+              confirmButtonText: 'Confirm',
+              callback: action => {
+                this.$notify({
+                  type: 'warning',
+                  title: 'Perhatian!',
+                  message: 'Download Sample Peta Yang Telah Disediakan!!',
+                  duration: 5000,
+                });
+              },
+            });
+          }
 
           this.geomStudyGeojson = data.features[0].geometry;
           this.geomStudyProperties = data.features[0].properties;

@@ -1,6 +1,6 @@
 <template>
   <div class="form-container" style="margin: 24px">
-    <el-card>
+    <el-card v-if="userInfo.roles !== undefined">
       <h3>Daftar Tim Penyusun Kegiatan</h3>
       <el-form
         ref="categoryForm"
@@ -138,6 +138,7 @@
       </div>
       <!-- <project-lpjp-table :selected-member="idLpjp" /> -->
     </el-card>
+    <el-card v-else v-loading="true" />
   </div>
 </template>
 

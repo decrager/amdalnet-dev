@@ -45,6 +45,7 @@ Untuk menyimpan path file di storage ke database, gunakan path relative dari con
 ```
 $name = 'test/123456.pdf';
 $file->storePubliclyAs('public', $name);
+Storage::disk('openstack')->putFile($reques->file('namafieldupload');
 
 ```
 Ini adalah menyimpan dalam path, relatif terhadap container yang digunakan di setting
@@ -66,3 +67,6 @@ Akses ke url file, ke container `public` bisa dilakukan dengan akses sebagai ber
 ```
 echo Storage::url('public/test/61c92bbba477f.txt');
 ```
+
+Application
+Robotcall

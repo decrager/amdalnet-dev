@@ -537,7 +537,8 @@ export default {
               message: 'Berhasil menyimpan file ', //  + this.files[0].name,
               type: 'success',
             });
-            this.$emit('handleReloadVsaList', 'metode-studi');
+            this.$emit('handlePetaBatasUploaded');
+            this.$emit('handleEnableSimpanLanjutkan');
           }
         });
     },

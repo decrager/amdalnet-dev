@@ -4,8 +4,11 @@
     <header-home @handleSetMenu="handleSetMenu" />
     <hero-home v-if="toggleMenu" />
     <steps-home v-if="toggleMenu" />
+
     <materi v-if="toggleMenuMateri" />
     <kebijakan v-if="toggleMenuKebijakan" />
+    <izin v-if="toggleIzin" />
+    <persetujuan v-if="togglePersetujuan" />
     <action-home v-if="toggleMenu" />
     <counter-home v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
@@ -24,7 +27,9 @@ import HeaderHome from './section/Header.vue';
 import HeroHome from './section/HeroTop.vue';
 import StepsHome from './section/Steps.vue';
 import Kebijakan from './section/Kebijakan.vue';
+import Izin from './section/Izin.vue';
 import Materi from './section/Materi.vue';
+import Persetujuan from './section/Persetujuan.vue';
 import ActionHome from './section/Action.vue';
 import CounterHome from './section/Counter.vue';
 import AnnouncementHome from './section/Announce.vue';
@@ -38,8 +43,10 @@ export default {
     'header-home': HeaderHome,
     'hero-home': HeroHome,
     'steps-home': StepsHome,
-    kebijakan: Kebijakan,
-    materi: Materi,
+    'kebijakan': Kebijakan,
+    'materi': Materi,
+    'izin': Izin,
+    'persetujuan': Persetujuan,
     'action-home': ActionHome,
     'counter-home': CounterHome,
     'announcement-home': AnnouncementHome,
@@ -50,31 +57,44 @@ export default {
     return {
       toggleMenuMateri: false,
       toggleMenuKebijakan: false,
+      toggleIzin: false,
       toggleMenu: true,
+      togglePersetujuan: false,
     };
   },
   created() {
     this.$store.dispatch('getKblis', { kblis: true });
   },
-  mounted(){},
+  mounted() {},
   methods: {
     handleSetMenu(e) {
-      this.toggleMenuMateri = false;
-      this.toggleMenuKebijakan = false;
-      this.toggleMenu = true;
-
       if (e === 'MATERI') {
         this.toggleMenuMateri = true;
         this.toggleMenuKebijakan = false;
+        this.toggleIzin = false;
         this.toggleMenu = false;
       }
       if (e === 'KEBIJAKAN') {
         this.toggleMenuKebijakan = true;
         this.toggleMenuMateri = false;
+        this.toggleIzin = false;
         this.toggleMenu = false;
       }
+      if (e === 'IZIN') {
+        this.toggleMenuKebijakan = false;
+        this.toggleMenuMateri = false;
+        this.toggleMenu = false;
+        this.toggleIzin = true;
+      }
+      if (e === 'TEMPLATE') {
+        this.toggleMenuKebijakan = false;
+        this.toggleMenuMateri = false;
+        this.toggleMenu = false;
+        this.toggleIzin = false;
+        this.togglePersetujuan = true;
+      }
     },
-    isFirstVisit(){
+    isFirstVisit() {
       const recurring = Cookies.get('recurring');
 
       if (recurring) {
@@ -82,7 +102,7 @@ export default {
       }
       return true;
     },
-    onCloseDisclaimer(val){
+    onCloseDisclaimer(val) {
       Cookies.set('recurring', true, { expires: 30 * 6, path: '' });
       console.log('closing disclaimer....');
     },

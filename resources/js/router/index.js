@@ -92,9 +92,27 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/activate/:id',
+    component: () => import('@/views/activate/index'),
+    hidden: true,
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,
+  },
+  {
+    path: '/oss-auth',
+    component: () => import('@/views/oss-auth/index'),
+    hidden: true,
+    name: 'OssAuth',
+  },
+  {
+    path: '/oss-auth/register',
+    component: () => import('@/views/oss-auth/Register'),
+    props: true,
+    hidden: true,
+    name: 'OssAuthRegister',
   },
   {
     path: '/auth-redirect',
@@ -212,6 +230,24 @@ export const asyncRoutes = [
         component: () => import('@/views/users/SelfProfile'),
         name: 'SelfProfile',
         meta: { title: 'userProfile', icon: 'user-outline', noCache: true, permissions: ['view menu profile'] },
+      },
+    ],
+  },
+  {
+    path: '/tuk-profile',
+    component: Layout,
+    meta: { title: 'Profil TUK', icon: 'zip', roles: ['examiner-secretary'] },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/tuk-management/Profile.vue'),
+        name: 'tukProfile',
+        meta: {
+          title: 'Profil TUK',
+          icon: 'user',
+          noCache: true,
+          roles: ['examiner-secretary'],
+        },
       },
     ],
   },

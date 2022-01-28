@@ -67,7 +67,7 @@ return [
             'type' => 'multiple_state',
             'property' => 'marking',
         ],
-        'supports' => ['App\Entity\Project'],
+        'supports' => ['App\Entity\ProjectX'],
         'events_to_dispatch' => [
             'workflow.enter',
             'workflow.leave',
@@ -123,7 +123,7 @@ return [
         ]
     ],
     'amdalnet' => [
-        'type' => 'workflow',
+        'type' => 'state_machine',
         'marking_store' => [
             'type' => 'single_state', // multiple_state | single_state, can be omitted to default to workflow type's default
             'property' => 'marking', // this is the property on the model, defaults to 'marking'
@@ -146,7 +146,8 @@ return [
         'announcement-drafting','announcement', 'announcement-completed', 'uklupl-mr.pkplh-published',
         'uklupl-mt.form', 'uklupl-mt.matrix-ukl', 'uklupl-mt.matrix-upl','uklupl-mt.submitted',
         'uklupl-mt.adm-review', 'uklupl-mt.adm-returned', 'uklupl-mt.examination-invitation-drafting',
-        'Uklupl-mt.examination', 'uklupl-mt.examination-meeting', 'uklupl-mt.returned', 'uklupl-mt.ba-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination', 'uklupl-mt.examination-meeting', 'uklupl-mt.returned', 'uklupl-mt.ba-drafting',
         'uklupl-mt.ba-signed', 'uklupl-mt.recommendation-drafting', 'uklupl-mt.recommendation-signed', 'uklupl-mt.pkplh-published',
         'amdal.form-ka-drafting', 'amdal.form-ka-submitted', 'amdal.form-ka-adm-review','amdal.form-ka-adm-returned',
         'amdal.form-ka-adm-approved', 'amdal.form-ka-examination-invitation-drafting', 'amdal.form-ka-examination-invitation-sent', 
@@ -244,7 +245,7 @@ return [
                         ],
                         'draft-uklupl-recommendation' => [  
                             'from' => 'uklupl-mt.ba-signed',
-                            'to' => 'uklupl-mt.recom-drafting',
+                            'to' => 'uklupl-mt.recommendation-drafting',
                         ],
                         'sign-uklupl-recommendation' => [  
                             'from' => 'uklupl-mt.recommendation-drafting',
@@ -266,7 +267,7 @@ return [
                     'from' => 'amdal.form-ka-submitted',
                     'to' => 'amdal.form-ka-adm-review',
                 ],
-                  'return-amdal-form-ka' => [
+                  'return-amdal-form-ka-review' => [
                       'from' => 'amdal.form-ka-adm-review',
                       'to' => 'amdal.form-ka-adm-returned',
                   ],

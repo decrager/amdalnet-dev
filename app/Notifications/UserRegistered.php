@@ -32,7 +32,7 @@ class UserRegistered extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['mail','database'];
     }
 
     /**
@@ -43,10 +43,14 @@ class UserRegistered extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = url("/#/activate/".$this->user->id);
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                        ->subject('Pendaftaran Akun AMDALNET')
+                        ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
+                        ->line('Hai '.$this->user->name)
+                        ->line('')
+                        ->line('Akun AMDALNET anda telah berhasil dibuat silahkan aktivasi akun dengan menekan tombol dibawah ini.')
+                        ->action('Aktivasi Akun Anda', $url);
     }
 
     /**
@@ -60,7 +64,7 @@ class UserRegistered extends Notification
         return [
             'createdUser' => $this->user,
             'admin' => $notifiable,
-            'message' => $this->user->name.' baru saja mendaftar dengan email '.$this->user->email,
+            'message' => $this->user->name.' berhasil mendaftar dengan email '.$this->user->email,
         ];
     }
 }

@@ -489,7 +489,33 @@ class TestMeetRKLRPLController extends Controller
              $total++;
          }
 
+        //  AUTHORITY && LOGO
+        $authority = '';
+        $tuk_logo = null;
+        if($testing_meeting->id_feasibility_test_team) {
+             $team = FeasibilityTestTeam::find($testing_meeting->id_feasibility_test_team);
+             if($team) {
+                 if($team->authority == 'Pusat') {
+                     $authority = 'PUSAT';
+                 } else if($team->authority == 'Provinsi') {
+                     $authority = 'PROVINSI' . strtoupper($team->provinceAuthority->name);
+                 } else if($team->authority == 'Kabupaten/Kota') {
+                     $authority = strtoupper($team->districtAuthority->name);
+                 }
+                 $tuk_logo = $team->logo;
+             }
+ 
+         }
+
         $templateProcessor = new TemplateProcessor('template_berkas_adm_ar_yes.docx');
+
+        if($tuk_logo) {
+            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+        } else {
+            $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+        }
+
+        $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('project_description', $project->description);
@@ -524,6 +550,10 @@ class TestMeetRKLRPLController extends Controller
 
     private function meetingInvitation($id_project)
     {
+        if (!File::exists(storage_path('app/public/meet-inv/'))) {
+            File::makeDirectory(storage_path('app/public/meet-inv/'));
+        }
+
         $project = Project::findOrFail($id_project);
         $testing_meeting = TestingMeeting::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time')->where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
         $invitations = TestingMeetingInvitation::where('id_testing_meeting', $testing_meeting->id)->get();
@@ -550,6 +580,7 @@ class TestMeetRKLRPLController extends Controller
         $tuk_address = '';
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
+        $tuk_logo = null;
 
 
         if($testing_meeting->id_feasibility_test_team) {
@@ -570,6 +601,7 @@ class TestMeetRKLRPLController extends Controller
                 }
 
                 $tuk_address = $team->address;
+                $tuk_logo = $team->logo;
 
                 // KETUA TUK
                 $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $team->id],['position', 'Ketua']])->first();
@@ -615,23 +647,33 @@ class TestMeetRKLRPLController extends Controller
             }
         }
 
-        return [
-            'project_title' => $project->project_title,
-            'project_address' => $project_address,
-            'pemrakarsa' => $project->initiator->name,
-            'pemrakarsa_address' => $project->initiator->address,
-            'docs_date' => $docs_date,
-            'meeting_date' => $meeting_date,
-            'meeting_time' => $meeting_time,
-            'meeting_location' => $meeting_location,
-            'authority_big_check' => $authority_big_check,
-            'authority_big' => $authority_big,
-            'tuk_address' => $tuk_address,
-            'authority' => $authority,
-            'ketua_tuk_name' => $ketua_tuk_name,
-            'ketua_tuk_nip' => $ketua_tuk_nip,
-            'tuk_member' => $member,
-            'pakar' => $ahli
-        ];
+        $templateProcessor = new TemplateProcessor('template_undangan_rapat_arr.docx');
+
+        if($tuk_logo) {
+            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+        } else {
+            $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+        }
+
+        $templateProcessor->setValue('project_title', $project->project_title);
+        $templateProcessor->setValue('project_address', $project_address);
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
+        $templateProcessor->setValue('docs_date', $docs_date);
+        $templateProcessor->setValue('meeting_date', $meeting_date);
+        $templateProcessor->setValue('meeting_time', $meeting_time);
+        $templateProcessor->setValue('meeting_location', $meeting_location);
+        $templateProcessor->setValue('authority_big_check', $authority_big_check);
+        $templateProcessor->setValue('authority_big', $authority_big);
+        $templateProcessor->setValue('tuk_address', $tuk_address);
+        $templateProcessor->setValue('authority', $authority);
+        $templateProcessor->setValue('ketua_tuk_name', $ketua_tuk_name);
+        $templateProcessor->setValue('ketua_tuk_nip', $ketua_tuk_nip);
+        $templateProcessor->cloneBlock('tuk_member', count($member), true, false, $member);
+        $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
+
+        $templateProcessor->saveAs(storage_path('app/public/meet-inv/andal-rkl-rpl-' . strtolower($project->project_title) . '.docx'));
+
+        return strtolower($project->project_title);
     }
 }
