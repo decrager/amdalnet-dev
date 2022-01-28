@@ -218,6 +218,13 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Tambah Persetujuan Lingkungan', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'template-persetujuan/edit',
+      component: () => import('@/views/template-persetujuan/Edit'),
+      name: 'EditDaftarPersetujuan',
+      hidden: true,
+      meta: { title: 'Edit Persetujuan Lingkungan', icon: 'documentation', noCache: true },
+    },
   ],
 };
 
