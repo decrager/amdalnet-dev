@@ -5,7 +5,7 @@
         <el-col :span="8" :offset="16">
           <div class="customFilter">
             <div class="customFilterLeft">
-              <span style="font-weight:bold; display:inline-block; margin-right:0.5rem;">Search</span>
+              <span style="display:inline-block; margin-right:0.5rem;">Search</span>
               <el-input v-model="keyword" placeholder="Please input" @keyup.native.enter="handleSearch()" />
             </div>
             <div :class="toggle ? 'customFilterRight filter bgNoActive' : 'customFilterRight filter bgActive'">
@@ -309,14 +309,14 @@ export default {
   .el-pagination span:not([class*="suffix"]), .el-pagination button {color: #fff;}
   .el-button.el-button--info.fw-bold.el-button--medium {margin-bottom: 10px;}
   .customFilter{display:flex; align-items: center;}
-  .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.51rem;}
+  .customFilterLeft{width:75%; display:flex; align-items: center; background: #062307; padding: 0.51rem; font-size: 0.9rem;font-weight: 600;}
   .customFilterRight{cursor:pointer; padding: 0.6rem; width:25%; display:flex; align-items:center; position:relative;}
   .customFilterRightWrap{display: flex;position: absolute;top: 3rem;width: 50rem;right: 0;z-index: 99; background:#dff5cf; color:#35442f;padding: 1.5rem 1rem;border-radius: 4px 0 4px 4px;}
   .cardCustom{width:20%; padding:0.5rem;}
   .cardCustom span{font-size: 11px;font-weight: bold;}
   .bgNoActive{background:#dff5cf; color:#35442f;}
   .bgActive{background:#062307; color: #fff;}
-  .textFilter{font-weight:bold; display:inline-block; margin-right:0.5rem; }
+  .textFilter{font-size: 0.9rem;font-weight: 600; display:inline-block; margin-right:0.5rem; }
   .textFilterNoAvtive{color:#ef8913;}
   .textFilterAvtive{color:#fff;}
   .customImage{width: 50px;height: 50px;border-radius: 50% !important;object-fit: contain;object-position: center;margin:auto; display: block;}
