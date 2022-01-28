@@ -133,8 +133,18 @@
 
           <el-table-column label="E-mail">
             <template slot-scope="scope">
-              <span v-if="scope.row.type == 'tuk'">{{ scope.row.email }}</span>
-              <el-input v-else v-model="scope.row.email" />
+              <div>
+                <span v-if="scope.row.type == 'tuk'">{{ scope.row.email }}</span>
+                <div v-else class="email-column">
+                  <el-input v-model="scope.row.email" />
+                  <el-button
+                    type="text"
+                    icon="el-icon-close"
+                    style="display: block"
+                    @click.prevent="deleteRow(scope.$index, scope.row.id)"
+                  />
+                </div>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -151,6 +161,7 @@
             Unduh Hasil Pemeriksaan Berkas Administrasi
           </el-button>
           <el-upload
+            v-if="!meetings.file"
             :auto-upload="false"
             :on-change="handleUploadChange"
             :show-file-list="false"
@@ -168,6 +179,17 @@
               {{ error }}
             </span>
           </small>
+          <div v-if="meetings.file" style="text-align: right;">
+            <el-button
+              type="text"
+              size="medium"
+              icon="el-icon-download"
+              style="color: blue"
+              @click.prevent="download(meetings.file)"
+            >
+              {{ baFileName }}
+            </el-button>
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -212,6 +234,12 @@ export default {
       out: '',
       outInvitation: '',
     };
+  },
+  computed: {
+    baFileName() {
+      const arrName = this.meetings.file.split('/');
+      return arrName[arrName.length - 1];
+    },
   },
   created() {
     this.getTimUjiKelayakan();
@@ -454,10 +482,11 @@ export default {
       formData.append('idProject', this.idProject);
       formData.append('dokumen_file', file.raw);
       formData.append('file', 'true');
-      const isError = await undanganRapatResource.store(formData);
-      this.errors = isError.errors === null ? {} : isError.errors;
+      const data = await undanganRapatResource.store(formData);
+      this.errors = data.errors === null ? {} : data.errors;
       this.loadingUpload = false;
-      if (isError.errors === null) {
+      if (data.errors === null) {
+        this.meetings.file = data.name;
         this.$message({
           message: 'Dokumen sukses diupload',
           type: 'success',
@@ -494,9 +523,27 @@ export default {
       }
       this.loadingSendInvitation = false;
     },
+    download(url) {
+      window.open(url, '_blank').focus();
+    },
+    deleteRow(idx, id) {
+      if (id) {
+        this.meetings.deleted_invitations.push(id);
+      }
+
+      this.meetings.invitations.splice(idx, 1);
+    },
   },
 };
 </script>
+
+<style scoped>
+.email-column {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>
 
 <style>
 .upload-demo {
