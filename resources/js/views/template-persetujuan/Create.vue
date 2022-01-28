@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <form enctype="multipart/form-data" @submit.prevent="saveIjinLingkungan">
+    <form enctype="multipart/form-data" @submit.prevent="saveApprovalLingkungan">
       <el-card>
         <el-row :gutter="20">
           <el-col :span="14">
@@ -9,7 +9,7 @@
                 <el-row>
                   <el-form-item label="Jenis Template">
                     <el-input
-                      v-model="form.jenis_template"
+                      v-model="form.template_type"
                       type="text"
                       placeholder="Jenis Template"
                     />
@@ -20,7 +20,7 @@
                 <el-row>
                   <el-form-item label="Deskripsi">
                     <el-input
-                      v-model="form.deskripsi"
+                      v-model="form.description"
                       type="textarea"
                       placeholder="Deskripsi"
                     />
@@ -44,7 +44,7 @@
                 <el-button
                   type="primary"
                   icon="el-icon-s-claim"
-                  @click="saveIjinLingkungan()"
+                  @click="saveApprovalLingkungan()"
                 >
                   Simpan
                 </el-button>
@@ -66,20 +66,10 @@ export default {
   data() {
     return {
       form: {
-        jenis_template: '',
-        authority: '',
-        deskripsi: '',
-        sk_number: '',
-        date: '',
-        publisher: '',
+        template_type: '',
+        description: '',
       },
       file: '',
-      kewenangan: [
-        { name: 'semua' },
-        { name: 'pusat' },
-        { name: 'provinsi' },
-        { name: 'kab/kota' },
-      ],
     };
   },
   mounted() {},
@@ -87,19 +77,15 @@ export default {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
-    async saveIjinLingkungan() {
+    async saveApprovalLingkungan() {
       const formData = new FormData();
       formData.append('file', this.file);
-      formData.append('jenis_template', this.form.jenis_template);
-      formData.append('authority', this.form.authority);
-      formData.append('deskripsi', this.form.deskripsi);
-      formData.append('sk_number', this.form.sk_number);
-      formData.append('date', this.form.date);
-      formData.append('publisher', this.form.publisher);
+      formData.append('template_type', this.form.template_type);
+      formData.append('description', this.form.description);
 
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/environmental-permit', formData, { headers })
+        .post('api/environmental-approval', formData, { headers })
         .then(() => {
           this.$message({
             message: 'Ijin Berhasil Disimpan',
@@ -107,7 +93,7 @@ export default {
             duration: 5 * 1000,
           });
           this.$router.push({
-            name: 'DaftarIzins',
+            name: 'DaftarPersetujuan',
           });
         })
         .catch((error) => {
