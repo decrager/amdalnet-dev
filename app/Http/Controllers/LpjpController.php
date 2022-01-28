@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Formulator;
 use App\Entity\Lpjp;
 use App\Entity\Project;
 use App\Http\Resources\LpjpResource;
@@ -23,6 +24,48 @@ class LpjpController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->formulators) {
+            $formulators = Formulator::where('id_lpjp', $request->idLpjp)->orWhere('id_lpjp', null)->orderBy('name')->get();
+            return $formulators;
+        }
+
+        if($request->member) {
+            $lpjp = Lpjp::select('id', 'name')->whereKey($request->idLpjp)->first();
+            $members = Formulator::where('id_lpjp', $request->idLpjp)->get();
+            $formulators = [];
+
+            $num = 1;
+            foreach($members as $m) {
+                $status = 'Tidak Aktif';
+
+                if($m->date_end) {
+                    if($m->date_end >= date('Y-m-d H:i:s')) {
+                        $status = 'Aktif';
+                    }
+                }
+
+                $formulators[] = [
+                    'num' => $num,
+                    'id' => $m->id,
+                    'name' => $m->name,
+                    'reg_no' => $m->reg_no,
+                    'cert_no' => $m->cert_no,
+                    'membership_status' => $m->membership_status,
+                    'status' => $status,
+                    'cert_file' => $m->cert_file,
+                    'cv_file' => $m->file,
+                    'type' => 'update'
+                ];
+                $num++;
+            }
+
+            return response()->json([
+                'lpjp' => $lpjp,
+                'members' => $formulators
+            ]);
+            
+        }
+
         return LpjpResource::collection(Lpjp::where(function ($query) use ($request) {
             if ($request->active) {
                 return $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
@@ -53,6 +96,22 @@ class LpjpController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->member) {
+            $members = $request->members;
+            $deleted_members = $request->deletedMembers;
+            $id_lpjp = $request->idLpjp;
+
+            if(count($members) > 0) {
+                Formulator::whereIn('id', $members)->update(['id_lpjp' => $id_lpjp]);
+            }
+
+            if(count($deleted_members) > 0) {
+                Formulator::whereIn('id', $deleted_members)->update(['id_lpjp' => null]);
+            }
+
+            return response()->json(['message' => 'success']);
+        }
+
         //validate request
 
         $validator = Validator::make(

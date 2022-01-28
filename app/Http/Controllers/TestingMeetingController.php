@@ -168,7 +168,7 @@ class TestingMeetingController extends Controller
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
             }
 
-            return response()->json(['errors' => null]);
+            return response()->json(['errors' => null, 'name' => $testing_meeting->file]);
         }
 
         $data = $request->meetings;
@@ -198,6 +198,10 @@ class TestingMeetingController extends Controller
         if($data['type'] == 'update') {
             if($oldTeamId != $data['id_feasibility_test_team']) {
                 TestingMeetingInvitation::where([['id_testing_meeting', $meeting->id]])->delete();           
+            } else {
+                 for($a = 0; $a < count($data['deleted_invitations']); $a++) {
+                     TestingMeetingInvitation::destroy($data['deleted_invitations'][$a]);
+                 }
             }
         }
 
@@ -306,7 +310,8 @@ class TestingMeetingController extends Controller
             'id_feasibility_test_team' => null,
             'project_name' => $project->project_title,
             'invitations' => [],
-            'file' => null
+            'file' => null,
+            'deleted_invitations' => []
         ];
 
         return $data;
@@ -375,7 +380,8 @@ class TestingMeetingController extends Controller
             'id_feasibility_test_team' => $meeting->id_feasibility_test_team,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
-            'file' => null
+            'file' => $meeting->file,
+            'deleted_invitations' => []
         ];
 
         return $data;
