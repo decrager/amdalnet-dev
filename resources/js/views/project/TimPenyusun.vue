@@ -199,13 +199,16 @@ export default {
       return this.userInfo.roles.includes('examiner-administration');
     },
   },
-  created() {
-    this.getUserInfo();
-    this.getFormulators();
-    this.getProjectName();
-    this.getLpjp();
-    this.getTimPenyusun();
-    this.getTimAhli();
+  async created() {
+    this.loadingSelectLpjp = true;
+    this.loadingTimPenyusun = true;
+    this.loadingTimAhli = true;
+    await this.getUserInfo();
+    await this.getFormulators();
+    await this.getProjectName();
+    await this.getLpjp();
+    await this.getTimPenyusun();
+    await this.getTimAhli();
   },
   methods: {
     async getFormulators() {
