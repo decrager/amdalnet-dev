@@ -28,6 +28,11 @@ class FormulatorTeamController extends Controller
     public function index(Request $request)
     {
         if($request->type && $request->type == 'formulator') {
+            if($request->lpjp) {
+                return Formulator::select('id', 'name', 'expertise', 'cv_file', 'cert_file', 'reg_no', 'membership_status')
+                    ->where([['membership_status', '!=', 'TA'],['id_lpjp', $request->idLpjp]])->orderBy('name')->get();
+            }
+
             return Formulator::select('id', 'name', 'expertise', 'cv_file', 'cert_file', 'reg_no', 'membership_status')
                                 ->where('membership_status', '!=', 'TA')->orderBy('name')->get();
         }

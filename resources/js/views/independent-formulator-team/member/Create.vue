@@ -139,17 +139,21 @@ export default {
       ],
     };
   },
-  created() {
-    this.getFormulators();
-    this.getProjectName();
-    this.getLpjp();
-    this.getTimPenyusun();
-    this.getTimAhli();
+  async created() {
+    this.loadingTimPenyusun = true;
+    this.loadingTimAhli = true;
+    await this.getProjectName();
+    await this.getFormulators();
+    await this.getLpjp();
+    await this.getTimPenyusun();
+    await this.getTimAhli();
   },
   methods: {
     async getFormulators() {
       this.formulators = await formulatorTeamsResource.list({
         type: 'formulator',
+        lpjp: 'true',
+        idLpjp: this.selectedLPJP,
       });
     },
     async getTimPenyusun() {
