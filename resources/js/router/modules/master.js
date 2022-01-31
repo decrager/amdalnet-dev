@@ -118,6 +118,12 @@ const masterRoutes = {
       meta: { title: 'Tambah SOP', icon: 'documentation', noCache: true },
     },
     {
+      path: 'instansi-pemerintah',
+      component: () => import('@/views/government-institution/index'),
+      name: 'governmentInstitution',
+      meta: { title: 'Instansi Pemerintah', icon: 'documentation', noCache: true },
+    },
+    {
       path: 'anggota-tuk',
       component: () => import('@/views/employee/index'),
       name: 'employeeTuk',
