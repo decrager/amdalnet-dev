@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <!-- <component :is="currentRole" /> -->
-    <admin-dashboard v-if="isAdmin" />
+    <admin-dashboard v-if="isAdmin || isExaminerSecretary" />
     <user-dashboard v-else-if="isFormulator || isInitiator || isExaminer" />
     <!--
     <examiner-dashboard v-if="isExaminer" />
@@ -40,6 +40,9 @@ export default {
     },
     isExaminer(){
       return (this.$store.getters.roles[0].split('-')[0] === 'examiner');
+    },
+    isExaminerSecretary() {
+      return this.$store.getters.roles.includes('examiner-secretary');
     },
   },
   created() {
