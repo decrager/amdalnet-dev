@@ -20,16 +20,17 @@
       </el-button>
     </div>
     <el-row :gutter="32">
-      <el-col :sm="24" :md="12">
+      <el-col :sm="24" :md="24">
         <FormBerita :reports="reports" :loadingtuk="loadingTuk" />
       </el-col>
-      <el-col :sm="24" :md="12">
+      <el-col :sm="24" :md="24">
         <DaftarHadir
           :invitations="reports.invitations"
           :reports="reports"
           :loadingtuk="loadingTuk"
           @deleteinvitation="deleteInvitation($event)"
           @updateuploadfile="updateUploadFile($event)"
+          @handleChangeRole="handleChangeRole($event)"
         />
       </el-col>
     </el-row>
@@ -39,6 +40,7 @@
 <script>
 import Resource from '@/api/resource';
 const meetingReportResource = new Resource('meeting-report');
+const institutionResource = new Resource('government-institution');
 import FormBerita from '@/views/pengujian/components/beritaAcara/FormBerita';
 import DaftarHadir from '@/views/pengujian/components/beritaAcara/DaftarHadir';
 import Docxtemplater from 'docxtemplater';
@@ -54,7 +56,6 @@ export default {
   },
   data() {
     return {
-      // projects: [],
       idProject: this.$route.params.id,
       loadingSubmit: false,
       loadingTuk: false,
@@ -64,11 +65,15 @@ export default {
       showDocument: false,
       projects: '',
       out: '',
+      governmentInstitutions: [],
     };
   },
-  created() {
-    this.handleChange(this.idProject);
-    // this.getData();
+  async created() {
+    this.loadingTuk = true;
+    this.idProject = this.$route.params.id;
+    await this.getGovernmentInstitutions();
+    await this.getReports();
+    this.loadingTuk = false;
   },
   methods: {
     async downloadDocx() {
@@ -135,14 +140,50 @@ export default {
         idProject: this.idProject,
       });
       if (data.type !== 'notexist') {
+        const invitations = data.invitations.map((x) => {
+          let institution_options = [];
+
+          if (this.isGovernmentInstitution(x.role)) {
+            institution_options = this.governmentInstitutions.filter(
+              (y) => y.institution_type === x.role
+            );
+          }
+
+          return {
+            id: x.id,
+            role: x.role,
+            name: x.name,
+            email: x.email,
+            type: x.type,
+            id_government_institution: x.id_government_institution,
+            institution_options: institution_options,
+            institution: x.institution,
+          };
+        });
+        data.invitations = invitations;
         this.reports = data;
       }
     },
-    async handleChange(val) {
-      this.idProject = val;
-      this.loadingTuk = true;
-      await this.getReports();
-      this.loadingTuk = false;
+    async getGovernmentInstitutions() {
+      this.governmentInstitutions = await institutionResource.list({
+        meeting: 'true',
+      });
+    },
+    isGovernmentInstitution(role) {
+      return (
+        role === 'Kementerian' ||
+        role === 'Lembaga' ||
+        role === 'Pemerintah Provinsi' ||
+        role === 'Pemerintah Kabupaten/Kota'
+      );
+    },
+    handleChangeRole({ val, idx }) {
+      if (this.isGovernmentInstitution(val)) {
+        const institution = this.governmentInstitutions.filter(
+          (x) => x.institution_type === val
+        );
+        this.reports.invitations[idx].institution_options = institution;
+      }
     },
     async handleSubmit() {
       if (this.reports.type === undefined) {
@@ -154,13 +195,15 @@ export default {
         idProject: this.idProject,
         reports: this.reports,
       });
-      await this.handleChange(this.idProject);
+      this.loadingTuk = true;
+      await this.getReports();
       this.$message({
         message: 'Data sukses tersimpan',
         type: 'success',
         duration: 5 * 1000,
       });
       this.loadingSubmit = false;
+      this.loadingTuk = false;
     },
     deleteInvitation({ id, personType }) {
       this.reports.invitations = this.reports.invitations.filter((inv) => {
