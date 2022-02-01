@@ -1,8 +1,32 @@
 <template>
   <div>
     <el-row :gutter="32">
-      <el-col :md="12" :sm="24">
+      <el-col :md="24" :sm="24">
         <h4 align="center">UNDANGAN RAPAT</h4>
+        <div style="text-align: right; margin-bottom: 10px">
+          <el-button
+            :loading="loadingSubmit"
+            type="primary"
+            @click="handleSubmit"
+          >
+            Simpan Perubahan
+          </el-button>
+          <el-button
+            :loading="loadingInvitationDocx"
+            type="primary"
+            @click="handleDownloadInvitation"
+          >
+            Undangan Rapat
+          </el-button>
+          <el-button
+            style="margin-top: 10px"
+            :loading="loadingSendInvitation"
+            type="primary"
+            @click="sendInvitation"
+          >
+            Kirim Undangan Rapat
+          </el-button>
+        </div>
         <el-form
           v-loading="loading"
           label-position="top"
@@ -22,11 +46,6 @@
               </el-form-item>
             </el-col>
             <el-col :sm="12" :md="12">
-              <el-form-item label="Pemrakarsa">
-                <el-input v-model="meetings.initiator_name" :readonly="true" />
-              </el-form-item>
-            </el-col>
-            <el-col :sm="12" :md="12">
               <el-form-item label="Waktu Rapat">
                 <el-time-picker
                   v-model="meetings.meeting_time"
@@ -35,11 +54,6 @@
                   value-format="HH:mm"
                   style="width: 100%"
                 />
-              </el-form-item>
-            </el-col>
-            <el-col :sm="12" :md="12">
-              <el-form-item label="Penanggung Jawab">
-                <el-input v-model="meetings.person_responsible" readonly />
               </el-form-item>
             </el-col>
             <el-col :sm="12" :md="12">
@@ -69,26 +83,10 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="12">
-              <el-form-item label="Nama Usaha/Kegiatan">
-                <el-input v-model="meetings.project_name" readonly />
-              </el-form-item>
-            </el-col>
           </el-row>
         </el-form>
       </el-col>
-      <el-col :md="12" :sm="24">
-        <div style="text-align: right">
-          <el-button
-            :loading="loadingSubmit"
-            type="primary"
-            @click="handleSubmit"
-          >
-            Simpan Perubahan
-          </el-button>
-          <el-button :loading="loadingInvitationDocx" type="primary" @click="handleDownloadInvitation">Undangan Rapat</el-button>
-          <el-button style="margin-top: 10px;" :loading="loadingSendInvitation" type="primary" @click="sendInvitation">Kirim Undangan Rapat</el-button>
-        </div>
+      <el-col :md="24" :sm="24">
         <h5>Daftar Undangan</h5>
         <el-table
           v-loading="loadingTuk"
@@ -113,6 +111,7 @@
                 v-model="scope.row.role"
                 placeholder="Pilih Peran"
                 style="width: 100%"
+                @change="handleChangeRole($event, scope.$index)"
               >
                 <el-option
                   v-for="item in peran"
@@ -131,10 +130,35 @@
             </template>
           </el-table-column>
 
+          <el-table-column label="Instansi">
+            <template slot-scope="scope">
+              <span v-if="scope.row.type == 'tuk'">{{
+                scope.row.institution
+              }}</span>
+              <el-select
+                v-else-if="isGovernmentInstitution(scope.row.role)"
+                v-model="scope.row.id_government_institution"
+                placeholder="Pilih Instansi"
+                style="width: 100%"
+                filterable
+              >
+                <el-option
+                  v-for="item in scope.row.institution_options"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+              <el-input v-else v-model="scope.row.institution" />
+            </template>
+          </el-table-column>
+
           <el-table-column label="E-mail">
             <template slot-scope="scope">
               <div>
-                <span v-if="scope.row.type == 'tuk'">{{ scope.row.email }}</span>
+                <span v-if="scope.row.type == 'tuk'">{{
+                  scope.row.email
+                }}</span>
                 <div v-else class="email-column">
                   <el-input v-model="scope.row.email" />
                   <el-button
@@ -167,19 +191,20 @@
             :show-file-list="false"
             action=""
           >
-            <el-button :loading="loadingUpload" type="primary" style="margin-top: 10px;">
+            <el-button
+              :loading="loadingUpload"
+              type="primary"
+              style="margin-top: 10px"
+            >
               Unggah Validasi Hasil Pemeriksaan Berkas Administrasi
             </el-button>
           </el-upload>
           <small v-if="errors.dokumen_file" style="color: #f56c6c">
-            <span
-              v-for="(error, index) in errors.dokumen_file"
-              :key="index"
-            >
+            <span v-for="(error, index) in errors.dokumen_file" :key="index">
               {{ error }}
             </span>
           </small>
-          <div v-if="meetings.file" style="text-align: right;">
+          <div v-if="meetings.file" style="text-align: right">
             <el-button
               type="text"
               size="medium"
@@ -203,6 +228,7 @@ import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
 const undanganRapatResource = new Resource('test-meet-rkl-rpl');
+const institutionResource = new Resource('government-institution');
 
 export default {
   name: 'UndanganRapat',
@@ -211,12 +237,32 @@ export default {
       timUjiKelayakan: [],
       peran: [
         {
+          label: 'Kementerian',
+          value: 'Kementerian',
+        },
+        {
+          label: 'Lembaga',
+          value: 'Lembaga',
+        },
+        {
+          label: 'Pemerintah Provinsi',
+          value: 'Pemerintah Provinsi',
+        },
+        {
+          label: 'Pemerintah Kabupaten/Kota',
+          value: 'Pemerintah Kabupaten/Kota',
+        },
+        {
           label: 'Tenaga Ahli',
           value: 'Tenaga Ahli',
         },
         {
           label: 'Masyarakat',
           value: 'Masyarakat',
+        },
+        {
+          label: 'Lainnya',
+          value: 'Lainnya',
         },
       ],
       loadingTuk: false,
@@ -233,6 +279,7 @@ export default {
       loadingInvitationDocx: false,
       out: '',
       outInvitation: '',
+      governmentInstitutions: [],
     };
   },
   computed: {
@@ -241,9 +288,11 @@ export default {
       return arrName[arrName.length - 1];
     },
   },
-  created() {
-    this.getTimUjiKelayakan();
-    this.getMeetings();
+  async created() {
+    this.loading = true;
+    await this.getGovernmentInstitutions();
+    await this.getTimUjiKelayakan();
+    await this.getMeetings();
   },
   methods: {
     async getMeetings() {
@@ -251,11 +300,39 @@ export default {
       const data = await undanganRapatResource.list({
         idProject: this.idProject,
       });
+      const invitations = data.invitations.map((x) => {
+        let institution_options = [];
+
+        if (this.isGovernmentInstitution(x.role)) {
+          institution_options = this.governmentInstitutions.filter(
+            (y) => y.institution_type === x.role
+          );
+        }
+
+        return {
+          id: x.id,
+          role: x.role,
+          name: x.name,
+          email: x.email,
+          type: x.type,
+          type_member: x.type_member,
+          id_government_institution: x.id_government_institution,
+          institution_options: institution_options,
+          institution: x.institution,
+        };
+      });
+      data.invitations = invitations;
       this.meetings = data;
       this.loading = false;
     },
     async handleSubmit() {
       this.loadingSubmit = true;
+      const invitations = this.meetings.invitations.map((x) => {
+        const newX = x;
+        newX.institution_options = [];
+        return newX;
+      });
+      this.meetings.invitations = invitations;
       await undanganRapatResource.store({
         idProject: this.idProject,
         meetings: this.meetings,
@@ -298,6 +375,11 @@ export default {
         };
       });
     },
+    async getGovernmentInstitutions() {
+      this.governmentInstitutions = await institutionResource.list({
+        meeting: 'true',
+      });
+    },
     async handleChangeTimUji(val) {
       this.loadingTuk = true;
       const data = await undanganRapatResource.list({
@@ -315,7 +397,26 @@ export default {
         email: null,
         type: 'other',
         type_member: 'other',
+        id_government_institution: null,
+        institution_options: [],
+        institution: null,
       });
+    },
+    isGovernmentInstitution(role) {
+      return (
+        role === 'Kementerian' ||
+        role === 'Lembaga' ||
+        role === 'Pemerintah Provinsi' ||
+        role === 'Pemerintah Kabupaten/Kota'
+      );
+    },
+    handleChangeRole(val, idx) {
+      if (this.isGovernmentInstitution(val)) {
+        const institution = this.governmentInstitutions.filter(
+          (x) => x.institution_type === val
+        );
+        this.meetings.invitations[idx].institution_options = institution;
+      }
     },
     capitalize(mySentence) {
       const words = mySentence.split(' ');
@@ -338,7 +439,8 @@ export default {
       });
       this.docxData = data;
       const a = document.createElement('a');
-      a.href = window.location.origin + `/storage/adm/berkas-adm-ar-${data}.docx`;
+      a.href =
+        window.location.origin + `/storage/adm/berkas-adm-ar-${data}.docx`;
       a.setAttribute('download', `berkas-adm-ar-${data}.docx`);
       a.click();
       this.loadingDocx = false;
@@ -351,7 +453,8 @@ export default {
       });
       this.invitationDocxData = data;
       const a = document.createElement('a');
-      a.href = window.location.origin + `/storage/meet-inv/andal-rkl-rpl-${data}.docx`;
+      a.href =
+        window.location.origin + `/storage/meet-inv/andal-rkl-rpl-${data}.docx`;
       a.setAttribute('download', `andal-rkl-rpl-${data}.docx`);
       a.click();
       this.loadingInvitationDocx = false;
@@ -471,7 +574,10 @@ export default {
           });
 
           this.outInvitation = out;
-          saveAs(this.outInvitation, `${this.invitationDocxData.project_title.toLowerCase()}.docx`);
+          saveAs(
+            this.outInvitation,
+            `${this.invitationDocxData.project_title.toLowerCase()}.docx`
+          );
           this.loadingInvitationDocx = false;
         }
       );
