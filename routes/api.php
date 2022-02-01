@@ -31,6 +31,7 @@ use App\Http\Controllers\PeraturanController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalPermitController;
+use App\Http\Controllers\OssController;
 use App\Http\Controllers\EnvironmentalApprovalController;
 use App\Http\Controllers\GovernmentInstitutionController;
 
@@ -347,6 +348,12 @@ Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index
 Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);
 Route::post('environmental-permit/update', [EnvironmentalPermitController::class, 'update']);
 Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);
+
+//OSS consume
+Route::get('oss/sectorByKbli/{kbli}', [OssController::class, 'sectorByKbli']);
+Route::get('oss/getField', [OssController::class, 'getField']);
+Route::get('oss/getParameterByFieldId/{id}', [OssController::class, 'getParamByFieldId']);
+Route::post('oss/calculateDoc', [OssController::class, 'calculateDoc']);
 
 Route::get('environmental-approval', [EnvironmentalApprovalController::class, 'index']);
 Route::post('environmental-approval', [EnvironmentalApprovalController::class, 'store']);
