@@ -18,6 +18,11 @@ class GovernmentInstitutionController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->meeting) {
+            $institutions = GovernmentInstitution::with('province', 'district')->orderBy('name')->get();
+            return $institutions;
+        }
+
         $institutions = GovernmentInstitution::orderBy('id', 'desc')->paginate($request->limit);
         return $institutions;
     }

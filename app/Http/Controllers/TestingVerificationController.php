@@ -317,6 +317,7 @@ class TestingVerificationController extends Controller
             'announcement' => $announcement,
             'public_consultation' => $public_consultation,
             'notes' => $verification ? $verification->notes : null,
+            'old_notes' => $verification ? $verification->notes : null,
             'is_complete' => $verification ? $verification->is_complete : null,
             'project' => $project,
             'lpjp' => $lpjp,

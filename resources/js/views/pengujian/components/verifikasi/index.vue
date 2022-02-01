@@ -1,8 +1,9 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div>
     <div class="filter-container" align="right">
       <el-button
-        v-if="verifications.is_complete === null"
+        v-if="verifications.old_notes === null"
         :loading="loadingSubmit"
         type="primary"
         style="font-size: 0.8rem"
@@ -39,15 +40,23 @@
               </a>
               <span v-else>
                 <span v-if="isRedirect(scope.row.name)">
-                  <a href="#" class="click" @click.prevent="handleRedirect(scope.row.name)">{{
-                    formLabel[scope.row.name]
-                  }}</a>
+                  <a
+                    href="#"
+                    class="click"
+                    @click.prevent="handleRedirect(scope.row.name)"
+                  >
+                    {{ formLabel[scope.row.name] }}
+                  </a>
                 </span>
                 <span v-else>
                   {{ formLabel[scope.row.name] }}
                   <span v-if="scope.row.name === 'peta'">
                     <li v-for="(link, index) in scope.row.link" :key="index">
-                      <a :href="scope.row.link[index].link" target="_blank" class="click">
+                      <a
+                        :href="scope.row.link[index].link"
+                        target="_blank"
+                        class="click"
+                      >
                         {{ scope.row.link[index].name }}
                       </a>
                     </li>
@@ -63,7 +72,10 @@
                 v-model="scope.row.suitability"
                 placeholder="Pilih Kesesuaian"
                 style="width: 100%"
-                :disabled="verifications.is_complete !== null"
+                :disabled="
+                  verifications.is_complete !== null &&
+                  verifications.old_notes !== null
+                "
               >
                 <el-option
                   v-for="sesuai in kesesuaian"
@@ -81,42 +93,85 @@
                 v-model="scope.row.description"
                 type="textarea"
                 :placeholder="getPlaceholder(scope.row.suitability)"
-                :readonly="verifications.is_complete !== null"
-                :class="{'is-error' : errors[`form-${scope.$index}`]}"
+                :readonly="
+                  verifications.is_complete !== null &&
+                  verifications.old_notes !== null
+                "
+                :class="{ 'is-error': errors[`form-${scope.$index}`] }"
               />
             </template>
           </el-table-column>
         </el-table>
       </el-col>
       <el-col :sm="24" :md="12">
-        <h4>Catatan<span style="color: red">*</span></h4>
-        <small v-if="errors.notes" style="color: #f56c6c;">Catatan Wajib Diisi</small>
-        <Tinymce v-if="verifications.is_complete === null" v-model="verifications.notes" :height="200" />
-        <div v-else v-html="verifications.notes" />
+        <h4 v-if="verifications.is_complete !== null">
+          Catatan<span style="color: red">*</span>
+        </h4>
+        <small
+          v-if="verifications.is_complete !== null && errors.notes"
+          style="color: #f56c6c"
+        >
+          Catatan Wajib Diisi
+        </small>
+        <Tinymce
+          v-if="
+            verifications.is_complete !== null &&
+            verifications.old_notes === null
+          "
+          v-model="verifications.notes"
+          :height="200"
+        />
+        <div v-else v-html="verifications.old_notes" />
         <div v-if="verifications.is_complete === null">
           <h4>Apakah Berkas Administrasi Lengkap dan Benar ?</h4>
-          <el-button :loading="loadingComplete" type="primary" @click="handleComplete('ya')">Ya</el-button>
-          <el-button :loading="loadingComplete" type="danger" @click="handleComplete('tidak')">Tidak</el-button>
+          <el-button
+            :loading="loadingComplete"
+            type="primary"
+            @click="handleComplete('ya')"
+          >
+            Ya
+          </el-button>
+          <el-button
+            :loading="loadingComplete"
+            type="danger"
+            @click="handleComplete('tidak')"
+          >
+            Tidak
+          </el-button>
         </div>
-        <div v-if="verifications.is_complete === false" style="text-align:right; margin-top:20px;">
-          <el-button :loading="loadingDocx" type="primary" @click="handleDownload">Unduh Hasil Pemeriksaan Berkas Administrasi</el-button>
+        <div
+          v-if="verifications.is_complete === false"
+          style="text-align: right; margin-top: 20px"
+        >
+          <el-button
+            :loading="loadingDocx"
+            type="primary"
+            @click="handleDownload"
+          >
+            Unduh Hasil Pemeriksaan Berkas Administrasi
+          </el-button>
         </div>
       </el-col>
     </el-row>
     <el-dialog :visible.sync="lpjpPenyusunDialog">
       <div v-if="lpjp !== null">
         <p><b>Nama:</b> {{ lpjp.name }}</p>
-        <p><b>No Registrasi:</b>  {{ lpjp.reg_no }}</p>
+        <p><b>No Registrasi:</b> {{ lpjp.reg_no }}</p>
         <p>
           <b>Dokumen Sertifikat:</b>
-          <a :href="lpjp.cert_file" style="color: #216221" target="_blank"> Lihat</a>
+          <a :href="lpjp.cert_file" style="color: #216221" target="_blank">
+            Lihat
+          </a>
         </p>
       </div>
       <div v-else-if="penyusunMandiri !== null">
         <p><b>Nama:</b> {{ penyusunMandiri.name }}</p>
       </div>
     </el-dialog>
-    <el-dialog title="Hasil Konsultasi Publik" :visible.sync="publicConsultationDialog">
+    <el-dialog
+      title="Hasil Konsultasi Publik"
+      :visible.sync="publicConsultationDialog"
+    >
       <div v-if="publicConsultation !== null">
         <p><b>Tanggal:</b> {{ publicConsultation.event_date }}</p>
         <p><b>Jumlah Peserta:</b> {{ publicConsultation.participant }} Orang</p>
@@ -126,7 +181,9 @@
           <div v-for="(docs, index) in publicConsultationDocs" :key="index">
             <p>
               <b>{{ docs.doc_type }}:</b>
-              <a :href="docs.filepath" style="color: #216221" target="_blank">Lihat</a>
+              <a :href="docs.filepath" style="color: #216221" target="_blank">
+                Lihat
+              </a>
             </p>
           </div>
         </div>
@@ -218,9 +275,11 @@ export default {
       if (data.public_consultation) {
         this.publicConsultation = data.public_consultation;
         if (data.public_consultation.docs) {
-          this.publicConsultationDocs = data.public_consultation.docs.map(x => {
-            return JSON.parse(x.doc_json);
-          });
+          this.publicConsultationDocs = data.public_consultation.docs.map(
+            (x) => {
+              return JSON.parse(x.doc_json);
+            }
+          );
         }
       }
       this.loadingverification = false;
@@ -228,6 +287,20 @@ export default {
     async handleSubmit() {
       if (this.idProject == null) {
         return;
+      }
+
+      if (this.verifications.is_complete !== null) {
+        this.errors = {};
+        let error = this.validationErrors();
+
+        if (!this.verifications.notes) {
+          error++;
+          this.errors.notes = true;
+        }
+
+        if (error > 0) {
+          return;
+        }
       }
 
       this.loadingSubmit = true;
@@ -282,7 +355,8 @@ export default {
         name === 'hasil_penapisan' ||
         name === 'sertifikasi_penyusun' ||
         name === 'cv_penyusun' ||
-        name === 'surat_penyusun' || name === 'konsul_publik'
+        name === 'surat_penyusun' ||
+        name === 'konsul_publik'
       );
     },
     handleRedirect(name) {
@@ -304,7 +378,8 @@ export default {
       });
       this.docxData = data;
       const a = document.createElement('a');
-      a.href = window.location.origin + `/storage/adm-no/hasil-adm-${data}.docx`;
+      a.href =
+        window.location.origin + `/storage/adm-no/hasil-adm-${data}.docx`;
       a.setAttribute('download', `hasil-adm-${data}.docx`);
       a.click();
       this.loadingDocx = false;
@@ -350,31 +425,20 @@ export default {
         confirmButtonText: 'Ya',
         cancelButtonText: 'Tidak',
         type: 'warning',
-      }).then(() => {
-        let error = 0;
-        this.errors = {};
-        if (!this.verifications.notes) {
-          error++;
-          this.errors.notes = true;
-        }
-
-        const forms = this.verifications.ka_forms;
-        for (let i = 0; i < forms.length; i++) {
-          if (forms[i].suitability === 'Tidak Sesuai' && !forms[i].description) {
-            error++;
-            this.errors[`form-${i}`] = true;
+      })
+        .then(() => {
+          this.errors = {};
+          const error = this.validationErrors();
+          if (error === 0) {
+            this.handleSaveComplete(decision);
           }
-        }
-
-        if (error === 0) {
-          this.handleSaveComplete(decision);
-        }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Simpan data dibatalkan',
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Simpan data dibatalkan',
+          });
         });
-      });
     },
     async handleSaveComplete(decision) {
       this.loadingComplete = true;
@@ -385,8 +449,19 @@ export default {
         decision,
       });
       this.getVerifications();
-      this.$emit('changeIsComplete', { isComplete: (decision === 'ya') });
+      this.$emit('changeIsComplete', { isComplete: decision === 'ya' });
       this.loadingComplete = false;
+    },
+    validationErrors() {
+      const forms = this.verifications.ka_forms;
+      let error = 0;
+      for (let i = 0; i < forms.length; i++) {
+        if (forms[i].suitability === 'Tidak Sesuai' && !forms[i].description) {
+          error++;
+          this.errors[`form-${i}`] = true;
+        }
+      }
+      return error;
     },
   },
 };

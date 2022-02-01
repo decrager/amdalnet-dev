@@ -25,4 +25,9 @@ class TestingMeetingInvitation extends Model
     {
         return $this->belongsTo(FeasibilityTestTeamMember::class, 'id_feasibility_test_team_member', 'id');
     }
+
+    public function governmentInstitution()
+    {
+        return $this->belongsTo(GovernmentInstitution::class, 'id_government_institution', 'id');
+    }
 }
