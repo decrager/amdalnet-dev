@@ -189,4 +189,15 @@ class OssController extends Controller
                 break;
         }
     }
+
+    public function getParamByFieldId($id){
+        $bparam = BusinessEnvParam::select('business_env_params.business_id','params.id as params_id', 'params.name as params_name', 'units.id as unit_id', 'units.name as unit_name')
+        ->leftJoin('params', 'business_env_params.id_param', '=', 'params.id')
+        ->leftJoin('units', 'business_env_params.id_unit', '=', 'units.id')
+        ->where('business_id',$id)->where('id_param', '!=', 0)->get();
+
+
+
+        return $bparam;
+    }
 }

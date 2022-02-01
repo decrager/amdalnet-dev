@@ -60,6 +60,8 @@ GET http://localhost:8000/api/oss/sectorByKbli/27401
 ###
 GET http://localhost:8000/api/oss/getField?kbli=27401&sector=Perindustrian
 ###
+GET http://localhost:8000/api/oss/getParameterByFieldId/211
+###
 POST http://localhost:8000/api/oss/calculateDoc
 content-type: application/json
 

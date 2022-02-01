@@ -352,6 +352,7 @@ Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::c
 //OSS consume
 Route::get('oss/sectorByKbli/{kbli}', [OssController::class, 'sectorByKbli']);
 Route::get('oss/getField', [OssController::class, 'getField']);
+Route::get('oss/getParameterByFieldId/{id}', [OssController::class, 'getParamByFieldId']);
 Route::post('oss/calculateDoc', [OssController::class, 'calculateDoc']);
 
 Route::get('environmental-approval', [EnvironmentalApprovalController::class, 'index']);
