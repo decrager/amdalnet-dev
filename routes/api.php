@@ -32,6 +32,8 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalPermitController;
 use App\Http\Controllers\OssController;
+use App\Http\Controllers\EnvironmentalApprovalController;
+use App\Http\Controllers\GovernmentInstitutionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -351,6 +353,14 @@ Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::c
 Route::get('oss/sectorByKbli/{kbli}', [OssController::class, 'sectorByKbli']);
 Route::get('oss/getField', [OssController::class, 'getField']);
 Route::post('oss/calculateDoc', [OssController::class, 'calculateDoc']);
+
+Route::get('environmental-approval', [EnvironmentalApprovalController::class, 'index']);
+Route::post('environmental-approval', [EnvironmentalApprovalController::class, 'store']);
+Route::post('environmental-approval/update', [EnvironmentalApprovalController::class, 'update']);
+Route::get('environmental-approval/delete/{id}', [EnvironmentalApprovalController::class, 'destroy']);
+
+// Master Government Insitution
+Route::apiResource('government-institution', 'GovernmentInstitutionController');
 
 // Route::put('activateUser/{user}', 'UserController@updateActive');
 Route::put('activateUser/{user}', function (User $user) {

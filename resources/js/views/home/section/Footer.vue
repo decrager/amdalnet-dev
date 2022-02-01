@@ -1,6 +1,6 @@
 <template>
   <footer class="footer section">
-    <div class="footer__container container grid">
+    <div class="footer__container container">
       <div class="footer__content grid">
         <div class="footer__data">
           <img src="/images/logo-klhk.png" alt="">

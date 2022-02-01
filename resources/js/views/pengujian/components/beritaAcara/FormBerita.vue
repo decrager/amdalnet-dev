@@ -1,39 +1,12 @@
 <template>
   <el-form label-position="top" label-width="200px" style="max-width: 100%">
-    <el-row :gutter="32">
-      <el-col :sm="24" :md="24">
-        <el-form-item label="Nama Usaha/Kegiatan">
-          <el-input v-model="reports.project_name" readonly />
-        </el-form-item>
-      </el-col>
-      <el-col :sm="24" :md="24">
-        <el-form-item label="Pemrakarsa">
-          <el-select
-            v-model="reports.id_initiator"
-            placeholder="Pilih Tim"
-            style="width: 100%"
-            :disabled="true"
-          >
-            <el-option
-              v-for="item in pemrakarsa"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-      </el-col>
-      <el-col :sm="12" :md="12">
-        <el-form-item label="Penanggung Jawab">
-          <el-input v-model="reports.person_responsible" readonly />
-        </el-form-item>
-      </el-col>
+    <el-row v-loading="loadingtuk" :gutter="32">
       <el-col :sm="12" :md="12">
         <el-form-item label="Jabatan">
           <el-input v-model="reports.position" />
         </el-form-item>
       </el-col>
-      <el-col :sm="24" :md="24">
+      <el-col :sm="24" :md="12">
         <el-form-item label="Tempat Rapat">
           <el-input v-model="reports.location" />
         </el-form-item>

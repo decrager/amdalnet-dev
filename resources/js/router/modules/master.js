@@ -118,6 +118,12 @@ const masterRoutes = {
       meta: { title: 'Tambah SOP', icon: 'documentation', noCache: true },
     },
     {
+      path: 'instansi-pemerintah',
+      component: () => import('@/views/government-institution/index'),
+      name: 'governmentInstitution',
+      meta: { title: 'Instansi Pemerintah', icon: 'documentation', noCache: true },
+    },
+    {
       path: 'anggota-tuk',
       component: () => import('@/views/employee/index'),
       name: 'employeeTuk',
@@ -205,20 +211,26 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Ubah Izin', icon: 'documentation', noCache: true },
     },
-    // {
-    //   path: 'create-params',
-    //   component: () => import('@/views/params/Create'),
-    //   name: 'addParams',
-    //   hidden: true,
-    //   meta: { title: 'Tambah Parameter Aplikasi', icon: 'documentation', noCache: true },
-    // },
-    // {
-    //   path: 'update-params',
-    //   component: () => import('@/views/params/Create'),
-    //   name: 'updateParams',
-    //   hidden: true,
-    //   meta: { title: 'Tambah Parameter Aplikasi', icon: 'documentation', noCache: true },
-    // },
+    {
+      path: 'template-persetujuan',
+      component: () => import('@/views/template-persetujuan/index'),
+      name: 'DaftarPersetujuan',
+      meta: { title: 'Persetujuan Lingkungan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'template-persetujuan/create',
+      component: () => import('@/views/template-persetujuan/Create'),
+      name: 'AddDaftarPersetujuan',
+      hidden: true,
+      meta: { title: 'Tambah Persetujuan Lingkungan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'template-persetujuan/edit',
+      component: () => import('@/views/template-persetujuan/Edit'),
+      name: 'EditDaftarPersetujuan',
+      hidden: true,
+      meta: { title: 'Edit Persetujuan Lingkungan', icon: 'documentation', noCache: true },
+    },
   ],
 };
 

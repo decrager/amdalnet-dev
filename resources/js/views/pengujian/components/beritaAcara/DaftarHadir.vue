@@ -22,6 +22,7 @@
             v-model="scope.row.role"
             placeholder="Pilih Peran"
             style="width: 100%"
+            @change="handleChangeRole($event, scope.$index)"
           >
             <el-option
               v-for="item in peran"
@@ -37,6 +38,29 @@
         <template slot-scope="scope">
           <span v-if="scope.row.type == 'tuk'">{{ scope.row.name }} TUK</span>
           <el-input v-else v-model="scope.row.name" />
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Instansi">
+        <template slot-scope="scope">
+          <span v-if="scope.row.type == 'tuk'">{{
+            scope.row.institution
+          }}</span>
+          <el-select
+            v-else-if="isGovernmentInstitution(scope.row.role)"
+            v-model="scope.row.id_government_institution"
+            placeholder="Pilih Instansi"
+            style="width: 100%"
+            filterable
+          >
+            <el-option
+              v-for="item in scope.row.institution_options"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+          <el-input v-else v-model="scope.row.institution" />
         </template>
       </el-table-column>
 
@@ -60,7 +84,7 @@
     </div>
     <div style="margin-top: 13px">
       <h5>Ringkasan Masukan dan Komentar</h5>
-      <Tinymce v-model="reports.notes" :height="200" />
+      <Tinymce v-model="reports.notes" v-loading="loadingtuk" :height="200" />
     </div>
     <el-upload
       v-if="!reports.file"
@@ -78,7 +102,7 @@
         Unggah BA Final
       </el-button>
     </el-upload>
-    <div v-else style="text-align: right;">
+    <div v-else style="text-align: right">
       <el-button
         type="text"
         size="medium"
@@ -120,10 +144,30 @@ export default {
       default: () => {},
     },
     loadingtuk: Boolean,
+    governmentinstitutions: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       peran: [
+        {
+          label: 'Kementerian',
+          value: 'Kementerian',
+        },
+        {
+          label: 'Lembaga',
+          value: 'Lembaga',
+        },
+        {
+          label: 'Pemerintah Provinsi',
+          value: 'Pemerintah Provinsi',
+        },
+        {
+          label: 'Pemerintah Kabupaten/Kota',
+          value: 'Pemerintah Kabupaten/Kota',
+        },
         {
           label: 'Tenaga Ahli',
           value: 'Tenaga Ahli',
@@ -131,6 +175,10 @@ export default {
         {
           label: 'Masyarakat',
           value: 'Masyarakat',
+        },
+        {
+          label: 'Lainnya',
+          value: 'Lainnya',
         },
       ],
       errors: {},
@@ -151,7 +199,21 @@ export default {
         name: null,
         email: null,
         type: 'other',
+        id_government_institution: null,
+        institution_options: [],
+        institution: null,
       });
+    },
+    isGovernmentInstitution(role) {
+      return (
+        role === 'Kementerian' ||
+        role === 'Lembaga' ||
+        role === 'Pemerintah Provinsi' ||
+        role === 'Pemerintah Kabupaten/Kota'
+      );
+    },
+    handleChangeRole(val, idx) {
+      this.$emit('handleChangeRole', { val, idx });
     },
     deleteRow(id, personType) {
       this.$emit('deleteinvitation', { id, personType });

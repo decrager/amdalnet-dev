@@ -194,6 +194,8 @@ class MeetReportRKLRPLController extends Controller
                 $invitation->role = $data['invitations'][$i]['role'];
                 $invitation->name = $data['invitations'][$i]['name'];
                 $invitation->email = $data['invitations'][$i]['email'];
+                $invitation->institution = $data['invitations'][$i]['institution'];
+                $invitation->id_government_institution = $data['invitations'][$i]['id_government_institution'];
             }
 
             $invitation->save();
@@ -265,6 +267,7 @@ class MeetReportRKLRPLController extends Controller
                     $name = '';
                     $email = '';
                     $type_member = '';
+                    $institution = '-';
 
                     if($i->feasibilityTestTeamMember->id_expert_bank) {
                         $name = $i->feasibilityTestTeamMember->expertBank->name;
@@ -273,6 +276,7 @@ class MeetReportRKLRPLController extends Controller
                     } else if($i->feasibilityTestTeamMember->id_luk_member) {
                         $name = $i->feasibilityTestTeamMember->lukMember->name;
                         $email = $i->feasibilityTestTeamMember->lukMember->email;
+                        $institution = $i->feasibilityTestTeamMember->lukMember->institution;
                         $type_member = 'employee';
                     }
 
@@ -282,7 +286,9 @@ class MeetReportRKLRPLController extends Controller
                         'name' => $name,
                         'email' => $email,
                         'type' => 'tuk',
-                        'type_member' => $type_member
+                        'type_member' => $type_member,
+                        'institution' => $institution,
+                        'id_government_institution' => null
                     ];
                 } else {
                     $invitations[] = [
@@ -291,7 +297,9 @@ class MeetReportRKLRPLController extends Controller
                         'name' => $i->name,
                         'email' => $i->email,
                         'type' => 'other',
-                        'type_member' => 'other'
+                        'type_member' => 'other',
+                        'institution' => $i->institution,
+                        'id_government_institution' => $i->id_government_institution,
                     ];
                 }
             }
@@ -335,6 +343,7 @@ class MeetReportRKLRPLController extends Controller
                     $name = '';
                     $email = '';
                     $type_member = '';
+                    $institution = '-';
 
                     if($i->feasibilityTestTeamMember->id_expert_bank) {
                         $name = $i->feasibilityTestTeamMember->expertBank->name;
@@ -343,6 +352,7 @@ class MeetReportRKLRPLController extends Controller
                     } else if($i->feasibilityTestTeamMember->id_luk_member) {
                         $name = $i->feasibilityTestTeamMember->lukMember->name;
                         $email = $i->feasibilityTestTeamMember->lukMember->email;
+                        $institution = $i->feasibilityTestTeamMember->lukMember->institution;
                         $type_member = 'employee';
                     }
 
@@ -352,7 +362,9 @@ class MeetReportRKLRPLController extends Controller
                         'name' => $name,
                         'email' => $email,
                         'type' => 'tuk',
-                        'type_member' => $type_member
+                        'type_member' => $type_member,
+                        'institution' => $institution,
+                        'id_government_institution' => null
                     ];
                 } else {
                     $invitations[] = [
@@ -361,7 +373,9 @@ class MeetReportRKLRPLController extends Controller
                         'name' => $i->name,
                         'email' => $i->email,
                         'type' => 'other',
-                        'type_member' => 'other'
+                        'type_member' => 'other',
+                        'institution' => $i->institution,
+                        'id_government_institution' => $i->id_government_institution,
                     ];
                 }
             }

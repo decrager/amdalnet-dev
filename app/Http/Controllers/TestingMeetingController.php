@@ -168,7 +168,7 @@ class TestingMeetingController extends Controller
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
             }
 
-            return response()->json(['errors' => null]);
+            return response()->json(['errors' => null, 'name' => $testing_meeting->file]);
         }
 
         $data = $request->meetings;
@@ -198,6 +198,10 @@ class TestingMeetingController extends Controller
         if($data['type'] == 'update') {
             if($oldTeamId != $data['id_feasibility_test_team']) {
                 TestingMeetingInvitation::where([['id_testing_meeting', $meeting->id]])->delete();           
+            } else {
+                 for($a = 0; $a < count($data['deleted_invitations']); $a++) {
+                     TestingMeetingInvitation::destroy($data['deleted_invitations'][$a]);
+                 }
             }
         }
 
@@ -212,6 +216,8 @@ class TestingMeetingController extends Controller
                     $invitation->role = $data['invitations'][$i]['role'];
                     $invitation->name = $data['invitations'][$i]['name'];
                     $invitation->email = $data['invitations'][$i]['email'];
+                    $invitation->institution = $data['invitations'][$i]['institution'];
+                    $invitation->id_government_institution = $data['invitations'][$i]['id_government_institution'];
                 }
     
                 $invitation->save();
@@ -232,6 +238,8 @@ class TestingMeetingController extends Controller
                     $invitation->role = $data['invitations'][$i]['role'];
                     $invitation->name = $data['invitations'][$i]['name'];
                     $invitation->email = $data['invitations'][$i]['email'];
+                    $invitation->institution = $data['invitations'][$i]['institution'];
+                    $invitation->id_government_institution = $data['invitations'][$i]['id_government_institution'];
                 }
 
                 $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
@@ -306,7 +314,8 @@ class TestingMeetingController extends Controller
             'id_feasibility_test_team' => null,
             'project_name' => $project->project_title,
             'invitations' => [],
-            'file' => null
+            'file' => null,
+            'deleted_invitations' => []
         ];
 
         return $data;
@@ -323,6 +332,7 @@ class TestingMeetingController extends Controller
                     $name = '';
                     $email = '';
                     $type_member = '';
+                    $institution = '-';
 
                     if($i->feasibilityTestTeamMember->id_expert_bank) {
                         $name = $i->feasibilityTestTeamMember->expertBank->name;
@@ -331,6 +341,7 @@ class TestingMeetingController extends Controller
                     } else if($i->feasibilityTestTeamMember->id_luk_member) {
                         $name = $i->feasibilityTestTeamMember->lukMember->name;
                         $email = $i->feasibilityTestTeamMember->lukMember->email;
+                        $institution = $i->feasibilityTestTeamMember->lukMember->institution;
                         $type_member = 'employee';
                     }
 
@@ -340,7 +351,9 @@ class TestingMeetingController extends Controller
                         'name' => $name,
                         'email' => $email,
                         'type' => 'tuk',
-                        'type_member' => $type_member
+                        'type_member' => $type_member,
+                        'institution' => $institution,
+                        'id_government_institution' => null
                     ];
                 } else {
                     $invitations[] = [
@@ -349,7 +362,9 @@ class TestingMeetingController extends Controller
                         'name' => $i->name,
                         'email' => $i->email,
                         'type' => 'other',
-                        'type_member' => 'other'
+                        'type_member' => 'other',
+                        'institution' => $i->institution,
+                        'id_government_institution' => $i->id_government_institution,
                     ];
                 }
             }
@@ -375,7 +390,8 @@ class TestingMeetingController extends Controller
             'id_feasibility_test_team' => $meeting->id_feasibility_test_team,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
-            'file' => null
+            'file' => $meeting->file,
+            'deleted_invitations' => []
         ];
 
         return $data;

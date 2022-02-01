@@ -161,14 +161,21 @@ export default {
 .tabset {
   margin-top: 30px;
 }
-.tabset >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
+/* .tabset >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
   color: #F6993F;
   font-weight: 800;
   background-color: #062307;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
+*/
 
+.tabset >>> .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
+  color: #FFF;
+  font-weight: 800;
+  background-color: #F6993F;
+  border-radius: 1px;
+}
 .tabset >>> .el-tabs--card > .el-tabs__header .el-tabs__item {
   color: white;
   font-weight: 400;

@@ -5,7 +5,7 @@
         <h2 class="section__title about__title">Tahapan Pengajuan Persetujuan Lingkungan</h2>
         <div class="progressbar-wrapper">
           <ul class="progressbar">
-            <li class="active">Pengajuan<br> Persetujuan Lingkungan</li>
+            <li class="active ">Pengajuan<br> Persetujuan Lingkungan</li>
             <li class="active">Penapisan<br>Otomatis</li>
             <li class="active">Pelingkupan<br>dan Rona Awal</li>
             <li class="active">Prakiraan<br>dan Evaluasi Dampak</li>
@@ -29,7 +29,7 @@ export default {
       width: 100%;
       display: grid;
       margin-bottom: 30px;
-      background-color: white;
+      /*background-color: white;*/
       padding: 20px;
       border-radius: 5px;
 }
@@ -45,11 +45,11 @@ export default {
 }
 
 .progressbar li:before {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     content: "";
     line-height: 60px;
-    border: 4px solid #7d7d7d;
+    border: 3px solid #7d7d7d;
     display: block;
     text-align: center;
     margin: 0 auto 3px auto;
@@ -74,25 +74,29 @@ export default {
 
 .progressbar li.active {
     line-height: 20px;
-    color: #2E7932;
-    font-weight: 800;
-    font-size: 12px;
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 13px;
 }
 .progressbar li.active:before {
-    border-color: #2E7932;
+    border-color: #bacdba;
     background: #2E7932;
  }
 .progressbar li.active + li:after {
-    background-color: #2E7932;
+    background-color: #bacdba;
 }
 
 .progressbar li.active:before {
-    background: #2E7932  url('/images/check.png') no-repeat center center;
+    background: #20492e  url('/images/checkwhite.png') no-repeat center center;
     background-size: 40%;
 }
 .progressbar li::before {
-    background: #fff url('/images/check.png') no-repeat center center;
+    /*background: #fff url('/images/check.png') no-repeat center center;*/
     background-size: 40%;
+}
+
+.progressbar li. {
+
 }
 
 @media screen and (max-width: 450px) {

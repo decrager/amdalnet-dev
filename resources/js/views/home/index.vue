@@ -4,9 +4,11 @@
     <header-home @handleSetMenu="handleSetMenu" />
     <hero-home v-if="toggleMenu" />
     <steps-home v-if="toggleMenu" />
+
     <materi v-if="toggleMenuMateri" />
     <kebijakan v-if="toggleMenuKebijakan" />
     <izin v-if="toggleIzin" />
+    <persetujuan v-if="togglePersetujuan" />
     <action-home v-if="toggleMenu" />
     <counter-home v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
@@ -27,6 +29,7 @@ import StepsHome from './section/Steps.vue';
 import Kebijakan from './section/Kebijakan.vue';
 import Izin from './section/Izin.vue';
 import Materi from './section/Materi.vue';
+import Persetujuan from './section/Persetujuan.vue';
 import ActionHome from './section/Action.vue';
 import CounterHome from './section/Counter.vue';
 import AnnouncementHome from './section/Announce.vue';
@@ -40,9 +43,10 @@ export default {
     'header-home': HeaderHome,
     'hero-home': HeroHome,
     'steps-home': StepsHome,
-    kebijakan: Kebijakan,
-    materi: Materi,
-    izin: Izin,
+    'kebijakan': Kebijakan,
+    'materi': Materi,
+    'izin': Izin,
+    'persetujuan': Persetujuan,
     'action-home': ActionHome,
     'counter-home': CounterHome,
     'announcement-home': AnnouncementHome,
@@ -55,6 +59,7 @@ export default {
       toggleMenuKebijakan: false,
       toggleIzin: false,
       toggleMenu: true,
+      togglePersetujuan: false,
     };
   },
   created() {
@@ -63,11 +68,6 @@ export default {
   mounted() {},
   methods: {
     handleSetMenu(e) {
-      this.toggleMenuMateri = false;
-      this.toggleMenuKebijakan = false;
-      this.toggleIzin = false;
-      this.toggleMenu = true;
-
       if (e === 'MATERI') {
         this.toggleMenuMateri = true;
         this.toggleMenuKebijakan = false;
@@ -85,6 +85,13 @@ export default {
         this.toggleMenuMateri = false;
         this.toggleMenu = false;
         this.toggleIzin = true;
+      }
+      if (e === 'TEMPLATE') {
+        this.toggleMenuKebijakan = false;
+        this.toggleMenuMateri = false;
+        this.toggleMenu = false;
+        this.toggleIzin = false;
+        this.togglePersetujuan = true;
       }
     },
     isFirstVisit() {
