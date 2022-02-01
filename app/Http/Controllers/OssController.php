@@ -56,6 +56,9 @@ class OssController extends Controller
         $result = '';
         $type = $request->type;
 
+        $choosenProject = '';
+        $choosenProjectAmdalType = '';
+
         foreach ($params['listSubProject'] as $key => $subPro) {
             $sresult = '';
             $sresult_risk = '';
@@ -135,8 +138,33 @@ class OssController extends Controller
             $params['listSubProject'][$key]['result'] = $sresult;
             $params['listSubProject'][$key]['result_risk'] = $sresult_risk;
             $params['listSubProject'][$key]['amdal_type'] = $samdal_type;
+
+            //validate tunggal or terpadu
+            if ($params['study_approach'] === 'tunggal') {
+                if ($subPro['jenis'] === 'utama') {
+                    if ($sresult === 'AMDAL') {
+                        $choosenProject = 'AMDAL';
+                        $choosenProjectAmdalType = $samdal_type;
+                    } else if ($sresult === 'UKL-UPL' && ($choosenProject === '' || $choosenProject !== 'AMDAL')) {
+                        $choosenProject = 'UKL-UPL';
+                    } else if ($sresult === 'SPPL' && ($choosenProject !== 'AMDAL' && $choosenProject !== 'UKL-UPL')) {
+                        $choosenProject = 'SPPL';
+                    }
+                }
+            } else if ($params['study_approach'] === 'terpadu') {
+                if ($sresult === 'AMDAL') {
+                    $choosenProject = 'AMDAL';
+                    $choosenProjectAmdalType = $samdal_type;
+                } else if ($sresult === 'UKL-UPL' && $choosenProject !== 'AMDAL') {
+                    $choosenProject = 'UKL-UPL';
+                } else if ($sresult === 'SPPL' && $choosenProject !== 'AMDAL' && $choosenProject !== 'UKL-UPL') {
+                    $choosenProject = 'SPPL';
+                }
+            }
         }
 
+        $params['final_result'] = $choosenProject;
+        $params['final_result_amdal_type'] = $choosenProjectAmdalType;
         return $params;
     }
 

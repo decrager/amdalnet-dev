@@ -64,8 +64,21 @@ POST http://localhost:8000/api/oss/calculateDoc
 content-type: application/json
 
 {
-    "type":"tunggal",
+    "study_approach":"terpadu",
     "listSubProject": [
+        {
+            "jenis": "pendukung",
+            "kbli":"01465",
+            "field_id":"3257",
+            "sector_id":"3256",
+            "params":[
+                {
+                    "id_param":27,
+                    "id_unit":19,
+                    "value":5001
+                }
+            ]
+        },
         {
             "jenis": "utama",
             "kbli":"01465",
@@ -75,7 +88,7 @@ content-type: application/json
                 {
                     "id_param":27,
                     "id_unit":19,
-                    "value":5001
+                    "value":1
                 }
             ]
         }
