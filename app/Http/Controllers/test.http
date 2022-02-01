@@ -49,7 +49,36 @@ POST http://localhost:8000/api/auth/login
 content-type: application/json
 
 {"email":"admin@amdalnet.dev","password":"amdalnet"}
-# 
+
 
 ###
 GET http://localhost:8000/api/fire
+
+
+###
+GET http://localhost:8000/api/oss/sectorByKbli/27401
+###
+GET http://localhost:8000/api/oss/getField?kbli=27401&sector=Perindustrian
+###
+POST http://localhost:8000/api/oss/calculateDoc
+content-type: application/json
+
+{
+    "type":"tunggal",
+    "listSubProject": [
+        {
+            "jenis": "utama",
+            "kbli":"01465",
+            "field_id":"3257",
+            "sector_id":"3256",
+            "params":[
+                {
+                    "id_param":27,
+                    "id_unit":19,
+                    "value":5001
+                }
+            ]
+        }
+    ]
+}
+###

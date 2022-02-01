@@ -31,6 +31,7 @@ use App\Http\Controllers\PeraturanController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalPermitController;
+use App\Http\Controllers\OssController;
 
 /*
 |--------------------------------------------------------------------------
@@ -345,6 +346,11 @@ Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index
 Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);
 Route::post('environmental-permit/update', [EnvironmentalPermitController::class, 'update']);
 Route::get('environmental-permit/delete/{id}', [EnvironmentalPermitController::class, 'destroy']);
+
+//OSS consume
+Route::get('oss/sectorByKbli/{kbli}', [OssController::class, 'sectorByKbli']);
+Route::get('oss/getField', [OssController::class, 'getField']);
+Route::post('oss/calculateDoc', [OssController::class, 'calculateDoc']);
 
 // Route::put('activateUser/{user}', 'UserController@updateActive');
 Route::put('activateUser/{user}', function (User $user) {
