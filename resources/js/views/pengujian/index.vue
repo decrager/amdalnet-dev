@@ -20,7 +20,11 @@
         >
           <UndanganRapat v-if="activeName === 'undanganrapat'" />
         </el-tab-pane>
-        <el-tab-pane v-if="isSubtance && isComplete" label="Berita Acara" name="beritaacara">
+        <el-tab-pane
+          v-if="isSubtance && isComplete"
+          label="Berita Acara"
+          name="beritaacara"
+        >
           <BeritaAcara v-if="activeName === 'beritaacara'" />
         </el-tab-pane>
       </el-tabs>
