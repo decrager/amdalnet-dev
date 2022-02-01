@@ -14,6 +14,7 @@ class AddIdGovernmentInstitutionInTestingMeetingInvitationsTable extends Migrati
     public function up()
     {
         Schema::table('testing_meeting_invitations', function (Blueprint $table) {
+            $table->string('institution')->nullable();
             $table->integer('id_government_institution')->nullable();
             $table->foreign('id_government_institution')->references('id')->on('government_institutions')->onDelete('cascade');
         });
@@ -29,6 +30,7 @@ class AddIdGovernmentInstitutionInTestingMeetingInvitationsTable extends Migrati
         Schema::table('testing_meeting_invitations', function (Blueprint $table) {
             $table->dropForeign(['id_government_institution']);
             $table->dropColumn('id_government_institution');
+            $table->dropColumn('institution');
         });
     }
 }
