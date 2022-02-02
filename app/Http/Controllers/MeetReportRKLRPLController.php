@@ -31,7 +31,8 @@ class MeetReportRKLRPLController extends Controller
     public function index(Request $request)
     {
         if($request->docs) {
-            return $this->getDocs($request->idProject);
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            return $this->getDocs($request->idProject, $document_type);
         }
 
         if($request->pemrakarsa) {
@@ -80,11 +81,12 @@ class MeetReportRKLRPLController extends Controller
 
         if($request->idProject) {
             // Check if meeting report exist
-            $report = MeetingReport::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            $report = MeetingReport::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             if($report) {
-                return $this->getExistReport($request->idProject);
+                return $this->getExistReport($request->idProject, $document_type);
             } else {
-                return $this->getFreshReport($request->idProject);
+                return $this->getFreshReport($request->idProject, $document_type);
             }
         }
     }
@@ -108,6 +110,7 @@ class MeetReportRKLRPLController extends Controller
     public function store(Request $request)
     {
         if($request->file) {
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $data = $request->all();
             $validator = \Validator::make($data, [
                 'dokumen_file' => 'max:1024'
@@ -122,10 +125,10 @@ class MeetReportRKLRPLController extends Controller
             if($request->hasFile('dokumen_file')) {
                 $project = Project::findOrFail($request->idProject);
                 $file = $request->file('dokumen_file');
-                $name = '/berita-acara-rkl-rpl/' . strtolower($project->project_title) . '.' . $file->extension();
+                $name = '/berita-acara-' . $document_type . '/' . strtolower($project->project_title) . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
     
-                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'rkl-rpl']])->first();
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
                 $meeting_report->file = Storage::url($name);
                 $meeting_report->save();
 
@@ -138,14 +141,15 @@ class MeetReportRKLRPLController extends Controller
 
         if ($request->formulir) {
             $project_title = strtolower(Project::findOrFail($request->idProject)->project_title);
-            if (File::exists(storage_path('app/public/berita-acara/ba-rkl-rpl-' . $project_title . '.docx'))) {
-                File::delete(storage_path('app/public/berita-acara/ba-rkl-rpl-' . $project_title . '.docx'));
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            if (File::exists(storage_path('app/public/berita-acara/ba-' . $document_type . '-' . $project_title . '.docx'))) {
+                File::delete(storage_path('app/public/berita-acara/ba-' . $document_type . '-' . $project_title . '.docx'));
             }
 
             if ($request->hasFile('docx')) {
                 //create file
                 $file = $request->file('docx');
-                $name = '/berita-acara/ba-rkl-rpl-' . $project_title . '.docx';
+                $name = '/berita-acara/ba-' . $document_type . '-' . $project_title . '.docx';
                 $file->storePubliclyAs('public', $name);
 
                 return response()->json(['message' => 'success']);
@@ -155,16 +159,16 @@ class MeetReportRKLRPLController extends Controller
         }
 
         $data = $request->reports;
-
+        $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
         // Save meetings
         $report = null;
         if($data['type'] == 'new') {
             $report = new MeetingReport();
             $report->id_project = $request->idProject;
             $report->id_testing_meeting = $data['id_testing_meeting'];
-            $report->document_type = 'rkl-rpl';
+            $report->document_type = $document_type;
         } else {
-            $report = MeetingReport::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
+            $report = MeetingReport::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
         }
 
 
@@ -250,8 +254,8 @@ class MeetReportRKLRPLController extends Controller
         //
     }
 
-    private function getFreshReport($id_project) {
-        $meeting = TestingMeeting::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
+    private function getFreshReport($id_project, $document_type) {
+        $meeting = TestingMeeting::where([['id_project', $id_project],['document_type', $document_type]])->first();
 
         if(!$meeting) {
             return [
@@ -332,8 +336,8 @@ class MeetReportRKLRPLController extends Controller
         return $data;
     }
 
-    private function getExistReport($id_project) {
-        $report = MeetingReport::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
+    private function getExistReport($id_project, $document_type) {
+        $report = MeetingReport::where([['id_project', $id_project],['document_type', $document_type]])->first();
 
         $invitations = [];
 
@@ -408,13 +412,15 @@ class MeetReportRKLRPLController extends Controller
         return $data;
     }
 
-    private function getDocs($id_project) {
-        if (!File::exists(storage_path('app/public/ba-andal-rkl-rpl/'))) {
-            File::makeDirectory(storage_path('app/public/ba-andal-rkl-rpl/'));
+    private function getDocs($id_project, $document_type) {
+        $directory = $document_type == 'ukl-upl' ? 'ukl-upl' : 'andal-rkl-rpl';
+
+        if (!File::exists(storage_path('app/public/ba-' . $directory . '/'))) {
+            File::makeDirectory(storage_path('app/public/ba-' . $directory . '/'));
         }
 
         $project = Project::findOrFail($id_project);
-        $meeting = MeetingReport::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes', 'position')->where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
+        $meeting = MeetingReport::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes', 'position')->where([['id_project', $id_project],['document_type', $document_type]])->first();
         $invitations = MeetingReportInvitation::where('id_meeting_report', $meeting->id)->get();
         Carbon::setLocale('id');
         
@@ -503,6 +509,9 @@ class MeetReportRKLRPLController extends Controller
         }
 
         $templateProcessor = new TemplateProcessor('template_berita_acara_arr.docx');
+        if($document_type == 'ukl-upl') {
+            $templateProcessor = new TemplateProcessor('template_berita_acara_uu.docx');
+        }
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
@@ -524,7 +533,11 @@ class MeetReportRKLRPLController extends Controller
         Html::addHtml($cell, $meeting->notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower($project->project_title) . '.docx'));
+        if($document_type == 'ukl-upl') {
+            $templateProcessor->saveAs(storage_path('app/public/ba-ukl-upl/ba-ukl-upl-' . strtolower($project->project_title) . '.docx'));
+        } else {
+            $templateProcessor->saveAs(storage_path('app/public/ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower($project->project_title) . '.docx'));
+        }
 
         return strtolower($project->project_title);
     }

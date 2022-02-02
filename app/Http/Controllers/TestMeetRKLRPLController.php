@@ -147,6 +147,7 @@ class TestMeetRKLRPLController extends Controller
         }
 
         if($request->file) {
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $data = $request->all();
             $validator = \Validator::make($data, [
                 'dokumen_file' => 'max:1024'
@@ -162,7 +163,7 @@ class TestMeetRKLRPLController extends Controller
                 $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
                 $project = Project::findOrFail($request->idProject);
                 $file = $request->file('dokumen_file');
-                $name = '/verifikasi-rkl-rpl/' . strtolower($project->project_title) . '.' . $file->extension();
+                $name = '/verifikasi-' . $document_type . '/' . strtolower($project->project_title) . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
     
                 $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
