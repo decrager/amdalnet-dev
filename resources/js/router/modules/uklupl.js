@@ -39,7 +39,7 @@ const ukluplRoutes = {
       path: ':id(\\d+)/rekomendasi-uji-kelayakan',
       component: () =>
         import(
-          '@/views/pengujian-ukl-upl/components/ujiKelayakan/SuratRekomendasi'
+          '@/views/pengujian-ukl-upl/components/ujiKelayakan/suratRekomendasi'
         ),
       name: 'rekomendasiUjiKelayakanUKLUPL',
       meta: {
