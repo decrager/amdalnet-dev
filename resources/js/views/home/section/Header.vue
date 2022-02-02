@@ -28,6 +28,11 @@
               </li>
               <li>
                 <a href="">UKL-UPL Standar Spesifik</a>
+                <i class="el-icon-arrow-down" />
+                <ul>
+                  <li><a href="#">Template UKL-UPL Menengah Rendah</a></li>
+                  <li><a href="#">Template UKL-UPL Standar Spesifik</a></li>
+                </ul>
               </li>
               <li>
                 <a href="">Lainnya...</a>
@@ -165,11 +170,16 @@ export default {
 .nav__link {font-size: 0.9rem;}
   .nav__item{position: relative;}
   /*.nav__item ul{position: absolute;background: black;  padding: 1rem;border: 1px solid #847a7a;border-radius: 5px;width: 254px;font-size: 0.7rem;}*/
-  .nav__item ul{position: absolute;top: 1.8rem;background: #637664;  padding: 1rem;width: 294px;font-size: 0.8rem;}
-  .nav__item ul li{padding: 0.5rem;}
-  .nav__item ul li a{color: #fff;}
+  .nav__item > ul{position: absolute;top: 1.8rem;background: #637664;  width: 294px;font-size: 0.8rem;z-index: 999;}
+  .nav__item > ul li{padding: 0.5rem; position: relative;}
+  /* .nav__item > ul > li:hover a{color: #143b17;} */
+  .nav__item > ul li a{color: #fff;}
   .left-4{left: -4rem;}
   .left0{left: 0;}
   .top-1-8{top: 1.8rem;}
   .top4{top: 4rem;}
+  .nav__item > ul li ul{position: absolute; left: 100%;background: #637664;  width: 294px;font-size: 0.8rem; top: 0;display: none;}
+  .nav__item > ul li:hover ul{display: block;}
+  .nav__item > ul li:hover i{transform: rotate(-90deg);}
+  .nav__item > ul li i {color: #133815;font-weight: bold;display: inline-block;float: right;}
 </style>
