@@ -253,13 +253,22 @@
                   Surat Rekomendasi Uji Kelayakan
                 </el-button>
                 <el-button
-                  v-if="scope.row.feasibility_test"
+                  v-if="isAmdal(scope.row) && scope.row.feasibility_test"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleFeasibilityTest(scope.row.id)"
                 >
                   SKKL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && scope.row.feasibility_test"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handlePKPLH(scope.row)"
+                >
+                  PKPLH
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -700,6 +709,11 @@ export default {
     handleFeasibilityTest(id) {
       this.$router.push({
         path: `/dokumen-kegiatan/${id}/skkl`,
+      });
+    },
+    handlePKPLH(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/pkplh`,
       });
     },
     async handleGenerateSPPL(project) {
