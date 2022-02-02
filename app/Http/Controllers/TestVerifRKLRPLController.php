@@ -31,7 +31,8 @@ class TestVerifRKLRPLController extends Controller
     public function index(Request $request)
     {
         if($request->checkComplete) {
-            $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             if($verification) {
                 if($verification->is_complete == null) {
                     return 'false';
@@ -46,7 +47,8 @@ class TestVerifRKLRPLController extends Controller
         }
 
         if($request->exportNoDocx) {
-            return $this->exportNoDocx($request->idProject);
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            return $this->exportNoDocx($request->idProject, $document_type);
         }
 
         if($request->project) {
@@ -55,7 +57,8 @@ class TestVerifRKLRPLController extends Controller
 
         if($request->idProject) {
             // Check if verification exist
-            $verifications = TestingVerification::where([['id_project', $request->idProject], ['document_type', 'rkl-rpl']])->first();
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            $verifications = TestingVerification::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
             return $this->getVerification($verifications, $request->idProject);
         }
     }
@@ -81,14 +84,15 @@ class TestVerifRKLRPLController extends Controller
         $data = $request->verifications;
 
         $verification = null;
+        $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
 
         // Save verifications
         if($data['type'] == 'new') {
             $verification = new TestingVerification();
             $verification->id_project = $request->idProject;
-            $verification->document_type = 'rkl-rpl';
+            $verification->document_type = $document_type;
         } else {
-            $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
+            $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
         }
         
         $verification->notes = $data['notes'];
@@ -360,14 +364,14 @@ class TestVerifRKLRPLController extends Controller
         ];
     }
 
-    private function exportNoDocx($id_project)
+    private function exportNoDocx($id_project, $document_type)
     {
         if (!File::exists(storage_path('app/public/adm-no/'))) {
             File::makeDirectory(storage_path('app/public/adm-no/'));
         }
 
         $project = Project::findOrFail($id_project);
-        $verification = TestingVerification::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
+        $verification = TestingVerification::where([['id_project', $id_project],['document_type', $document_type]])->first();
         
         Carbon::setLocale('id');
 
@@ -405,7 +409,11 @@ class TestVerifRKLRPLController extends Controller
         $templateProcessor->setValue('project_address', $project_address);
         $templateProcessor->setValue('ketua_tuk_name', $ketua_tuk_name);
         $templateProcessor->setValue('ketua_tuk_nip', $ketua_tuk_nip);
-        $templateProcessor->setValue('document_type', 'Andal RKL RPL');
+        if($document_type == 'rkl-rpl') {
+            $templateProcessor->setValue('document_type', 'Andal RKL RPL');
+        } else {
+            $templateProcessor->setValue('document_type', 'UKL UPL');
+        }
 
         $notesTable = new Table();
         $notesTable->addRow();

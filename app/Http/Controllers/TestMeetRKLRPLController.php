@@ -33,11 +33,13 @@ class TestMeetRKLRPLController extends Controller
     public function index(Request $request)
     {
         if($request->meetingInvitation) {
-            return $this->meetingInvitation($request->idProject);
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            return $this->meetingInvitation($request->idProject, $document_type);
         }
 
         if($request->dokumen) {
-            return $this->dokumen($request->idProject);
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            return $this->dokumen($request->idProject, $document_type);
         }
 
         if($request->pemrakarsa) {
@@ -82,9 +84,10 @@ class TestMeetRKLRPLController extends Controller
 
         if($request->idProject) {
             // Check if meeting exist
-            $meetings = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'rkl-rpl']])->first();
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+            $meetings = TestingMeeting::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
             if($meetings) {
-                return $this->getExistMeetings($request->idProject);
+                return $this->getExistMeetings($request->idProject, $document_type);
             } else {
                 return $this->getFreshMeetings($request->idProject);
             }
@@ -110,8 +113,9 @@ class TestMeetRKLRPLController extends Controller
     public function store(Request $request)
     {
         if($request->invitation) {
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $receiver = [];
-            $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
+            $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             if($meeting) {
                 $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
                 foreach($invitations as $i) {
@@ -143,6 +147,7 @@ class TestMeetRKLRPLController extends Controller
         }
 
         if($request->file) {
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $data = $request->all();
             $validator = \Validator::make($data, [
                 'dokumen_file' => 'max:1024'
@@ -155,12 +160,13 @@ class TestMeetRKLRPLController extends Controller
             }
 
             if($request->hasFile('dokumen_file')) {
+                $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
                 $project = Project::findOrFail($request->idProject);
                 $file = $request->file('dokumen_file');
-                $name = '/verifikasi-rkl-rpl/' . strtolower($project->project_title) . '.' . $file->extension();
+                $name = '/verifikasi-' . $document_type . '/' . strtolower($project->project_title) . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
     
-                $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'rkl-rpl']])->first();
+                $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
                 $testing_meeting->file = Storage::url($name);
                 $testing_meeting->save();
 
@@ -172,6 +178,7 @@ class TestMeetRKLRPLController extends Controller
         }
 
         $data = $request->meetings;
+        $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
 
         // Save meetings
         $meeting = null;
@@ -179,9 +186,9 @@ class TestMeetRKLRPLController extends Controller
         if($data['type'] == 'new') {
             $meeting = new TestingMeeting();
             $meeting->id_project = $request->idProject;
-            $meeting->document_type = 'rkl-rpl';
+            $meeting->document_type = $document_type;
         } else {
-            $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'rkl-rpl']])->first();
+            $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             $oldTeamId = $meeting->id_feasibility_test_team;
         }
 
@@ -321,8 +328,8 @@ class TestMeetRKLRPLController extends Controller
         return $data;
     }
 
-    private function getExistMeetings($id_project) {
-        $meeting = TestingMeeting::where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
+    private function getExistMeetings($id_project, $document_type) {
+        $meeting = TestingMeeting::where([['id_project', $id_project],['document_type', $document_type]])->first();
 
         $invitations = [];
 
@@ -397,14 +404,14 @@ class TestMeetRKLRPLController extends Controller
         return $data;
     }
 
-    private function dokumen($id_project) {
+    private function dokumen($id_project, $document_type) {
         if (!File::exists(storage_path('app/public/adm/'))) {
             File::makeDirectory(storage_path('app/public/adm/'));
         }
 
         $project = Project::findOrFail($id_project);
-        $testing_meeting = TestingMeeting::where([['id_project', $id_project], ['document_type', 'rkl-rpl']])->first();
-        $verification = TestingVerification::where([['id_project', $id_project], ['document_type', 'rkl-rpl']])->first();
+        $testing_meeting = TestingMeeting::where([['id_project', $id_project], ['document_type', $document_type]])->first();
+        $verification = TestingVerification::where([['id_project', $id_project], ['document_type', $document_type]])->first();
         Carbon::setLocale('id');
 
         $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
@@ -523,6 +530,9 @@ class TestMeetRKLRPLController extends Controller
          }
 
         $templateProcessor = new TemplateProcessor('template_berkas_adm_ar_yes.docx');
+        if($document_type == 'ukl-upl') {
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes.docx');
+        }
 
         if($tuk_logo) {
             $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
@@ -558,19 +568,24 @@ class TestMeetRKLRPLController extends Controller
         Html::addHtml($cell, $verification->notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-ar-' . strtolower($project->project_title) . '.docx'));
+        
+        if($document_type == 'ukl-upl') {
+            $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-uu-' . strtolower($project->project_title) . '.docx'));
+        } else {
+            $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-ar-' . strtolower($project->project_title) . '.docx'));
+        }
 
         return strtolower($project->project_title);
     }
 
-    private function meetingInvitation($id_project)
+    private function meetingInvitation($id_project, $document_type)
     {
         if (!File::exists(storage_path('app/public/meet-inv/'))) {
             File::makeDirectory(storage_path('app/public/meet-inv/'));
         }
 
         $project = Project::findOrFail($id_project);
-        $testing_meeting = TestingMeeting::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time')->where([['id_project', $id_project],['document_type', 'rkl-rpl']])->first();
+        $testing_meeting = TestingMeeting::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time')->where([['id_project', $id_project],['document_type', $document_type]])->first();
         $invitations = TestingMeetingInvitation::where('id_testing_meeting', $testing_meeting->id)->get();
         Carbon::setLocale('id');
         
@@ -663,6 +678,9 @@ class TestMeetRKLRPLController extends Controller
         }
 
         $templateProcessor = new TemplateProcessor('template_undangan_rapat_arr.docx');
+        if($document_type == 'ukl-upl') {
+            $templateProcessor = new TemplateProcessor('template_undangan_rapat_uu.docx');
+        }
 
         if($tuk_logo) {
             $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
@@ -687,7 +705,11 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->cloneBlock('tuk_member', count($member), true, false, $member);
         $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
 
-        $templateProcessor->saveAs(storage_path('app/public/meet-inv/andal-rkl-rpl-' . strtolower($project->project_title) . '.docx'));
+        if($document_type == 'ukl-upl') {
+            $templateProcessor->saveAs(storage_path('app/public/meet-inv/ukl-upl-' . strtolower($project->project_title) . '.docx'));
+        } else {
+            $templateProcessor->saveAs(storage_path('app/public/meet-inv/andal-rkl-rpl-' . strtolower($project->project_title) . '.docx'));
+        }
 
         return strtolower($project->project_title);
     }

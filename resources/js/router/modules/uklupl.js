@@ -29,6 +29,25 @@ const ukluplRoutes = {
       hidden: false,
       meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
     },
+    {
+      path: ':id(\\d+)/pengujian',
+      component: () => import('@/views/pengujian-ukl-upl/index'),
+      name: 'pengujianUKLUPL',
+      meta: { title: 'Pengujian', icon: 'zip', noCache: true },
+    },
+    {
+      path: ':id(\\d+)/rekomendasi-uji-kelayakan',
+      component: () =>
+        import(
+          '@/views/pengujian-ukl-upl/components/ujiKelayakan/SuratRekomendasi'
+        ),
+      name: 'rekomendasiUjiKelayakanUKLUPL',
+      meta: {
+        title: 'Surat Rekomendasi Uji Kelayakan',
+        icon: 'zip',
+        noCache: true,
+      },
+    },
   ],
 };
 

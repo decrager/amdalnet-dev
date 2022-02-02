@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <el-card>
-      <WorkFlow />
+      <WorkflowUkl />
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane
           v-if="isAdmin"
-          label="Pemeriksaan Berkas Administrasi Formulir Andal RKL RPL"
+          label="Pemeriksaan Berkas Administrasi"
           name="verifikasi"
         >
           <Verifikasi
@@ -40,22 +40,22 @@
 </template>
 
 <script>
-import Verifikasi from '@/views/pengujian-rkl-rpl/components/verifikasi/index';
-import UndanganRapat from '@/views/pengujian-rkl-rpl/components/undanganRapat/index';
-import BeritaAcara from '@/views/pengujian-rkl-rpl/components/beritaAcara/index';
+import Verifikasi from '@/views/pengujian-ukl-upl/components/verifikasi/index';
+import UndanganRapat from '@/views/pengujian-ukl-upl/components/undanganRapat/index';
+import BeritaAcara from '@/views/pengujian-ukl-upl/components/beritaAcara/index';
 import UjiKelayakan from '@/views/pengujian-rkl-rpl/components/ujiKelayakan/index';
-import WorkFlow from '@/components/Workflow';
+import WorkflowUkl from '@/components/WorkflowUkl';
 import Resource from '@/api/resource';
 const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
 
 export default {
-  name: 'PengujianRKLRPL',
+  name: 'PengujianUKLUPL',
   components: {
     Verifikasi,
     UndanganRapat,
     BeritaAcara,
     UjiKelayakan,
-    WorkFlow,
+    WorkflowUkl,
   },
   data() {
     return {
@@ -85,8 +85,9 @@ export default {
     this.isComplete = await verifikasiRapatResource.list({
       checkComplete: 'true',
       idProject: this.$route.params.id,
+      uklUpl: 'true',
     });
-    this.$store.dispatch('getStep', 6);
+    this.$store.dispatch('getStep', 5);
     if (this.userInfo.roles.includes('examiner-substance')) {
       this.activeName = 'beritaacara';
     } else if (this.userInfo.roles.includes('examiner-administration')) {

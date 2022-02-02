@@ -32,7 +32,8 @@ class FeasibilityTestController extends Controller
         }
 
         if($request->dokumen) {
-           return $this->dokumen($request->idProject);
+            $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
+           return $this->dokumen($request->idProject, $document_type);
         }
 
         if($request->idProject) {
@@ -213,7 +214,7 @@ class FeasibilityTestController extends Controller
         ];
     }
 
-    private function dokumen($id_project) {
+    private function dokumen($id_project, $document_type) {
         if (!File::exists(storage_path('app/public/uji-kelayakan/'))) {
             File::makeDirectory(storage_path('app/public/uji-kelayakan/'));
         }
@@ -268,6 +269,10 @@ class FeasibilityTestController extends Controller
         $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
         $templateProcessor = new TemplateProcessor('template_kelayakan.docx');
+        if($document_type == 'ukl-upl') {
+            $templateProcessor = new TemplateProcessor('template_kelayakan_ukl_upl.docx');
+        }
+
         $templateProcessor->setValue('docs_date', $docs_date);
         $templateProcessor->setValue('project_title_big', $project_title_big);
         $templateProcessor->setValue('project_address_big', $project_address_big);
