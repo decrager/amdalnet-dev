@@ -256,6 +256,12 @@ class TestingVerificationController extends Controller
                   'type' => 'download'
                 ],
                 [
+                  'name' => 'pippib',
+                  'suitability' => null,
+                  'description' => null,
+                  'type' => 'non-download'
+                ],
+                [
                     'name' => 'persetujuan_awal',
                     'link' => $project->pre_agreement_file,
                     'suitability' => null,
@@ -322,6 +328,7 @@ class TestingVerificationController extends Controller
             'project' => $project,
             'lpjp' => $lpjp,
             'penyusun_mandiri' => $penyusun_mandiri,
+            'pre_agreement' => $project->pre_agreement_file
         ];
 
         return $data;
@@ -338,13 +345,17 @@ class TestingVerificationController extends Controller
               'link' => $peta_sosial,
             ],
             [
-              'name' => 'SHP Peta Batas Ekologis',
+              'name' => 'Peta Batas Ekologis',
               'link' => $peta_ekologis,
             ],
             [
               'name' => 'Peta Batas Wilayah Studi',
               'link' => $peta_wilayah_studi,
             ],
+            [
+              'name' => 'Kesesuaian Peta dengan Kawasan Lindung',
+              'link' => $peta_tapak,
+            ]
         ];
     }
 
