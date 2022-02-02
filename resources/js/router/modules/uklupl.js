@@ -48,6 +48,16 @@ const ukluplRoutes = {
         noCache: true,
       },
     },
+    {
+      path: ':id(\\d+)/pkplh',
+      component: () => import('@/views/pkplh/index'),
+      name: 'pkplh',
+      meta: {
+        title: 'Persetujuan Pernyataan Kesanggupan Pengelolaan Lingkungan Hidup',
+        icon: 'zip',
+        noCache: true,
+      },
+    },
   ],
 };
 

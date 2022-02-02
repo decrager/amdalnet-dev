@@ -27,6 +27,10 @@ class SKKLController extends Controller
         }
 
         if($request->document) {
+            if($request->uklUpl) {
+                return $this->getDocumentUklUpl($request->idProject);
+            }
+
             return $this->getDocument($request->idProject);
         }
 
@@ -294,6 +298,80 @@ class SKKLController extends Controller
                     'name' => 'Dokumen RKL RPL',
                     'file' => Storage::url('workspace/' .  $idProject . '-rkl-rpl.docx'),
                     'updated_at' => $rklRplDate
+                ]
+            ];
+    }
+
+    private function getDocumentUklUpl($idProject) {
+        $project = Project::findOrFail($idProject);
+
+        // ============== PROJECT ADDRESS =============== //
+        $location = '';
+        if($project->address) {
+            if($project->address->first()) {
+                $district = $project->address->first()->district;
+                $province = $project->address->first()->province;
+                $address = $project->address->first()->address;
+                $location = $address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
+            }
+        }
+
+        // PHPWord
+        $templateProcessor = new TemplateProcessor('template_pkplh.docx');
+        $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
+        $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
+        $templateProcessor->setValue('project_title', $project->project_title);
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('pemrakarsa_nib', $project->initiator->nib);
+        $templateProcessor->setValue('project_type', $project->project_type);
+        $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->name);
+        $templateProcessor->setValue('pemrakarsa_position', '');
+        $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
+        $templateProcessor->setValue('project_address', $location);
+
+        $save_file_name = $project->project_title .' - ' . $project->initiator->name . '.docx';
+        if (!File::exists(storage_path('app/public/pkplh/'))) {
+            File::makeDirectory(storage_path('app/public/pkplh/'));
+        }
+
+        $templateProcessor->saveAs(storage_path('app/public/pkplh/' . $save_file_name));
+
+        $uklDate = '';
+        $ukl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
+            $q->where('id_project', $idProject); 
+         })->orderBy('updated_at', 'desc')->first();
+         if($ukl) {
+             $uklDate = $ukl->updated_at;
+         }
+
+        $uplDate = '';
+        $upl = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($idProject) {
+            $q->where('id_project', $idProject); 
+         })->orderBy('updated_at', 'desc')->first();
+         if($upl) {
+            $uplDate = $upl->updated_at;
+        }
+
+        $uklUplDate = '';
+        if($uklDate == '') {
+            $uklUplDate = $uplDate;
+        } else if ($uplDate == '') {
+            $uklUplDate = $uklDate;
+        } else {
+            $uklUplDate = $uklDate > $uplDate ? $uklDate->locale('id')->isoFormat('D MMMM Y') : $uplDate->locale('id')->isoFormat('D MMMM Y');
+        }
+ 
+
+        return [ 
+                [
+                    'name' => 'PKPLH',
+                    'file' => Storage::url('pkplh/' . $save_file_name),
+                    'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
+                ],
+                [
+                    'name' => 'Dokumen UKL UPL',
+                    'file' => Storage::url('workspace/ukl-upl-' . strtolower($project->project_title) . '.docx'),
+                    'updated_at' => $uklUplDate
                 ]
             ];
     }
