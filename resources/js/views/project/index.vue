@@ -172,13 +172,22 @@
                   Matriks UKL/UPL
                 </el-button>
                 <el-button
-                  v-if="isSubtance || isAdmin"
+                  v-if="isAmdal(scope.row) && (isSubtance || isAdmin)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleUjiKa(scope.row)"
                 >
                   Uji KA
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && (isSubtance || isAdmin)"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiUKLUPL(scope.row)"
+                >
+                  Uji UKL UPL
                 </el-button>
                 <el-button
                   v-if="isAdmin || isSubtance || isExaminer"
@@ -235,11 +244,11 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
-                  v-if="scope.row.feasibility_test && isAmdal(scope.row)"
+                  v-if="scope.row.feasibility_test"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleRekomendasiUjiKelayakan(scope.row.id)"
+                  @click="handleRekomendasiUjiKelayakan(scope.row)"
                 >
                   Surat Rekomendasi Uji Kelayakan
                 </el-button>
@@ -661,15 +670,32 @@ export default {
         path: `/dokumen-kegiatan/${project.id}/pengujian-ka`,
       });
     },
-    handleUjiRklRpl(project) {
+    handleUjiUKLUPL(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
+        path: `/uklupl/${project.id}/pengujian`,
       });
     },
-    handleRekomendasiUjiKelayakan(id) {
-      this.$router.push({
-        path: `/dokumen-kegiatan/${id}/rekomendasi-uji-kelayakan`,
-      });
+    handleUjiRklRpl(project) {
+      if (this.isAmdal(project)) {
+        this.$router.push({
+          path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
+        });
+      } else {
+        this.$router.push({
+          path: `/uklupl/${project.id}/pengujian`,
+        });
+      }
+    },
+    handleRekomendasiUjiKelayakan(project) {
+      if (this.isAmdal(project)) {
+        this.$router.push({
+          path: `/dokumen-kegiatan/${project.id}/rekomendasi-uji-kelayakan`,
+        });
+      } else {
+        this.$router.push({
+          path: `/uklupl/${project.id}/rekomendasi-uji-kelayakan`,
+        });
+      }
     },
     handleFeasibilityTest(id) {
       this.$router.push({
