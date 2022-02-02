@@ -69,6 +69,7 @@
           <el-table-column label="Kesesuaian">
             <template slot-scope="scope">
               <el-select
+                v-if="isPreAgreement(scope.row.name)"
                 v-model="scope.row.suitability"
                 placeholder="Pilih Kesesuaian"
                 style="width: 100%"
@@ -84,12 +85,14 @@
                   :value="sesuai.value"
                 />
               </el-select>
+              <span v-else>-</span>
             </template>
           </el-table-column>
 
           <el-table-column label="Keterangan">
             <template slot-scope="scope">
               <el-input
+                v-if="isPreAgreement(scope.row.name)"
                 v-model="scope.row.description"
                 type="textarea"
                 :placeholder="getPlaceholder(scope.row.suitability)"
@@ -99,6 +102,7 @@
                 "
                 :class="{ 'is-error': errors[`form-${scope.$index}`] }"
               />
+              <span v-else>-</span>
             </template>
           </el-table-column>
         </el-table>
@@ -241,9 +245,11 @@ export default {
       ],
       formLabel: {
         tata_ruang:
-          'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan RTRW yang berlaku',
+          'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan rencana tata ruang yang berlaku',
+        pippib:
+          'Justifikasi/bukti persetujuan awal rencana usaha dan/atau kegiatan dengan PIPPIB',
         persetujuan_awal:
-          'Justifikasi/bukti rencana usaha dan/atau kegiatan secara prinsip dapat dilakukan',
+          'Justifikasi/bukti persetujuan awal rencana usaha dan/atau kegiatan',
         hasil_penapisan: 'Justifikasi/arahan penyusunan dokumen lingkungan',
         surat_penyusun:
           'Bukti Tanda Registrasi LPJP atau Surat pembentukan Tim Penyusun Amdal dari pihak pemrakarsa',
@@ -456,12 +462,30 @@ export default {
       const forms = this.verifications.ka_forms;
       let error = 0;
       for (let i = 0; i < forms.length; i++) {
+        if (
+          (forms[i].name === 'tata_ruang' ||
+            forms[i].nane === 'persetujuan_awal') &&
+          !this.verifications.pre_agreement
+        ) {
+          continue;
+        }
+
         if (forms[i].suitability === 'Tidak Sesuai' && !forms[i].description) {
           error++;
           this.errors[`form-${i}`] = true;
         }
       }
       return error;
+    },
+    isPreAgreement(name) {
+      if (
+        (name === 'tata_ruang' || name === 'persetujuan_awal') &&
+        !this.verifications.pre_agreement
+      ) {
+        return false;
+      }
+
+      return true;
     },
   },
 };
