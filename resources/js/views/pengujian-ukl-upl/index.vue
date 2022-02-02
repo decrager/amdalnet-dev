@@ -41,7 +41,7 @@
 
 <script>
 import Verifikasi from '@/views/pengujian-ukl-upl/components/verifikasi/index';
-import UndanganRapat from '@/views/pengujian-rkl-rpl/components/undanganRapat/index';
+import UndanganRapat from '@/views/pengujian-ukl-upl/components/undanganRapat/index';
 import BeritaAcara from '@/views/pengujian-rkl-rpl/components/beritaAcara/index';
 import UjiKelayakan from '@/views/pengujian-rkl-rpl/components/ujiKelayakan/index';
 import WorkflowUkl from '@/components/WorkflowUkl';
