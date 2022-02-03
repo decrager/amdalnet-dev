@@ -231,6 +231,19 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Edit Persetujuan Lingkungan', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'template-ukl-upl-menengah-rendah',
+      component: () => import('@/views/template-ukl-menengah/index'),
+      name: 'UklRendah',
+      meta: { title: 'UKL-UPL Menengah Rendah', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'template-ukl-upl-menengah-rendah/create',
+      component: () => import('@/views/template-ukl-menengah/Create'),
+      name: 'UklRendah',
+      hidden: true,
+      meta: { title: 'Tambah UKL-UPL Menengah Rendah', icon: 'documentation', noCache: true },
+    },
   ],
 };
 
