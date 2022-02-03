@@ -30,7 +30,7 @@
                 <a href="">UKL-UPL Standar Spesifik</a>
                 <i class="el-icon-arrow-down" />
                 <ul>
-                  <li><a href="#">Template UKL-UPL Menengah Rendah</a></li>
+                  <li><a href="#" @click="handleSetMenu('UKL_UPL_M')">Template UKL-UPL Menengah Rendah</a></li>
                   <li><a href="#">Template UKL-UPL Standar Spesifik</a></li>
                 </ul>
               </li>
@@ -143,7 +143,7 @@ export default {
       if (e === 'MATERI'){
         this.activeMenu = 'Materi';
       }
-      if (e === 'FORMULIR'){
+      if (e === 'FORMULIR' || e === 'UKL_UPL_M'){
         this.isActiveFormulir = !this.isActiveFormulir;
         this.activeMenu = 'Formulir';
       }
