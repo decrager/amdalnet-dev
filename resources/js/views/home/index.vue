@@ -9,6 +9,7 @@
     <kebijakan v-if="toggleMenuKebijakan" />
     <izin v-if="toggleIzin" />
     <persetujuan v-if="togglePersetujuan" />
+    <ukl-menengah v-if="toggleUklMenengah" />
     <action-home v-if="toggleMenu" />
     <counter-home v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
@@ -29,6 +30,7 @@ import StepsHome from './section/Steps.vue';
 import Kebijakan from './section/Kebijakan.vue';
 import Izin from './section/Izin.vue';
 import Materi from './section/Materi.vue';
+import Uklm from './section/Uklm.vue';
 import Persetujuan from './section/Persetujuan.vue';
 import ActionHome from './section/Action.vue';
 import CounterHome from './section/Counter.vue';
@@ -45,6 +47,7 @@ export default {
     'steps-home': StepsHome,
     'kebijakan': Kebijakan,
     'materi': Materi,
+    'ukl-menengah': Uklm,
     'izin': Izin,
     'persetujuan': Persetujuan,
     'action-home': ActionHome,
@@ -60,6 +63,7 @@ export default {
       toggleIzin: false,
       toggleMenu: true,
       togglePersetujuan: false,
+      toggleUklMenengah: false,
     };
   },
   created() {
@@ -92,6 +96,14 @@ export default {
         this.toggleMenu = false;
         this.toggleIzin = false;
         this.togglePersetujuan = true;
+      }
+      if (e === 'UKL_UPL_M') {
+        this.toggleMenuKebijakan = false;
+        this.toggleMenuMateri = false;
+        this.toggleMenu = false;
+        this.toggleIzin = false;
+        this.togglePersetujuan = false;
+        this.toggleUklMenengah = true;
       }
     },
     isFirstVisit() {
