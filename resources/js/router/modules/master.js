@@ -240,7 +240,7 @@ const masterRoutes = {
     {
       path: 'template-ukl-upl-menengah-rendah/create',
       component: () => import('@/views/template-ukl-menengah/Create'),
-      name: 'UklRendah',
+      name: 'AddUklMenengah',
       hidden: true,
       meta: { title: 'Tambah UKL-UPL Menengah Rendah', icon: 'documentation', noCache: true },
     },
