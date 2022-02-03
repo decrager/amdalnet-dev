@@ -40,7 +40,7 @@
 
         <div class="context-bar-item" v-html="data.description" /> -->
 
-        <project-detail :data="data" />
+        <project-detail v-if="data !== null" :data="data" />
       </el-collapse-item>
     </el-collapse>
   </div>
