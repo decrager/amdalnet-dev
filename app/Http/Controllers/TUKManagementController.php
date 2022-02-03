@@ -9,7 +9,9 @@ use App\Entity\LukMember;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\TUKAssigned;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class TUKManagementController extends Controller
@@ -305,6 +307,10 @@ class TUKManagementController extends Controller
         if($request->member) {
             $members = $request->members;
             $deleted = $request->deleted;
+            $receiver_chairman = [];
+            $receiver_secretary = [];
+            $receiver_member = [];
+            $team_id = null;
 
             for($i = 0; $i < count($members); $i++) {
                 $member = null;
@@ -331,36 +337,50 @@ class TUKManagementController extends Controller
                 $member->save();
 
                 // ====== CHANGE USER ROLE ======= //
-            
+                $user = User::where('email', $members[$i]['email'])->count();
                 if($members[$i]['id']) {
-                    if($members[$i]['role'] == 'Kepala Sekretariat') {
-                        if($members[$i]['old_role'] != 'Kepala Sekretariat') {
-                            $user = User::where('email', $members[$i]['email'])->count();
-                            if($user > 0) {
-                                $user = User::where('email', $members[$i]['email'])->first();
+                    if($members[$i]['role'] != $members[$i]['old_role']) {
+                        if($user > 0) {
+                            $user = User::where('email', $members[$i]['email'])->first();
+                            if($members[$i]['role'] == 'Ketua') {
+                                $receiver_chairman[] = $user;
+                            } else if($members[$i]['role'] == 'Kepala Sekretariat') {
+                                $receiver_secretary[] = $user;
                                 $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SECRETARY);
                                 $user->syncRoles($valsubRole);
+                            } else if($members[$i]['role'] == 'Anggota') {
+                                $receiver_member[] = $user;
                             }
-                        }
-                    } else {
-                        if($members[$i]['old_role'] == 'Kepala Sekretariat') {
-                            $user = User::where('email', $members[$i]['email'])->count();
-                            if($user > 0) {
-                                $user = User::where('email', $members[$i]['email'])->first();
+
+                            // === HANDLE IF PREVIOUS POSITION IS SECRETARY === //
+                            if($members[$i]['old_role'] == 'Kepala Sekretariat') {
                                 $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
                                 $user->syncRoles($valsubRole);
                             }
                         }
                     }
                 } else {
-                    if($members[$i]['role'] == 'Kepala Sekretariat') {
-                        $user = User::where('email', $members[$i]['email'])->count();
-                        if($user > 0) {
-                            $user = User::where('email', $members[$i]['email'])->first();
+                    if($user > 0) {
+                        $user = User::where('email', $members[$i]['email'])->first();
+
+                        if($members[$i]['role'] == 'Kepala Sekretariat') {
                             $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SECRETARY);
                             $user->syncRoles($valsubRole);
+                            
+                            // ==== NOTIFICATION RECEIVER === //
+                            $receiver_secretary[] = $user;
+
+                        } else if($members[$i]['role'] == 'Ketua') {
+                            $receiver_chairman[] = $user;
+                        } else if($members[$i]['role'] == 'Anggota') {
+                            $receiver_member[] = $user;
                         }
                     }
+                }
+
+                // === ASSIGN TEAM ID === //
+                if($team_id == null) {
+                    $team_id = $members[$i]['idTeam'];
                 }
             }
 
@@ -375,6 +395,20 @@ class TUKManagementController extends Controller
                             $user->syncRoles($valsubRole);
                         }
                     }
+                }
+            }
+
+            // === NOTIFICATIONS === //
+            if($team_id != null) {
+                $feasibility_test_team = FeasibilityTestTeam::findOrFail($team_id);
+                if(count($receiver_chairman) > 0) {
+                    Notification::send($receiver_chairman, new TUKAssigned($feasibility_test_team, 'Ketua'));
+                }
+                if(count($receiver_secretary) > 0) {
+                    Notification::send($receiver_secretary, new TUKAssigned($feasibility_test_team, 'Kepala Sekretariat'));
+                }
+                if(count($receiver_member) > 0) {
+                    Notification::send($receiver_secretary, new TUKAssigned($feasibility_test_team, 'Anggota'));
                 }
             }
 
