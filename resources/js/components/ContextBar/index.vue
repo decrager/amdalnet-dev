@@ -5,7 +5,7 @@
         <template slot="title">
           <div class="context-bar-header">{{ data.initiator_name || '*' }} : {{ data.project_title }}</div>
         </template>
-        <el-row :gutter="20">
+        <!-- <el-row :gutter="20">
           <el-col :span="4">
             <div class="block" style="text-align: center;">
               <el-image
@@ -38,22 +38,21 @@
           </el-col>
         </el-row>
 
-        <div class="context-bar-item" v-html="data.description" />
-
-        <!-- <project-detail v-if="data !==" :data="data" /> -->
+        <div class="context-bar-item" v-html="data.description" /> -->
+        <project-detail v-if="data !== null" :data="data" />
       </el-collapse-item>
     </el-collapse>
   </div>
 </template>
 <script>
-// import ProjectDetail from '../../views/project/Home/components/ProjectDetail.vue';
+import ProjectDetail from '../../views/project/Home/components/ProjectDetail.vue';
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
 
 export default {
   name: 'ContextBar',
   components: {
-    // ProjectDetail,
+    ProjectDetail,
   },
   data() {
     return {
