@@ -129,7 +129,7 @@ class ProjectController extends Controller
         ->distinct()
         ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
         ->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
- 
+
     }
 
     /**
@@ -468,16 +468,23 @@ class ProjectController extends Controller
 
     private function getProject($id)
     {
-        /*
-        lpjp.name as lpjp_name,
-        lpjp.address as lpjp_address,
-        initcap(districts."name") as lpjp_address_district,
-        initcap(provinces."name") as lpjp_address_province,
-       ->leftJoin('lpjp', 'lpjp.id', '=', 'projects.id_lpjp')
-       ->leftJoin('districts', 'districts.id','=', 'lpjp.id_district')
-       ->leftJoin('provinces', 'provinces.id','=', 'lpjp.id_prov')
-        */
 
+        $project = Project::with(['address', 'listSubProject', 'initiator'])->from('projects')
+            ->selectRaw('
+        projects.*,
+        concat(initcap(project_address.district), \', \', initcap(project_address.prov)) as project_address,
+        announcements.id as announcement_id,
+        announcements.potential_impact as potential_impact,
+        initiators.name as initiator_name,
+        initiators.address as initiator_address,
+        users.avatar as logo')
+            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+            ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
+            ->leftJoin('users', 'initiators.email', '=', 'users.email');
+        return $project->where('projects.id', $id)->first();
+
+        /*
         $project = Project::from('projects')
             ->selectRaw('
         projects.id,
@@ -493,6 +500,7 @@ class ProjectController extends Controller
             ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
             ->leftJoin('users', 'initiators.email', '=', 'users.email');
         return $project->where('projects.id', $id)->first();
+        */
     }
 
     /**

@@ -5,7 +5,7 @@
         <template slot="title">
           <div class="context-bar-header">{{ data.initiator_name || '*' }} : {{ data.project_title }}</div>
         </template>
-        <el-row :gutter="20">
+        <!-- <el-row :gutter="20">
           <el-col :span="4">
             <div class="block" style="text-align: center;">
               <el-image
@@ -37,18 +37,24 @@
             </div>
           </el-col>
         </el-row>
-        <div class="context-bar-item" v-html="data.description" />
+
+        <div class="context-bar-item" v-html="data.description" /> -->
+
+        <project-detail :data="data" />
       </el-collapse-item>
     </el-collapse>
   </div>
 </template>
 <script>
-
+import ProjectDetail from '../../views/project/Home/components/ProjectDetail.vue';
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
 
 export default {
   name: 'ContextBar',
+  components: {
+    ProjectDetail,
+  },
   data() {
     return {
       contextBar: [],
@@ -113,6 +119,15 @@ div.context-bar-container + section.app-main .app-container:first-child{
   padding-top:0 !important;
 }
 .context-bar-container {
+
+     p.header{
+      font-weight: bold;
+      margin-bottom: 0.5em;
+    }
+    p.data{
+        margin-top: 0.5em;
+        margin-bottom: 1.5em;
+    }
 
   padding-bottom: 0;
   .el-collapse-item {

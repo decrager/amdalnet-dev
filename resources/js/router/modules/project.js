@@ -65,6 +65,14 @@ const projectRoutes = {
       props: true,
     },
     {
+      path: 'home/:id(\\d+)',
+      component: () => import('@/views/project/Home/index'),
+      name: 'projectHome',
+      hidden: true,
+      meta: { title: 'Rumah Kegiatan', icon: 'edit', noCache: true, breadcrumb: true },
+      props: true,
+    },
+    {
       path: 'workspace/:id(\\d+)',
       component: () => import('@/views/workspace/Edit'),
       name: 'editWorkspace',
