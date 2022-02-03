@@ -27,12 +27,10 @@
     </el-card>
   </div>
 </template>
-
 <script>
 import Pagination from '@/components/Pagination';
 import axios from 'axios';
 import ComponentTable from './components/ComponentTable.vue';
-
 export default {
   name: 'UklRendah',
   components: {

@@ -45,10 +45,8 @@
     </form>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
-
 export default {
   name: 'AddUklMenengah',
   props: {},
@@ -71,7 +69,6 @@ export default {
       formData.append('file', this.file);
       formData.append('template_type', this.form.template_type);
       formData.append('description', this.form.description);
-
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
         .post('api/environmental-approval', formData, { headers })
