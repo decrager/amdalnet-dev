@@ -135,6 +135,7 @@ class TestingMeetingController extends Controller
             }
 
             if(count($receiver) > 0) {
+                $this->meetingInvitation($request->idProject);
                 Notification::send($receiver, new MeetingInvitation($meeting));
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
             }

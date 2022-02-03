@@ -32,7 +32,7 @@ class MeetingInvitation extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -44,9 +44,9 @@ class MeetingInvitation extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
+                    ->line('Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title)
+                    ->attach(storage_path('app/public/meet-inv/ka-' . strtolower($this->meeting->project->project_title) . '.docx'));
     }
 
     /**
@@ -60,8 +60,35 @@ class MeetingInvitation extends Notification
         return [
             'meeting' => $this->meeting ,
             'member' => $notifiable,
-            'message' => 'Anda baru saja diundang meeting',
+            'message' => 'Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title,
             'path' => '#',
         ];
+    }
+
+    private function documentType()
+    {
+        $document_type = '';
+        if($this->meeting->document_type == 'ka') {
+            $document_type = 'Kerangka Acuan';
+        } else if($this->meeting->document_type == 'rkl-rpl') {
+            $document_type = 'Analisis Dampak Lingkungan dan Rencana Pengelolaan Hidup dan Rencana Pemantauan Lingkungan Hidup';
+        } else if($this->meeting->document_type == 'ukl-upl') {
+            $document_type = 'Upaya Pengelolaan Lingkungan Hidup dan Upaya Pemantauan Lingkungan Hidup';
+        }
+
+        return $document_type;
+    }
+
+    private function docxName() {
+        $name = '';
+        if($this->meeting->document_type == 'ka') {
+           $name = 'ka-' . strtolower($this->meeting->project->project_title) . '.docx';
+        } else if($this->meeting->document_type == 'rkl-rpl') {
+            $name = 'andal-rkl-rpl-' . strtolower($this->meeting->project->project_title) . '.docx';
+        } else if($this->meeting->document_type == 'ukl-upl') {
+            $name = 'ukl-upl-' . strtolower($this->meeting->project->project_title) . '.docx';
+        }
+
+        return $name;
     }
 }
