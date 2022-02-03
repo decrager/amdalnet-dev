@@ -46,7 +46,7 @@ class MeetingInvitation extends Notification
         return (new MailMessage)
                     ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
                     ->line('Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title)
-                    ->attach(storage_path('app/public/meet-inv/ka-' . strtolower($this->meeting->project->project_title) . '.docx'));
+                    ->attach(storage_path('app/public/meet-inv/' . $this->docxName()));
     }
 
     /**
