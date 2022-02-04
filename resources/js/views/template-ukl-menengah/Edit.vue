@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <form enctype="multipart/form-data" @submit.prevent="saveApprovalLingkungan">
+    <form enctype="multipart/form-data" @submit.prevent="saveTemplateUklUplMenengah">
       <el-card>
         <el-row :gutter="20">
           <el-col :span="14">
@@ -12,17 +12,6 @@
                       v-model="currentParam.template_type"
                       type="text"
                       placeholder="Jenis Template"
-                    />
-                  </el-form-item>
-                </el-row>
-              </el-form>
-              <el-form>
-                <el-row>
-                  <el-form-item label="Deskripsi">
-                    <el-input
-                      v-model="currentParam.description"
-                      type="textarea"
-                      placeholder="Deskripsi"
                     />
                   </el-form-item>
                 </el-row>
@@ -56,7 +45,7 @@
                 <el-button
                   type="primary"
                   icon="el-icon-s-claim"
-                  @click="saveApprovalLingkungan()"
+                  @click="saveTemplateUklUplMenengah()"
                 >
                   Edit
                 </el-button>
@@ -73,7 +62,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'AddIzin',
+  name: 'EditUklMenengah',
   props: {},
   data() {
     return {
@@ -90,25 +79,24 @@ export default {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
-    async saveApprovalLingkungan() {
+    async saveTemplateUklUplMenengah() {
       const formData = new FormData();
       formData.append('id', this.currentParam.id);
       formData.append('file', this.file);
       formData.append('old_file', this.currentParam.file);
       formData.append('template_type', this.currentParam.template_type);
-      formData.append('description', this.currentParam.description);
 
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/environmental-approval/update', formData, { headers })
+        .post('api/template-ukl-upl-medium-low/update', formData, { headers })
         .then(() => {
           this.$message({
-            message: 'Ijin Berhasil Disimpan',
+            message: 'Template UKL UPL Berhasil Disimpan',
             type: 'success',
             duration: 5 * 1000,
           });
           this.$router.push({
-            name: 'DaftarPersetujuan',
+            name: 'UklRendah',
           });
         })
         .catch((error) => {
@@ -122,7 +110,7 @@ export default {
     },
     handleCancel() {
       this.$router.push({
-        name: 'DaftarPersetujuan',
+        name: 'UklRendah',
       });
     },
   },
