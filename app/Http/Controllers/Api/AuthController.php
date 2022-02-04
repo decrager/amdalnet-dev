@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Entity\Initiator;
+use App\Entity\OssLicense;
 use App\Http\Resources\UserResource;
 use App\Laravue\Acl;
 use App\Laravue\JsonResponse;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Class AuthController
@@ -153,6 +155,61 @@ class AuthController extends BaseController
                 'message' => 'Failed to create User',
             ], 500);
         }
+    }
+
+    public function receiveToken(Request $request)
+    {
+        /*
+         * Receive token and licenses from OSS
+         * Store access_token & refresh_token to `users` table
+         * Store kd_izin & id_izin to `oss_licenses` table
+         */
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'access_token' => 'required',
+                'refresh_token' => 'required',
+                'kd_izin' => 'required',
+                'id_izin' => 'required',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Request parameter tidak valid.',
+            ], 400);
+        }
+        $validated = $request->only('access_token', 'refresh_token', 'kd_izin', 'id_izin');
+        $resp = $this->getOssUserInfo($validated['access_token'])->json();
+
+        if ($resp['status'] === 200) {
+            $user_info = $resp['data'];
+            $user = User::where('email', $user_info['email'])->first();
+            $initiator = Initiator::where('email', $user_info['email'])->first();
+            DB::beginTransaction();
+            $user->access_token = $validated['access_token'];
+            $user->refresh_token = $validated['refresh_token'];
+            $user->save();
+            $created = OssLicense::create([
+                'id_initiator' => $initiator->id,
+                'email' => $initiator->email,
+                'id_izin' => $validated['id_izin'],
+                'kd_izin' => $validated['kd_izin'],
+            ]);
+            if ($created) {
+                DB::commit();
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Token berhasil diterima.',
+                ], 200);
+            } else {
+                DB::rollBack();
+            }
+        }
+        return response()->json([
+            'status' => 500,
+            'message' => 'Gagal menyimpan token',
+        ], 500);
     }
 
     private function setUserAsActive($id)
