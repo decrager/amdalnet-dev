@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\AndalAttachment;
 use App\Entity\AndalComment;
 use App\Entity\Comment;
 use App\Entity\ComponentType;
@@ -44,6 +45,10 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->attachment) {
+            return $this->getAttachment($request->idProject);
+        }
+
         if($request->holisticEvaluation) {
             $evaluation = HolisticEvaluation::where('id_project', $request->idProject)->count();
             if($evaluation > 0) {
@@ -134,6 +139,61 @@ class AndalComposingController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->type == 'attachment') {
+            $project = Project::findOrFail($request->idProject);
+
+            if($request->hasFile('ktr')) {
+                $ktrName = '';
+                if ($request->file('ktr')) {
+                    $fileKtr = $request->file('ktr');
+                    $ktrName = 'project/ktr/' . uniqid() . '.' . $fileKtr->extension();
+                    $fileKtr->storePubliclyAs('public', $ktrName);
+                    $project->ktr = Storage::url($ktrName);
+                }
+            }
+
+            if($request->hasFile('pA')) {
+                $pAName = '';
+                if ($request->file('pA')) {
+                    $filePa = $request->file('pA');
+                    $pAName = 'project/preAgreement/' . uniqid() . '.' . $filePa->extension();
+                    $filePa->storePubliclyAs('public', $pAName);
+                    $project->pre_agreement_file = Storage::url($pAName);
+                }
+            }
+
+            $project->save();
+
+            // === ANDAL ATTACHMENT === //
+            $others = json_decode($request->others, true);
+
+            if(count($others) > 0) {
+                for($i = 0; $i < count($others); $i++) {
+                    $fileRequest = 'file-' . $i;
+                    if($request->hasFile($fileRequest)) {
+                        $attachment = new AndalAttachment();
+                        $attachment->id_project = $request->idProject;
+                        $attachment->name = $others[$i];
+    
+                        $file = $request->file($fileRequest);
+                        $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file->extension();
+                        $file->storePubliclyAs('public', $fileName);
+                        $attachment->file = Storage::url($fileName);
+    
+                        $attachment->save();
+                    }
+                }
+            }
+
+            $deleted = json_decode($request->deleted, true);
+
+            if(count($deleted) > 0) {
+                AndalAttachment::whereIn('id', $deleted)->delete();
+            }
+
+            return response()->json(['message' => 'success']);
+        }
+
         if($request->type == 'holisticEvaluation') {
             $evaluation = HolisticEvaluation::where('id_project', $request->idProject)->count();
             if($evaluation > 0) {
@@ -2441,5 +2501,16 @@ class AndalComposingController extends Controller
         }
 
         return '';
+    }
+
+    private function getAttachment($id_project)
+    {
+        $project = Project::findOrFail($id_project);
+        $others = AndalAttachment::where('id_project', $id_project)->get();
+        return [
+            'kesesuaian_tata_ruang' => $project->ktr,
+            'persetujuan_awal' => $project->pre_agreement_file,
+            'lainnya' => $others ? $others->toArray() : []
+        ];
     }
 }
