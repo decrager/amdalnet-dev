@@ -8,7 +8,7 @@
           icon="el-icon-plus"
           @click="handleCreate"
         >
-          {{ 'Tambah UKL-UPL Menengah Rendah' }}
+          {{ 'Tambah UKL-UPL' }}
         </el-button>
       </div>
       <component-table

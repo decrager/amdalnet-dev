@@ -7,6 +7,23 @@
             <div class="form-container">
               <el-form>
                 <el-row>
+                  <el-form-item label="Jenis UKL-UPL" />
+                  <el-form-item>
+                    <template>
+                      <el-select v-model="value" placeholder="Pilih Jenis UKL-UPL" style="width:100%">
+                        <el-option
+                          v-for="item in options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
+                        />
+                      </el-select>
+                    </template>
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
                   <el-form-item label="Jenis Template">
                     <el-input
                       v-model="currentParam.template_type"
@@ -68,6 +85,16 @@ export default {
     return {
       currentParam: {},
       file: '',
+      options: [
+        {
+          value: 'MENENGAH RENDAH',
+          label: 'MENENGAH RENDAH',
+        }, {
+          value: 'STANDAR SPESIFIK',
+          label: 'STANDAR SPESIFIK',
+        },
+      ],
+      value: '',
     };
   },
   created() {

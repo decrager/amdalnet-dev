@@ -16,6 +16,11 @@
         <span>{{ scope.row.template_type }}</span>
       </template>
     </el-table-column>
+    <el-table-column label="Jenis UKL-UPL">
+      <template>
+        <span>Menengah Rendah</span>
+      </template>
+    </el-table-column>
     <el-table-column label="Download/File">
       <template slot-scope="scope">
         <span>{{ scope.row.file }}</span>
