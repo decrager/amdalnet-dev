@@ -63,6 +63,7 @@ class FormulatorTeamController extends Controller
                 $member[] = [
                     'num' => $num,
                     'id' => $f->id,
+                    'db_id' => $f->id_formulator,
                     'name' => $f->formulator->name,
                     'value' => $f->formulator->name,
                     'type' => 'update',

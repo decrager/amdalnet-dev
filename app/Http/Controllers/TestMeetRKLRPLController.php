@@ -6,6 +6,7 @@ use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
+use App\Entity\GovernmentInstitution;
 use App\Entity\Initiator;
 use App\Entity\Lpjp;
 use App\Entity\Project;
@@ -652,6 +653,7 @@ class TestMeetRKLRPLController extends Controller
         
         $member = [];
         $ahli = [];
+        $instansi = [];
         
         foreach($invitations as $i) {
             if($i->id_feasibility_test_team_member) {
@@ -669,6 +671,13 @@ class TestMeetRKLRPLController extends Controller
                         }
                     }
                 }
+            } else if($i->id_government_institution) {
+                $institution = GovernmentInstitution::find($i->id_government_institution);
+                if($institution) {
+                    $instansi[] = [
+                        'name' => count($instansi) + 1 . '. Wakil dari ' . $institution->name
+                    ];
+                } 
             } else {
                 if($i->role == 'Tenaga Ahli') {
                     $member[] = [
@@ -689,6 +698,10 @@ class TestMeetRKLRPLController extends Controller
             $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
         }
 
+        $instansi[] = ['name' => count($instansi) + 1 . '. Kementerian/Lembaga/Dinas yang terkait Usaha dan/atau Kegiatan'];
+        $instansi[] = ['name' => count($instansi) + 1 . '. Kementerian/Lembaga/Dinas yang terkait Persetujuan Awal'];
+        $instansi[] = ['name' => count($instansi) + 1 . '. Kementerian/Lembaga/Dinas yang penerbit Pertek'];
+
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('project_address', $project_address);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
@@ -705,6 +718,7 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->setValue('ketua_tuk_nip', $ketua_tuk_nip);
         $templateProcessor->cloneBlock('tuk_member', count($member), true, false, $member);
         $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
+        $templateProcessor->cloneBlock('instansi', count($instansi), true, false, $instansi);
 
         if($document_type == 'ukl-upl') {
             $templateProcessor->saveAs(storage_path('app/public/meet-inv/ukl-upl-' . strtolower($project->project_title) . '.docx'));
