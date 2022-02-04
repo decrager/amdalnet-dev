@@ -70,6 +70,12 @@
         </template>
         <EvaluasiHolistik v-if="activeName === 'evaluasi-holistik'" />
       </el-collapse-item>
+      <el-collapse-item name="lampiran">
+        <template slot="title" class="head-accordion">
+          <span class="title">LAMPIRAN</span>
+        </template>
+        <Lampiran v-if="activeName === 'lampiran'" />
+      </el-collapse-item>
     </el-collapse>
   </div>
 </template>
@@ -89,6 +95,7 @@ import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
 import BaganAlir from '@/views/penyusunan-andal/clone/BaganAlir.vue';
 import BaganAlirDampak from '../components/BaganAlirDampak.vue';
 import EvaluasiHolistik from '@/views/penyusunan-andal/components/EvaluasiHolistik.vue';
+import Lampiran from '@/views/penyusunan-andal/components/Lampiran.vue';
 
 export default {
   name: 'Andal',
@@ -105,6 +112,7 @@ export default {
     BaganAlir,
     BaganAlirDampak,
     EvaluasiHolistik,
+    Lampiran,
   },
   data() {
     return {
