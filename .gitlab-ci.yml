@@ -97,7 +97,8 @@ deploy_app-dev_menlhk:
     - php artisan route:clear
     - npm install
     - npm run production
-    - php /home/ubuntu/cachetool.phar opcache:reset --cli
+    - sudo systemctl restart php8.1-fpm.service
+    #- php /home/ubuntu/cachetool.phar opcache:reset --cli
     #- php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
     #- echo "update app server"
     #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
@@ -157,9 +158,9 @@ deploy_app_menlhk:
     - php artisan route:clear
     - npm install
     - npm run production
-    - php /home/ubuntu/cachetool.phar opcache:reset --cli
-    #- php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
-    #- sudo systemctl restart php8.1-fpm.service
+    #- php /home/ubuntu/cachetool.phar opcache:reset --cli
+    - php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
+    # - sudo systemctl restart php8.1-fpm.service
     #- echo "update app server"
     #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
   only:
