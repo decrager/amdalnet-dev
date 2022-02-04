@@ -23,10 +23,15 @@ class MediumLowUklUplTemplateController extends Controller
         }
 
         $mediumLowUklUplTemplate = MediumLowUklUplTemplate::When($request->has('keyword'), function ($query) use ($request) {
+            $columnsToSearch = ['type'];
             $searchQuery = '%' . $request->keyword . '%';
             $indents = $query->where('template_type', 'ILIKE', '%'.$request->keyword.'%');
+            $indents = $query->where('type', '=', $request->type);
+            foreach($columnsToSearch as $column) {
+                $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+            }
             return $indents;
-        })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+        })->orderby('id', $sort ?? 'DESC')->where('type', $request->type)->paginate($request->limit ? $request->limit : 10);
 
         return response()->json($mediumLowUklUplTemplate, 200);
     }
@@ -74,6 +79,7 @@ class MediumLowUklUplTemplateController extends Controller
             //create environmental permits
             $permit = new MediumLowUklUplTemplate();
             $permit->template_type = $params['template_type'];
+            $permit->type = $params['type'];
             $permit->file = Storage::url($name);
             $permit->save();
 
@@ -136,6 +142,7 @@ class MediumLowUklUplTemplateController extends Controller
                 $name = $request->file('old_file');
             }
             $permit->template_type = $params['template_type'];
+            $permit->type = $params['type'];
             $permit->save();
         }
 

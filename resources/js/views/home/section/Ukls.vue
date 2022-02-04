@@ -172,7 +172,7 @@ export default {
     getAll(search, sort, limit) {
       axios
         .get(
-          `/api/template-ukl-upl-medium-low?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
+          `/api/template-ukl-upl-medium-low?type=SS&keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
