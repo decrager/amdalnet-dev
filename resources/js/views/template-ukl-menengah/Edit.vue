@@ -10,12 +10,13 @@
                   <el-form-item label="Jenis UKL-UPL" />
                   <el-form-item>
                     <template>
-                      <el-select v-model="value" placeholder="Pilih Jenis UKL-UPL" style="width:100%">
+                      <el-select v-model="currentParam.type" placeholder="Pilih Jenis UKL-UPL" style="width:100%">
                         <el-option
                           v-for="item in options"
                           :key="item.value"
                           :label="item.label"
                           :value="item.value"
+                          :selected="currentParam.type === item.value"
                         />
                       </el-select>
                     </template>
@@ -87,14 +88,13 @@ export default {
       file: '',
       options: [
         {
-          value: 'MENENGAH RENDAH',
+          value: 'MR',
           label: 'MENENGAH RENDAH',
         }, {
-          value: 'STANDAR SPESIFIK',
+          value: 'SS',
           label: 'STANDAR SPESIFIK',
         },
       ],
-      value: '',
     };
   },
   created() {
@@ -112,6 +112,7 @@ export default {
       formData.append('file', this.file);
       formData.append('old_file', this.currentParam.file);
       formData.append('template_type', this.currentParam.template_type);
+      formData.append('type', this.currentParam.type);
 
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios

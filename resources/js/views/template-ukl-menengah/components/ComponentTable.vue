@@ -17,8 +17,8 @@
       </template>
     </el-table-column>
     <el-table-column label="Jenis UKL-UPL">
-      <template>
-        <span>Menengah Rendah</span>
+      <template slot-scope="scope">
+        <span>{{ (scope.row.type === "MR") ? "MENENGAH RENDAH" : "STANDAR SPESIFIK" }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Download/File">
