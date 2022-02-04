@@ -62,7 +62,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'AddIzin',
+  name: 'EditUklMenengah',
   props: {},
   data() {
     return {
@@ -110,7 +110,7 @@ export default {
     },
     handleCancel() {
       this.$router.push({
-        name: 'DaftarPersetujuan',
+        name: 'UklRendah',
       });
     },
   },
