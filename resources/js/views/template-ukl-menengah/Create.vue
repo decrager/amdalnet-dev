@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <form enctype="multipart/form-data" @submit.prevent="saveApprovalLingkungan">
+    <form enctype="multipart/form-data" @submit.prevent="saveTemplateUklUplMenengah">
       <el-card>
         <el-row :gutter="20">
           <el-col :span="14">
@@ -33,7 +33,7 @@
                 <el-button
                   type="primary"
                   icon="el-icon-s-claim"
-                  @click="saveApprovalLingkungan()"
+                  @click="saveTemplateUklUplMenengah()"
                 >
                   Simpan
                 </el-button>
@@ -64,17 +64,16 @@ export default {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
-    async saveApprovalLingkungan() {
+    async saveTemplateUklUplMenengah() {
       const formData = new FormData();
       formData.append('file', this.file);
       formData.append('template_type', this.form.template_type);
-      formData.append('description', this.form.description);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/environmental-approval', formData, { headers })
+        .post('api/template-ukl-upl-medium-low', formData, { headers })
         .then(() => {
           this.$message({
-            message: 'Ijin Berhasil Disimpan',
+            message: 'Template UKL UPL Berhasil Disimpan',
             type: 'success',
             duration: 5 * 1000,
           });

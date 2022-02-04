@@ -244,6 +244,13 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Tambah UKL-UPL Menengah Rendah', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'template-ukl-upl-menengah-rendah/edit',
+      component: () => import('@/views/template-ukl-menengah/Edit'),
+      name: 'EditUklMenengah',
+      hidden: true,
+      meta: { title: 'Edit UKL-UPL Menengah Rendah', icon: 'documentation', noCache: true },
+    },
   ],
 };
 

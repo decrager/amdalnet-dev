@@ -53,7 +53,6 @@ class MediumLowUklUplTemplateController extends Controller
             $request->all(),
             [
                 'template_type'    => 'required',
-                'description'      => 'required',
             ]
         );
 
@@ -65,7 +64,7 @@ class MediumLowUklUplTemplateController extends Controller
             //create file
             if (!empty($request->file('file'))) {
                 $file = $request->file('file');
-                $name = '/environmental-approval/' . uniqid() . '.' . $file->extension();
+                $name = '/template-ukl-upl-menengah/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
             } else {
                 $name = NULL;
@@ -73,13 +72,12 @@ class MediumLowUklUplTemplateController extends Controller
             
 
             //create environmental permits
-            $permit = new EnvironmentalApproval();
+            $permit = new MediumLowUklUplTemplate();
             $permit->template_type = $params['template_type'];
-            $permit->description = $params['description'];
             $permit->file = Storage::url($name);
             $permit->save();
 
-            return new EnvironmentalExpertResource($permit);
+            return response()->json($permit, 200);
         }
     }
 
@@ -118,28 +116,26 @@ class MediumLowUklUplTemplateController extends Controller
             $request->all(),
             [
                 'template_type'    => 'required',
-                'description'      => 'required',
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            $permit = EnvironmentalApproval::findOrFail($request->id);
+            $permit = MediumLowUklUplTemplate::findOrFail($request->id);
 
             $params = $request->all();
 
             if($request->file('file') !== null){
                 //create file
                 $file = $request->file('file');
-                $name = '/environmental-approval/' . uniqid() . '.' . $file->extension();
+                $name = '/template-ukl-upl-menengah/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
                 $permit->file = Storage::url($name);
             } else {
                 $name = $request->file('old_file');
             }
             $permit->template_type = $params['template_type'];
-            $permit->description = $params['description'];
             $permit->save();
         }
 
@@ -155,7 +151,7 @@ class MediumLowUklUplTemplateController extends Controller
     public function destroy($id)
     {
         try {
-            EnvironmentalApproval::destroy($id);
+            MediumLowUklUplTemplate::destroy($id);
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
