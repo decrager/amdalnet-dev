@@ -295,6 +295,22 @@ export default {
     },
     handleAdd() {
       if (this.selectedMember) {
+        const existMember = this.members.filter((x) => {
+          return x.db_id === this.selectedMember;
+        });
+
+        if (existMember.length > 0) {
+          this.$alert(
+            'Tidak bisa menambahkan lebih dari 1 penyusun yang sama',
+            '',
+            {
+              center: true,
+            }
+          );
+          this.selectedMember = null;
+          return;
+        }
+
         const member = this.formulators.find(
           (form) => form.id === this.selectedMember
         );
@@ -306,6 +322,7 @@ export default {
           value: member.name,
           name: member.name,
           id: member.id,
+          db_id: member.id,
           type: 'new',
           position: 'Anggota',
           expertise: member.expertise,
