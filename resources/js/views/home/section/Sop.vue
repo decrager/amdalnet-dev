@@ -40,7 +40,7 @@
           </el-col>
           <el-col :span="14" class="py1 cp">
             <div class="d-flex align-items-center" @click="handleSort(sort)">
-              <span class="fz12 white fw">Jenis Template</span>
+              <span class="fz12 white fw">Jenis SOP</span>
               <i class="el-icon-d-caret white fz12 ml-0-3" />
             </div>
           </el-col>
