@@ -48,6 +48,8 @@ export default {
       },
       optionValue: null,
       sort: 'DESC',
+      keyword: '',
+      limit: 10,
     };
   },
   created() {
@@ -61,7 +63,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/template-ukl-upl-medium-low?page=${this.listQuery.page}&sort=${this.sort}`
+          `/api/template-ukl-upl-medium-low?type=&keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
