@@ -3,7 +3,7 @@
     <div class="container">
       <el-row>
         <el-col :span="24">
-          <h2 class="fw white mb-1-5">Template UKL-UPL Menengah Rendah AMDALNET</h2>
+          <h2 class="fw white mb-1-5">Template UKL-UPL Standar Spesifik AMDALNET</h2>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="mb-1">
@@ -172,7 +172,7 @@ export default {
     getAll(search, sort, limit) {
       axios
         .get(
-          `/api/template-ukl-upl-medium-low?type=MR&keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
+          `/api/template-ukl-upl-medium-low?type=SS&keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;

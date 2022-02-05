@@ -7,6 +7,23 @@
             <div class="form-container">
               <el-form>
                 <el-row>
+                  <el-form-item label="Jenis UKL-UPL" />
+                  <el-form-item>
+                    <template>
+                      <el-select v-model="form.type" placeholder="Pilih Jenis UKL-UPL" style="width:100%">
+                        <el-option
+                          v-for="item in options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
+                        />
+                      </el-select>
+                    </template>
+                  </el-form-item>
+                </el-row>
+              </el-form>
+              <el-form>
+                <el-row>
                   <el-form-item label="Jenis Template">
                     <el-input
                       v-model="form.template_type"
@@ -54,9 +71,18 @@ export default {
     return {
       form: {
         template_type: '',
-        description: '',
+        type: '',
       },
       file: '',
+      options: [
+        {
+          value: 'MR',
+          label: 'MENENGAH RENDAH',
+        }, {
+          value: 'SS',
+          label: 'STANDAR SPESIFIK',
+        },
+      ],
     };
   },
   mounted() {},
@@ -68,6 +94,7 @@ export default {
       const formData = new FormData();
       formData.append('file', this.file);
       formData.append('template_type', this.form.template_type);
+      formData.append('type', this.form.type);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
         .post('api/template-ukl-upl-medium-low', formData, { headers })

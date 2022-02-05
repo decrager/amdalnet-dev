@@ -10,6 +10,7 @@
     <izin v-if="toggleIzin" />
     <persetujuan v-if="togglePersetujuan" />
     <ukl-menengah v-if="toggleUklMenengah" />
+    <ukl-spesifik v-if="toggleUklSpesifik" />
     <action-home v-if="toggleMenu" />
     <counter-home v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
@@ -31,6 +32,7 @@ import Kebijakan from './section/Kebijakan.vue';
 import Izin from './section/Izin.vue';
 import Materi from './section/Materi.vue';
 import Uklm from './section/Uklm.vue';
+import Ukls from './section/Ukls.vue';
 import Persetujuan from './section/Persetujuan.vue';
 import ActionHome from './section/Action.vue';
 import CounterHome from './section/Counter.vue';
@@ -48,6 +50,7 @@ export default {
     'kebijakan': Kebijakan,
     'materi': Materi,
     'ukl-menengah': Uklm,
+    'ukl-spesifik': Ukls,
     'izin': Izin,
     'persetujuan': Persetujuan,
     'action-home': ActionHome,
@@ -64,6 +67,7 @@ export default {
       toggleMenu: true,
       togglePersetujuan: false,
       toggleUklMenengah: false,
+      toggleUklSpesifik: false,
     };
   },
   created() {
@@ -72,39 +76,22 @@ export default {
   mounted() {},
   methods: {
     handleSetMenu(e) {
-      if (e === 'MATERI') {
-        this.toggleMenuMateri = true;
-        this.toggleMenuKebijakan = false;
-        this.toggleIzin = false;
-        this.toggleMenu = false;
-      }
-      if (e === 'KEBIJAKAN') {
-        this.toggleMenuKebijakan = true;
-        this.toggleMenuMateri = false;
-        this.toggleIzin = false;
-        this.toggleMenu = false;
-      }
-      if (e === 'IZIN') {
-        this.toggleMenuKebijakan = false;
-        this.toggleMenuMateri = false;
-        this.toggleMenu = false;
-        this.toggleIzin = true;
-      }
-      if (e === 'TEMPLATE') {
-        this.toggleMenuKebijakan = false;
-        this.toggleMenuMateri = false;
-        this.toggleMenu = false;
-        this.toggleIzin = false;
-        this.togglePersetujuan = true;
-      }
-      if (e === 'UKL_UPL_M') {
-        this.toggleMenuKebijakan = false;
-        this.toggleMenuMateri = false;
-        this.toggleMenu = false;
-        this.toggleIzin = false;
-        this.togglePersetujuan = false;
-        this.toggleUklMenengah = true;
-      }
+      this.setAllState(e);
+    },
+    setAllState(e){
+      const materi = (e === 'MATERI') ? 'true' : 'false';
+      const kebijakan = (e === 'KEBIJAKAN') ? 'true' : 'false';
+      const izin = (e === 'IZIN') ? 'true' : 'false';
+      const template = (e === 'TEMPLATE') ? 'true' : 'false';
+      const men = (e === 'UKL_UPL_M') ? 'true' : 'false';
+      const spec = (e === 'UKL_UPL_S') ? 'true' : 'false';
+      this.toggleMenuMateri = JSON.parse(materi);
+      this.toggleMenuKebijakan = JSON.parse(kebijakan);
+      this.toggleIzin = JSON.parse(izin);
+      this.toggleMenu = false;
+      this.togglePersetujuan = JSON.parse(template);
+      this.toggleUklMenengah = JSON.parse(men);
+      this.toggleUklSpesifik = JSON.parse(spec);
     },
     isFirstVisit() {
       const recurring = Cookies.get('recurring');

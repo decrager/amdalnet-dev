@@ -16,6 +16,16 @@
         <span>{{ scope.row.template_type }}</span>
       </template>
     </el-table-column>
+    <el-table-column label="Jenis UKL-UPL">
+      <template slot-scope="scope">
+        <div v-if="scope.row.type === 'MR'">
+          <span>MENENGAH RENDAH</span>
+        </div>
+        <div v-else>
+          <span type="info">STANDAR SPESIFIK</span>
+        </div>
+      </template>
+    </el-table-column>
     <el-table-column label="Download/File">
       <template slot-scope="scope">
         <span>{{ scope.row.file }}</span>
