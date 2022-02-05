@@ -22,11 +22,16 @@ class MediumLowUklUplTemplateController extends Controller
             $sort = $request->sort;
         }
 
+        // dd($request->type);
+
         $mediumLowUklUplTemplate = MediumLowUklUplTemplate::When($request->has('keyword'), function ($query) use ($request) {
             $columnsToSearch = ['type'];
             $searchQuery = '%' . $request->keyword . '%';
             $indents = $query->where('template_type', 'ILIKE', '%'.$request->keyword.'%');
-            $indents = $query->where('type', '=', $request->type);
+            // if (!empty($request->type)) {
+            //     $indents = $query->where('type', '=', $request->type);
+            // }
+            
             foreach($columnsToSearch as $column) {
                 $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
             }
