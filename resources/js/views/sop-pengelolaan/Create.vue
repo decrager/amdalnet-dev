@@ -9,7 +9,7 @@
                 <el-row>
                   <el-form-item label="Jenis Template">
                     <el-input
-                      v-model="form.template_type"
+                      v-model="form.sop_type"
                       type="text"
                       placeholder="Jenis Template"
                     />
@@ -33,7 +33,7 @@
                 <el-button
                   type="primary"
                   icon="el-icon-s-claim"
-                  @click="saveTemplateUklUplMenengah()"
+                  @click="saveEnvManagementSop()"
                 >
                   Simpan
                 </el-button>
@@ -53,7 +53,7 @@ export default {
   data() {
     return {
       form: {
-        template_type: '',
+        sop_type: '',
       },
       file: '',
     };
@@ -63,16 +63,16 @@ export default {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
-    async saveTemplateUklUplMenengah() {
+    async saveEnvManagementSop() {
       const formData = new FormData();
       formData.append('file', this.file);
-      formData.append('template_type', this.form.template_type);
+      formData.append('sop_type', this.form.sop_type);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/template-ukl-upl-medium-low', formData, { headers })
+        .post('api/env-management-sop', formData, { headers })
         .then(() => {
           this.$message({
-            message: 'Template UKL UPL Berhasil Disimpan',
+            message: 'SOP Berhasil Disimpan',
             type: 'success',
             duration: 5 * 1000,
           });

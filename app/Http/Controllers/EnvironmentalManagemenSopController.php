@@ -57,7 +57,7 @@ class EnvironmentalManagemenSopController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'template_type'    => 'required',
+                'sop_type'    => 'required',
             ]
         );
 

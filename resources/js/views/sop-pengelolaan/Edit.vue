@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="padding: 24px">
-    <form enctype="multipart/form-data" @submit.prevent="saveTemplateUklUplMenengah">
+    <form enctype="multipart/form-data" @submit.prevent="saveEnvManagementSop">
       <el-card>
         <el-row :gutter="20">
           <el-col :span="14">
@@ -9,7 +9,7 @@
                 <el-row>
                   <el-form-item label="Jenis Template">
                     <el-input
-                      v-model="form.template_type"
+                      v-model="currentParam.sop_type"
                       type="text"
                       placeholder="Jenis Template"
                     />
@@ -28,12 +28,24 @@
                   </el-form-item>
                 </el-row>
               </el-form>
+              <el-form>
+                <el-row>
+                  <el-input
+                    v-model="currentParam.id"
+                    type="hidden"
+                  />
+                  <el-input
+                    v-model="currentParam.file"
+                    type="hidden"
+                  />
+                </el-row>
+              </el-form>
               <div class="" style="margin-top: 0.5rem; text-align: right">
                 <el-button type="danger" @click="handleCancel">Kembali</el-button>
                 <el-button
                   type="primary"
                   icon="el-icon-s-claim"
-                  @click="saveTemplateUklUplMenengah()"
+                  @click="saveEnvManagementSop()"
                 >
                   Edit
                 </el-button>
@@ -52,27 +64,31 @@ export default {
   props: {},
   data() {
     return {
-      form: {
-        template_type: '',
-      },
+      currentParam: {},
       file: '',
     };
   },
-  mounted() {},
+  created() {
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+    }
+  },
   methods: {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
-    async saveTemplateUklUplMenengah() {
+    async saveEnvManagementSop() {
       const formData = new FormData();
+      formData.append('id', this.currentParam.id);
       formData.append('file', this.file);
-      formData.append('template_type', this.form.template_type);
+      formData.append('old_file', this.currentParam.file);
+      formData.append('sop_type', this.currentParam.sop_type);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/template-ukl-upl-medium-low', formData, { headers })
+        .post('api/env-management-sop/update', formData, { headers })
         .then(() => {
           this.$message({
-            message: 'Template UKL UPL Berhasil Disimpan',
+            message: 'SOP Berhasil Disimpan',
             type: 'success',
             duration: 5 * 1000,
           });

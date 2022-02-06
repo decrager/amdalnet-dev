@@ -13,7 +13,7 @@
     </el-table-column>
     <el-table-column label="Jenis SOP">
       <template slot-scope="scope">
-        <span>{{ scope.row.template_type }}</span>
+        <span>{{ scope.row.sop_type }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Download/File">

@@ -63,7 +63,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/template-ukl-upl-medium-low?type=&keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
+          `/api/env-management-sop?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -83,7 +83,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          axios.get(`/api/template-ukl-upl-medium-low/delete/${rows.id}`)
+          axios.get(`/api/env-management-sop/delete/${rows.id}`)
             .then((response) => {
               this.$message({
                 type: 'success',
