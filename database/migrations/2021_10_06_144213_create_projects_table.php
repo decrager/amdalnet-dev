@@ -40,7 +40,6 @@ class CreateProjectsTable extends Migration
             $table->string('announcement_letter')->nullable();
             $table->string('result_risk')->nullable();
             $table->string('kbli')->nullable();
-            $table->jsonb('marking')->nullable();
             $table->boolean('published')->default(0);
             $table->string('required_doc')->nullable();
             $table->string('biz_type')->nullable();
