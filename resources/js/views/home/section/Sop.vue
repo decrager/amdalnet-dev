@@ -51,8 +51,8 @@
           </el-col>
         </el-row>
         <el-row
-          v-for="(ukl_upl_template, index) in allData"
-          :key="ukl_upl_template.id"
+          v-for="(envManagementSop, index) in allData"
+          :key="envManagementSop.id"
           :gutter="20"
           style="display: flex; align-items: center"
           class="bb bg-custom tb-hover"
@@ -61,11 +61,11 @@
             <span class="fz12 white fw">{{ index + 1 }}</span>
           </el-col>
           <el-col :span="14" class="py">
-            <span class="fz12 white">{{ ukl_upl_template.template_type }}</span>
+            <span class="fz12 white">{{ envManagementSop.sop_type }}</span>
           </el-col>
           <el-col :span="8" class="py text-center">
             <a
-              :href="ukl_upl_template.file"
+              :href="envManagementSop.file"
               target="_blank"
               class="fz12 white cl-blue buttonDownload"
               download
@@ -172,7 +172,7 @@ export default {
     getAll(search, sort, limit) {
       axios
         .get(
-          `/api/template-ukl-upl-medium-low?type=SS&keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
+          `/api/env-management-sop?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -185,11 +185,12 @@ export default {
     handleFilter() {
       axios
         .get(
-          `/api/template-ukl-upl-medium-low?&page=${this.listQuery.page}`
+          `/api/env-management-sop?&page=${this.listQuery.page}`
         )
         .then((response) => {
           this.allData = response.data.data;
           this.total = response.data.total;
+          console.log(this.allData);
         });
     },
     handleSort() {
