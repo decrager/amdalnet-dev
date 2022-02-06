@@ -35,7 +35,7 @@
                 </ul>
               </li>
               <li>
-                <a href="">Lainnya...</a>
+                <a href="#" @click="handleSetMenu('SOP')">SOP Pengelolaan dan Pemantauan Lingkungan</a>
               </li>
             </ul>
           </li>
@@ -143,7 +143,7 @@ export default {
       if (e === 'MATERI'){
         this.activeMenu = 'Materi';
       }
-      if (e === 'FORMULIR' || e === 'UKL_UPL_M' || e === 'UKL_UPL_S'){
+      if (e === 'FORMULIR' || e === 'UKL_UPL_M' || e === 'UKL_UPL_S' || e === 'SOP'){
         this.isActiveFormulir = !this.isActiveFormulir;
         this.activeMenu = 'Formulir';
       }

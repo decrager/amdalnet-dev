@@ -35,6 +35,7 @@ use App\Http\Controllers\OssController;
 use App\Http\Controllers\EnvironmentalApprovalController;
 use App\Http\Controllers\GovernmentInstitutionController;
 use App\Http\Controllers\MediumLowUklUplTemplateController;
+use App\Http\Controllers\EnvironmentalManagemenSopController;
 
 /*
 |--------------------------------------------------------------------------
@@ -366,6 +367,11 @@ Route::get('template-ukl-upl-medium-low', [MediumLowUklUplTemplateController::cl
 Route::post('template-ukl-upl-medium-low', [MediumLowUklUplTemplateController::class, 'store']);
 Route::post('template-ukl-upl-medium-low/update', [MediumLowUklUplTemplateController::class, 'update']);
 Route::get('template-ukl-upl-medium-low/delete/{id}', [MediumLowUklUplTemplateController::class, 'destroy']);
+
+Route::get('env-management-sop', [EnvironmentalManagemenSopController::class, 'index']);
+Route::post('env-management-sop', [EnvironmentalManagemenSopController::class, 'store']);
+Route::post('env-management-sop/update', [EnvironmentalManagemenSopController::class, 'update']);
+Route::get('env-management-sop/delete/{id}', [EnvironmentalManagemenSopController::class, 'destroy']);
 
 // Master Government Insitution
 Route::apiResource('government-institution', 'GovernmentInstitutionController');

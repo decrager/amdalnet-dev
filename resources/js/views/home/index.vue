@@ -11,6 +11,7 @@
     <persetujuan v-if="togglePersetujuan" />
     <ukl-menengah v-if="toggleUklMenengah" />
     <ukl-spesifik v-if="toggleUklSpesifik" />
+    <Sop v-if="toggleSop" />
     <action-home v-if="toggleMenu" />
     <counter-home v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
@@ -33,6 +34,7 @@ import Izin from './section/Izin.vue';
 import Materi from './section/Materi.vue';
 import Uklm from './section/Uklm.vue';
 import Ukls from './section/Ukls.vue';
+import Sop from './section/Sop.vue';
 import Persetujuan from './section/Persetujuan.vue';
 import ActionHome from './section/Action.vue';
 import CounterHome from './section/Counter.vue';
@@ -51,6 +53,7 @@ export default {
     'materi': Materi,
     'ukl-menengah': Uklm,
     'ukl-spesifik': Ukls,
+    'Sop': Sop,
     'izin': Izin,
     'persetujuan': Persetujuan,
     'action-home': ActionHome,
@@ -68,6 +71,7 @@ export default {
       togglePersetujuan: false,
       toggleUklMenengah: false,
       toggleUklSpesifik: false,
+      toggleSop: false,
     };
   },
   created() {
@@ -85,6 +89,7 @@ export default {
       const template = (e === 'TEMPLATE') ? 'true' : 'false';
       const men = (e === 'UKL_UPL_M') ? 'true' : 'false';
       const spec = (e === 'UKL_UPL_S') ? 'true' : 'false';
+      const sop = (e === 'SOP') ? 'true' : 'false';
       this.toggleMenuMateri = JSON.parse(materi);
       this.toggleMenuKebijakan = JSON.parse(kebijakan);
       this.toggleIzin = JSON.parse(izin);
@@ -92,6 +97,7 @@ export default {
       this.togglePersetujuan = JSON.parse(template);
       this.toggleUklMenengah = JSON.parse(men);
       this.toggleUklSpesifik = JSON.parse(spec);
+      this.toggleSop = JSON.parse(sop);
     },
     isFirstVisit() {
       const recurring = Cookies.get('recurring');

@@ -251,6 +251,26 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Edit UKL-UPL', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'sop-pengelolaan-dan-pemantauan-lingkungan',
+      component: () => import('@/views/sop-pengelolaan/index'),
+      name: 'SopPengelolaan',
+      meta: { title: 'SOP Pengelolaan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'sop-pengelolaan-dan-pemantauan-lingkungan/create',
+      component: () => import('@/views/sop-pengelolaan/Create'),
+      name: 'CreateSopPengelolaan',
+      hidden: true,
+      meta: { title: 'SOP Pengelolaan', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'sop-pengelolaan-dan-pemantauan-lingkungan/edit',
+      component: () => import('@/views/sop-pengelolaan/Edit'),
+      name: 'EditSopPengelolaan',
+      hidden: true,
+      meta: { title: 'SOP Pengelolaan', icon: 'documentation', noCache: true },
+    },
   ],
 };
 
