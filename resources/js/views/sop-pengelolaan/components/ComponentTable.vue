@@ -58,7 +58,7 @@ export default {
     handleEditForm(row) {
       const currentParam = row;
       this.$router.push({
-        name: 'EditUklMenengah',
+        name: 'EditSopPengelolaan',
         params: { row, appParams: currentParam },
       });
     },
