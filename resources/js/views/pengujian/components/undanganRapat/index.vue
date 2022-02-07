@@ -185,7 +185,6 @@
             Unduh Hasil Pemeriksaan Berkas Administrasi
           </el-button>
           <el-upload
-            v-if="!meetings.file"
             :auto-upload="false"
             :on-change="handleUploadChange"
             :show-file-list="false"
