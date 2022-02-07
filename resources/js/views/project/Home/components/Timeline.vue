@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 2em;">
+  <div style="padding: 2em;" :loading="loading">
     <template v-if="activities.length > 0">
       <div class="radio">
         <span style="display:inline-block;font-size:0.9em; margin-right:1em;">Urutkan:</span>
@@ -50,6 +50,7 @@ export default {
       id: 0,
       reverse: false,
       activities: [],
+      loading: false,
     };
   },
   mounted(){
@@ -59,11 +60,14 @@ export default {
   methods: {
     async getData() {
       this.activities = [];
+      this.loading = true;
       await timelineResource.list({ id: this.id })
         .then((res) => {
           this.activities = this.process(res);
         })
-        .finally();
+        .finally(() => {
+          this.loading = false;
+        });
     },
     process(data){
       const res = [];

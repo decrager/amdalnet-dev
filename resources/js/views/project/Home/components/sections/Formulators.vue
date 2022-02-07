@@ -1,7 +1,7 @@
 <template>
   <div style="margin-bottom: 3em;">
     <template v-for="person in data">
-      <el-row :key="'ketua_' +id+'-'+ person.id" :gutter="10" style="margin-bottom:1em;">
+      <el-row :key="'person_'+ person.id" :gutter="10" style="margin-bottom:1em;">
         <el-col :span="18">
           {{ person.name }}<br>
           <span v-if="person.membership_status">[{{ person.membership_status }}]</span> <span v-if="person.reg_no">No. Cert {{ person.reg_no }}</span>
