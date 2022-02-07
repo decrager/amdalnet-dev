@@ -348,12 +348,9 @@
             <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district+'/ '+scope.row.address[0].prov : '' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Tahap" class-name="status-col" width="100">
+        <el-table-column label="Tahap" class-name="status-col">
           <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.tag === 'Home' ? 'primary' : 'success'"
-              disable-transitions
-            >{{ scope.row.tag }}</el-tag>
+            {{ scope.row.marking | projectStep }}
           </template>
         </el-table-column>
       </el-table>
@@ -397,6 +394,17 @@ const rklResource = new Resource('matriks-rkl');
 export default {
   name: 'Project',
   components: { Pagination, AnnouncementDialog },
+  filters: {
+    projectStep: function(value) {
+      if (value === 'screening-completed'){
+        return 'Selesai Penapisan';
+      } else if (value === 'formulator-assignment'){
+        return 'Penetapan Penyusun';
+      } else {
+        return '';
+      }
+    },
+  },
   data() {
     return {
       loading: true,
