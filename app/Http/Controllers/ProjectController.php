@@ -237,6 +237,12 @@ class ProjectController extends Controller
                 'registration_no' => uniqid(),
             ]);
 
+            // add workflow
+            $project->workflow_apply('fill-info');
+            $project->workflow_apply('screening');
+            $project->workflow_apply('complete-screening');
+            $project->save();
+
             if ($files = $request->file('fileMap')) {
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
                 $files->storePubliclyAs('public/map/', $mapName);
