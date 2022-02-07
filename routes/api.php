@@ -36,6 +36,7 @@ use App\Http\Controllers\EnvironmentalApprovalController;
 use App\Http\Controllers\GovernmentInstitutionController;
 use App\Http\Controllers\MediumLowUklUplTemplateController;
 use App\Http\Controllers\EnvironmentalManagemenSopController;
+use App\Http\Controllers\ProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -295,6 +296,7 @@ Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf'
 Route::apiResource('ka-comment', 'KaCommentController');
 Route::apiResource('employee-tuk', 'EmployeeTUKController');
 Route::apiResource('tuk-management', 'TUKManagementController');
+Route::get('timeline', [ProjectController::class, 'timeline']);
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
@@ -388,7 +390,7 @@ Route::put('activateUser/{user}', function (User $user) {
 
     $user->active = 1;
     $user->save();
-    
+
     return response(['message' => 'done']);
 });
 
@@ -396,7 +398,7 @@ Route::put('activateUser/{user}', function (User $user) {
 // Route::get('/testemail', function () {
 
 //     $data = User::find(236);
-  
+
 //         $billData = [
 //             'name' => '#007 Bill',
 //             'body' => 'You have received a new bill.',
@@ -405,8 +407,8 @@ Route::put('activateUser/{user}', function (User $user) {
 //             'offer' => url('/'),
 //             'bill_id' => 30061
 //         ];
-  
+
 //         Notification::send($data, new BillingNotification($billData));
-   
+
 //         dd('Bill notification has been sent!');
 // });

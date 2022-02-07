@@ -1,5 +1,8 @@
 <template>
   <div class="ph-formulator">
+
+    <p v-if="tim !== null" class="header">{{ tim.name }}</p>
+
     <p class="header">Ketua</p>
     <formulator-persons :data="ketua" />
 
@@ -7,7 +10,7 @@
     <formulator-persons :data="anggota" />
 
     <p class="header">Tim Ahli</p>
-    <formulator-persons :data="ahli" />
+    <formulator-persons :data="ahli" :mode="2" />
 
   </div>
 </template>
@@ -30,10 +33,12 @@ export default {
       ketua: [],
       anggota: [],
       ahli: [],
+      tim: null,
     };
   },
   mounted(){
     // this.id = this.$route.params && this.$route.params.id;
+    this.getFormulatorTeam();
     this.getFormulator();
     this.getExpert();
   },
@@ -55,10 +60,20 @@ export default {
     async getExpert(){
       this.ahli = [];
       const projectId = this.$route.params && this.$route.params.id;
-      await formulatorResource.list({ type: 'tim-penyusun', idProject: projectId })
+      await formulatorResource.list({ type: 'tim-ahli', idProject: projectId })
         .then((res) => {
           this.ahli = res;
           // console.log('ahli: ', this.ahli);
+        })
+        .finally();
+    },
+    async getFormulatorTeam(){
+      this.tim = null;
+      const projectId = this.$route.params && this.$route.params.id;
+      await formulatorResource.list({ type: 'project', idProject: projectId })
+        .then((res) => {
+          this.tim = res;
+          // console.log('tim: ', this.tim);
         })
         .finally();
     },

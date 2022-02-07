@@ -666,4 +666,29 @@ class ProjectController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Request $request
+     * @return Response
+     */
+
+     public function timeline(Request $request){
+         $res = [];
+         $res = DB::table('audits')
+         ->leftJoin('users', 'users.id', '=', 'audits.user_id')
+         ->select(
+            'audits.created_at as datetime',
+            'audits.event',
+            'audits.old_values',
+            'audits.new_values',
+            'users.name as user_name'
+         )
+         ->where('audits.auditable_id', $request->id)
+         ->orderBy('audits.id', $request->order ? $request->order : 'DESC')
+         ->get();
+
+         return response($res);
+     }
 }

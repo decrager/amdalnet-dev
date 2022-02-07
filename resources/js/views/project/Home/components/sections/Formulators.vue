@@ -4,10 +4,12 @@
       <el-row :key="'ketua_' +id+'-'+ person.id" :gutter="10" style="margin-bottom:1em;">
         <el-col :span="18">
           {{ person.name }}<br>
-          [{{ person.membership_status }}] No. Cert {{ person.reg_no }}
+          <span v-if="person.membership_status">[{{ person.membership_status }}]</span> <span v-if="person.reg_no">No. Cert {{ person.reg_no }}</span>
         </el-col>
         <el-col :span="6">
-          <el-link :href="person.certificate" target="_blank" icon="el-icon-download" type="primary">Sertifikat</el-link>&nbsp;&nbsp;&nbsp;&nbsp;<el-link :href="person.file" target="_blank" icon="el-icon-download" type="primary">CV</el-link>
+          <el-link v-if="person.certificate" :href="person.certificate" target="_blank" icon="el-icon-download" type="primary">Sertifikat</el-link>&nbsp;&nbsp;&nbsp;&nbsp;
+          <el-link v-if="(mode === 1) && (person.file !== null)" :href="person.file" target="_blank" icon="el-icon-download" type="primary">CV</el-link>
+          <el-link v-else-if="(mode === 2) && (person.cv !== null)" :href="person.cv" target="_blank" icon="el-icon-download" type="primary">CV</el-link>
         </el-col>
       </el-row>
     </template>
@@ -22,6 +24,10 @@ export default {
       default: function() {
         return [];
       },
+    },
+    mode: {
+      type: Number,
+      default: 1, // 1: penyusun, 2: expert
     },
   },
 };

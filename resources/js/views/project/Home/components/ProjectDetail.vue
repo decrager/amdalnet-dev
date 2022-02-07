@@ -50,6 +50,7 @@
 
       </el-col>
       <el-col :span="4">
+        <!--
         <template v-for="link in linkData">
           <p :key="data.id+ '_link_'+ link.label">
             <el-button
@@ -61,6 +62,7 @@
             </el-button>
           </p>
         </template>
+        -->
         <p v-if="isHome !== true"><el-button
           round
           plain

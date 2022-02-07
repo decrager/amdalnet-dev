@@ -1,7 +1,15 @@
 <template>
   <div v-if="data !== null" class="app-container ph">
 
-    <el-card type="box" style="margin-bottom: 20px;">
+    <!-- <el-collapse v-model="mphDetail" >
+      <el-collapse-item name="1">
+        <div slot="title" class="clearfix">
+          <span style="font-weight: 500;">{{ data.initiator.name + ': ' + data.project_title }}</span>
+        </div>
+        <project-detail :data="data" :is-home="true" />
+      </el-collapse-item>
+    </el-collapse> -->
+    <el-card type="box" style="margin-bottom: 2em;">
       <div slot="header" class="clearfix">
         <span style="font-weight: 500;">{{ data.initiator.name + ': ' + data.project_title }}</span>
       </div>
@@ -65,6 +73,7 @@ export default {
       announcement_id: 0,
       data: null,
       initiator: null,
+      mphDetail: ['1'],
     };
   },
   mounted(){
