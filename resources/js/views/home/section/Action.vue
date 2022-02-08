@@ -69,7 +69,7 @@
             </div>
           </div>
           <div class="content" :hidden="!showPelingkupan" style="padding-top: 20px;">
-            <h3 class="sub-title button"><img src="/images/docPlus.svg" style="width: 16px; height:16px" alt=""> Proses Persetujuan Lingkungan</h3>
+            <h3 class="sub-title button" @click="handleSetMenu()"><img src="/images/docPlus.svg" style="width: 16px; height:16px" alt=""> Proses Persetujuan Lingkungan</h3>
             <h3 class="sub-title button" @click="showPubDialog"><img src="/images/pubques.svg" style="width: 16px; height:16px" alt=""> Pelayanan Public</h3>
             <h3 class="sub-title button" @click="showTrackingDialog"><img src="/images/search.svg" style="width: 16px; height:16px" alt=""> Tracking Dokumen</h3>
           </div>
@@ -295,6 +295,9 @@ export default {
       // this.listSubProjectParams = choosenProject.listSubProjectParams;
       const at = choosenProject.amdal_type ? choosenProject.amdal_type : '';
       this.last_result = choosenProject.result + ' ' + at;
+    },
+    handleSetMenu(){
+      this.$router.push('/login');
     },
   },
 };
