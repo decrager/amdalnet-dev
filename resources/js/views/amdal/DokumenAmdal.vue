@@ -1,7 +1,10 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card v-if="formulirKACompleted && templateKALoaded" v-loading="loading">
-      <h2>Formulir Kerangka Acuan</h2>
+      <h2>
+        Submit Formulir kerangka Acuan
+        <span v-if="isFormulator">ke Pemrakarsa</span>
+      </h2>
       <div>
         <el-button
           v-if="showDocument"
@@ -21,15 +24,8 @@
         </a>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
-        <el-col :span="16">
+        <el-col :sm="24" :md="14">
           <div class="grid-content bg-purple" />
-          <!-- <iframe
-            v-if="showDocument"
-            :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projectId}-form-ka-andal&embedded=true`"
-            width="100%"
-            height="723px"
-            frameborder="1"
-          /> -->
           <iframe
             v-if="showDocument"
             :src="
@@ -40,9 +36,9 @@
             frameborder="0"
           />
         </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple" />
-          <Comment />
+        <el-col :sm="24" :md="10">
+          <KaReviewPenyusun v-if="isFormulator" />
+          <KaReviewPemrakarsa v-if="isInitiator" />
         </el-col>
       </el-row>
     </el-card>
@@ -51,18 +47,16 @@
 
 <script>
 import Resource from '@/api/resource';
+import KaReviewPenyusun from '@/views/amdal/components/KaReviewPenyusun';
+import KaReviewPemrakarsa from '@/views/amdal/components/KaReviewPemrakarsa';
 const scopingResource = new Resource('scoping');
 const andalComposingResource = new Resource('andal-composing');
-import Comment from '@/views/penyusunan-andal/components/Comment';
 import axios from 'axios';
-import Docxtemplater from 'docxtemplater';
-import PizZip from 'pizzip';
-import PizZipUtils from 'pizzip/utils/index.js';
-import { saveAs } from 'file-saver';
 
 export default {
   components: {
-    Comment,
+    KaReviewPenyusun,
+    KaReviewPemrakarsa,
   },
   data() {
     return {
@@ -73,26 +67,25 @@ export default {
       loading: false,
       loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
-      metode_studi: [],
-      pra_konstruksi: [],
-      konstruksi: [],
-      operasi: [],
-      pasca_operasi: [],
-      project_title: '',
-      pic: '',
-      description: '',
-      location_desc: '',
-      positive: [],
-      negative: [],
-      penyusun: [],
       out: '',
       showDocument: false,
       downloadDocxPath: '',
+      userInfo: {
+        roles: [],
+      },
     };
   },
-  created() {
-    this.getData();
-    // this.getDocument();
+  computed: {
+    isFormulator() {
+      return this.userInfo.roles.includes('formulator');
+    },
+    isInitiator() {
+      return this.userInfo.roles.includes('initiator');
+    },
+  },
+  async created() {
+    this.userInfo = await this.$store.dispatch('user/getInfo');
+    await this.getData();
   },
   methods: {
     async getData() {
@@ -127,82 +120,6 @@ export default {
       this.loading = false;
       this.templateKALoaded = true;
     },
-    async exportDocxPhpWord() {
-      await andalComposingResource.list({
-        idProject: this.$route.params.id,
-        formulir: 'true',
-      });
-    },
-    downloadDocx() {
-      saveAs(this.out, this.$route.params.id + '-form-ka.docx');
-    },
-    exportDocx() {
-      PizZipUtils.getBinaryContent('/template_KA.docx', (error, content) => {
-        if (error) {
-          this.$message({
-            message: 'Gagal memuat template formulir KA',
-            type: 'error',
-            duration: 5 * 1000,
-          });
-          throw error;
-        }
-        this.templateKALoaded = true;
-        const zip = new PizZip(content);
-        const doc = new Docxtemplater(zip, {
-          paragraphLoop: true,
-          linebreaks: true,
-        });
-        doc.render({
-          metode_studi: this.metode_studi,
-          pra_konstruksi: this.pra_konstruksi,
-          konstruksi: this.konstruksi,
-          operasi: this.operasi,
-          pasca_operasi: this.pasca_operasi,
-          project_title: this.project_title,
-          pic: this.pic,
-          description: this.description,
-          location_desc: this.location_desc,
-          negative: this.negative,
-          positive: this.positive,
-          penyusun: this.penyusun,
-        });
-
-        const out = doc.getZip().generate({
-          type: 'blob',
-          mimeType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        });
-
-        const formData = new FormData();
-        formData.append('docx', out);
-        formData.append('type', 'formulir');
-        formData.append('idProject', this.$route.params.id);
-
-        andalComposingResource
-          .store(formData)
-          .then((response) => {
-            this.showDocument = true;
-            this.projects =
-              window.location.origin +
-              '/storage/formulir/' +
-              this.$route.params.id +
-              '-form-ka.docx';
-            this.loading = false;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
-        this.out = out;
-      });
-    },
-    getDocument() {
-      this.projects =
-        window.location.origin +
-        '/storage/formulir/' +
-        this.$route.params.id +
-        '-form-ka.docx';
-    },
     async exportPdf() {
       this.loadingPDF = true;
       axios({
@@ -215,9 +132,6 @@ export default {
           type: 'ka',
         },
       }).then((response) => {
-        // const getHeaders = response.headers['content-disposition'].split('; ');
-        // const getFileName = getHeaders[1].split('=');
-        // const getName = getFileName[1].split('=');
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;

@@ -318,6 +318,7 @@ Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('env-manage-docs', 'EnvManageDocController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('public-questions', 'PublicQuestionController');
+Route::apiResource('ka-reviews', 'KaReviewController');
 
 // notification
 Route::get('mark-all-read/{user}', function (User $user) {
