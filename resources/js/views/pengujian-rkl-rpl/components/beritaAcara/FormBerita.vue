@@ -2,7 +2,7 @@
   <el-form label-position="top" label-width="200px" style="max-width: 100%">
     <el-row v-loading="loadingtuk" :gutter="32">
       <el-col :sm="12" :md="12">
-        <el-form-item label="Jabatan">
+        <el-form-item label="Jabatan Penanggung Jawab Usaha">
           <el-input v-model="reports.position" />
         </el-form-item>
       </el-col>

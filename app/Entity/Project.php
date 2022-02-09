@@ -110,4 +110,9 @@ class Project extends Model implements Auditable
     {
         return $this->hasOne(FeasibilityTest::class, 'id_project', 'id');
     }
+
+    public function kaReviews()
+    {
+        return $this->hasMany(KaReview::class, 'id_project', 'id');
+    }
 }

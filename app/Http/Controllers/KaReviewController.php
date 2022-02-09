@@ -59,9 +59,17 @@ class KaReviewController extends Controller
                 $user = User::where('email', $email)->first();
                 Notification::send([$user], new AppKaReview($review));
             }
+
+            // === WORKFLOW === //
+            // if($project->marking == 'amdal.form-ka-drafting') {
+            //     $project->workflow_apply('submit-amdal-form-ka');
+            //     $project->save();
+            // }
         }
 
         if($request->type == 'pemrakarsa') {
+            $project = Project::findOrFail($request->idProject);
+
             $review = new KaReview();
             $review->id_project = $request->idProject;
             $review->status = $request->status;
@@ -96,6 +104,19 @@ class KaReviewController extends Controller
                         }
                     }
                 }
+                // === WORKFLOW === //
+                // if($project->marking == 'amdal.form-ka-adm-review') {
+                //     $project->workflow_apply('return-amdal-form-ka-review');
+                //     $project->save();
+                // }
+            } else if($request->status == 'submit') {
+                // if($project->marking == 'amdal.form-ka-adm-review') {
+                //     $project->workflow_apply('approve-amdal-form-ka');
+                //     $project->save();
+                // } else if($project->marking == 'amdal.form-ka-adm-returned') {
+                //     $project->workflow_apply('approve-amdal-form-ka');
+                //     $project->save();
+                // }
             }
         }
 

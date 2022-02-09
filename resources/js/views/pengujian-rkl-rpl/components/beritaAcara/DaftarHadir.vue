@@ -87,7 +87,6 @@
       <Tinymce v-model="reports.notes" v-loading="loadingtuk" :height="200" />
     </div>
     <el-upload
-      v-if="!reports.file"
       :auto-upload="false"
       :on-change="handleUploadChange"
       :show-file-list="false"
@@ -102,7 +101,7 @@
         Unggah BA Final
       </el-button>
     </el-upload>
-    <div v-else style="text-align: right">
+    <div v-if="reports.file" style="text-align: right">
       <el-button
         type="text"
         size="medium"

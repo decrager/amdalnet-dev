@@ -62,7 +62,7 @@ class KaReview extends Notification
             'kaReview' => $this->kaReviews,
             'user' => $notifiable,
             'message' => $this->getMessage(),
-            'path' => '/#/amdal' . '/' . $this->kaReviews->id_project . '/dokumen' ,
+            'path' => '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen' ,
         ];
     }
 
