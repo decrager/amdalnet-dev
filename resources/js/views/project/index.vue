@@ -145,6 +145,15 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
+                  v-if="isAmdal(scope.row) && isKaSubmitted(scope.row) && isInitiator && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDokumenKA(scope.row)"
+                >
+                  Dokumen Kerangka Acuan
+                </el-button>
+                <el-button
                   v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
@@ -498,6 +507,15 @@ export default {
     isAmdal(project){
       return project.required_doc === 'AMDAL';
     },
+    isKaSubmitted(project) {
+      if (project.ka_reviews) {
+        if (project.ka_reviews.length > 0) {
+          return true;
+        }
+      }
+
+      return false;
+    },
     toTitleCase(str) {
       return str.replace(
         /\w\S*/g,
@@ -680,6 +698,11 @@ export default {
       this.$router.push({
         path: `/uklupl/${project.id}/formulir`,
         // path: `/ukluplstatic/form`,
+      });
+    },
+    handleDokumenKA(project) {
+      this.$router.push({
+        path: `/amdal/${project.id}/dokumen`,
       });
     },
     handleUjiKa(project) {

@@ -89,7 +89,9 @@ class ProjectController extends Controller
             return response()->json(ProjectController::getProject($request->id));
         }
 
-        return Project::with(['address', 'listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
+        return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function($q) {
+            $q->select('id', 'id_project');
+        }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
