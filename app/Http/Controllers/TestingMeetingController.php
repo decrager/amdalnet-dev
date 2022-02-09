@@ -142,9 +142,12 @@ class TestingMeetingController extends Controller
             }
 
             // === ADD WORKFLOW === //
-            // $project = Project::findOrFail($request->idProject);
+            $project = Project::findOrFail($request->idProject);
             // if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
             //     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
+            //     $project->workflow_apply('examine-amdal-form-ka');
+            //     $project->workflow_apply('held-amdal-form-ka-meeting');
+            //     $project->workflow_apply('aprrove-amdal-form-ka');
             //     $project->save();
             // }
 

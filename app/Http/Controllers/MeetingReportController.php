@@ -118,9 +118,10 @@ class MeetingReportController extends Controller
             if($validator->fails()) {
                 return response()->json(['errors' => $validator->messages()]);
             }
+            
+            $project = Project::findOrFail($request->idProject);
 
             if($request->hasFile('dokumen_file')) {
-                $project = Project::findOrFail($request->idProject);
                 $file = $request->file('dokumen_file');
                 $name = '/berita-acara-ka/' . strtolower($project->project_title) . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
@@ -132,6 +133,12 @@ class MeetingReportController extends Controller
             } else {
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
             }
+
+            // === ADD WORKFLOW === //
+            // if($project->marking == 'draft-amdal-form-ka-ba') {
+            //     $project->workflow_apply('sign-amdal-form-ka-ba');
+            //     $project->save();
+            // }
 
             return response()->json(['errors' => null, 'name' => $meeting_report->file]);
         }
@@ -201,6 +208,13 @@ class MeetingReportController extends Controller
             $invitation->save();
 
         }
+
+        // === ADD WORKFLOW === //
+        // $project = Project::findOrFail($request->idProject);
+        // if($project->marking == 'aprrove-amdal-form-ka') {
+        //     $project->workflow_apply('draft-amdal-form-ka-ba');
+        //     $project->save();
+        // }
 
         return response()->json(['message' => 'success']);
     }
