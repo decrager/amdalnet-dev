@@ -434,9 +434,44 @@ class TUKManagementController extends Controller
         }
 
         $tuk = null;
+        $team_number = null;
 
         if($request->type == 'create') {
             $tuk = new FeasibilityTestTeam();
+            
+            // === CHECK EXIST TUK TO ASSIGN TEAM NUMBER === //
+            if($request->authority == 'Pusat') {
+                $check_tuk = FeasibilityTestTeam::where('authority', 'Pusat')->count();
+                if($check_tuk > 0) {
+                    $check_tuk = FeasibilityTestTeam::where('authority', 'Pusat')->orderBy('id', 'desc')->first();
+                    if($check_tuk->team_number == null) {
+                        $team_number = 2;
+                    } else {
+                        $team_number = $check_tuk->team_number + 1;
+                    }
+                }
+            } else if($request->authority == 'Provinsi') {
+                $check_tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $request->id_province_name]])->count();
+                if($check_tuk > 0) {
+                    $check_tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $request->id_province_name]])->orderBy('id', 'desc')->first();
+                    if($check_tuk->team_number == null) {
+                        $team_number = 2;
+                    } else {
+                        $team_number = $check_tuk->team_number + 1;
+                    }
+                }
+            } else if($request->authority == 'Kabupaten/Kota') {
+                $check_tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_province_name', $request->id_province_name],['id_district_name', $request->id_district_name]])->count();
+                if($check_tuk > 0) {
+                    $check_tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_province_name', $request->id_province_name],['id_district_name', $request->id_district_name]])->orderBy('id', 'desc')->first();
+                    if($check_tuk->team_number == null) {
+                        $team_number = 2;
+                    } else {
+                        $team_number = $check_tuk->team_number + 1;
+                    }
+                }
+            }
+
         } else {
             $tuk = FeasibilityTestTeam::findOrFail($request->idTeam);
         }
@@ -449,10 +484,8 @@ class TUKManagementController extends Controller
         $tuk->id_province_name = $request->id_province_name;
         $tuk->id_district_name = $request->id_district_name;
 
-        if($request->team_number == 0 || $request->team_number == null) {
-            $tuk->team_number = null;
-        } else {
-            $tuk->team_number = $request->team_number;
+        if($request->type == 'create') {
+            $tuk->team_number = $team_number;
         }
 
         if($request->hasFile('assignment_file')) {
