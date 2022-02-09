@@ -244,7 +244,6 @@ export default {
           'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan RTRW yang berlaku',
         persetujuan_awal:
           'Justifikasi/bukti rencana usaha dan/atau kegiatan secara prinsip dapat dilakukan',
-        hasil_penapisan: 'Justifikasi/arahan penyusunan dokumen lingkungan',
         surat_penyusun:
           'Bukti Tanda Registrasi LPJP atau Surat pembentukan Tim Penyusun Amdal dari pihak pemrakarsa',
         sertifikasi_penyusun:
@@ -356,7 +355,6 @@ export default {
     },
     isRedirect(name) {
       return (
-        name === 'hasil_penapisan' ||
         name === 'sertifikasi_penyusun' ||
         name === 'cv_penyusun' ||
         name === 'surat_penyusun' ||
@@ -364,9 +362,7 @@ export default {
       );
     },
     handleRedirect(name) {
-      if (name === 'hasil_penapisan') {
-        this.handleHasilPenapisan();
-      } else if (name === 'sertifikasi_penyusun' || name === 'cv_penyusun') {
+      if (name === 'sertifikasi_penyusun' || name === 'cv_penyusun') {
         this.handleRedirectPenyusun();
       } else if (name === 'surat_penyusun') {
         this.lpjpPenyusunDialog = true;

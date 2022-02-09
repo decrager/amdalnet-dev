@@ -269,12 +269,6 @@ class TestingVerificationController extends Controller
                     'type' => 'download'
                   ],
                   [
-                    'name' => 'hasil_penapisan',
-                    'suitability' => null,
-                    'description' => null,
-                    'type' => 'non-download'
-                  ],
-                  [
                     'name' => 'surat_penyusun',
                     'suitability' => null,
                     'description' => null,
