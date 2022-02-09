@@ -98,19 +98,7 @@
       </el-row>
       <el-row :gutter="32">
         <el-col :md="12" :sm="24">
-          <el-row :gutter="32">
-            <el-col :md="15" :sm="15">
-              <el-input v-model="name" :readonly="true" />
-            </el-col>
-            <el-col :md="7" :sm="7">
-              <el-input-number
-                v-model="currentData.team_number"
-                :min="0"
-                :max="100"
-                style="width: 100%"
-              />
-            </el-col>
-          </el-row>
+          <el-input v-model="name" :readonly="true" />
         </el-col>
       </el-row>
       <el-row :gutter="32">
