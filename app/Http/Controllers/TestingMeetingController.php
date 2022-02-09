@@ -141,6 +141,13 @@ class TestingMeetingController extends Controller
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
             }
 
+            // === ADD WORKFLOW === //
+            // $project = Project::findOrFail($request->idProject);
+            // if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
+            //     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
+            //     $project->save();
+            // }
+
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
         }
 
@@ -250,6 +257,13 @@ class TestingMeetingController extends Controller
             }
 
         }
+
+        // === ADD WORKFLOW === //
+        // $project = Project::findOrFail($request->idProject);
+        // if($project->marking == 'amdal.form-ka-adm-approved') {
+        //     $project->workflow_apply('draft-amdal-form-ka-examination-invitation');
+        //     $project->save();
+        // }
 
         return response()->json(['message' => 'success']);
     }
