@@ -13,7 +13,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column>
+      <el-table-column width="60px">
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.used" @change="handleUsedChange(scope.row)" />
         </template>
