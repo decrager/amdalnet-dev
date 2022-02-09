@@ -346,7 +346,7 @@
               </el-col>
             </el-row>
           </el-collapse-item>
-          <el-collapse-item title="PERSETUJUAN TEKNIS(PERTEK)" name="6" disabled>
+          <el-collapse-item title="PERSETUJUAN TEKNIS (PERTEK)" name="6" disabled>
             <el-row>
               <el-col :span="24">
                 <el-form-item

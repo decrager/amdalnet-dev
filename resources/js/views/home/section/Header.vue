@@ -59,9 +59,6 @@
               <li>
                 <a href="">Daftar LPJP</a>
               </li>
-              <li>
-                <a href="">Lainnya...</a>
-              </li>
             </ul>
           </li>
           <li class="nav__item">
@@ -137,7 +134,7 @@ export default {
       if (e === 'LOGO'){
         this.activeMenu = 'Home';
       }
-      if (e !== 'FORMULIR' && e !== 'DAFTAR'){
+      if (e !== 'FORMULIR' && e !== 'DAFTAR' && e !== 'STATIC'){
         this.$emit('handleSetMenu', e);
       }
       if (e === 'MATERI'){
