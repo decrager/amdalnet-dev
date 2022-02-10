@@ -439,17 +439,24 @@ class MeetReportRKLRPLController extends Controller
         $meeting_location = $meeting->location;
 
         // TUK
+        $authority_real = '';
         $authority = '';
         $authority_big = '';
         $tuk_address = '';
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
         $ketua_tuk_position = '';
+        $tuk_telp = '';
+        $tuk_logo = null;
 
 
         if($meeting->id_feasibility_test_team) {
             $team = FeasibilityTestTeam::find($meeting->id_feasibility_test_team);
             if($team) {
+                $authority_real = $team->authority;
+                $tuk_address = $team->address;
+                $tuk_telp = $team->phone;
+                $tuk_logo = $team->logo;
                 if($team->authority == 'Pusat') {
                     $authority_big = 'PUSAT';
                     $authority = 'Pusat';
@@ -508,10 +515,29 @@ class MeetReportRKLRPLController extends Controller
             }
         }
 
-        $templateProcessor = new TemplateProcessor('template_berita_acara_arr.docx');
-        if($document_type == 'ukl-upl') {
-            $templateProcessor = new TemplateProcessor('template_berita_acara_uu.docx');
+        $templateProcessor = null;
+
+        if($authority_real == 'Pusat') {
+            $templateProcessor = new TemplateProcessor('template_berita_acara_arr.docx');
+            if($document_type == 'ukl-upl') {
+                $templateProcessor = new TemplateProcessor('template_berita_acara_uu.docx');
+            }
+        } else {
+            $templateProcessor = new TemplateProcessor('template_berita_acara_arr_tuk.docx');
+            if($document_type == 'ukl-upl') {
+                $templateProcessor = new TemplateProcessor('template_berita_acara_uu_tuk.docx');
+            }
+            $templateProcessor->setValue('tuk_address', $tuk_address);
+            $templateProcessor->setValue('tuk_telp', $tuk_telp);
+
+            if($tuk_logo) {
+                $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+            } else {
+                $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+            }
         }
+        
+
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
