@@ -1,16 +1,35 @@
 <template>
-  <div v-if="isShow" v-loading="loading">
+  <div v-loading="loading">
     <div v-if="status === 'revisi'">
       <p>Catatan dari pemrakarsa:</p>
       <div v-html="notesShow" />
     </div>
-    <p>Pesan:</p>
-    <Tinymce v-model="notes" />
-    <div style="text-align: right; margin-top: 8px">
-      <el-button :loading="loadingSubmit" type="primary" @click="handleSubmit">
-        Kirim
-      </el-button>
+    <div v-if="isShowNotes">
+      <p>Pesan:</p>
+      <Tinymce v-model="notes" />
+      <div style="text-align: right; margin-top: 8px">
+        <el-button
+          :loading="loadingSubmit"
+          type="primary"
+          @click="handleSubmit"
+        >
+          Kirim
+        </el-button>
+      </div>
     </div>
+    <div v-else>
+      <p>Pesan:</p>
+      <div v-html="formulatorNotes" />
+    </div>
+    <el-alert
+      v-if="!isShowNotes"
+      title="Formulir Kerangka Acuan telah Dikirim ke Pemrakarsa"
+      type="success"
+      description="Terimakasih"
+      show-icon
+      center
+      :closable="false"
+    />
   </div>
 </template>
 
@@ -31,11 +50,20 @@ export default {
       notesShow: null,
       loading: false,
       loadingSubmit: false,
+      formulatorNotes: null,
+      success: false,
     };
   },
   computed: {
     isShow() {
       return this.status === null || this.status === 'revisi';
+    },
+    isShowNotes() {
+      if (this.status === null || this.status === 'revisi') {
+        return true;
+      }
+
+      return false;
     },
   },
   created() {
@@ -50,6 +78,7 @@ export default {
       if (data) {
         this.status = data.status;
         this.notesShow = data.notes;
+        this.formulatorNotes = data.formulator_notes;
       }
       this.loading = false;
     },
@@ -61,11 +90,6 @@ export default {
         type: 'penyusun',
       });
       this.notes = null;
-      this.$message({
-        message: 'Data berhasil disimpan',
-        type: 'success',
-        duration: 5 * 1000,
-      });
       this.getData();
       this.loadingSubmit = false;
     },
