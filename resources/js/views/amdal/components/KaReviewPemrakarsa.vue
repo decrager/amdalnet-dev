@@ -1,46 +1,68 @@
 <template>
-  <div v-if="isShow" v-loading="loading">
-    <div
-      v-if="statusShow === 'submit-to-pemrakarsa'"
-      style="margin-bottom: 8px"
-    >
-      <label v-if="notesShow">Pesan dari Penyusun:</label>
-      <div v-html="notesShow" />
+  <div v-loading="loading">
+    <div style="margin-bottom: 8px">
+      <label>Pesan dari Penyusun:</label>
+      <div v-html="formulatorNotes" />
     </div>
     <div style="margin-bottom: 8px">
-      <el-radio v-model="status" label="submit">Submit</el-radio>
-      <el-radio v-model="status" label="revisi">Revisi</el-radio>
+      <el-radio v-model="status" label="submit" :disabled="isDisabled">
+        Submit
+      </el-radio>
+      <el-radio v-model="status" label="revisi" :disabled="isDisabled">
+        Revisi
+      </el-radio>
     </div>
     <div v-if="status === 'submit'">
-      <p>Unggah Surat Permohonan<span style="color: red">*</span></p>
-      <el-upload
-        action="#"
-        :auto-upload="false"
-        :on-change="handleUpload"
-        :show-file-list="false"
-      >
-        <el-button size="small" type="warning"> Upload </el-button>
-        <div slot="tip" class="el-upload__tip">
-          {{ fileName }}
-        </div>
-      </el-upload>
-      <span v-if="errors.file" style="color: red">{{ errors.file }}</span>
+      <div v-if="!isDisabled">
+        <p>Unggah Surat Permohonan<span style="color: red">*</span></p>
+        <el-upload
+          action="#"
+          :auto-upload="false"
+          :on-change="handleUpload"
+          :show-file-list="false"
+        >
+          <el-button size="small" type="warning"> Upload </el-button>
+          <div slot="tip" class="el-upload__tip">
+            {{ fileName }}
+          </div>
+        </el-upload>
+        <span v-if="errors.file" style="color: red">{{ errors.file }}</span>
+      </div>
+      <div v-else>
+        <a :href="applicationLetter" download>
+          <i class="el-icon-download" /> Download Surat Permohonan
+        </a>
+      </div>
     </div>
     <div v-if="status === 'revisi'">
-      <p style="margin-bottom: 0px; padding-bottom: 0px">
-        Catatan<span style="color: red">*</span>
-      </p>
-      <Tinymce v-model="notes" />
-      <span v-if="errors.notes" style="color: red">{{ errors.notes }}</span>
+      <div v-if="!isDisabled">
+        <p style="margin-bottom: 0px; padding-bottom: 0px">
+          Catatan<span style="color: red">*</span>
+        </p>
+        <Tinymce v-model="notes" />
+        <span v-if="errors.notes" style="color: red">{{ errors.notes }}</span>
+      </div>
+      <div v-else>
+        <p style="margin-bottom: 0px; padding-bottom: 0px">
+          Catatan perbaikan dari pemrakarsa
+        </p>
+        <div v-html="notesShow" />
+      </div>
     </div>
-    <div
-      v-if="status === 'revisi' || status === 'submit'"
-      style="text-align: right; margin-top: 8px"
-    >
+    <div v-if="showButton" style="text-align: right; margin-top: 8px">
       <el-button :loading="loadingSubmit" type="primary" @click="checkSubmit">
         Kirim
       </el-button>
     </div>
+    <el-alert
+      v-if="statusShow === 'revisi' || statusShow === 'submit'"
+      :title="alertTitle"
+      type="success"
+      :description="alertDescription"
+      show-icon
+      center
+      :closable="false"
+    />
   </div>
 </template>
 
@@ -64,6 +86,8 @@ export default {
       notesShow: null,
       loading: false,
       loadingSubmit: false,
+      formulatorNotes: null,
+      applicationLetter: null,
       errors: {},
     };
   },
@@ -74,6 +98,34 @@ export default {
       }
 
       return !(this.statusShow === 'revisi' || this.statusShow === 'submit');
+    },
+    showButton() {
+      if (this.statusShow === 'revisi' || this.statusShow === 'submit') {
+        return false;
+      }
+
+      if (this.status === 'revisi' || this.status === 'submit') {
+        return true;
+      }
+
+      return false;
+    },
+    isDisabled() {
+      return this.statusShow === 'revisi' || this.statusShow === 'submit';
+    },
+    alertTitle() {
+      if (this.statusShow === 'revisi') {
+        return 'Formulir Kerangka Acuan telah Dikembalikan ke Penyusun untuk Diperbaiki';
+      }
+
+      return 'Formulir Kerangka Acuan telah Dikirim untuk Dinilai';
+    },
+    alertDescription() {
+      if (this.statusShow === 'revisi') {
+        return 'Terimakasih atas Tanggapan Anda';
+      }
+
+      return 'Terimakasih sudah Mengirimkan Formulir Kerangka Acuan';
     },
   },
   created() {
@@ -88,6 +140,11 @@ export default {
       if (data) {
         this.statusShow = data.status;
         this.notesShow = data.notes;
+        this.formulatorNotes = data.formulator_notes;
+        this.applicationLetter = data.application_letter;
+        if (data.status !== 'submit-to-pemrakarsa') {
+          this.status = data.status;
+        }
       }
       this.loading = false;
     },
@@ -129,11 +186,6 @@ export default {
         notes: this.notes,
         status: 'revisi',
       });
-      this.$message({
-        message: 'Data berhasil disimpan',
-        type: 'success',
-        duration: 5 * 1000,
-      });
       this.getData();
       this.loadingSubmit = false;
     },
@@ -145,12 +197,9 @@ export default {
       formData.append('status', 'submit');
       formData.append('file', this.file);
       await kaReviewsResource.store(formData);
-      this.$message({
-        message: 'Data berhasil disimpan',
-        type: 'success',
-        duration: 5 * 1000,
-      });
       this.getData();
+      this.file = null;
+      this.fileName = null;
       this.loadingSubmit = false;
     },
     showFileAlert() {
