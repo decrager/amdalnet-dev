@@ -53,9 +53,23 @@
                   <span v-if="scope.row.name === 'peta'">
                     <li v-for="(link, index) in scope.row.link" :key="index">
                       <a
-                        :href="scope.row.link[index].link"
-                        target="_blank"
+                        v-if="link.name === 'Webgis'"
+                        href="#"
                         class="click"
+                        @click.prevent="showWebgisDialog = true"
+                      >
+                        Webgis
+                      </a>
+                      <a
+                        v-else
+                        href="#"
+                        class="click"
+                        @click.prevent="
+                          download(
+                            scope.row.link[index].link,
+                            scope.row.link[index].pdf
+                          )
+                        "
                       >
                         {{ scope.row.link[index].name }}
                       </a>
@@ -193,6 +207,9 @@
         <div v-html="publicConsultation.negative_feedback_summary" />
       </div>
     </el-dialog>
+    <el-dialog title="" class="map-dialog" :visible.sync="showWebgisDialog">
+      <WebgisVerifikasi />
+    </el-dialog>
   </div>
 </template>
 
@@ -202,6 +219,7 @@ import Resource from '@/api/resource';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
+import WebgisVerifikasi from '@/views/pengujian/components/verifikasi/Webgis';
 import { saveAs } from 'file-saver';
 const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
 
@@ -209,6 +227,7 @@ export default {
   name: 'Verifikasi',
   components: {
     Tinymce,
+    WebgisVerifikasi,
   },
   data() {
     return {
@@ -227,6 +246,7 @@ export default {
       docxData: {},
       loadingComplete: false,
       loadingDocx: false,
+      showWebgisDialog: false,
       out: '',
       errors: {},
       kesesuaian: [
@@ -465,6 +485,14 @@ export default {
       }
       return error;
     },
+    download(url, urlPdf) {
+      if (urlPdf) {
+        window.open(urlPdf);
+      }
+      if (url) {
+        window.open(url);
+      }
+    },
   },
 };
 </script>
@@ -480,5 +508,8 @@ export default {
 .is-error .el-radio__inner,
 .is-error .el-textarea__inner {
   border-color: #f56c6c;
+}
+.map-dialog .el-dialog__body {
+  height: 600px;
 }
 </style>
