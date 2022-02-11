@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card v-loading="loading">
@@ -31,7 +32,8 @@
       </el-row>
       <el-row
         v-if="
-          currentData.authority === 'Provinsi' || currentData.authority === 'Kabupaten/Kota'
+          currentData.authority === 'Provinsi' ||
+          currentData.authority === 'Kabupaten/Kota'
         "
         :gutter="32"
       >
@@ -111,6 +113,14 @@
                   v-model="currentData.assignment_number"
                   placeholder="Isi Nomor Penetapan"
                 />
+                <small v-if="errors.assignment_number" style="color: #f56c6c">
+                  <span
+                    v-for="(error, index) in errors.assignment_number"
+                    :key="index"
+                  >
+                    {{ error }}
+                  </span>
+                </small>
               </el-col>
               <el-col :md="8" :sm="24">
                 <el-upload
@@ -124,6 +134,14 @@
                     {{ assignmentFileName }}
                   </div>
                 </el-upload>
+                <small v-if="errors.assignment_file" style="color: #f56c6c">
+                  <span
+                    v-for="(error, index) in errors.assignment_file"
+                    :key="index"
+                  >
+                    {{ error }}
+                  </span>
+                </small>
               </el-col>
             </el-row>
           </div>
@@ -137,6 +155,7 @@
                 <label>Nomor Kontak</label>
                 <el-input
                   v-model="currentData.phone"
+                  type="number"
                   :class="{ 'is-error': errors.phone }"
                 />
                 <small v-if="errors.phone" style="color: #f56c6c">
@@ -371,7 +390,9 @@ export default {
 
       if (id_province_name) {
         this.currentData.id_province_name = id_province_name;
-        this.authority_districts = this.districts.filter(x => x.id_prov === id_province_name);
+        this.authority_districts = this.districts.filter(
+          (x) => x.id_prov === id_province_name
+        );
       }
       // if (id_province) {
       //   const id_province = this.currentData.id_province;
@@ -379,7 +400,8 @@ export default {
       // }
       this.authority = this.currentData.authority;
 
-      const dataType = this.currentData.authority === 'Provinsi' ? 'province' : null;
+      const dataType =
+        this.currentData.authority === 'Provinsi' ? 'province' : null;
 
       this.teamName(id_province_name, dataType);
 
@@ -431,11 +453,15 @@ export default {
 
       if (dataType === 'province') {
         this.id_district_name = null;
-        this.authority_districts = this.districts.filter(x => x.id_prov === id_province);
+        this.authority_districts = this.districts.filter(
+          (x) => x.id_prov === id_province
+        );
       }
     },
     handleChangeProvince(id_province) {
-      this.address_districts = this.districts.filter(x => x.id_prov === id_province);
+      this.address_districts = this.districts.filter(
+        (x) => x.id_prov === id_province
+      );
       this.currentData.id_district = null;
     },
   },

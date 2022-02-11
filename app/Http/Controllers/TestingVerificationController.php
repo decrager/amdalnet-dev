@@ -177,16 +177,36 @@ class TestingVerificationController extends Controller
         $peta_ekologis = null;
         $peta_sosial = null;
         $peta_wilayah_studi = null;
+        $peta_tapak_pdf = null;
+        $peta_ekologis_pdf = null;
+        $peta_sosial_pdf = null;
+        $peta_wilayah_studi_pdf = null;
         $maps = ProjectMapAttachment::where('id_project', $id_project)->get();
         foreach($maps as $m) {
             if($m->attachment_type == 'tapak') {
-                $peta_tapak = Storage::url('/map' . '/' . $m->stored_filename);
-            } else if($m->attachment_type == 'ecology' && $m->file_type == 'SHP') {
-                $peta_ekologis = Storage::url('/map' . '/' . $m->stored_filename);
-            } else if($m->attachment_type == 'social' && $m->file_type == 'SHP') {
-                $peta_sosial = Storage::url('/map' . '/' . $m->stored_filename);
-            } else if($m->attachment_type == 'study' && $m->file_type == 'SHP') {
-                $peta_wilayah_studi = Storage::url('/map' . '/' . $m->stored_filename);
+                if($m->file_type == 'SHP') {
+                    $peta_tapak = Storage::url('/map' . '/' . $m->stored_filename);
+                } else if($m->file_type == 'PDF') {
+                    $peta_tapak_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                }
+            } else if($m->attachment_type == 'ecology') {
+                if($m->file_type == 'SHP') {
+                    $peta_ekologis = Storage::url('/map' . '/' . $m->stored_filename);
+                } else if($m->file_type == 'PDF') {
+                    $peta_ekologis_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                }
+            } else if($m->attachment_type == 'social') {
+                if($m->file_type == 'SHP') {
+                    $peta_sosial = Storage::url('/map' . '/' . $m->stored_filename);
+                } else if($m->file_type == 'PDF') {
+                    $peta_sosial_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                }
+            } else if($m->attachment_type == 'study') {
+                if($m->file_type == 'SHP') {
+                    $peta_wilayah_studi = Storage::url('/map' . '/' . $m->stored_filename);
+                } else if($m->file_type == 'PDF') {
+                    $peta_wilayah_studi_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                }
             }
         }
         
@@ -231,7 +251,15 @@ class TestingVerificationController extends Controller
                         } else if($f->name == 'persetujuan_awal') {
                             $link = $project->pre_agreement_file;
                         } else if($f->name == 'peta') {
-                            $link = $this->petaLink($peta_tapak, $peta_sosial, $peta_ekologis, $peta_wilayah_studi);
+                            $link = $this->petaLink(
+                                $peta_tapak, 
+                                $peta_sosial, 
+                                $peta_ekologis, 
+                                $peta_wilayah_studi,
+                                $peta_tapak_pdf,
+                                $peta_sosial_pdf,
+                                $peta_ekologis_pdf,
+                                $peta_wilayah_studi_pdf);
                         }
 
 
@@ -282,7 +310,15 @@ class TestingVerificationController extends Controller
                   ],
                   [
                     'name' => 'peta',
-                    'link' => $this->petaLink($peta_tapak, $peta_sosial, $peta_ekologis, $peta_wilayah_studi),
+                    'link' => $this->petaLink(
+                        $peta_tapak, 
+                        $peta_sosial, 
+                        $peta_ekologis, 
+                        $peta_wilayah_studi,
+                        $peta_tapak_pdf,
+                        $peta_sosial_pdf,
+                        $peta_ekologis_pdf,
+                        $peta_wilayah_studi_pdf),
                     'suitability' => null,
                     'description' => null,
                     'type' => 'non-download'
@@ -328,27 +364,43 @@ class TestingVerificationController extends Controller
         return $data;
     }
 
-    private function petaLink($peta_tapak, $peta_sosial, $peta_ekologis, $peta_wilayah_studi) {
+    private function petaLink(
+            $peta_tapak, 
+            $peta_sosial, 
+            $peta_ekologis, 
+            $peta_wilayah_studi,
+            $peta_tapak_pdf,
+            $peta_sosial_pdf,
+            $peta_ekologis_pdf,
+            $peta_wilayah_studi_pdf) {
         return [
             [
               'name' => 'Peta Tapak Proyek',
               'link' => $peta_tapak,
+              'pdf' => $peta_tapak_pdf
             ],
             [
               'name' => 'Peta Batas Sosial',
               'link' => $peta_sosial,
+              'pdf' => $peta_sosial_pdf
             ],
             [
               'name' => 'Peta Batas Ekologis',
               'link' => $peta_ekologis,
+              'pdf' => $peta_ekologis_pdf
             ],
             [
               'name' => 'Peta Batas Wilayah Studi',
               'link' => $peta_wilayah_studi,
+              'pdf' => $peta_wilayah_studi_pdf
             ],
             [
               'name' => 'Kesesuaian Peta dengan Kawasan Lindung',
               'link' => $peta_tapak,
+              'pdf' => $peta_tapak_pdf
+            ],
+            [
+                'name' => 'Webgis'
             ]
         ];
     }

@@ -414,20 +414,8 @@ class TUKManagementController extends Controller
 
             return response()->json(['message' => 'success']);
         }
-
-        $input = $request->all();
-
-        $validator = \Validator::make($input,[
-            'authority' => 'required',
-            'email' => 'required',
-            'phone' => 'required',
-            'address' => 'required',
-        ],[
-            'authority.required' => 'Kewenangan Wajib Dipilih',
-            'email.required' => 'Email Wajib Diisi',
-            'phone.required' => 'Nomor Kontak Wajib Diisi',
-            'address.required' => 'Alamat Wajib Dipilih',
-        ]);
+        
+        $validator = $this->validateStore($request);
 
         if($validator->fails()) {
             return response()->json(['errors' => $validator->messages()]);
@@ -566,5 +554,47 @@ class TUKManagementController extends Controller
         }
         
         return $id_team;
+    }
+
+    private function validateStore(Request $request)
+    {
+        $rules = [
+            'authority' => 'required',
+            'assignment_number' => 'required',
+            'email' => 'required|email',
+            'phone' => 'required|numeric',
+            'address' => 'required',
+        ];
+
+        $messages = [
+            'authority.required' => 'Kewenangan Wajib Dipilih',
+            'assignment_number.required' => 'Nomor Penetapan Wajib Diisi',
+            'email.required' => 'Email Wajib Diisi',
+            'email.email' => 'Email Tidak Valid',
+            'phone.required' => 'Nomor Kontak Wajib Diisi',
+            'phone.numeric' => 'No Telepon Hanya Terdiri dari Angka',
+            'address.required' => 'Alamat Wajib Dipilih',
+        ];
+
+        if($request->type == 'create') {
+            $rules['assignment_file'] = 'required';
+            $messages['assignment_file.required'] = 'File Wajib Diunggah';
+        }
+
+        if($request->authority) {
+            if($request->authority == 'Provinsi' || $request->authority == 'Kabupaten/Kota') {
+                $rules['id_province_name'] = 'required';
+                $messages['id_province_name.required'] = 'Provinsi Wajib Dipilih';
+            }
+            if($request->authority == 'Kabupaten/Kota') {
+                $rules['id_district_name'] = 'required';
+                $messages['id_district_name.required'] = 'Kabupaten/Kota Wajib Dipilih';
+            }
+        }
+
+        $data = $request->all();
+        $validator = \Validator::make($data, $rules, $messages);
+
+        return $validator;
     }
 }
