@@ -343,10 +343,10 @@ class TrackingDocumentController extends Controller
         }
         // Dokumen UKL UPL (start: matriksComplete=true, end: check if document file exists with this id_project)
         $dokumenComplete = false;
-        $docFilepath = 'app/public/ukl-upl/ukl-upl-' . strtolower($project->project_title) . '.docx';
-        if ($sppl && $dpt && File::exists(storage_path($docFilepath))) {
+        $docUklUplFilepath = storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf');
+        if ($sppl && $dpt && File::exists($docUklUplFilepath)) {
             $dokumenComplete = true;
-            $createdTime = date('Y-m-d H:i:s', filectime(storage_path($docFilepath)));
+            $createdTime = date('Y-m-d H:i:s', filectime(storage_path($docUklUplFilepath)));
             array_push($uklUplTimeline, [
                 'content' => 'Dokumen UKL UPL',
                 'timestamp' => $this->formatDateWIB($createdTime),
@@ -363,15 +363,17 @@ class TrackingDocumentController extends Controller
                 'color' => 'orange',
             ]);
         }
-        // Surat Keputusan (start: dokumenComplete=true, end: project_skkl)
-        $skkl = ProjectSkkl::select('*')
-            ->where('id_project', $project->id)
-            ->orderBy('created_at', 'asc')
-            ->get();
-        if ($dokumenComplete && count($skkl) > 0) {
+        // Surat Keputusan (start: dokumenComplete=true, end: SKKL doc)
+        $save_file_name = $project->project_title .' - ' . $project->initiator->name . '.docx';
+        $skklFilepath = storage_path('app/public/skkl/' . $save_file_name);
+        // $skkl = ProjectSkkl::select('*')
+        //     ->where('id_project', $project->id)
+        //     ->orderBy('created_at', 'asc')
+        //     ->get();
+        if ($dokumenComplete && File::exists($skklFilepath)) {
             array_push($uklUplTimeline, [
                 'content' => 'Surat Keputusan',
-                'timestamp' => $this->formatDateWIB($skkl[0]->created_at),
+                'timestamp' => $this->formatDateWIB($project->updated_at),
                 'size' => 'large',
                 'icon' => 'el-icon-success',
                 'color' => 'green',
