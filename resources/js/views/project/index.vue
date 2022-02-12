@@ -409,8 +409,10 @@ export default {
         return 'Selesai Penapisan';
       } else if (value === 'formulator-assignment'){
         return 'Penetapan Penyusun';
+      } else if (value === 'announcement-completed'){
+        return 'Sudah Diumumkan';
       } else {
-        return '';
+        return value;
       }
     },
   },
