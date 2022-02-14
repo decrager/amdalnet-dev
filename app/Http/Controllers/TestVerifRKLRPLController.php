@@ -12,6 +12,7 @@ use App\Entity\Project;
 use App\Entity\ProjectKaForm;
 use App\Entity\ProjectMapAttachment;
 use App\Entity\PublicConsultation;
+use App\Entity\TestingMeeting;
 use App\Entity\TestingVerification;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
@@ -59,7 +60,7 @@ class TestVerifRKLRPLController extends Controller
             // Check if verification exist
             $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $verifications = TestingVerification::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
-            return $this->getVerification($verifications, $request->idProject);
+            return $this->getVerification($verifications, $request->idProject, $document_type);
         }
     }
 
@@ -169,7 +170,7 @@ class TestVerifRKLRPLController extends Controller
         //
     }
 
-    private function getVerification($verification, $id_project) {
+    private function getVerification($verification, $id_project, $document_type) {
         $project = Project::findOrFail($id_project);
         $formulator_team = FormulatorTeam::where('id_project', $id_project)->with(['member' => function($q) {
             $q->orderBy('position', 'desc');
@@ -240,11 +241,26 @@ class TestVerifRKLRPLController extends Controller
         }
 
         // Konsultasi Publik
-        $public_consultation = PublicConsultation::where('project_id', $project->id)->with('docs')->first(); 
+        $public_consultation = PublicConsultation::where('project_id', $project->id)->with('docs')->first();
+        
+        // Verification Form Disable
+        $is_disabled = false;
         
         $form = [];
         
         if($verification) {
+            // Verification Form Disable
+            if($verification->is_complete !== null) {
+                if($verification->is_complete === false && $verification->notes !== null) {
+                    $is_disabled = true;
+                } else if($verification->is_complete === true) {
+                    $invitation = TestingMeeting::where([['id_project', $id_project],['document_type', $document_type]])->first();
+                    if($invitation) {
+                        $is_disabled = true;
+                    }
+                }
+            }
+
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
@@ -368,6 +384,7 @@ class TestVerifRKLRPLController extends Controller
             'project' => $project,
             'lpjp' => $lpjp,
             'penyusun_mandiri' => $penyusun_mandiri,
+            'is_disabled' => $is_disabled
         ];
 
         return $data;
