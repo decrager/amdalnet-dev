@@ -141,7 +141,10 @@ export default {
     },
     async getMemberData() {
       this.loadingMember = true;
-      this.listMember = await tukManagementResource.list({ type: 'profileMember', email: this.userInfo.email });
+      this.listMember = await tukManagementResource.list({
+        type: 'profileMember',
+        email: this.userInfo.email,
+      });
       this.loadingMember = false;
     },
     async handleSubmit() {
@@ -154,6 +157,25 @@ export default {
       formData.append('address', this.team.address);
       formData.append('logo', this.imageRaw);
       formData.append('idTeam', this.team.id);
+
+      // === MEMBER ROLES === //
+      const members = this.listMember
+        .filter((x) => {
+          if (x.type === 'luk_member') {
+            if (x.role !== 'examiner-secretary') {
+              return true;
+            }
+          }
+        })
+        .map((y) => {
+          return {
+            id: y.id,
+            role: y.role,
+          };
+        });
+
+      formData.append('members', JSON.stringify(members));
+
       const data = await tukManagementResource.store(formData);
       if (data.errors === null) {
         this.$message({
