@@ -3,7 +3,7 @@ import Layout from '@/layout';
 const tukRoutes = {
   path: '/tuk',
   component: Layout,
-  meta: { title: 'tuk', icon: 'zip', roles: ['examiner'] },
+  meta: { title: 'tuk', icon: 'zip', roles: [] },
   children: [
     {
       path: '',

@@ -12,6 +12,7 @@ use App\Entity\Project;
 use App\Entity\ProjectKaForm;
 use App\Entity\ProjectMapAttachment;
 use App\Entity\PublicConsultation;
+use App\Entity\TestingMeeting;
 use App\Entity\TestingVerification;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
@@ -236,11 +237,26 @@ class TestingVerificationController extends Controller
         }
 
         // Konsultasi Publik
-        $public_consultation = PublicConsultation::where('project_id', $project->id)->with('docs')->first(); 
+        $public_consultation = PublicConsultation::where('project_id', $project->id)->with('docs')->first();
+        
+        // Verification Form Disable
+        $is_disabled = false;
         
         $form = [];
         
         if($verification) {
+            // Verification Form Disable
+            if($verification->is_complete !== null) {
+                if($verification->is_complete === false && $verification->notes !== null) {
+                    $is_disabled = true;
+                } else if($verification->is_complete === true) {
+                    $invitation = TestingMeeting::where([['id_project', $id_project],['document_type', 'ka']])->first();
+                    if($invitation) {
+                        $is_disabled = true;
+                    }
+                }
+            }
+
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
@@ -358,7 +374,8 @@ class TestingVerificationController extends Controller
             'project' => $project,
             'lpjp' => $lpjp,
             'penyusun_mandiri' => $penyusun_mandiri,
-            'pre_agreement' => $project->pre_agreement_file
+            'pre_agreement' => $project->pre_agreement_file,
+            'is_disabled' => $is_disabled
         ];
 
         return $data;
