@@ -682,7 +682,7 @@ export default {
       map.add(penutupanLahan2020);
 
       const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/KawasanHutan/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
