@@ -144,6 +144,8 @@ export default {
     companyLogo: 'Logo Perusahaan',
     nib: 'NIB',
     nik: 'NIK',
+    registrationNumber: 'No. Registrasi',
+    certificateUpload: 'Unggah Sertifikat',
   },
   documentation: {
     documentation: 'Dokumentasi',
