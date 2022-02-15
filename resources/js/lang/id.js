@@ -122,6 +122,7 @@ export default {
     register: 'Daftar',
     username: 'Nama pengguna',
     password: 'Password',
+    confirmPassword: 'Konfirmasi Password',
     any: 'apa saja',
     thirdparty: 'Terhubung dengan',
     thirdpartyTips: 'Tidak bisa disimulasikan di lokal, silahkan gabungkan dengan simulasi yang Anda miliki!',
@@ -143,6 +144,8 @@ export default {
     companyLogo: 'Logo Perusahaan',
     nib: 'NIB',
     nik: 'NIK',
+    registrationNumber: 'No. Registrasi',
+    certificateUpload: 'Unggah Sertifikat',
   },
   documentation: {
     documentation: 'Dokumentasi',
