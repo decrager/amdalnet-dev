@@ -83,7 +83,7 @@ class FormulatorController extends Controller
                 $fileCv->storePubliclyAs('public', $cvName);
             }
 
-            if ($request->file('file_sertifikat') !== null) {
+            if ($request->file_sertifikat && ($request->file('file_sertifikat') !== null)) {
                 //create file sertifikat
                 $fileSertifikat = $request->file('file_sertifikat');
                 $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();

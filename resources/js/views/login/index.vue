@@ -452,6 +452,60 @@
                   </el-input>
                 </el-form-item>
               </el-col>
+              <el-col :span="12">
+                <el-form-item prop="confirmPassword" :label="$t('login.confirmPassword')">
+                  <el-input
+                    v-model="registrationForm.confirmPassword"
+                    name="confirmPassword"
+                    auto-complete="on"
+                    :placeholder="$t('login.confirmPassword')"
+                    :type="pwdType"
+                  >
+                    <span slot="append" class="show-pwd" @click="showPwd">
+                      <svg-icon icon-class="eye" />
+                    </span>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item>
+                  <el-checkbox v-model="registrationForm.isCertified" name="isCertified">Memiliki Sertifikat Kompetensi AMDAL</el-checkbox>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row v-if="registrationForm.isCertified" :gutter="24">
+              <el-col :span="12">
+                <el-form-item prop="reg_no" :label="$t('login.registrationNumber')">
+                  <el-input
+                    v-model="registrationForm.reg_no"
+                    name="reg_no"
+                    type="text"
+                    auto-complete="on"
+                    :placeholder="$t('login.registrationNumber')"
+                    suffix-icon="el-icon-user-solid"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="certificateUpload" :label="$t('login.certificateUpload')" class="form-btn-cert">
+                  <el-upload
+                    action="#"
+                    :auto-upload="false"
+                    :on-change="handleCertificateUpload"
+                    :show-file-list="false"
+                  >
+                    <el-button
+                      size="small"
+                      type="warning"
+                    >
+                      Upload
+                    </el-button>
+                    <span>{{ certificateName }}</span>
+                  </el-upload>
+                </el-form-item>
+              </el-col>
             </el-row>
           </el-form>
         </el-row>
@@ -549,6 +603,29 @@ export default {
         callback();
       }
     };
+    const validateConfirmPassword = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('Silahkan masukkan konfirmasi yang sesuai'));
+      } else if (value !== this.registrationForm.password) {
+        callback(new Error('Silahkan masukkan konfirmasi yang sesuai'));
+      } else {
+        callback();
+      }
+    };
+    const validateRegistrationNumber = (rule, value, callback) => {
+      if (this.registrationForm.isCertified && (!value)) {
+        callback(new Error('Silahkan masukkan nomor registrasi anda'));
+      } else {
+        callback();
+      }
+    };
+    const validateCertificateUpload = (rule, value, callback) => {
+      if (this.registrationForm.isCertified && (!this.registrationForm.file_sertifikat)) {
+        callback(new Error('Anda Belum Upload Sertifikat Anda'));
+      } else {
+        callback();
+      }
+    };
     return {
       user_type: 'Pemrakarsa',
       loginForm: {},
@@ -582,7 +659,10 @@ export default {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         // fileAgencyUpload: [{ required: true, trigger: 'change', validator: validateFileAgencyUpload }],
         password: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
+        confirmPassword: [{ required: true, trigger: 'blur', validator: validateConfirmPassword }],
         phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { type: 'number', message: 'Nomor Telepon berupa angka' }],
+        reg_no: [{ required: true, validator: validateRegistrationNumber }],
+        certificateUpload: [{ required: true, validator: validateCertificateUpload }],
       },
       regPemerintahRules: {
         agency_type: [{ required: true, trigger: 'change', message: 'Jenis Instansi Dibutuhkan' }],
@@ -628,6 +708,7 @@ export default {
       fileAgencyUpload: null,
       fileAgencyUploadName: '',
       imageUrl: null,
+      certificateName: null,
     };
   },
   watch: {
@@ -667,6 +748,15 @@ export default {
 
       // this.fileAgencyUpload = e.target.files[0];
       this.registrationForm.fileAgencyUpload = file.raw;
+    },
+    handleCertificateUpload(file, filelist) {
+      if (file.raw.size > 1048576) {
+        this.showFileAlert();
+        return;
+      }
+
+      this.registrationForm.file_sertifikat = file.raw;
+      this.certificateName = file.name;
     },
     showFileAlert(){
       this.$alert('File Yang Diupload Melebihi 1 MB', {
@@ -918,6 +1008,9 @@ $light_gray:#5F6368;
 }
 .el-upload-dragger{
    width: auto;
+}
+.form-btn-cert {
+  display: inline-block;
 }
 </style>
 
