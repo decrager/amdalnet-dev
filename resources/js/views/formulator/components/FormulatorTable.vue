@@ -6,7 +6,7 @@
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
-    <el-table-column type="expand">
+    <!-- <el-table-column type="expand">
       <template slot-scope="scope">
         <div class="expand-container">
           <div>
@@ -36,9 +36,9 @@
           </div>
         </div>
       </template>
-    </el-table-column>
+    </el-table-column> -->
 
-    <el-table-column align="center" label="Nama Penyusun">
+    <el-table-column align="center" label="Nama">
       <template slot-scope="scope">
         <span>{{ scope.row.name }}</span>
       </template>
@@ -50,9 +50,17 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="No. Sertifikasi">
+    <el-table-column align="center" label="No. Sertifikat">
       <template slot-scope="scope">
-        <span>{{ scope.row.cert_no }}</span>
+        <span>{{ noCertificate(scope.row.cert_no) }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column align="center" label="Sertifikasi">
+      <template slot-scope="scope">
+        <span>{{
+          scope.row.membership_status ? scope.row.membership_status : '-'
+        }}</span>
       </template>
     </el-table-column>
 
@@ -69,7 +77,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Sertifikat">
+    <el-table-column label="File">
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -134,6 +142,13 @@ export default {
     },
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });
+    },
+    noCertificate(no) {
+      if (no === null || no === undefined || no === 'null') {
+        return '-';
+      } else {
+        return no;
+      }
     },
   },
 };

@@ -7,6 +7,7 @@ use App\Http\Resources\FormulatorResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,12 +26,14 @@ class FormulatorController extends Controller
     {
         return FormulatorResource::collection(
             Formulator::where(function ($query) use ($request) {
-                if ($request->active) {
+                if ($request->active && ($request->active == 'true')) {
                     return $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
                         ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
+                } else if($request->active && ($request->active == 'false')) {
+                    return $query->where('date_end', '<', date('Y-m-d H:i:s'));
                 }
                 return '';
-            })->orderBy('id', 'DESC')->paginate($request->limit)->appends(['active' => $request->active])
+            })->orderBy('created_at', 'DESC')->paginate($request->limit)->appends(['active' => $request->active])
         );
     }
 
@@ -108,12 +111,12 @@ class FormulatorController extends Controller
                 'expertise'         => $params['expertise'],
                 'cert_no'           => isset($params['cert_no'])  ? $params['cert_no'] : null,
                 'date_start'        => isset($params['date_start']) ? $params['date_start'] : null,
-                'date_end'          => isset($params['date_end']) ? $params['date_end'] : null,
+                'date_end'          => $request->date_start ? Carbon::createFromDate($request->date_start)->addYears(3) : null,
                 'cert_file'         => isset($fileSertifikatName) ? Storage::url($fileSertifikatName) : null,
                 'cv_file'           => isset($cvName) ? Storage::url($cvName) : null,
                 'reg_no'            => isset($params['reg_no']) ? $params['reg_no'] : null,
                 'id_institution'    => isset($params['id_institution']) ? $params['id_institution'] : null,
-                'membership_status' => isset($params['membership_status']) ? $params['membership_status'] : null,
+                'membership_status' => isset($params['membership_status']) ? $params['membership_status'] : 'TA',
                 'id_lsp'            => isset($params['id_lsp']) ? $params['id_lsp'] : null,
                 'nik'               => isset($params['nik']) ? $params['nik'] : null,
                 'district'          => isset($params['district']) ? $params['district'] : null,
@@ -181,56 +184,56 @@ class FormulatorController extends Controller
             return response()->json(['error' => 'formulator not found'], 404);
         }
 
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name'              => 'required',
-                'expertise'         => 'required',
-                'cert_no'           => 'required',
-                'date_start'        => 'required',
-                'date_end'          => 'required',
-                'reg_no'            => 'required',
-                'id_institution'    => 'required',
-                'membership_status' => 'required',
-                'id_lsp'            => 'required',
-                'email'             => 'required',
-            ]
-        );
+        // $validator = Validator::make(
+        //     $request->all(),
+        //     [
+        //         'name'              => 'required',
+        //         'expertise'         => 'required',
+        //         'cert_no'           => 'required',
+        //         'date_start'        => 'required',
+        //         'date_end'          => 'required',
+        //         'reg_no'            => 'required',
+        //         'id_institution'    => 'required',
+        //         'membership_status' => 'required',
+        //         'id_lsp'            => 'required',
+        //         'email'             => 'required',
+        //     ]
+        // );
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 403);
-        } else {
-            $params = $request->all();
+        // if ($validator->fails()) {
+        //     return response()->json(['errors' => $validator->errors()], 403);
+        // } else {
+        $params = $request->all();
 
-            if ($request->file('cv_penyusun') !== null) {
-                //create file cv
-                $fileCv = $request->file('cv_penyusun');
-                $cvName = '/penyusun/' . uniqid() . '.' . $fileCv->extension();
-                $fileCv->storePubliclyAs('public', $cvName);
-                $formulator->cv_file = Storage::url($cvName);
-            }
-
-            if ($request->file('file_sertifikat') !== null) {
-                //create file sertifikat
-                $fileSertifikat = $request->file('file_sertifikat');
-                $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
-                $fileCv->storePubliclyAs('public', $fileSertifikatName);
-                $formulator->cv_file = Storage::url($fileSertifikatName);
-            }
-
-            $formulator->name = $params['name'];
-            $formulator->expertise = $params['expertise'];
-            $formulator->cert_no = $params['cert_no'];
-            $formulator->date_start = $params['date_start'];
-            $formulator->date_end = $params['date_end'];
-            $formulator->reg_no = $params['reg_no'];
-            $formulator->id_institution = $params['id_institution'];
-            $formulator->membership_status = $params['membership_status'];
-            $formulator->id_lsp = $params['id_lsp'];
-            $formulator->email = $params['email'];
-            $formulator->nip = $params['nip'] ? $params['nip'] : null;
-            $formulator->save();
+        if ($request->file('cv_penyusun') !== null) {
+            //create file cv
+            $fileCv = $request->file('cv_penyusun');
+            $cvName = '/penyusun/' . uniqid() . '.' . $fileCv->extension();
+            $fileCv->storePubliclyAs('public', $cvName);
+            $formulator->cv_file = Storage::url($cvName);
         }
+
+        if ($request->file('file_sertifikat') !== null) {
+            //create file sertifikat
+            $fileSertifikat = $request->file('file_sertifikat');
+            $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
+            $fileCv->storePubliclyAs('public', $fileSertifikatName);
+            $formulator->cv_file = Storage::url($fileSertifikatName);
+        }
+
+        $formulator->name = $params['name'];
+        $formulator->expertise = $params['expertise'];
+        $formulator->cert_no = $params['cert_no'];
+        $formulator->date_start = $params['date_start'];
+        $formulator->date_end = $params['date_start'] ? Carbon::createFromDate($params['date_start'])->addYears(3) : null;
+        $formulator->reg_no = $params['reg_no'];
+        $formulator->id_institution = $params['id_institution'];
+        $formulator->membership_status = $params['membership_status'];
+        $formulator->id_lsp = $params['id_lsp'];
+        $formulator->email = $params['email'];
+        $formulator->nip = $params['nip'] ? $params['nip'] : null;
+        $formulator->save();
+        // }
 
         return new FormulatorResource($formulator);
     }

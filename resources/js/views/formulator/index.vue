@@ -12,7 +12,7 @@
         </el-button>
       </div>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
-        <el-tab-pane label="Penyusun" name="penyusun">
+        <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
           <formulator-table
             :loading="loading"
             :list="list"
@@ -20,7 +20,15 @@
             @handleDelete="handleDelete($event)"
           />
         </el-tab-pane>
-        <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
+        <el-tab-pane label="Penyusun Tidak Aktif" name="penyusunTidakAktif">
+          <formulator-table
+            :loading="loading"
+            :list="list"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="Penyusun" name="penyusun">
           <formulator-table
             :loading="loading"
             :list="list"
@@ -56,11 +64,11 @@ export default {
     return {
       list: [],
       loading: true,
-      activeName: 'penyusun',
+      activeName: 'penyusunAktif',
       listQuery: {
         page: 1,
         limit: 10,
-        active: '',
+        active: 'true',
       },
       total: 0,
     };
@@ -75,7 +83,13 @@ export default {
     handleClickTab(tab, event) {
       this.listQuery.page = 1;
       this.listQuery.limit = 10;
-      this.listQuery.active = tab.name === 'penyusunAktif' ? 'true' : '';
+      if (tab.name === 'penyusunAktif') {
+        this.listQuery.active = 'true';
+      } else if (tab.name === 'penyusunTidakAktif') {
+        this.listQuery.active = 'false';
+      } else {
+        this.listQuery.active = '';
+      }
       this.getList();
     },
     async getList() {
@@ -93,10 +107,9 @@ export default {
       });
     },
     handleEditForm(id) {
-      const currentFormulator = this.list.find((element) => element.id === id);
       this.$router.push({
         name: 'editFormulator',
-        params: { id, formulator: currentFormulator },
+        params: { id },
       });
     },
     handleDelete({ id, nama }) {
