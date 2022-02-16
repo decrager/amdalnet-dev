@@ -24,6 +24,15 @@ class FormulatorController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->avatar) {
+            $user = User::where('email', $request->email)->first();
+            if($user) {
+                return $user->avatar;
+            } else {
+                return 'null';
+            }
+        }
+
         return FormulatorResource::collection(
             Formulator::where(function ($query) use ($request) {
                 if ($request->active && ($request->active == 'true')) {
@@ -37,7 +46,9 @@ class FormulatorController extends Controller
                     return $query->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
                 }
                 return '';
-            })->orderBy('created_at', 'DESC')->paginate($request->limit)->appends(['active' => $request->active])
+            })
+            ->orderBy('created_at', 'DESC')->paginate($request->limit)
+            ->appends(['active' => $request->active])
         );
     }
 
@@ -59,6 +70,38 @@ class FormulatorController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->sertifikasi) {
+            $formulator = Formulator::findOrFail($request->id);
+
+            if ($request->hasFile('file_sertifikat')) {
+                //create file sertifikat
+                $fileSertifikat = $request->file('file_sertifikat');
+                $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
+                $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
+                $formulator->cert_file = Storage::url($fileSertifikatName);
+            }
+
+            $formulator->membership_status = $request->membership_status;
+            $formulator->date_start = $request->date_start;
+            $formulator->date_end =  Carbon::createFromDate($request->date_start)->addYears(3);
+            $formulator->expertise = $request->expertise;
+            $formulator->save();
+
+            if($request->hasFile('avatarFile')) {
+                $user = User::where('email', $formulator->email)->first();
+                if($user) {
+                    $fileAvatar = $request->file('avatarFile');
+                    $fileAvatarName = '/avatar/' . uniqid() . '.' . $fileAvatar->extension();
+                    $fileAvatar->storePubliclyAs('public', $fileAvatarName);
+                    $user->avatar = Storage::url($fileAvatarName);
+                    $user->save();
+                }
+            }
+
+            return response()->json(['message' => 'success']);
+
+        }
+
         //validate request
         $validator = Validator::make(
             $request->all(),
@@ -94,7 +137,7 @@ class FormulatorController extends Controller
                 //create file sertifikat
                 $fileSertifikat = $request->file('file_sertifikat');
                 $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
-                $fileCv->storePubliclyAs('public', $fileSertifikatName);
+                $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
             }
 
             $email = $request->get('email');
@@ -148,6 +191,19 @@ class FormulatorController extends Controller
      */
     public function show(Formulator $formulator)
     {
+        $province = null;
+        $district = null;
+
+        if($formulator->formulatorProvince) {
+            $province = $formulator->formulatorProvince->name;
+        }
+
+        if($formulator->formulatorDistrict) {
+            $district = $formulator->formulatorDistrict->name;
+        }
+
+        $formulator->setAttribute('formulator_province', $province);
+        $formulator->setAttribute('formulator_district', $district);
         return $formulator;
     }
 
@@ -222,7 +278,7 @@ class FormulatorController extends Controller
             $fileSertifikat = $request->file('file_sertifikat');
             $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
             $fileCv->storePubliclyAs('public', $fileSertifikatName);
-            $formulator->cv_file = Storage::url($fileSertifikatName);
+            $formulator->cert_file = Storage::url($fileSertifikatName);
         }
 
         $formulator->name = $params['name'];

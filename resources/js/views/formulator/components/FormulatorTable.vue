@@ -97,7 +97,12 @@
         >
           CV
         </el-button>
-        <el-button v-if="certificate" type="warning" size="mini">
+        <el-button
+          v-if="certificate"
+          type="warning"
+          size="mini"
+          @click="handleCertificate(scope.row.id)"
+        >
           Update
         </el-button>
       </template>
@@ -158,6 +163,10 @@ export default {
       } else {
         return no;
       }
+    },
+    handleCertificate(id) {
+      // eslint-disable-next-line object-curly-spacing
+      this.$router.push({ name: 'certificateFormulator', params: { id } });
     },
   },
 };
