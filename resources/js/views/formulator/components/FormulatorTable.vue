@@ -97,6 +97,9 @@
         >
           CV
         </el-button>
+        <el-button v-if="certificate" type="warning" size="mini">
+          Update
+        </el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -120,6 +123,7 @@ export default {
       default: () => [],
     },
     loading: Boolean,
+    certificate: Boolean,
   },
   methods: {
     calculateStatus(awal, akhir) {
