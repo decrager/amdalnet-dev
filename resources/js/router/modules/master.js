@@ -85,6 +85,13 @@ const masterRoutes = {
       meta: { title: 'Edit Penyusun', icon: 'documentation', noCache: true },
     },
     {
+      path: 'formulator/sertifikasi/:id',
+      component: () => import('@/views/formulator/Certification'),
+      name: 'certificateFormulator',
+      hidden: true,
+      meta: { title: 'Sertifikasi Penyusun', icon: 'documentation', noCache: true },
+    },
+    {
       path: 'bank-ahli',
       component: () => import('@/views/expert-bank/index'),
       name: 'expertBank',
