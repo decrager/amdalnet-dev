@@ -91,7 +91,7 @@ class ProjectMapAttachmentController extends Controller
                     $map->save();
                     // Add workflow
                     // $project = Project::findOrFail($id_project);
-                    // if ($project->marking == 'fill-uklupl-matrix-upl') {
+                    // if ($project->marking == 'uklupl-mt.matrix-upl') {
                     //     $project->workflow_apply('submit-uklupl');
                     //     $project->save();
                     // }
