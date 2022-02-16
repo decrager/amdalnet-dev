@@ -111,8 +111,8 @@ class User extends Authenticatable
             // });
 
             // Notification::send($admins, new UserRegistered($user));
-            Notification::send($user, new UserRegistered($user));
-            event(new \App\Events\NotificationEvent());
+            //Notification::send($user, new UserRegistered($user));
+            //event(new \App\Events\NotificationEvent());
         });
     }
 }
