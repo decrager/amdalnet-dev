@@ -34,11 +34,23 @@ class TUKManagementController extends Controller
 
             foreach($members as $m) {
                 $cv = null;
+                $email = null;
+                $role = null;
+                $type = null;
 
                 if($m->lukMember) {
                     $cv = $m->lukMember->cv;
+                    $email = $m->lukMember->email;
+                    $type = 'luk_member';
                 } else if($m->expertBank) {
                     $cv = $m->expertBank->cv_file;
+                    $email = $m->expertBank->email;
+                    $type = 'expert_bank';
+                }
+
+                $user = User::where('email', $email)->with('roles')->first();
+                if($user) {
+                    $role = $user->roles->first()->name;
                 }
 
                 $member[] = [
@@ -47,7 +59,9 @@ class TUKManagementController extends Controller
                     'nik' => $m->lukMember ? $m->lukMember->nik : '-',
                     'position' => $m->position . ' Tim Uji Kelayakan' ,
                     'institution' => $m->lukMember ? $m->lukMember->institution : $m->expertBank->institution,
-                    'cv' => $cv
+                    'cv' => $cv,
+                    'role' => $role,
+                    'type' => $type
                 ];
             }
 
@@ -299,9 +313,27 @@ class TUKManagementController extends Controller
 
             $tuk->save();
 
+            // === MEMBERS === //
+            $members = json_decode($request->members, true);
+            if(count($members) > 0) {
+                for($i = 0; $i < count($members); $i++) {
+                    $team_member = FeasibilityTestTeamMember::findOrFail($members[$i]['id']);
+                    $email = $team_member->lukMember->email;
+                    $user = User::where('email', $email)->count();
+                    if($user > 0) {
+                        $user = User::where('email', $email)->first();
+                        if($members[$i]['role'] == 'examiner-substance') {
+                            $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
+                            $user->syncRoles($valsubRole);
+                        } else if($members[$i]['role'] == 'examiner-administration') {
+                            $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_ADMINISTRATION);
+                            $user->syncRoles($valsubRole);
+                        }
+                    }
+                }
+            }
+
             return response()->json(['errors' => null, 'message' => 'success']);
-
-
         }
 
         if($request->member) {

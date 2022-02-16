@@ -346,7 +346,7 @@
               </el-col>
             </el-row>
           </el-collapse-item>
-          <el-collapse-item title="PERSETUJUAN TEKNIS (PERTEK)" name="6" disabled>
+          <el-collapse-item title="PERSETUJUAN TEKNIS ( PERTEK )" name="6" disabled>
             <el-row>
               <el-col :span="24">
                 <el-form-item
@@ -384,7 +384,7 @@
                       </td>
                     </tr>
                   </table>
-                  <el-tag v-if="currentProject.high_pollution" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Air Limbah Ke Laut</el-tag>
+                  <el-tag v-if="currentProject.high_pollution" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Standar </b> Air Limbah</el-tag>
                 </el-card>
               </el-col>
             </el-row>
@@ -412,7 +412,7 @@
                       </td>
                     </tr>
                   </table>
-                  <el-tag v-if="currentProject.high_emission" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Dengan Kajian Teknis </b> Pembuangan Emisi</el-tag>
+                  <el-tag v-if="currentProject.high_emission" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Standar </b> Gas Buang</el-tag>
                 </el-card>
               </el-col>
             </el-row>
