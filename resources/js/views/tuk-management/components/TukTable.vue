@@ -133,9 +133,13 @@ export default {
       if (authority === 'Pusat') {
         return 'Pusat';
       } else if (authority === 'Provinsi') {
-        return 'Provinsi ' + province.name;
+        if (province !== null) {
+          return 'Provinsi ' + province.name;
+        }
       } else if (authority === 'Kabupaten/Kota') {
-        return district.name;
+        if (district !== null) {
+          return district.name;
+        }
       }
 
       return '';
