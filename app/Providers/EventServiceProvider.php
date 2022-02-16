@@ -27,6 +27,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $subscribe = [
         'App\Listeners\BlogPostWorkflowSubscriber',
+        'App\Listeners\ProjectWorkflowSubscriber',
     ];
 
     /**
