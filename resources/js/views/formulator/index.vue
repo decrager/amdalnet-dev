@@ -28,7 +28,10 @@
             @handleDelete="handleDelete($event)"
           />
         </el-tab-pane>
-        <el-tab-pane label="Penyusun" name="penyusun">
+        <el-tab-pane
+          label="Penyusun Bersertifikat"
+          name="penyusunBersertifikat"
+        >
           <formulator-table
             :loading="loading"
             :list="list"
@@ -87,6 +90,8 @@ export default {
         this.listQuery.active = 'true';
       } else if (tab.name === 'penyusunTidakAktif') {
         this.listQuery.active = 'false';
+      } else if (tab.name === 'penyusunBersertifikat') {
+        this.listQuery.active = 'bersertifikat';
       } else {
         this.listQuery.active = '';
       }

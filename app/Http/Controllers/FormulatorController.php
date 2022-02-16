@@ -31,6 +31,8 @@ class FormulatorController extends Controller
                         ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
                 } else if($request->active && ($request->active == 'false')) {
                     return $query->where('date_end', '<', date('Y-m-d H:i:s'));
+                } else if($request->active && ($request->active === 'bersertifikat')) {
+                    return $query->whereIn('membership_status', ['KTPA', 'ATPA']);
                 }
                 return '';
             })->orderBy('created_at', 'DESC')->paginate($request->limit)->appends(['active' => $request->active])

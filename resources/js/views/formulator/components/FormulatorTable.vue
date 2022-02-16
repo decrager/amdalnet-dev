@@ -144,7 +144,12 @@ export default {
       this.$emit('handleDelete', { id, nama });
     },
     noCertificate(no) {
-      if (no === null || no === undefined || no === 'null') {
+      if (
+        no === null ||
+        no === undefined ||
+        no === 'null' ||
+        no === 'undefined'
+      ) {
         return '-';
       } else {
         return no;
