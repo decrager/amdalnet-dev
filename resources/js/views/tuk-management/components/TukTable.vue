@@ -97,17 +97,21 @@ export default {
   name: 'EmployeeTable',
   filters: {
     capitalize(mySentence) {
-      const words = mySentence.split(' ');
+      if (mySentence) {
+        const words = mySentence.split(' ');
 
-      const newWords = words
-        .map((word) => {
-          return (
-            word.toLowerCase()[0].toUpperCase() +
-            word.toLowerCase().substring(1)
-          );
-        })
-        .join(' ');
-      return newWords;
+        const newWords = words
+          .map((word) => {
+            return (
+              word.toLowerCase()[0].toUpperCase() +
+              word.toLowerCase().substring(1)
+            );
+          })
+          .join(' ');
+        return newWords;
+      }
+
+      return '';
     },
   },
   props: {
@@ -145,17 +149,21 @@ export default {
       return '';
     },
     capitalizeMethod(mySentence) {
-      const words = mySentence.split(' ');
+      if (mySentence) {
+        const words = mySentence.split(' ');
 
-      const newWords = words
-        .map((word) => {
-          return (
-            word.toLowerCase()[0].toUpperCase() +
-            word.toLowerCase().substring(1)
-          );
-        })
-        .join(' ');
-      return newWords;
+        const newWords = words
+          .map((word) => {
+            return (
+              word.toLowerCase()[0].toUpperCase() +
+              word.toLowerCase().substring(1)
+            );
+          })
+          .join(' ');
+        return newWords;
+      }
+
+      return '';
     },
     handleKelolaTuk(id) {
       // eslint-disable-next-line object-curly-spacing
