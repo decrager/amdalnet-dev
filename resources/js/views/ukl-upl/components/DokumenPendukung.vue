@@ -170,7 +170,7 @@ export default {
             duration: 5 * 1000,
           });
           if (type === 'dpt') {
-            this.$emit('handleEnableSimpanLanjutkan');
+            this.$emit('handleDokPendukungUploaded');
           }
           // rename
           if (fileList.length > 0) {

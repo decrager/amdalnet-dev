@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Entity\ChangeType;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\Project;
 use PHPUnit\Framework\Constraint\IsEmpty;
 use PhpParser\Node\Expr\Empty_;
 
@@ -77,6 +78,7 @@ class ImpactIdentificationController extends Controller
          DB::beginTransaction();
          $num_impacts = 0;
          $response = [];
+         $idProject = 0;
          try {
              foreach ($params['study_data'] as $study) {
                  if (array_key_exists('impacts', $study)) {
@@ -86,6 +88,9 @@ class ImpactIdentificationController extends Controller
                              $num_impacts++;
                              $row = ImpactIdentification::find($impact['id']);
                              if ($row != null) {
+                                 if ($idProject == 0) {
+                                    $idProject = $row->id_project;
+                                 }
                                  $row->id_unit = $impact['id_unit'];
                                  /*if(is_string($impact['id_change_type'])){
                                      $ctype = ChangeType::firstOrCreate(['name' => $impact['id_change_type']]);
@@ -194,6 +199,12 @@ class ImpactIdentificationController extends Controller
          }
          if (count($response) == $num_impacts) {
              DB::commit();
+             // Workflow Amdal
+              // $project = Project::findOrFail($idProject);
+            // if ($project->marking == 'amdal.form-ka-drafting') {
+            //     $project->workflow_apply('submit-amdal-form-ka');
+            //     $project->save();
+            // }
              return response()->json([
                  'status' => 200,
                  'code' => 200,
@@ -216,11 +227,19 @@ class ImpactIdentificationController extends Controller
         $count = 0;
         $errors = [];
         $response = [];
+        $unitEmpty = 0;
+        $idProject = 0;
         foreach ($params['unit_data'] as $impact) {
             if (!$impact['is_stage']) {
                 $count++;
                 $toUpdate = ImpactIdentification::find($impact['id']);
                 if ($toUpdate != null) {
+                    if ($idProject == 0) {
+                        $idProject = $toUpdate->id_project;
+                    }
+                    if (empty($toUpdate->unit)) {
+                        $unitEmpty++;
+                    }
                     try {
                         $empty = 0;
                         if (empty($impact['id_change_type']) && empty($impact['change_type_name'])) {
@@ -251,6 +270,14 @@ class ImpactIdentificationController extends Controller
         }
         if ($updated == $count) {
             DB::commit();
+            if ($unitEmpty == $count) {
+                // First time saving unit: trigger workflow
+                // $project = Project::findOrFail($idProject);
+                // if ($project->marking == 'announcement-completed') {
+                //     $project->workflow_apply('fill-uklupl-form');
+                //     $project->save();
+                // }
+            }
             return response()->json([
                 'status' => 200,
                 'code' => 200,
@@ -336,10 +363,14 @@ class ImpactIdentificationController extends Controller
         $errors = [];
         $count = 0;
         $response = [];
+        $idProject = 0;
         DB::beginTransaction();
         foreach ($params['env_manage_plan_data'] as $impact) {
-
             if (!$impact['is_stage']) {
+                $impactObj = ImpactIdentification::findOrFail($impact['id']);
+                if ($idProject == 0) {
+                    $idProject = $impactObj->id_project;
+                }
                 if ($impact['env_manage_plan'] != null) {
                     foreach ($impact['env_manage_plan'] as $plan) {
                         $count++;
@@ -368,6 +399,11 @@ class ImpactIdentificationController extends Controller
         }
         if ($updated == $count) {
             DB::commit();
+            // $project = Project::findOrFail($idProject);
+            // if ($project->marking == 'uklupl-mt.form') {
+            //     $project->workflow_apply('fill-uklupl-matrix-ukl');
+            //     $project->save();
+            // }
             return response()->json([
                 'status' => 200,
                 'code' => 200,
@@ -389,10 +425,14 @@ class ImpactIdentificationController extends Controller
         $errors = [];
         $count = 0;
         $response = [];
+        $idProject = 0;
         DB::beginTransaction();
         foreach ($params['env_monitor_plan_data'] as $impact) {
-
             if (!$impact['is_stage']) {
+                $impactObj = ImpactIdentification::findOrFail($impact['id']);
+                if ($idProject == 0) {
+                    $idProject = $impactObj->id_project;
+                }
                 if ($impact['env_monitor_plan'] != null) {
                     foreach ($impact['env_monitor_plan'] as $plan) {
                         $count++;
@@ -421,6 +461,11 @@ class ImpactIdentificationController extends Controller
         }
         if ($updated == $count) {
             DB::commit();
+            // $project = Project::findOrFail($idProject);
+            // if ($project->marking == 'uklupl-mt.matrix-ukl') {
+            //     $project->workflow_apply('fill-uklupl-matrix-upl');
+            //     $project->save();
+            // }
             return response()->json([
                 'status' => 200,
                 'code' => 200,
@@ -466,6 +511,12 @@ class ImpactIdentificationController extends Controller
             $created = ImpactIdentification::create($validator);
             if ($created){
                 DB::commit();
+                // Workflow Amdal: drafting
+                // $project = Project::findOrFail($params['id_project']);
+                // if ($project->marking == 'announcement-completed') {
+                //     $project->workflow_apply('draft-amdal-form-ka');
+                //     $project->save();
+                // }
                 return $created;
             } else {
                 DB::rollBack();

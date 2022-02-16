@@ -256,6 +256,7 @@ export default {
               type: 'success',
               duration: 5 * 1000,
             });
+            // this.$emit('handleCheckProjectMarking');
           }
         })
         .catch((err) => {

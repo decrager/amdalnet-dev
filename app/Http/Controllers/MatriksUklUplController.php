@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\EnvManageDoc;
 use App\Entity\ImpactIdentification;
+use App\Entity\Project;
 use App\Entity\ProjectStage;
 use Illuminate\Http\Request;
 
@@ -67,6 +68,23 @@ class MatriksUklUplController extends Controller
             'code' => 200,
             'data' => $uklFilled && $uplFilled && $docsUploaded,
         ], 200);
+    }
+
+    public function getProjectMarking(Request $request, $id) 
+    {
+        $project = Project::find($id);
+        if ($project) {
+            return response()->json([
+                'status' => 200,
+                'code' => 200,
+                'data' => $project->marking,
+            ], 200);
+        }
+        return response()->json([
+            'status' => 404,
+            'code' => 404,
+            'message' => 'Project not found',
+        ], 404);
     }
 
     private function setEnvPlanData($envPlan) {
