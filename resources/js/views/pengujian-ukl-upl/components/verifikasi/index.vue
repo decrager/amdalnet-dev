@@ -86,10 +86,7 @@
                 v-model="scope.row.suitability"
                 placeholder="Pilih Kesesuaian"
                 style="width: 100%"
-                :disabled="
-                  verifications.is_complete !== null &&
-                  verifications.old_notes !== null
-                "
+                :disabled="verifications.is_disabled"
               >
                 <el-option
                   v-for="sesuai in kesesuaian"
@@ -107,10 +104,7 @@
                 v-model="scope.row.description"
                 type="textarea"
                 :placeholder="getPlaceholder(scope.row.suitability)"
-                :readonly="
-                  verifications.is_complete !== null &&
-                  verifications.old_notes !== null
-                "
+                :readonly="verifications.is_disabled"
                 :class="{ 'is-error': errors[`form-${scope.$index}`] }"
               />
             </template>

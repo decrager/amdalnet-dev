@@ -97,17 +97,21 @@ export default {
   name: 'EmployeeTable',
   filters: {
     capitalize(mySentence) {
-      const words = mySentence.split(' ');
+      if (mySentence) {
+        const words = mySentence.split(' ');
 
-      const newWords = words
-        .map((word) => {
-          return (
-            word.toLowerCase()[0].toUpperCase() +
-            word.toLowerCase().substring(1)
-          );
-        })
-        .join(' ');
-      return newWords;
+        const newWords = words
+          .map((word) => {
+            return (
+              word.toLowerCase()[0].toUpperCase() +
+              word.toLowerCase().substring(1)
+            );
+          })
+          .join(' ');
+        return newWords;
+      }
+
+      return '';
     },
   },
   props: {
@@ -133,25 +137,33 @@ export default {
       if (authority === 'Pusat') {
         return 'Pusat';
       } else if (authority === 'Provinsi') {
-        return 'Provinsi ' + province.name;
+        if (province !== null) {
+          return 'Provinsi ' + province.name;
+        }
       } else if (authority === 'Kabupaten/Kota') {
-        return district.name;
+        if (district !== null) {
+          return district.name;
+        }
       }
 
       return '';
     },
     capitalizeMethod(mySentence) {
-      const words = mySentence.split(' ');
+      if (mySentence) {
+        const words = mySentence.split(' ');
 
-      const newWords = words
-        .map((word) => {
-          return (
-            word.toLowerCase()[0].toUpperCase() +
-            word.toLowerCase().substring(1)
-          );
-        })
-        .join(' ');
-      return newWords;
+        const newWords = words
+          .map((word) => {
+            return (
+              word.toLowerCase()[0].toUpperCase() +
+              word.toLowerCase().substring(1)
+            );
+          })
+          .join(' ');
+        return newWords;
+      }
+
+      return '';
     },
     handleKelolaTuk(id) {
       // eslint-disable-next-line object-curly-spacing
