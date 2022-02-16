@@ -148,7 +148,15 @@ export default {
       }
     },
     checkIfTrue(item) {
-      const [data1, operator, data2] = item.split(/\s+/);
+      console.log('masuk pak eko');
+      const [ar1, operator, ar2] = item.split(/\s+/);
+
+      // replace . to ''
+      const data1 = ar1.replace('.', '');
+      const data2 = ar2.replace('.', '');
+
+      console.log('awal', [ar1, ar2]);
+      console.log('test', [data1, data2]);
 
       switch (operator) {
         case '<=':
