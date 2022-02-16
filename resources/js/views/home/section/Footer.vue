@@ -6,15 +6,9 @@
           <img src="/images/logo-klhk.png" alt="">
           <div class="footer__description">
             <ul>
-              <li class="footer__item">
-                <a href="#" class="footer__link">Direktorat Pencegahan Dampak Lingkungan Usaha dan Kegiatan</a>
-              </li>
-              <li class="footer__item">
-                <a href="#" class="footer__link">Direktorat Jenderal Planologi Kehutanan dan Tata Lingkungan</a>
-              </li>
-              <li class="footer__item">
-                <a href="#" class="footer__link">Kementerian Lingkungan Hidup dan Kehutanan</a>
-              </li>
+              <li class="footer__item">Direktorat Pencegahan Dampak Lingkungan Usaha dan Kegiatan</li>
+              <li class="footer__item">Direktorat Jenderal Planologi Kehutanan dan Tata Lingkungan</li>
+              <li class="footer__item">Kementerian Lingkungan Hidup dan Kehutanan</li>
             </ul>
             <p>Gedung Manggala Wanabakti Blok IV, Lt 6,<br>Wing C, Jalan Gatot Subroto, Jakarta Pusat, 10270.</p>
           </div>
