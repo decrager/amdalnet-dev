@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Entity\BlogPost;
+use App\Entity\Project;
 use Workflow;
 
 class WorkflowTest extends Command
@@ -38,6 +39,27 @@ class WorkflowTest extends Command
      * @return int
      */
     public function handle()
+    {
+        $this->amdalnetTest();
+    }
+
+    /**
+     * Amdalnet workflow test
+     *
+     * @return int
+     */
+    protected function amdalnetTest()
+    {
+        $project = Project::create();
+        // var_dump($project);
+        $project->workflow_apply('fill-info');
+        $project->workflow_apply('screening');
+        sleep(5);
+        $project->workflow_apply('complete-screening');
+        $project->save();
+    }
+
+    protected function blogTest()
     {
         // $post = factory(BlogPost::class)->create();
         $post = BlogPost::factory()->create();

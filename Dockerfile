@@ -12,11 +12,12 @@ RUN apt-get update \
     && apt-get clean
 
 # Install extensions
-RUN docker-php-ext-install mbstring zip exif pcntl pdo pgsql pdo_pgsql curl
+RUN docker-php-ext-install mbstring zip exif pcntl pdo pgsql pdo_pgsql curl redis
 # RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure pgsql -with-pgsql 
 RUN docker-php-ext-install gd
+RUN yes "no" | pecl install redis && docker-php-ext-enable redis
 
 
 # Install composer

@@ -14,7 +14,9 @@ class ChangeScaleToNumericSubProjectsTable extends Migration
     public function up()
     {
         Schema::table('sub_projects', function (Blueprint $table) {
-            $table->decimal('scale', 20,2)->change();
+            if (Schema::hasColumn('scale', 'sub_projects')) {
+                $table->decimal('scale', 20,2)->change();
+            }
         });
     }
 
