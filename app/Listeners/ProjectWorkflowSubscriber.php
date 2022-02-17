@@ -95,7 +95,9 @@ class ProjectWorkflowSubscriber
             $lastlog = WorkflowLog::where([['id_project', $project->id], ['to_place', $tfroms[0]]])
                 ->orderBy('created_at', 'DESC')
                 ->first();
-            $duration = $now->floatDiffInSeconds($lastlog->created_at);
+            if ($lastlog) {
+                $duration = $now->floatDiffInSeconds($lastlog->created_at);
+            }
             $duration_total = $now->floatDiffInSeconds($project->created_at);
         }
         
