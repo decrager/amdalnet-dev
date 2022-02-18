@@ -161,13 +161,13 @@ class AuthController extends BaseController
     {
         /*
          * Receive token and licenses from OSS
-         * Store access_token & refresh_token to `users` table
+         * Store access-token & refresh_token to `users` table
          * Store kd_izin & id_izin to `oss_licenses` table
          */
         $validator = Validator::make(
             $request->all(),
             [
-                'access_token' => 'required',
+                'access-token' => 'required',
                 'refresh_token' => 'required',
                 'kd_izin' => 'required',
                 'id_izin' => 'required',
@@ -179,15 +179,15 @@ class AuthController extends BaseController
                 'message' => 'Request parameter tidak valid.',
             ], 400);
         }
-        $validated = $request->only('access_token', 'refresh_token', 'kd_izin', 'id_izin');
-        $resp = $this->getOssUserInfo($validated['access_token'])->json();
+        $validated = $request->only('access-token', 'refresh_token', 'kd_izin', 'id_izin');
+        $resp = $this->getOssUserInfo($validated['access-token'])->json();
 
         if ($resp['status'] === 200) {
             $user_info = $resp['data'];
             $user = User::where('email', $user_info['email'])->first();
             $initiator = Initiator::where('email', $user_info['email'])->first();
             DB::beginTransaction();
-            $user->access_token = $validated['access_token'];
+            $user->access_token = $validated['access-token'];
             $user->refresh_token = $validated['refresh_token'];
             $user->save();
             $created = OssLicense::create([
