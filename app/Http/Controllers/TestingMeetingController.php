@@ -527,9 +527,13 @@ class TestingMeetingController extends Controller
         //  AUTHORITY AND LOGO
         $authority = '';
         $tuk_logo = null;
+        $tuk_address = '';
+        $tuk_telp = '';
         if($testing_meeting->id_feasibility_test_team) {
             $team = FeasibilityTestTeam::find($testing_meeting->id_feasibility_test_team);
             if($team) {
+                $tuk_address = $team->address;
+                $tuk_telp = $team->phone;
                 if($team->authority == 'Pusat') {
                     $authority = 'PUSAT';
                 } else if($team->authority == 'Provinsi') {
@@ -541,13 +545,21 @@ class TestingMeetingController extends Controller
             }
         }
 
-        $templateProcessor = new TemplateProcessor('template_berkas_adm_yes.docx');
-
-        if($tuk_logo) {
-            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+        if($authority == 'PUSAT') {
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes.docx');
         } else {
-            $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes_tuk.docx');
+            $templateProcessor->setValue('tuk_address', $tuk_address);
+            $templateProcessor->setValue('tuk_telp', $tuk_telp);
+            $templateProcessor->setValue('authority_big', $authority);
+
+            if($tuk_logo) {
+                $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+            } else {
+                $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+            }
         }
+
 
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
