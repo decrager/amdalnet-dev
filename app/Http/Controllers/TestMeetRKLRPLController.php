@@ -143,6 +143,21 @@ class TestMeetRKLRPLController extends Controller
                 $this->meetingInvitation($request->idProject, $document_type);
                 Notification::send($receiver, new MeetingInvitation($meeting));
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
+
+                // === WORKFLOW === //
+                // $project = Project::findOrFail($request->idProject);
+                // if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
+                //     $project->workflow_apply('send-uklupl-examination-invitation');
+                //     $project->workflow_apply('examine-uklupl');
+                //     $project->workflow_apply('held-uklupl-examination-meeting');
+                //     $project->save();
+                // } else if($project->marking == 'amdal.feasibility-invitation-drafting') {
+                //     $project->workflow_apply('send-amdal-feasibility-invitation');
+                //     $project->workflow_apply('review-amdal-feasibility');
+                //     $project->workflow_apply('held-amdal-feasibility-meeting');
+                //     $project->save();
+                // }
+                
             }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
@@ -257,6 +272,15 @@ class TestMeetRKLRPLController extends Controller
             }
 
         }
+
+        // === WORKFLOW === //
+        // if($document_type == 'rkl-rpl') {
+        //     $project = Project::findOrFail($request->idProject);
+        //     if($project->marking == 'amdal.examination') {
+        //         $project->workflow_apply('draft-amdal-feasibility-invitation');
+        //         $project->save();
+        //     }
+        // }
 
         return response()->json(['message' => 'success']);
     }

@@ -623,6 +623,7 @@ export default {
       const time = await rplResource.store({
         monitor: sendForm,
         type: this.lastTime ? 'update' : 'new',
+        idProject: this.$route.params.id,
       });
       this.loadingSubmit = false;
       this.lastTime = time;

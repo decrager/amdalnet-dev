@@ -83,6 +83,7 @@ export default {
       const time = await andalComposingResource.store({
         analysis: sendForm,
         type: this.lastTime ? 'update' : 'new',
+        idProject: this.$route.params.id,
       });
       this.loadingSubmit = false;
       this.lastTime = time;

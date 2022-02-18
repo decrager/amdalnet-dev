@@ -139,17 +139,17 @@ class TestingMeetingController extends Controller
                 $this->meetingInvitation($request->idProject);
                 Notification::send($receiver, new MeetingInvitation($meeting));
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
-            }
 
-            // === ADD WORKFLOW === //
-            $project = Project::findOrFail($request->idProject);
-            // if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
-            //     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
-            //     $project->workflow_apply('examine-amdal-form-ka');
-            //     $project->workflow_apply('held-amdal-form-ka-meeting');
-            //     $project->workflow_apply('aprrove-amdal-form-ka');
-            //     $project->save();
-            // }
+                // === WORKFLOW === //
+                // $project = Project::findOrFail($request->idProject);
+                // if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
+                //     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
+                //     $project->workflow_apply('examine-amdal-form-ka');
+                //     $project->workflow_apply('held-amdal-form-ka-meeting');
+                //     $project->workflow_apply('approve-amdal-form-ka');
+                //     $project->save();
+                // }
+            }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
         }
