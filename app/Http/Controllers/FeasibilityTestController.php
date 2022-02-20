@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\EligibilityCriteria;
 use App\Entity\FeasibilityTest;
 use App\Entity\FeasibilityTestDetail;
+use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\MeetingReport;
 use App\Entity\Project;
@@ -272,15 +273,16 @@ class FeasibilityTestController extends Controller
             'ketua_tuk_name' => '',
             'ketua_tuk_nip' => ''
         ];
-        $testing_meeting = TestingMeeting::where('id_project', $project->id)->first();
-        if($testing_meeting) {
-            $tuk = $this->getTukData($testing_meeting, $tuk);
-        } else {
-            $meeting_report = MeetingReport::where('id_project', $project->id)->first();
-            if($meeting_report) {
-                $tuk = $this->getTukData($meeting_report, $tuk);
-            }
+        $tuk_data = null;
+        if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
+            $tuk_data = FeasibilityTestTeam::where('authority', 'Pusat')->first();
+        } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
+            $tuk_data = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
+        } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
+            $tuk_data = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
         }
+
+        $tuk = $this->getTukData($tuk_data, $tuk);
 
         $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
 
@@ -315,8 +317,8 @@ class FeasibilityTestController extends Controller
     }
 
     private function getTukData($data, $tuk) {
-        if($data->id_feasibility_test_team) {
-            $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $data->id_feasibility_test_team],['position', 'Ketua']])->first();
+        if($data) {
+            $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $data->id],['position', 'Ketua']])->first();
             if($ketua_tuk) {
                 if($ketua_tuk->expertBank) {
                     $tuk['ketua_tuk_name'] = $ketua_tuk->expertBank->name;
@@ -326,7 +328,7 @@ class FeasibilityTestController extends Controller
                     $tuk['ketua_tuk_nip'] = $ketua_tuk->lukMember->nip ?? '';
                 }
             }
-            $kepala_sekretariat = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $data->id_feasibility_test_team],['position', 'Kepala Sekretariat']])->first();
+            $kepala_sekretariat = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $data->id],['position', 'Kepala Sekretariat']])->first();
             if($kepala_sekretariat) {
                 if($kepala_sekretariat->expertBank) {
                     $tuk['kepala_sekretariat_tuk_name'] = $kepala_sekretariat->expertBank->name;
@@ -344,24 +346,26 @@ class FeasibilityTestController extends Controller
         $project = Project::findOrFail($id_project);
         $project_address = ProjectAddress::where('id_project', $project->id)->first();
         $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
+        $tuk = null;
 
         // GET TUK
-        $tuk = [
+        $tuk_data = [
             'kepala_sekretariat_tuk_name' => '',
             'kepala_sekretariat_tuk_nip' => '',
             'ketua_tuk_position' => '',
             'ketua_tuk_name' => '',
             'ketua_tuk_nip' => ''
         ];
-        $testing_meeting = TestingMeeting::where('id_project', $project->id)->first();
-        if($testing_meeting) {
-            $tuk = $this->getTukData($testing_meeting, $tuk);
-        } else {
-            $meeting_report = MeetingReport::where('id_project', $project->id)->first();
-            if($meeting_report) {
-                $tuk = $this->getTukData($meeting_report, $tuk);
-            }
+
+        if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
+            $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
+        } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
+            $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
+        } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
+            $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
         }
+
+        $tuk = $this->getTukData($tuk, $tuk_data);
 
         $pdf = PDF::loadView('document.template_kelayakan', 
             compact(
