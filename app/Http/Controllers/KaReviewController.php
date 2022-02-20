@@ -61,9 +61,16 @@ class KaReviewController extends Controller
             $email = $project->initiator->email;
             $user = User::where('email', $email)->count();
 
+            $document_type = '';
+            if($project->required_doc == 'AMDAL') {
+                $document_type = 'KA';
+            } else if($project->required_doc == 'UKL-UPL') {
+                $document_type = 'UKL UPL';
+            }
+
             if($user > 0) {
                 $user = User::where('email', $email)->first();
-                Notification::send([$user], new AppKaReview($review));
+                Notification::send([$user], new AppKaReview($review, $document_type));
             }
 
             // === WORKFLOW === //
@@ -104,8 +111,15 @@ class KaReviewController extends Controller
                             $email = $ketua->formulator->email;
                             $user = User::where('email', $email)->count();
                             if($user > 0) {
+                                $document_type = '';
+                                if($project->required_doc == 'AMDAL') {
+                                    $document_type = 'KA';
+                                } else if($project->required_doc == 'UKL-UPL') {
+                                    $document_type = 'UKL UPL';
+                                }
+                                
                                 $user = User::where('email', $email)->first();
-                                Notification::send([$user], new AppKaReview($review));
+                                Notification::send([$user], new AppKaReview($review, $document_type));
                             }
                         }
                     }
