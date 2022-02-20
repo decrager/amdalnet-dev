@@ -55,14 +55,24 @@
       </el-table-column> -->
       <el-table-column align="center" label="Rekomendasi Ahli">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.expert_notes" type="textarea" :rows="2" :disabled="!isExaminer" />
+          <el-input
+            v-model="scope.row.expert_notes"
+            type="textarea"
+            :rows="2"
+            :disabled="!isExaminer"
+          />
         </template>
       </el-table-column>
     </el-table>
     <el-row :gutter="32">
       <el-col :sm="24" :md="12">
         <h4>Kesimpulan</h4>
-        <el-input v-model="list.conclusion" type="textarea" :rows="3" :disabled="!isExaminer" />
+        <el-input
+          v-model="list.conclusion"
+          type="textarea"
+          :rows="3"
+          :disabled="!isExaminer"
+        />
       </el-col>
     </el-row>
   </div>
@@ -113,7 +123,11 @@ export default {
     },
     async handleSubmit() {
       this.loadingSubmit = true;
-      await feasibilityResource.store({ feasibility: this.list });
+      await feasibilityResource.store({
+        feasibility: this.list,
+        document_type:
+          this.$route.name === 'pengujianRKLRPL' ? 'rkl-rpl' : 'ukl-upl',
+      });
       this.loadingSubmit = false;
       this.$message({
         message: 'Data is saved Successfully',

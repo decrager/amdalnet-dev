@@ -23,7 +23,7 @@
     </div>
     <el-alert
       v-if="!isShowNotes"
-      title="Formulir Kerangka Acuan telah Dikirim ke Pemrakarsa"
+      :title="`Formulir ${documenttype} telah Dikirim ke Pemrakarsa`"
       type="success"
       description="Terimakasih"
       show-icon
@@ -39,9 +39,15 @@ import Resource from '@/api/resource';
 const kaReviewsResource = new Resource('ka-reviews');
 
 export default {
-  name: 'KaReviewPenyusun',
+  name: 'ReviewPenyusun',
   components: {
     Tinymce,
+  },
+  props: {
+    documenttype: {
+      type: String,
+      default: () => '',
+    },
   },
   data() {
     return {

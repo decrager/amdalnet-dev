@@ -61,14 +61,21 @@ class KaReviewController extends Controller
             $email = $project->initiator->email;
             $user = User::where('email', $email)->count();
 
+            $document_type = '';
+            if($project->required_doc == 'AMDAL') {
+                $document_type = 'KA';
+            } else if($project->required_doc == 'UKL-UPL') {
+                $document_type = 'UKL UPL';
+            }
+
             if($user > 0) {
                 $user = User::where('email', $email)->first();
-                Notification::send([$user], new AppKaReview($review));
+                Notification::send([$user], new AppKaReview($review, $document_type));
             }
 
             // === WORKFLOW === //
-            // if($project->marking == 'amdal.form-ka-drafting') {
-            //     $project->workflow_apply('submit-amdal-form-ka');
+            // if($project->marking == 'amdal.form-ka-submitted') {
+            //     $project->workflow_apply('review-amdal-form-ka');
             //     $project->save();
             // }
         }
@@ -104,25 +111,19 @@ class KaReviewController extends Controller
                             $email = $ketua->formulator->email;
                             $user = User::where('email', $email)->count();
                             if($user > 0) {
+                                $document_type = '';
+                                if($project->required_doc == 'AMDAL') {
+                                    $document_type = 'KA';
+                                } else if($project->required_doc == 'UKL-UPL') {
+                                    $document_type = 'UKL UPL';
+                                }
+                                
                                 $user = User::where('email', $email)->first();
-                                Notification::send([$user], new AppKaReview($review));
+                                Notification::send([$user], new AppKaReview($review, $document_type));
                             }
                         }
                     }
                 }
-                // === WORKFLOW === //
-                // if($project->marking == 'amdal.form-ka-adm-review') {
-                //     $project->workflow_apply('return-amdal-form-ka-review');
-                //     $project->save();
-                // }
-            } else if($request->status == 'submit') {
-                // if($project->marking == 'amdal.form-ka-adm-review') {
-                //     $project->workflow_apply('approve-amdal-form-ka');
-                //     $project->save();
-                // } else if($project->marking == 'amdal.form-ka-adm-returned') {
-                //     $project->workflow_apply('approve-amdal-form-ka');
-                //     $project->save();
-                // }
             }
         }
 

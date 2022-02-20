@@ -80,6 +80,7 @@ class TestingVerificationController extends Controller
     public function store(Request $request)
     {
         $data = $request->verifications;
+        $project = Project::findOrFail($request->idProject);
 
         $verification = null;
 
@@ -96,6 +97,16 @@ class TestingVerificationController extends Controller
 
         if($request->complete) {
             $verification->is_complete = $request->decision == 'ya' ? true : false;
+
+            // === WORKFLOW === //
+            // if($project->marking == 'amdal.form-ka-adm-review') {
+            //     if($request->decison == 'ya') {
+            //         $project->workflow_apply('approve-amdal-form-ka');
+            //     } else {
+            //         $project->workflow_apply('return-amdal-form-ka-review');
+            //     }
+            // }
+
         } else {
             $verification->is_complete = $data['is_complete'];
         }

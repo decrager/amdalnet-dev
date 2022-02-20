@@ -96,6 +96,22 @@ class FeasibilityTestController extends Controller
             $feasibility_detail->save();
         }
 
+        // === WORKFLOW === //
+        // $project = Project::findOrFail($data['idProject']);
+        // if($request->document_type == 'ukl-upl') {
+        //     if($project->marking == 'uklupl-mt.ba-signed') {
+        //         $project->workflow_apply('draft-uklupl-recommendation');
+        //         $project->workflow_apply('sign-uklupl-recommendation');
+        //         $project->save();
+        //     } 
+        // } else {
+        //     if($project->marking == 'amdal.feasibility-ba-signed') {
+        //         $project->workflow_apply('draft-amdal-recommendation');
+        //         $project->workflow_apply('sign-amdal-recommendation');
+        //         $project->save();
+        //     }
+        // } 
+
         return response()->json(['messsage' => 'success']);
     }
 

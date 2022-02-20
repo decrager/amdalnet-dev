@@ -134,8 +134,8 @@ class MeetingReportController extends Controller
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
             }
 
-            // === ADD WORKFLOW === //
-            // if($project->marking == 'draft-amdal-form-ka-ba') {
+            // === WORKFLOW === //
+            // if($project->marking == 'amdal.form-ka-ba-drafting') {
             //     $project->workflow_apply('sign-amdal-form-ka-ba');
             //     $project->save();
             // }
@@ -209,9 +209,9 @@ class MeetingReportController extends Controller
 
         }
 
-        // === ADD WORKFLOW === //
+        // === WORKFLOW === //
         // $project = Project::findOrFail($request->idProject);
-        // if($project->marking == 'aprrove-amdal-form-ka') {
+        // if($project->marking == 'amdal.form-ka-approved') {
         //     $project->workflow_apply('draft-amdal-form-ka-ba');
         //     $project->save();
         // }

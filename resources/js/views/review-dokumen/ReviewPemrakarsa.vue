@@ -72,9 +72,15 @@ import Resource from '@/api/resource';
 const kaReviewsResource = new Resource('ka-reviews');
 
 export default {
-  name: 'KaReviewPemrakarsa',
+  name: 'ReviewPemrakarsa',
   components: {
     Tinymce,
+  },
+  props: {
+    documenttype: {
+      type: String,
+      default: () => '',
+    },
   },
   data() {
     return {
@@ -115,17 +121,17 @@ export default {
     },
     alertTitle() {
       if (this.statusShow === 'revisi') {
-        return 'Formulir Kerangka Acuan telah Dikembalikan ke Penyusun untuk Diperbaiki';
+        return `Formulir ${this.documenttype} telah Dikembalikan ke Penyusun untuk Diperbaiki`;
       }
 
-      return 'Formulir Kerangka Acuan telah Dikirim untuk Dinilai';
+      return `Formulir ${this.documenttype} telah Dikirim untuk Dinilai`;
     },
     alertDescription() {
       if (this.statusShow === 'revisi') {
         return 'Terimakasih atas Tanggapan Anda';
       }
 
-      return 'Terimakasih sudah Mengirimkan Formulir Kerangka Acuan';
+      return `Terimakasih sudah Mengirimkan Formulir ${this.documenttype}`;
     },
   },
   created() {
