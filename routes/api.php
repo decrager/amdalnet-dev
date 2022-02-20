@@ -69,7 +69,9 @@ Route::namespace('Api')->group(function () {
         Route::post('auth/logout', 'AuthController@logout');
 
         Route::get('/user', function (Request $request) {
-            return new UserResource($request->user());
+            return (new UserResource($request->user()))
+                ->response()
+                ->header('Cache-Control', 'no-cache, max-age=0, no-store, private, must-revalidate');
         });
 
         // Api resource routes

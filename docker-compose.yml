@@ -32,7 +32,8 @@ services:
       - laravel
       
   database:
-    image: postgres:13
+    # image: postgres:13
+    image: postgis/postgis
     ports:
       - "6666:5432"
     environment:

@@ -28,4 +28,14 @@ class Formulator extends Model
     {
         return $this->hasMany(FormulatorTeamMember::class, 'id_formulator', 'id');
     }
+
+    public function formulatorProvince()
+    {
+        return $this->belongsTo(Province::class, 'province', 'id');
+    }
+
+    public function formulatorDistrict()
+    {
+        return $this->belongsTo(District::class, 'district', 'id');
+    }
 }
