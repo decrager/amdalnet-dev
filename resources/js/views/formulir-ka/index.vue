@@ -380,7 +380,7 @@
         </el-form>
 
       </el-collapse-item>
-      <el-collapse-item title="Dampak Potensial & Dampak Penting Hipotetik" name="4">
+      <el-collapse-item title="Evaluasi Dampak Potensial & Dampak Penting Hipotetik" name="4">
         <el-button size="medium" type="primary">Simpan Perubahan</el-button>
         <table style="margin: 2em 0; border-collapse: collapse;">
           <thead>

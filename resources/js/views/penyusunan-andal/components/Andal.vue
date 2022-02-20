@@ -28,7 +28,7 @@
       </el-collapse-item>
       <el-collapse-item name="dampak-potensial">
         <template slot="title" class="head-accordion">
-          <span class="title">DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
+          <span class="title">EVALUASI DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
         </template>
         <DampakHipotetikMD v-if="activeName === 'dampak-potensial'" :mode="1" />
         <!-- <DampakHipotetik v-if="activeName === 'dampak-potensial'" /> -->
