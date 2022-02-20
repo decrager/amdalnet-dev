@@ -237,6 +237,10 @@ class ProjectController extends Controller
                 'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
                 'pre_agreement_file' => Storage::url($preAgreementName),
                 'registration_no' => uniqid(),
+                'status' => isset($request['status']) ? $request['status'] : null,
+                'study_approach' => isset($request['study_approach']) ? $request['study_approach'] : null,
+                'auth_province' => isset($request['auth_province']) ? $request['auth_province'] : null,
+                'authority' => isset($request['authority']) ? $request['authority'] : null,
             ]);
 
             // add workflow
@@ -338,6 +342,7 @@ class ProjectController extends Controller
                 'process_b3' => isset($request['process_b3']) ? $request['process_b3'] : false,
                 'utilization_b3' => isset($request['utilization_b3']) ? $request['utilization_b3'] : false,
                 'dumping_b3' => isset($request['dumping_b3']) ? $request['dumping_b3'] : false,
+                'transport_b3' => isset($request['transport_b3']) ? $request['transport_b3'] : false,
                 'tps' => isset($request['tps']) ? $request['tps'] : false,
                 'traffic' => isset($request['traffic']) ? $request['traffic'] : false,
                 'low_traffic' => isset($request['low_traffic']) ? $request['low_traffic'] : false,

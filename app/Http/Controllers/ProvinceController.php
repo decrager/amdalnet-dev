@@ -13,8 +13,11 @@ class ProvinceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        if($request->provName){
+            return Province::where('name',$request->provName)->first();
+        }
         return ProvinceResource::collection(Province::all());
     }
 

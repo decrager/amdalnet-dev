@@ -56,7 +56,7 @@
                 <el-row>
                   <el-form-item label="" prop="fileMap">
                     <div slot="label">
-                      <span>Upload Peta Tapak (File .ZIP Max 1MB)</span>
+                      <span>Upload SHP Peta Tapak Proyek (File .zip max 1 MB)</span>
                       <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
                     </div>
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
@@ -424,6 +424,7 @@
                       <th>Jenis Kegiatan</th>
                       <th />
                       <th />
+                      <th />
                     </tr>
                     <tr>
                       <td>
@@ -447,7 +448,12 @@
                           <el-checkbox v-model="currentProject.dumping_b3" label="Dumping Limbah B3" border />
                         </div>
                         <div>
-                          <el-checkbox v-model="currentProject.tps" style="margin-top: 5px" label="TPS" border />
+                          <el-checkbox v-model="currentProject.tps" style="margin-top: 5px" label="Penyimpanan Limbah B3" border />
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <el-checkbox v-model="currentProject.transport_b3" label="Pengangkutan Limbah B3" border />
                         </div>
                       </td>
                     </tr>
@@ -505,6 +511,7 @@ import Resource from '@/api/resource';
 import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
+const provinceResource = new Resource('provinces');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
@@ -868,7 +875,26 @@ export default {
     this.getAllData();
   },
   methods: {
-    goToPendekatanStudi(){
+    async addAuthoritiesBasedOnAddress(address){
+      let tempFile = address[0].prov;
+      for (let i = 1; i < address.length; i++) {
+        if (address[i].prov !== tempFile) {
+          this.currentProject.authority = 'Pusat';
+          delete this.currentProject.auth_province;
+          return;
+        }
+
+        tempFile = address[i].prov;
+      }
+
+      this.currentProject.authority = 'Province';
+      const authProv = await provinceResource.list({ provName: tempFile });
+      this.currentProject.auth_province = authProv.id;
+
+      console.log(this.currentProject);
+    },
+    async goToPendekatanStudi(){
+      await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
       this.$refs.tapakProyek.validate((valid) => {
         if (valid) {
           this.activeName = '2';
@@ -879,6 +905,7 @@ export default {
       });
     },
     goToStatusKegiatan(){
+      console.log(this.currentProject);
       this.$refs.pendekatanStudi.validate((valid) => {
         if (valid) {
           this.activeName = '3';
