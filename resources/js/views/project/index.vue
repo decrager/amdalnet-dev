@@ -154,6 +154,15 @@
                   Dokumen Kerangka Acuan
                 </el-button>
                 <el-button
+                  v-if="isUklUpl(scope.row) && isKaSubmitted(scope.row) && isInitiator && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDokumenUklUpl(scope.row)"
+                >
+                  Dokumen UKL UPL
+                </el-button>
+                <el-button
                   v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
@@ -705,6 +714,11 @@ export default {
     handleDokumenKA(project) {
       this.$router.push({
         path: `/amdal/${project.id}/dokumen`,
+      });
+    },
+    handleDokumenUklUpl(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/dokumen`,
       });
     },
     handleUjiKa(project) {
