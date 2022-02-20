@@ -37,8 +37,14 @@
           />
         </el-col>
         <el-col :sm="24" :md="10">
-          <KaReviewPenyusun v-if="isFormulator" />
-          <KaReviewPemrakarsa v-if="isInitiator" />
+          <ReviewPenyusun
+            v-if="isFormulator"
+            :documenttype="'Kerangka Acuan'"
+          />
+          <ReviewPemrakarsa
+            v-if="isInitiator"
+            :documenttype="'Kerangka Acuan'"
+          />
         </el-col>
       </el-row>
     </el-card>
@@ -47,16 +53,16 @@
 
 <script>
 import Resource from '@/api/resource';
-import KaReviewPenyusun from '@/views/amdal/components/KaReviewPenyusun';
-import KaReviewPemrakarsa from '@/views/amdal/components/KaReviewPemrakarsa';
+import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
+import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 const scopingResource = new Resource('scoping');
 const andalComposingResource = new Resource('andal-composing');
 import axios from 'axios';
 
 export default {
   components: {
-    KaReviewPenyusun,
-    KaReviewPemrakarsa,
+    ReviewPenyusun,
+    ReviewPemrakarsa,
   },
   data() {
     return {

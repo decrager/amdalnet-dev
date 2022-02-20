@@ -276,6 +276,12 @@ class SKKLController extends Controller
         } else {
             $rklRplDate = $rklDate > $rplDate ? $rklDate->locale('id')->isoFormat('D MMMM Y') : $rplDate->locale('id')->isoFormat('D MMMM Y');
         }
+
+        // === WORKFLOW === //
+        // if($project->marking == 'amdal.recommendation-signed') {
+        //     $project->workflow_apply('publish-amdal-skkl');
+        //     $project->save();
+        // }
  
 
         return [ 
@@ -360,6 +366,12 @@ class SKKLController extends Controller
         } else {
             $uklUplDate = $uklDate > $uplDate ? $uklDate->locale('id')->isoFormat('D MMMM Y') : $uplDate->locale('id')->isoFormat('D MMMM Y');
         }
+
+        // === WORKFLOW === //
+        // if($project->marking == 'uklupl-mt.recommendation-signed') {
+        //     $project->workflow_apply('publish-uklupl-pkplh');
+        //     $project->save();
+        // }
  
 
         return [ 

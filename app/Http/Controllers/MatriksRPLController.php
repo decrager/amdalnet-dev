@@ -195,6 +195,13 @@ class MatriksRPLController extends Controller
             $envMonitor->report_recipient = $monitor[$i]['report_recipient'];
             $envMonitor->save();
         }
+
+        // === WORKFLOW === //
+        // $project = Project::findOrFail($request->idProject);
+        // if($project->marking == 'amdal.andal-drafting') {
+        //     $project->workflow_apply('draft-amdal-rklrpl');
+        //     $project->save();
+        // }
         
         if($request->type != 'new') {
             $lastTime = EnvMonitorPlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()

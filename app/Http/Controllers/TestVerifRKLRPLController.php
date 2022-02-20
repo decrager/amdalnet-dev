@@ -83,6 +83,7 @@ class TestVerifRKLRPLController extends Controller
     public function store(Request $request)
     {
         $data = $request->verifications;
+        $project = Project::findOrFail($request->idProject);
 
         $verification = null;
         $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
@@ -100,8 +101,57 @@ class TestVerifRKLRPLController extends Controller
 
         if($request->complete) {
             $verification->is_complete = $request->decision == 'ya' ? true : false;
+
+            // === WORKFKLOW === //
+            // if($document_type == 'ukl-upl') {
+            //     if($project->marking == 'uklupl-mt.submitted') {
+            //         $project->workflow_apply('review-uklupl-adm');
+            //         if($request->decision == 'ya') {
+            //             $project->workflow_apply('draft-uklupl-examination-invitation');
+            //         } else {
+            //             $project->workflow_apply('return-uklupl-adm');
+            //         }
+            //         $project->save();
+            //     }
+            // } else {
+            //     if($project->marking == 'draft-amdal-rklrpl') {
+            //         $project->workflow_apply('submit-amdal');
+            //         $project->workflow_apply('review-amdal-adm');
+            //         if($request->decision == 'ya') {
+            //             $project->workflow_apply('approve-amdal-adm');
+            //             $project->workflow_apply('examine-amdal');
+            //             $project->save();
+            //         } else {
+            //             $project->workflow_apply('return-amdal-adm');
+            //             $project->save();
+            //         }
+            //     } else if($project->marking == 'amdal.adm-review') {
+            //         if($request->decision == 'ya') {
+            //             $project->workflow_apply('approve-amdal-adm');
+            //             $project->workflow_apply('examine-amdal');
+            //             $project->save();
+            //         } else {
+            //             $project->workflow_apply('return-amdal-adm');
+            //             $project->save();
+            //         }
+            //     }
+            // }
         } else {
             $verification->is_complete = $data['is_complete'];
+
+            // === WORKFLOW === //
+            // if($document_type == 'ukl-upl') {
+            //     if($project->marking == 'uklupl-mt.submitted') {
+            //         $project->workflow_apply('review-uklupl-adm');
+            //         $project->save();
+            //     }
+            // } else {
+            //     if($project->marking == 'amdal.rklrpl-drafting') {
+            //         $project->workflow_apply('submit-amdal');
+            //         $project->workflow_apply('review-amdal-adm');
+            //         $project->save();
+            //     }
+            // }
         }
         $verification->save();
 

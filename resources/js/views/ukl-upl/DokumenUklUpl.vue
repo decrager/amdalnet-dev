@@ -2,7 +2,10 @@
   <div class="app-container" style="padding: 24px">
     <el-card v-loading="loading">
       <workflow-ukl />
-      <h2>Dokumen UKL UPL</h2>
+      <h2>
+        Submit Formulir UKL UPL
+        <span v-if="isFormulator">ke Pemrakarsa</span>
+      </h2>
       <div>
         <!-- <el-button v-if="projects !== null" type="danger" @click="exportPdf">
           Export to .PDF
@@ -20,7 +23,7 @@
         </el-button>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
-        <el-col :span="16">
+        <el-col :sm="24" :md="14">
           <div class="grid-content bg-purple" />
           <iframe
             v-if="projects !== null"
@@ -32,8 +35,9 @@
             frameborder="0"
           />
         </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple" />
+        <el-col :sm="24" :md="10">
+          <ReviewPenyusun v-if="isFormulator" :documenttype="'UKL UPL'" />
+          <ReviewPemrakarsa v-if="isInitiator" :documenttype="'UKL UPL'" />
         </el-col>
       </el-row>
     </el-card>
@@ -42,6 +46,8 @@
 
 <script>
 import Resource from '@/api/resource';
+import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
+import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 const andalComposingResource = new Resource('andal-composing');
 import axios from 'axios';
 import WorkflowUkl from '@/components/WorkflowUkl';
@@ -49,6 +55,8 @@ import WorkflowUkl from '@/components/WorkflowUkl';
 export default {
   components: {
     WorkflowUkl,
+    ReviewPenyusun,
+    ReviewPemrakarsa,
   },
   data() {
     return {
@@ -58,11 +66,23 @@ export default {
       projectId: this.$route.params && this.$route.params.id,
       showDocument: true,
       projectName: '',
+      userInfo: {
+        roles: [],
+      },
     };
   },
-  created() {
-    this.getData();
+  computed: {
+    isFormulator() {
+      return this.userInfo.roles.includes('formulator');
+    },
+    isInitiator() {
+      return this.userInfo.roles.includes('initiator');
+    },
+  },
+  async created() {
     this.$store.dispatch('getStep', 5);
+    this.userInfo = await this.$store.dispatch('user/getInfo');
+    await this.getData();
   },
   methods: {
     async getData() {

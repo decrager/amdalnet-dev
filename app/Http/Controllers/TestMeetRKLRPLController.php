@@ -10,6 +10,8 @@ use App\Entity\GovernmentInstitution;
 use App\Entity\Initiator;
 use App\Entity\Lpjp;
 use App\Entity\Project;
+use App\Entity\ProjectMapAttachment;
+use App\Entity\PublicConsultation;
 use App\Entity\TestingMeeting;
 use App\Entity\TestingMeetingInvitation;
 use App\Entity\TestingVerification;
@@ -143,6 +145,21 @@ class TestMeetRKLRPLController extends Controller
                 $this->meetingInvitation($request->idProject, $document_type);
                 Notification::send($receiver, new MeetingInvitation($meeting));
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
+
+                // === WORKFLOW === //
+                // $project = Project::findOrFail($request->idProject);
+                // if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
+                //     $project->workflow_apply('send-uklupl-examination-invitation');
+                //     $project->workflow_apply('examine-uklupl');
+                //     $project->workflow_apply('held-uklupl-examination-meeting');
+                //     $project->save();
+                // } else if($project->marking == 'amdal.feasibility-invitation-drafting') {
+                //     $project->workflow_apply('send-amdal-feasibility-invitation');
+                //     $project->workflow_apply('review-amdal-feasibility');
+                //     $project->workflow_apply('held-amdal-feasibility-meeting');
+                //     $project->save();
+                // }
+                
             }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
@@ -257,6 +274,15 @@ class TestMeetRKLRPLController extends Controller
             }
 
         }
+
+        // === WORKFLOW === //
+        // if($document_type == 'rkl-rpl') {
+        //     $project = Project::findOrFail($request->idProject);
+        //     if($project->marking == 'amdal.examination') {
+        //         $project->workflow_apply('draft-amdal-feasibility-invitation');
+        //         $project->save();
+        //     }
+        // }
 
         return response()->json(['message' => 'success']);
     }
@@ -517,9 +543,13 @@ class TestMeetRKLRPLController extends Controller
         //  AUTHORITY && LOGO
         $authority = '';
         $tuk_logo = null;
+        $tuk_address = '';
+        $tuk_telp = '';
         if($testing_meeting->id_feasibility_test_team) {
              $team = FeasibilityTestTeam::find($testing_meeting->id_feasibility_test_team);
              if($team) {
+                $tuk_address = $team->address;
+                $tuk_telp = $team->phone;
                  if($team->authority == 'Pusat') {
                      $authority = 'PUSAT';
                  } else if($team->authority == 'Provinsi') {
@@ -531,16 +561,46 @@ class TestMeetRKLRPLController extends Controller
              }
          }
 
-        $templateProcessor = new TemplateProcessor('template_berkas_adm_ar_yes.docx');
-        if($document_type == 'ukl-upl') {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes.docx');
-        }
+        // === PETA === //
+        $checkPeta = $this->checkPeta($id_project);
+        
+        // === KONSULTASI PUBLIK === //
+        $checkKonsulPublik = $this->checkKonsulPublik($id_project);
 
-        if($tuk_logo) {
-            $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
-        } else {
-            $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
-        }
+        // === PENYUSUN === //
+        $checkCvPenyusun = $this->checkCvPenyusun($id_project);
+
+         if($document_type == 'rkl-rpl') {
+             if($authority == 'PUSAT') {
+                 $templateProcessor = new TemplateProcessor('template_berkas_adm_ar_yes.docx');
+             } else {
+                 $templateProcessor = new TemplateProcessor('template_berkas_adm_ar_yes_tuk.docx');
+                 $templateProcessor->setValue('tuk_address', $tuk_address);
+                 $templateProcessor->setValue('tuk_telp', $tuk_telp);
+                 $templateProcessor->setValue('authority_big', $authority);
+
+                 if($tuk_logo) {
+                    $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+                } else {
+                    $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+                }
+             }
+         } else {
+             if($authority == 'PUSAT') {
+                 $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes.docx');
+             } else {
+                $templateProcessor = new TemplateProcessor('template_berkas_adm_uu_yes_tuk.docx');
+                $templateProcessor->setValue('tuk_address', $tuk_address);
+                $templateProcessor->setValue('tuk_telp', $tuk_telp);
+                $templateProcessor->setValue('authority_big', $authority);
+
+                if($tuk_logo) {
+                   $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+               } else {
+                   $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+               }
+            }
+         }
 
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
@@ -557,6 +617,22 @@ class TestMeetRKLRPLController extends Controller
         if($verification->forms) {
             if($verification->forms->first()) {
                 foreach($verification->forms as $f) {
+                    $templateProcessor->setValue($f->name . '_exist', 
+                                $this->checkFileAdmExist(
+                                                'exist', 
+                                                $f->name, 
+                                                $project, 
+                                                $checkPeta, 
+                                                $checkKonsulPublik, 
+                                                $checkCvPenyusun));
+                    $templateProcessor->setValue($f->name . '_not_exist', 
+                    $this->checkFileAdmExist(
+                                    'not_exist', 
+                                    $f->name, 
+                                    $project, 
+                                    $checkPeta, 
+                                    $checkKonsulPublik, 
+                                    $checkCvPenyusun));
                     $templateProcessor->setValue($f->name . '_yes', $f->suitability == 'Sesuai' ? 'V' : '');
                     $templateProcessor->setValue($f->name . '_no', $f->suitability == 'Tidak Sesuai' ? 'V' : '');
                     $templateProcessor->setValue($f->name . '_ket', $f->description);
@@ -727,5 +803,164 @@ class TestMeetRKLRPLController extends Controller
         }
 
         return strtolower($project->project_title);
+    }
+
+    private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)
+    {
+        if($type == 'tata_ruang') {
+            if($project->ktr) {
+                if($is_exist == 'exist') {
+                    return 'V';
+                } else {
+                    return '';
+                }
+            } else {
+                if($is_exist == 'exist') {
+                    return '';
+                } else {
+                    return 'V';
+                }
+            }
+        } else if($type == 'persetujuan_awal') {
+            if($project->pre_agreement_file) {
+                if($is_exist == 'exist') {
+                    return 'V';
+                } else {
+                    return '';
+                }
+            } else {
+                if($is_exist == 'exist') {
+                    return '';
+                } else {
+                    return 'V';
+                }
+            }
+        } else if($type == 'surat_penyusun') {
+            if($is_exist == 'exist') {
+                return 'V';
+            } else {
+                return '';
+            }
+        } else if($type == 'sertifikasi_penyusun') {
+            if($is_exist == 'exist') {
+                return 'V';
+            } else {
+                return '';
+            }
+        } else if($type == 'peta') {
+            if($checkPeta) {
+                if($is_exist == 'exist') {
+                    return 'V';
+                } else {
+                    return '';
+                }
+            } else {
+                if($is_exist == 'exist') {
+                    return 'V';
+                } else {
+                    return '';
+                }
+            }
+        } else if($type == 'konsul_publik') {
+            if($checkKonsulPublik) {
+                if($is_exist == 'exist') {
+                    return 'V';
+                } else {
+                    return '';
+                }
+            } else {
+                if($is_exist == 'exist') {
+                    return '';
+                } else {
+                    return 'V';
+                }
+            }
+        } else if($type == 'cv_penyusun') {
+            if($checkCvPenyusun) {
+                if($is_exist == 'exist') {
+                    return 'V';
+                } else {
+                    return '';
+                }
+            } else {
+                if($is_exist == 'exist') {
+                    return '';
+                } else {
+                    return 'V';
+                }
+            }
+        } else if($type == 'sistematika_penyusunan') {
+            if($is_exist == 'exist') {
+                return 'V';
+            } else {
+                return '';
+            }
+        } else if($type == 'pertek') {
+           return '';
+        } else if($type == 'peta_titik') {
+            return '';
+         }
+
+        return '';
+    }
+
+    private function checkPeta($id_project)
+    {
+        $total = 0;
+        $maps = ProjectMapAttachment::where('id_project', $id_project)->get();
+        foreach($maps as $m) {
+            if($m->attachment_type == 'tapak') {
+                $total++;
+            } else if($m->attachment_type == 'ecology') {
+                $total++;
+            } else if($m->attachment_type == 'social') {
+                $total++;
+            } else if($m->attachment_type == 'study') {
+                $total++;
+            }
+        }
+
+        if($total > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function checkKonsulPublik($id_project)
+    {
+        $konsul = PublicConsultation::where('project_id', $id_project)->count();
+        if($konsul > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function checkCvPenyusun($id_project)
+    {
+        $cv_penyusun = 0;
+
+        $team = FormulatorTeam::where('id_project', $id_project)->first();
+        if($team) {
+            $members = FormulatorTeamMember::where('id_formulator_team', $team->id)->get();
+            foreach($members as $m) {
+                if($m->formulator) {
+                    if($m->formulator->cv_file) {
+                        $cv_penyusun++;
+                    }
+                } else if($m->expert) {
+                    if($m->expert->cv) {
+                        $cv_penyusun++;
+                    }
+                }
+            }
+        }
+
+        if($cv_penyusun > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
