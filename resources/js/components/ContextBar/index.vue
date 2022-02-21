@@ -91,6 +91,7 @@ export default {
       this.isShown = false;
       this.projectId = 0;
       this.data = null;
+      this.contextBar = [];
     },
     async getData(){
       this.data = null;
