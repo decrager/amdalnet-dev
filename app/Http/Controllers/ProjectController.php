@@ -38,47 +38,46 @@ class ProjectController extends Controller
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
             return Project::with(['address', 'listSubProject', 'feasibilityTest'])
-            ->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
-            ->where(function ($query) use ($request) {
-                return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
-            })->where(
-                function ($query) use ($request) {
-                    return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
-                }
-            )->where(
-                function ($query) use ($request) {
-                    return $request->formulatorId ? $query->where('formulators.id', $request->formulatorId) : '';
-                }
-            )
-            ->where(function($query) use ($request){
-                return $request->filters ? $query->where('projects.required_doc', $request->filters ) : '';
-            })
-            ->where(
-                function ($query) use ($request) {
-                    if ($request->search){
-                        $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
-                        ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
-                        ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
-                        ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
-                        ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
-                        ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
-                        ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
-                        ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
-                        ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                ->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
+                ->where(function ($query) use ($request) {
+                    return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
+                })->where(
+                    function ($query) use ($request) {
+                        return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
                     }
-                    return $query;
-                }
-            )
-            ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
-            ->leftJoin('users', 'initiators.email', '=', 'users.email')
-            ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
-            ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
-            ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
-            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
-            ->distinct()
-            ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id')
-            ->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
-
+                )->where(
+                    function ($query) use ($request) {
+                        return $request->formulatorId ? $query->where('formulators.id', $request->formulatorId) : '';
+                    }
+                )
+                ->where(function ($query) use ($request) {
+                    return $request->filters ? $query->where('projects.required_doc', $request->filters) : '';
+                })
+                ->where(
+                    function ($query) use ($request) {
+                        if ($request->search) {
+                            $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                        }
+                        return $query;
+                    }
+                )
+                ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+                ->leftJoin('users', 'initiators.email', '=', 'users.email')
+                ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
+                ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
+                ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
+                ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+                ->distinct()
+                ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id')
+                ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
             return ProjectResource::collection(Project::select('*')
                 ->where('registration_no', $request->registration_no)
@@ -89,7 +88,7 @@ class ProjectController extends Controller
             return response()->json(ProjectController::getProject($request->id));
         }
 
-        return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function($q) {
+        return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
             $q->select('id', 'id_project', 'status');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
@@ -102,36 +101,35 @@ class ProjectController extends Controller
                 return $request->initiatorId ? $query->where('projects.id_applicant', $request->initiatorId) : '';
             }
         )
-        ->where(function($query) use ($request){
-            return $request->filters ? $query->where('projects.required_doc', $request->filters ) : '';
-        })
-        ->where(
-            function ($query) use ($request) {
-                //return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
+            ->where(function ($query) use ($request) {
+                return $request->filters ? $query->where('projects.required_doc', $request->filters) : '';
+            })
+            ->where(
+                function ($query) use ($request) {
+                    //return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
 
-                if ($request->search){
-                    $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                    if ($request->search) {
+                        $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                    }
+                    return $query;
                 }
-                return $query;
-            }
-        )
-        ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
-        ->leftJoin('users', 'initiators.email', '=', 'users.email')
-        ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
-        ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
-        ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
-        ->distinct()
-        ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
-        ->orderBy('projects.'.$request->orderBy, $request->order)->paginate($request->limit);
-
+            )
+            ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+            ->leftJoin('users', 'initiators.email', '=', 'users.email')
+            ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
+            ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
+            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->distinct()
+            ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
+            ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
     }
 
     /**
@@ -258,7 +256,7 @@ class ProjectController extends Controller
                     'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
-                    'geom' => DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomFromGeojson'), 4326)"),
+                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
                     'properties' => $request->geomProperties,
                     'id_styles' => $request->geomStyles
                 ]);
@@ -681,21 +679,22 @@ class ProjectController extends Controller
      * @return Response
      */
 
-     public function timeline(Request $request){
-         $res = [];
-         $res = DB::table('audits')
-         ->leftJoin('users', 'users.id', '=', 'audits.user_id')
-         ->select(
-            'audits.created_at as datetime',
-            'audits.event',
-            'audits.old_values',
-            'audits.new_values',
-            'users.name as user_name'
-         )
-         ->where('audits.auditable_id', $request->id)
-         ->orderBy('audits.id', $request->order ? $request->order : 'DESC')
-         ->get();
+    public function timeline(Request $request)
+    {
+        $res = [];
+        $res = DB::table('audits')
+            ->leftJoin('users', 'users.id', '=', 'audits.user_id')
+            ->select(
+                'audits.created_at as datetime',
+                'audits.event',
+                'audits.old_values',
+                'audits.new_values',
+                'users.name as user_name'
+            )
+            ->where('audits.auditable_id', $request->id)
+            ->orderBy('audits.id', $request->order ? $request->order : 'DESC')
+            ->get();
 
-         return response($res);
-     }
+        return response($res);
+    }
 }
