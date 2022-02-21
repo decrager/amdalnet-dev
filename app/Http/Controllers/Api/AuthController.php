@@ -143,9 +143,7 @@ class AuthController extends BaseController
             return response()->json([
                 'status' => 200,
                 'code' => 200,
-                'data' => $user,
-                'active' => $user->active, // via insert
-                'active_2' => $user2->active, // via update
+                // 'data' => $user,
             ], 200);
         } else {
             DB::rollBack();
@@ -181,34 +179,54 @@ class AuthController extends BaseController
         }
         $validated = $request->only('access-token', 'refresh_token', 'kd_izin', 'id_izin');
         $resp = $this->getOssUserInfo($validated['access-token'])->json();
-
-        if ($resp['status'] === 200) {
-            $user_info = $resp['data'];
-            $user = User::where('email', $user_info['email'])->first();
-            $initiator = Initiator::where('email', $user_info['email'])->first();
-            DB::beginTransaction();
+        $user_info =  null;
+        if ($resp['status'] != 200) {
+            // update token
+            $respUpdate = $this->postUpdateToken($validated['refresh_token'])->json();
+            if ($respUpdate['code'] == 200) {
+                $validated['access-token'] = $respUpdate['data']['access_token'];
+                $resp = $this->getOssUserInfo($respUpdate['data']['access_token'])->json();
+                // $user_info = $resp['data'];
+            } else {
+                return response()->json([
+                    'status' => 500,
+                    'message' => 'Gagal update token',
+                ], 500);
+            }
+        }
+        $user_info = $resp['data'];
+        $user = User::where('email', $user_info['email'])->first();
+        $initiator = Initiator::where('email', $user_info['email'])->first();
+        DB::beginTransaction();
+        $id_initiator = 0;
+        if ($user && $initiator) {
             $user->access_token = $validated['access-token'];
             $user->refresh_token = $validated['refresh_token'];
             $user->save();
-            $created = OssLicense::create([
-                'id_initiator' => $initiator->id,
-                'email' => $initiator->email,
-                'id_izin' => $validated['id_izin'],
-                'kd_izin' => $validated['kd_izin'],
-            ]);
-            if ($created) {
-                DB::commit();
-                return response()->json([
-                    'status' => 200,
-                    'message' => 'Token berhasil diterima.',
-                ], 200);
-            } else {
-                DB::rollBack();
-            }
+            $id_initiator = $initiator->id;
+        } else {
+            // REGISTER?? PASSWORD-NYA ??
         }
+        $created = OssLicense::create([
+            'id_initiator' => $id_initiator,
+            'email' => $user_info['email'],
+            'id_izin' => $validated['id_izin'],
+            'kd_izin' => $validated['kd_izin'],
+        ]);
+        if ($created) {
+            DB::commit();
+            return response()->json([
+                'status' => 200,
+                'message' => 'Token berhasil diterima.',
+            ], 200);
+        } else {
+            DB::rollBack();
+        }
+        
         return response()->json([
             'status' => 500,
             'message' => 'Gagal menyimpan token',
+            // 'data' => $resp,
         ], 500);
     }
 
@@ -228,6 +246,14 @@ class AuthController extends BaseController
             'user_key' => env('OSS_USER_KEY'),
         ])->withToken($accessToken)
         ->post(env('OSS_ENDPOINT_SSO') . '/users/validate-token');
+    }
+
+    private function postUpdateToken($refreshToken)
+    {
+        return Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+        ])->withToken($refreshToken)
+        ->post(env('OSS_ENDPOINT_SSO') . '/users/update-token');
     }
 
     private function getOssUserInfo($accessToken)
