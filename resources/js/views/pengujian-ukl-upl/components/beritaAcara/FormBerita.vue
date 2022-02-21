@@ -33,7 +33,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :sm="24" :md="24">
+      <!-- <el-col :sm="24" :md="24">
         <el-form-item label="Tim Uji Kelayakan">
           <el-select
             v-model="reports.id_feasibility_test_team"
@@ -49,7 +49,7 @@
             />
           </el-select>
         </el-form-item>
-      </el-col>
+      </el-col> -->
     </el-row>
   </el-form>
 </template>
