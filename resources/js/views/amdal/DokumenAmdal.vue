@@ -17,7 +17,7 @@
         <a
           v-if="showDocument"
           class="btn-docx"
-          :href="'/storage/formulir/' + downloadDocxPath"
+          :href="'/storage/workspace/' + downloadDocxPath"
           download
         >
           Export to .DOCX
@@ -121,7 +121,7 @@ export default {
       this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
       this.projects =
-        window.location.origin + `/storage/formulir/${this.downloadDocxPath}`;
+        window.location.origin + `/storage/workspace/${this.downloadDocxPath}`;
       this.showDocument = true;
       this.loading = false;
       this.templateKALoaded = true;
