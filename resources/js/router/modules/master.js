@@ -278,6 +278,19 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'SOP Pengelolaan', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'video-tutorial',
+      component: () => import('@/views/video-tutorial/index'),
+      name: 'VideoTutorial',
+      meta: { title: 'Video Tutorial', icon: 'documentation', noCache: true },
+    },
+    {
+      path: 'video-tutorial/create',
+      component: () => import('@/views/video-tutorial/Create'),
+      name: 'CreateVideoTutorial',
+      hidden: true,
+      meta: { title: 'Create Video Tutorial', icon: 'documentation', noCache: true },
+    },
   ],
 };
 
