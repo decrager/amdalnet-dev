@@ -45,15 +45,15 @@ class AndalCloneController extends Controller
             'pc.name AS component_name',
             'ra.name AS rona_awal_name_master',
             'pra.name AS rona_awal_name',
-            'ps.name as stage',
             'ct.name AS change_type_name')
             ->leftJoin('sub_project_components AS pc', 'impact_identification_clones.id_sub_project_component', '=', 'pc.id')
             ->leftJoin('sub_project_rona_awals AS pra', 'impact_identification_clones.id_sub_project_rona_awal', '=', 'pra.id')
             ->leftJoin('change_types AS ct', 'impact_identification_clones.id_change_type', '=', 'ct.id')
             ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
             ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
-            ->join('project_stages as ps', 'ps.id', '=', 'pc.id_project_stage')
             ->where('impact_identification_clones.id_project', $request->id_project)
+            ->whereNotNull('impact_identification_clones.id_sub_project_component')
+            ->whereNotNull('impact_identification_clones.id_sub_project_rona_awal')
             ->orderBy('impact_identification_clones.id', 'asc')
             ->get();
             return ImpactIdentificationCloneResource::collection($list);
