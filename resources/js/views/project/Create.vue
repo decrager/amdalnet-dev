@@ -1407,7 +1407,7 @@ export default {
             formDataPublish.append('f', 'json');
             formDataPublish.append('itemId', this.mapItemId);
             formDataPublish.append('filetype', 'shapefile');
-            formDataPublish.append('publishParameters', '{"hasStaticData":true,"name":"Sample_5","maxRecordCount":2000,"layerInfo":{"capabilities":"Query"}}');
+            formDataPublish.append('publishParameters', `{"hasStaticData":true,"name":${this.currentProject.project_title},"maxRecordCount":2000,"layerInfo":{"capabilities":"Query"}}`);
 
             var requestOptionsPublish = {
               method: 'POST',
