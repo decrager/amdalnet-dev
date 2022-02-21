@@ -15,6 +15,7 @@ use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\ImportantTrait;
+use App\Entity\KaReview;
 use App\Entity\Lpjp;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
@@ -1992,7 +1993,6 @@ class AndalComposingController extends Controller
             File::makeDirectory(storage_path('app/public/formulir/'));
         }
 
-        
         $ids = [4, 1, 2, 3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
             return array_search($model->getKey(), $ids);
@@ -2002,7 +2002,18 @@ class AndalComposingController extends Controller
 
         $save_file_name = 'ka-andal-' . strtolower($project->project_title) . '.docx';
         if($type != 'andal') {
-            $save_file_name = 'ka-' . strtolower($project->project_title) . '.docx';
+            $save_file_name = 'ka-' . $project->id . '-' . strtolower($project->project_title) . '.docx';
+        }
+
+        // === CHECK IF FORMULIR KA HAS SUBMITTED === //
+        if($type != 'andal') {
+            $submit = KaReview::where([['id_project', $id_project], ['status', 'submit']])->first();
+            if($submit) {
+                return [
+                    'file_name' => $save_file_name,
+                    'project_title' => strtolower($project->project_title)
+                ];
+            }
         }
 
         $fomulator_team = FormulatorTeam::where('id_project', $project->id)->first();
@@ -2262,7 +2273,11 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneRowAndSetValues('pasca_operasi', $pasca_operasi);
         $templateProcessor->cloneRowAndSetValues('metode_studi', $metode_studi);
 
-        $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
+        if($type == 'andal') {
+            $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
+        } else {
+            $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        }
 
         return [
             'file_name' => $save_file_name,

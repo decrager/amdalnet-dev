@@ -226,6 +226,15 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
+                  v-if="isAmdal(scope.row) && isKaSubmittedToTuk(scope.row) && isSubtance && !isScreening && !isScoping"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceKa(scope.row)"
+                >
+                  Workspace KA
+                </el-button>
+                <el-button
                   v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
                   type="text"
@@ -522,6 +531,18 @@ export default {
       if (project.ka_reviews) {
         if (project.ka_reviews.length > 0) {
           return true;
+        }
+      }
+
+      return false;
+    },
+    isKaSubmittedToTuk(project) {
+      if (project.ka_reviews) {
+        if (project.ka_reviews.length > 0) {
+          const status = project.ka_reviews[project.ka_reviews.length - 1].status;
+          if (status === 'submit') {
+            return true;
+          }
         }
       }
 
@@ -847,6 +868,15 @@ export default {
       const { data } = await districtResource.list({ idProv });
       this.cityOptions = data.map((i) => {
         return { value: i.id, label: i.name };
+      });
+    },
+    handleWorkspaceKa(project) {
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: project.id,
+          filename: `ka-${project.id}-${project.project_title.toLowerCase()}.docx`,
+        },
       });
     },
     async handleWorkspaceAndal(idProject) {
