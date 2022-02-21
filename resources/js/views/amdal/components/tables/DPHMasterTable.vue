@@ -1,7 +1,20 @@
 <template>
   <div id="dpdph-master-table" v-loading="loading">
-
-    <div style="text-align: right; margin-bottom: 0.5em;">Total: <span style="font-weight: bold">{{ impacts.length }}</span></div>
+    <el-row :gutter="10" style="margin-bottom: 0.5em;">
+      <el-col :span="12">
+        <dampak-hipotetik-preview
+          v-if="(impacts && impacts.length > 0)"
+          :impacts="impacts"
+          :stages="stages"
+          :pie-params="pieParams"
+          :mode="mode"
+        />
+        <p v-else>&nbsp;</p>
+      </el-col>
+      <el-col :span="12" style="text-align: right;">
+        <span v-if="impacts">Total: <span style="font-weight: bold">{{ impacts.length }}</span></span>
+      </el-col>
+    </el-row>
     <el-table
       :data="impacts"
       max-height="300"
@@ -77,8 +90,10 @@
   </div>
 </template>
 <script>
+import DampakHipotetikPreview from './DPDPHPreview.vue';
 export default {
   name: 'DampakHipotetikMasterTable',
+  components: { DampakHipotetikPreview },
   props: {
     impacts: {
       type: Array,
@@ -87,6 +102,10 @@ export default {
       },
     },
     stages: {
+      type: Array,
+      default: null,
+    },
+    pieParams: {
       type: Array,
       default: null,
     },
@@ -102,6 +121,10 @@ export default {
       type: Number,
       default: 0,
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
     loading: {
       type: Boolean,
       default: false,
@@ -109,6 +132,7 @@ export default {
   },
   data() {
     return {
+      preview: false,
       stageFilters: [
         { text: 'Pra Konstruksi', value: 'Pra Konstruksi' },
         { text: 'Konstruksi', value: 'Konstruksi' },
@@ -125,8 +149,8 @@ export default {
     };
   },
   watch: {
-    impacts: function(){
-
+    impacts: function(val){
+      // console.log('master table:', val);
     },
   },
   methods: {
