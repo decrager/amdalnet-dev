@@ -154,6 +154,15 @@
                   Dokumen Kerangka Acuan
                 </el-button>
                 <el-button
+                  v-if="isUklUpl(scope.row) && isKaSubmitted(scope.row) && isInitiator && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDokumenUklUpl(scope.row)"
+                >
+                  Dokumen UKL UPL
+                </el-button>
+                <el-button
                   v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
@@ -216,6 +225,15 @@
                 >
                   Bagan Alir
                 </el-button> -->
+                <el-button
+                  v-if="isAmdal(scope.row) && isKaSubmittedToTuk(scope.row) && isSubtance && !isScreening && !isScoping"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceKa(scope.row)"
+                >
+                  Workspace KA
+                </el-button>
                 <el-button
                   v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
                   href="#"
@@ -518,6 +536,18 @@ export default {
 
       return false;
     },
+    isKaSubmittedToTuk(project) {
+      if (project.ka_reviews) {
+        if (project.ka_reviews.length > 0) {
+          const status = project.ka_reviews[project.ka_reviews.length - 1].status;
+          if (status === 'submit') {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
     toTitleCase(str) {
       return str.replace(
         /\w\S*/g,
@@ -707,6 +737,11 @@ export default {
         path: `/amdal/${project.id}/dokumen`,
       });
     },
+    handleDokumenUklUpl(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/dokumen`,
+      });
+    },
     handleUjiKa(project) {
       this.$router.push({
         path: `/dokumen-kegiatan/${project.id}/pengujian-ka`,
@@ -833,6 +868,15 @@ export default {
       const { data } = await districtResource.list({ idProv });
       this.cityOptions = data.map((i) => {
         return { value: i.id, label: i.name };
+      });
+    },
+    handleWorkspaceKa(project) {
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: project.id,
+          filename: `ka-${project.id}-${project.project_title.toLowerCase()}.docx`,
+        },
       });
     },
     async handleWorkspaceAndal(idProject) {

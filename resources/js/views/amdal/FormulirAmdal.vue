@@ -33,7 +33,7 @@
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
           <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
         </el-collapse-item>
-        <el-collapse-item name="3" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+        <el-collapse-item name="3" title="EVALUASI DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
           <dampak-hipotetik-m-d />
           <!--
           <dampak-hipotetik

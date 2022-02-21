@@ -880,10 +880,12 @@ export default {
                 })
                 .catch((error) => {
                   console.log(error);
+                  this.loading = false;
                 });
             });
           } else {
             console.log('error submit!!');
+            this.loading = false;
             return false;
           }
         });
@@ -919,11 +921,13 @@ export default {
                   this.registrationForm = {};
                 })
                 .catch((error) => {
+                  this.loading = false;
                   console.log(error);
                 });
             });
           } else {
             console.log('error submit!!');
+            this.loading = false;
             return false;
           }
         });
@@ -960,11 +964,13 @@ export default {
                   this.registrationForm = {};
                 })
                 .catch((error) => {
+                  this.loading = false;
                   console.log(error);
                 });
             });
           } else {
             console.log('error submit!!');
+            this.loading = false;
             return false;
           }
         });

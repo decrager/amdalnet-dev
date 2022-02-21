@@ -545,6 +545,7 @@ export default {
       const time = await rklResource.store({
         manage: sendForm,
         type: this.lastTime ? 'update' : 'new',
+        idProject: this.$route.params.id,
       });
       this.loadingSubmit = false;
       this.lastTime = time;

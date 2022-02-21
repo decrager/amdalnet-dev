@@ -70,6 +70,11 @@ class InitiatorController extends Controller
 
             DB::beginTransaction();
             
+            $found = User::where('email', $params['email'])->first();
+            if ($found) {
+                return response()->json(['error' => 'Email yang anda masukkan sudah terpakai'], 403);
+            }
+
             $initiatorRole = Role::findByName(Acl::ROLE_INITIATOR);
 
             $user = User::create([

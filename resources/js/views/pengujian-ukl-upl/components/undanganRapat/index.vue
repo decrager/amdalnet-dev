@@ -66,7 +66,7 @@
                 <el-input v-model="meetings.position" />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="12">
+            <!-- <el-col :sm="12" :md="12">
               <el-form-item label="Tim Uji Kelayakan">
                 <el-select
                   v-model="meetings.id_feasibility_test_team"
@@ -82,7 +82,7 @@
                   />
                 </el-select>
               </el-form-item>
-            </el-col>
+            </el-col> -->
           </el-row>
         </el-form>
       </el-col>
@@ -296,6 +296,7 @@ export default {
   methods: {
     async getMeetings() {
       this.loading = true;
+      this.loadingTuk = true;
       const data = await undanganRapatResource.list({
         idProject: this.idProject,
         uklUpl: 'true',
@@ -324,6 +325,7 @@ export default {
       data.invitations = invitations;
       this.meetings = data;
       this.loading = false;
+      this.loadingTuk = false;
     },
     async handleSubmit() {
       this.loadingSubmit = true;

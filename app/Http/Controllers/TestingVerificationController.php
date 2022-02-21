@@ -80,6 +80,7 @@ class TestingVerificationController extends Controller
     public function store(Request $request)
     {
         $data = $request->verifications;
+        $project = Project::findOrFail($request->idProject);
 
         $verification = null;
 
@@ -96,6 +97,16 @@ class TestingVerificationController extends Controller
 
         if($request->complete) {
             $verification->is_complete = $request->decision == 'ya' ? true : false;
+
+            // === WORKFLOW === //
+            // if($project->marking == 'amdal.form-ka-adm-review') {
+            //     if($request->decison == 'ya') {
+            //         $project->workflow_apply('approve-amdal-form-ka');
+            //     } else {
+            //         $project->workflow_apply('return-amdal-form-ka-review');
+            //     }
+            // }
+
         } else {
             $verification->is_complete = $data['is_complete'];
         }
@@ -442,13 +453,37 @@ class TestingVerificationController extends Controller
             }
         }
 
-        // TUK PUSAT    
+        // === TUK === // 
+        $tuk = null;
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
+        $authority = '';
+        $authority_big = '';
+        $tuk_address = '';
+        $tuk_telp = '';
+        $tuk_logo = null;
 
-        $tuk_pusat = FeasibilityTestTeam::where('authority', 'Pusat')->first();
-        if($tuk_pusat) {
-            $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk_pusat->id],['position', 'Ketua']])->first();
+        if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
+            $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
+            $authority_big = 'PUSAT';
+        } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
+            $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
+            if($tuk) {
+                $authority = ucwords(strtolower('PROVINSI' . strtoupper($tuk->provinceAuthority->name)));
+                $authority_big = 'PROVINSI' . strtoupper($tuk->provinceAuthority->name);
+            }
+        } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
+            $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
+            if($tuk) {
+                $authority = ucwords(strtolower(strtoupper($tuk->districtAuthority->name)));
+                $authority_big = strtoupper($tuk->districtAuthority->name);
+            }
+        }
+        
+        if($tuk) {
+            $tuk_address = $tuk->address;
+            $tuk_telp = $tuk->phone;
+            $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Ketua']])->first();
             if($ketua) {
                 if($ketua->expertBank) {
                     $ketua_tuk_name = $ketua->expertBank->name;
@@ -457,9 +492,21 @@ class TestingVerificationController extends Controller
                     $ketua_tuk_nip = $ketua_tuk_name->lukMember->nip ?? '';
                 }
             }
+            $tuk_logo = $tuk->logo;
         }
 
-        $templateProcessor = new TemplateProcessor('template_berkas_adm_no.docx');
+        if($authority_big == 'PUSAT') {
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_no.docx');
+        } else {
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_no_tuk.docx');
+            $templateProcessor->setValue('authority', $authority);
+            if($tuk_logo) {
+                $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
+            } else {
+                $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
+            }
+        }
+
         $templateProcessor->setValue('docs_date', $docs_date);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
@@ -468,6 +515,9 @@ class TestingVerificationController extends Controller
         $templateProcessor->setValue('ketua_tuk_name', $ketua_tuk_name);
         $templateProcessor->setValue('ketua_tuk_nip', $ketua_tuk_nip);
         $templateProcessor->setValue('document_type', 'kerangka acuan');
+        $templateProcessor->setValue('authority_big', $authority_big);
+        $templateProcessor->setValue('tuk_address', $tuk_address);
+        $templateProcessor->setValue('tuk_telp', $tuk_telp);
 
         $notesTable = new Table();
         $notesTable->addRow();

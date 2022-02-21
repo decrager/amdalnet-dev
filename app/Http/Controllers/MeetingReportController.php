@@ -134,8 +134,8 @@ class MeetingReportController extends Controller
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
             }
 
-            // === ADD WORKFLOW === //
-            // if($project->marking == 'draft-amdal-form-ka-ba') {
+            // === WORKFLOW === //
+            // if($project->marking == 'amdal.form-ka-ba-drafting') {
             //     $project->workflow_apply('sign-amdal-form-ka-ba');
             //     $project->save();
             // }
@@ -180,7 +180,6 @@ class MeetingReportController extends Controller
         $report->person_responsible = $data['person_responsible'];
         $report->location = $data['location'];
         $report->position = $data['position'];
-        $report->id_feasibility_test_team = $data['id_feasibility_test_team'];
         $report->project_name = $data['project_name'];
         $report->id_initiator = $data['id_initiator'];
         $report->notes = $data['notes'];
@@ -209,9 +208,9 @@ class MeetingReportController extends Controller
 
         }
 
-        // === ADD WORKFLOW === //
+        // === WORKFLOW === //
         // $project = Project::findOrFail($request->idProject);
-        // if($project->marking == 'aprrove-amdal-form-ka') {
+        // if($project->marking == 'amdal.form-ka-approved') {
         //     $project->workflow_apply('draft-amdal-form-ka-ba');
         //     $project->save();
         // }
@@ -336,7 +335,6 @@ class MeetingReportController extends Controller
             'location' => $meeting->location,
             'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
-            'id_feasibility_test_team' => $meeting->id_feasibility_test_team,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
             'notes' => null,
@@ -412,7 +410,6 @@ class MeetingReportController extends Controller
             'location' => $report->location,
             'position' => $report->position,
             'expert_bank_team_id' => $report->expert_bank_team_id,
-            'id_feasibility_test_team' => $report->id_feasibility_test_team,
             'project_name' => $report->project->project_title,
             'invitations' => $invitations,
             'notes' => $report->notes,
@@ -452,47 +449,40 @@ class MeetingReportController extends Controller
         $authority_big = '';
         $tuk_address = '';
         $ketua_tuk_name = '';
-        $ketua_tuk_nip = '';
         $ketua_tuk_position = '';
         $tuk_telp = '';
         $tuk_logo = null;
 
-
-        if($meeting->id_feasibility_test_team) {
-            $team = FeasibilityTestTeam::find($meeting->id_feasibility_test_team);
-            if($team) {
-                $authority_real = $team->authority;
-                $tuk_address = $team->address;
-                $tuk_telp = $team->phone;
-                $tuk_logo = $team->logo;
-                if($team->authority == 'Pusat') {
-                    $authority_big = 'PUSAT';
-                    $authority = 'Pusat';
-                } else if($team->authority == 'Provinsi') {
-                    $authority_big = 'PROVINSI' . strtoupper($team->provinceAuthority->name);
-                    $authority = 'Provinsi ' . ucwords(strtolower($team->provinceAuthority->name)); 
-                } else if($team->authority == 'Kabupaten/Kota') {
-                    $authority_big = strtoupper($team->districtAuthority->name);
-                    $authority = ucwords(strtolower($team->districtAuthority->name));
-                }
-
-                $tuk_address = $team->address;
-
-                // KETUA TUK
-                $ketua_tuk = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $team->id],['position', 'Ketua']])->first();
-                if($ketua_tuk) {
-                    if($ketua_tuk->expertBank) {
-                        $ketua_tuk_name = $ketua_tuk->expertBank->name;
-                    } else if($ketua_tuk->lukMember) {
-                        $ketua_tuk_name = $ketua_tuk->lukMember->name;
-                        $ketua_tuk_nip = $ketua_tuk->lukMember->nip ? 'NIP. ' . $ketua_tuk->lukMember->nip : '';
-                        $ketua_tuk_position = $ketua_tuk->lukMember->position;
-                    }
-                }
-
-
+        if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
+            $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
+            $authority = 'Pusat';
+            $authority_big = 'PUSAT';
+        } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
+            $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
+            if($tuk) {
+                $authority = ucwords(strtolower('PROVINSI' . strtoupper($tuk->provinceAuthority->name)));
+                $authority_big = 'PROVINSI' . strtoupper($tuk->provinceAuthority->name);
             }
-
+        } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
+            $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
+            if($tuk) {
+                $authority = ucwords(strtolower(strtoupper($tuk->districtAuthority->name)));
+                $authority_big = strtoupper($tuk->districtAuthority->name);
+            }
+        }
+        
+        if($tuk) {
+            $tuk_address = $tuk->address;
+            $authority_real = $tuk->authority;
+            $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Ketua']])->first();
+            if($ketua) {
+                if($ketua->expertBank) {
+                    $ketua_tuk_name = $ketua->expertBank->name;
+                } else if($ketua->lukMember) {
+                    $ketua_tuk_name = $ketua->lukMember->name;
+                }
+            }
+            $tuk_logo = $tuk->logo;
         }
         
         $member = [];

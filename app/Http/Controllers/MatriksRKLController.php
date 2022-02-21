@@ -266,29 +266,36 @@ class MatriksRKLController extends Controller
         $envManage = null;
         $ids = [];
         
-            for($i = 0; $i < count($manage); $i++) {
-                if($request->type == 'new') {
-                    $envManage = new EnvManagePlan();
-                    $envManage->id_impact_identifications = $manage[$i]['id'];
-                } else {
-                    $envManage = EnvManagePlan::where('id_impact_identifications', $manage[$i]['id'])->first();
-                    $ids[] = $manage[$i]['id'];
-                }
-
-                $envManage->impact_source = $manage[$i]['impact_source'];
-                $envManage->success_indicator = $manage[$i]['success_indicator'];
-                $envManage->form = $manage[$i]['form'];
-                $envManage->location = $manage[$i]['location'];
-                $envManage->period = $manage[$i]['period_number'] . '-' . $manage[$i]['period_description'];
-                $envManage->institution = $manage[$i]['institution'];
-                $envManage->save();
+        for($i = 0; $i < count($manage); $i++) {
+            if($request->type == 'new') {
+                $envManage = new EnvManagePlan();
+                $envManage->id_impact_identifications = $manage[$i]['id'];
+            } else {
+                $envManage = EnvManagePlan::where('id_impact_identifications', $manage[$i]['id'])->first();
+                $ids[] = $manage[$i]['id'];
             }
 
-            if($request->type != 'new') {
-                $lastTime = EnvManagePlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
-                                ->updated_at->locale('id')->diffForHumans();
-                return 'Diperbarui ' . $lastTime;
-            }
+            $envManage->impact_source = $manage[$i]['impact_source'];
+            $envManage->success_indicator = $manage[$i]['success_indicator'];
+            $envManage->form = $manage[$i]['form'];
+            $envManage->location = $manage[$i]['location'];
+            $envManage->period = $manage[$i]['period_number'] . '-' . $manage[$i]['period_description'];
+            $envManage->institution = $manage[$i]['institution'];
+            $envManage->save();
+        }
+
+        // === WORKFLOW === //
+        // $project = Project::findOrFail($request->idProject);
+        // if($project->marking == 'amdal.andal-drafting') {
+        //     $project->workflow_apply('draft-amdal-rklrpl');
+        //     $project->save();
+        // }
+
+        if($request->type != 'new') {
+            $lastTime = EnvManagePlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
+                            ->updated_at->locale('id')->diffForHumans();
+            return 'Diperbarui ' . $lastTime;
+        }
 
         return 'Diperbarui ' . EnvManagePlan::orderBy('id', 'DESC')->first()->updated_at->locale('id')->diffForHumans();
     }
