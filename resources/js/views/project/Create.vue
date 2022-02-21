@@ -67,7 +67,7 @@
 
             <div v-show="fileMap" id="mapView" style="height: 600px;" />
             <div style="margin-top: 10px">
-              <span v-if="full_address !== ''" style="font-style: italic; color: red">Provinsi: {{ full_address }}</span>
+              <span v-if="full_address !== ''" style="font-style: italic; color: red">Alamat : {{ full_address }} </span>
             </div>
 
             <!-- Alamat -->
@@ -1176,19 +1176,7 @@ export default {
           fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
             .then(response => response.json())
             .then(data => {
-              if (data.osm_type === 'way') {
-                fetch(`https://www.openstreetmap.org/api/0.6/way/${data.osm_id}.json`)
-                  .then(response => response.json())
-                  .then(state => {
-                    this.full_address = state.elements[0].tags.addr;
-                  });
-              } else if (data.osm_type === 'relation') {
-                fetch(`https://www.openstreetmap.org/api/0.6/relation/${data.osm_id}.json`)
-                  .then(response => response.json())
-                  .then(state => {
-                    this.full_address = state.elements[0].tags.name;
-                  });
-              }
+              this.full_address = data.display_name;
             });
 
           if (datas.features[0].geometry.type !== 'Polygon') {
