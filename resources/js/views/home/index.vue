@@ -80,7 +80,12 @@ export default {
   mounted() {},
   methods: {
     handleSetMenu(e) {
-      this.setAllState(e);
+      // going back to home
+      if (e === 'LOGO') {
+        this.toggleMenu = true;
+      } else {
+        this.setAllState(e);
+      }
     },
     setAllState(e){
       const materi = (e === 'MATERI') ? 'true' : 'false';
@@ -101,7 +106,6 @@ export default {
     },
     isFirstVisit() {
       const recurring = Cookies.get('recurring');
-
       if (recurring) {
         return false;
       }
