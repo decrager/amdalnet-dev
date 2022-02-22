@@ -137,12 +137,14 @@ class ProjectController extends Controller
                         $id_district = $team_member->feasibilityTestTeam->id_district_name;
                         
                         if($authority == 'Pusat') {
-                            $query->where('authority', 'Pusat')->orWhere('authority', null);
+                            $query->where('authority', 'Pusat');
                         } else if($authority == 'Provinsi') {
                             $query->where([['authority', 'Provinsi'],['auth_province', $id_province]]);
                         } else if($authority == 'Kabupaten/Kota') {
                             $query->where([['authority', 'Kabupaten'],['auth_district', $id_district]]);
                         }
+                    } else {
+                        $query->where('projects.id', 0);
                     }
                 }
             }
