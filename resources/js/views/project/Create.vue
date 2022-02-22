@@ -67,7 +67,7 @@
 
             <div v-show="fileMap" id="mapView" style="height: 600px;" />
             <div style="margin-top: 10px">
-              <span v-if="full_address !== ''" style="font-style: italic; color: red">Provinsi: {{ full_address }}</span>
+              <span v-if="full_address !== ''" style="font-style: italic; color: red">Alamat : {{ full_address }} </span>
             </div>
 
             <!-- Alamat -->
@@ -569,6 +569,7 @@ export default {
       callback();
     };
     return {
+      mapItemId: '',
       full_address: '',
       mismatchMapData: false,
       token: '',
@@ -832,7 +833,6 @@ export default {
         'Content-Encoding': 'gzip',
       },
       body: data,
-      responseType: 'json',
     };
 
     esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
@@ -1176,19 +1176,7 @@ export default {
           fetch(`https://nominatim.openstreetmap.org/reverse?lat=${getCoordinates[1]}&lon=${getCoordinates[0]}&format=json`)
             .then(response => response.json())
             .then(data => {
-              if (data.osm_type === 'way') {
-                fetch(`https://www.openstreetmap.org/api/0.6/way/${data.osm_id}.json`)
-                  .then(response => response.json())
-                  .then(state => {
-                    this.full_address = state.elements[0].tags.addr;
-                  });
-              } else if (data.osm_type === 'relation') {
-                fetch(`https://www.openstreetmap.org/api/0.6/relation/${data.osm_id}.json`)
-                  .then(response => response.json())
-                  .then(state => {
-                    this.full_address = state.elements[0].tags.name;
-                  });
-              }
+              this.full_address = data.display_name;
             });
 
           if (datas.features[0].geometry.type !== 'Polygon') {
@@ -1232,6 +1220,7 @@ export default {
             },
           };
           const url = URL.createObjectURL(blob);
+          console.log(url);
           const geojsonLayer = new GeoJSONLayer({
             url: url,
             visible: true,
@@ -1391,23 +1380,53 @@ export default {
       myHeaders.append('Authorization', 'Bearer ' + this.token);
 
       var formdatas = new FormData();
-      formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
-      formdatas.append('type', 'Feature Service');
-      formdatas.append('title', this.currentProject.project_title + '_Peta Tapak Proyek');
       formdatas.append('file', this.currentProject.fileMap);
       formdatas.append('filePdf', this.currentProject.filePdf);
-      formdatas.append('fileName', this.currentProject.project_title + '_Peta Tapak Proyek');
+
+      var fomDataArcgis = new FormData();
+      fomDataArcgis.append('type', 'Shapefile');
+      fomDataArcgis.append('title', this.currentProject.project_title + '_Peta Tapak Proyek');
+      fomDataArcgis.append('file', this.currentProject.fileMap);
+      fomDataArcgis.append('fileName', this.currentProject.project_title + '_Peta Tapak Proyek');
+      fomDataArcgis.append('tags', 'Amdalnet Web');
+      fomDataArcgis.append('f', 'json');
 
       var requestOptions = {
         method: 'POST',
         headers: myHeaders,
-        body: formdatas,
-        responseType: 'json',
-        multipart: true,
+        body: fomDataArcgis,
+        multipart: false,
       };
 
       esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
-        .then(response => response.data)
+        .then(response => {
+          if (response.data.success === true) {
+            this.mapItemId = response.data.id;
+
+            var formDataPublish = new FormData();
+            formDataPublish.append('f', 'json');
+            formDataPublish.append('itemId', this.mapItemId);
+            formDataPublish.append('filetype', 'shapefile');
+            formDataPublish.append('publishParameters', `{"hasStaticData":true,"name":${this.currentProject.project_title},"maxRecordCount":2000,"layerInfo":{"capabilities":"Query"}}`);
+
+            var requestOptionsPublish = {
+              method: 'POST',
+              headers: myHeaders,
+              body: formDataPublish,
+            };
+
+            esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/publish', requestOptionsPublish)
+              .then(() => {
+                this.$notify({
+                  type: 'success',
+                  title: 'Berhasil!',
+                  message: 'Berhasil Publish Peta!!',
+                  duration: 2000,
+                });
+              })
+              .catch(error => console.log('error', error));
+          }
+        })
         .catch(error => console.log('error', error));
     },
     async changeProvince(row) {

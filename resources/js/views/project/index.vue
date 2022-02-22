@@ -118,13 +118,13 @@
                   Lihat SPT
                 </el-button>
                 <el-button
-                  v-if="isLpjp && !scope.row.team_id"
+                  v-if="isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-user"
                   @click="handleLpjpTeam(scope.row)"
                 >
-                  Tambah Tim LPJP
+                  Tim LPJP
                 </el-button>
                 <el-button
                   v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"

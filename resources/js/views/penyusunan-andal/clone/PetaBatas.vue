@@ -1,99 +1,110 @@
 <template>
-  <el-form label-position="top" label-width="100px">
-    <!-- ekologis -->
-    <el-form-item label="Peta Batas Ekologis" :required="required" style="display: none;">
-      <el-col :span="11" style="margin-right:1em;">
+  <div>
+    <el-form label-position="top" label-width="100px">
+      <!-- ekologis -->
+      <el-form-item label="Peta Batas Ekologis" :required="required" style="display: none;">
+        <el-col :span="11" style="margin-right:1em;">
 
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPES)"><strong>{{ petaEkologisSHP }}<i class="el-icon-circle-check" /></strong></span>
-              <!-- &nbsp;<i class="el-icon-delete"></i>-->
-            </div>
-          </legend>
-          <form @submit.prevent="handleSubmit">
-            <input ref="peSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
+          <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+            <legend style="margin:0 2em;">Versi SHP
+              <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPES)"><strong>{{ petaEkologisSHP }}<i class="el-icon-circle-check" /></strong></span>
+                <!-- &nbsp;<i class="el-icon-delete"></i>-->
+              </div>
+            </legend>
+            <form @submit.prevent="handleSubmit">
+              <input ref="peSHP" type="file" class="form-control-file" @change="onChangeFiles(1)">
+              <!-- <button type="submit">Unggah</button> -->
+            </form>
+          </fieldset>
 
+        </el-col>
+        <el-col :span="11" style="margin-right:1em;">
+          <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+            <legend style="margin:0 2em;">Versi PDF
+              <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            </legend>
+            <form @submit.prevent="handleSubmit">
+              <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
+              <!-- <button type="submit">Unggah</button> -->
+            </form>
+          </fieldset>
+        </el-col>
+      </el-form-item>
+
+      <el-form-item label="Peta Batas Sosial" :required="required" style="display:none;">
+        <el-col :span="11" style="margin-right:1em;">
+          <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+            <legend style="margin:0 2em;">Versi SHP
+              <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSS)"><strong>{{ petaSosialSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+            </legend>
+
+            <form @submit.prevent="handleSubmit">
+              <input ref="psSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
+              <!-- <button type="submit">Unggah</button> -->
+            </form>
+          </fieldset>
+
+        </el-col>
+
+        <el-col :span="11" style="margin-right:1em;">
+          <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+            <legend style="margin:0 2em;">Versi PDF
+              <div v-if="petaSosialPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSP)"><strong>{{ petaSosialPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            </legend>
+
+            <form @submit.prevent="handleSubmit">
+              <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
+              <!-- <button type="submit">Unggah</button> -->
+            </form>
+          </fieldset>
+        </el-col>
+      </el-form-item>
+
+      <el-form-item label="Peta Batas Wilayah Studi" :required="required" style="display:none;">
+        <el-col :span="11" style="margin-right:1em;">
+          <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+            <legend style="margin:0 2em;">Versi SHP
+              <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuS)"><strong>{{ petaStudiSHP }}<i class="el-icon-circle-check" /></strong></span></div>
+            </legend>
+
+            <form @submit.prevent="handleSubmit">
+              <input ref="pwSHP" type="file" class="form-control-file" @change="onChangeFiles(5)">
+              <!-- <button type="submit">Unggah</button> -->
+            </form>
+          </fieldset>
+        </el-col>
+
+        <el-col :span="11" style="margin-right:1em;">
+          <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
+            <legend style="margin:0 2em;">Versi PDF
+              <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuP)"><strong>{{ petaStudiPDF }}<i class="el-icon-circle-check" /></strong></span></div>
+            </legend>
+
+            <form @submit.prevent="handleSubmit">
+              <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(6)">
+              <!-- <button type="submit">Unggah</button> -->
+            </form>
+          </fieldset>
+        </el-col>
+
+      </el-form-item>
+      <div id="mapView" class="map-wrapper" />
+
+      <el-row style="text-align:right; display:none;">
+        <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
+      </el-row>
+
+    </el-form>
+
+    <el-row :gutter="32">
+      <el-col :sm="24" :md="24">
+        <Comment
+          commenttype="peta-batas-andal"
+          :kolom="kolom"
+        />
       </el-col>
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
-          </legend>
-          <form @submit.prevent="handleSubmit">
-            <input ref="pePDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(2)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-    </el-form-item>
-
-    <el-form-item label="Peta Batas Sosial" :required="required" style="display:none;">
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSS)"><strong>{{ petaSosialSHP }}<i class="el-icon-circle-check" /></strong></span></div>
-          </legend>
-
-          <form @submit.prevent="handleSubmit">
-            <input ref="psSHP" type="file" class="form-control-file" @change="onChangeFiles(3)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-
-      </el-col>
-
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaSosialPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSP)"><strong>{{ petaSosialPDF }}<i class="el-icon-circle-check" /></strong></span></div>
-          </legend>
-
-          <form @submit.prevent="handleSubmit">
-            <input ref="psPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(4)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-    </el-form-item>
-
-    <el-form-item label="Peta Batas Wilayah Studi" :required="required" style="display:none;">
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi SHP
-            <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuS)"><strong>{{ petaStudiSHP }}<i class="el-icon-circle-check" /></strong></span></div>
-          </legend>
-
-          <form @submit.prevent="handleSubmit">
-            <input ref="pwSHP" type="file" class="form-control-file" @change="onChangeFiles(5)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-
-      <el-col :span="11" style="margin-right:1em;">
-        <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-          <legend style="margin:0 2em;">Versi PDF
-            <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuP)"><strong>{{ petaStudiPDF }}<i class="el-icon-circle-check" /></strong></span></div>
-          </legend>
-
-          <form @submit.prevent="handleSubmit">
-            <input ref="pwPDF" type="file" class="form-control-file" accept="application/pdf" @change="onChangeFiles(6)">
-            <!-- <button type="submit">Unggah</button> -->
-          </form>
-        </fieldset>
-      </el-col>
-
-    </el-form-item>
-    <div id="mapView" class="map-wrapper" />
-
-    <el-row style="text-align:right; display:none;">
-      <el-button size="medium" type="primary" @click="handleSubmit">Unggah Peta</el-button>
     </el-row>
-
-  </el-form>
+  </div>
 
 </template>
 <style scoped>
@@ -104,6 +115,7 @@
  }
 </style>
 <script>
+import Comment from '@/views/amdal/components/Comment.vue';
 import Resource from '@/api/resource';
 import request from '@/utils/request';
 import axios from 'axios';
@@ -122,6 +134,9 @@ const uploadMaps = new Resource('project-map');
 
 export default {
   name: 'UploadPetaBatas',
+  components: {
+    Comment,
+  },
   data() {
     return {
       data: [],
@@ -145,6 +160,20 @@ export default {
       required: true,
       fileMap: [],
       mapShpFile: [],
+      kolom: [
+        {
+          label: 'Peta Batas Ekologis',
+          value: 'Peta Batas Ekologis',
+        },
+        {
+          label: 'Peta Batas Sosial',
+          value: 'Peta Batas Sosial',
+        },
+        {
+          label: 'Peta Batas Wilayah Studi',
+          value: 'Peta Batas Wilayah Studi',
+        },
+      ],
       // isVisible: false,
       // visible: [false, false, false, false, false, false, false],
     };
