@@ -13,6 +13,7 @@ import {
   applyPolyfills,
   defineCustomElements,
 } from '@esri/calcite-components/dist/loader';
+import VueMask from 'v-mask';
 
 applyPolyfills().then(() => {
   defineCustomElements(window);
@@ -27,6 +28,8 @@ Vue.use(ElementUI, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value),
 });
+
+Vue.use(VueMask);
 
 // register global utility filters.
 Object.keys(filters).forEach(key => {
