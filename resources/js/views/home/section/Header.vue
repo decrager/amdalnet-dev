@@ -2,7 +2,14 @@
   <header id="header" class="header">
     <nav class="nav container">
       <a href="#" class="nav__logo" @click="handleSetMenu('LOGO')">
-        <img src="/images/logo-amdal-white.png" alt="">
+        <el-row :gutter="5">
+          <el-col :span="6" class="meaf-logo">
+            <div><img src="/images/meaf_logo.png" alt=""></div>
+          </el-col>
+          <el-col :span="18">
+            <img src="/images/logo-amdal-white.png" alt="">
+          </el-col>
+        </el-row>
       </a>
       <div id="nav-menu" class="nav__menu">
         <ul class="nav__list">
@@ -41,7 +48,7 @@
           </li>
           <li class="nav__item" style="margin-top:2.2rem">
             <a href="#" class="nav__link" :class="{'active-link':(activeMenu === 'Daftar')}" @click="handleSetMenu('STATIC')">
-              Data & Informasi<br>Persetujuan<br>Lingkungan
+              Data &amp; Informasi<br>Persetujuan<br>Lingkungan
               <template v-if="isActiveDaftar">
                 <i class="el-icon-arrow-up" />
               </template>
@@ -179,4 +186,13 @@ export default {
   .nav__item > ul li:hover ul{display: block;}
   .nav__item > ul li:hover i{transform: rotate(-90deg);}
   .nav__item > ul li i {color: #133815;font-weight: bold;display: inline-block;float: right;}
+
+@media screen and (min-width: 451px) {
+  .nav__logo .meaf-logo div{
+    text-align: left !important;
+    padding-right: 1.5em;
+    margin: 1.1em  auto 0.8em;
+    border-right: 3px solid #092e0b;
+  }
+}
 </style>

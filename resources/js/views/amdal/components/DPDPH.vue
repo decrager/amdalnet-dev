@@ -28,6 +28,7 @@
       :id-project="id_project"
       :change-types="changeTypes"
       :stages="stages"
+      :pie-params="pieParams"
       :total-changes="totalChanges"
       :loading="isLoading"
       :mode="mode"
