@@ -352,6 +352,11 @@ Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
 // dashboard
 Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
 Route::get('latest-activities', [DashboardController::class, 'latestActivities']);
+Route::group(['prefix' => 'dashboard'], function($r) {
+    $r->get('permit-authority', [DashboardController::class, 'permitAuthority']);
+    $r->get('status', [DashboardController::class, 'status']);
+    $r->get('initiator', [DashboardController::class, 'initiator']);
+});
 
 Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);
 Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);

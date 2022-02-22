@@ -3,7 +3,7 @@
 
 /*=============== VARIABLES CSS ===============*/
 :root {
-    --header-height: 3rem;
+    --header-height: 3.5rem;
 
     /*========== Colors ==========*/
     /* Change favorite color to match images */
@@ -235,7 +235,7 @@ input {
 
 .nav__logo {
     font-weight: var(--font-semi-bold);
-    width: 200px;
+    width: 300px;
 }
 
 .nav__toggle {
@@ -1009,7 +1009,7 @@ input {
 
 @media screen and (min-width: 768px) {
     body {
-        margin: 0;        
+        margin: 0;
     }
 
     .nav {
@@ -1317,7 +1317,7 @@ input {
     }
 
     .nav__logo {
-        width: 100px;
+        width: 150px;
     }
 
     .home__data {

@@ -27,9 +27,9 @@
           <div v-else-if="activity.value.type_formulator_team">
             <p>Tim Penyusun ditetapkan oleh <i>{{ activity.username }}</i></p>
           </div>
-          <div v-else>
+          <!-- <div v-else>
             <p>{{ activity.content }}, oleh <i>{{ activity.username }}</i></p>
-          </div>
+          </div> -->
         </el-timeline-item>
       </el-timeline>
     </template>
@@ -73,14 +73,17 @@ export default {
       const res = [];
 
       data.map((e) => {
-        const processed = {
-          datetime: e.datetime,
-          username: e.user_name,
-          event: e.event,
-          content: e.new_values,
-          value: JSON.parse(e.new_values),
-        };
-        res.push(processed);
+        const val = JSON.parse(e.new_values);
+        if ((e.event === 'created') || ((e.event === 'updated') && (val.marking))){
+          const processed = {
+            datetime: e.datetime,
+            username: e.user_name,
+            event: e.event,
+            content: e.new_values,
+            value: val,
+          };
+          res.push(processed);
+        }
       });
       return res;
     },
