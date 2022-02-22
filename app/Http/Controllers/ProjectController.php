@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Business;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
@@ -121,6 +122,29 @@ class ProjectController extends Controller
                     ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
                 }
                 return $query;
+            }
+        )
+        ->where(
+            function($query) use($request) {
+                if($request->tuk) {
+                    $email = User::findOrFail($request->id_user)->email;
+                    $team_member = FeasibilityTestTeamMember::whereHas('lukMember', function($q) use($email) {
+                        $q->where('email', $email);
+                    })->first();
+                    if($team_member) {
+                        $authority = $team_member->feasibilityTestTeam->authority;
+                        $id_province = $team_member->feasibilityTestTeam->id_province_name;
+                        $id_district = $team_member->feasibilityTestTeam->id_district_name;
+                        
+                        if($authority == 'Pusat') {
+                            $query->where('authority', 'Pusat')->orWhere('authority', null);
+                        } else if($authority == 'Provinsi') {
+                            $query->where([['authority', 'Provinsi'],['auth_province', $id_province]]);
+                        } else if($authority == 'Kabupaten/Kota') {
+                            $query->where([['authority', 'Kabupaten'],['auth_district', $id_district]]);
+                        }
+                    }
+                }
             }
         )
         ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
