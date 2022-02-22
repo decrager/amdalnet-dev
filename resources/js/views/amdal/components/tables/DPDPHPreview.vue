@@ -11,7 +11,7 @@
     <el-dialog
       :visible.sync="preview"
       width="98%"
-      top="2em"
+      top="1em"
       @close="preview = false"
     >
       <div slot="title" style="font-weight: bold;">
@@ -148,7 +148,7 @@ export default {
   },
   computed: {
     height(){
-      return window.innerHeight * 0.65;
+      return window.innerHeight - 250;
     },
   },
   watch: {
@@ -251,17 +251,18 @@ div.dpdph-preview-table{
       th, td {
         word-break: normal !important;
       }
-
       th {
-        padding: 1em auto;
+        padding: 1.2em 0.5em;
         background: #216221;
+        font-weight: 500 !important;
         position: sticky;
         top: 0;
         text-align: center;
         color: white;
       }
       td.title p {
-        font-size: 1.1em;
+        font-size: 1.2em;
+        letter-spacing: 0.05em;
       }
 
     }
