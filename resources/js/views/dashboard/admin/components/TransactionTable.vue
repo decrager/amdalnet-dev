@@ -1,32 +1,39 @@
 <template>
-  <el-table
-    :data="list"
-    :stripe="true"
-    style="width: 100%"
-    class="initiator-list"
-  >
-    <el-table-column
-      type="index"
-      width="50"
-    />
-    <el-table-column
-      prop="name"
-      label="Nama"
-    />
-    <el-table-column
-      prop="submission_date"
-      label="Tanggal Pengajuan"
-      width="180"
-    />
-    <el-table-column
-      prop="end_date"
-      label="Batas Pengajuan"
-    />
-    <el-table-column
-      prop="status"
-      label="Status"
-    />
-  </el-table>
+  <div>
+    <el-table
+      v-loading="loading"
+      :data="list"
+      :stripe="true"
+      style="width: 100%"
+      class="initiator-list"
+    >
+      <el-table-column width="50">
+        <template slot-scope="scope">
+          {{ scope.$index + 1 + page * limit - limit }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Nama">
+        <template slot-scope="scope">
+          {{ scope.row.initiator !== null ? scope.row.initiator.name : '' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Tanggal Pengajuan">
+        <template slot-scope="scope">
+          {{ scope.row.filling_date }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Batas Pengajuan">
+        <template slot-scope="scope">
+          {{ scope.row.submission_deadline }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Status">
+        <template slot-scope="scope">
+          {{ checkStatus(scope.row.feasibility_test) }}
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
 <script>
@@ -46,26 +53,28 @@ export default {
       return str;
     },
   },
-  data() {
-    return {
-      list: [
-        { name: 'PT Rejeki Berkah Alam', submission_date: '10 Oktober 2020', end_date: '10 November 2020', status: 'Disetujui' },
-        { name: 'PT Sumber Tani', submission_date: '18 Juli 2021', end_date: '18 Agustus 2021', status: 'Proses Review' },
-        { name: 'CV Mandiri Raya', submission_date: '10 Februari 2020', end_date: '10 Maret 2020', status: 'Disetujui' },
-        { name: 'PT Nusa Mandiri', submission_date: '21 April 2021', end_date: '21 Mei 2021', status: 'Ditolak' },
-        { name: 'PT Hijau Nusantara', submission_date: '19 Oktober 2020', end_date: '19 November 2020', status: 'Proses Review' },
-      ],
-      loading: true,
-    };
-  },
-  created() {
-    this.fetchData();
+  props: {
+    list: {
+      type: Array,
+      default: () => [],
+    },
+    loading: Boolean,
+    page: {
+      type: Number,
+      default: () => 1,
+    },
+    limit: {
+      type: Number,
+      default: () => 5,
+    },
   },
   methods: {
-    async fetchData() {
-      // const { data } = await fetchList();
-      // this.list = data.items.slice(0, 8);
-      this.loading = false;
+    checkStatus(data) {
+      if (data !== null) {
+        return 'Disetujui';
+      }
+
+      return 'Proses Review';
     },
   },
 };
