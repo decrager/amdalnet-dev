@@ -887,7 +887,7 @@ export default {
         tempFile = address[i].prov;
       }
 
-      this.currentProject.authority = 'Province';
+      this.currentProject.authority = 'Provinsi';
       const authProv = await provinceResource.list({ provName: tempFile });
       this.currentProject.auth_province = authProv.id;
 
@@ -1036,7 +1036,6 @@ export default {
       this.currentProject.risk_level = choosenProject.result_risk;
       this.currentProject.result_risk = choosenProject.result_risk;
       this.currentProject.sector = choosenProject.sector;
-      this.currentProject.authority = 'Pusat';
       this.currentProject.plan_type = choosenProject.name;
       this.currentProject.scale = choosenProject.scale;
       this.currentProject.scale_unit = choosenProject.scale_unit;

@@ -100,27 +100,7 @@
           <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
             <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
-            <el-col :span="12">Pusat</el-col></el-row>
-          <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
-            <el-col :span="12">
-              <el-form
-                ref="project"
-                :model="project"
-                label-position="top"
-              >
-                <el-form-item prop="id_lpjp">
-                  <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
-                    <el-option
-                      v-for="item in getLpjps"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-form>
-            </el-col>
-          </el-row>
+            <el-col :span="12">{{ project.authority }}</el-col></el-row>
         </el-col>
         <el-col :span="12" />
       </el-row>
@@ -153,7 +133,7 @@ import FormulatorTable from './components/formulatorTable.vue';
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const provinceResource = new Resource('provinces');
-const formulatorTeamResource = new Resource('formulator-teams');
+// const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
 const initiatorByEmailResource = new Resource('initiatorsByEmail');
 const initiatorResource = new Resource('initiators');
@@ -200,7 +180,7 @@ export default {
       doc_req: 'SPPL',
       risk_level: 'Rendah',
       teamOptions: [{ value: 'mandiri', label: 'Penyusun Perseorangan' }, { value: 'lpjp', label: 'Lembaga Penyedia Jasa Penyusun' }],
-      teamToChooseOptions: null,
+      // teamToChooseOptions: null,
       kabkot: null,
       list: [],
       listFormulatorTeam: [],
@@ -243,7 +223,7 @@ export default {
     this.fullLoading = true;
     // for step
     this.$store.dispatch('getStep', 1);
-    await this.getTeamOptions();
+    // await this.getTeamOptions();
     await this.getInitiatorData();
     await this.updateList();
     this.setDataTables();
@@ -494,12 +474,12 @@ export default {
         this.project.initiatorData = await initiatorByEmailResource.list({ email: data.email });
       }
     },
-    async getTeamOptions() {
-      const { data } = await formulatorTeamResource.list({});
-      this.teamToChooseOptions = data.map((i) => {
-        return { value: i.id, label: i.name };
-      });
-    },
+    // async getTeamOptions() {
+    //   const { data } = await formulatorTeamResource.list({});
+    //   this.teamToChooseOptions = data.map((i) => {
+    //     return { value: i.id, label: i.name };
+    //   });
+    // },
     async getKabKotName(id) {
       const data = await districtResource.get(id);
       this.kabkot = data.name;
