@@ -100,27 +100,7 @@
           <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
             <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
-            <el-col :span="12">Pusat</el-col></el-row>
-          <el-row v-if="project.type_formulator_team === 'lpjp'" style="padding-bottom: 16px"><el-col :span="12">Pilih LPJP</el-col>
-            <el-col :span="12">
-              <el-form
-                ref="project"
-                :model="project"
-                label-position="top"
-              >
-                <el-form-item prop="id_lpjp">
-                  <el-select v-model="project.id_lpjp" filterable placeholder="Pilih" size="mini">
-                    <el-option
-                      v-for="item in getLpjps"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-form>
-            </el-col>
-          </el-row>
+            <el-col :span="12">{{ project.authority }}</el-col></el-row>
         </el-col>
         <el-col :span="12" />
       </el-row>
