@@ -37,6 +37,7 @@ use App\Http\Controllers\GovernmentInstitutionController;
 use App\Http\Controllers\MediumLowUklUplTemplateController;
 use App\Http\Controllers\EnvironmentalManagemenSopController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\VideoTutorialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -384,6 +385,12 @@ Route::get('env-management-sop', [EnvironmentalManagemenSopController::class, 'i
 Route::post('env-management-sop', [EnvironmentalManagemenSopController::class, 'store']);
 Route::post('env-management-sop/update', [EnvironmentalManagemenSopController::class, 'update']);
 Route::get('env-management-sop/delete/{id}', [EnvironmentalManagemenSopController::class, 'destroy']);
+
+Route::get('tutorial-video', [VideoTutorialController::class, 'index']);
+Route::post('tutorial-video', [VideoTutorialController::class, 'store']);
+Route::post('tutorial-video/update', [VideoTutorialController::class, 'update']);
+Route::get('tutorial-video/delete/{id}', [VideoTutorialController::class, 'destroy']);
+
 
 // Master Government Insitution
 Route::apiResource('government-institution', 'GovernmentInstitutionController');
