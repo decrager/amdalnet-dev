@@ -17,6 +17,7 @@
                         :key="item.value"
                         :label="item.label"
                         :value="item.value"
+                        :selected="currentParam.tutorial_type === item.value"
                       />
                     </el-select>
                   </el-form-item>
@@ -59,6 +60,7 @@ export default {
   data() {
     return {
       file: '',
+      currentParam: {},
       form: {
         tutorial_type: [
           {
@@ -78,7 +80,11 @@ export default {
       value: '',
     };
   },
-  mounted() {},
+  created() {
+    if (this.$route.params.appParams) {
+      this.currentParam = this.$route.params.appParams;
+    }
+  },
   methods: {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
@@ -88,9 +94,11 @@ export default {
       const formData = new FormData();
       formData.append('url_video', this.file);
       formData.append('tutorial_type', this.value);
+      formData.append('old_link', this.currentParam.link);
+      formData.append('id', this.currentParam.id);
       const headers = { 'Content-Type': 'multipart/form-data' };
       await axios
-        .post('api/tutorial-video', formData, { headers })
+        .post('api/tutorial-video/update', formData, { headers })
         .then(() => {
           this.$message({
             message: 'Tutorial Berhasil Disimpan',
