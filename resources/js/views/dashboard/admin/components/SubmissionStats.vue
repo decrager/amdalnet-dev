@@ -39,6 +39,9 @@ export default {
     return {
       loading: false,
       stats: {},
+      period: null,
+      date_start: null,
+      date_end: null,
     };
   },
   computed: {
@@ -57,7 +60,17 @@ export default {
     getStats() {
       this.loading = true;
       const dataType = this.isExaminerSecretary ? 'tuk' : '';
-      axios.get(`/api/dashboard/status?type=${dataType}&id_user=${this.$store.getters.userId}`)
+      let search = '';
+      if (this.period) {
+        search += `&period=${this.period}`;
+      }
+      if (this.date_start) {
+        search += `&start=${this.date_start}`;
+      }
+      if (this.date_end) {
+        search += `&end=${this.date_end}`;
+      }
+      axios.get(`/api/dashboard/status?type=${dataType}&id_user=${this.$store.getters.userId}${search}`)
         .then(data => {
           this.stats = data.data;
           this.loading = false;
@@ -66,6 +79,14 @@ export default {
           console.log(error);
           this.loading = false;
         });
+    },
+    filterStats(filter) {
+      this.period = filter.periode;
+      if (filter.date_range) {
+        this.date_start = filter.date_range[0];
+        this.date_end = filter.date_range[1];
+      }
+      this.getStats();
     },
   },
 };

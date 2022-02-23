@@ -1,6 +1,8 @@
 <template>
   <el-card class="box-card">
-    <div style="margin: 0 0 2em 0; font-weight:bold;">Daftar Pemrakarsa Usaha/Kegiatan</div>
+    <div style="margin: 0 0 2em 0; font-weight: bold">
+      Daftar Pemrakarsa Usaha/Kegiatan
+    </div>
     <transaction-table
       :list="initiators"
       :loading="loading"
@@ -38,13 +40,13 @@ export default {
         limit: 5,
       },
       total: 0,
+      period: null,
+      date_start: null,
+      date_end: null,
     };
   },
   computed: {
-    ...mapGetters([
-      'roles',
-      'userId',
-    ]),
+    ...mapGetters(['roles', 'userId']),
     isExaminerSecretary() {
       return this.$store.getters.roles.includes('examiner-secretary');
     },
@@ -56,16 +58,42 @@ export default {
     async getInitiators() {
       this.loadingInitiators = true;
       const dataType = this.isExaminerSecretary ? 'tuk' : '';
-      axios.get(`/api/dashboard/initiator?type=${dataType}&id_user=${this.$store.getters.userId}&page=${this.listQuery.page}&limit=${this.listQuery.limit}`)
-        .then(data => {
+      let search = '';
+      if (this.period) {
+        search += `&period=${this.period}`;
+      }
+      if (this.date_start) {
+        search += `&start=${this.date_start}`;
+      }
+      if (this.date_end) {
+        search += `&end=${this.date_end}`;
+      }
+      axios
+        .get(
+          `/api/dashboard/initiator?type=${dataType}&id_user=${this.$store.getters.userId}&page=${this.listQuery.page}&limit=${this.listQuery.limit}${search}`
+        )
+        .then((data) => {
           this.initiators = data.data.data;
           this.total = data.data.total;
           this.loading = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.loading = false;
         });
+    },
+    filterInitiator(filter) {
+      this.period = filter.periode;
+      if (filter.date_range) {
+        this.date_start = filter.date_range[0];
+        this.date_end = filter.date_range[1];
+      }
+      this.listQuery = {
+        page: 1,
+        limit: 5,
+      };
+      this.total = 0;
+      this.getInitiators();
     },
   },
 };
