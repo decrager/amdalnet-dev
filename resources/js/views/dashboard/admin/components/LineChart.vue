@@ -1,5 +1,5 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}" />
+  <div :class="className" :style="{ height: height, width: width }" />
 </template>
 
 <script>
@@ -29,6 +29,10 @@ export default {
       type: Object,
       required: true,
     },
+    xAxis: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -57,7 +61,11 @@ export default {
 
     // Monitor the sidebar changes
     this.sidebarElm = document.getElementsByClassName('sidebar-container')[0];
-    this.sidebarElm && this.sidebarElm.addEventListener('transitionend', this.sidebarResizeHandler);
+    this.sidebarElm &&
+      this.sidebarElm.addEventListener(
+        'transitionend',
+        this.sidebarResizeHandler
+      );
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -67,7 +75,11 @@ export default {
       window.removeEventListener('resize', this.__resizeHandler);
     }
 
-    this.sidebarElm && this.sidebarElm.removeEventListener('transitionend', this.sidebarResizeHandler);
+    this.sidebarElm &&
+      this.sidebarElm.removeEventListener(
+        'transitionend',
+        this.sidebarResizeHandler
+      );
 
     this.chart.dispose();
     this.chart = null;
@@ -79,9 +91,10 @@ export default {
       }
     },
     setOptions({ amdalData, ukluplData, spplData, aARKLRPLData } = {}) {
+      const xAxisData = this.xAxis;
       this.chart.setOption({
         xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: xAxisData,
           boundaryGap: false,
           axisTick: {
             show: false,

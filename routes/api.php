@@ -356,6 +356,7 @@ Route::group(['prefix' => 'dashboard'], function($r) {
     $r->get('permit-authority', [DashboardController::class, 'permitAuthority']);
     $r->get('status', [DashboardController::class, 'status']);
     $r->get('initiator', [DashboardController::class, 'initiator']);
+    $r->get('chart', [DashboardController::class, 'chart']);
 });
 
 Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);

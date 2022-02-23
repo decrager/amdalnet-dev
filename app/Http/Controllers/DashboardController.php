@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Entity\Project;
 use App\Laravue\Models\User;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+
+use function PHPSTORM_META\type;
 
 class DashboardController extends Controller
 {
@@ -71,38 +75,131 @@ class DashboardController extends Controller
         $type = $request->type;
         $id_user = $request->id_user;
 
-        if($type == 'tuk') {
-            $user = User::find($id_user);
-            if($user) {
-                $team = $this->checkTuk($user);
-                if($team) {
-                    if($team->authority == 'Pusat') {
-                        $total = Project::count();
-                        $accepted = Project::whereHas('feasibilityTest')->count();
-                        $on_progress = Project::whereDoesntHave('feasibilityTest')->count();
-                    } else if($team->authority == 'Provinsi') {
-                        // === GET DISTRICT === //
-                        $districts = $this->getDistricts($team->id_province_name);
+        $total = Project::where(function($q) use($request) {
+                    if($request->period && $request->start && $request->end) {
+                        $start = $request->start;
+                        $end = $request->end;
 
-                        $query =  Project::where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
-                                ->orWhere(function($q) use($districts) {
-                                    $q->where('authority', 'district');
-                                    $q->whereIn('auth_district', $districts);
-                                });
+                        if($request->period == 2) {
+                            $start = $start . '-01';
+                            $end = Carbon::createFromFormat('Y-m', $end)->endOfMonth()->format('Y-m-d');
+                        } else if($request->period == 3) {
+                            $start = $start . '-01-01';
+                            $end = $end . '-12-31';
+                        }
 
-                        $total = $query->count();
-                        $accepted = $query->whereHas('feasibilityTest')->count();
-                        $on_progress = $query->whereDoesntHave('feasibilityTest')->count();
-                    } else if($team->authority == 'Kabupaten/Kota') {
-                        $query = Project::where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                        $q->whereBetween('created_at', [date($start), date($end)]);
 
-                        $total = $query->count();
-                        $accepted = $query->whereHas('feasibilityTest')->count();
-                        $on_progress = $query->whereDoesntHave('feasibilityTest')->count();
-                    } 
-                }
-            }
-        }
+                    } else {
+                        $q->whereYear('created_at', date('Y'));
+                        $q->whereMonth('created_at', date('m'));
+                    }
+                })
+                ->where(function($q) use($type, $id_user) {
+                    if($type == 'tuk') {
+                        $user = User::find($id_user);
+                        if($user) {
+                            $team = $this->checkTuk($user);
+                            if($team) {
+                                if($team->authority == 'Provinsi') {
+                                    $districts = $this->getDistricts($team->id_province_name);
+                                    $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
+                                    ->orWhere(function($que) use($districts) {
+                                            $que->where('authority', 'district');
+                                            $que->whereIn('auth_district', $districts);
+                                        });
+                                } else if($team->authority == 'Kabupaten') {
+                                    $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                                }
+                            }
+                        }
+                    }
+                })
+                ->count();
+
+        $accepted = Project::where(function($q) use($request) {
+                        if($request->period && $request->start && $request->end) {
+                            $start = $request->start;
+                            $end = $request->end;
+
+                            if($request->period == 2) {
+                                $start = $start . '-01';
+                                $end = Carbon::createFromFormat('Y-m', $end)->endOfMonth()->format('Y-m-d');
+                            } else if($request->period == 3) {
+                                $start = $start . '-01-01';
+                                $end = $end . '-12-31';
+                            }
+
+                            $q->whereBetween('created_at', [date($start), date($end)]);
+                        } else {
+                            $q->whereYear('created_at', date('Y'));
+                            $q->whereMonth('created_at', date('m'));
+                        }
+                    })
+                    ->where(function($q) use($type, $id_user) {
+                        if($type == 'tuk') {
+                            $user = User::find($id_user);
+                            if($user) {
+                                $team = $this->checkTuk($user);
+                                if($team) {
+                                    if($team->authority == 'Provinsi') {
+                                        $districts = $this->getDistricts($team->id_province_name);
+                                        $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
+                                        ->orWhere(function($que) use($districts) {
+                                                $que->where('authority', 'district');
+                                                $que->whereIn('auth_district', $districts);
+                                            });
+                                    } else if($team->authority == 'Kabupaten') {
+                                        $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                                    }
+                                }
+                            }
+                        }
+                    })
+                    ->whereHas('feasibilityTest')
+                    ->count();
+        
+        $on_progress = Project::where(function($q) use($request) {
+                            if($request->period && $request->start && $request->end) {
+                                $start = $request->start;
+                                $end = $request->end;
+
+                                if($request->period == 2) {
+                                    $start = $start . '-01';
+                                    $end = Carbon::createFromFormat('Y-m', $end)->endOfMonth()->format('Y-m-d');
+                                } else if($request->period == 3) {
+                                    $start = $start . '-01-01';
+                                    $end = $end . '-12-31';
+                                }
+
+                                $q->whereBetween('created_at', [date($start), date($end)]);
+                            } else {
+                                $q->whereYear('created_at', date('Y'));
+                                $q->whereMonth('created_at', date('m'));
+                            }
+                        })
+                        ->where(function($q) use($type, $id_user) {
+                            if($type == 'tuk') {
+                                $user = User::find($id_user);
+                                if($user) {
+                                    $team = $this->checkTuk($user);
+                                    if($team) {
+                                        if($team->authority == 'Provinsi') {
+                                            $districts = $this->getDistricts($team->id_province_name);
+                                            $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
+                                            ->orWhere(function($que) use($districts) {
+                                                    $que->where('authority', 'district');
+                                                    $que->whereIn('auth_district', $districts);
+                                                });
+                                        } else if($team->authority == 'Kabupaten') {
+                                            $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                        ->whereDoesntHave('feasibilityTest')
+                        ->count();
 
         return [
             'total' => $total,
@@ -132,57 +229,50 @@ class DashboardController extends Controller
             'show' => false
         ];
 
-        if($type == 'tuk') {
+        $user = null;
+        $team = null;
+        
+        if($id_user) {
             $user = User::whereKey($id_user)->with('roles')->first();
-            if($user) {
-                $team = $this->checkTuk($user);
-                if($team) {
-                    if($team->authority == 'Pusat') {
-                        $project = Project::where('authority', 'Pusat')->count();
-                        $pusat = [
-                            'total' => $project,
-                            'show' => true
-                        ];
+            $team = $this->checkTuk($user);
+        }
 
-                        $project = Project::where('authority', 'Provinsi')->count();
-                        $provinsi = [
-                            'total' => $project,
-                            'show' => true
-                        ];
-
-                        $project = Project::where('authority', 'Kabupaten')->count();
-                        $kabupaten = [
-                            'total' => $project,
-                            'show' => true
-                        ];
-                    }
-
-                    if($team->authority == 'Provinsi') {
-                        $project = Project::where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])->count();
-                        $provinsi = [
-                            'total' => $project,
-                            'show' => true
-                        ];
-                        
-                        // === GET DISTRICT === //
-                        $districts = $this->getDistricts($team->id_province_name);
-
-                        $project = Project::where('authority', 'Kabupaten')->whereIn('auth_district', $districts)->count();
-                        $kabupaten = [
-                            'total' => $project,
-                            'show' => true
-                        ];
-                    }
-
-                    if($team->authority == 'Kabupaten/Kota') {
-                        $project = Project::where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]])->count();
-                        $kabupaten = [
-                            'total' => $project,
-                            'show' => true
-                        ];
-                    }
+        if($type == 'tuk') {
+            if($team) {
+                if($team->authority == 'Pusat') {
+                    $pusat = [
+                        'total' => $this->getPermitAuthority($type, 'Pusat', $team, $request->period, $request->start, $request->end),
+                        'show' => true
+                    ];
                 }
+
+                if($team->authority == 'Pusat' || $team->authority == 'Provinsi') {
+                    $provinsi = [
+                        'total' => $this->getPermitAuthority($type, 'Provinsi', $team, $request->period, $request->start, $request->end),
+                        'show' => true
+                    ];
+                }
+
+                $kabupaten = [
+                    'total' => $this->getPermitAuthority($type, 'Kabupaten/Kota', $team, $request->period, $request->start, $request->end),
+                    'show' => true
+                ];
             }
+        } else {
+            $pusat = [
+                'total' => $this->getPermitAuthority('admin', 'Pusat', null, $request->period, $request->start, $request->end),
+                'show' => true
+            ];
+    
+            $provinsi = [
+                'total' => $this->getPermitAuthority('admin', 'Provinsi', null, $request->period, $request->start, $request->end),
+                'show' => true
+            ];
+    
+            $kabupaten = [
+                'total' => $this->getPermitAuthority('admin', 'Kabupaten/Kota', null, $request->period, $request->start, $request->end),
+                'show' => true
+            ];    
         }
 
         return [
@@ -196,37 +286,225 @@ class DashboardController extends Controller
     {
         $type = $request->type;
         $id_user = $request->id_user;
+        $user = null;
+        $team = null;
 
         if($type == 'tuk') {
             $user = User::whereKey($id_user)->with('roles')->first();
             if($user) {
                 $team = $this->checkTuk($user);
                 if($team) {
-                    $query = Project::select('id', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district')
-                                    ->with(['initiator' => function($q) {
-                                        $q->select('id', 'name');
-                                    }, 'feasibilityTest' => function($q) {
-                                        $q->select('id', 'id_project');
-                                    }]);
-                    if($team->authority == 'Pusat') {
-                        return $query->orderBy('created_at', 'desc')->paginate($request->limit);
-                    } else if($team->authority == 'Provinsi') {
-                        $districts = $this->getDistricts($team->id_province_name);
-                        return $query->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
-                                     ->orWhere(function($q) use($districts) {
-                                         $q->where('authority', 'Kabupaten');
-                                         $q->whereIn('auth_district', $districts);
-                                     })
-                                     ->orderBy('created_at', 'desc')
-                                     ->paginate($request->limit);
-                    } else if($team->authority == 'Kabupaten/Kota') {
-                        return $query->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]])
-                                     ->orderBy('created_at', 'desc')
-                                     ->paginate($request->limit);
-                    }
+                   return $this->getInitiators($type, $team, $request->limit, $request->period, $request->start, $request->end);
                 }
             }
+        } else {
+            return $this->getInitiators('admin', null, $request->limit, $request->period, $request->start, $request->end);
         }
+
+    }
+
+    public function chart(Request $request)
+    {
+        Carbon::setLocale('id');
+        $period = $request->period;
+        $start = $request->start;
+        $end = $request->end;
+        $type = $request->type;
+        $id_user = $request->id_user;
+        $dates = [];
+        $amdal = [];
+        $ukl_upl = [];
+        $sppl = [];
+        $adendum = [];
+        $range = null;
+        $team = null;
+
+        $user = User::find($id_user);
+        if($user) {
+            $team = $this->checkTuk($user);
+        }
+
+        if($period == 1) {
+            $range = CarbonPeriod::create(date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end)))->toArray();
+            foreach($range as $r) {
+                $dates[] = $r->format('d-m-Y');
+    
+                $amdal[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'AMDAL');
+                $sppl[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'SPPL');
+                $ukl_upl[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'UKL-UPL');
+                $adendum[] = 0;
+            }
+        } else if($period == 2) {
+            $range = CarbonPeriod::create($start . '-01', '1 month', $end . '-01')->toArray();
+            foreach($range as $r) {
+                $dates[] = Carbon::createFromFormat('Y-m', $r->format('Y-m'))->isoFormat('MMMM Y');
+                $year = $r->format('Y');
+                $month = $r->format('m');
+
+                $amdal[] = $this->getChart($type, $period, $team, $year, $month, null, 'AMDAL');
+                $sppl[] = $this->getChart($type, $period, $team, $year, $month, null, 'SPPL');
+                $ukl_upl[] = $this->getChart($type, $period, $team, $year, $month, null, 'UKL-UPL');
+                $adendum[] = 0;
+            }
+        } else if($period == 3) {
+            for($year = $start; $year <= $end; $year++) {
+                $dates[] = $year;
+
+                $amdal[] = $this->getChart($type, $period, $team, $year, null, null, 'AMDAL');
+                $sppl[] = $this->getChart($type, $period, $team, $year, null, null, 'SPPL');
+                $ukl_upl[] = $this->getChart($type, $period, $team, $year, null, null, 'UKL-UPL');
+                $adendum[] = 0;
+            }
+        } else {
+            $period = 1;
+            $start = date('Y-m') . '-01';
+            $end = Carbon::now()->endOfMonth()->format('Y-m-d');
+            
+            $range = CarbonPeriod::create(date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end)))->toArray();
+            foreach($range as $r) {
+                $dates[] = $r->format('d-m-Y');
+    
+                $amdal[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'AMDAL');
+                $sppl[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'SPPL');
+                $ukl_upl[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'UKL-UPL');
+                $adendum[] = 0;
+            }
+        }
+
+
+        return [
+            'dates' => $dates,
+            'amdal' => $amdal,
+            'sppl' => $sppl,
+            'ukl_upl' => $ukl_upl,
+            'adendum' => $adendum
+        ];
+        
+    }
+
+    private function getPermitAuthority($type, $authority, $team, $period, $start, $end)
+    {
+        return Project::where(function($q) use($period, $start, $end) {
+                                if($period && $start && $end) {
+                                    if($period == 2) {
+                                        $start = $start . '-01';
+                                        $end = Carbon::createFromFormat('Y-d', $end)->endOfMonth()->format('Y-m-d');
+                                    } else if($period == 3) {
+                                        $start = $start . '-01-01';
+                                        $end = $end . '-12-31';
+                                    }
+
+                                    $q->whereBetween('created_at', [date($start), date($end)]);
+                                } else {
+                                    $q->whereYear('created_at', date('Y'));
+                                    $q->whereMonth('created_at', date('m'));
+                                }
+                            })
+                            ->where(function($q) use($type, $authority, $team) {
+                                if($authority == 'Pusat') {
+                                    $q->where('authority', 'Pusat')->orWhere('authority', null);
+                                } else if($authority == 'Provinsi') {
+                                    if($type == 'tuk') {
+                                        if($team) {
+                                            if($team->authority == 'Pusat') {
+                                                $q->where('authority', 'Provinsi');
+                                            } else if($team->authority == 'Provinsi') {
+                                                $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]]);
+                                            }
+                                        }
+                                    } else {
+                                        $q->where('authority', 'Provinsi');
+                                    }
+                                } else if($authority == 'Kabupaten/Kota') {
+                                    if($type == 'tuk') {
+                                        if($team) {
+                                            if($team->authority == 'Pusat') {
+                                                $q->where('authority', 'Kabupaten');
+                                            } else if($team->authority == 'Provinsi') {
+                                                $districts = $this->getDistricts($team->id_province_name);
+                                                $q->where('authority', 'Kabupaten');
+                                                $q->whereIn('auth_district', $districts);
+                                            }  else if($team->authority == 'Kabupaten/Kota') {
+                                                $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                                            }
+                                        }
+                                    } else {
+                                        $q->where('authority', 'Kabupaten');
+                                    }
+                                }
+                            })
+                            ->count();
+    }
+
+    private function getInitiators($type, $team, $limit, $period, $start, $end)
+    {
+        return Project::select('id', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district')
+        ->where(function($q) use($period, $start, $end) {
+            if($period && $start && $end) {
+                if($period == 2) {
+                    $start = $start . '-01';
+                    $end = Carbon::createFromFormat('Y-d', $end)->endOfMonth()->format('Y-m-d');
+                } else if($period == 3) {
+                    $start = $start . '-01-01';
+                    $end = $end . '-12-31';
+                }
+
+                $q->whereBetween('created_at', [date($start), date($end)]);
+            } else {
+                $q->whereYear('created_at', date('Y'));
+                $q->whereMonth('created_at', date('m'));
+            }
+        })
+        ->with(['initiator' => function($q) {
+            $q->select('id', 'name');
+        }, 'feasibilityTest' => function($q) {
+            $q->select('id', 'id_project');
+        }])
+        ->where(function($q) use($type, $team) {
+            if($type == 'tuk') {
+                if($team->authority == 'Provinsi') {
+                    $districts = $this->getDistricts($team->id_province_name);
+                    $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
+                    ->orWhere(function($que) use($districts) {
+                          $que->where('authority', 'Kabupaten');
+                          $que->whereIn('auth_district', $districts);
+                      });
+                } else if($team->authority == 'Kabupaten/Kota') {
+                    $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                }
+            }
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate($limit);
+    }
+
+    private function getChart($type, $period, $team, $year, $month, $date, $required_doc)
+    {
+        return Project::where('required_doc', $required_doc)
+                      ->where(function($q) use($type, $team) {
+                          if($type == 'tuk') {
+                              if($team->authority == 'Provinsi') {
+                                $districts = $this->getDistricts($team->id_province_name);
+                                $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
+                                ->orWhere(function($que) use($districts) {
+                                      $que->where('authority', 'Kabupaten');
+                                      $que->whereIn('auth_district', $districts);
+                                  });
+                              } else if($team->authority == 'Kabupaten/Kota') {
+                                  $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                              }
+                          }
+                      })
+                      ->where(function($q) use($period, $year, $month, $date) {
+                        if($period == 1) {
+                            $q->whereDate('created_at', $date);
+                        } else if($period == 2) {
+                            $q->whereYear('created_at', $year);
+                            $q->whereMonth('created_at', $month);
+                        } else if($period == 3) {
+                            $q->whereYear('created_at', (String) $year);
+                        } 
+                      })->count();
     }
 
     private function checkTuk($user)
