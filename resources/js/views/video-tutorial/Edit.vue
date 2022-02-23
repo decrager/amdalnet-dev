@@ -90,7 +90,6 @@ export default {
       this.file = this.$refs.file.files[0];
     },
     async saveVideoTutorial() {
-      console.log(this.value);
       const formData = new FormData();
       formData.append('url_video', this.file);
       formData.append('tutorial_type', this.value);
