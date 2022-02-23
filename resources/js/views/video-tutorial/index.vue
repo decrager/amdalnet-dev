@@ -63,7 +63,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/env-management-sop?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
+          `/api/tutorial-video?keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -77,13 +77,13 @@ export default {
       });
     },
     handleDelete({ rows }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + rows.template_type + '. ?', 'Peringatan', {
+      this.$confirm('apakah anda yakin akan menghapus ' + rows.tutorial_type + '. ?', 'Peringatan', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
         type: 'warning',
       })
         .then(() => {
-          axios.get(`/api/env-management-sop/delete/${rows.id}`)
+          axios.get(`/api/tutorial-video/delete/${rows.id}`)
             .then((response) => {
               this.$message({
                 type: 'success',

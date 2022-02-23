@@ -13,12 +13,12 @@
     </el-table-column>
     <el-table-column label="Jenis Tutorial">
       <template slot-scope="scope">
-        <span>{{ scope.row.sop_type }}</span>
+        <span>{{ scope.row.tutorial_type }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Link Video">
       <template slot-scope="scope">
-        <span>{{ scope.row.file }}</span>
+        <span>{{ scope.row.url_video }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Aksi">
@@ -58,7 +58,7 @@ export default {
     handleEditForm(row) {
       const currentParam = row;
       this.$router.push({
-        name: 'EditSopPengelolaan',
+        name: 'EditVideoTutorial',
         params: { row, appParams: currentParam },
       });
     },

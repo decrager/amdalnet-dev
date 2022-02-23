@@ -291,6 +291,13 @@ const masterRoutes = {
       hidden: true,
       meta: { title: 'Create Video Tutorial', icon: 'documentation', noCache: true },
     },
+    {
+      path: 'video-tutorial/edit',
+      component: () => import('@/views/video-tutorial/Edit'),
+      name: 'EditVideoTutorial',
+      hidden: true,
+      meta: { title: 'Edit Video Tutorial', icon: 'documentation', noCache: true },
+    },
   ],
 };
 
