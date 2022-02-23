@@ -21,12 +21,12 @@
           </el-col>
         </el-row>
       </div> -->
-      <el-tabs v-model="activeName" type="card">
+      <el-tabs v-model="activeName" v-loading="loading" type="card">
         <el-tab-pane label="Formulir Kerangka Acuan" name="formulir-ka">
-          <FormulirKA v-if="activeName === 'formulir-ka'" />
+          <FormulirKA v-if="activeName === 'formulir-ka' && !loading" />
         </el-tab-pane>
         <el-tab-pane label="Analisa Dampak Lingkungan" name="andal">
-          <Andal v-if="activeName === 'andal'" />
+          <Andal v-if="activeName === 'andal' && !loading" />
         </el-tab-pane>
         <!-- <el-tab-pane label="Dokumen ANDAL" name="dokumen">
           <el-row v-if="activeName === 'dokumen'" :gutter="32"> -->
@@ -85,6 +85,7 @@ export default {
         roles: [],
       },
       activeName: 'formulir-ka',
+      loading: false,
     };
   },
   created() {
@@ -94,10 +95,12 @@ export default {
   },
   methods: {
     async checkExist() {
+      this.loading = true;
       await cloneResource.list({
         exist: 'true',
         idProject: this.$route.params.id,
       });
+      this.loading = false;
     },
     async getUserInfo() {
       this.userInfo = await this.$store.dispatch('user/getInfo');

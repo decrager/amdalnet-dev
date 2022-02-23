@@ -118,13 +118,13 @@
                   Lihat SPT
                 </el-button>
                 <el-button
-                  v-if="isLpjp && !scope.row.team_id"
+                  v-if="isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-user"
                   @click="handleLpjpTeam(scope.row)"
                 >
-                  Tambah Tim LPJP
+                  Tim LPJP
                 </el-button>
                 <el-button
                   v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
@@ -512,6 +512,9 @@ export default {
     } else if (this.userInfo.roles.includes('formulator')) {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
+    } else if (this.userInfo.roles.includes('examiner-substance') || this.userInfo.roles.includes('examiner-administration')) {
+      this.listQuery.tuk = 'true';
+      this.listQuery.id_user = this.userInfo.id;
     }
     // else if (this.userInfo.roles.includes('examiner-substance')) {
     //   const formulator = await formulatorResource.list({ email: this.userInfo.email });
