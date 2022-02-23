@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Entity\Business;
 use App\Entity\BusinessEnvParam;
+use App\Entity\OssNib;
 use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use stdClass;
 
 class OssController extends Controller
@@ -199,5 +202,76 @@ class OssController extends Controller
 
 
         return $bparam;
+    }
+
+    public function receiveNib(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'dataNIB' => 'required',
+            ]
+        );
+        $token = $request->bearerToken();
+        // Belum ada validasi token karena user-nya saja belum terdaftar
+        if ($validator->fails() || empty($token)) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Data NIB tidak valid.',
+            ], 400);
+        }
+        $validated = $request->only('dataNIB');
+        $data = $validated['dataNIB'];
+        $nib = $data['nib'];
+        $existing = OssNib::where('nib', $nib)->first();
+        $saved = false;
+        DB::beginTransaction();
+        if ($existing) {
+            if ($existing->nib_updated_date != $data['tgl_perubahan_nib']) {
+                // update
+                $existing->nib_submit_date = $data['tgl_pengajuan_nib'];
+                $existing->nib_published_date = $data['tgl_terbit_nib'];
+                $existing->nib_updated_date = $data['tgl_perubahan_nib'];
+                $existing->oss_id = $data['oss_id'];
+                $existing->id_izin = $data['id_izin'];
+                $existing->kd_izin = $data['kd_izin'];
+                $existing->company_name = $data['nama_perseroan'];
+                $existing->company_email = $data['email_perusahaan'];
+                $existing->json_content = $data;
+                $existing->save();
+                DB::commit();
+            }
+            $saved = true;
+        } else {
+            // insert
+            $created = OssNib::create([
+                'nib' => $data['nib'],
+                'nib_submit_date' => $data['tgl_pengajuan_nib'],
+                'nib_published_date' => $data['tgl_terbit_nib'],
+                'nib_updated_date' => $data['tgl_perubahan_nib'],
+                'oss_id' => $data['oss_id'],
+                'id_izin' => $data['id_izin'],
+                'kd_izin' => $data['kd_izin'],
+                'company_name' => $data['nama_perseroan'],
+                'company_email' => $data['email_perusahaan'],
+                'json_content' => $data,
+            ]);
+            if ($created) {
+                DB::commit();
+                $saved = true;
+            } else {
+                DB::rollBack();
+            }
+        }
+        if ($saved) {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Data NIB berhasil diterima.',
+            ], 200);
+        }
+        return response()->json([
+            'status' => 500,
+            'message' => 'Gagal menyimpan data NIB',
+        ], 500);
     }
 }
