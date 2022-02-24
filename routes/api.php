@@ -37,6 +37,7 @@ use App\Http\Controllers\GovernmentInstitutionController;
 use App\Http\Controllers\MediumLowUklUplTemplateController;
 use App\Http\Controllers\EnvironmentalManagemenSopController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\VideoTutorialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -352,6 +353,12 @@ Route::post('impacts', [ImpactIdentificationController::class, 'saveImpacts']);
 // dashboard
 Route::get('proposal-count', [DashboardController::class, 'proposalCount']);
 Route::get('latest-activities', [DashboardController::class, 'latestActivities']);
+Route::group(['prefix' => 'dashboard'], function($r) {
+    $r->get('permit-authority', [DashboardController::class, 'permitAuthority']);
+    $r->get('status', [DashboardController::class, 'status']);
+    $r->get('initiator', [DashboardController::class, 'initiator']);
+    $r->get('chart', [DashboardController::class, 'chart']);
+});
 
 Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);
 Route::post('environmental-permit', [EnvironmentalPermitController::class, 'store']);
@@ -363,6 +370,7 @@ Route::get('oss/sectorByKbli/{kbli}', [OssController::class, 'sectorByKbli']);
 Route::get('oss/getField', [OssController::class, 'getField']);
 Route::get('oss/getParameterByFieldId/{id}', [OssController::class, 'getParamByFieldId']);
 Route::post('oss/calculateDoc', [OssController::class, 'calculateDoc']);
+Route::post('oss/receiveNib', [OssController::class, 'receiveNib']);
 
 Route::get('environmental-approval', [EnvironmentalApprovalController::class, 'index']);
 Route::post('environmental-approval', [EnvironmentalApprovalController::class, 'store']);
@@ -378,6 +386,12 @@ Route::get('env-management-sop', [EnvironmentalManagemenSopController::class, 'i
 Route::post('env-management-sop', [EnvironmentalManagemenSopController::class, 'store']);
 Route::post('env-management-sop/update', [EnvironmentalManagemenSopController::class, 'update']);
 Route::get('env-management-sop/delete/{id}', [EnvironmentalManagemenSopController::class, 'destroy']);
+
+Route::get('tutorial-video', [VideoTutorialController::class, 'index']);
+Route::post('tutorial-video', [VideoTutorialController::class, 'store']);
+Route::post('tutorial-video/update', [VideoTutorialController::class, 'update']);
+Route::get('tutorial-video/delete/{id}', [VideoTutorialController::class, 'destroy']);
+
 
 // Master Government Insitution
 Route::apiResource('government-institution', 'GovernmentInstitutionController');

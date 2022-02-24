@@ -512,6 +512,9 @@ export default {
     } else if (this.userInfo.roles.includes('formulator')) {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
+    } else if (this.userInfo.roles.includes('examiner-substance') || this.userInfo.roles.includes('examiner-administration')) {
+      this.listQuery.tuk = 'true';
+      this.listQuery.id_user = this.userInfo.id;
     }
     // else if (this.userInfo.roles.includes('examiner-substance')) {
     //   const formulator = await formulatorResource.list({ email: this.userInfo.email });

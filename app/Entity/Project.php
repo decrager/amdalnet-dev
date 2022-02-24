@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
@@ -50,6 +51,8 @@ class Project extends Model implements Auditable
     // ];
 
     protected $guarded = [];
+    
+    protected $appends = ['filling_date', 'submission_deadline'];
 
     public function team()
     {
@@ -114,5 +117,17 @@ class Project extends Model implements Auditable
     public function kaReviews()
     {
         return $this->hasMany(KaReview::class, 'id_project', 'id');
+    }
+
+    public function getFillingDateAttribute()
+    {
+        Carbon::setLocale('id');
+        return Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->isoFormat('D MMMM Y');
+    }
+
+    public function getSubmissionDeadlineAttribute()
+    {
+        Carbon::setLocale('id');
+        return Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->addMonth(1)->isoFormat('D MMMM Y');
     }
 }

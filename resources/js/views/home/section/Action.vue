@@ -50,7 +50,11 @@
         </el-col>
         <el-col :span="4">
           <div class="thumbnailVideo">
-            <img src="/images/penapisan.jpeg" alt="">
+            <!-- <img src="/images/penapisan.jpeg" alt=""> -->
+            <iframe
+              style="width:100%; height:128px;"
+              :src="video1"
+            />
           </div>
         </el-col>
       </el-row>
@@ -76,7 +80,11 @@
         </el-col>
         <el-col :span="4">
           <div class="thumbnailVideo">
-            <img src="/images/ka.jpeg" alt="">
+            <!-- <img src="/images/ka.jpeg" alt=""> -->
+            <iframe
+              style="width:100%; height:128px;"
+              :src="video2"
+            />
           </div>
         </el-col>
       </el-row>
@@ -103,7 +111,11 @@
         </el-col>
         <el-col :span="4">
           <div class="thumbnailVideo">
-            <img src="/images/login.jpeg" alt="">
+            <!-- <img src="/images/login.jpeg" alt=""> -->
+            <iframe
+              style="width:100%; height:128px;"
+              :src="video3"
+            />
           </div>
         </el-col>
       </el-row>
@@ -128,6 +140,7 @@ import SubProjectTable from '../../project/components/SubProjectTable.vue';
 import PublicQuestionDialog from '../components/PublicQuestionDialog.vue';
 import TrackingDocumentDialog from '../components/TrackingDocumentDialog.vue';
 import TrackingDocumentDetailDialog from '../components/TrackingDocumentDetailDialog.vue';
+import axios from 'axios';
 // import Materi from './Materi.vue';
 // import Kebijakan from './Kebijakan.vue';
 
@@ -170,6 +183,9 @@ export default {
       showMateri: false,
       showKebijakan: false,
       project: {},
+      video1: '',
+      video2: '',
+      video3: '',
     };
   },
   computed: {
@@ -177,7 +193,27 @@ export default {
       return this.$store.getters.kblis;
     },
   },
+  created(){
+    this.getAll();
+  },
   methods: {
+    getAll() {
+      axios
+        .get(`/api/tutorial-video`)
+        .then((response) => {
+          response.data.data.map((val, i) => {
+            if (val.tutorial_type === 'Amdal Digital Workspace'){
+              this.video3 = val.url_video;
+            }
+            if (val.tutorial_type === 'Penapisan Otomatis'){
+              this.video1 = val.url_video;
+            }
+            if (val.tutorial_type === 'Asistensi Pelingkupan'){
+              this.video2 = val.url_video;
+            }
+          });
+        });
+    },
     showPubDialog(){
       console.log('kepencet');
       this.showPublicQues = true;

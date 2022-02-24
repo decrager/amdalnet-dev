@@ -1,25 +1,24 @@
 <template>
   <div class="app-container">
     <date-filter @filterChange="onFilterChange" />
-    <submission-stats />
+    <submission-stats ref="stats" />
 
-    <el-row style="margin: 2em auto;">
+    <el-row style="margin: 2em auto">
       <el-col :span="16">
-        <submission-chart />
+        <submission-chart ref="chart" />
       </el-col>
       <el-col :span="8">
-        <permit-by-region />
+        <permit-by-region ref="permit" />
       </el-col>
     </el-row>
 
-    <el-row :gutter="8" style="margin: 2em auto;">
-      <initiator-list />
+    <el-row :gutter="8" style="margin: 2em auto">
+      <initiator-list ref="initiators" />
     </el-row>
   </div>
 </template>
 
 <script>
-
 import InitiatorList from './components/InitiatorList';
 import SubmissionChart from './components/SubmissionChart';
 import PermitByRegion from './components/Permit';
@@ -41,14 +40,16 @@ export default {
     };
   },
   methods: {
-    onFilterChange(val){
+    onFilterChange(val) {
       this.filter = val;
       console.log('onFilterChange', this.filter);
+      this.$refs.stats.filterStats(this.filter);
+      this.$refs.permit.filterPermit(this.filter);
+      this.$refs.initiators.filterInitiator(this.filter);
+      this.$refs.chart.filterChart(this.filter);
     },
   },
 };
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-
-</style>
+<style rel="stylesheet/scss" lang="scss" scoped></style>
