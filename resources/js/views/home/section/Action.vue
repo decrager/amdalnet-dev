@@ -185,6 +185,7 @@ export default {
     showTrackingDialog(){
       this.showTrackingDocumentDetail = false;
       this.showTrackingDocument = true;
+      return false;
     },
     showTrackingDocumentDetailDialog(project){
       this.project = project;
