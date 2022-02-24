@@ -206,6 +206,13 @@ class OssController extends Controller
 
     public function receiveNib(Request $request)
     {
+        if (!$request->accepts(['application/json'])) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Data yang diterima bukan JSON.',
+                'submitted_data' => $request->getContent(),
+            ], 400);
+        }
         $validator = Validator::make(
             $request->all(),
             [
@@ -213,16 +220,28 @@ class OssController extends Controller
             ]
         );
         $token = $request->bearerToken();
-        // Belum ada validasi token karena user-nya saja belum terdaftar
-        if ($validator->fails() || empty($token)) {
+
+        if ($validator->fails()) {
             return response()->json([
                 'status' => 400,
-                'message' => 'Data NIB tidak valid.',
+                'message' => 'Format Data JSON NIB tidak valid.',
+                'submitted_data' => $request->getContent(),
+                // 'submitted_json' => json_decode($request->getContent()),
             ], 400);
         }
         $validated = $request->only('dataNIB');
         $data = $validated['dataNIB'];
         $nib = $data['nib'];
+        // check token
+        $sha1 = sha1(env('OSS_REQUEST_USERNAME') . env('OSS_REQUEST_PASSWORD') . $nib . date('Ymd'));
+        if ($token != $sha1) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Token tidak valid.',
+                'submitted_data' => $request->getContent(),
+                // 'submitted_json' => json_decode($request->getContent()),
+            ], 401);
+        }
         $existing = OssNib::where('nib', $nib)->first();
         $saved = false;
         DB::beginTransaction();
@@ -272,6 +291,8 @@ class OssController extends Controller
         return response()->json([
             'status' => 500,
             'message' => 'Gagal menyimpan data NIB',
+            'submitted_data' => $request->getContent(),
+            // 'submitted_json' => json_decode($request->getContent()),
         ], 500);
     }
 }
