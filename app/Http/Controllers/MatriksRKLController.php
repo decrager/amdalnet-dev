@@ -31,6 +31,15 @@ class MatriksRKLController extends Controller
     public function index(Request $request)
     {
         if($request->docs) {
+            $save_file_name = $request->idProject .'-rkl-rpl' . '.docx'; 
+            if (!File::exists(storage_path('app/public/workspace/'))) {
+                File::makeDirectory(storage_path('app/public/workspace/'));
+            }
+
+            if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+                return response()->json(['message' => 'success']);
+            }
+
             $templateProcessor = new TemplateProcessor('template_rkl_rpl.docx');
 
             $poinA = [];
@@ -82,14 +91,7 @@ class MatriksRKLController extends Controller
             $templateProcessor->cloneRowAndSetValues('b_operasi_rpl', $poinBp['b_operasi_rpl']);
             $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rpl', $poinBp['b_pasca_operasi_rpl']);
 
-            $save_file_name = $request->idProject .'-rkl-rpl' . '.docx'; 
-            if (!File::exists(storage_path('app/public/workspace/'))) {
-                File::makeDirectory(storage_path('app/public/workspace/'));
-            }
-
-            if (!File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-                $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
-            }
+            $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
             
 
             return response()->json(['message' => 'success']);
@@ -280,7 +282,9 @@ class MatriksRKLController extends Controller
             $envManage->form = $manage[$i]['form'];
             $envManage->location = $manage[$i]['location'];
             $envManage->period = $manage[$i]['period_number'] . '-' . $manage[$i]['period_description'];
-            $envManage->institution = $manage[$i]['institution'];
+            $envManage->executor = $manage[$i]['executor'];
+            $envManage->supervisor = $manage[$i]['supervisor'];
+            $envManage->report_recipient = $manage[$i]['report_recipient'];
             $envManage->save();
         }
 
@@ -452,7 +456,9 @@ class MatriksRKLController extends Controller
                 'form' => $type == 'new' ? null : $pA->envManagePlan->form,
                 'location' => $type == 'new' ? null : $pA->envManagePlan->location,
                 'period' => $type == 'new' ? null : $pA->envManagePlan->period,
-                'institution' => $type == 'new' ? null : $pA->envManagePlan->institution,
+                'executor' => $type == 'new' ? null : $pA->envManagePlan->executor,
+                'supervisor' => $type == 'new' ? null : $pA->envManagePlan->supervisor,
+                'report_recipient' => $type == 'new' ? null : $pA->envManagePlan->report_recipient,
                 'period_number' => $periodeNumber,
                 'period_description' => $periodeDesc,
                 'comments' => $comments
@@ -571,6 +577,9 @@ class MatriksRKLController extends Controller
                 'location' => $type == 'new' ? null : $merge->envManagePlan->location,
                 'period' => $type == 'new' ? null : $merge->envManagePlan->period,
                 'institution' => $type == 'new' ? null : $merge->envManagePlan->institution,
+                'executor' => $type == 'new' ? null : $merge->envManagePlan->executor,
+                'supervisor' => $type == 'new' ? null : $merge->envManagePlan->supervisor,
+                'report_recipient' => $type == 'new' ? null :$merge->envManagePlan->report_recipient,
                 'period_number' => $periodeNumber,
                 'period_description' => $periodeDesc,
                 'comments' => $comments
@@ -638,7 +647,9 @@ class MatriksRKLController extends Controller
                     'form' => $pA->envManagePlan->form,
                     'location' => $pA->envManagePlan->location,
                     'period' => $pA->envManagePlan->period,
-                    'institution' => $pA->envManagePlan->institution,
+                    'executor' => $pA->envManagePlan->executor,
+                    'supervisor' => $pA->envManagePlan->supervisor,
+                    'report_recipient' => $pA->envManagePlan->report_recipient,
                 ];
                 $total++;
             } else {
@@ -729,7 +740,9 @@ class MatriksRKLController extends Controller
                         'form' => $merge->envManagePlan->form,
                         'location' => $merge->envManagePlan->location,
                         'period' => $merge->envManagePlan->period,
-                        'institution' => $merge->envManagePlan->institution,
+                        'executor' => $merge->envManagePlan->executor,
+                        'supervisor' => $merge->envManagePlan->supervisor,
+                        'report_recipient' => $merge->envManagePlan->report_recipient,
                     ];
                 } else {
                     continue;
