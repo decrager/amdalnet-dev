@@ -208,9 +208,10 @@ class OssController extends Controller
     {
         if (!$request->accepts(['application/json'])) {
             return response()->json([
-                'status' => 400,
-                'message' => 'Data yang diterima bukan JSON.',
-                'submitted_data' => $request->getContent(),
+                'responreceiveNIB' => [
+                    'status' => false,
+                    'keterangan' => 'Data yang diterima bukan JSON.',
+                ]
             ], 400);
         }
         $validator = Validator::make(
@@ -223,11 +224,10 @@ class OssController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 400,
-                'message' => 'Format Data JSON NIB tidak valid.',
-                'submitted_token' => $token,
-                'submitted_data' => $request->getContent(),
-                // 'submitted_json' => json_decode($request->getContent()),
+                'responreceiveNIB' => [
+                    'status' => false,
+                    'keterangan' => 'Format data JSON tidak valid.',
+                ]
             ], 400);
         }
         $validated = $request->only('dataNIB');
@@ -286,18 +286,17 @@ class OssController extends Controller
         }
         if ($saved) {
             return response()->json([
-                'status' => 200,
-                'message' => 'Data NIB berhasil diterima.',
-                'submitted_token' => $token,
-                'post_data' => $validated,
+                'responreceiveNIB' => [
+                    'status' => true,
+                    'keterangan' => 'Data NIB berhasil disimpan.',
+                ]
             ], 200);
         }
         return response()->json([
-            'status' => 500,
-            'message' => 'Gagal menyimpan data NIB',
-            'submitted_token' => $token,
-            'post_data' => $validated,
-            // 'submitted_json' => json_decode($request->getContent()),
+            'responreceiveNIB' => [
+                'status' => false,
+                'keterangan' => 'Gagal menyimpan data NIB.',
+            ]
         ], 500);
     }
 }
