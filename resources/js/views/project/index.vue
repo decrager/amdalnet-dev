@@ -226,7 +226,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isAmdal(scope.row) && isKaSubmittedToTuk(scope.row) && isSubtance && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && isKaSubmittedToTuk(scope.row) && (isSubtance || isAdmin) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
