@@ -177,32 +177,6 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Indikator / Parameter">
-          <template slot-scope="scope">
-            <el-input
-              v-if="scope.row.type == 'subtitle'"
-              v-model="scope.row.indicator"
-              type="textarea"
-              :rows="2"
-              :readonly="!isFormulator"
-              :class="{
-                'is-error': checkError(
-                  scope.row.type,
-                  scope.$index,
-                  'indicator'
-                ),
-              }"
-            />
-            <span v-else>{{ '' }}</span>
-            <small
-              v-if="checkError(scope.row.type, scope.$index, 'indicator')"
-              style="color: #f56c6c"
-            >
-              Indikator Wajib Diisi
-            </small>
-          </template>
-        </el-table-column>
-
         <el-table-column label="Sumber Dampak">
           <template slot-scope="scope">
             <el-input
@@ -228,6 +202,28 @@
             </small>
           </template>
         </el-table-column>
+      </el-table-column>
+
+      <el-table-column label="Indikator / Parameter">
+        <template slot-scope="scope">
+          <el-input
+            v-if="scope.row.type == 'subtitle'"
+            v-model="scope.row.indicator"
+            type="textarea"
+            :rows="2"
+            :readonly="!isFormulator"
+            :class="{
+              'is-error': checkError(scope.row.type, scope.$index, 'indicator'),
+            }"
+          />
+          <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'indicator')"
+            style="color: #f56c6c"
+          >
+            Indikator Wajib Diisi
+          </small>
+        </template>
       </el-table-column>
 
       <el-table-column label="Bentuk Pemantauan Lingkungan Hidup">

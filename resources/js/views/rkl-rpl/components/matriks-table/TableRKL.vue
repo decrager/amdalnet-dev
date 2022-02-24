@@ -332,7 +332,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Institusi Pengelolaan Lingkungan Hidup">
+      <!-- <el-table-column label="Institusi Pengelolaan Lingkungan Hidup">
         <template slot-scope="scope">
           <el-input
             v-if="scope.row.type == 'subtitle'"
@@ -356,6 +356,88 @@
             Institusi Pengelolaan Wajib Diisi
           </small>
         </template>
+      </el-table-column> -->
+
+      <el-table-column label="Institusi Pemantauan Lingkungan Hidup">
+        <el-table-column label="Pelaksana">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.executor"
+              type="textarea"
+              :rows="2"
+              :readonly="!isFormulator"
+              :class="{
+                'is-error': checkError(
+                  scope.row.type,
+                  scope.$index,
+                  'executor'
+                ),
+              }"
+            />
+            <span v-else>{{ '' }}</span>
+            <small
+              v-if="checkError(scope.row.type, scope.$index, 'executor')"
+              style="color: #f56c6c"
+            >
+              Pelaksana Wajib Diisi
+            </small>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="Pengawas">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.supervisor"
+              type="textarea"
+              :rows="2"
+              :readonly="!isFormulator"
+              :class="{
+                'is-error': checkError(
+                  scope.row.type,
+                  scope.$index,
+                  'supervisor'
+                ),
+              }"
+            />
+            <span v-else>{{ '' }}</span>
+            <small
+              v-if="checkError(scope.row.type, scope.$index, 'supervisor')"
+              style="color: #f56c6c"
+            >
+              Pengawas Wajib Diisi
+            </small>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="Penerima Laporan">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.report_recipient"
+              type="textarea"
+              :rows="2"
+              :readonly="!isFormulator"
+              :class="{
+                'is-error': checkError(
+                  scope.row.type,
+                  scope.$index,
+                  'report_recipient'
+                ),
+              }"
+            />
+            <span v-else>{{ '' }}</span>
+            <small
+              v-if="
+                checkError(scope.row.type, scope.$index, 'report_recipient')
+              "
+              style="color: #f56c6c"
+            >
+              Penerima Laporan Wajib Diisi
+            </small>
+          </template>
+        </el-table-column>
       </el-table-column>
     </el-table>
     <div style="margin: 2em 0 1em; text-align: right">
@@ -505,7 +587,9 @@ export default {
             !x.location ||
             !x.period_number ||
             !x.period_description ||
-            !x.institution
+            !x.executor ||
+            !x.supervisor ||
+            !x.report_recipient
           ) {
             errors++;
           }
@@ -517,7 +601,9 @@ export default {
             location: !x.location,
             period_number: !x.period_number,
             period_description: !x.period_description,
-            institution: !x.institution,
+            executor: !x.executor,
+            supervisor: !x.supervisor,
+            report_recipient: !x.report_recipient,
           };
         }
 
