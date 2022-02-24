@@ -234,16 +234,16 @@ class OssController extends Controller
         $data = $validated['dataNIB'];
         $nib = $data['nib'];
         // check token
-        $sha1 = sha1(env('OSS_REQUEST_USERNAME') . env('OSS_REQUEST_PASSWORD') . $nib . date('Ymd'));
-        if ($token != $sha1) {
-            return response()->json([
-                'status' => 401,
-                'message' => 'Token tidak valid.',
-                'submitted_token' => $token,
-                'submitted_data' => $request->getContent(),
-                // 'submitted_json' => json_decode($request->getContent()),
-            ], 401);
-        }
+        // $sha1 = sha1(env('OSS_REQUEST_USERNAME') . env('OSS_REQUEST_PASSWORD') . $nib . date('Ymd'));
+        // if ($token != $sha1) {
+        //     return response()->json([
+        //         'status' => 401,
+        //         'message' => 'Token tidak valid.',
+        //         'submitted_token' => $token,
+        //         'submitted_data' => $request->getContent(),
+        //         // 'submitted_json' => json_decode($request->getContent()),
+        //     ], 401);
+        // }
         $existing = OssNib::where('nib', $nib)->first();
         $saved = false;
         DB::beginTransaction();
@@ -289,13 +289,14 @@ class OssController extends Controller
                 'status' => 200,
                 'message' => 'Data NIB berhasil diterima.',
                 'submitted_token' => $token,
+                'post_data' => $validated,
             ], 200);
         }
         return response()->json([
             'status' => 500,
             'message' => 'Gagal menyimpan data NIB',
             'submitted_token' => $token,
-            'submitted_data' => $request->getContent(),
+            'post_data' => $validated,
             // 'submitted_json' => json_decode($request->getContent()),
         ], 500);
     }
