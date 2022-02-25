@@ -1,16 +1,23 @@
 <template>
   <div v-if="data" id="detailForm" v-loading="isSaving">
     <div>
-      <el-row class="detail-header">
-        <el-col :span="18" class="stage">{{ data.stage }}</el-col>
-        <el-col :span="6" style="font-size:150%; font-weight:900;text-align:right;">
-          <!-- <el-button icon="el-icon-back" type="info" circle />
-        <span style="font-weight:900; margin: auto 1em">2</span>
-
-        <el-button icon="el-icon-right" type="info" circle />
-        -->
+      <!--<el-row :gutter="20" class="detail-header">
+         <el-col :span="20" class="kegiatan">
+          <div class="label">Kegiatan {{ data.type }}</div>
+          <div>{{ data.kegiatan }}</div>
         </el-col>
-      </el-row>
+        <el-col class="stage" style="text-align: right;">
+         <div class="label">Tahap</div>
+          <div>{{ data.stage }}</div>
+        </el-col>
+      </el-row>-->
+      <div class="detail-header">
+        <div class="stage">
+          <div class="label">Kegiatan {{ data.type }}: {{ data.kegiatan }}</div>
+          <div class="label">Tahap</div>
+          <div>{{ data.stage }}</div>
+        </div>
+      </div>
 
       <div class="entry-title">
         <el-form label-position="top">
@@ -54,13 +61,24 @@
             />
             </el-form-item>
             <el-form-item label="Pengelolaan yang sudah direncanakan">
-              <el-input
+              <!-- <el-input
                 v-model="data.initial_study_plan"
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 5}"
                 :readonly="!isFormulator"
                 @input="hasChanges"
+              /> -->
+              <editor
+                v-if="isFormulator"
+                v-model="data.initial_study_plan"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :height="150"
+                :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                @hasChanges="hasChanges"
               />
+              <div v-else v-html="data.initial_study_plan" />
             </el-form-item>
             <el-form-item v-if="!(data.is_hypothetical_significant === false)" label="Wilayah Studi">
               <el-input
@@ -130,6 +148,7 @@
   </div>
 </template>
 <script>
+import editor from '@/components/Tinymce';
 import Resource from '@/api/resource';
 import PieForm from './PieForm.vue';
 import Comment from '@/views/amdal/components/Comment.vue';
@@ -138,6 +157,7 @@ const impactsResource = new Resource('impacts');
 export default {
   name: 'DampakHipotetikDetailForm',
   components: {
+    editor,
     PieForm,
     Comment,
 
@@ -252,7 +272,7 @@ export default {
       }
     },
     hasChanges(e) {
-      // console.log('has changes:', e);
+      console.log('has changes:', e);
       this.dataChanged = true;
       this.data.hasChanges = true;
       this.$emit('hasChanges', this.data);
@@ -343,23 +363,27 @@ export default {
   border: 1px solid #e0e0e0;
   border-radius: 1em;
   .detail-header {
+    font-size:180%;
+     margin-bottom: 2em;
     .stage {
-      margin-bottom: 2em;;
-      font-size:180%;
+      margin-bottom: 1em;
       text-transform: uppercase;
       font-weight:900;
       line-height: 1em;
     }
-    .stage:before{
-      content: 'tahap';
+    .label{
       font-size: 60%;
-      display:table;
-      clear:both;
       font-weight: normal;
-      text-transform: unset;
+      text-transform: uppercase;
+    }
+    .kegiatan {
+      text-transform: capitalize;
+      font-weight: 500;
+       line-height: 1em;
     }
   }
-  .entry-title{
+
+   .entry-title{
     font-size: 150%;
     margin: 1em 0 2em;
     font-weight: bold;

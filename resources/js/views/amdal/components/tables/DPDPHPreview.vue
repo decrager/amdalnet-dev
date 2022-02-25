@@ -31,6 +31,7 @@
 
     </el-table> -->
       <div v-loading="loading" class="dpdph-preview-table" :style="'height: '+ height + 'px;'">
+
         <table style="border-collapse: collapse;clear:both; margin:0; ">
           <!-- based on mockup received on Thu, 2 Dec 2021 -->
           <thead>
@@ -39,7 +40,7 @@
               <th>Pengelolaan yang sudah direncanakan</th>
               <th>Komponen Rona yang Terkena Dampak</th>
               <th>Dampak Potensial</th>
-              <th style="width:20%;">Evaluasi Dampak Potensial</th>
+              <th style="width:25%;">Evaluasi Dampak Potensial</th>
               <th>Dampak Penting Hipotetik</th>
               <th>Wilayah Studi</th>
               <th>Batas Waktu Kajian</th>
@@ -47,14 +48,14 @@
           </thead>
           <template v-for="stage in data">
             <tr :key="'stage_'+ stage.id" :data-index="stage.name">
-              <td colspan="9" class="title"><p><strong>{{ stage.name }}</strong></p></td>
+              <td colspan="13" class="title"><p><strong>{{ stage.name }}</strong></p></td>
             </tr>
             <tbody :key="'hipotetik_' + stage.id">
               <template v-for="(impact, idx) in stage.data">
                 <tr :key="'impact_'+ impact.id" class="title" animated>
                   <td style="width:30px;">{{ (idx + 1) }}.</td>
-                  <td>{{ impact.komponen }}</td>
-                  <td>{{ impact.initial_study_plan }}</td>
+                  <td>{{ impact.kegiatan }}</td>
+                  <td><div v-html="impact.initial_study_plan" /></td>
                   <td>{{ impact.rona_awal }}</td>
                   <td>
                     <span v-if="(impact.change_type_name) && (impact.change_type_name !== '')">{{ impact.change_type_name }}</span>
@@ -76,9 +77,9 @@
                           </el-popover>
                           <p v-else :key="'po_'+ pie.id + '_'+ impact.id" style="font-weight:bold;">{{ pie.name }}</p>
 
-                          <p v-if="impact.pie">
-                            <span v-if="impact.pie[index].text && (impact.pie[index].text !=='')">{{ impact.pie[index].text }}</span>
-                            <span v-else style="color: red; font-weight: bold;">&mdash;</span></p>
+                          <div v-if="impact.pie">
+                            <div v-if="impact.pie[index].text && (impact.pie[index].text !=='')" v-html="impact.pie[index].text" />
+                            <span v-else style="color: red; font-weight: bold;">&mdash;</span></div>
                         </div>
                       </template>
                     </template>
@@ -242,7 +243,7 @@ div.div-fka {
 }
 
 div.dpdph-preview-table{
-  overflow-y: scroll;
+  overflow: auto;
 
    table {
       text-align: left;

@@ -28,6 +28,9 @@
       :id-project="id_project"
       :change-types="changeTypes"
       :stages="stages"
+      :components="components"
+      :sub-projects="subProjects"
+      :hues="hues"
       :pie-params="pieParams"
       :total-changes="totalChanges"
       :loading="isLoading"
@@ -75,6 +78,9 @@ export default {
       pieParams: [],
       changeTypes: [],
       impact_res_name: 'impacts',
+      components: [],
+      subProjects: [],
+      hues: [],
     };
   },
   mounted(){
@@ -91,11 +97,29 @@ export default {
         id_project: this.id_project,
         mode: this.mode,
       }).then((res) => {
+        this.components = [];
+        this.subProjects = [];
+        this.hues = [];
         res.map((e) => {
           e.hasChanges = false;
+
+          if (this.components.findIndex(c => c.value === e.komponen) < 0) {
+            this.components.push({ text: e.komponen, value: e.komponen });
+          }
+
+          if (this.subProjects.findIndex(s => s.value === e.kegiatan) < 0) {
+            this.subProjects.push({ text: e.kegiatan, label: e.kegiatan + ' (' + e.type + ')', value: e.kegiatan });
+          }
+
+          if (this.hues.findIndex(c => c.value === e.rona_awal) < 0) {
+            this.hues.push({ text: e.rona_awal, value: e.rona_awal });
+          }
         });
         const order = [4, 1, 2, 3]; // stage's order
         this.impacts = res.sort((a, b) => order.indexOf(a.project_stage) - order.indexOf(b.project_stage));
+        this.hues.sort((a, b) => a.value.localeCompare(b.value));
+        this.subProjects.sort((a, b) => a.value.localeCompare(b.value));
+        this.components.sort((a, b) => a.value.localeCompare(b.value));
       }).finally(() => {
         this.isLoading = false;
       });

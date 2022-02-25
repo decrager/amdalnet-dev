@@ -15,60 +15,117 @@
         <span v-if="impacts">Total: <span style="font-weight: bold">{{ impacts.length }}</span></span>
       </el-col>
     </el-row>
+    <!-- tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase())) -->
     <el-table
-      :data="impacts"
-      max-height="300"
+      :data="impacts.filter(data => !search || data.kegiatan === search)"
+      max-height="400"
       highlight-current-row
       header-row-class-name="dpdph-table"
       style="width: 100%"
       @current-change="selection"
     >
       <el-table-column
-        label="No."
-        width="60"
-        align="center"
+        style="background: none !important;"
       >
-        <template slot-scope="scope">
-          {{ scope.$index + 1 }}
+        <template slot="header">
+          <el-select
+            v-model="search"
+            clearable
+            placeholder="Semua Rencana Usaha/Kegiatan"
+            class="filter-header"
+            style="width: 60% !important;"
+          >
+            <el-option
+              v-for="item in subProjects"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </template>
-      </el-table-column>
-      <el-table-column
-        prop="stage"
-        label="Tahap"
-        width="150"
-        :filters="stageFilters"
-        :filter-method="filterTag"
-        filter-placement="bottom-end"
-      />
-
-      <el-table-column
-        label="Dampak"
-        :filters="changeFilters"
-        :filter-method="onChangefilter"
-        filter-placement="bottom-end"
-      >
-        <template slot-scope="scope">
-          <div>
-            <!--
+        <el-table-column
+          label="No."
+          width="60"
+          align="center"
+        >
+          <template slot-scope="scope">
+            {{ scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="stage"
+          label="Tahap"
+          width="180"
+          :filters="stageFilters"
+          :filter-method="filterTag"
+          filter-placement="bottom-end"
+        />
+        <el-table-column
+          label="Kegiatan"
+          prop="komponen"
+          width="200"
+          :filters="components"
+          :filter-method="onActivityChange"
+          filter-placement="bottom-end"
+        />
+        <el-table-column
+          label="Rona Lingkungan"
+          prop="rona_awal"
+          width="200"
+          :filters="hues"
+          :filter-method="onHueChange"
+          filter-placement="bottom-end"
+        />
+        <!-- <el-table-column
+          label="tipe"
+          width="80"
+          :filters="activityTypeFilters"
+          :filter-method="onATFChange"
+          filter-placement="bottom-end"
+          align="center"
+        >
+          <template slot-scope="s">
+            <el-tooltip class="item" effect="dark" :content="s.row.type" placement="right">
+              <el-tag style="text-transform: uppercase">{{ (s.row.type).charAt(0) }}</el-tag>
+             </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="komponen"
+          label="Nama"
+          width="250"
+        />
+        -->
+        <el-table-column
+          v-if="changeFilters.length > 0"
+          label="Dampak"
+          :filters="changeFilters"
+          :filter-method="onChangefilter"
+          filter-placement="bottom-end"
+        >
+          <template slot-scope="scope">
+            <div>
+              <!--
           <span v-if="scope.row.id_change_type" :class=" (scope.row.change_type_name === null) ? 'empty':'change-type'" >{{ scope.row.change_type_name || '*belum terdefinisi*'  }}</span>
           -->
-            <span class="empty"> {{ scope.row.change_type_name || '*belum terdefinisi*' }}</span>
-            <!-- <span v-else >{{ changeTypes.find(e => e.id = scope.row.id_change_type).name }}</span> -->
+              <span class="empty"> {{ scope.row.change_type_name || '*belum terdefinisi*' }}</span>
+              <!-- <span v-else >{{ changeTypes.find(e => e.id = scope.row.id_change_type).name }}</span> -->
 
-            {{ scope.row.rona_awal }} akibat {{ scope.row.komponen }}
+              {{ scope.row.rona_awal }} akibat {{ scope.row.komponen }}
 
-            <span style="font-weight: 500; margin-left: 1em;">
-              <el-tag v-if="scope.row.is_hypothetical_significant" class="dph">DPH</el-tag>
-              <el-tag v-else-if="scope.row.is_hypothetical_significant === false" type="info" class="dtph">DTPH</el-tag>
-              <el-tag v-if="(scope.row.is_hypothetical_significant === false) && (scope.row.is_managed === true)" type="info" class="dph">Dikelola</el-tag>
-              <el-tag v-if="scope.row.hasChanges === true" type="danger">~diubah</el-tag>
-              <!--
+              <span style="font-weight: 500; margin-left: 1em;">
+                <el-tag v-if="scope.row.is_hypothetical_significant" class="dph">DPH</el-tag>
+                <el-tag v-else-if="scope.row.is_hypothetical_significant === false" type="info" class="dtph">DTPH</el-tag>
+                <el-tag v-if="(scope.row.is_hypothetical_significant === false) && (scope.row.is_managed === true)" type="info" class="dph">Dikelola</el-tag>
+                <el-tag v-if="scope.row.hasChanges === true" type="danger">~diubah</el-tag>
+                <!--
   <el-button  v-if="scope.row.comment > 0" type="danger" icon="el-icon-s-comment" size="medium" plain circle> </el-button> -->
-              <i v-if="scope.row.comment > 0" class="el-icon-s-comment" style="font-size: 150%; line-height:0.8em;" />
-            </span>
-          </div>
+                <i v-if="scope.row.comment > 0" class="el-icon-s-comment" style="font-size: 150%; line-height:0.8em;" />
+              </span>
+            </div>
 
-        </template>
+          </template>
+        </el-table-column>
       </el-table-column>
     </el-table>
     <el-row>
@@ -113,6 +170,18 @@ export default {
       type: Array,
       default: null,
     },
+    subProjects: {
+      type: Array,
+      default: null,
+    },
+    components: {
+      type: Array,
+      default: null,
+    },
+    hues: {
+      type: Array,
+      default: null,
+    },
     idProject: {
       type: Number,
       default: 0,
@@ -133,6 +202,7 @@ export default {
   data() {
     return {
       preview: false,
+      search: '',
       stageFilters: [
         { text: 'Pra Konstruksi', value: 'Pra Konstruksi' },
         { text: 'Konstruksi', value: 'Konstruksi' },
@@ -146,11 +216,19 @@ export default {
         { text: 'Belum terdefinisi', value: 4 },
         { text: 'Bercatatan', value: 5 },
       ],
+      activityTypeFilters: [
+        { text: 'Utama', value: 'utama' },
+        { text: 'Pendukung', value: 'pendukung' },
+      ],
+      activitiesFilter: [],
     };
   },
   watch: {
     impacts: function(val){
       // console.log('master table:', val);
+      if (val.length > 0){
+        this.getActivities();
+      }
     },
   },
   methods: {
@@ -159,6 +237,9 @@ export default {
     },
     filterTag(value, row){
       return row.stage === value;
+    },
+    getActivities(){
+      console.log(this.components);
     },
     onChangefilter(value, row){
       // 1, 2, 3 => data diubah, dph, dtph
@@ -185,6 +266,15 @@ export default {
         return (row.comment > 0);
       }
       return false;
+    },
+    onATFChange(value, row){
+      return row.type === value;
+    },
+    onActivityChange(value, row){
+      return row.komponen === value;
+    },
+    onHueChange(value, row){
+      return row.rona_awal === value;
     },
     onFilterChange(e){
       console.log(e);
