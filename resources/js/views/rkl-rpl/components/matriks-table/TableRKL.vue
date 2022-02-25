@@ -178,24 +178,30 @@
 
       <el-table-column label="Sumber Dampak">
         <template slot-scope="scope">
-          <el-input
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(source, index) in scope.row.impact_source"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <el-input
+                v-model="scope.row.impact_source[index].description"
+                type="textarea"
+                :rows="2"
+                :readonly="!isFormulator"
+              />
+            </div>
+          </div>
+          <el-button
             v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.impact_source"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
-            :class="{
-              'is-error': checkError(
-                scope.row.type,
-                scope.$index,
-                'impact_source'
-              ),
-            }"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddImpactSource(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
             v-if="checkError(scope.row.type, scope.$index, 'impact_source')"
-            style="color: #f56c6c"
+            style="color: #f56c6c; display: block"
           >
             Sumber Dampak Wajib Diisi
           </small>
@@ -206,24 +212,30 @@
         label="Indikator Keberhasilan Pengelolaan Lingkungan Hidup"
       >
         <template slot-scope="scope">
-          <el-input
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(indicator, index) in scope.row.success_indicator"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <el-input
+                v-model="scope.row.success_indicator[index].description"
+                type="textarea"
+                :rows="2"
+                :readonly="!isFormulator"
+              />
+            </div>
+          </div>
+          <el-button
             v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.success_indicator"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
-            :class="{
-              'is-error': checkError(
-                scope.row.type,
-                scope.$index,
-                'success_indicator'
-              ),
-            }"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddSuccessIndicator(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
             v-if="checkError(scope.row.type, scope.$index, 'success_indicator')"
-            style="color: #f56c6c"
+            style="color: #f56c6c; display: block"
           >
             Indikator Wajib Diisi
           </small>
@@ -589,14 +601,42 @@ export default {
             !x.period_description ||
             !x.executor ||
             !x.supervisor ||
-            !x.report_recipient
+            !x.report_recipient ||
+            x.impact_source.length === 0 ||
+            x.success_indicator.length === 0
           ) {
             errors++;
           }
 
+          let impactSourceError = x.impact_source.length === 0;
+
+          if (!impactSourceError) {
+            const filter = x.impact_source.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              impactSourceError = true;
+              errors++;
+            }
+          }
+
+          let successIndicatorError = x.success_indicator.length === 0;
+
+          if (!successIndicatorError) {
+            const filter = x.success_indicator.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              successIndicatorError = true;
+              errors++;
+            }
+          }
+
           return {
-            impact_source: !x.impact_source,
-            success_indicator: !x.success_indicator,
+            impact_source: impactSourceError,
+            success_indicator: successIndicatorError,
             form: !x.form,
             location: !x.location,
             period_number: !x.period_number,
@@ -606,7 +646,6 @@ export default {
             report_recipient: !x.report_recipient,
           };
         }
-
         return {};
       });
 
@@ -697,6 +736,18 @@ export default {
     },
     async getUserInfo() {
       this.userInfo = await this.$store.dispatch('user/getInfo');
+    },
+    handleAddImpactSource(idx) {
+      this.list[idx].impact_source.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddSuccessIndicator(idx) {
+      this.list[idx].success_indicator.push({
+        id: null,
+        description: null,
+      });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.type === 'title' && columnIndex === 1) {
