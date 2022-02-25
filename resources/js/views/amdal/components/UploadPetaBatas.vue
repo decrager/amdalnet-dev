@@ -232,9 +232,8 @@ export default {
     };
 
     esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
-      .then(response => response.json())
-      .then(data => {
-        this.token = data.token;
+      .then(response => {
+        this.token = response.data.token;
       });
 
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
@@ -434,14 +433,10 @@ export default {
         formData.append('geomSocialStyles', JSON.stringify(this.geomSocialStyles));
         formData.append('geomStudyStyles', JSON.stringify(this.geomStudyStyles));
 
-        var projectTitle = '';
-
         axios.get(`api/projects/${this.idProject}`)
           .then((response) => {
-            projectTitle = response.data.project_title;
+            this.projectTitle = response.data.project_title;
           });
-
-        console.log(projectTitle);
 
         var myHeaders = new Headers();
         myHeaders.append('Authorization', 'Bearer ' + this.token);
@@ -449,7 +444,7 @@ export default {
         var formdatas = new FormData();
         formdatas.append('url', 'https://amdalgis.menlhk.go.id/server/rest/services/Hosted/Test/FeatureServer');
         formdatas.append('type', 'Feature Service');
-        formdatas.append('title', projectTitle + this.idProject);
+        formdatas.append('title', this.projectTitle + this.idProject);
         formdatas.append('file', e[0]);
 
         var requestOptions = {
@@ -583,7 +578,10 @@ export default {
 
           const uploaded = Object.keys(data.features[0].properties);
 
-          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
+
+          if (!checkShapefile) {
             return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
               confirmButtonText: 'Confirm',
               callback: action => {
@@ -652,8 +650,10 @@ export default {
           ];
 
           const uploaded = Object.keys(data.features[0].properties);
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
 
-          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+          if (!checkShapefile) {
             return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
               confirmButtonText: 'Confirm',
               callback: action => {
@@ -723,8 +723,10 @@ export default {
           ];
 
           const uploaded = Object.keys(data.features[0].properties);
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
 
-          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+          if (!checkShapefile) {
             return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {
               confirmButtonText: 'Confirm',
               callback: action => {
