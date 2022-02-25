@@ -696,8 +696,8 @@ class MatriksRKLController extends Controller
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'impact_source' => $pA->envManagePlan->impact_source,
-                    'success_indicator' => $pA->envManagePlan->success_indicator,
+                    'impact_source' => $this->getImpactSource('id_env_manage_plan', $pA->envManagePlan->id),
+                    'success_indicator' => $this->getIndicator('id_env_manage_plan', $pA->envManagePlan->id),
                     'form' => $pA->envManagePlan->form,
                     'location' => $pA->envManagePlan->location,
                     'period' => $pA->envManagePlan->period,
@@ -789,8 +789,8 @@ class MatriksRKLController extends Controller
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'impact_source' => $merge->envManagePlan->impact_source,
-                        'success_indicator' => $merge->envManagePlan->success_indicator,
+                        'impact_source' => $this->getImpactSource('id_env_manage_plan', $merge->envManagePlan->id),
+                        'success_indicator' => $this->getIndicator('id_env_manage_plan', $merge->envManagePlan->id),
                         'form' => $merge->envManagePlan->form,
                         'location' => $merge->envManagePlan->location,
                         'period' => $merge->envManagePlan->period,
@@ -849,8 +849,8 @@ class MatriksRKLController extends Controller
                         'id' => $pA->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'indicator' => $pA->envMonitorPlan->indicator,
-                        'impact_source' => $pA->envMonitorPlan->impact_source,
+                        'indicator' => $this->getIndicator('id_env_monitor_plan', $pA->envMonitorPlan->id),
+                        'impact_source' => $this->getImpactSource('id_env_monitor_plan', $pA->envMonitorPlan->id),
                         'collection_method' => $pA->envMonitorPlan->collection_method,
                         'location' => $pA->envMonitorPlan->location,
                         'time_frequent' => $pA->envMonitorPlan->time_frequent,
@@ -939,8 +939,8 @@ class MatriksRKLController extends Controller
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'indicator' => $merge->envMonitorPlan->indicator,
-                        'impact_source' => $merge->envMonitorPlan->impact_source,
+                        'indicator' => $this->getIndicator('id_env_monitor_plan', $merge->envMonitorPlan->id),
+                        'impact_source' => $this->getImpactSource('id_env_monitor_plan', $merge->envMonitorPlan->id),
                         'collection_method' => $merge->envMonitorPlan->collection_method,
                         'location' => $merge->envMonitorPlan->location,
                         'time_frequent' => $merge->envMonitorPlan->time_frequent,
@@ -1021,5 +1021,35 @@ class MatriksRKLController extends Controller
         }
 
         return $comments;
+    }
+
+    private function getImpactSource($type_id, $id)
+    {
+        $impact_source = '';
+
+        $imp_source = EnvPlanSource::where($type_id, $id)->get();
+
+        $total = 1;
+        foreach($imp_source as $i) {
+            $impact_source .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
+            $total++;
+        }
+
+        return $impact_source;
+    }
+
+    private function getIndicator($type_id, $id)
+    {
+        $indicator = '';
+
+        $indicators = EnvPlanIndicator::where($type_id, $id)->get();
+
+        $total = 1;
+        foreach($indicators as $i) {
+            $indicator .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
+            $total++;
+        }
+
+        return $indicator ;
     }
 }
