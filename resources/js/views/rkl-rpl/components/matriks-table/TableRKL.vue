@@ -344,32 +344,6 @@
         </template>
       </el-table-column>
 
-      <!-- <el-table-column label="Institusi Pengelolaan Lingkungan Hidup">
-        <template slot-scope="scope">
-          <el-input
-            v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.institution"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
-            :class="{
-              'is-error': checkError(
-                scope.row.type,
-                scope.$index,
-                'institution'
-              ),
-            }"
-          />
-          <span v-else>{{ '' }}</span>
-          <small
-            v-if="checkError(scope.row.type, scope.$index, 'institution')"
-            style="color: #f56c6c"
-          >
-            Institusi Pengelolaan Wajib Diisi
-          </small>
-        </template>
-      </el-table-column> -->
-
       <el-table-column label="Institusi Pemantauan Lingkungan Hidup">
         <el-table-column label="Pelaksana">
           <template slot-scope="scope">
