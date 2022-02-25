@@ -1186,7 +1186,10 @@ export default {
             });
           }
 
-          if (JSON.stringify(mapUploadProperties) !== JSON.stringify(mapSampleProperties)) {
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(mapUploadProperties, mapSampleProperties);
+
+          if (!checkShapefile) {
             document.getElementById('fileMap').value = '';
             this.fileMapName = 'No File Selected';
             return this.$alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar.', 'Format Salah', {

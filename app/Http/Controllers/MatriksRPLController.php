@@ -6,6 +6,8 @@ use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\Comment;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\EnvPlanIndicator;
+use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Institution;
@@ -185,8 +187,6 @@ class MatriksRPLController extends Controller
                 $ids[] = $monitor[$i]['id'];
             }
 
-            $envMonitor->indicator = $monitor[$i]['indicator'];
-            $envMonitor->impact_source = $monitor[$i]['impact_source'];
             $envMonitor->collection_method = $monitor[$i]['collection_method'];
             $envMonitor->location = $monitor[$i]['location'];
             $envMonitor->time_frequent = $monitor[$i]['period_number'] . '-' . $monitor[$i]['period_description'];
@@ -194,6 +194,40 @@ class MatriksRPLController extends Controller
             $envMonitor->supervisor = $monitor[$i]['supervisor'];
             $envMonitor->report_recipient = $monitor[$i]['report_recipient'];
             $envMonitor->save();
+
+            // === IMPACT SOURCE === //
+            $impact_source = $monitor[$i]['impact_source'];
+            if(count($impact_source) > 0) {
+                for($a = 0; $a < count($impact_source); $a++) {
+                    $imp_source = null;
+                    if($impact_source[$a]['id'] !== null) {
+                        $imp_source = EnvPlanSource::findOrFail($impact_source[$a]['id']);
+                    } else {
+                       $imp_source = new EnvPlanSource();
+                       $imp_source->id_env_monitor_plan = $envMonitor->id;
+                    }
+                    
+                    $imp_source->description = $impact_source[$a]['description'];
+                    $imp_source->save();
+                }
+            }
+
+            // === SUCCESS INDICATOR === //
+            $indicator = $monitor[$i]['indicator'];
+            if(count($indicator) > 0) {
+                for($a = 0; $a < count($indicator); $a++) {
+                    $imp_indicator = null;
+                    if($indicator[$a]['id'] !== null) {
+                        $imp_indicator = EnvPlanIndicator::findOrFail($indicator[$a]['id']);
+                    } else {
+                       $imp_indicator = new EnvPlanIndicator();
+                       $imp_indicator->id_env_monitor_plan = $envMonitor->id;
+                    }
+                    
+                    $imp_indicator->description = $indicator[$a]['description'];
+                    $imp_indicator->save();
+                }
+            }
         }
 
         // === WORKFLOW === //
@@ -360,8 +394,18 @@ class MatriksRPLController extends Controller
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'indicator' => $type == 'new' ? null : $pA->envMonitorPlan->indicator,
-                    'impact_source' => $type == 'new' ? null : $pA->envMonitorPlan->impact_source,
+                    'impact_source' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanSource::select('id', 'description', 'id_env_monitor_plan')
+                                    ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
+                                    ->get(),
+                    'indicator' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanIndicator::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
+                                        ->get(),
                     'collection_method' => $type == 'new' ? null : $pA->envMonitorPlan->collection_method,
                     'location' => $type == 'new' ? null : $pA->envMonitorPlan->location,
                     'time_frequent' => $type == 'new' ? null : $pA->envMonitorPlan->time_frequent,
@@ -481,8 +525,18 @@ class MatriksRPLController extends Controller
                     'id' => $merge->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'indicator' => $type == 'new' ? null : $merge->envMonitorPlan->indicator,
-                    'impact_source' => $type == 'new' ? null : $merge->envMonitorPlan->impact_source,
+                    'impact_source' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanSource::select('id', 'description', 'id_env_monitor_plan')
+                                    ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
+                                    ->get(),
+                    'indicator' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanIndicator::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
+                                        ->get(),
                     'collection_method' => $type == 'new' ? null : $merge->envMonitorPlan->collection_method,
                     'location' => $type == 'new' ? null : $merge->envMonitorPlan->location,
                     'time_frequent' => $type == 'new' ? null : $merge->envMonitorPlan->time_frequent,

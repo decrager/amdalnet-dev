@@ -326,8 +326,10 @@ export default {
           ];
 
           const uploaded = Object.keys(data.features[0].properties);
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
 
-          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+          if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
             return;
           }
@@ -386,7 +388,10 @@ export default {
 
           const uploaded = Object.keys(data.features[0].properties);
 
-          if (JSON.stringify(uploaded) !== JSON.stringify(valid)) {
+          const checker = (arr, target) => target.every(v => arr.includes(v));
+          const checkShapefile = checker(uploaded, valid);
+
+          if (!checkShapefile) {
             alert('Atribut .shp yang dimasukkan tidak sesuai dengan format yang benar. Download sample diatas!');
             return;
           }

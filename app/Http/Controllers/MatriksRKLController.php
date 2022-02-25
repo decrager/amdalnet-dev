@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Entity\Comment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
+use App\Entity\EnvPlanIndicator;
+use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Project;
@@ -277,8 +279,6 @@ class MatriksRKLController extends Controller
                 $ids[] = $manage[$i]['id'];
             }
 
-            $envManage->impact_source = $manage[$i]['impact_source'];
-            $envManage->success_indicator = $manage[$i]['success_indicator'];
             $envManage->form = $manage[$i]['form'];
             $envManage->location = $manage[$i]['location'];
             $envManage->period = $manage[$i]['period_number'] . '-' . $manage[$i]['period_description'];
@@ -286,6 +286,40 @@ class MatriksRKLController extends Controller
             $envManage->supervisor = $manage[$i]['supervisor'];
             $envManage->report_recipient = $manage[$i]['report_recipient'];
             $envManage->save();
+
+             // === IMPACT SOURCE === //
+             $impact_source = $manage[$i]['impact_source'];
+             if(count($impact_source) > 0) {
+                 for($a = 0; $a < count($impact_source); $a++) {
+                     $imp_source = null;
+                     if($impact_source[$a]['id'] !== null) {
+                         $imp_source = EnvPlanSource::findOrFail($impact_source[$a]['id']);
+                     } else {
+                        $imp_source = new EnvPlanSource();
+                        $imp_source->id_env_manage_plan = $envManage->id;
+                     }
+                     
+                     $imp_source->description = $impact_source[$a]['description'];
+                     $imp_source->save();
+                 }
+             }
+
+             // === SUCCESS INDICATOR === //
+             $success_indicator = $manage[$i]['success_indicator'];
+             if(count($success_indicator) > 0) {
+                 for($a = 0; $a < count($success_indicator); $a++) {
+                     $imp_indicator = null;
+                     if($success_indicator[$a]['id'] !== null) {
+                         $imp_indicator = EnvPlanIndicator::findOrFail($success_indicator[$a]['id']);
+                     } else {
+                        $imp_indicator = new EnvPlanIndicator();
+                        $imp_indicator->id_env_manage_plan = $envManage->id;
+                     }
+                     
+                     $imp_indicator->description = $success_indicator[$a]['description'];
+                     $imp_indicator->save();
+                 }
+             }
         }
 
         // === WORKFLOW === //
@@ -451,8 +485,18 @@ class MatriksRKLController extends Controller
                 'id' => $pA->id,
                 'name' => "$changeType $ronaAwal akibat $component",
                 'type' => 'subtitle',
-                'impact_source' => $type == 'new' ? null : $pA->envManagePlan->impact_source,
-                'success_indicator' => $type == 'new' ? null : $pA->envManagePlan->success_indicator,
+                'impact_source' => 
+                    $type == 'new' ? 
+                    [] : 
+                    EnvPlanSource::select('id', 'description', 'id_env_manage_plan')
+                                   ->where('id_env_manage_plan', $pA->envManagePlan->id)
+                                   ->get(),
+                'success_indicator' => 
+                    $type == 'new' ? 
+                    [] : 
+                    EnvPlanIndicator::select('id', 'description', 'id_env_manage_plan')
+                                      ->where('id_env_manage_plan', $pA->envManagePlan->id)
+                                      ->get(),
                 'form' => $type == 'new' ? null : $pA->envManagePlan->form,
                 'location' => $type == 'new' ? null : $pA->envManagePlan->location,
                 'period' => $type == 'new' ? null : $pA->envManagePlan->period,
@@ -571,8 +615,18 @@ class MatriksRKLController extends Controller
                 'id' => $merge->id,
                 'name' => "$changeType $ronaAwal akibat $component",
                 'type' => 'subtitle',
-                'impact_source' => $type == 'new' ? null : $merge->envManagePlan->impact_source,
-                'success_indicator' => $type == 'new' ? null : $merge->envManagePlan->success_indicator,
+                'impact_source' => 
+                    $type == 'new' ? 
+                    [] : 
+                    EnvPlanSource::select('id', 'description', 'id_env_manage_plan')
+                                   ->where('id_env_manage_plan', $merge->envManagePlan->id)
+                                   ->get(),
+                'success_indicator' => 
+                    $type == 'new' ? 
+                    [] : 
+                    EnvPlanIndicator::select('id', 'description', 'id_env_manage_plan')
+                                      ->where('id_env_manage_plan', $merge->envManagePlan->id)
+                                      ->get(),
                 'form' => $type == 'new' ? null : $merge->envManagePlan->form,
                 'location' => $type == 'new' ? null : $merge->envManagePlan->location,
                 'period' => $type == 'new' ? null : $merge->envManagePlan->period,
@@ -642,8 +696,8 @@ class MatriksRKLController extends Controller
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'impact_source' => $pA->envManagePlan->impact_source,
-                    'success_indicator' => $pA->envManagePlan->success_indicator,
+                    'impact_source' => $this->getImpactSource('id_env_manage_plan', $pA->envManagePlan->id),
+                    'success_indicator' => $this->getIndicator('id_env_manage_plan', $pA->envManagePlan->id),
                     'form' => $pA->envManagePlan->form,
                     'location' => $pA->envManagePlan->location,
                     'period' => $pA->envManagePlan->period,
@@ -735,8 +789,8 @@ class MatriksRKLController extends Controller
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'impact_source' => $merge->envManagePlan->impact_source,
-                        'success_indicator' => $merge->envManagePlan->success_indicator,
+                        'impact_source' => $this->getImpactSource('id_env_manage_plan', $merge->envManagePlan->id),
+                        'success_indicator' => $this->getIndicator('id_env_manage_plan', $merge->envManagePlan->id),
                         'form' => $merge->envManagePlan->form,
                         'location' => $merge->envManagePlan->location,
                         'period' => $merge->envManagePlan->period,
@@ -795,8 +849,8 @@ class MatriksRKLController extends Controller
                         'id' => $pA->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'indicator' => $pA->envMonitorPlan->indicator,
-                        'impact_source' => $pA->envMonitorPlan->impact_source,
+                        'indicator' => $this->getIndicator('id_env_monitor_plan', $pA->envMonitorPlan->id),
+                        'impact_source' => $this->getImpactSource('id_env_monitor_plan', $pA->envMonitorPlan->id),
                         'collection_method' => $pA->envMonitorPlan->collection_method,
                         'location' => $pA->envMonitorPlan->location,
                         'time_frequent' => $pA->envMonitorPlan->time_frequent,
@@ -885,8 +939,8 @@ class MatriksRKLController extends Controller
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'indicator' => $merge->envMonitorPlan->indicator,
-                        'impact_source' => $merge->envMonitorPlan->impact_source,
+                        'indicator' => $this->getIndicator('id_env_monitor_plan', $merge->envMonitorPlan->id),
+                        'impact_source' => $this->getImpactSource('id_env_monitor_plan', $merge->envMonitorPlan->id),
                         'collection_method' => $merge->envMonitorPlan->collection_method,
                         'location' => $merge->envMonitorPlan->location,
                         'time_frequent' => $merge->envMonitorPlan->time_frequent,
@@ -967,5 +1021,35 @@ class MatriksRKLController extends Controller
         }
 
         return $comments;
+    }
+
+    private function getImpactSource($type_id, $id)
+    {
+        $impact_source = '';
+
+        $imp_source = EnvPlanSource::where($type_id, $id)->get();
+
+        $total = 1;
+        foreach($imp_source as $i) {
+            $impact_source .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
+            $total++;
+        }
+
+        return $impact_source;
+    }
+
+    private function getIndicator($type_id, $id)
+    {
+        $indicator = '';
+
+        $indicators = EnvPlanIndicator::where($type_id, $id)->get();
+
+        $total = 1;
+        foreach($indicators as $i) {
+            $indicator .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
+            $total++;
+        }
+
+        return $indicator ;
     }
 }
