@@ -313,7 +313,6 @@ class AndalComposingController extends Controller
             for ($i = 0; $i < count($analysis); $i++) {
                 $envAnalysis = new EnvImpactAnalysis();
                 $envAnalysis->id_impact_identifications = $analysis[$i]['id'];
-                $envAnalysis->impact_size = $analysis[$i]['impact_size'];
                 $envAnalysis->impact_eval_result = $analysis[$i]['impact_eval_result'];
                 $envAnalysis->impact_type = $analysis[$i]['impact_type'];
                 $envAnalysis->studies_condition = $analysis[$i]['studies_condition'];
@@ -344,7 +343,6 @@ class AndalComposingController extends Controller
             $ids = [];
             for ($i = 0; $i < count($analysis); $i++) {
                 $envAnalysis = EnvImpactAnalysis::where('id_impact_identifications', $analysis[$i]['id'])->first();
-                $envAnalysis->impact_size = $analysis[$i]['impact_size'];
                 $envAnalysis->impact_eval_result = $analysis[$i]['impact_eval_result'];
                 $envAnalysis->impact_type = $analysis[$i]['impact_type'];
                 $envAnalysis->studies_condition = $analysis[$i]['studies_condition'];
@@ -490,7 +488,6 @@ class AndalComposingController extends Controller
                     'type' => 'subtitle',
                     'component' => $component,
                     'ronaAwal' => $ronaAwal,
-                    'impact_size' => null,
                     'important_trait' => $traits,
                     'impact_type' => null,
                     'impact_eval_result' => null,
@@ -584,7 +581,6 @@ class AndalComposingController extends Controller
                     'type' => 'subtitle',
                     'component' => $component,
                     'ronaAwal' => $ronaAwal,
-                    'impact_size' => $imp->envImpactAnalysis->impact_size,
                     'important_trait' => $important_trait,
                     'impact_type' => $imp->envImpactAnalysis->impact_type,
                     'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
