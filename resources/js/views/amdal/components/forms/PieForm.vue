@@ -41,7 +41,7 @@
                   :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
                   @hasChanges="markChange"
                 />
-                <div v-else v-html="data[data.findIndex(e => e.id_pie_param === param.id)].text" />
+                <div v-else class="div-readonly" v-html="data[data.findIndex(e => e.id_pie_param === param.id)].text || '&nbsp;<br/>&nbsp;'" />
               </el-form-item>
             </el-col>
           </template>
@@ -131,7 +131,7 @@ fieldset {
   background: #f5f5f5; /*#f3f7f3;*/
   border: 1px solid #e0e9e0;
   border-radius: 1em;
-  padding: 1em 2em;
+  padding: 0.7em 1em;
 
   legend {
     font-weight: 600;
@@ -149,5 +149,16 @@ div.pie-desc-popper {
 
   &[x-placement^="bottom"] .popper__arrow::after { border-bottom-color: #333; }
   &[x-placement^="top"] .popper__arrow::after { border-top-color: #333; }
+}
+div.pie-readonly {
+  border:1px solid #e0e0e0;
+  background: white;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+
+  p{
+    margin: 0.5em 0 0.8em;
+    line-height: 1.25em;
+  }
 }
 </style>

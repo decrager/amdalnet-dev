@@ -78,7 +78,7 @@
                 :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
                 @hasChanges="hasChanges"
               />
-              <div v-else v-html="data.initial_study_plan" />
+              <div v-else class="div-readonly" v-html="data.initial_study_plan || '&nbsp;<br/>&nbsp;'" />
             </el-form-item>
             <el-form-item v-if="!(data.is_hypothetical_significant === false)" label="Wilayah Studi">
               <el-input
@@ -392,5 +392,16 @@ export default {
       font-weight: 500;
       line-height: 1.3em ;
     }
+  div.div-readonly {
+    border:1px solid #e0e0e0;
+    background: white;
+    padding: 0.5em 1em;
+    border-radius: 0.3em;
+
+    p{
+      margin: 0.5em 0 0.8em;
+      line-height: 1.25em;
+    }
+  }
 }
 </style>
