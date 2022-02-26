@@ -3,11 +3,6 @@ function popupTemplate(value) {
     title: 'Keterangan',
     content: '<table style="border-collapse: collapse !important">' +
                 '<thead>' +
-                    '<tr style="margin: 5px 0;">' +
-                        '<td style="width: 35%">ID</td>' +
-                        '<td> : </td>' +
-                        '<td>' + value.OBJECTID_1 + '</td>' +
-                    '</tr>' +
                     '<tr style="margin: 5px 0; background-color: #CFEEFA">' +
                         '<td style="width: 35%">NAMA_PEMRAKARSA</td>' +
                         '<td> : </td>' +

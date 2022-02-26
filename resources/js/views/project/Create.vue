@@ -1129,7 +1129,7 @@ export default {
       });
 
       const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/Kawasan_Hutan/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/KawasanHutan/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
@@ -1156,7 +1156,6 @@ export default {
         const base = event.target.result;
         shp(base).then((datas) => {
           const mapSampleProperties = [
-            'OBJECTID_1',
             'PEMRAKARSA',
             'KEGIATAN',
             'TAHUN',
@@ -1167,7 +1166,13 @@ export default {
           ];
 
           const mapUploadProperties = Object.keys(datas.features[0].properties);
-          const propFields = datas.features[0].properties;
+          var getPropFields = datas.features[0].properties;
+
+          var propFields = Object.entries(getPropFields).reduce(function(a, _a) {
+            var key = _a[0], value = _a[1];
+            a[key.toUpperCase()] = value;
+            return a;
+          }, {});
 
           var centroids = centroid(datas.features[0]);
           var getCoordinates = centroids.geometry.coordinates;
@@ -1187,7 +1192,9 @@ export default {
           }
 
           const checker = (arr, target) => target.every(v => arr.includes(v));
-          const checkShapefile = checker(mapUploadProperties, mapSampleProperties);
+          const validDataSet = mapSampleProperties.map(element => element.toLowerCase());
+          const uploadDataSet = mapUploadProperties.map(element => element.toLowerCase());
+          const checkShapefile = checker(uploadDataSet, validDataSet);
 
           if (!checkShapefile) {
             document.getElementById('fileMap').value = '';
@@ -1222,7 +1229,6 @@ export default {
             },
           };
           const url = URL.createObjectURL(blob);
-          console.log(url);
           const geojsonLayer = new GeoJSONLayer({
             url: url,
             visible: true,
@@ -1392,6 +1398,8 @@ export default {
       fomDataArcgis.append('fileName', this.currentProject.project_title + '_Peta Tapak Proyek');
       fomDataArcgis.append('tags', 'Amdalnet Web');
       fomDataArcgis.append('f', 'json');
+
+      console.log(this.currentProject.fileMap);
 
       var requestOptions = {
         method: 'POST',
