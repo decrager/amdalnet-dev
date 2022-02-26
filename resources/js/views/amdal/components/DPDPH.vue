@@ -100,6 +100,7 @@ export default {
         this.components = [];
         this.subProjects = [];
         this.hues = [];
+        const data = res;
         res.map((e) => {
           e.hasChanges = false;
 
@@ -108,11 +109,20 @@ export default {
           }
 
           if (this.subProjects.findIndex(s => s.value === e.kegiatan) < 0) {
-            this.subProjects.push({ text: e.kegiatan, label: e.kegiatan + ' (' + e.type + ')', value: e.kegiatan });
+            const temp = data.filter(d => d.kegiatan === e.kegiatan);
+            this.subProjects.push({
+              text: e.kegiatan,
+              label: ('[' + e.type + '] ' + e.kegiatan + ' (' + temp.length + ')')
+                .replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+              value: e.kegiatan,
+            });
           }
 
-          if (this.hues.findIndex(c => c.value === e.rona_awal) < 0) {
-            this.hues.push({ text: e.rona_awal, value: e.rona_awal });
+          if (this.hues.findIndex(c => (c.value).toLowerCase() === (e.rona_awal).toLowerCase()) < 0) {
+            this.hues.push({
+              text: (e.rona_awal)
+                .replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+              value: e.rona_awal });
           }
         });
         const order = [4, 1, 2, 3]; // stage's order
