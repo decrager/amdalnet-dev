@@ -84,6 +84,10 @@ export default {
       type: Number,
       default: () => 0,
     },
+    selectedIdSubProjectComponent: {
+      type: Number,
+      default: () => 0,
+    },
     subProjects: {
       type: Object,
       default: () => {},
@@ -156,7 +160,7 @@ export default {
         });
     },
     handleClose() {
-      this.$emit('handleCloseAddComponent', false);
+      this.$emit('handleCloseAddComponent', this.selectedIdSubProjectComponent);
     },
     async getData() {
       // if edit

@@ -108,7 +108,15 @@
                   </el-row>
                 </div>
 
-                <el-button v-if="!isAndal && isFormulator" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
+                <el-button
+                  v-if="!isAndal && isFormulator"
+                  icon="el-icon-plus"
+                  circle
+                  style="margin-top:3em;display:block;"
+                  round
+                  :disabled="!(currentIdSubProject > 0)"
+                  @click="handleAddComponent()"
+                />
               </td>
               <td v-for="i in 6" :key="i">
                 <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" style="margin:.5em 0;">
@@ -126,7 +134,7 @@
                   circle
                   style="margin-top:3em;display:block;"
                   round
-                  :disabled="currentIdSubProjectComponent === 0"
+                  :disabled="!(currentIdSubProjectComponent > 0)"
                   @click="handleAddRonaAwal(i)"
                 />
               </td>
@@ -144,6 +152,7 @@
       :sub-project-component="editSubProjectComponent"
       :is-edit="isEditComponent"
       :current-id-sub-project="currentIdSubProject"
+      :selected-id-sub-project-component="currentIdSubProjectComponent"
       @handleCloseAddComponent="handleCloseAddComponent"
       @handleSetCurrentIdSubProjectComponent="handleSetCurrentIdSubProjectComponent"
     />

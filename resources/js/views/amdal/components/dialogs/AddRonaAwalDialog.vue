@@ -228,7 +228,7 @@ export default {
         });
     },
     handleClose() {
-      this.$emit('handleCloseAddRonaAwal', false);
+      this.$emit('handleCloseAddRonaAwal', this.currentIdSubProjectComponent);
     },
     async getData() {
       const { data } = await componentTypeResource.list({});
