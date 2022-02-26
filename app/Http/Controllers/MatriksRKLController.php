@@ -276,6 +276,10 @@ class MatriksRKLController extends Controller
                 $envManage->id_impact_identifications = $manage[$i]['id'];
             } else {
                 $envManage = EnvManagePlan::where('id_impact_identifications', $manage[$i]['id'])->first();
+                if(!$envManage) {
+                    $envManage = new EnvManagePlan();
+                    $envManage->id_impact_identifications = $manage[$i]['id'];
+                }
                 $ids[] = $manage[$i]['id'];
             }
 

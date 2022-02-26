@@ -184,6 +184,11 @@ class MatriksRPLController extends Controller
                 $envMonitor->id_impact_identifications = $monitor[$i]['id'];
             } else {
                 $envMonitor = EnvMonitorPlan::where('id_impact_identifications', $monitor[$i]['id'])->first();
+                if(!$envMonitor) {
+                    $envMonitor = new EnvMonitorPlan();
+                    $envMonitor->id_impact_identifications = $monitor[$i]['id'];
+                }
+
                 $ids[] = $monitor[$i]['id'];
             }
 

@@ -28,6 +28,7 @@ class FormulatorTeamController extends Controller
     public function index(Request $request)
     {
         if($request->type && $request->type == 'formulator') {
+            $id_project = $request->idProject;
             if($request->lpjp) {
                 return Formulator::select('id', 'name', 'expertise', 'cv_file', 'cert_file', 'reg_no', 'membership_status', 'date_start', 'date_end')
                     ->where([['membership_status', '!=', 'TA'],['id_lpjp', $request->idLpjp],['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
@@ -37,7 +38,14 @@ class FormulatorTeamController extends Controller
             }
 
             return Formulator::select('id', 'name', 'expertise', 'cv_file', 'cert_file', 'reg_no', 'membership_status', 'date_start', 'date_end')
-                                ->where([['membership_status', '!=', 'TA'],['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])->orWhere([['membership_status', '!=', 'TA'],['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]])
+                                ->whereDoesntHave('teamMember', function($q) use($id_project) {
+                                    $q->whereHas('team', function($query) use($id_project) {
+                                        $query->where('id_project', $id_project);
+                                    });
+                                })
+                                ->where(function($q) {
+                                    $q->where([['membership_status', '!=', 'TA'],['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])->orWhere([['membership_status', '!=', 'TA'],['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
+                                })
                                 ->orderBy('name')
                                 ->get();
         }
