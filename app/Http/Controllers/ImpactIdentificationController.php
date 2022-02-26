@@ -17,6 +17,9 @@ use App\Entity\EnvMonitorPlan;
 use App\Entity\Project;
 use PHPUnit\Framework\Constraint\IsEmpty;
 use PhpParser\Node\Expr\Empty_;
+use App\Entity\SubProject;
+use App\Entity\SubProjectComponent;
+use App\Entity\SubProjectRonaAwal;
 
 class ImpactIdentificationController extends Controller
 {
@@ -517,6 +520,47 @@ class ImpactIdentificationController extends Controller
                 //     $project->workflow_apply('draft-amdal-form-ka');
                 //     $project->save();
                 // }
+
+                // init pies
+                // A
+                $subProj = SubProjectComponent::where('id', $request['id_sub_project_component'])->first();
+                $subProjHue = SubProjectRonaAwal::where('id', $request['id_sub_project_rona_awal'])->first();
+                if ($subProj && $subProjHue){
+                    $text = "<p><strong>Deskripsi</strong></p>";
+                    $text .= "<p>".$subProj->description_specific."</p>";
+                    $text .= "<p><strong>Besaran</strong></p>";
+                    $text .= "<p>".$subProj->unit."</p>";
+
+                    $pie_A = PotentialImpactEvaluation::create([
+                        'id_impact_identification' => $created->id,
+                        'id_pie_param' => 1,
+                        'text' => $text
+                    ]);
+
+
+                    $pie_B = PotentialImpactEvaluation::create([
+                        'id_impact_identification' => $created->id,
+                        'id_pie_param' => 2,
+                    ]);
+                    $pie_C = PotentialImpactEvaluation::create([
+                        'id_impact_identification' => $created->id,
+                        'id_pie_param' => 3,
+                    ]);
+                    $pie_D = PotentialImpactEvaluation::create([
+                        'id_impact_identification' => $created->id,
+                        'id_pie_param' => 4,
+                    ]);
+
+                    $text = "<p><strong>Deskripsi</strong></p>";
+                    $text .= "<p>".$subProjHue->description_specific."</p>";
+                    $text .= "<p><strong>Besaran</strong></p>";
+                    $text .= "<p>".$subProjHue->unit."</p>";
+                    $pie_E = PotentialImpactEvaluation::create([
+                        'id_impact_identification' => $created->id,
+                        'id_pie_param' => 5,
+                        'text' => $text
+                    ]);
+                 }
                 return $created;
             } else {
                 DB::rollBack();
@@ -622,11 +666,14 @@ class ImpactIdentificationController extends Controller
             ii.study_length_month,
             ii.study_length_year,
             ii.study_location,
-            count(cm.id) as comment
+            count(cm.id) as comment,
+            sp."name" as kegiatan,
+            sp.type
         ')
         ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
         ->leftJoin('sub_project_rona_awals AS spra', 'ii.id_sub_project_rona_awal', '=', 'spra.id')
         ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
+        ->leftJoin('sub_projects as sp', 'sp.id', '=', 'spc.id_sub_project')
         ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
         ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
         ->leftJoin('comments as cm', function ($join) use ($request, $comments) {
@@ -641,10 +688,20 @@ class ImpactIdentificationController extends Controller
             return response(
             $impacts
             ->where('ii.id_project', $request->id_project)
+             ->where(function($query) {
+                $query->whereNotNull('ra.id');
+                $query->orWhereNotNull('spra.id');
+                return $query;
+            })
+            /*->where(function($query) {
+                $query->whereNotNull('c.id');
+                $query->orWhereNotNull('spc.id');
+                return $query;
+            })*/
             ->groupBy('ii.id', 'ct.name', 'c.id_project_stage',
                 'spc.id_project_stage', 'ps.name',
                 'c.name', 'spc.name',
-                'ra.name', 'spra.name')
+                'ra.name', 'spra.name', 'sp.name', 'sp.type')
             ->orderBy('ii.id', 'asc')
             ->get());
         //return response($impacts);
@@ -655,7 +712,7 @@ class ImpactIdentificationController extends Controller
             ->groupBy('ii.id', 'ct.name', 'c.id_project_stage',
                 'spc.id_project_stage', 'ps.name',
                 'c.name', 'spc.name',
-                'ra.name', 'spra.name')
+                'ra.name', 'spra.name', 'sp.name', 'sp.type')
             ->first();
             if($res) return response($res);
             return response('Dampak tidak ditemukan',404);

@@ -1,7 +1,7 @@
 <template>
   <div :class="{fullscreen:fullscreen}" class="tinymce-container editor-container">
     <textarea :id="tinymceId" class="tinymce-textarea" />
-    <div class="editor-custom-btn-container">
+    <div v-if="image" class="editor-custom-btn-container">
       <editorImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessCBK" />
     </div>
   </div>
@@ -42,6 +42,11 @@ export default {
       required: false,
       default: 360,
     },
+    image: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   data() {
     return {
@@ -70,6 +75,12 @@ export default {
     language() {
       this.destroyTinymce();
       this.$nextTick(() => this.initTinymce());
+    },
+    hasChange: function(val){
+      console.log('yup, there are changes!', val);
+      if (val){
+        this.$emit('hasChanges', val);
+      }
     },
   },
   mounted() {
@@ -105,13 +116,19 @@ export default {
         imagetools_cors_hosts: ['www.tinymce.com', 'codepen.io'],
         default_link_target: '_blank',
         link_title: false,
+        autosave_ask_before_unload: false,
+        content_css: 'body: {font-family: Monserrat; color:#303333 !important;}',
         nonbreaking_force_tab: true, // inserting nonbreaking space &nbsp; need Nonbreaking Space Plugin
         init_instance_callback: editor => {
           if (_this.value) {
             editor.setContent(_this.value);
           }
           _this.hasInit = true;
-          editor.on('NodeChange Change KeyUp SetContent', () => {
+          /* editor.on('NodeChange Change KeyUp SetContent', () => {
+            this.hasChange = true;
+            this.$emit('input', editor.getContent());
+          });*/
+          editor.on('Change', () => {
             this.hasChange = true;
             this.$emit('input', editor.getContent());
           });

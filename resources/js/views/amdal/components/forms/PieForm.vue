@@ -4,7 +4,7 @@
       <legend>Evaluasi Dampak Potensial <span v-if="!isFormulator" style="font-size:80%; font-style: italic; color: blue;">&nbsp;&nbsp;read-only</span></legend>
       <el-form v-if="data" ref="form" label-position="top" label-width="120px">
         <el-row
-          :gutter="20"
+          :gutter="15"
           class="pies-input"
         >
           <template
@@ -15,7 +15,7 @@
                 <el-popover
                   v-if="param.description !== ''"
                   placement="top-start"
-                  width="350"
+                  width="300"
                   popper-class="pie-desc-popper"
                   trigger="hover"
                 >
@@ -23,13 +23,25 @@
                   <label slot="reference" :key="'po_'+ param.id + '_'+ data[data.findIndex(e => e.id_pie_param === param.id)].id" class="el-form-item__label" style="cursor: pointer;">{{ param.name }}</label>
                 </el-popover>
                 <label v-else class="el-form-item__label">{{ param.name }}</label>
+                <!--
                 <el-input
                   v-model="data[data.findIndex(e => e.id_pie_param === param.id)].text"
                   type="textarea"
                   :autosize="{ minRows: 3, maxRows: 5}"
                   :readonly="!isFormulator"
                   @input="markChange"
+                /> -->
+                <pie-editor
+                  v-if="isFormulator"
+                  v-model="data[data.findIndex(e => e.id_pie_param === param.id)].text"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :height="150"
+                  :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                  @hasChanges="markChange"
                 />
+                <div v-else class="div-readonly" v-html="data[data.findIndex(e => e.id_pie_param === param.id)].text || '&nbsp;<br/>&nbsp;'" />
               </el-form-item>
             </el-col>
           </template>
@@ -39,8 +51,12 @@
   </div>
 </template>
 <script>
+import PieEditor from '@/components/Tinymce';
 export default {
   name: 'PieForm',
+  components: {
+    PieEditor,
+  },
   props: {
     data: {
       type: Array,
@@ -115,7 +131,7 @@ fieldset {
   background: #f5f5f5; /*#f3f7f3;*/
   border: 1px solid #e0e9e0;
   border-radius: 1em;
-  padding: 1em 2em;
+  padding: 0.7em 1em;
 
   legend {
     font-weight: 600;
@@ -133,5 +149,16 @@ div.pie-desc-popper {
 
   &[x-placement^="bottom"] .popper__arrow::after { border-bottom-color: #333; }
   &[x-placement^="top"] .popper__arrow::after { border-top-color: #333; }
+}
+div.pie-readonly {
+  border:1px solid #e0e0e0;
+  background: white;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+
+  p{
+    margin: 0.5em 0 0.8em;
+    line-height: 1.25em;
+  }
 }
 </style>

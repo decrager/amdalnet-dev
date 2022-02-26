@@ -1,5 +1,9 @@
 <template>
-  <el-dialog :title="'Lihat Progres Dokumen Lingkungan'" :visible.sync="show">
+  <el-dialog
+    :title="'Lihat Progres Dokumen Lingkungan'"
+    :destroy-on-close="true"
+    :visible.sync="show"
+  >
     <div class="form-container">
       <el-form
         ref="form"

@@ -21,10 +21,10 @@
             <span class="label">Nama</span>
             <span class="value">{{ user.name }}</span>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <span class="label">Nama LPJP</span>
             <span class="value">{{ user.expertise }}</span>
-          </el-row>
+          </el-row> -->
           <el-row>
             <span class="label">No. Sertifikat</span>
             <span class="value">{{ user.cert_no }}</span>

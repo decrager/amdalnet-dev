@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PotentialImpactEvaluation extends Model
 {
     use HasFactory;
-    protected $fillabel = [
+    protected $fillable = [
         'id_impact_identification',
         'id_pie_param',
         'text'

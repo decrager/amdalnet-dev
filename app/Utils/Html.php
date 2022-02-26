@@ -25,6 +25,7 @@ use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\SimpleType\NumberFormat;
 use PhpOffice\PhpWord\Style\Paragraph;
+use PhpOffice\PhpWord\Shared\Converter;
 
 /**
  * Common Html functions

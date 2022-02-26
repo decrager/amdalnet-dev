@@ -179,24 +179,30 @@
 
         <el-table-column label="Sumber Dampak">
           <template slot-scope="scope">
-            <el-input
+            <div v-if="scope.row.type == 'subtitle'">
+              <div
+                v-for="(source, index) in scope.row.impact_source"
+                :key="index"
+                style="margin-bottom: 5px"
+              >
+                <el-input
+                  v-model="scope.row.impact_source[index].description"
+                  type="textarea"
+                  :rows="2"
+                  :readonly="!isFormulator"
+                />
+              </div>
+            </div>
+            <el-button
               v-if="scope.row.type == 'subtitle'"
-              v-model="scope.row.impact_source"
-              type="textarea"
-              :rows="2"
-              :readonly="!isFormulator"
-              :class="{
-                'is-error': checkError(
-                  scope.row.type,
-                  scope.$index,
-                  'impact_source'
-                ),
-              }"
+              icon="el-icon-plus"
+              circle
+              @click="handleAddImpactSource(scope.$index)"
             />
             <span v-else>{{ '' }}</span>
             <small
               v-if="checkError(scope.row.type, scope.$index, 'impact_source')"
-              style="color: #f56c6c"
+              style="color: #f56c6c; display: block"
             >
               Sumber Dampak Wajib Diisi
             </small>
@@ -206,20 +212,30 @@
 
       <el-table-column label="Indikator / Parameter">
         <template slot-scope="scope">
-          <el-input
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(indi, index) in scope.row.indicator"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <el-input
+                v-model="scope.row.indicator[index].description"
+                type="textarea"
+                :rows="2"
+                :readonly="!isFormulator"
+              />
+            </div>
+          </div>
+          <el-button
             v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.indicator"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
-            :class="{
-              'is-error': checkError(scope.row.type, scope.$index, 'indicator'),
-            }"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddIndicator(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
             v-if="checkError(scope.row.type, scope.$index, 'indicator')"
-            style="color: #f56c6c"
+            style="color: #f56c6c; display: block"
           >
             Indikator Wajib Diisi
           </small>
@@ -577,14 +593,42 @@ export default {
             !x.period_description ||
             !x.executor ||
             !x.supervisor ||
-            !x.report_recipient
+            !x.report_recipient ||
+            x.impact_source.length === 0 ||
+            x.indicator.length === 0
           ) {
             errors++;
           }
 
+          let impactSourceError = x.impact_source.length === 0;
+
+          if (!impactSourceError) {
+            const filter = x.impact_source.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              impactSourceError = true;
+              errors++;
+            }
+          }
+
+          let indicatorError = x.indicator.length === 0;
+
+          if (!indicatorError) {
+            const filter = x.indicator.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              indicatorError = true;
+              errors++;
+            }
+          }
+
           return {
-            indicator: !x.indicator,
-            impact_source: !x.impact_source,
+            indicator: indicatorError,
+            impact_source: impactSourceError,
             collection_method: !x.collection_method,
             location: !x.location,
             period_number: !x.period_number,
@@ -685,6 +729,18 @@ export default {
     },
     async getUserInfo() {
       this.userInfo = await this.$store.dispatch('user/getInfo');
+    },
+    handleAddImpactSource(idx) {
+      this.list[idx].impact_source.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddIndicator(idx) {
+      this.list[idx].indicator.push({
+        id: null,
+        description: null,
+      });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.type === 'title' && columnIndex === 1) {

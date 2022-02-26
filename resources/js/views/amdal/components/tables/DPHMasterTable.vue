@@ -15,14 +15,48 @@
         <span v-if="impacts">Total: <span style="font-weight: bold">{{ impacts.length }}</span></span>
       </el-col>
     </el-row>
+    <!-- tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase())) -->
+
+    <div style="text-align:right;">
+      <el-select
+        v-if="subProjects"
+        v-model="search"
+        placeholder="Semua Rencana Usaha/Kegiatan"
+        size="large"
+        :clearable="true"
+        class="filter-header"
+        style="width: 100% !important;"
+      >
+        <el-option
+          v-for="item in subProjects"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        >
+          <div>
+            <span style="float:left;">{{ item.label }}</span>
+            <span style="float:right; color: #8492a6; font-size: 13px">{{ 'Kegiatan '+ item.type }}, {{ item.count }}</span>
+          </div>
+        </el-option>
+      </el-select>
+    </div>
     <el-table
-      :data="impacts"
-      max-height="300"
+      :data="impacts.filter(data => !search || data.kegiatan === search)"
+      max-height="400"
       highlight-current-row
       header-row-class-name="dpdph-table"
       style="width: 100%"
       @current-change="selection"
     >
+      <!-- <el-table-column>
+        <template slot="header">
+          <div v-if="search !== ''">
+            {{ search }}
+          </div>
+          <div v-else>
+            Semua Rencana Usaha/Kegiatan
+          </div>
+        </template> -->
       <el-table-column
         label="No."
         width="60"
@@ -35,13 +69,49 @@
       <el-table-column
         prop="stage"
         label="Tahap"
-        width="150"
+        width="180"
         :filters="stageFilters"
         :filter-method="filterTag"
         filter-placement="bottom-end"
       />
-
       <el-table-column
+        label="Kegiatan"
+        prop="komponen"
+        width="200"
+        :filters="components"
+        :filter-method="onActivityChange"
+        filter-placement="bottom-end"
+      />
+      <el-table-column
+        label="Rona Lingkungan"
+        prop="rona_awal"
+        width="200"
+        :filters="hues"
+        :filter-method="onHueChange"
+        filter-placement="bottom-end"
+      />
+      <!-- <el-table-column
+          label="tipe"
+          width="80"
+          :filters="activityTypeFilters"
+          :filter-method="onATFChange"
+          filter-placement="bottom-end"
+          align="center"
+        >
+          <template slot-scope="s">
+            <el-tooltip class="item" effect="dark" :content="s.row.type" placement="right">
+              <el-tag style="text-transform: uppercase">{{ (s.row.type).charAt(0) }}</el-tag>
+             </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="komponen"
+          label="Nama"
+          width="250"
+        />
+        -->
+      <el-table-column
+        v-if="changeFilters.length > 0"
         label="Dampak"
         :filters="changeFilters"
         :filter-method="onChangefilter"
@@ -70,6 +140,7 @@
 
         </template>
       </el-table-column>
+      <!-- </el-table-column> -->
     </el-table>
     <el-row>
       <el-col>
@@ -113,6 +184,18 @@ export default {
       type: Array,
       default: null,
     },
+    subProjects: {
+      type: Array,
+      default: null,
+    },
+    components: {
+      type: Array,
+      default: null,
+    },
+    hues: {
+      type: Array,
+      default: null,
+    },
     idProject: {
       type: Number,
       default: 0,
@@ -133,6 +216,7 @@ export default {
   data() {
     return {
       preview: false,
+      search: '',
       stageFilters: [
         { text: 'Pra Konstruksi', value: 'Pra Konstruksi' },
         { text: 'Konstruksi', value: 'Konstruksi' },
@@ -146,11 +230,24 @@ export default {
         { text: 'Belum terdefinisi', value: 4 },
         { text: 'Bercatatan', value: 5 },
       ],
+      activityTypeFilters: [
+        { text: 'Utama', value: 'utama' },
+        { text: 'Pendukung', value: 'pendukung' },
+      ],
+      activitiesFilter: [],
     };
   },
   watch: {
     impacts: function(val){
       // console.log('master table:', val);
+      if (val === null) {
+        this.search = '';
+      }
+      if (val.length > 0){
+        this.getActivities();
+      } else {
+        this.search = '';
+      }
     },
   },
   methods: {
@@ -159,6 +256,9 @@ export default {
     },
     filterTag(value, row){
       return row.stage === value;
+    },
+    getActivities(){
+      console.log(this.components);
     },
     onChangefilter(value, row){
       // 1, 2, 3 => data diubah, dph, dtph
@@ -185,6 +285,15 @@ export default {
         return (row.comment > 0);
       }
       return false;
+    },
+    onATFChange(value, row){
+      return row.type === value;
+    },
+    onActivityChange(value, row){
+      return row.komponen === value;
+    },
+    onHueChange(value, row){
+      return (row.rona_awal).toLowerCase() === value.toLowerCase();
     },
     onFilterChange(e){
       console.log(e);
