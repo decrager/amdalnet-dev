@@ -22,16 +22,22 @@
         v-if="subProjects"
         v-model="search"
         placeholder="Semua Rencana Usaha/Kegiatan"
-        clearable
+        size="large"
+        :clearable="true"
         class="filter-header"
-        style="width: 40% !important;"
+        style="width: 100% !important;"
       >
         <el-option
           v-for="item in subProjects"
           :key="item.value"
           :label="item.label"
           :value="item.value"
-        />
+        >
+          <div>
+            <span style="float:left;">{{ item.label }}</span>
+            <span style="float:right; color: #8492a6; font-size: 13px">{{ 'Kegiatan '+ item.type }}, {{ item.count }}</span>
+          </div>
+        </el-option>
       </el-select>
     </div>
     <el-table
@@ -234,8 +240,13 @@ export default {
   watch: {
     impacts: function(val){
       // console.log('master table:', val);
+      if (val === null) {
+        this.search = '';
+      }
       if (val.length > 0){
         this.getActivities();
+      } else {
+        this.search = '';
       }
     },
   },

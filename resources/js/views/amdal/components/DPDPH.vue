@@ -112,9 +112,11 @@ export default {
             const temp = data.filter(d => d.kegiatan === e.kegiatan);
             this.subProjects.push({
               text: e.kegiatan,
-              label: ('[' + e.type + '] ' + e.kegiatan + ' (' + temp.length + ')')
+              label: (e.kegiatan)
                 .replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
               value: e.kegiatan,
+              type: e.type,
+              count: temp.length,
             });
           }
 
