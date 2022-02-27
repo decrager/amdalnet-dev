@@ -1,6 +1,7 @@
 const ArcGISPlugin = require('@arcgis/webpack-plugin');
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
 
@@ -30,6 +31,7 @@ module.exports = {
   },
   configureWebpack: {
     plugins: [
+      new Dotenv(),
       new ArcGISPlugin({
         useDefaultAssetLoaders: false,
       }),

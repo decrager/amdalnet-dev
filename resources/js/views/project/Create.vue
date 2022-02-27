@@ -525,9 +525,9 @@ import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
 import Expand from '@arcgis/core/widgets/Expand';
 import esriRequest from '@arcgis/core/request';
-import qs from 'qs';
 import popupTemplate from '../webgis/scripts/popupTemplate';
 import centroid from '@turf/centroid';
+import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
 
 export default {
   name: 'CreateProject',
@@ -573,7 +573,7 @@ export default {
       mapItemId: '',
       full_address: '',
       mismatchMapData: false,
-      token: '',
+      token: null,
       refresh: 0,
       preeAgreementLabel: '',
       preProject: true,
@@ -817,34 +817,7 @@ export default {
     },
   },
   async created() {
-    urlUtils.addProxyRule({
-      proxyUrl: 'proxy/proxy.php',
-      urlPrefix: 'https://amdalgis.menlhk.go.id/',
-    });
-
-    var data = qs.stringify({
-      'username': 'Amdalnet',
-      'password': 'Amdalnet123',
-      'client': 'requestip',
-      'expiration': 20160,
-      'f': 'json',
-    });
-
-    var config = {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Connection': 'keep-alive',
-        'Content-Encoding': 'gzip',
-      },
-      body: data,
-    };
-
-    esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
-      .then(response => {
-        this.token = response.data.token;
-      });
-
+    generateArcgisToken(this.token);
     // for step
     this.$store.dispatch('getStep', 0);
 
@@ -1399,13 +1372,10 @@ export default {
 
       var fomDataArcgis = new FormData();
       fomDataArcgis.append('type', 'Shapefile');
-      fomDataArcgis.append('title', this.currentProject.project_title + '_Peta Tapak Proyek');
+      fomDataArcgis.append('title', this.currentProject.project_title.replace(/ /g, '_') + '_Peta_Tapak_Proyek');
       fomDataArcgis.append('file', this.currentProject.fileMap);
-      fomDataArcgis.append('fileName', this.currentProject.project_title + '_Peta Tapak Proyek');
       fomDataArcgis.append('tags', 'Amdalnet Web');
       fomDataArcgis.append('f', 'json');
-
-      console.log(this.currentProject.fileMap);
 
       var requestOptions = {
         method: 'POST',
@@ -1423,7 +1393,7 @@ export default {
             formDataPublish.append('f', 'json');
             formDataPublish.append('itemId', this.mapItemId);
             formDataPublish.append('filetype', 'shapefile');
-            formDataPublish.append('publishParameters', `{"hasStaticData":true,"name":${this.currentProject.project_title},"maxRecordCount":2000,"layerInfo":{"capabilities":"Query"}}`);
+            formDataPublish.append('publishParameters', `{"hasStaticData":true,"name":${this.currentProject.project_title.replace(/ /g, '_')},"maxRecordCount":2000,"layerInfo":{"capabilities":"Query"}}`);
 
             var requestOptionsPublish = {
               method: 'POST',
