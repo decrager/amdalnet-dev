@@ -10,4 +10,9 @@ class KaReview extends Model
     use HasFactory;
 
     protected $table = 'ka_reviews';
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'id_project', 'id');
+    }
 }

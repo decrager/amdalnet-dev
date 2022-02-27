@@ -21,7 +21,7 @@ class KaReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $review = KaReview::where('id_project', $request->idProject)->orderBy('id', 'desc')->first();
+        $review = KaReview::where('id_project', $request->idProject)->with('project')->orderBy('id', 'desc')->first();
         
         if($review) {
             $review_penyusun = KaReview::where([['id_project', $request->idProject],['status', 'submit-to-pemrakarsa']])->orderBy('id', 'desc')->first();
