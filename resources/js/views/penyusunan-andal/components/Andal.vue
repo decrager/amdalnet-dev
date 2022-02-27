@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="text-align: right; margin-bottom: 10px">
-      <el-button :loading="loadingWorkspace" type="primary" @click="getData">
+      <el-button :loading="loadingWorkspace" type="primary" @click="checkData">
         WORKSPACE
       </el-button>
     </div>
@@ -28,7 +28,9 @@
       </el-collapse-item>
       <el-collapse-item name="dampak-potensial">
         <template slot="title" class="head-accordion">
-          <span class="title">EVALUASI DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK</span>
+          <span class="title">
+            EVALUASI DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK
+          </span>
         </template>
         <DampakHipotetikMD v-if="activeName === 'dampak-potensial'" :mode="1" />
         <!-- <DampakHipotetik v-if="activeName === 'dampak-potensial'" /> -->
@@ -121,8 +123,25 @@ export default {
     };
   },
   methods: {
-    async getData() {
+    async checkData() {
       this.loadingWorkspace = true;
+      const andalData = await andalComposingResource.list({
+        checkWorkspace: 'true',
+        idProject: this.$route.params.id,
+      });
+      if (andalData) {
+        this.getData();
+      } else {
+        this.$alert(
+          'Silahkan Mengisi Data Analisa Dampak Lingkungan Terlebih Dahulu',
+          {
+            confirmButtonText: 'OK',
+          }
+        );
+        this.loadingWorkspace = false;
+      }
+    },
+    async getData() {
       await andalComposingResource.list({
         docs: 'true',
         idProject: this.$route.params.id,

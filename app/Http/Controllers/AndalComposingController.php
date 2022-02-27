@@ -46,6 +46,10 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->checkWorkspace) {
+            return $this->checkWorkspace($request->idProject);
+        }
+
         if($request->attachment) {
             return $this->getAttachment($request->idProject);
         }
@@ -414,6 +418,26 @@ class AndalComposingController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function checkWorkspace($id_project)
+    {
+        $count_1 = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($id_project) {
+            $q->where('id_project', $id_project);
+        })
+        ->count();
+
+        if($count_1 == 0) {
+            return false;
+        }
+
+        $count_2 = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($id_project) {
+            $q->where('id_project', $id_project);
+        })
+        ->where('condition_dev_no_plan', '!=', null)
+        ->count();
+
+        return $count_1 === $count_2;
     }
 
     private function getImpactNotifications($id_project, $stages)
