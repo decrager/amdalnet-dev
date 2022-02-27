@@ -131,9 +131,6 @@ import MapView from '@arcgis/core/views/MapView';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
-import * as urlUtils from '@arcgis/core/core/urlUtils';
-import qs from 'qs';
-import esriRequest from '@arcgis/core/request';
 import urlBlob from '../../webgis/scripts/urlBlob';
 import popupTemplate from '../../webgis/scripts/popupTemplate';
 import popupTemplateBatas from '../../webgis/scripts/popupTemplateBatas';
@@ -141,6 +138,8 @@ import Expand from '@arcgis/core/widgets/Expand';
 const uploadMaps = new Resource('project-map');
 // const unggahMaps = new Resource('upload-map');
 // const unduhMaps = new Resource('download-map');
+import generateArcgisToken from '../../webgis/scripts/arcgisGenerateToken';
+import addItem from '../../webgis/scripts/addItem';
 
 export default {
   name: 'UploadPetaBatas',
@@ -181,6 +180,7 @@ export default {
       geomEcologyStyles: null,
       geomSocialStyles: null,
       geomStudyStyles: null,
+      mapItemId: null,
       kolom: [
         {
           label: 'Peta Batas Ekologis',
@@ -204,64 +204,8 @@ export default {
       return this.$store.getters.roles.includes('formulator');
     },
   },
-  async created() {
-    urlUtils.addProxyRule({
-      proxyUrl: 'proxy/proxy.php',
-      urlPrefix: 'https://amdalgis.menlhk.go.id/',
-    });
-
-    var data = qs.stringify({
-      'username': 'Amdalnet',
-      'password': 'Amdalnet123',
-      'client': 'requestip',
-      'expiration': 20160,
-      'f': 'json',
-    });
-
-    var config = {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Connection': 'keep-alive',
-        'Content-Encoding': 'gzip',
-      },
-      body: data,
-    };
-
-    esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
-      .then(response => {
-        this.token = response.data.token;
-      });
-  },
   async mounted() {
-    urlUtils.addProxyRule({
-      proxyUrl: 'proxy/proxy.php',
-      urlPrefix: 'https://amdalgis.menlhk.go.id/',
-    });
-
-    var data = qs.stringify({
-      'username': 'Amdalnet',
-      'password': 'Amdalnet123',
-      'client': 'requestip',
-      'expiration': 20160,
-      'f': 'json',
-    });
-
-    var config = {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Connection': 'keep-alive',
-        'Content-Encoding': 'gzip',
-      },
-      body: data,
-    };
-
-    esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/generateToken', config)
-      .then(response => {
-        console.log(response.data);
-        this.token = response.data.token;
-      });
+    generateArcgisToken(this.token);
 
     this.idProject = parseInt(this.$route.params && this.$route.params.id);
 
@@ -271,7 +215,6 @@ export default {
         this.projectTitle = response.data.project_title;
       });
 
-    console.log(this.projectTitle);
     this.getData();
     this.getMap();
   },
@@ -450,9 +393,6 @@ export default {
       const formData = new FormData();
       formData.append('id_project', this.idProject);
 
-      var myHeaders = new Headers();
-      myHeaders.append('Authorization', 'Bearer ' + this.token);
-
       this.files.forEach((e, i) => {
         formData.append('files[]', e[0]);
         formData.append('params[]', JSON.stringify(this.param[i]));
@@ -467,193 +407,24 @@ export default {
         formData.append('geomStudyStyles', JSON.stringify(this.geomStudyStyles));
       });
 
+      const notify =
+            this.$notify({
+              type: 'success',
+              title: 'Berhasil!',
+              message: 'Berhasil Publish Peta!!',
+              duration: 2000,
+            });
+
       if (this.files[0]) {
-        var formDataArcgisEkologis = new FormData();
-        formDataArcgisEkologis.append('type', 'Shapefile');
-        formDataArcgisEkologis.append('title', this.projectTitle + '_Peta Batas Ekologis');
-        formDataArcgisEkologis.append('file', this.files[0]);
-        formDataArcgisEkologis.append('fileName', this.projectTitle + '_Peta Batas Ekologis');
-        formDataArcgisEkologis.append('tags', 'Amdalnet Web');
-        formDataArcgisEkologis.append('f', 'json');
-
-        urlUtils.addProxyRule({
-          proxyUrl: 'proxy/proxy.php',
-          urlPrefix: 'https://amdalgis.menlhk.go.id/',
-        });
-
-        var requestOptions = {
-          method: 'POST',
-          headers: myHeaders,
-          body: formDataArcgisEkologis,
-          multipart: false,
-        };
-
-        esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptions)
-          .then(response => {
-            if (response.data.success === true) {
-              this.mapItemId = response.data.id;
-
-              var formDataPublish = new FormData();
-              formDataPublish.append('f', 'json');
-              formDataPublish.append('itemId', this.mapItemId);
-              formDataPublish.append('filetype', 'shapefile');
-              formDataPublish.append('publishParameters', `{"hasStaticData":true,"name":${this.projectTitle + '_Peta Batas Ekologis'},"maxRecordCount":2000,"layerInfo":{"capabilities":"Query"}}`);
-
-              var requestOptionsPublish = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formDataPublish,
-              };
-
-              esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/publish', requestOptionsPublish)
-                .then(() => {
-                  this.$notify({
-                    type: 'success',
-                    title: 'Berhasil!',
-                    message: 'Berhasil Publish Peta Ekologis!!',
-                    duration: 2000,
-                  });
-                })
-                .then(() => {
-                  axios.post('api/upload-maps', formData, {
-                    headers: {
-                      'Content-Type': 'multipart/form-data',
-                    }})
-                    .then((response) => {
-                      if (response) {
-                        this.$message({
-                          message: 'Berhasil menyimpan file ', //  + this.files[0].name,
-                          type: 'success',
-                        });
-                        this.$emit('handleReloadVsaList', 'metode-studi');
-                      }
-                    });
-                })
-                .catch(error => console.log('error', error));
-            }
-          })
-          .catch(error => console.log('error', error));
-      }
-
-      if (this.files[1]) {
-        var formDataArcgisSosial = new FormData();
-        formDataArcgisSosial.append('type', 'Shapefile');
-        formDataArcgisSosial.append('title', this.projectTitle + '_Peta Batas Sosial');
-        formDataArcgisSosial.append('file', this.files[0]);
-        formDataArcgisSosial.append('fileName', this.projectTitle + '_Peta Batas Sosial');
-        formDataArcgisSosial.append('tags', 'Amdalnet Web');
-        formDataArcgisSosial.append('f', 'json');
-
-        urlUtils.addProxyRule({
-          proxyUrl: 'proxy/proxy.php',
-          urlPrefix: 'https://amdalgis.menlhk.go.id/',
-        });
-
-        var requestOptionsSosial = {
-          method: 'POST',
-          headers: myHeaders,
-          body: formDataArcgisSosial,
-          multipart: false,
-        };
-
-        esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptionsSosial)
-          .then(response => {
-            if (response.data.success === true) {
-              this.mapItemId = response.data.id;
-
-              var formDataPublish = new FormData();
-              formDataPublish.append('f', 'json');
-              formDataPublish.append('itemId', this.mapItemId);
-              formDataPublish.append('filetype', 'shapefile');
-              formDataPublish.append('publishParameters', `{"hasStaticData":true,"name":${this.projectTitle + '_Peta Batas Sosial'},"maxRecordCount":2000,"layerInfo":{"capabilities":"Query"}}`);
-
-              var requestOptionsPublish = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formDataPublish,
-              };
-
-              esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/publish', requestOptionsPublish)
-                .then(() => {
-                  this.$notify({
-                    type: 'success',
-                    title: 'Berhasil!',
-                    message: 'Berhasil Publish Peta Sosial!!',
-                    duration: 2000,
-                  });
-                })
-                .catch(error => console.log('error', error));
-            }
-          })
-          .catch(error => console.log('error', error));
+        addItem(this.token, this.projectTitle, this.files[0][0], this.mapItemId, notify);
       }
 
       if (this.files[2]) {
-        var formDataArcgisStudi = new FormData();
-        formDataArcgisStudi.append('type', 'Shapefile');
-        formDataArcgisStudi.append('title', this.projectTitle + '_Peta Batas Studi');
-        formDataArcgisStudi.append('file', this.files[0]);
-        formDataArcgisStudi.append('fileName', this.projectTitle + '_Peta Batas Studi');
-        formDataArcgisStudi.append('tags', 'Amdalnet Web');
-        formDataArcgisStudi.append('f', 'json');
+        addItem(this.token, this.projectTitle, this.files[2][0], this.mapItemId, notify);
+      }
 
-        urlUtils.addProxyRule({
-          proxyUrl: 'proxy/proxy.php',
-          urlPrefix: 'https://amdalgis.menlhk.go.id/',
-        });
-
-        var requestOptionsStudi = {
-          method: 'POST',
-          headers: myHeaders,
-          body: formDataArcgisStudi,
-          multipart: false,
-        };
-
-        esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/addItem', requestOptionsStudi)
-          .then(response => {
-            if (response.data.success === true) {
-              this.mapItemId = response.data.id;
-
-              var formDataPublish = new FormData();
-              formDataPublish.append('f', 'json');
-              formDataPublish.append('itemId', this.mapItemId);
-              formDataPublish.append('filetype', 'shapefile');
-              formDataPublish.append('publishParameters', `{"hasStaticData":true,"name":${this.projectTitle + '_Peta Batas Studi'},"maxRecordCount":2000,"layerInfo":{"capabilities":"Query"}}`);
-
-              var requestOptionsPublish = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formDataPublish,
-              };
-
-              esriRequest('https://amdalgis.menlhk.go.id/portal/sharing/rest/content/users/Amdalnet/publish', requestOptionsPublish)
-                .then(() => {
-                  this.$notify({
-                    type: 'success',
-                    title: 'Berhasil!',
-                    message: 'Berhasil Publish Peta Studi!!',
-                    duration: 2000,
-                  });
-                })
-                .then(() => {
-                  axios.post('api/upload-maps', formData, {
-                    headers: {
-                      'Content-Type': 'multipart/form-data',
-                    }})
-                    .then((response) => {
-                      if (response) {
-                        this.$message({
-                          message: 'Berhasil menyimpan file ', //  + this.files[0].name,
-                          type: 'success',
-                        });
-                        this.$emit('handleReloadVsaList', 'metode-studi');
-                      }
-                    });
-                })
-                .catch(error => console.log('error', error));
-            }
-          })
-          .catch(error => console.log('error', error));
+      if (this.files[4]) {
+        addItem(this.token, this.projectTitle, this.files[4][0], this.mapItemId, notify);
       }
 
       axios.post('api/upload-maps', formData, {
