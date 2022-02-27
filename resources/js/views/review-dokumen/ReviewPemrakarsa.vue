@@ -29,7 +29,7 @@
         <span v-if="errors.file" style="color: red">{{ errors.file }}</span>
       </div>
       <div v-else>
-        <a :href="applicationLetter" download>
+        <a :href="applicationLetter" :download="applicationLetterName">
           <i class="el-icon-download" /> Download Surat Permohonan
         </a>
       </div>
@@ -94,6 +94,7 @@ export default {
       loadingSubmit: false,
       formulatorNotes: null,
       applicationLetter: null,
+      applicationLetterName: '',
       errors: {},
     };
   },
@@ -148,6 +149,7 @@ export default {
         this.notesShow = data.notes;
         this.formulatorNotes = data.formulator_notes;
         this.applicationLetter = data.application_letter;
+        this.applicationLetterName = data.project.project_title;
         if (data.status !== 'submit-to-pemrakarsa') {
           this.status = data.status;
         }
