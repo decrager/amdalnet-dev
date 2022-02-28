@@ -67,12 +67,15 @@ export default {
                 }
               });
           } else {
-            this.updateToken()
-              .then(response => {
-                if (this.isTokenValid) {
+            console.log('invalid token. recalling main()');
+            setTimeout(() => {
+              console.log('updating token...');
+              this.updateToken()
+                .then(response => {
                   this.main();
-                }
-              });
+                  console.log('called main() function');
+                });
+            }, 1000);
           }
         });
     },
@@ -179,9 +182,11 @@ export default {
         refresh_token: this.refresh_token,
       })
         .then(response => {
-          if (parseInt(response.data.status) === 200) {
+          console.log('updateToken response.data = ' + JSON.stringify(response.data));
+          if (parseInt(response.data.code) === 200) {
             this.isTokenValid = true;
             this.token = response.data.data.access_token;
+            console.log('updated new token = ' + this.token);
           }
         });
     },
