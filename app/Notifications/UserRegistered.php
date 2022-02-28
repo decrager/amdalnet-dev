@@ -44,6 +44,7 @@ class UserRegistered extends Notification
     public function toMail($notifiable)
     {
         $url = url("/#/activate/".$this->user->id);
+        // TODO: tambahin detail password (untuk akun OSS yg auto register)
         return (new MailMessage)
                         ->subject('Pendaftaran Akun AMDALNET')
                         ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
