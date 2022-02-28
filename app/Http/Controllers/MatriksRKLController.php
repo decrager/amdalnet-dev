@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Comment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
+use App\Entity\EnvMonitorPlan;
 use App\Entity\EnvPlanIndicator;
 use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
@@ -32,6 +33,10 @@ class MatriksRKLController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->checkWorkspace) {
+            return $this->checkWorkspace($request->idProject);
+        }
+
         if($request->docs) {
             $save_file_name = $request->idProject .'-rkl-rpl' . '.docx'; 
             if (!File::exists(storage_path('app/public/workspace/'))) {
@@ -385,6 +390,49 @@ class MatriksRKLController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function checkWorkspace($id_project)
+    {
+        $count_1 = EnvManagePlan::whereHas('impactIdentification', function($q) use($id_project) {
+            $q->where('id_project', $id_project);
+        })
+        ->count();
+
+        if($count_1 == 0) {
+            return false;
+        }
+
+        $count_2 = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($id_project) {
+            $q->where('id_project', $id_project);
+        })
+        ->count();
+
+        if($count_2 == 0) {
+            return false;
+        }
+
+        $count_1_2 = EnvManagePlan::whereHas('impactIdentification', function($q) use($id_project) {
+            $q->where('id_project', $id_project);
+        })
+        ->where('form', '!=', null)
+        ->count();
+
+        if($count_1 !== $count_1_2) {
+            return false;
+        }
+
+        $count_2_2 = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($id_project) {
+            $q->where('id_project', $id_project);
+        })
+        ->where('collection_method', '!=', null)
+        ->count();
+
+        if($count_2 !== $count_2_2) {
+            return false;
+        }
+
+        return true;
     }
 
     private function getEnvManagePlan($id_project, $stages, $type) {
