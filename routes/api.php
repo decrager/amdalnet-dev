@@ -340,6 +340,7 @@ Route::post('peraturan', [PeraturanController::class, 'store']);
 Route::post('peraturan/update', [PeraturanController::class, 'update']);
 Route::get('peraturan/delete/{id}', [PeraturanController::class, 'destroy']);
 Route::apiResource('regulations', 'RegulationsController');
+Route::apiResource('ossNibs', 'OssNibController');
 
 Route::apiResource('materials', 'MaterialController');
 Route::post('materials', [MaterialController::class, 'store']);
