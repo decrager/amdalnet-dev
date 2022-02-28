@@ -61,6 +61,7 @@ Route::namespace('Api')->group(function () {
     Route::get('auth/userinfo-oss', 'AuthController@getUserInfo');
     Route::get('auth/receive-token', 'AuthController@receiveToken');
     Route::post('auth/validate-token', 'AuthController@validateToken');
+    Route::post('auth/update-token', 'AuthController@updateToken');
     Route::post('auth/login-oss', 'AuthController@loginOss');
     Route::post('auth/register-oss', 'AuthController@registerOss');
 

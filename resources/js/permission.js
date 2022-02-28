@@ -59,7 +59,7 @@ router.beforeEach(async(to, from, next) => {
   } else {
     /* has no token*/
 
-    if (whiteList.indexOf(to.matched[0] ? to.matched[0].path : '') !== -1 || to.path.includes('/oss-auth')) {
+    if (whiteList.indexOf(to.matched[0] ? to.matched[0].path : '') !== -1 || to.path.includes('/oss')) {
       // in the free login whitelist, go directly
       next();
     } else {
