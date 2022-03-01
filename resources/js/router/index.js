@@ -102,17 +102,17 @@ export const constantRoutes = [
     hidden: true,
   },
   {
-    path: '/oss-auth',
+    path: '/oss/receive-token',
     component: () => import('@/views/oss-auth/index'),
     hidden: true,
-    name: 'OssAuth',
+    name: 'OssReceiveToken',
   },
   {
-    path: '/oss-auth/register',
+    path: '/oss/register',
     component: () => import('@/views/oss-auth/Register'),
     props: true,
     hidden: true,
-    name: 'OssAuthRegister',
+    name: 'OssRegister',
   },
   {
     path: '/auth-redirect',

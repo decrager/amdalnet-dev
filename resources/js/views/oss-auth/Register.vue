@@ -125,6 +125,8 @@ export default {
                     type: 'success',
                     duration: 5 * 1000,
                   });
+                  // TODO: call API receive-token
+
                   // login & go to user profile
                   // this.$store.dispatch('user/login', {
                   //   email: this.regForm.email,

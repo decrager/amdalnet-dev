@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 /**
  * Class AuthController
@@ -64,6 +65,13 @@ class AuthController extends BaseController
     {
         $validated = $request->only('token');
         $resp = $this->getValidateToken($validated['token']);
+        return $resp->json();
+    }
+
+    public function updateToken(Request $request)
+    {
+        $validated = $request->only('refresh_token');
+        $resp = $this->postUpdateToken($validated['refresh_token']);
         return $resp->json();
     }
 
@@ -119,12 +127,17 @@ class AuthController extends BaseController
         $validated = $request->only('email', 'username', 'name', 
             'password', 'pic', 'user_type', 'phone', 'address', 'nib');
         $initiatorRole = Role::findByName(Acl::ROLE_INITIATOR);
+        // TODO: create random password
+        $password = $validated['password'];
+        if (empty($password)) {
+            $password = Str::random(10);
+        }
         DB::beginTransaction();
         $user = User::create([
             'name' => ucfirst($validated['name']),
             'email' => $validated['email'],
             'oss_username' => $validated['username'],
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($password),
             'active' => 1,
         ]);
         $user->syncRoles($initiatorRole);
@@ -139,7 +152,6 @@ class AuthController extends BaseController
         ]);
         if ($user && $initiator) {
             DB::commit();
-            $user2 = $this->setUserAsActive($user->id);
             return response()->json([
                 'status' => 200,
                 'code' => 200,
@@ -179,21 +191,21 @@ class AuthController extends BaseController
         }
         $validated = $request->only('access-token', 'refresh_token', 'kd_izin', 'id_izin');
         $resp = $this->getOssUserInfo($validated['access-token'])->json();
-        $user_info =  null;
-        if ($resp['status'] != 200) {
-            // update token
-            $respUpdate = $this->postUpdateToken($validated['refresh_token'])->json();
-            if ($respUpdate['code'] == 200) {
-                $validated['access-token'] = $respUpdate['data']['access_token'];
-                $resp = $this->getOssUserInfo($respUpdate['data']['access_token'])->json();
-                // $user_info = $resp['data'];
-            } else {
-                return response()->json([
-                    'status' => 500,
-                    'message' => 'Gagal update token',
-                ], 500);
-            }
-        }
+        // $user_info =  null;
+        // if ($resp['status'] != 200) {
+        //     // update token
+        //     $respUpdate = $this->postUpdateToken($validated['refresh_token'])->json();
+        //     if ($respUpdate['code'] == 200) {
+        //         $validated['access-token'] = $respUpdate['data']['access_token'];
+        //         $resp = $this->getOssUserInfo($respUpdate['data']['access_token'])->json();
+        //         // $user_info = $resp['data'];
+        //     } else {
+        //         return response()->json([
+        //             'status' => 500,
+        //             'message' => 'Gagal update token',
+        //         ], 500);
+        //     }
+        // }
         $user_info = $resp['data'];
         $user = User::where('email', $user_info['email'])->first();
         $initiator = Initiator::where('email', $user_info['email'])->first();
@@ -204,8 +216,6 @@ class AuthController extends BaseController
             $user->refresh_token = $validated['refresh_token'];
             $user->save();
             $id_initiator = $initiator->id;
-        } else {
-            // REGISTER?? PASSWORD-NYA ??
         }
         $created = OssLicense::create([
             'id_initiator' => $id_initiator,
