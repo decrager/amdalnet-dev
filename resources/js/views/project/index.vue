@@ -145,7 +145,7 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && isKaSubmitted(scope.row) && isInitiator && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && isDocumentSubmitted(scope.row, 'ka') && isInitiator && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -154,7 +154,7 @@
                   Dokumen Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && isKaSubmitted(scope.row) && isInitiator && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -163,7 +163,7 @@
                   Dokumen UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin || (isInitiator && isDocumentSubmitted(scope.row, 'andal'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -172,7 +172,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance || (isInitiator && isDocumentSubmitted(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -271,7 +271,7 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
-                  v-if="scope.row.feasibility_test"
+                  v-if="scope.row.feasibility_test && (isInitiator || isAdmin || isSubtance || isSecretary || isChief)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -280,7 +280,7 @@
                   Surat Rekomendasi Uji Kelayakan
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && scope.row.feasibility_test"
+                  v-if="isAmdal(scope.row) && scope.row.feasibility_test && (isInitiator || isAdmin || isSubtance || isSecretary || isChief)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -486,6 +486,12 @@ export default {
     isAdmin() {
       return this.userInfo.roles.includes('examiner-administration');
     },
+    isSecretary() {
+      return this.userInfo.roles.includes('examiner-secretary');
+    },
+    isChief() {
+      return this.userInfo.roles.includes('examiner-chief');
+    },
     isExaminer() {
       return this.userInfo.roles.includes('examiner');
     },
@@ -530,10 +536,19 @@ export default {
     isAmdal(project){
       return project.required_doc === 'AMDAL';
     },
-    isKaSubmitted(project) {
+    isDocumentSubmitted(project, document) {
       if (project.ka_reviews) {
         if (project.ka_reviews.length > 0) {
-          return true;
+          const reviews = project.ka_reviews.filter(x => {
+            if (document === 'ka' || document === 'ukl-upl') {
+              return x.document_type === document || x.document_type === null;
+            } else {
+              return x.document_type === document;
+            }
+          });
+          if (reviews.length > 0) {
+            return true;
+          }
         }
       }
 

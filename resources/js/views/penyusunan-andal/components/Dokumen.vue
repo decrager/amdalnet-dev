@@ -1,21 +1,25 @@
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card v-loading="loading">
-      <workflow-ukl />
       <h2>
-        Submit Formulir UKL UPL
+        Submit Dokumen ANDAL
         <span v-if="isFormulator">ke Pemrakarsa</span>
       </h2>
       <div>
-        <el-button :loading="loading" type="primary" @click="workspace">
-          Workspace
-        </el-button>
+        <a
+          v-if="showDocument"
+          class="btn-docx"
+          :href="'/storage/workspace/' + documentName"
+          :download="title"
+        >
+          Export to .DOCX
+        </a>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
           <div class="grid-content bg-purple" />
           <iframe
-            v-if="projects !== null"
+            v-if="showDocument"
             :src="
               'https://docs.google.com/gview?url=' + projects + '&embedded=true'
             "
@@ -25,8 +29,8 @@
           />
         </el-col>
         <el-col :sm="24" :md="10">
-          <ReviewPenyusun v-if="isFormulator" :documenttype="'UKL UPL'" />
-          <ReviewPemrakarsa v-if="isInitiator" :documenttype="'UKL UPL'" />
+          <ReviewPenyusun v-if="isFormulator" :documenttype="'ANDAL'" />
+          <ReviewPemrakarsa v-if="isInitiator" :documenttype="'ANDAL'" />
         </el-col>
       </el-row>
     </el-card>
@@ -38,23 +42,22 @@ import Resource from '@/api/resource';
 import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
 import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 const andalComposingResource = new Resource('andal-composing');
-import axios from 'axios';
-import WorkflowUkl from '@/components/WorkflowUkl';
 
 export default {
   components: {
-    WorkflowUkl,
     ReviewPenyusun,
     ReviewPemrakarsa,
   },
   data() {
     return {
       idProject: 0,
-      projects: null,
+      projects: '',
+      title: '',
       loading: false,
+      loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
-      showDocument: true,
-      projectName: '',
+      out: '',
+      showDocument: false,
       userInfo: {
         roles: [],
       },
@@ -67,54 +70,25 @@ export default {
     isInitiator() {
       return this.userInfo.roles.includes('initiator');
     },
+    documentName() {
+      return `${this.$route.params.id}-andal.docx`;
+    },
   },
   async created() {
-    this.$store.dispatch('getStep', 5);
     this.userInfo = await this.$store.dispatch('user/getInfo');
     await this.getData();
   },
   methods: {
     async getData() {
       this.loading = true;
-      const projectName = await axios.get(
-        `/api/dokumen-ukl-upl/${this.$route.params.id}`
-      );
-      this.projects =
-        window.location.origin + '/storage/workspace/' + projectName.data;
-      this.projectName = projectName.data;
-      this.loading = false;
-    },
-    async exportDocxPhpWord() {
-      await andalComposingResource.list({
+      this.title = await andalComposingResource.list({
         idProject: this.$route.params.id,
-        formulir: 'true',
+        projectName: 'true',
       });
-    },
-    async exportPdf() {
-      axios({
-        url: `api/dokumen-ukl-upl-pdf/${this.$route.params.id}`,
-        method: 'GET',
-        responseType: 'blob',
-      }).then((response) => {
-        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-        var fileLink = document.createElement('a');
-        fileLink.href = fileURL;
-        fileLink.setAttribute(
-          'download',
-          `${this.projectName.replace('.docx', '.pdf')}`
-        );
-        document.body.appendChild(fileLink);
-        fileLink.click();
-      });
-    },
-    workspace() {
-      this.$router.push({
-        name: 'projectWorkspace',
-        params: {
-          id: this.$route.params.id,
-          filename: this.projectName,
-        },
-      });
+      this.projects =
+        window.location.origin + `/storage/workspace/${this.documentName}`;
+      this.showDocument = true;
+      this.loading = false;
     },
   },
 };
@@ -147,5 +121,24 @@ export default {
   width: 32px;
   border-radius: 50%;
   border: 2px solid #099c4b;
+}
+.btn-docx {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #ffffff;
+  background-color: #216221;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid #216221;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: 0.1s;
+  font-weight: 400;
 }
 </style>

@@ -122,17 +122,40 @@ export default {
     },
     alertTitle() {
       if (this.statusShow === 'revisi') {
-        return `Formulir ${this.documenttype} telah Dikembalikan ke Penyusun untuk Diperbaiki`;
+        return `${this.formulirOrDokumen} ${this.documenttype} telah Dikembalikan ke Penyusun untuk Diperbaiki`;
       }
 
-      return `Formulir ${this.documenttype} telah Dikirim untuk Dinilai`;
+      return `${this.formulirOrDokumen} ${this.documenttype} telah Dikirim untuk Dinilai`;
     },
     alertDescription() {
       if (this.statusShow === 'revisi') {
         return 'Terimakasih atas Tanggapan Anda';
       }
 
-      return `Terimakasih sudah Mengirimkan Formulir ${this.documenttype}`;
+      return `Terimakasih sudah Mengirimkan ${this.formulirOrDokumen} ${this.documenttype}`;
+    },
+    getDocumentType() {
+      if (this.documenttype === 'Kerangka Acuan') {
+        return 'ka';
+      } else if (this.documenttype === 'ANDAL') {
+        return 'andal';
+      } else if (this.documenttype === 'RKL RPL') {
+        return 'rkl-rpl';
+      } else if (this.documenttype === 'UKL UPL') {
+        return 'ukl-upl';
+      }
+
+      return '';
+    },
+    formulirOrDokumen() {
+      if (
+        this.documenttype === 'Kerangka Acuan' ||
+        this.documenttype === 'UKL UPL'
+      ) {
+        return 'Formulir';
+      } else {
+        return 'Dokumen';
+      }
     },
   },
   created() {
@@ -143,6 +166,7 @@ export default {
       this.loading = true;
       const data = await kaReviewsResource.list({
         idProject: this.$route.params.id,
+        documentType: this.getDocumentType,
       });
       if (data) {
         this.statusShow = data.status;
@@ -193,6 +217,7 @@ export default {
         idProject: this.$route.params.id,
         notes: this.notes,
         status: 'revisi',
+        documentType: this.getDocumentType,
       });
       this.getData();
       this.loadingSubmit = false;
@@ -204,6 +229,7 @@ export default {
       formData.append('idProject', this.$route.params.id);
       formData.append('status', 'submit');
       formData.append('file', this.file);
+      formData.append('documentType', this.getDocumentType);
       await kaReviewsResource.store(formData);
       this.getData();
       this.file = null;
