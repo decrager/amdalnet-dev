@@ -122,17 +122,17 @@ export default {
     },
     alertTitle() {
       if (this.statusShow === 'revisi') {
-        return `Formulir ${this.documenttype} telah Dikembalikan ke Penyusun untuk Diperbaiki`;
+        return `${this.formulirOrDokumen} ${this.documenttype} telah Dikembalikan ke Penyusun untuk Diperbaiki`;
       }
 
-      return `Formulir ${this.documenttype} telah Dikirim untuk Dinilai`;
+      return `${this.formulirOrDokumen} ${this.documenttype} telah Dikirim untuk Dinilai`;
     },
     alertDescription() {
       if (this.statusShow === 'revisi') {
         return 'Terimakasih atas Tanggapan Anda';
       }
 
-      return `Terimakasih sudah Mengirimkan Formulir ${this.documenttype}`;
+      return `Terimakasih sudah Mengirimkan ${this.formulirOrDokumen} ${this.documenttype}`;
     },
     getDocumentType() {
       if (this.documenttype === 'Kerangka Acuan') {
@@ -146,6 +146,16 @@ export default {
       }
 
       return '';
+    },
+    formulirOrDokumen() {
+      if (
+        this.documenttype === 'Kerangka Acuan' ||
+        this.documenttype === 'UKL UPL'
+      ) {
+        return 'Formulir';
+      } else {
+        return 'Dokumen';
+      }
     },
   },
   created() {

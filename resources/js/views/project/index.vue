@@ -172,7 +172,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance || (isInitiator && isDocumentSubmitted(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
