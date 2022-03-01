@@ -271,7 +271,7 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
-                  v-if="scope.row.feasibility_test"
+                  v-if="scope.row.feasibility_test && (isInitiator || isAdmin || isSubtance || isSecretary || isChief)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -280,7 +280,7 @@
                   Surat Rekomendasi Uji Kelayakan
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && scope.row.feasibility_test"
+                  v-if="isAmdal(scope.row) && scope.row.feasibility_test && (isInitiator || isAdmin || isSubtance || isSecretary || isChief)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -485,6 +485,12 @@ export default {
     },
     isAdmin() {
       return this.userInfo.roles.includes('examiner-administration');
+    },
+    isSecretary() {
+      return this.userInfo.roles.includes('examiner-secretary');
+    },
+    isChief() {
+      return this.userInfo.roles.includes('examiner-chief');
     },
     isExaminer() {
       return this.userInfo.roles.includes('examiner');
