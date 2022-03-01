@@ -85,11 +85,20 @@ class KaReview extends Notification
         $message = '';
 
         if($this->kaReviews->status == 'submit-to-pemrakarsa') {
-            $message = 'Penyusun telah selesai menyusun Formulir ' . $this->document_type . ' untuk direview';
+            $message = 'Penyusun telah selesai menyusun ' . $this->formulirOrDokumen() . ' ' . $this->document_type . ' untuk direview';
         } else if($this->kaReviews->status == 'revisi') {
-            $message = 'Pemrakarsa mengembalikan Formulir ' . $this->document_type . ' untuk direvisi';
+            $message = 'Pemrakarsa mengembalikan ' . $this->formulirOrDokumen() . ' ' . $this->document_type . ' untuk direvisi';
         }
 
         return $message;
+    }
+
+    private function formulirOrDokumen()
+    {
+        if($this->document_type == 'ANDAL' || $this->document_type == 'RKL RPL') {
+            return 'Dokumen';
+        } else {
+            return 'Formulir';
+        }
     }
 }

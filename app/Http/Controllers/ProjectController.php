@@ -90,7 +90,7 @@ class ProjectController extends Controller
         }
 
         return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
-            $q->select('id', 'id_project', 'status');
+            $q->select('id', 'id_project', 'status', 'document_type');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(

@@ -145,7 +145,7 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && isKaSubmitted(scope.row) && isInitiator && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && isDocumentSubmitted(scope.row, 'ka') && isInitiator && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -154,7 +154,7 @@
                   Dokumen Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && isKaSubmitted(scope.row) && isInitiator && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -163,7 +163,7 @@
                   Dokumen UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin || (isInitiator && isDocumentSubmitted(scope.row, 'andal'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -536,10 +536,19 @@ export default {
     isAmdal(project){
       return project.required_doc === 'AMDAL';
     },
-    isKaSubmitted(project) {
+    isDocumentSubmitted(project, document) {
       if (project.ka_reviews) {
         if (project.ka_reviews.length > 0) {
-          return true;
+          const reviews = project.ka_reviews.filter(x => {
+            if (document === 'ka' || document === 'ukl-upl') {
+              return x.document_type === document || x.document_type === null;
+            } else {
+              return x.document_type === document;
+            }
+          });
+          if (reviews.length > 0) {
+            return true;
+          }
         }
       }
 
