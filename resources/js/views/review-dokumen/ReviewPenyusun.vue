@@ -23,7 +23,7 @@
     </div>
     <el-alert
       v-if="!isShowNotes"
-      :title="`Formulir ${documenttype} telah Dikirim ke Pemrakarsa`"
+      :title="`${formulirOrDokumen} ${documenttype} telah Dikirim ke Pemrakarsa`"
       type="success"
       description="Terimakasih"
       show-icon
@@ -83,6 +83,16 @@ export default {
       }
 
       return '';
+    },
+    formulirOrDokumen() {
+      if (
+        this.documenttype === 'Kerangka Acuan' ||
+        this.documenttype === 'UKL UPL'
+      ) {
+        return 'Formulir';
+      } else {
+        return 'Dokumen';
+      }
     },
   },
   created() {
