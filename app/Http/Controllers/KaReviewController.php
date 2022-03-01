@@ -21,10 +21,28 @@ class KaReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $review = KaReview::where('id_project', $request->idProject)->with('project')->orderBy('id', 'desc')->first();
+        $document_type = $request->documentType;
+        $id_project = $request->idProject;
+
+        $review = KaReview::where(function($q) use($document_type, $id_project) {
+            if($document_type == 'ka' || $document_type == 'ukl-upl') {
+                $q->where([['id_project', $id_project],['document_type', $document_type]])->orWhere([['id_project', $id_project], ['document_type', null]]);
+            } else {
+                $q->where([['id_project', $id_project],['document_type', $document_type]]);
+            }
+        })->with('project')->orderBy('id', 'desc')->first();
         
         if($review) {
-            $review_penyusun = KaReview::where([['id_project', $request->idProject],['status', 'submit-to-pemrakarsa']])->orderBy('id', 'desc')->first();
+            $review_penyusun = KaReview::where(function($q) use($document_type, $id_project) {
+                if($document_type == 'ka' || $document_type == 'ukl-upl') {
+                    $q->where([['id_project', $id_project],['document_type', $document_type],['status', 'submit-to-pemrakarsa']])->orWhere([['id_project', $id_project], ['document_type', null]]);
+                } else {
+                    $q->where([['id_project', $id_project],['document_type', $document_type],['status', 'submit-to-pemrakarsa']]);
+                }
+            })
+            ->orderBy('id', 'desc')
+            ->first();
+
             $review->setAttribute('formulator_notes', $review_penyusun->notes);
         }
         
@@ -54,6 +72,7 @@ class KaReviewController extends Controller
             $review->id_project = $request->idProject;
             $review->status = 'submit-to-pemrakarsa';
             $review->notes = $request->notes;
+            $review->document_type = $request->documentType;
             $review->save();
 
             // === NOTIFICATIONS === //
@@ -62,9 +81,13 @@ class KaReviewController extends Controller
             $user = User::where('email', $email)->count();
 
             $document_type = '';
-            if($project->required_doc == 'AMDAL') {
+            if($request->documentType == 'ka') {
                 $document_type = 'KA';
-            } else if($project->required_doc == 'UKL-UPL') {
+            } else if($request->documentType == 'andal') {
+                $document_type = 'ANDAL';
+            } else if($request->documentType == 'rkl-rpl') {
+                $document_type = 'RKL RPL';
+            } else if($request->documentType == 'ukl-upl') {
                 $document_type = 'UKL UPL';
             }
 
@@ -86,6 +109,7 @@ class KaReviewController extends Controller
             $review = new KaReview();
             $review->id_project = $request->idProject;
             $review->status = $request->status;
+            $review->document_type = $request->documentType;
             
             if($request->status == 'revisi') {
                 $review->notes = $request->notes;
@@ -112,9 +136,13 @@ class KaReviewController extends Controller
                             $user = User::where('email', $email)->count();
                             if($user > 0) {
                                 $document_type = '';
-                                if($project->required_doc == 'AMDAL') {
+                                if($request->documentType == 'ka') {
                                     $document_type = 'KA';
-                                } else if($project->required_doc == 'UKL-UPL') {
+                                } else if($request->documentType == 'andal') {
+                                    $document_type = 'ANDAL';
+                                } else if($request->documentType == 'rkl-rpl') {
+                                    $document_type = 'RKL RPL';
+                                } else if($request->documentType == 'ukl-upl') {
                                     $document_type = 'UKL UPL';
                                 }
                                 

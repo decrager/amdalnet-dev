@@ -71,6 +71,19 @@ export default {
 
       return false;
     },
+    getDocumentType() {
+      if (this.documenttype === 'Kerangka Acuan') {
+        return 'ka';
+      } else if (this.documenttype === 'ANDAL') {
+        return 'andal';
+      } else if (this.documenttype === 'RKL RPL') {
+        return 'rkl-rpl';
+      } else if (this.documenttype === 'UKL UPL') {
+        return 'ukl-upl';
+      }
+
+      return '';
+    },
   },
   created() {
     this.getData();
@@ -80,6 +93,7 @@ export default {
       this.loading = true;
       const data = await kaReviewsResource.list({
         idProject: this.$route.params.id,
+        documentType: this.getDocumentType,
       });
       if (data) {
         this.status = data.status;
@@ -94,6 +108,7 @@ export default {
         idProject: this.$route.params.id,
         notes: this.notes,
         type: 'penyusun',
+        documentType: this.getDocumentType,
       });
       this.notes = null;
       this.getData();
