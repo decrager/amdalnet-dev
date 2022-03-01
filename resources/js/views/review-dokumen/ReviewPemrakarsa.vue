@@ -134,6 +134,19 @@ export default {
 
       return `Terimakasih sudah Mengirimkan Formulir ${this.documenttype}`;
     },
+    getDocumentType() {
+      if (this.documenttype === 'Kerangka Acuan') {
+        return 'ka';
+      } else if (this.documenttype === 'ANDAL') {
+        return 'andal';
+      } else if (this.documenttype === 'RKL RPL') {
+        return 'rkl-rpl';
+      } else if (this.documenttype === 'UKL UPL') {
+        return 'ukl-upl';
+      }
+
+      return '';
+    },
   },
   created() {
     this.getData();
@@ -143,6 +156,7 @@ export default {
       this.loading = true;
       const data = await kaReviewsResource.list({
         idProject: this.$route.params.id,
+        documentType: this.getDocumentType,
       });
       if (data) {
         this.statusShow = data.status;
@@ -204,6 +218,7 @@ export default {
       formData.append('idProject', this.$route.params.id);
       formData.append('status', 'submit');
       formData.append('file', this.file);
+      formData.append('documentType', this.getDocumentType);
       await kaReviewsResource.store(formData);
       this.getData();
       this.file = null;
