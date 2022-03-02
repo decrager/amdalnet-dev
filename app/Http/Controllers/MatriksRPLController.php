@@ -6,7 +6,10 @@ use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\Comment;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\EnvPlanForm;
 use App\Entity\EnvPlanIndicator;
+use App\Entity\EnvPlanInstitution;
+use App\Entity\EnvPlanLocation;
 use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
@@ -192,13 +195,20 @@ class MatriksRPLController extends Controller
                 $ids[] = $monitor[$i]['id'];
             }
 
-            $envMonitor->collection_method = $monitor[$i]['collection_method'];
-            $envMonitor->location = $monitor[$i]['location'];
             $envMonitor->time_frequent = $monitor[$i]['period_number'] . '-' . $monitor[$i]['period_description'];
-            $envMonitor->executor = $monitor[$i]['executor'];
-            $envMonitor->supervisor = $monitor[$i]['supervisor'];
-            $envMonitor->report_recipient = $monitor[$i]['report_recipient'];
             $envMonitor->save();
+
+            // === INSTITUTION === //
+            $institution = EnvPlanInstitution::where('id_impact_identification', $monitor[$i]['id'])->first();
+            if(!$institution) {
+                $institution = new EnvPlanInstitution();
+                $institution->id_impact_identification = $monitor[$i]['id'];
+            }
+
+            $institution->executor = $monitor[$i]['executor'];
+            $institution->supervisor = $monitor[$i]['supervisor'];
+            $institution->report_recipient = $monitor[$i]['report_recipient'];
+            $institution->save();
 
             // === IMPACT SOURCE === //
             $impact_source = $monitor[$i]['impact_source'];
@@ -209,7 +219,7 @@ class MatriksRPLController extends Controller
                         $imp_source = EnvPlanSource::findOrFail($impact_source[$a]['id']);
                     } else {
                        $imp_source = new EnvPlanSource();
-                       $imp_source->id_env_monitor_plan = $envMonitor->id;
+                       $imp_source->id_impact_identification = $monitor[$i]['id'];
                     }
                     
                     $imp_source->description = $impact_source[$a]['description'];
@@ -226,11 +236,45 @@ class MatriksRPLController extends Controller
                         $imp_indicator = EnvPlanIndicator::findOrFail($indicator[$a]['id']);
                     } else {
                        $imp_indicator = new EnvPlanIndicator();
-                       $imp_indicator->id_env_monitor_plan = $envMonitor->id;
+                       $imp_indicator->id_impact_identification = $monitor[$i]['id'];
                     }
                     
                     $imp_indicator->description = $indicator[$a]['description'];
                     $imp_indicator->save();
+                }
+            }
+
+            // === COLLECTION METHOD === //
+            $collection_method = $monitor[$i]['collection_method'];
+            if(count($collection_method) > 0) {
+                for($a = 0; $a < count($collection_method); $a++) {
+                    $collection_method_data = null;
+                    if($collection_method[$a]['id'] !== null) {
+                        $collection_method_data = EnvPlanForm::findOrFail($collection_method[$a]['id']);
+                    } else {
+                       $collection_method_data = new EnvPlanForm();
+                       $collection_method_data->id_env_monitor_plan = $envMonitor->id;
+                    }
+                    
+                    $collection_method_data->description = $collection_method[$a]['description'];
+                    $collection_method_data->save();
+                }
+            }
+
+            // === LOCATION === //
+            $location = $monitor[$i]['location'];
+            if(count($location) > 0) {
+                for($a = 0; $a < count($location); $a++) {
+                    $location_data = null;
+                    if($location[$a]['id'] !== null) {
+                        $location_data = EnvPlanLocation::findOrFail($location[$a]['id']);
+                    } else {
+                       $location_data = new EnvPlanLocation();
+                       $location_data->id_env_monitor_plan = $envMonitor->id;
+                    }
+                    
+                    $location_data->description = $location[$a]['description'];
+                    $location_data->save();
                 }
             }
         }
@@ -394,29 +438,38 @@ class MatriksRPLController extends Controller
                     }
                 }
 
+                // === INSTITUTION === //
+                $institution = EnvPlanInstitution::where('id_impact_identification', $pA->id)->first();
+
+                // === IMPACT SOURCE === //
+                $impact_source = EnvPlanSource::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
+
+                // === INDICATOR == //
+                $indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'impact_source' => 
+                    'impact_source' => $impact_source,
+                    'indicator' => $indicator,
+                    'collection_method' => 
                         $type == 'new' ? 
                         [] : 
-                        EnvPlanSource::select('id', 'description', 'id_env_monitor_plan')
-                                    ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
-                                    ->get(),
-                    'indicator' => 
-                        $type == 'new' ? 
-                        [] : 
-                        EnvPlanIndicator::select('id', 'description', 'id_env_monitor_plan')
+                        EnvPlanForm::select('id', 'description', 'id_env_monitor_plan')
                                         ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
                                         ->get(),
-                    'collection_method' => $type == 'new' ? null : $pA->envMonitorPlan->collection_method,
-                    'location' => $type == 'new' ? null : $pA->envMonitorPlan->location,
+                    'location' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanLocation::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
+                                        ->get(),
                     'time_frequent' => $type == 'new' ? null : $pA->envMonitorPlan->time_frequent,
-                    'executor' => $type == 'new' ? null : $pA->envMonitorPlan->executor,
-                    'supervisor' => $type == 'new' ? null : $pA->envMonitorPlan->supervisor,
-                    'report_recipient' => $type == 'new' ? null : $pA->envMonitorPlan->report_recipient,
+                    'executor' => $institution ? $institution->executor : null,
+                    'supervisor' => $institution ? $institution->supervisor : null,
+                    'report_recipient' => $institution ? $institution->report_recipient : null,
                     'description' => $type == 'new' ? null : $pA->envMonitorPlan->description,
                     'period_number' => $periodeNumber,
                     'period_description' => $periodeDesc,
@@ -525,29 +578,38 @@ class MatriksRPLController extends Controller
                     }
                 }
 
+                // === INSTITUTION === //
+                $institution = EnvPlanInstitution::where('id_impact_identification', $merge->id)->first();
+
+                 // === IMPACT SOURCE === //
+                 $impact_source = EnvPlanSource::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $merge->id)->get();
+
+                 // === INDICATOR === //
+                 $indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $merge->id)->get();
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $merge->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'impact_source' => 
+                    'impact_source' => $impact_source,
+                    'indicator' => $indicator,
+                    'collection_method' => 
                         $type == 'new' ? 
                         [] : 
-                        EnvPlanSource::select('id', 'description', 'id_env_monitor_plan')
-                                    ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
-                                    ->get(),
-                    'indicator' => 
-                        $type == 'new' ? 
-                        [] : 
-                        EnvPlanIndicator::select('id', 'description', 'id_env_monitor_plan')
+                        EnvPlanForm::select('id', 'description', 'id_env_monitor_plan')
                                         ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
                                         ->get(),
-                    'collection_method' => $type == 'new' ? null : $merge->envMonitorPlan->collection_method,
-                    'location' => $type == 'new' ? null : $merge->envMonitorPlan->location,
+                    'location' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanLocation::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
+                                        ->get(),
                     'time_frequent' => $type == 'new' ? null : $merge->envMonitorPlan->time_frequent,
-                    'executor' => $type == 'new' ? null : $merge->envMonitorPlan->executor,
-                    'supervisor' => $type == 'new' ? null : $merge->envMonitorPlan->supervisor,
-                    'report_recipient' => $type == 'new' ? null : $merge->envMonitorPlan->report_recipient,
+                    'executor' => $institution ? $institution->executor : null,
+                    'supervisor' => $institution ? $institution->supervisor : null,
+                    'report_recipient' => $institution ? $institution->report_recipient : null,
                     'description' => $type == 'new' ? null : $merge->envMonitorPlan->description,
                     'period_number' => $periodeNumber,
                     'period_description' => $periodeDesc,
