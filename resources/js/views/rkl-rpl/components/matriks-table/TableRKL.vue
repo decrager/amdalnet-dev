@@ -244,20 +244,30 @@
 
       <el-table-column label="Bentuk Pengelolaan Lingkungan Hidup">
         <template slot-scope="scope">
-          <el-input
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(form, index) in scope.row.form"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <el-input
+                v-model="scope.row.form[index].description"
+                type="textarea"
+                :rows="2"
+                :readonly="!isFormulator"
+              />
+            </div>
+          </div>
+          <el-button
             v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.form"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
-            :class="{
-              'is-error': checkError(scope.row.type, scope.$index, 'form'),
-            }"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddForm(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
             v-if="checkError(scope.row.type, scope.$index, 'form')"
-            style="color: #f56c6c"
+            style="color: #f56c6c; display: block"
           >
             Bentuk Pengelolaan Wajib Diisi
           </small>
@@ -266,20 +276,30 @@
 
       <el-table-column label="Lokasi Pengelolaan Lingkungan Hidup">
         <template slot-scope="scope">
-          <el-input
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(location, index) in scope.row.location"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <el-input
+                v-model="scope.row.location[index].description"
+                type="textarea"
+                :rows="2"
+                :readonly="!isFormulator"
+              />
+            </div>
+          </div>
+          <el-button
             v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.location"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
-            :class="{
-              'is-error': checkError(scope.row.type, scope.$index, 'location'),
-            }"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddLocation(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
           <small
             v-if="checkError(scope.row.type, scope.$index, 'location')"
-            style="color: #f56c6c"
+            style="color: #f56c6c; display: block"
           >
             Lokasi Pengelolaan Wajib Diisi
           </small>
@@ -574,15 +594,15 @@ export default {
           if (
             !x.impact_source ||
             !x.success_indicator ||
-            !x.form ||
-            !x.location ||
             !x.period_number ||
             !x.period_description ||
             !x.executor ||
             !x.supervisor ||
             !x.report_recipient ||
             x.impact_source.length === 0 ||
-            x.success_indicator.length === 0
+            x.success_indicator.length === 0 ||
+            x.form.length === 0 ||
+            x.location.length === 0
           ) {
             errors++;
           }
@@ -613,11 +633,37 @@ export default {
             }
           }
 
+          let formError = x.form.length === 0;
+
+          if (!formError) {
+            const filter = x.form.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              formError = true;
+              errors++;
+            }
+          }
+
+          let locationError = x.location.length === 0;
+
+          if (!locationError) {
+            const filter = x.location.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              locationError = true;
+              errors++;
+            }
+          }
+
           return {
             impact_source: impactSourceError,
             success_indicator: successIndicatorError,
-            form: !x.form,
-            location: !x.location,
+            form: formError,
+            location: locationError,
             period_number: !x.period_number,
             period_description: !x.period_description,
             executor: !x.executor,
@@ -724,6 +770,18 @@ export default {
     },
     handleAddSuccessIndicator(idx) {
       this.list[idx].success_indicator.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddForm(idx) {
+      this.list[idx].form.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddLocation(idx) {
+      this.list[idx].location.push({
         id: null,
         description: null,
       });
