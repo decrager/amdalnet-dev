@@ -334,7 +334,7 @@ class MatriksRKLController extends Controller
                          $imp_source = EnvPlanSource::findOrFail($impact_source[$a]['id']);
                      } else {
                         $imp_source = new EnvPlanSource();
-                        $imp_source->id_env_manage_plan = $envManage->id;
+                        $imp_source->id_impact_identification = $manage[$i]['id'];
                      }
                      
                      $imp_source->description = $impact_source[$a]['description'];
@@ -351,7 +351,7 @@ class MatriksRKLController extends Controller
                          $imp_indicator = EnvPlanIndicator::findOrFail($success_indicator[$a]['id']);
                      } else {
                         $imp_indicator = new EnvPlanIndicator();
-                        $imp_indicator->id_env_manage_plan = $envManage->id;
+                        $imp_indicator->id_impact_identification = $manage[$i]['id'];
                      }
                      
                      $imp_indicator->description = $success_indicator[$a]['description'];
@@ -598,23 +598,19 @@ class MatriksRKLController extends Controller
             // === INSTITUTION === //
             $institution = EnvPlanInstitution::where('id_impact_identification', $pA->id)->first();
 
+            // === IMPACT SOURCE === //
+            $impact_source = EnvPlanSource::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
+
+            // === SUCCESS INDICATOR == //
+            $success_indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
+
             $results[] = [
                 'no' => $total + 1,
                 'id' => $pA->id,
                 'name' => "$changeType $ronaAwal akibat $component",
                 'type' => 'subtitle',
-                'impact_source' => 
-                    $type == 'new' ? 
-                    [] : 
-                    EnvPlanSource::select('id', 'description', 'id_env_manage_plan')
-                                   ->where('id_env_manage_plan', $pA->envManagePlan->id)
-                                   ->get(),
-                'success_indicator' => 
-                    $type == 'new' ? 
-                    [] : 
-                    EnvPlanIndicator::select('id', 'description', 'id_env_manage_plan')
-                                      ->where('id_env_manage_plan', $pA->envManagePlan->id)
-                                      ->get(),
+                'impact_source' => $impact_source,
+                'success_indicator' => $success_indicator,
                 'form' => 
                     $type == 'new' ? 
                     [] : 
@@ -741,23 +737,19 @@ class MatriksRKLController extends Controller
             // === INSTITUTION === //
             $institution = EnvPlanInstitution::where('id_impact_identification', $merge->id)->first();
 
+             // === IMPACT SOURCE === //
+             $impact_source = EnvPlanSource::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $merge->id)->get();
+
+             // === SUCCESS INDICATOR == //
+             $success_indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $merge->id)->get();
+
             $results[] = [
                 'no' => $total + 1,
                 'id' => $merge->id,
                 'name' => "$changeType $ronaAwal akibat $component",
                 'type' => 'subtitle',
-                'impact_source' => 
-                    $type == 'new' ? 
-                    [] : 
-                    EnvPlanSource::select('id', 'description', 'id_env_manage_plan')
-                                   ->where('id_env_manage_plan', $merge->envManagePlan->id)
-                                   ->get(),
-                'success_indicator' => 
-                    $type == 'new' ? 
-                    [] : 
-                    EnvPlanIndicator::select('id', 'description', 'id_env_manage_plan')
-                                      ->where('id_env_manage_plan', $merge->envManagePlan->id)
-                                      ->get(),
+                'impact_source' => $impact_source,
+                'success_indicator' => $success_indicator,
                 'form' => 
                     $type == 'new' ? 
                     [] : 
