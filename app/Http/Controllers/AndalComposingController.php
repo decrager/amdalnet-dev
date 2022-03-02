@@ -1737,6 +1737,7 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('district', ucwords(strtolower($project_district)));
         $templateProcessor->setValue('province', ucwords(strtolower($project_province)));
         $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->pic);
+        $templateProcessor->setValue('pemrakarsa_position', $project->initiator->pic_role);
         $templateProcessor->setValue('address', ucwords(strtolower($project_address)));
         $templateProcessor->setValue('pemrakarsa_address', ucwords(strtolower($project->initiator->address)));
         $templateProcessor->setValue('pemrakarsa_phone', ucwords(strtolower($project->initiator->phone)));
