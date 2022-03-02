@@ -8,6 +8,7 @@ use App\Entity\Comment;
 use App\Entity\EnvMonitorPlan;
 use App\Entity\EnvPlanForm;
 use App\Entity\EnvPlanIndicator;
+use App\Entity\EnvPlanInstitution;
 use App\Entity\EnvPlanLocation;
 use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
@@ -195,10 +196,19 @@ class MatriksRPLController extends Controller
             }
 
             $envMonitor->time_frequent = $monitor[$i]['period_number'] . '-' . $monitor[$i]['period_description'];
-            $envMonitor->executor = $monitor[$i]['executor'];
-            $envMonitor->supervisor = $monitor[$i]['supervisor'];
-            $envMonitor->report_recipient = $monitor[$i]['report_recipient'];
             $envMonitor->save();
+
+            // === INSTITUTION === //
+            $institution = EnvPlanInstitution::where('id_impact_identification', $monitor[$i]['id'])->first();
+            if(!$institution) {
+                $institution = new EnvPlanInstitution();
+                $institution->id_impact_identification = $monitor[$i]['id'];
+            }
+
+            $institution->executor = $monitor[$i]['executor'];
+            $institution->supervisor = $monitor[$i]['supervisor'];
+            $institution->report_recipient = $monitor[$i]['report_recipient'];
+            $institution->save();
 
             // === IMPACT SOURCE === //
             $impact_source = $monitor[$i]['impact_source'];
@@ -428,6 +438,9 @@ class MatriksRPLController extends Controller
                     }
                 }
 
+                // === INSTITUTION === //
+                $institution = EnvPlanInstitution::where('id_impact_identification', $pA->id)->first();
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $pA->id,
@@ -458,9 +471,9 @@ class MatriksRPLController extends Controller
                                         ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
                                         ->get(),
                     'time_frequent' => $type == 'new' ? null : $pA->envMonitorPlan->time_frequent,
-                    'executor' => $type == 'new' ? null : $pA->envMonitorPlan->executor,
-                    'supervisor' => $type == 'new' ? null : $pA->envMonitorPlan->supervisor,
-                    'report_recipient' => $type == 'new' ? null : $pA->envMonitorPlan->report_recipient,
+                    'executor' => $institution ? $institution->executor : null,
+                    'supervisor' => $institution ? $institution->supervisor : null,
+                    'report_recipient' => $institution ? $institution->report_recipient : null,
                     'description' => $type == 'new' ? null : $pA->envMonitorPlan->description,
                     'period_number' => $periodeNumber,
                     'period_description' => $periodeDesc,
@@ -569,6 +582,9 @@ class MatriksRPLController extends Controller
                     }
                 }
 
+                // === INSTITUTION === //
+                $institution = EnvPlanInstitution::where('id_impact_identification', $merge->id)->first();
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $merge->id,
@@ -599,9 +615,9 @@ class MatriksRPLController extends Controller
                                         ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
                                         ->get(),
                     'time_frequent' => $type == 'new' ? null : $merge->envMonitorPlan->time_frequent,
-                    'executor' => $type == 'new' ? null : $merge->envMonitorPlan->executor,
-                    'supervisor' => $type == 'new' ? null : $merge->envMonitorPlan->supervisor,
-                    'report_recipient' => $type == 'new' ? null : $merge->envMonitorPlan->report_recipient,
+                    'executor' => $institution ? $institution->executor : null,
+                    'supervisor' => $institution ? $institution->supervisor : null,
+                    'report_recipient' => $institution ? $institution->report_recipient : null,
                     'description' => $type == 'new' ? null : $merge->envMonitorPlan->description,
                     'period_number' => $periodeNumber,
                     'period_description' => $periodeDesc,

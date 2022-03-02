@@ -80,4 +80,9 @@ class ImpactIdentificationClone extends Model
     {
         return $this->belongsTo(ImpactIdentification::class, 'id_impact_identification', 'id');
     }
+
+    public function institution()
+    {
+        return $this->hasOne(EnvPlanInstitution::class, 'id_impact_identification', 'id');
+    }
 }
