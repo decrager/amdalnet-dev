@@ -245,54 +245,67 @@
       <el-table-column label="Bentuk Pemantauan Lingkungan Hidup">
         <el-table-column label="Metode Pengumpulan & Analisis Data">
           <template slot-scope="scope">
-            <el-input
+            <div v-if="scope.row.type == 'subtitle'">
+              <div
+                v-for="(collection_method, index) in scope.row
+                  .collection_method"
+                :key="index"
+                style="margin-bottom: 5px"
+              >
+                <el-input
+                  v-model="scope.row.collection_method[index].description"
+                  type="textarea"
+                  :rows="2"
+                  :readonly="!isFormulator"
+                />
+              </div>
+            </div>
+            <el-button
               v-if="scope.row.type == 'subtitle'"
-              v-model="scope.row.collection_method"
-              type="textarea"
-              :rows="2"
-              :readonly="!isFormulator"
-              :class="{
-                'is-error': checkError(
-                  scope.row.type,
-                  scope.$index,
-                  'collection_method'
-                ),
-              }"
+              icon="el-icon-plus"
+              circle
+              @click="handleAddCollectionMethod(scope.$index)"
             />
             <span v-else>{{ '' }}</span>
             <small
               v-if="
                 checkError(scope.row.type, scope.$index, 'collection_method')
               "
-              style="color: #f56c6c"
+              style="color: #f56c6c; display: block"
             >
-              Metode Wajib Diisi
+              Metode Pengumpulan & Analisis Data Wajib Diisi
             </small>
           </template>
         </el-table-column>
 
         <el-table-column label="Lokasi Pemantauan Lingkungan Hidup">
           <template slot-scope="scope">
-            <el-input
+            <div v-if="scope.row.type == 'subtitle'">
+              <div
+                v-for="(location, index) in scope.row.location"
+                :key="index"
+                style="margin-bottom: 5px"
+              >
+                <el-input
+                  v-model="scope.row.location[index].description"
+                  type="textarea"
+                  :rows="2"
+                  :readonly="!isFormulator"
+                />
+              </div>
+            </div>
+            <el-button
               v-if="scope.row.type == 'subtitle'"
-              v-model="scope.row.location"
-              type="textarea"
-              :rows="2"
-              :readonly="!isFormulator"
-              :class="{
-                'is-error': checkError(
-                  scope.row.type,
-                  scope.$index,
-                  'location'
-                ),
-              }"
+              icon="el-icon-plus"
+              circle
+              @click="handleAddLocation(scope.$index)"
             />
             <span v-else>{{ '' }}</span>
             <small
               v-if="checkError(scope.row.type, scope.$index, 'location')"
-              style="color: #f56c6c"
+              style="color: #f56c6c; display: block"
             >
-              Lokasi Wajib Diisi
+              Lokasi Pemantauan Wajib Diisi
             </small>
           </template>
         </el-table-column>
@@ -592,15 +605,15 @@ export default {
           if (
             !x.indicator ||
             !x.impact_source ||
-            !x.collection_method ||
-            !x.location ||
             !x.period_number ||
             !x.period_description ||
             !x.executor ||
             !x.supervisor ||
             !x.report_recipient ||
             x.impact_source.length === 0 ||
-            x.indicator.length === 0
+            x.indicator.length === 0 ||
+            x.collection_method.length === 0 ||
+            x.location.length === 0
           ) {
             errors++;
           }
@@ -631,11 +644,37 @@ export default {
             }
           }
 
+          let collectionMethodError = x.collection_method.length === 0;
+
+          if (!collectionMethodError) {
+            const filter = x.collection_method.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              collectionMethodError = true;
+              errors++;
+            }
+          }
+
+          let locationError = x.location.length === 0;
+
+          if (!locationError) {
+            const filter = x.location.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              locationError = true;
+              errors++;
+            }
+          }
+
           return {
             indicator: indicatorError,
             impact_source: impactSourceError,
-            collection_method: !x.collection_method,
-            location: !x.location,
+            collection_method: collectionMethodError,
+            location: locationError,
             period_number: !x.period_number,
             period_description: !x.period_description,
             executor: !x.executor,
@@ -743,6 +782,18 @@ export default {
     },
     handleAddIndicator(idx) {
       this.list[idx].indicator.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddCollectionMethod(idx) {
+      this.list[idx].collection_method.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddLocation(idx) {
+      this.list[idx].location.push({
         id: null,
         description: null,
       });

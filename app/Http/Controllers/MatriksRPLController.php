@@ -6,7 +6,9 @@ use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\Comment;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\EnvPlanForm;
 use App\Entity\EnvPlanIndicator;
+use App\Entity\EnvPlanLocation;
 use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
@@ -192,8 +194,6 @@ class MatriksRPLController extends Controller
                 $ids[] = $monitor[$i]['id'];
             }
 
-            $envMonitor->collection_method = $monitor[$i]['collection_method'];
-            $envMonitor->location = $monitor[$i]['location'];
             $envMonitor->time_frequent = $monitor[$i]['period_number'] . '-' . $monitor[$i]['period_description'];
             $envMonitor->executor = $monitor[$i]['executor'];
             $envMonitor->supervisor = $monitor[$i]['supervisor'];
@@ -231,6 +231,40 @@ class MatriksRPLController extends Controller
                     
                     $imp_indicator->description = $indicator[$a]['description'];
                     $imp_indicator->save();
+                }
+            }
+
+            // === COLLECTION METHOD === //
+            $collection_method = $monitor[$i]['collection_method'];
+            if(count($collection_method) > 0) {
+                for($a = 0; $a < count($collection_method); $a++) {
+                    $collection_method_data = null;
+                    if($collection_method[$a]['id'] !== null) {
+                        $collection_method_data = EnvPlanForm::findOrFail($collection_method[$a]['id']);
+                    } else {
+                       $collection_method_data = new EnvPlanForm();
+                       $collection_method_data->id_env_monitor_plan = $envMonitor->id;
+                    }
+                    
+                    $collection_method_data->description = $collection_method[$a]['description'];
+                    $collection_method_data->save();
+                }
+            }
+
+            // === LOCATION === //
+            $location = $monitor[$i]['location'];
+            if(count($location) > 0) {
+                for($a = 0; $a < count($location); $a++) {
+                    $location_data = null;
+                    if($location[$a]['id'] !== null) {
+                        $location_data = EnvPlanLocation::findOrFail($location[$a]['id']);
+                    } else {
+                       $location_data = new EnvPlanLocation();
+                       $location_data->id_env_monitor_plan = $envMonitor->id;
+                    }
+                    
+                    $location_data->description = $location[$a]['description'];
+                    $location_data->save();
                 }
             }
         }
@@ -411,8 +445,18 @@ class MatriksRPLController extends Controller
                         EnvPlanIndicator::select('id', 'description', 'id_env_monitor_plan')
                                         ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
                                         ->get(),
-                    'collection_method' => $type == 'new' ? null : $pA->envMonitorPlan->collection_method,
-                    'location' => $type == 'new' ? null : $pA->envMonitorPlan->location,
+                    'collection_method' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanForm::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
+                                        ->get(),
+                    'location' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanLocation::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
+                                        ->get(),
                     'time_frequent' => $type == 'new' ? null : $pA->envMonitorPlan->time_frequent,
                     'executor' => $type == 'new' ? null : $pA->envMonitorPlan->executor,
                     'supervisor' => $type == 'new' ? null : $pA->envMonitorPlan->supervisor,
@@ -542,8 +586,18 @@ class MatriksRPLController extends Controller
                         EnvPlanIndicator::select('id', 'description', 'id_env_monitor_plan')
                                         ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
                                         ->get(),
-                    'collection_method' => $type == 'new' ? null : $merge->envMonitorPlan->collection_method,
-                    'location' => $type == 'new' ? null : $merge->envMonitorPlan->location,
+                    'collection_method' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanForm::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
+                                        ->get(),
+                    'location' => 
+                        $type == 'new' ? 
+                        [] : 
+                        EnvPlanLocation::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
+                                        ->get(),
                     'time_frequent' => $type == 'new' ? null : $merge->envMonitorPlan->time_frequent,
                     'executor' => $type == 'new' ? null : $merge->envMonitorPlan->executor,
                     'supervisor' => $type == 'new' ? null : $merge->envMonitorPlan->supervisor,
