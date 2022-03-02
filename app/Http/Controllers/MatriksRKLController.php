@@ -6,7 +6,9 @@ use App\Entity\Comment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\EnvPlanForm;
 use App\Entity\EnvPlanIndicator;
+use App\Entity\EnvPlanLocation;
 use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
@@ -307,8 +309,6 @@ class MatriksRKLController extends Controller
                 $ids[] = $manage[$i]['id'];
             }
 
-            $envManage->form = $manage[$i]['form'];
-            $envManage->location = $manage[$i]['location'];
             $envManage->period = $manage[$i]['period_number'] . '-' . $manage[$i]['period_description'];
             $envManage->executor = $manage[$i]['executor'];
             $envManage->supervisor = $manage[$i]['supervisor'];
@@ -348,6 +348,40 @@ class MatriksRKLController extends Controller
                      $imp_indicator->save();
                  }
              }
+
+            // === FORM === //
+            $form = $manage[$i]['form'];
+            if(count($form) > 0) {
+                for($a = 0; $a < count($form); $a++) {
+                    $form_data = null;
+                    if($form[$a]['id'] !== null) {
+                        $form_data = EnvPlanForm::findOrFail($form[$a]['id']);
+                    } else {
+                       $form_data = new EnvPlanForm();
+                       $form_data->id_env_manage_plan = $envManage->id;
+                    }
+                    
+                    $form_data->description = $form[$a]['description'];
+                    $form_data->save();
+                }
+            }
+
+            // === LOCATION === //
+            $location = $manage[$i]['location'];
+            if(count($location) > 0) {
+                for($a = 0; $a < count($location); $a++) {
+                    $location_data = null;
+                    if($location[$a]['id'] !== null) {
+                        $location_data = EnvPlanLocation::findOrFail($location[$a]['id']);
+                    } else {
+                       $location_data = new EnvPlanLocation();
+                       $location_data->id_env_manage_plan = $envManage->id;
+                    }
+                    
+                    $location_data->description = $location[$a]['description'];
+                    $location_data->save();
+                }
+            }
         }
 
         // === WORKFLOW === //
@@ -568,8 +602,18 @@ class MatriksRKLController extends Controller
                     EnvPlanIndicator::select('id', 'description', 'id_env_manage_plan')
                                       ->where('id_env_manage_plan', $pA->envManagePlan->id)
                                       ->get(),
-                'form' => $type == 'new' ? null : $pA->envManagePlan->form,
-                'location' => $type == 'new' ? null : $pA->envManagePlan->location,
+                'form' => 
+                    $type == 'new' ? 
+                    [] : 
+                    EnvPlanForm::select('id', 'description', 'id_env_manage_plan')
+                                      ->where('id_env_manage_plan', $pA->envManagePlan->id)
+                                      ->get(),
+                'location' => 
+                    $type == 'new' ? 
+                    [] : 
+                    EnvPlanLocation::select('id', 'description', 'id_env_manage_plan')
+                                      ->where('id_env_manage_plan', $pA->envManagePlan->id)
+                                      ->get(),
                 'period' => $type == 'new' ? null : $pA->envManagePlan->period,
                 'executor' => $type == 'new' ? null : $pA->envManagePlan->executor,
                 'supervisor' => $type == 'new' ? null : $pA->envManagePlan->supervisor,
@@ -698,8 +742,18 @@ class MatriksRKLController extends Controller
                     EnvPlanIndicator::select('id', 'description', 'id_env_manage_plan')
                                       ->where('id_env_manage_plan', $merge->envManagePlan->id)
                                       ->get(),
-                'form' => $type == 'new' ? null : $merge->envManagePlan->form,
-                'location' => $type == 'new' ? null : $merge->envManagePlan->location,
+                'form' => 
+                    $type == 'new' ? 
+                    [] : 
+                    EnvPlanForm::select('id', 'description', 'id_env_manage_plan')
+                                      ->where('id_env_manage_plan', $merge->envManagePlan->id)
+                                      ->get(),
+                'location' => 
+                    $type == 'new' ? 
+                    [] : 
+                    EnvPlanLocation::select('id', 'description', 'id_env_manage_plan')
+                                      ->where('id_env_manage_plan', $merge->envManagePlan->id)
+                                      ->get(),
                 'period' => $type == 'new' ? null : $merge->envManagePlan->period,
                 'institution' => $type == 'new' ? null : $merge->envManagePlan->institution,
                 'executor' => $type == 'new' ? null : $merge->envManagePlan->executor,
