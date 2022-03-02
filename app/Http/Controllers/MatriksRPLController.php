@@ -219,7 +219,7 @@ class MatriksRPLController extends Controller
                         $imp_source = EnvPlanSource::findOrFail($impact_source[$a]['id']);
                     } else {
                        $imp_source = new EnvPlanSource();
-                       $imp_source->id_env_monitor_plan = $envMonitor->id;
+                       $imp_source->id_impact_identification = $monitor[$i]['id'];
                     }
                     
                     $imp_source->description = $impact_source[$a]['description'];
@@ -236,7 +236,7 @@ class MatriksRPLController extends Controller
                         $imp_indicator = EnvPlanIndicator::findOrFail($indicator[$a]['id']);
                     } else {
                        $imp_indicator = new EnvPlanIndicator();
-                       $imp_indicator->id_env_monitor_plan = $envMonitor->id;
+                       $imp_indicator->id_impact_identification = $monitor[$i]['id'];
                     }
                     
                     $imp_indicator->description = $indicator[$a]['description'];
@@ -441,23 +441,19 @@ class MatriksRPLController extends Controller
                 // === INSTITUTION === //
                 $institution = EnvPlanInstitution::where('id_impact_identification', $pA->id)->first();
 
+                // === IMPACT SOURCE === //
+                $impact_source = EnvPlanSource::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
+
+                // === INDICATOR == //
+                $indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'impact_source' => 
-                        $type == 'new' ? 
-                        [] : 
-                        EnvPlanSource::select('id', 'description', 'id_env_monitor_plan')
-                                    ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
-                                    ->get(),
-                    'indicator' => 
-                        $type == 'new' ? 
-                        [] : 
-                        EnvPlanIndicator::select('id', 'description', 'id_env_monitor_plan')
-                                        ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
-                                        ->get(),
+                    'impact_source' => $impact_source,
+                    'indicator' => $indicator,
                     'collection_method' => 
                         $type == 'new' ? 
                         [] : 
@@ -585,23 +581,19 @@ class MatriksRPLController extends Controller
                 // === INSTITUTION === //
                 $institution = EnvPlanInstitution::where('id_impact_identification', $merge->id)->first();
 
+                 // === IMPACT SOURCE === //
+                 $impact_source = EnvPlanSource::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $merge->id)->get();
+
+                 // === INDICATOR === //
+                 $indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $merge->id)->get();
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $merge->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'impact_source' => 
-                        $type == 'new' ? 
-                        [] : 
-                        EnvPlanSource::select('id', 'description', 'id_env_monitor_plan')
-                                    ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
-                                    ->get(),
-                    'indicator' => 
-                        $type == 'new' ? 
-                        [] : 
-                        EnvPlanIndicator::select('id', 'description', 'id_env_monitor_plan')
-                                        ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
-                                        ->get(),
+                    'impact_source' => $impact_source,
+                    'indicator' => $indicator,
                     'collection_method' => 
                         $type == 'new' ? 
                         [] : 
