@@ -91,11 +91,26 @@ class MatriksRKLController extends Controller
                 }
             }
 
-            $poinA = $this->getPoinA($stages, $request->idProject);
-            $poinB = $this->getPoinB($stages, $request->idProject);
+            // === IMPACT SOURCE === //
+            $impact_source = EnvPlanSource::whereHas('impactIdentification', function($q) use($request) {
+                $q->where('id_project', $request->idProject);
+            })->get();
 
-            $poinAp = $this->getPoinARpl($stages, $request->idProject);
-            $poinBp = $this->getPoinBRpl($stages, $request->idProject);
+            // === INDICATOR === //
+            $indicator = EnvPlanIndicator::whereHas('impactIdentification', function($q) use($request) {
+                $q->where('id_project', $request->idProject);
+            })->get();
+
+            // === INSTITUTION === //
+            $institution = EnvPlanInstitution::whereHas('impactIdentification', function($q) use($request) {
+                $q->where('id_project', $request->idProject);
+            })->get();
+
+            $poinA = $this->getPoinA($stages, $request->idProject, $impact_source, $indicator, $institution);
+            $poinB = $this->getPoinB($stages, $request->idProject, $impact_source, $indicator, $institution);
+
+            $poinAp = $this->getPoinARpl($stages, $request->idProject, $impact_source, $indicator, $institution);
+            $poinBp = $this->getPoinBRpl($stages, $request->idProject, $impact_source, $indicator, $institution);
 
             $templateProcessor->setValue('project_title', $project->project_title);
             $templateProcessor->setValue('district', $project_district);
@@ -478,7 +493,7 @@ class MatriksRKLController extends Controller
         $count_1_2 = EnvManagePlan::whereHas('impactIdentification', function($q) use($id_project) {
             $q->where('id_project', $id_project);
         })
-        ->where('form', '!=', null)
+        ->where('period', '!=', null)
         ->count();
 
         if($count_1 !== $count_1_2) {
@@ -488,7 +503,7 @@ class MatriksRKLController extends Controller
         $count_2_2 = EnvMonitorPlan::whereHas('impactIdentification', function($q) use($id_project) {
             $q->where('id_project', $id_project);
         })
-        ->where('collection_method', '!=', null)
+        ->where('time_frequent', '!=', null)
         ->count();
 
         if($count_2 !== $count_2_2) {
@@ -787,7 +802,7 @@ class MatriksRKLController extends Controller
     return $results;
   }
 
-  private function getPoinA($stages, $id_project) {
+  private function getPoinA($stages, $id_project, $impact_source, $indicator, $institution) {
     $results = []; 
 
     $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
@@ -801,8 +816,6 @@ class MatriksRKLController extends Controller
 
     $idx = 0;
     foreach($stages as $s) {
-        // $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
-        // $results[$idx]['data'] = [];
         $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
 
         $total = 0;
@@ -822,20 +835,22 @@ class MatriksRKLController extends Controller
 
             $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
+            $institution_data = $institution->where('id_impact_identification', $pA->id)->first();
+
             if($pA->envManagePlan) {
                 $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
                     'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl' => $total + 1,
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'impact_source' => $this->getImpactSource('id_env_manage_plan', $pA->envManagePlan->id),
-                    'success_indicator' => $this->getIndicator('id_env_manage_plan', $pA->envManagePlan->id),
-                    'form' => $pA->envManagePlan->form,
-                    'location' => $pA->envManagePlan->location,
+                    'impact_source' => $this->getImpactSourceList($impact_source, $pA->id),
+                    'success_indicator' => $this->getIndicatorList($indicator, $pA->id),
+                    'form' => $this->getForm('id_env_manage_plan', $pA->envManagePlan->id),
+                    'location' => $this->getLocation('id_env_manage_plan', $pA->envManagePlan->id),
                     'period' => $pA->envManagePlan->period,
-                    'executor' => $pA->envManagePlan->executor,
-                    'supervisor' => $pA->envManagePlan->supervisor,
-                    'report_recipient' => $pA->envManagePlan->report_recipient,
+                    'executor' => $institution_data ? $institution_data->executor : '',
+                    'supervisor' => $institution_data ? $institution_data->supervisor : '',
+                    'report_recipient' => $institution_data ? $institution_data->report_recipient : '',
                 ];
                 $total++;
             } else {
@@ -849,7 +864,7 @@ class MatriksRKLController extends Controller
     
   }
 
-    private function getPoinB($stages, $id_project) {
+    private function getPoinB($stages, $id_project, $impact_source, $indicator, $institution) {
         $results = [];
 
        //  =========== POIN B.1 ============= //
@@ -891,8 +906,6 @@ class MatriksRKLController extends Controller
     
         $idx = 0;
         foreach($stages as $s) {
-            // $results[$idx]['stages'] = $alphabet_list . '. ' . $s->name;
-            // $results[$idx]['data'] = [];
             $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
     
             $total = 0;
@@ -910,10 +923,10 @@ class MatriksRKLController extends Controller
                     continue;
                 }
                 $changeType = $merge->id_change_type ? $merge->changeType->name : '';
-                // $ronaAwal =  $merge->ronaAwal->id_rona_awal ? $merge->ronaAwal->rona_awal->name : $merge->ronaAwal->name;
-                // $component = $merge->component->id_component ? $merge->component->component->name : $merge->component->name;
                 $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
                 $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+
+                $institution_data = $institution->where('id_impact_identification', $merge->id)->first();
 
                 if($merge->envManagePlan) {
                     $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
@@ -921,14 +934,14 @@ class MatriksRKLController extends Controller
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'impact_source' => $this->getImpactSource('id_env_manage_plan', $merge->envManagePlan->id),
-                        'success_indicator' => $this->getIndicator('id_env_manage_plan', $merge->envManagePlan->id),
-                        'form' => $merge->envManagePlan->form,
-                        'location' => $merge->envManagePlan->location,
+                        'impact_source' => $this->getImpactSourceList($impact_source, $merge->id),
+                        'success_indicator' => $this->getIndicatorList($indicator, $merge->id),
+                        'form' => $this->getForm('id_env_manage_plan', $merge->envManagePlan->id),
+                        'location' => $this->getLocation('id_env_manage_plan', $merge->envManagePlan->id),
                         'period' => $merge->envManagePlan->period,
-                        'executor' => $merge->envManagePlan->executor,
-                        'supervisor' => $merge->envManagePlan->supervisor,
-                        'report_recipient' => $merge->envManagePlan->report_recipient,
+                        'executor' => $institution_data ? $institution_data->executor : '',
+                        'supervisor' => $institution_data ? $institution_data->supervisor : '',
+                        'report_recipient' => $institution_data ? $institution_data->report_recipient : '',
                     ];
                 } else {
                     continue;
@@ -941,7 +954,7 @@ class MatriksRKLController extends Controller
         return $results;
     }
 
-    private function getPoinARpl($stages, $id_project) {
+    private function getPoinARpl($stages, $id_project, $impact_source, $indicator, $institution) {
         $results = [];
 
         $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
@@ -955,8 +968,6 @@ class MatriksRKLController extends Controller
 
         $idx = 0;
         foreach($stages as $s) {
-            // $results[$idx]['stages'] =  $alphabet_list . '. ' . $s->name;
-            // $results[$idx]['data'] = [];
             $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'] = [];
 
             $total = 0;
@@ -975,20 +986,22 @@ class MatriksRKLController extends Controller
                 }
                 $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
+                $institution_data = $institution->where('id_impact_identification', $pA->id)->first();
+
                 if($pA->envMonitorPlan) {
                     $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
                         'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
                         'id' => $pA->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'indicator' => $this->getIndicator('id_env_monitor_plan', $pA->envMonitorPlan->id),
-                        'impact_source' => $this->getImpactSource('id_env_monitor_plan', $pA->envMonitorPlan->id),
-                        'collection_method' => $pA->envMonitorPlan->collection_method,
-                        'location' => $pA->envMonitorPlan->location,
+                        'indicator' => $this->getIndicatorList($indicator, $pA->id),
+                        'impact_source' => $this->getImpactSourceList($impact_source, $pA->id),
+                        'collection_method' => $this->getForm('id_env_monitor_plan', $pA->envMonitorPlan->id),
+                        'location' => $this->getLocation('id_env_monitor_plan', $pA->envMonitorPlan->id),
                         'time_frequent' => $pA->envMonitorPlan->time_frequent,
-                        'executor' => $pA->envMonitorPlan->executor,
-                        'supervisor' => $pA->envMonitorPlan->supervisor,
-                        'report_recipient' => $pA->envMonitorPlan->report_recipient,
+                        'executor' => $institution_data ? $institution_data->executor : '',
+                        'supervisor' => $institution_data ? $institution_data->supervisor : '',
+                        'report_recipient' => $institution_data ? $institution_data->report_recipient : '',
                         'description' => $pA->envMonitorPlan->description,
                     ];
                 } else {
@@ -1002,7 +1015,7 @@ class MatriksRKLController extends Controller
         return $results;
     }
 
-    private function getPoinBRpl($stages, $id_project) {
+    private function getPoinBRpl($stages, $id_project, $impact_source, $indicator, $institution) {
        $results = [];
 
         //  =========== POIN B.1 ============= //
@@ -1044,8 +1057,6 @@ class MatriksRKLController extends Controller
 
        $idx = 0;
        foreach($stages as $s) {
-        //    $results[$idx]['stages'] =  $alphabet_list . '. ' . $s->name;
-        //    $results[$idx]['data'] = [];
         $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'] = [];
 
            $total = 0;
@@ -1065,20 +1076,22 @@ class MatriksRKLController extends Controller
                 
                 $changeType = $merge->id_change_type ? $merge->changeType->name : '';
 
+                $institution_data = $institution->where('id_impact_identification', $merge->id)->first();
+
                 if($merge->envMonitorPlan) {
                     $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
                         'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'indicator' => $this->getIndicator('id_env_monitor_plan', $merge->envMonitorPlan->id),
-                        'impact_source' => $this->getImpactSource('id_env_monitor_plan', $merge->envMonitorPlan->id),
-                        'collection_method' => $merge->envMonitorPlan->collection_method,
-                        'location' => $merge->envMonitorPlan->location,
+                        'indicator' => $this->getIndicatorList($indicator, $merge->id),
+                        'impact_source' => $this->getImpactSourceList($impact_source, $merge->id),
+                        'collection_method' => $this->getForm('id_env_monitor_plan', $merge->envMonitorPlan->id),
+                        'location' => $this->getLocation('id_env_monitor_plan', $merge->envMonitorPlan->id),
                         'time_frequent' => $merge->envMonitorPlan->time_frequent,
-                        'executor' => $merge->envMonitorPlan->executor,
-                        'supervisor' => $merge->envMonitorPlan->supervisor,
-                        'report_recipient' => $merge->envMonitorPlan->report_recipient,
+                        'executor' => $institution_data ? $institution_data->executor : '',
+                        'supervisor' => $institution_data ? $institution_data->supervisor : '',
+                        'report_recipient' => $institution_data ? $institution_data->report_recipient : '',
                         'description' => $merge->envMonitorPlan->description,
                     ];
                 } else {
@@ -1155,33 +1168,59 @@ class MatriksRKLController extends Controller
         return $comments;
     }
 
-    private function getImpactSource($type_id, $id)
+    private function getImpactSourceList($impact_source, $id)
     {
-        $impact_source = '';
-
-        $imp_source = EnvPlanSource::where($type_id, $id)->get();
-
-        $total = 1;
-        foreach($imp_source as $i) {
-            $impact_source .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
-            $total++;
+        $imp_source = '';
+        $total_source = 1;
+        $sources = $impact_source->where('id_impact_identification', $id);
+        foreach($sources as $s) {
+            $imp_source .= $total_source . '. ' . $s->description . '</w:t><w:p/><w:t>';
+            $total_source++;
         }
 
-        return $impact_source;
+        return $imp_source;
     }
 
-    private function getIndicator($type_id, $id)
+    private function getIndicatorList($indicator, $id)
     {
-        $indicator = '';
-
-        $indicators = EnvPlanIndicator::where($type_id, $id)->get();
-
+        $indicator_data = '';
         $total = 1;
+        $indicators = $indicator->where('id_impact_identification', $id);
         foreach($indicators as $i) {
-            $indicator .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
+            $indicator_data .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
             $total++;
         }
 
-        return $indicator ;
+        return $indicator_data;
+    }
+
+    private function getForm($type_id, $id)
+    {
+        $form = '';
+
+        $imp_form = EnvPlanForm::where($type_id, $id)->get();
+
+        $total = 1;
+        foreach($imp_form as $i) {
+            $form .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
+            $total++;
+        }
+
+        return $form;
+    }
+
+    private function getLocation($type_id, $id)
+    {
+        $location = '';
+
+        $locations = EnvPlanLocation::where($type_id, $id)->get();
+
+        $total = 1;
+        foreach($locations as $l) {
+            $location .= $total . '. ' . $l->description . '</w:t><w:p/><w:t>';
+            $total++;
+        }
+
+        return $location ;
     }
 }
