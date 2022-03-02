@@ -534,7 +534,7 @@ class MeetingReportController extends Controller
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
         $templateProcessor->setValue('pic', $project->initiator->pic);
-        $templateProcessor->setValue('pic_position', $meeting->position);
+        $templateProcessor->setValue('pic_position', $project->initiator->pic_role);
         $templateProcessor->setValue('ketua_tuk_position', $ketua_tuk_position);
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('authority_big', $authority_big);

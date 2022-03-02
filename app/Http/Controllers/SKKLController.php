@@ -232,7 +232,7 @@ class SKKLController extends Controller
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('project_type', $project->project_type);
         $templateProcessor->setValue('pic', $project->initiator->name);
-        $templateProcessor->setValue('pic_position', '');
+        $templateProcessor->setValue('pic_position', $project->initiator->pic_role);
         $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
         $templateProcessor->setValue('location', $location);
 
@@ -331,7 +331,7 @@ class SKKLController extends Controller
         $templateProcessor->setValue('pemrakarsa_nib', $project->initiator->nib);
         $templateProcessor->setValue('project_type', $project->project_type);
         $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->name);
-        $templateProcessor->setValue('pemrakarsa_position', '');
+        $templateProcessor->setValue('pemrakarsa_position', $project->initiator->pic_role);
         $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
         $templateProcessor->setValue('project_address', $location);
 

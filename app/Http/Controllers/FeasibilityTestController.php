@@ -7,14 +7,10 @@ use App\Entity\FeasibilityTest;
 use App\Entity\FeasibilityTestDetail;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
-use App\Entity\MeetingReport;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
-use App\Entity\TestingMeeting;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\Settings;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use PDF;
@@ -253,6 +249,7 @@ class FeasibilityTestController extends Controller
         $pemrakarsa = $project->initiator->name;
         $pic = $project->initiator->pic;
         $pemrakarsa_address = $project->initiator->address;
+        $pemrakarsa_position = $project->initiator->pic_role;
 
         if($project->address) {
             if($project->address->first()) {
@@ -305,6 +302,7 @@ class FeasibilityTestController extends Controller
         $templateProcessor->setValue('project_type', $project_type);
         $templateProcessor->setValue('pic', $pic);
         $templateProcessor->setValue('pemrakarsa_address', $pemrakarsa_address);
+        $templateProcessor->setValue('pemrakarsa_position', $pemrakarsa_position);
         $templateProcessor->setValue('kepala_sekretariat_tuk_name', $tuk['kepala_sekretariat_tuk_name']);
         $templateProcessor->setValue('kepala_sekretariat_tuk_nip', $tuk['kepala_sekretariat_tuk_nip']);
         $templateProcessor->setValue('ketua_tuk_name', $tuk['ketua_tuk_name']);
