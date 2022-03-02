@@ -8,6 +8,7 @@ use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
 use App\Entity\EnvPlanForm;
 use App\Entity\EnvPlanIndicator;
+use App\Entity\EnvPlanInstitution;
 use App\Entity\EnvPlanLocation;
 use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
@@ -310,10 +311,19 @@ class MatriksRKLController extends Controller
             }
 
             $envManage->period = $manage[$i]['period_number'] . '-' . $manage[$i]['period_description'];
-            $envManage->executor = $manage[$i]['executor'];
-            $envManage->supervisor = $manage[$i]['supervisor'];
-            $envManage->report_recipient = $manage[$i]['report_recipient'];
             $envManage->save();
+
+            // === INSTITUTION === //
+            $institution = EnvPlanInstitution::where('id_impact_identification', $manage[$i]['id'])->first();
+            if(!$institution) {
+                $institution = new EnvPlanInstitution();
+                $institution->id_impact_identification = $manage[$i]['id'];
+            }
+
+            $institution->executor = $manage[$i]['executor'];
+            $institution->supervisor = $manage[$i]['supervisor'];
+            $institution->report_recipient = $manage[$i]['report_recipient'];
+            $institution->save();
 
              // === IMPACT SOURCE === //
              $impact_source = $manage[$i]['impact_source'];
@@ -585,6 +595,9 @@ class MatriksRKLController extends Controller
                 }
             }
 
+            // === INSTITUTION === //
+            $institution = EnvPlanInstitution::where('id_impact_identification', $pA->id)->first();
+
             $results[] = [
                 'no' => $total + 1,
                 'id' => $pA->id,
@@ -615,9 +628,9 @@ class MatriksRKLController extends Controller
                                       ->where('id_env_manage_plan', $pA->envManagePlan->id)
                                       ->get(),
                 'period' => $type == 'new' ? null : $pA->envManagePlan->period,
-                'executor' => $type == 'new' ? null : $pA->envManagePlan->executor,
-                'supervisor' => $type == 'new' ? null : $pA->envManagePlan->supervisor,
-                'report_recipient' => $type == 'new' ? null : $pA->envManagePlan->report_recipient,
+                'executor' => $institution ? $institution->executor : null,
+                'supervisor' => $institution ? $institution->supervisor : null,
+                'report_recipient' => $institution ? $institution->report_recipient : null,
                 'period_number' => $periodeNumber,
                 'period_description' => $periodeDesc,
                 'comments' => $comments
@@ -725,6 +738,9 @@ class MatriksRKLController extends Controller
                 }
             }
 
+            // === INSTITUTION === //
+            $institution = EnvPlanInstitution::where('id_impact_identification', $merge->id)->first();
+
             $results[] = [
                 'no' => $total + 1,
                 'id' => $merge->id,
@@ -755,10 +771,9 @@ class MatriksRKLController extends Controller
                                       ->where('id_env_manage_plan', $merge->envManagePlan->id)
                                       ->get(),
                 'period' => $type == 'new' ? null : $merge->envManagePlan->period,
-                'institution' => $type == 'new' ? null : $merge->envManagePlan->institution,
-                'executor' => $type == 'new' ? null : $merge->envManagePlan->executor,
-                'supervisor' => $type == 'new' ? null : $merge->envManagePlan->supervisor,
-                'report_recipient' => $type == 'new' ? null :$merge->envManagePlan->report_recipient,
+                'executor' => $institution ? $institution->executor : null,
+                'supervisor' => $institution ? $institution->supervisor : null,
+                'report_recipient' => $institution ? $institution->report_recipient : null,
                 'period_number' => $periodeNumber,
                 'period_description' => $periodeDesc,
                 'comments' => $comments
