@@ -181,7 +181,6 @@ class TestMeetRKLRPLController extends Controller
         $meeting->meeting_date = $data['meeting_date'];
         $meeting->meeting_time = $data['meeting_time'];
         $meeting->location = $data['location'];
-        $meeting->position = $data['position'];
         $meeting->id_initiator = $data['id_initiator'];
         $meeting->save();
 
@@ -316,7 +315,6 @@ class TestMeetRKLRPLController extends Controller
             'meeting_time' => null,
             'person_responsible' => $project->initiator->pic,
             'location' => null,
-            'position' => null,
             'expert_bank_team_id' => null,
             'project_name' => $project->project_title,
             'invitations' => $tuk ? $this->getTukMember($tuk->id) : [],
@@ -391,7 +389,6 @@ class TestMeetRKLRPLController extends Controller
             'meeting_time' => $meeting->meeting_time,
             'person_responsible' => $meeting->project->initiator->pic,
             'location' => $meeting->location,
-            'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,

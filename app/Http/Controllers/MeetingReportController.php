@@ -179,7 +179,6 @@ class MeetingReportController extends Controller
         $report->meeting_time = $data['meeting_time'];
         $report->person_responsible = $data['person_responsible'];
         $report->location = $data['location'];
-        $report->position = $data['position'];
         $report->project_name = $data['project_name'];
         $report->id_initiator = $data['id_initiator'];
         $report->notes = $data['notes'];
@@ -333,7 +332,6 @@ class MeetingReportController extends Controller
             'meeting_time' => $meeting->meeting_time,
             'person_responsible' => $meeting->project->initiator->pic,
             'location' => $meeting->location,
-            'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
@@ -408,7 +406,6 @@ class MeetingReportController extends Controller
             'meeting_time' => $report->meeting_time,
             'person_responsible' => $report->project->initiator->pic,
             'location' => $report->location,
-            'position' => $report->position,
             'expert_bank_team_id' => $report->expert_bank_team_id,
             'project_name' => $report->project->project_title,
             'invitations' => $invitations,
