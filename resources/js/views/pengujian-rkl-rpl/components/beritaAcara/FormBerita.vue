@@ -1,17 +1,12 @@
 <template>
   <el-form label-position="top" label-width="200px" style="max-width: 100%">
     <el-row v-loading="loadingtuk" :gutter="32">
-      <el-col :sm="12" :md="12">
-        <el-form-item label="Jabatan Penanggung Jawab Usaha">
-          <el-input v-model="reports.position" />
-        </el-form-item>
-      </el-col>
       <el-col :sm="24" :md="12">
         <el-form-item label="Tempat Rapat">
           <el-input v-model="reports.location" />
         </el-form-item>
       </el-col>
-      <el-col :sm="12" :md="12">
+      <el-col :sm="24" :md="12">
         <el-form-item label="Tanggal Rapat">
           <el-date-picker
             v-model="reports.meeting_date"
@@ -22,7 +17,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :sm="12" :md="12">
+      <el-col :sm="24" :md="24">
         <el-form-item label="Waktu Rapat">
           <el-time-picker
             v-model="reports.meeting_time"
@@ -33,23 +28,6 @@
           />
         </el-form-item>
       </el-col>
-      <!-- <el-col :sm="24" :md="24">
-        <el-form-item label="Tim Uji Kelayakan">
-          <el-select
-            v-model="reports.id_feasibility_test_team"
-            placeholder="Pilih Tim"
-            style="width: 100%"
-            @change="handleChangeTimUji"
-          >
-            <el-option
-              v-for="item in timUjiKelayakan"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-      </el-col> -->
     </el-row>
   </el-form>
 </template>

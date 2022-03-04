@@ -56,33 +56,11 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="12">
+            <el-col :sm="24" :md="24">
               <el-form-item label="Tempat Rapat">
                 <el-input v-model="meetings.location" />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="12">
-              <el-form-item label="Jabatan">
-                <el-input v-model="meetings.position" />
-              </el-form-item>
-            </el-col>
-            <!-- <el-col :sm="12" :md="12">
-              <el-form-item label="Tim Uji Kelayakan">
-                <el-select
-                  v-model="meetings.id_feasibility_test_team"
-                  placeholder="Pilih Tim"
-                  style="width: 100%"
-                  @change="handleChangeTimUji"
-                >
-                  <el-option
-                    v-for="item in timUjiKelayakan"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col> -->
           </el-row>
         </el-form>
       </el-col>
