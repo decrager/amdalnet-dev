@@ -132,8 +132,8 @@ class PublicConsultationController extends Controller
                         $decoded_data = base64_decode($data);
                         // save img
                         $img_filepath = 'docs/pubcons/img/' . uniqid() . '.' . $extension;
-                        Storage::put($img_filepath, $decoded_data);
-                        $filepath = 'storage/' . $img_filepath;
+                        $filepath = Storage::url($img_filepath);
+                        Storage::disk('public')->put($filepath, $decoded_data);
                         $file_extension = $extension;
                     } else {
                         // Dokumen Lampiran
@@ -148,9 +148,10 @@ class PublicConsultationController extends Controller
                         $r = count($exp) == 2 ? $exp[1][0] : '';
                         $subfolder = strtolower(sprintf('%s%s', $f, $r));
                         $folder = sprintf('docs/pubcons/%s', $subfolder);
+                        $file_name = '/' . $folder . '/' . $filename;
                         // save file
-                        $file->storePubliclyAs($folder, $filename);
-                        $filepath = sprintf('storage/%s/%s', $folder, $filename);
+                        $file->storePubliclyAs('public', $file_name);
+                        $filepath = Storage::url($file_name);
                         $file_extension = $file->extension();
                     }
                 } catch (Exception $e){
