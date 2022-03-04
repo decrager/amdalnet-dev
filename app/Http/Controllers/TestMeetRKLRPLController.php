@@ -539,7 +539,7 @@ class TestMeetRKLRPLController extends Controller
 
         // === TUK === // 
         $tuk = null;
-        $ketua_tuk_name = '';
+        $kepala_sekretariat_tuk = '';
         $authority = '';
         $authority_big = '';
         $tuk_address = '';
@@ -567,12 +567,12 @@ class TestMeetRKLRPLController extends Controller
         if($tuk) {
             $tuk_address = $tuk->address;
             $tuk_telp = $tuk->phone;
-            $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Ketua']])->first();
-            if($ketua) {
-                if($ketua->expertBank) {
-                    $ketua_tuk_name = $ketua->expertBank->name;
-                } else if($ketua->lukMember) {
-                    $ketua_tuk_name = $ketua->lukMember->name;
+            $kepala_sekretariat = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Kepala Sekretariat']])->first();
+            if($kepala_sekretariat) {
+                if($kepala_sekretariat->expertBank) {
+                    $kepala_sekretariat_tuk = $kepala_sekretariat->expertBank->name;
+                } else if($kepala_sekretariat->lukMember) {
+                    $kepala_sekretariat_tuk = $kepala_sekretariat->lukMember->name;
                 }
             }
             $tuk_logo = $tuk->logo;
@@ -617,7 +617,7 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->setValue('project_location', $project_address);
         $templateProcessor->setValue('meeting_time', $meeting_time . ' ' . $meeting_date);
         $templateProcessor->setValue('docs_date', $docs_date);
-        $templateProcessor->setValue('ketua_tuk', $ketua_tuk_name);
+        $templateProcessor->setValue('kepala_sekretariat_tuk', $kepala_sekretariat_tuk);
         $templateProcessor->setValue('tim_penyusun', $tim_penyusun);
         $templateProcessor->cloneBlock('anggota_penyusun', count($anggota_penyusun), true, false, $anggota_penyusun);
         $templateProcessor->cloneBlock('meeting_invitations', count($meeting_invitations), true, false, $meeting_invitations);
