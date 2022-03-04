@@ -169,7 +169,6 @@ class TestingMeetingController extends Controller
         $meeting->meeting_date = $data['meeting_date'];
         $meeting->meeting_time = $data['meeting_time'];
         $meeting->location = $data['location'];
-        $meeting->position = $data['position'];
         $meeting->id_initiator = $data['id_initiator'];
         $meeting->save();
 
@@ -302,7 +301,6 @@ class TestingMeetingController extends Controller
             'meeting_time' => null,
             'person_responsible' => $project->initiator->pic,
             'location' => null,
-            'position' => null,
             'expert_bank_team_id' => null,
             'project_name' => $project->project_title,
             'invitations' => $tuk ? $this->getTukMember($tuk->id) : [],
@@ -377,7 +375,6 @@ class TestingMeetingController extends Controller
             'meeting_time' => $meeting->meeting_time,
             'person_responsible' => $meeting->project->initiator->pic,
             'location' => $meeting->location,
-            'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
@@ -528,7 +525,7 @@ class TestingMeetingController extends Controller
 
         // === TUK === // 
         $tuk = null;
-        $ketua_tuk_name = '';
+        $kepala_sekretariat_tuk = '';
         $authority = '';
         $authority_big = '';
         $tuk_address = '';
@@ -556,12 +553,12 @@ class TestingMeetingController extends Controller
         if($tuk) {
             $tuk_address = $tuk->address;
             $tuk_telp = $tuk->phone;
-            $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Ketua']])->first();
-            if($ketua) {
-                if($ketua->expertBank) {
-                    $ketua_tuk_name = $ketua->expertBank->name;
-                } else if($ketua->lukMember) {
-                    $ketua_tuk_name = $ketua->lukMember->name;
+            $kepala_sekretariat = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Kepala Sekretariat']])->first();
+            if($kepala_sekretariat) {
+                if($kepala_sekretariat->expertBank) {
+                    $kepala_sekretariat_tuk = $kepala_sekretariat->expertBank->name;
+                } else if($kepala_sekretariat->lukMember) {
+                    $kepala_sekretariat_tuk = $kepala_sekretariat->lukMember->name;
                 }
             }
             $tuk_logo = $tuk->logo;
@@ -589,7 +586,7 @@ class TestingMeetingController extends Controller
         $templateProcessor->setValue('project_location', $project_address);
         $templateProcessor->setValue('meeting_time', $meeting_time . ' ' . $meeting_date);
         $templateProcessor->setValue('docs_date', $docs_date);
-        $templateProcessor->setValue('ketua_tuk', $ketua_tuk_name);
+        $templateProcessor->setValue('kepala_sekretariat_tuk', $kepala_sekretariat_tuk);
         $templateProcessor->setValue('tim_penyusun', $tim_penyusun);
         $templateProcessor->cloneBlock('anggota_penyusun', count($anggota_penyusun), true, false, $anggota_penyusun);
         $templateProcessor->cloneBlock('meeting_invitations', count($meeting_invitations), true, false, $meeting_invitations);
