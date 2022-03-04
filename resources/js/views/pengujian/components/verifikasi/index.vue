@@ -180,6 +180,9 @@
         <p><b>Nama:</b> {{ penyusunMandiri.name }}</p>
       </div>
     </el-dialog>
+    <el-dialog :visible.sync="formulatorTeamDialog">
+      <FormulatorTeamTable />
+    </el-dialog>
     <el-dialog
       title="Hasil Konsultasi Publik"
       :visible.sync="publicConsultationDialog"
@@ -217,6 +220,7 @@ import Resource from '@/api/resource';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
+import FormulatorTeamTable from '@/views/pengujian/components/FormulatorTeamDialog';
 import WebgisVerifikasi from '@/views/pengujian/components/verifikasi/Webgis';
 import { saveAs } from 'file-saver';
 const verifikasiRapatResource = new Resource('testing-verification');
@@ -226,6 +230,7 @@ export default {
   components: {
     Tinymce,
     WebgisVerifikasi,
+    FormulatorTeamTable,
   },
   data() {
     return {
@@ -239,6 +244,7 @@ export default {
       lpjp: null,
       penyusunMandiri: null,
       publicConsultationDialog: false,
+      formulatorTeamDialog: false,
       publicConsultation: null,
       publicConsultationDocs: [],
       docxData: {},
@@ -359,16 +365,6 @@ export default {
         params: { project: currentProject, readonly: true },
       });
     },
-    handleRedirectPenyusun() {
-      this.$router.push({
-        name: 'timPenyusun',
-        params: {
-          project: this.verifications.project,
-          readonly: true,
-          id: this.verifications.project.id,
-        },
-      });
-    },
     isRedirect(name) {
       return (
         name === 'sertifikasi_penyusun' ||
@@ -379,7 +375,7 @@ export default {
     },
     handleRedirect(name) {
       if (name === 'sertifikasi_penyusun' || name === 'cv_penyusun') {
-        this.handleRedirectPenyusun();
+        this.formulatorTeamDialog = true;
       } else if (name === 'surat_penyusun') {
         this.lpjpPenyusunDialog = true;
       } else if (name === 'konsul_publik') {
