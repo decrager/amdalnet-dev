@@ -43,7 +43,7 @@
 
       <el-table-column align="center" label="Sektor">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)">
+          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)" @focus="onChangeSectorBlur(scope.row)">
             <el-option
               v-for="item in scope.row.listSector"
               :key="item.label"
@@ -154,6 +154,23 @@ export default {
       delete sproject.listSubProjectParams;
 
       await this.getSectorByKbli(sproject);
+      this.refresh++;
+      this.loading = false;
+    },
+    async onChangeSectorBlur(sproject){
+      if (sproject.listSector){
+        return;
+      }
+
+      this.loading = true;
+      try {
+        await this.getSectorByKbli(sproject);
+      } catch (error) {
+        console.error(error);
+        this.refresh++;
+        this.loading = false;
+      }
+
       this.refresh++;
       this.loading = false;
     },

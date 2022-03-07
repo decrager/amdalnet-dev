@@ -211,7 +211,7 @@ class ProjectController extends Controller
 
         // return $data;
 
-        //create fileKtr
+        //create filePreeagreement
         $preAgreementName = '';
         if ($request->file('filePreAgreement')) {
             $filePreAgreement = $request->file('filePreAgreement');
@@ -225,6 +225,22 @@ class ProjectController extends Controller
             $fileKtr = $request->file('fileKtr');
             $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
             $fileKtr->storePubliclyAs('public', $ktrName);
+        }
+
+        //create filepippib
+        $pippibName = '';
+        if ($request->file('filepippib')) {
+            $filePippib = $request->file('filepippib');
+            $pippibName = 'project/pippib' . uniqid() . '.' . $filePippib->extension();
+            $filePippib->storePubliclyAs('public', $pippibName);
+        }
+
+        //create fileKawLin
+        $kawLinName = '';
+        if ($request->file('fileKawasanLindung')) {
+            $fileKawasanLindung = $request->file('fileKawasanLindung');
+            $kawLinName = 'project/kawasanlindung' . uniqid() . '.' . $fileKawasanLindung->extension();
+            $fileKawasanLindung->storePubliclyAs('public', $kawLinName);
         }
 
         //create file map
@@ -265,6 +281,10 @@ class ProjectController extends Controller
                 'study_approach' => isset($request['study_approach']) ? $request['study_approach'] : null,
                 'auth_province' => isset($request['auth_province']) ? $request['auth_province'] : null,
                 'authority' => isset($request['authority']) ? $request['authority'] : null,
+                'ppib' => isset($request['kawasan_lindung']) ? $request['kawasan_lindung'] : null,
+                'ppib_file' => Storage::url($kawLinName),
+                'kawasan_lindung' => isset($request['pippib']) ? $request['pippib'] : null,
+                'kawasan_lindung_file' => Storage::url($pippibName),
             ]);
 
             // add workflow

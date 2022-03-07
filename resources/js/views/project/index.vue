@@ -7,6 +7,7 @@
           <el-col>
             <el-button
               v-if="couldCreateProject && !isScoping && !isDigiWork"
+              :disabled="addLoading"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
@@ -437,6 +438,7 @@ export default {
   data() {
     return {
       loading: true,
+      addLoading: false,
       searchString: '',
       sectionHeader: 'list-penapisan',
       userInfo: {
@@ -500,6 +502,7 @@ export default {
     },
   },
   async created() {
+    // this.addLoading = true;
     this.getProvinces();
     this.userInfo = await this.$store.dispatch('user/getInfo');
     if (this.userInfo.roles.includes('lpjp')){
@@ -522,8 +525,15 @@ export default {
     // }
 
     this.getFiltered(this.listQuery);
+
+    // load info project from oss
+    await this.loadInfoFromOss();
   },
   methods: {
+    async loadInfoFromOss(){
+      // await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
+      // this.addLoading = false;
+    },
     isUklUpl(project){
       return project.required_doc === 'UKL-UPL';
     },
