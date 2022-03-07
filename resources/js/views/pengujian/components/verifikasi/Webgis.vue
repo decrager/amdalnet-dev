@@ -6,12 +6,9 @@
 import axios from 'axios';
 import Map from '@arcgis/core/Map';
 import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
-import popupTemplate from '@/views/webgis/scripts/popupTemplate';
 import MapView from '@arcgis/core/views/MapView';
-import Attribution from '@arcgis/core/widgets/Attribution';
 import Legend from '@arcgis/core/widgets/Legend';
 import LayerList from '@arcgis/core/widgets/LayerList';
-import Expand from '@arcgis/core/widgets/Expand';
 import shp from 'shpjs';
 
 export default {
@@ -22,161 +19,205 @@ export default {
       geomFromGeojson: {},
       geomProperties: {},
       mapUpload: null,
+      idProject: 0,
     };
   },
   mounted() {
+    this.idProject = parseInt(this.$route.params && this.$route.params.id);
     this.loadMap();
   },
   methods: {
     loadMap() {
-      if (this.readonly === true) {
-        const map = new Map({
-          basemap: 'satellite',
-        });
+      axios.get('api/map/' + this.idProject).then((response) => {
+        if (response.data.length > 1) {
+          const map = new Map({
+            basemap: 'satellite',
+          });
 
-        axios
-          .get(`api/map-geojson?id=${this.$route.params.id}&type=tapak`)
-          .then((response) => {
-            response.data.forEach((item) => {
-              const getType = JSON.parse(item.feature_layer);
-              const propFields = getType.features[0].properties.field;
-              const blob = new Blob([item.feature_layer], {
-                type: 'application/json',
-              });
-              const rendererTapak = {
-                type: 'simple',
-                field: '*',
-                symbol: {
-                  type: 'simple-fill',
-                  color: [200, 0, 0, 1],
-                  outline: {
-                    color: [200, 0, 0, 1],
-                    width: 2,
-                  },
-                },
-              };
-              const url = URL.createObjectURL(blob);
-              const geojsonLayerArray = new GeoJSONLayer({
-                url: url,
-                outFields: ['*'],
-                visible: true,
-                title: 'Layer Tapak Proyek',
-                renderer: rendererTapak,
-                opacity: 0.7,
-                popupTemplate: popupTemplate(propFields),
-              });
-              mapView.on('layerview-create', (event) => {
-                mapView.goTo({
-                  target: geojsonLayerArray.fullExtent,
+          const projects = response.data;
+          for (let i = 0; i < projects.length; i++) {
+            // Map Ekologi
+            if (projects[i].attachment_type === 'ecology') {
+              shp(
+                window.location.origin +
+                  '/storage/map/' +
+                  projects[i].stored_filename
+              ).then((data) => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + this.idProject).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: 'red',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Batas Ekologi',
+                    renderer: rendererTapak,
+                  });
+                  map.add(geojsonLayerArray);
                 });
               });
-              map.add(geojsonLayerArray);
-            });
-          });
+            }
 
-        const mapView = new MapView({
-          container: 'mapView',
-          map: map,
-          center: [115.287, -1.588],
-          zoom: 6,
-        });
-
-        const attribution = new Attribution({
-          view: mapView,
-        });
-        mapView.ui.add(attribution, 'manual');
-
-        const legend = new Legend({
-          view: mapView,
-          container: document.createElement('div'),
-        });
-        const layerList = new LayerList({
-          view: mapView,
-          container: document.createElement('div'),
-          listItemCreatedFunction: this.defineActions,
-        });
-
-        layerList.on('trigger-action', (event) => {
-          const id = event.action.id;
-          if (id === 'full-extent') {
-            mapView.goTo({
-              target: event.item.layer.fullExtent,
-            });
-          }
-        });
-
-        const legendExpand = new Expand({
-          view: mapView,
-          content: legend.domNode,
-          expandIconClass: 'esri-icon-collection',
-          expandTooltip: 'Legend',
-        });
-
-        mapView.ui.add(legendExpand, 'bottom-left');
-        mapView.ui.add(layerList, 'top-right');
-      } else {
-        const map = new Map({
-          basemap: 'satellite',
-        });
-
-        const fr = new FileReader();
-        fr.onload = (event) => {
-          const base = event.target.result;
-          shp(base).then((data) => {
-            this.geomFromGeojson = data.features[0].geometry;
-            this.geomProperties = data.features[0].properties;
-
-            const blob = new Blob([JSON.stringify(data)], {
-              type: 'application/json',
-            });
-
-            const renderer = {
-              type: 'simple',
-              field: '*',
-              symbol: {
-                type: 'simple-fill',
-                color: [200, 0, 0, 1],
-                outline: {
-                  color: [200, 0, 0, 1],
-                },
-              },
-            };
-            const url = URL.createObjectURL(blob);
-            const geojsonLayer = new GeoJSONLayer({
-              url: url,
-              visible: true,
-              outFields: ['*'],
-              opacity: 0.75,
-              title: 'Peta Tapak Proyek',
-              renderer: renderer,
-            });
-
-            map.add(geojsonLayer);
-            mapView.on('layerview-create', (event) => {
-              mapView.goTo({
-                target: geojsonLayer.fullExtent,
+            // Map Sosial
+            if (projects[i].attachment_type === 'social') {
+              shp(
+                window.location.origin +
+                  '/storage/map/' +
+                  projects[i].stored_filename
+              ).then((data) => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + this.idProject).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: 'blue',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Batas Sosial',
+                    renderer: rendererTapak,
+                  });
+                  map.add(geojsonLayerArray);
+                });
               });
-            });
+            }
+
+            // Map Studi
+            if (projects[i].attachment_type === 'study') {
+              shp(
+                window.location.origin +
+                  '/storage/map/' +
+                  projects[i].stored_filename
+              ).then((data) => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + this.idProject).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: 'green',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Batas Wilayah Studi',
+                    renderer: rendererTapak,
+                  });
+                  mapView.on('layerview-create', (event) => {
+                    mapView.goTo({
+                      target: geojsonLayerArray.fullExtent,
+                    });
+                  });
+                  map.add(geojsonLayerArray);
+                });
+              });
+            }
+
+            // Map Tapak
+            if (projects[i].attachment_type === 'tapak') {
+              shp(
+                window.location.origin +
+                  '/storage/map/' +
+                  projects[i].stored_filename
+              ).then((data) => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                axios.get('api/projects/' + this.idProject).then((response) => {
+                  const rendererTapak = {
+                    type: 'simple',
+                    field: '*',
+                    symbol: {
+                      type: 'simple-fill',
+                      color: [0, 0, 0, 0.0],
+                      outline: {
+                        color: '#964B00',
+                        width: 2,
+                      },
+                    },
+                  };
+                  const geojsonLayerArray = new GeoJSONLayer({
+                    url: url,
+                    outFields: ['*'],
+                    visible: true,
+                    title: 'Layer Tapak',
+                    renderer: rendererTapak,
+                  });
+                  map.add(geojsonLayerArray);
+                });
+              });
+            }
+          }
+
+          const mapView = new MapView({
+            container: 'mapView',
+            map: map,
+            center: [115.287, -1.588],
+            zoom: 5,
           });
-        };
-        fr.readAsArrayBuffer(this.mapUpload);
+          this.$parent.mapView = mapView;
 
-        const mapView = new MapView({
-          container: 'mapView',
-          map: map,
-          center: [115.287, -1.588],
-          zoom: 6,
-        });
-        this.$parent.mapView = mapView;
+          const layerList = new LayerList({
+            view: mapView,
+            container: document.createElement('div'),
+            listItemCreatedFunction: this.defineActions,
+          });
 
-        const layerList = new LayerList({
-          view: mapView,
-          container: document.createElement('div'),
-          listItemCreatedFunction: this.defineActions,
-        });
+          layerList.on('trigger-action', (event) => {
+            const id = event.action.id;
+            if (id === 'full-extent') {
+              mapView.goTo({
+                target: event.item.layer.fullExtent,
+              });
+            }
+          });
 
-        mapView.ui.add(layerList, 'top-right');
-      }
+          const legend = new Legend({
+            view: mapView,
+            container: document.createElement('div'),
+          });
+
+          mapView.ui.add(layerList, 'top-right');
+          mapView.ui.add(legend, 'bottom-left');
+        }
+      });
     },
     defineActions(event) {
       const item = event.item;
