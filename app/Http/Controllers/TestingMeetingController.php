@@ -106,6 +106,10 @@ class TestingMeetingController extends Controller
             }
 
             if(count($receiver) > 0) {
+                // === UPDATE STATUS INVITATION === //
+                $meeting->is_invitation_sent = true;
+                $meeting->save();
+
                 $this->meetingInvitation($request->idProject);
                 Notification::send($receiver, new MeetingInvitation($meeting));
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
