@@ -57,6 +57,18 @@ class User extends Authenticatable
      */
     protected $guard_name = 'api';
 
+    protected $raw_password = '';
+
+    public function getRawPassword()
+    {
+        return $this->raw_password;
+    }
+
+    public function setRawPassword($password)
+    {
+        $this->raw_password = $password;
+    }
+
     /**
      * @inheritdoc
      */

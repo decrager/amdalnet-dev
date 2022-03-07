@@ -127,19 +127,21 @@ class AuthController extends BaseController
         $validated = $request->only('email', 'username', 'name', 
             'password', 'pic', 'user_type', 'phone', 'address', 'nib');
         $initiatorRole = Role::findByName(Acl::ROLE_INITIATOR);
-        // TODO: create random password
         $password = $validated['password'];
         if (empty($password)) {
             $password = Str::random(10);
         }
         DB::beginTransaction();
-        $user = User::create([
-            'name' => ucfirst($validated['name']),
-            'email' => $validated['email'],
-            'oss_username' => $validated['username'],
-            'password' => Hash::make($password),
-            'active' => 1,
-        ]);
+
+        $user = new User;
+        $user->setRawPassword($password);
+        $user->name = ucfirst($validated['name']);
+        $user->email = $validated['email'];
+        $user->oss_username = $validated['username'];
+        $user->password = Hash::make($password);
+        $user->active = 1;
+        $user->save();
+
         $user->syncRoles($initiatorRole);
         $initiator = Initiator::create([
             'name'        =>  $validated['name'],
