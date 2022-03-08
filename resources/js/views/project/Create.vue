@@ -1097,14 +1097,14 @@ export default {
       const penutupanLahan2020 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
         imageTransparency: true,
-        visible: false,
+        visible: true,
         visibilityMode: '',
       });
 
       const kawasanHutanB = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/KawasanHutan/MapServer',
         imageTransparency: true,
-        visible: false,
+        visible: true,
         visibilityMode: '',
       });
 
