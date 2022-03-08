@@ -38,8 +38,9 @@ class ProjectController extends Controller
             return Project::with('feasibilityTest')->whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
-            return Project::with(['address', 'listSubProject', 'feasibilityTest'])
-                ->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
+            return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+                $q->select('id', 'id_project', 'status', 'document_type');
+            }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
                 ->where(function ($query) use ($request) {
                     return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
                 })->where(
@@ -91,6 +92,8 @@ class ProjectController extends Controller
 
         return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
             $q->select('id', 'id_project', 'status', 'document_type');
+        },'testingMeeting' => function($q) {
+            $q->select('id', 'id_project', 'document_type', 'is_invitation_sent');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(

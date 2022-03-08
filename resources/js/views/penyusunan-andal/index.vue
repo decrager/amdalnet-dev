@@ -18,13 +18,6 @@
         >
           <Andal v-if="activeName === 'andal' && !loading" />
         </el-tab-pane>
-        <el-tab-pane
-          v-if="!loading && showDocument && (isFormulator || isInitiator)"
-          label="Dokumen ANDAL"
-          name="dokumen-andal"
-        >
-          <Dokumen v-if="activeName === 'dokumen-andal'" />
-        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -33,9 +26,7 @@
 <script>
 import Resource from '@/api/resource';
 const cloneResource = new Resource('andal-clone');
-const andalComposingResource = new Resource('andal-composing');
 import Andal from '@/views/penyusunan-andal/components/Andal';
-import Dokumen from '@/views/penyusunan-andal/components/Dokumen';
 import FormulirKA from '@/views/penyusunan-andal/components/FormulirKA';
 import WorkFlow from '@/components/Workflow';
 
@@ -45,7 +36,6 @@ export default {
     Andal,
     WorkFlow,
     FormulirKA,
-    Dokumen,
   },
   data() {
     return {
@@ -54,7 +44,6 @@ export default {
       lastTime: null,
       activeName: 'formulir-ka',
       loading: false,
-      showDocument: false,
     };
   },
   computed: {
@@ -67,7 +56,6 @@ export default {
   },
   created() {
     this.checkExist();
-    this.checkDocument();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
@@ -85,12 +73,6 @@ export default {
     },
     handleSubmitTanggapan() {
       this.handleSubmit();
-    },
-    async checkDocument() {
-      this.showDocument = await andalComposingResource.list({
-        checkDocument: 'true',
-        idProject: this.$route.params.id,
-      });
     },
   },
 };

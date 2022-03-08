@@ -64,10 +64,8 @@ class KaReview extends Notification
         $path = '#';
         if($this->document_type == 'KA') {
             $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen';
-        } else if($this->document_type == 'ANDAL') {
-            $path = '/dokumen-kegiatan' . '/' . $this->kaReviews->id_project . '/penyusunan-andal';
-        } else if($this->document_type == 'RKL RPL') {
-            $path = '/dokumen-kegiatan' . '/' . $this->kaReviews->id_project . '/penyusunan-rkl-rpl';
+        } else if($this->document_type == 'ANDAL RKL RPL') {
+            $path = '/dokumen-kegiatan' . '/' . $this->kaReviews->id_project . '/dokumen-andal-rkl-rpl';
         } else if($this->document_type == 'UKL UPL') {
             $path = '/uklupl' . '/' . $this->kaReviews->id_project . '/dokumen';
         }
@@ -88,6 +86,8 @@ class KaReview extends Notification
             $message = 'Penyusun telah selesai menyusun ' . $this->formulirOrDokumen() . ' ' . $this->document_type . ' untuk direview';
         } else if($this->kaReviews->status == 'revisi') {
             $message = 'Pemrakarsa mengembalikan ' . $this->formulirOrDokumen() . ' ' . $this->document_type . ' untuk direvisi';
+        } else if($this->kaReviews->status == 'submit') {
+            $message = 'Pemrakara telah mereview ' . $this->formulirOrDokumen() . ' '  . $this->document_type . ' untuk dinilai';
         }
 
         return $message;
@@ -95,7 +95,7 @@ class KaReview extends Notification
 
     private function formulirOrDokumen()
     {
-        if($this->document_type == 'ANDAL' || $this->document_type == 'RKL RPL') {
+        if($this->document_type == 'ANDAL RKL RPL') {
             return 'Dokumen';
         } else {
             return 'Formulir';
