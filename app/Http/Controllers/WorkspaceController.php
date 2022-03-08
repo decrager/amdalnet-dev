@@ -206,7 +206,7 @@ class WorkspaceController extends Controller
     private function isReadOnly($user)
     {
         $role = $user->roles->first()->name;
-        return $role === 'examiner' || $role === 'examiner-substance';
+        return !($role === 'examiner' || $role === 'examiner-substance');
     }
 
     /**
