@@ -110,6 +110,10 @@ class TestMeetRKLRPLController extends Controller
             }
 
             if(count($receiver) > 0) {
+                // === UPDATE INVITATION STATUS === //
+                $meeting->is_invitation_sent = true;
+                $meeting->save();
+
                 $this->meetingInvitation($request->idProject, $document_type);
                 Notification::send($receiver, new MeetingInvitation($meeting));
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);

@@ -21,14 +21,14 @@
           <UndanganRapat v-if="activeName === 'undanganrapat'" />
         </el-tab-pane>
         <el-tab-pane
-          v-else-if="isSubtance && isComplete"
+          v-if="isSubtance && isComplete"
           label="Berita Acara"
           name="beritaacara"
         >
           <BeritaAcara v-if="activeName === 'beritaacara'" />
         </el-tab-pane>
         <el-tab-pane
-          v-else-if="isExaminer || isFormulator"
+          v-if="isExaminer || isFormulator || isAdmin || isSubtance"
           label="Uji Kelayakan"
           name="ujikelayakan"
         >
