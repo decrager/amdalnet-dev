@@ -22,7 +22,7 @@ const dokumenKegiatanRoutes = {
     {
       path: ':id(\\d+)/dokumen-andal-rkl-rpl',
       component: () => import('@/views/rkl-rpl/components/Dokumen'),
-      name: 'penyusunanRKLRPL',
+      name: 'dokumenANDALRKLRPL',
       meta: { title: 'Dokumen ANDAL RKL RPL', icon: 'zip', noCache: true },
     },
     // dummy for uklupl temp

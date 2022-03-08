@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\FeasibilityTestTeam;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
 use App\Entity\KaReview;
@@ -131,6 +132,40 @@ class KaReviewController extends Controller
                                 }
                                 
                                 $user = User::where('email', $email)->first();
+                                Notification::send([$user], new AppKaReview($review, $document_type));
+                            }
+                        }
+                    }
+                }
+            } else {
+                $feasibility_test_team = null;
+
+                if($project->authority == 'Pusat') {
+                    $feasibility_test_team = FeasibilityTestTeam::where('authority', 'Pusat')->with(['member' => function($q) {
+                        $q->where('position', 'Kepala Sekretariat');
+                        $q->with('lukMember', 'expertBank');
+                    }])->first();
+                } else if($project->authority == 'Provinsi') {
+                    $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Provinsi'], ['id_province_name', $project->auth_province]])->with(['member' => function($q) {
+                        $q->where('position', 'Kepala Sekretariat');
+                    }])->first();
+                } else if($project->authority == 'Kabupaten') {
+                    $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'], ['id_district_name', $project->auth_district]])->with(['member' => function($q) {
+                        $q->where('position', 'Kepala Sekretariat');
+                    }])->first();
+                }
+
+                if($feasibility_test_team) {
+                    if($feasibility_test_team->member->first()) {
+                        $email = null;
+                        if($feasibility_test_team->member->first()->lukMember) {
+                            $email = $feasibility_test_team->member->first()->lukMember->email;
+                        } else if($feasibility_test_team->member->first()->expertBank) {
+                            $email = $feasibility_test_team->member->first()->expertBank->email;
+                        }
+                        if($email) {
+                            $user = User::where('email', $email)->first();
+                            if($user) {
                                 Notification::send([$user], new AppKaReview($review, $document_type));
                             }
                         }
