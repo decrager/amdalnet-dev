@@ -52,12 +52,10 @@ class UserRegistered extends Notification
             return (new MailMessage)
                             ->subject('Pendaftaran Akun AMDALNET')
                             ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
-                            ->line('Username: ' . $this->user->name)
-                            ->line('Password: ' . $raw_password)
-                            ->line('')
                             ->line('Hai '.$this->user->name)
                             ->line('')
-                            ->line('Akun AMDALNET anda telah berhasil dibuat.');
+                            ->line('Akun AMDALNET anda telah berhasil dibuat.')
+                            ->line('Password: ' . $raw_password);
         } else {
             return (new MailMessage)
                             ->subject('Pendaftaran Akun AMDALNET')
