@@ -24,24 +24,12 @@ class KaReviewController extends Controller
         $document_type = $request->documentType;
         $id_project = $request->idProject;
 
-        $review = KaReview::where(function($q) use($document_type, $id_project) {
-            if($document_type == 'ka' || $document_type == 'ukl-upl') {
-                $q->where([['id_project', $id_project],['document_type', $document_type]])->orWhere([['id_project', $id_project], ['document_type', null]]);
-            } else {
-                $q->where([['id_project', $id_project],['document_type', $document_type]]);
-            }
-        })->with('project')->orderBy('id', 'desc')->first();
+        $review = KaReview::where([['id_project', $id_project],['document_type', $document_type]])->with('project')->orderBy('id', 'desc')->first();
         
         if($review) {
-            $review_penyusun = KaReview::where(function($q) use($document_type, $id_project) {
-                if($document_type == 'ka' || $document_type == 'ukl-upl') {
-                    $q->where([['id_project', $id_project],['document_type', $document_type],['status', 'submit-to-pemrakarsa']])->orWhere([['id_project', $id_project], ['document_type', null]]);
-                } else {
-                    $q->where([['id_project', $id_project],['document_type', $document_type],['status', 'submit-to-pemrakarsa']]);
-                }
-            })
-            ->orderBy('id', 'desc')
-            ->first();
+            $review_penyusun = KaReview::where([['id_project', $id_project],['document_type', $document_type],['status', 'submit-to-pemrakarsa']])
+                ->orderBy('id', 'desc')
+                ->first();
 
             $review->setAttribute('formulator_notes', $review_penyusun->notes);
         }
@@ -83,10 +71,8 @@ class KaReviewController extends Controller
             $document_type = '';
             if($request->documentType == 'ka') {
                 $document_type = 'KA';
-            } else if($request->documentType == 'andal') {
-                $document_type = 'ANDAL';
-            } else if($request->documentType == 'rkl-rpl') {
-                $document_type = 'RKL RPL';
+            } else if($request->documentType == 'andal-rkl-rpl') {
+                $document_type = 'ANDAL RKL RPL';
             } else if($request->documentType == 'ukl-upl') {
                 $document_type = 'UKL UPL';
             }
@@ -138,10 +124,8 @@ class KaReviewController extends Controller
                                 $document_type = '';
                                 if($request->documentType == 'ka') {
                                     $document_type = 'KA';
-                                } else if($request->documentType == 'andal') {
-                                    $document_type = 'ANDAL';
-                                } else if($request->documentType == 'rkl-rpl') {
-                                    $document_type = 'RKL RPL';
+                                } else if($request->documentType == 'andal-rkl-rpl') {
+                                    $document_type = 'ANDAL RKL RPL';
                                 } else if($request->documentType == 'ukl-upl') {
                                     $document_type = 'UKL UPL';
                                 }
