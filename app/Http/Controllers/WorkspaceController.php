@@ -110,7 +110,7 @@ class WorkspaceController extends Controller
                 'url' => $callUrl.'/storage/workspace/'.$filename,
                 'permissions' => [
                     'fillForms' => true,
-                    'edit' => true,
+                    'edit' => $this->isReadOnly($currentUser),
                     'modifyContentControl' => true,
                     'copy' => false,
                     'print' => false,
@@ -201,6 +201,12 @@ class WorkspaceController extends Controller
 
         $result['status'] = 'success';
         return response()->json($result);
+    }
+
+    private function isReadOnly($user)
+    {
+        $role = $user->roles->first()->name;
+        return $role === 'examiner' || $role === 'examiner-substance';
     }
 
     /**
