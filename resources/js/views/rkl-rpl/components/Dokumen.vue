@@ -1,23 +1,44 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div class="app-container" style="padding: 24px">
     <el-card v-loading="loading">
       <h2>
-        Submit Dokumen RKL RPL
+        Submit Dokumen ANDAL RKL RPL
         <span v-if="isFormulator">ke Pemrakarsa</span>
       </h2>
-      <div>
-        <a
-          v-if="showDocument"
-          class="btn-docx"
-          :href="'/storage/workspace/' + documentName"
-          :download="title"
-        >
-          Export to .DOCX
-        </a>
-      </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
-          <div class="grid-content bg-purple" />
+          <div style="margin-bottom: 8px">
+            <a
+              v-if="showDocumentAndal"
+              class="btn-docx"
+              :href="'/storage/workspace/' + documentNameAndal"
+              :download="title"
+            >
+              Export Dokumen ANDAL to .DOCX
+            </a>
+          </div>
+          <iframe
+            v-if="showDocumentAndal"
+            :src="
+              'https://docs.google.com/gview?url=' +
+              projectsAndal +
+              '&embedded=true'
+            "
+            width="100%"
+            height="723px"
+            frameborder="0"
+          />
+          <div style="margin-top: 10px; margin-bottom: 8px">
+            <a
+              v-if="showDocument"
+              class="btn-docx"
+              :href="'/storage/workspace/' + documentName"
+              :download="title"
+            >
+              Export Dokumen RKL RPL to .DOCX
+            </a>
+          </div>
           <iframe
             v-if="showDocument"
             :src="
@@ -29,8 +50,11 @@
           />
         </el-col>
         <el-col :sm="24" :md="10">
-          <ReviewPenyusun v-if="isFormulator" :documenttype="'RKL RPL'" />
-          <ReviewPemrakarsa v-if="isInitiator" :documenttype="'RKL RPL'" />
+          <ReviewPenyusun v-if="isFormulator" :documenttype="'ANDAL RKL RPL'" />
+          <ReviewPemrakarsa
+            v-if="isInitiator"
+            :documenttype="'ANDAL RKL RPL'"
+          />
         </el-col>
       </el-row>
     </el-card>
@@ -42,6 +66,7 @@ import Resource from '@/api/resource';
 import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
 import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 const rklResource = new Resource('matriks-rkl');
+const andalComposingResource = new Resource('andal-composing');
 
 export default {
   components: {
@@ -52,12 +77,15 @@ export default {
     return {
       idProject: 0,
       projects: '',
+      projectsAndal: '',
       title: '',
+      titleAndal: '',
       loading: false,
       loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
       out: '',
       showDocument: false,
+      showDocumentAndal: false,
       userInfo: {
         roles: [],
       },
@@ -73,14 +101,19 @@ export default {
     documentName() {
       return `${this.$route.params.id}-rkl-rpl.docx`;
     },
+    documentNameAndal() {
+      return `${this.$route.params.id}-andal.docx`;
+    },
   },
   async created() {
+    this.loading = true;
     this.userInfo = await this.$store.dispatch('user/getInfo');
+    await this.getDataAndal();
     await this.getData();
+    this.loading = false;
   },
   methods: {
     async getData() {
-      this.loading = true;
       this.title = await rklResource.list({
         idProject: this.$route.params.id,
         projectName: 'true',
@@ -88,7 +121,15 @@ export default {
       this.projects =
         window.location.origin + `/storage/workspace/${this.documentName}`;
       this.showDocument = true;
-      this.loading = false;
+    },
+    async getDataAndal() {
+      this.titleAndal = await andalComposingResource.list({
+        idProject: this.$route.params.id,
+        projectName: 'true',
+      });
+      this.projectsAndal =
+        window.location.origin + `/storage/workspace/${this.documentNameAndal}`;
+      this.showDocumentAndal = true;
     },
   },
 };

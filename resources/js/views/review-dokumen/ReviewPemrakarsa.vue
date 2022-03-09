@@ -137,10 +137,8 @@ export default {
     getDocumentType() {
       if (this.documenttype === 'Kerangka Acuan') {
         return 'ka';
-      } else if (this.documenttype === 'ANDAL') {
-        return 'andal';
-      } else if (this.documenttype === 'RKL RPL') {
-        return 'rkl-rpl';
+      } else if (this.documenttype === 'ANDAL RKL RPL') {
+        return 'andal-rkl-rpl';
       } else if (this.documenttype === 'UKL UPL') {
         return 'ukl-upl';
       }

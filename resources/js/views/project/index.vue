@@ -127,7 +127,7 @@
                   Tim LPJP
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isAdmin || isSubtance) && isInvitationSent(scope.row, 'ka'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -136,7 +136,7 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && (isFormulator || ((isExaminer || isAdmin || isSubtance) && isInvitationSent(scope.row, 'ukl-upl'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -145,7 +145,7 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && isDocumentSubmitted(scope.row, 'ka') && isInitiator && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isDocumentSubmitted(scope.row, 'ka') && (isInitiator || isFormulator)) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -154,7 +154,7 @@
                   Dokumen Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && (isFormulator || (isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator)) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -163,7 +163,7 @@
                   Dokumen UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin || (isInitiator && isDocumentSubmitted(scope.row, 'andal'))) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isSubtance || isAdmin || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -172,13 +172,22 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance || (isInitiator && isDocumentSubmitted(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isSubtance || isAdmin || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleRklRpl(scope.row)"
                 >
                   RKL/RPL
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && ((isDocumentSubmitted(scope.row, 'andal-rkl-rpl') && isInitiator) || (scope.row.rkl_rpl_document && isFormulator)) && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDokumenAndalRklRpl(scope.row)"
+                >
+                  Dokumen ANDAL RKL RPL
                 </el-button>
                 <el-button
                   v-if="isUklUpl(scope.row) && isFormulator && !isScreening && !isDigiWork"
@@ -190,7 +199,7 @@
                   Matriks UKL/UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isSubtance || isAdmin)"
+                  v-if="isAmdal(scope.row) && ((isSubtance || isAdmin || isSecretary || isChief) && isDocumentReviewed(scope.row, 'ka'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -199,7 +208,7 @@
                   Uji KA
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isSubtance || isAdmin)"
+                  v-if="isUklUpl(scope.row) && ((isSubtance || isAdmin || isSecretary || isChief) && isDocumentReviewed(scope.row, 'ukl-upl'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -208,7 +217,7 @@
                   Uji UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAdmin || isSubtance || isExaminer"
+                  v-if="isAmdal(scope.row) && ((isAdmin || isSubtance || isExaminer || isSecretary || isChief) && isDocumentReviewed(scope.row, 'andal-rkl-rpl'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -226,7 +235,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isAmdal(scope.row) && isKaSubmittedToTuk(scope.row) && (isSubtance || isAdmin) && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && isDocumentReviewed(scope.row, 'ka') && (isSubtance || isAdmin || isSecretary || isChief) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -235,7 +244,7 @@
                   Workspace KA
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isAdmin || isSubtance || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -244,7 +253,7 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isAdmin || isSubtance || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -253,7 +262,7 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance) && !isScreening && !isScoping"
+                  v-if="isUklUpl(scope.row) && (isFormulator || ((isExaminer || isAdmin || isSubtance || isSecretary || isChief) && isDocumentReviewed(scope.row, 'ukl-upl'))) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -289,7 +298,7 @@
                   SKKL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && scope.row.feasibility_test"
+                  v-if="isUklUpl(scope.row) && scope.row.feasibility_test && (isInitiator || isAdmin || isSubtance || isSecretary || isChief)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -554,16 +563,34 @@ export default {
 
       return false;
     },
-    isKaSubmittedToTuk(project) {
-      if (project.ka_reviews) {
-        if (project.ka_reviews.length > 0) {
-          const status = project.ka_reviews[project.ka_reviews.length - 1].status;
-          if (status === 'submit') {
+    isDocumentReviewed(project, document) {
+      if (this.isDocumentSubmitted(project, document)) {
+        const reviews = project.ka_reviews.filter(x => {
+          if (document === 'ka' || document === 'ukl-upl') {
+            return x.document_type === document || x.document_type === null;
+          } else {
+            return x.document_type === document;
+          }
+        });
+        const status = reviews[reviews.length - 1].status;
+        if (status === 'submit') {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    isInvitationSent(project, document) {
+      if (project.testing_meeting) {
+        if (project.testing_meeting.length > 0) {
+          const invitation = project.testing_meeting.find(x => {
+            return x.document_type === document && Boolean(x.is_invitation_sent);
+          });
+          if (invitation) {
             return true;
           }
         }
       }
-
       return false;
     },
     toTitleCase(str) {
@@ -753,6 +780,11 @@ export default {
     handleDokumenKA(project) {
       this.$router.push({
         path: `/amdal/${project.id}/dokumen`,
+      });
+    },
+    handleDokumenAndalRklRpl(project) {
+      this.$router.push({
+        path: `/dokumen-kegiatan/${project.id}/dokumen-andal-rkl-rpl`,
       });
     },
     handleDokumenUklUpl(project) {
