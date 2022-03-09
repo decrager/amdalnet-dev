@@ -115,6 +115,7 @@ class WorkspaceController extends Controller
                     'copy' => false,
                     'print' => false,
                     'download' => false,
+                    'comment' => true
                 ]
             ],
             'editorConfig' => [
