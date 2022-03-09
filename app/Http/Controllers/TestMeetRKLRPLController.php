@@ -86,6 +86,7 @@ class TestMeetRKLRPLController extends Controller
         if($request->invitation) {
             $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $receiver = [];
+            $receiver_non_user = [];
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             if($meeting) {
                 $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
@@ -97,6 +98,8 @@ class TestMeetRKLRPLController extends Controller
                             $email = $member->expertBank->email;
                         } else if($member->lukMember) {
                             $email = $member->lukMember->email;
+                        } else if($member->email) {
+                            $receiver_non_user[] = $member->email;
                         }
 
                         if($email) {
@@ -116,6 +119,11 @@ class TestMeetRKLRPLController extends Controller
 
                 $this->meetingInvitation($request->idProject, $document_type);
                 Notification::send($receiver, new MeetingInvitation($meeting));
+
+                if(count($receiver_non_user) > 0) {
+                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
+                }
+
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 
                 // === WORKFLOW === //
@@ -190,7 +198,8 @@ class TestMeetRKLRPLController extends Controller
         if($request->hasFile('invitation_file')) {
             $project = Project::findOrFail($request->idProject);
             $file = $request->file('invitation_file');
-            $name = '/meeting-andal-rkl-rpl/' . strtolower($project->project_title) . '.' . $file->extension();
+            $folder = $document_type === 'ukl-upl' ? 'ukl-upl' : 'andal-rkl-rpl';
+            $name = '/meeting-' . $folder . '/' . strtolower($project->project_title) . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
             $meeting->invitation_file = Storage::url($name);

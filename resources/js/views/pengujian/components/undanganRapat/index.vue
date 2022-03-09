@@ -81,7 +81,14 @@
                   :show-file-list="false"
                   style="display: inline"
                 >
-                  <el-button size="small" type="warning"> Upload </el-button>
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    content="Unggah Undangan Rapat Final yang sudah ditandatangani"
+                    placement="top-start"
+                  >
+                    <el-button size="small" type="warning"> Upload </el-button>
+                  </el-tooltip>
                   <div slot="tip" class="el-upload__tip">
                     {{ invitation_file_name }}
                   </div>
@@ -637,6 +644,14 @@ export default {
     handleUploadInvitationFile(file, fileList) {
       if (file.raw.size > 1048576) {
         this.showFileAlert();
+        return;
+      }
+
+      const extension = file.name.split('.');
+      if (extension[extension.length - 1].toLowerCase() !== 'pdf') {
+        this.$alert('File harus berformat PDF', '', {
+          center: true,
+        });
         return;
       }
 
