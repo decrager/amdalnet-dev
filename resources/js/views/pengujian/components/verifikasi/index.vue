@@ -267,7 +267,7 @@ export default {
         tata_ruang:
           'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan rencana tata ruang yang berlaku',
         pippib:
-          'Justifikasi/bukti persetujuan awal rencana usaha dan/atau kegiatan dengan PIPPIB',
+          'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan PIPPIB',
         persetujuan_awal:
           'Justifikasi/bukti persetujuan awal rencana usaha dan/atau kegiatan',
         surat_penyusun:

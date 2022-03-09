@@ -82,6 +82,7 @@ class TestingMeetingController extends Controller
     {
         if($request->invitation) {
             $receiver = [];
+            $receiver_non_user = [];
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
             if($meeting) {
                 $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
@@ -93,6 +94,8 @@ class TestingMeetingController extends Controller
                             $email = $member->expertBank->email;
                         } else if($member->lukMember) {
                             $email = $member->lukMember->email;
+                        } else if($member->email) {
+                            $receiver_non_user[] = $member->email;
                         }
 
                         if($email) {
@@ -112,6 +115,11 @@ class TestingMeetingController extends Controller
 
                 $this->meetingInvitation($request->idProject);
                 Notification::send($receiver, new MeetingInvitation($meeting));
+
+                if(count($receiver_non_user) > 0) {
+                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
+                }
+
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 
                 // === WORKFLOW === //
@@ -157,7 +165,7 @@ class TestingMeetingController extends Controller
             return response()->json(['errors' => null, 'name' => $testing_meeting->file]);
         }
 
-        $data = $request->meetings;
+        $data = json_decode($request->meetings, true);
 
         // Save meetings
         $meeting = null;
@@ -173,7 +181,18 @@ class TestingMeetingController extends Controller
         $meeting->meeting_date = $data['meeting_date'];
         $meeting->meeting_time = $data['meeting_time'];
         $meeting->location = $data['location'];
-        $meeting->id_initiator = $data['id_initiator'];
+
+        // Invitation File
+        if($request->hasFile('invitation_file')) {
+            $project = Project::findOrFail($request->idProject);
+            $file = $request->file('invitation_file');
+            $name = '/meeting-ka/' . strtolower($project->project_title) . '.' . $file->extension();
+            $file->storePubliclyAs('public', $name);
+
+            $meeting->invitation_file = Storage::url($name);
+
+        }
+
         $meeting->save();
 
         // Delete invitations
@@ -309,6 +328,7 @@ class TestingMeetingController extends Controller
             'project_name' => $project->project_title,
             'invitations' => $tuk ? $this->getTukMember($tuk->id) : [],
             'file' => null,
+            'invitation_file' => null,
             'deleted_invitations' => []
         ];
 
@@ -383,6 +403,7 @@ class TestingMeetingController extends Controller
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
             'file' => $meeting->file,
+            'invitation_file' => $meeting->invitation_file,
             'deleted_invitations' => []
         ];
 

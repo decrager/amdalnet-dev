@@ -86,6 +86,7 @@ class TestMeetRKLRPLController extends Controller
         if($request->invitation) {
             $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $receiver = [];
+            $receiver_non_user = [];
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             if($meeting) {
                 $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
@@ -97,6 +98,8 @@ class TestMeetRKLRPLController extends Controller
                             $email = $member->expertBank->email;
                         } else if($member->lukMember) {
                             $email = $member->lukMember->email;
+                        } else if($member->email) {
+                            $receiver_non_user[] = $member->email;
                         }
 
                         if($email) {
@@ -116,6 +119,11 @@ class TestMeetRKLRPLController extends Controller
 
                 $this->meetingInvitation($request->idProject, $document_type);
                 Notification::send($receiver, new MeetingInvitation($meeting));
+
+                if(count($receiver_non_user) > 0) {
+                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
+                }
+
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 
                 // === WORKFLOW === //
@@ -168,7 +176,7 @@ class TestMeetRKLRPLController extends Controller
             return response()->json(['errors' => null, 'name' => $testing_meeting->file]);
         }
 
-        $data = $request->meetings;
+        $data = json_decode($request->meetings, true);
         $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
 
         // Save meetings
@@ -185,7 +193,19 @@ class TestMeetRKLRPLController extends Controller
         $meeting->meeting_date = $data['meeting_date'];
         $meeting->meeting_time = $data['meeting_time'];
         $meeting->location = $data['location'];
-        $meeting->id_initiator = $data['id_initiator'];
+
+        // Invitation File
+        if($request->hasFile('invitation_file')) {
+            $project = Project::findOrFail($request->idProject);
+            $file = $request->file('invitation_file');
+            $folder = $document_type === 'ukl-upl' ? 'ukl-upl' : 'andal-rkl-rpl';
+            $name = '/meeting-' . $folder . '/' . strtolower($project->project_title) . '.' . $file->extension();
+            $file->storePubliclyAs('public', $name);
+
+            $meeting->invitation_file = Storage::url($name);
+
+        }
+
         $meeting->save();
 
         // Delete invitations
@@ -322,6 +342,7 @@ class TestMeetRKLRPLController extends Controller
             'expert_bank_team_id' => null,
             'project_name' => $project->project_title,
             'invitations' => $tuk ? $this->getTukMember($tuk->id) : [],
+            'invitation_file' => null,
             'file' => null,
             'deleted_invitations' => []
         ];
@@ -396,6 +417,7 @@ class TestMeetRKLRPLController extends Controller
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
+            'invitation_file' => $meeting->invitation_file,
             'file' => $meeting->file,
             'deleted_invitations' => []
         ];
