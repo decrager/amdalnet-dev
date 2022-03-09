@@ -109,8 +109,8 @@ class WorkspaceController extends Controller
                 // 'url' => $appUrl.'/workspace/document/download?fileName=61943e88ad99a.docx',
                 'url' => $callUrl.'/storage/workspace/'.$filename,
                 'permissions' => [
-                    'fillForms' => true,
-                    'edit' => $this->isReadOnly($currentUser),
+                    'fillForms' => $this->isReadOnly($currentUser),
+                    'edit' => true,
                     'modifyContentControl' => true,
                     'copy' => false,
                     'print' => false,
