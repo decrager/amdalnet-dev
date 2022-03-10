@@ -579,8 +579,8 @@ class TestMeetRKLRPLController extends Controller
         } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
             if($tuk) {
-                $authority = ucwords(strtolower('PROVINSI' . strtoupper($tuk->provinceAuthority->name)));
-                $authority_big = 'PROVINSI' . strtoupper($tuk->provinceAuthority->name);
+                $authority = ucwords(strtolower('PROVINSI ' . strtoupper($tuk->provinceAuthority->name)));
+                $authority_big = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
             }
         } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
@@ -612,6 +612,7 @@ class TestMeetRKLRPLController extends Controller
                  $templateProcessor->setValue('tuk_address', $tuk_address);
                  $templateProcessor->setValue('tuk_telp', $tuk_telp);
                  $templateProcessor->setValue('authority_big', $authority_big);
+                 $templateProcessor->setValue('authority_location', str_replace('Provinsi', '', $authority));
 
                  if($tuk_logo) {
                     $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
@@ -627,6 +628,7 @@ class TestMeetRKLRPLController extends Controller
                 $templateProcessor->setValue('tuk_address', $tuk_address);
                 $templateProcessor->setValue('tuk_telp', $tuk_telp);
                 $templateProcessor->setValue('authority_big', $authority_big);
+                $templateProcessor->setValue('authority_location', str_replace('Provinsi', '', $authority));
 
                 if($tuk_logo) {
                    $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
