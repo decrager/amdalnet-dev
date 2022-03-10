@@ -861,6 +861,12 @@ class TestMeetRKLRPLController extends Controller
                     return 'V';
                 }
             }
+        } else if($type == 'pippib') {
+            if($is_exist == 'exist') {
+                return 'V';
+            } else {
+                return '';
+            }
         } else if($type == 'persetujuan_awal') {
             if($project->pre_agreement_file) {
                 if($is_exist == 'exist') {

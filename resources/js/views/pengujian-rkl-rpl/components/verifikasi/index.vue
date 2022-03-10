@@ -262,6 +262,8 @@ export default {
       formLabel: {
         tata_ruang:
           'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan RTRW yang berlaku',
+        pippib:
+          'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan PIPPIB',
         persetujuan_awal:
           'Justifikasi/bukti rencana usaha dan/atau kegiatan secara prinsip dapat dilakukan',
         surat_penyusun:
