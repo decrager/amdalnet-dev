@@ -354,6 +354,12 @@ class TestVerifRKLRPLController extends Controller
                   'type' => 'download'
                 ],
                 [
+                    'name' => 'pippib',
+                    'suitability' => null,
+                    'description' => null,
+                    'type' => 'non-download'
+                ],
+                [
                     'name' => 'persetujuan_awal',
                     'link' => $project->pre_agreement_file,
                     'suitability' => null,

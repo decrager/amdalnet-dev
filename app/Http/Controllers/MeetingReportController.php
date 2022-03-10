@@ -177,10 +177,7 @@ class MeetingReportController extends Controller
 
         $report->meeting_date = $data['meeting_date'];
         $report->meeting_time = $data['meeting_time'];
-        $report->person_responsible = $data['person_responsible'];
         $report->location = $data['location'];
-        $report->project_name = $data['project_name'];
-        $report->id_initiator = $data['id_initiator'];
         $report->notes = $data['notes'];
         $report->save();
 
@@ -327,13 +324,10 @@ class MeetingReportController extends Controller
             'type' => 'new',
             'id_project' => $id_project,
             'id_testing_meeting' => $meeting->id,
-            'id_initiator' => $meeting->project->initiator->id,
             'meeting_date' => $meeting->meeting_date,
             'meeting_time' => $meeting->meeting_time,
-            'person_responsible' => $meeting->project->initiator->pic,
             'location' => $meeting->location,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
-            'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
             'notes' => null,
             'file' => null
@@ -401,13 +395,10 @@ class MeetingReportController extends Controller
             'type' => 'update',
             'id_project' => $id_project,
             'id_testing_meeting' => $report->id_testing_meeting,
-            'id_initiator' => $report->project->initiator->id,
             'meeting_date' => $report->meeting_date,
             'meeting_time' => $report->meeting_time,
-            'person_responsible' => $report->project->initiator->pic,
             'location' => $report->location,
             'expert_bank_team_id' => $report->expert_bank_team_id,
-            'project_name' => $report->project->project_title,
             'invitations' => $invitations,
             'notes' => $report->notes,
             'file' => $report->file
@@ -422,7 +413,7 @@ class MeetingReportController extends Controller
         }
 
         $project = Project::findOrFail($id_project);
-        $meeting = MeetingReport::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes', 'position')->where([['id_project', $id_project],['document_type', 'ka']])->first();
+        $meeting = MeetingReport::select('id', 'id_project', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes')->where([['id_project', $id_project],['document_type', 'ka']])->first();
         $invitations = MeetingReportInvitation::where('id_meeting_report', $meeting->id)->get();
         Carbon::setLocale('id');
         
