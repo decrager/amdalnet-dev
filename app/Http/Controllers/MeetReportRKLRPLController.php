@@ -194,11 +194,7 @@ class MeetReportRKLRPLController extends Controller
 
         $report->meeting_date = $data['meeting_date'];
         $report->meeting_time = $data['meeting_time'];
-        $report->person_responsible = $data['person_responsible'];
         $report->location = $data['location'];
-        $report->position = $data['position'];
-        $report->project_name = $data['project_name'];
-        $report->id_initiator = $data['id_initiator'];
         $report->notes = $data['notes'];
         $report->save();
 
@@ -355,9 +351,7 @@ class MeetReportRKLRPLController extends Controller
             'id_initiator' => $meeting->project->initiator->id,
             'meeting_date' => $meeting->meeting_date,
             'meeting_time' => $meeting->meeting_time,
-            'person_responsible' => $meeting->project->initiator->pic,
             'location' => $meeting->location,
-            'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
@@ -432,7 +426,6 @@ class MeetReportRKLRPLController extends Controller
             'meeting_time' => $report->meeting_time,
             'person_responsible' => $report->project->initiator->pic,
             'location' => $report->location,
-            'position' => $report->position,
             'expert_bank_team_id' => $report->expert_bank_team_id,
             'project_name' => $report->project->project_title,
             'invitations' => $invitations,
@@ -451,7 +444,7 @@ class MeetReportRKLRPLController extends Controller
         }
 
         $project = Project::findOrFail($id_project);
-        $meeting = MeetingReport::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes', 'position')->where([['id_project', $id_project],['document_type', $document_type]])->first();
+        $meeting = MeetingReport::select('id', 'id_project', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes')->where([['id_project', $id_project],['document_type', $document_type]])->first();
         $invitations = MeetingReportInvitation::where('id_meeting_report', $meeting->id)->get();
         Carbon::setLocale('id');
         
@@ -567,7 +560,7 @@ class MeetReportRKLRPLController extends Controller
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
         $templateProcessor->setValue('pic', $project->initiator->pic);
-        $templateProcessor->setValue('pic_position', $meeting->position);
+        $templateProcessor->setValue('pic_position', $project->initiator->pic_role);
         $templateProcessor->setValue('ketua_tuk_position', $ketua_tuk_position);
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('authority_big', $authority_big);

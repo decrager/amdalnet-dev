@@ -7,17 +7,6 @@
         <span v-if="isFormulator">ke Pemrakarsa</span>
       </h2>
       <div>
-        <!-- <el-button v-if="projects !== null" type="danger" @click="exportPdf">
-          Export to .PDF
-        </el-button>
-        <a
-          v-if="projects !== null"
-          class="el-button el-button--primary el-button--medium"
-          :href="projects"
-          download
-        >
-          Export to .DOCX
-        </a> -->
         <el-button :loading="loading" type="primary" @click="workspace">
           Workspace
         </el-button>
@@ -107,9 +96,6 @@ export default {
         method: 'GET',
         responseType: 'blob',
       }).then((response) => {
-        // const getHeaders = response.headers['content-disposition'].split('; ');
-        // const getFileName = getHeaders[1].split('=');
-        // const getName = getFileName[1].split('=');
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;

@@ -21,6 +21,7 @@ use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
@@ -86,6 +87,7 @@ class TestMeetRKLRPLController extends Controller
         if($request->invitation) {
             $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $receiver = [];
+            $receiver_non_user = [];
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             if($meeting) {
                 $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
@@ -97,6 +99,8 @@ class TestMeetRKLRPLController extends Controller
                             $email = $member->expertBank->email;
                         } else if($member->lukMember) {
                             $email = $member->lukMember->email;
+                        } else if($member->email) {
+                            $receiver_non_user[] = $member->email;
                         }
 
                         if($email) {
@@ -110,8 +114,17 @@ class TestMeetRKLRPLController extends Controller
             }
 
             if(count($receiver) > 0) {
+                // === UPDATE INVITATION STATUS === //
+                $meeting->is_invitation_sent = true;
+                $meeting->save();
+
                 $this->meetingInvitation($request->idProject, $document_type);
                 Notification::send($receiver, new MeetingInvitation($meeting));
+
+                if(count($receiver_non_user) > 0) {
+                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
+                }
+
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 
                 // === WORKFLOW === //
@@ -164,7 +177,7 @@ class TestMeetRKLRPLController extends Controller
             return response()->json(['errors' => null, 'name' => $testing_meeting->file]);
         }
 
-        $data = $request->meetings;
+        $data = json_decode($request->meetings, true);
         $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
 
         // Save meetings
@@ -181,8 +194,19 @@ class TestMeetRKLRPLController extends Controller
         $meeting->meeting_date = $data['meeting_date'];
         $meeting->meeting_time = $data['meeting_time'];
         $meeting->location = $data['location'];
-        $meeting->position = $data['position'];
-        $meeting->id_initiator = $data['id_initiator'];
+
+        // Invitation File
+        if($request->hasFile('invitation_file')) {
+            $project = Project::findOrFail($request->idProject);
+            $file = $request->file('invitation_file');
+            $folder = $document_type === 'ukl-upl' ? 'ukl-upl' : 'andal-rkl-rpl';
+            $name = '/meeting-' . $folder . '/' . strtolower($project->project_title) . '.' . $file->extension();
+            $file->storePubliclyAs('public', $name);
+
+            $meeting->invitation_file = Storage::url($name);
+
+        }
+
         $meeting->save();
 
         // Delete invitations
@@ -316,10 +340,10 @@ class TestMeetRKLRPLController extends Controller
             'meeting_time' => null,
             'person_responsible' => $project->initiator->pic,
             'location' => null,
-            'position' => null,
             'expert_bank_team_id' => null,
             'project_name' => $project->project_title,
             'invitations' => $tuk ? $this->getTukMember($tuk->id) : [],
+            'invitation_file' => null,
             'file' => null,
             'deleted_invitations' => []
         ];
@@ -391,10 +415,10 @@ class TestMeetRKLRPLController extends Controller
             'meeting_time' => $meeting->meeting_time,
             'person_responsible' => $meeting->project->initiator->pic,
             'location' => $meeting->location,
-            'position' => $meeting->position,
             'expert_bank_team_id' => $meeting->expert_bank_team_id,
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
+            'invitation_file' => $meeting->invitation_file,
             'file' => $meeting->file,
             'deleted_invitations' => []
         ];
@@ -542,7 +566,7 @@ class TestMeetRKLRPLController extends Controller
 
         // === TUK === // 
         $tuk = null;
-        $ketua_tuk_name = '';
+        $kepala_sekretariat_tuk = '';
         $authority = '';
         $authority_big = '';
         $tuk_address = '';
@@ -556,8 +580,8 @@ class TestMeetRKLRPLController extends Controller
         } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
             if($tuk) {
-                $authority = ucwords(strtolower('PROVINSI' . strtoupper($tuk->provinceAuthority->name)));
-                $authority_big = 'PROVINSI' . strtoupper($tuk->provinceAuthority->name);
+                $authority = ucwords(strtolower('PROVINSI ' . strtoupper($tuk->provinceAuthority->name)));
+                $authority_big = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
             }
         } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
@@ -570,12 +594,12 @@ class TestMeetRKLRPLController extends Controller
         if($tuk) {
             $tuk_address = $tuk->address;
             $tuk_telp = $tuk->phone;
-            $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Ketua']])->first();
-            if($ketua) {
-                if($ketua->expertBank) {
-                    $ketua_tuk_name = $ketua->expertBank->name;
-                } else if($ketua->lukMember) {
-                    $ketua_tuk_name = $ketua->lukMember->name;
+            $kepala_sekretariat = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Kepala Sekretariat']])->first();
+            if($kepala_sekretariat) {
+                if($kepala_sekretariat->expertBank) {
+                    $kepala_sekretariat_tuk = $kepala_sekretariat->expertBank->name;
+                } else if($kepala_sekretariat->lukMember) {
+                    $kepala_sekretariat_tuk = $kepala_sekretariat->lukMember->name;
                 }
             }
             $tuk_logo = $tuk->logo;
@@ -589,6 +613,7 @@ class TestMeetRKLRPLController extends Controller
                  $templateProcessor->setValue('tuk_address', $tuk_address);
                  $templateProcessor->setValue('tuk_telp', $tuk_telp);
                  $templateProcessor->setValue('authority_big', $authority_big);
+                 $templateProcessor->setValue('authority_location', str_replace('Provinsi', '', $authority));
 
                  if($tuk_logo) {
                     $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
@@ -604,6 +629,7 @@ class TestMeetRKLRPLController extends Controller
                 $templateProcessor->setValue('tuk_address', $tuk_address);
                 $templateProcessor->setValue('tuk_telp', $tuk_telp);
                 $templateProcessor->setValue('authority_big', $authority_big);
+                $templateProcessor->setValue('authority_location', str_replace('Provinsi', '', $authority));
 
                 if($tuk_logo) {
                    $templateProcessor->setImageValue('logo_tuk', substr(str_replace('//', '/', $tuk_logo), 1));
@@ -620,7 +646,8 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->setValue('project_location', $project_address);
         $templateProcessor->setValue('meeting_time', $meeting_time . ' ' . $meeting_date);
         $templateProcessor->setValue('docs_date', $docs_date);
-        $templateProcessor->setValue('ketua_tuk', $ketua_tuk_name);
+        $templateProcessor->setValue('kepala_sekretariat_tuk', $kepala_sekretariat_tuk);
+        $templateProcessor->setValue('validator_administrasi', Auth::user()->name);
         $templateProcessor->setValue('tim_penyusun', $tim_penyusun);
         $templateProcessor->cloneBlock('anggota_penyusun', count($anggota_penyusun), true, false, $anggota_penyusun);
         $templateProcessor->cloneBlock('meeting_invitations', count($meeting_invitations), true, false, $meeting_invitations);
@@ -654,7 +681,11 @@ class TestMeetRKLRPLController extends Controller
         $notesTable = new Table();
         $notesTable->addRow();
         $cell = $notesTable->addCell(6000);
-        Html::addHtml($cell, $verification->notes);
+        $final_notes = $verification->notes;
+        if($final_notes) {
+            $final_notes = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $final_notes);
+        }
+        Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         
@@ -709,9 +740,9 @@ class TestMeetRKLRPLController extends Controller
         } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
             if($tuk) {
-                $authority = ucwords(strtolower('PROVINSI' . strtoupper($tuk->provinceAuthority->name)));
-                $authority_big = 'PROVINSI' . strtoupper($tuk->provinceAuthority->name);
-                $authority_big_check = 'PROVINSI' . strtoupper($tuk->provinceAuthority->name);
+                $authority = ucwords(strtolower('PROVINSI ' . strtoupper($tuk->provinceAuthority->name)));
+                $authority_big = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
+                $authority_big_check = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
             }
         } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
@@ -829,6 +860,12 @@ class TestMeetRKLRPLController extends Controller
                 } else {
                     return 'V';
                 }
+            }
+        } else if($type == 'pippib') {
+            if($is_exist == 'exist') {
+                return 'V';
+            } else {
+                return '';
             }
         } else if($type == 'persetujuan_awal') {
             if($project->pre_agreement_file) {

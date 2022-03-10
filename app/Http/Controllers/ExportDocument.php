@@ -465,9 +465,9 @@ class ExportDocument extends Controller
 
         $save_file_name = 'ukl-upl-' . strtolower($project->project_title) . '.docx';
 
-        // if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-        //     return $save_file_name;
-        // }
+        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            return $save_file_name;
+        }
 
         $project_title_big = strtoupper($project->project_title);
         $pemrakarsa = $project->initiator->name;
@@ -475,7 +475,7 @@ class ExportDocument extends Controller
         $pemrakarsa_phone = $project->initiator->phone;
         $pemrakarsa_nib = $project->initiator->nib;
         $pic = $project->initiator->pic;
-        $position = '';
+        $pic_position = $project->initiator->pic_role;
         $district = '';
         $project_sector = $project->sector;
         $project_title = $project->project_title;
@@ -693,7 +693,7 @@ class ExportDocument extends Controller
         $templateProcessor->setValue('pemrakarsa_phone', $pemrakarsa_phone);
         $templateProcessor->setValue('pemrakarsa_nib', $pemrakarsa_nib);
         $templateProcessor->setValue('pic', $pic);
-        $templateProcessor->setValue('position', $position);
+        $templateProcessor->setValue('pic_position', $pic_position);
         $templateProcessor->setValue('district', $district);
         $templateProcessor->setValue('project_sector', $project_sector);
         $templateProcessor->setValue('project_title', $project_title);

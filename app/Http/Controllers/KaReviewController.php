@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\FeasibilityTestTeam;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
 use App\Entity\KaReview;
@@ -21,10 +22,16 @@ class KaReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $review = KaReview::where('id_project', $request->idProject)->with('project')->orderBy('id', 'desc')->first();
+        $document_type = $request->documentType;
+        $id_project = $request->idProject;
+
+        $review = KaReview::where([['id_project', $id_project],['document_type', $document_type]])->with('project')->orderBy('id', 'desc')->first();
         
         if($review) {
-            $review_penyusun = KaReview::where([['id_project', $request->idProject],['status', 'submit-to-pemrakarsa']])->orderBy('id', 'desc')->first();
+            $review_penyusun = KaReview::where([['id_project', $id_project],['document_type', $document_type],['status', 'submit-to-pemrakarsa']])
+                ->orderBy('id', 'desc')
+                ->first();
+
             $review->setAttribute('formulator_notes', $review_penyusun->notes);
         }
         
@@ -54,6 +61,7 @@ class KaReviewController extends Controller
             $review->id_project = $request->idProject;
             $review->status = 'submit-to-pemrakarsa';
             $review->notes = $request->notes;
+            $review->document_type = $request->documentType;
             $review->save();
 
             // === NOTIFICATIONS === //
@@ -62,9 +70,11 @@ class KaReviewController extends Controller
             $user = User::where('email', $email)->count();
 
             $document_type = '';
-            if($project->required_doc == 'AMDAL') {
+            if($request->documentType == 'ka') {
                 $document_type = 'KA';
-            } else if($project->required_doc == 'UKL-UPL') {
+            } else if($request->documentType == 'andal-rkl-rpl') {
+                $document_type = 'ANDAL RKL RPL';
+            } else if($request->documentType == 'ukl-upl') {
                 $document_type = 'UKL UPL';
             }
 
@@ -86,6 +96,7 @@ class KaReviewController extends Controller
             $review = new KaReview();
             $review->id_project = $request->idProject;
             $review->status = $request->status;
+            $review->document_type = $request->documentType;
             
             if($request->status == 'revisi') {
                 $review->notes = $request->notes;
@@ -112,13 +123,49 @@ class KaReviewController extends Controller
                             $user = User::where('email', $email)->count();
                             if($user > 0) {
                                 $document_type = '';
-                                if($project->required_doc == 'AMDAL') {
+                                if($request->documentType == 'ka') {
                                     $document_type = 'KA';
-                                } else if($project->required_doc == 'UKL-UPL') {
+                                } else if($request->documentType == 'andal-rkl-rpl') {
+                                    $document_type = 'ANDAL RKL RPL';
+                                } else if($request->documentType == 'ukl-upl') {
                                     $document_type = 'UKL UPL';
                                 }
                                 
                                 $user = User::where('email', $email)->first();
+                                Notification::send([$user], new AppKaReview($review, $document_type));
+                            }
+                        }
+                    }
+                }
+            } else {
+                $feasibility_test_team = null;
+
+                if($project->authority == 'Pusat') {
+                    $feasibility_test_team = FeasibilityTestTeam::where('authority', 'Pusat')->with(['member' => function($q) {
+                        $q->where('position', 'Kepala Sekretariat');
+                        $q->with('lukMember', 'expertBank');
+                    }])->first();
+                } else if($project->authority == 'Provinsi') {
+                    $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Provinsi'], ['id_province_name', $project->auth_province]])->with(['member' => function($q) {
+                        $q->where('position', 'Kepala Sekretariat');
+                    }])->first();
+                } else if($project->authority == 'Kabupaten') {
+                    $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'], ['id_district_name', $project->auth_district]])->with(['member' => function($q) {
+                        $q->where('position', 'Kepala Sekretariat');
+                    }])->first();
+                }
+
+                if($feasibility_test_team) {
+                    if($feasibility_test_team->member->first()) {
+                        $email = null;
+                        if($feasibility_test_team->member->first()->lukMember) {
+                            $email = $feasibility_test_team->member->first()->lukMember->email;
+                        } else if($feasibility_test_team->member->first()->expertBank) {
+                            $email = $feasibility_test_team->member->first()->expertBank->email;
+                        }
+                        if($email) {
+                            $user = User::where('email', $email)->first();
+                            if($user) {
                                 Notification::send([$user], new AppKaReview($review, $document_type));
                             }
                         }

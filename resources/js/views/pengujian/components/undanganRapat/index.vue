@@ -19,6 +19,7 @@
             Undangan Rapat
           </el-button>
           <el-button
+            v-if="meetings.invitation_file"
             style="margin-top: 10px"
             :loading="loadingSendInvitation"
             type="primary"
@@ -34,7 +35,7 @@
           style="max-width: 100%"
         >
           <el-row :gutter="32">
-            <el-col :sm="12" :md="12">
+            <el-col :sm="24" :md="12">
               <el-form-item label="Tanggal Rapat">
                 <el-date-picker
                   v-model="meetings.meeting_date"
@@ -45,7 +46,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="12">
+            <el-col :sm="24" :md="12">
               <el-form-item label="Waktu Rapat">
                 <el-time-picker
                   v-model="meetings.meeting_time"
@@ -56,33 +57,44 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="12">
+            <el-col :sm="24" :md="12">
               <el-form-item label="Tempat Rapat">
                 <el-input v-model="meetings.location" />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="12">
-              <el-form-item label="Jabatan">
-                <el-input v-model="meetings.position" />
+            <el-col :sm="24" :md="12">
+              <el-form-item label="Unggah Undangan Rapat Final">
+                <el-button
+                  v-if="meetings.invitation_file"
+                  type="text"
+                  size="medium"
+                  icon="el-icon-download"
+                  style="color: blue"
+                  @click.prevent="download(meetings.invitation_file)"
+                >
+                  Download Undangan Rapat Final
+                </el-button>
+                <el-upload
+                  action="#"
+                  :auto-upload="false"
+                  :on-change="handleUploadInvitationFile"
+                  :show-file-list="false"
+                  style="display: inline"
+                >
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    content="Unggah Undangan Rapat Final yang sudah ditandatangani"
+                    placement="top-start"
+                  >
+                    <el-button size="small" type="warning"> Upload </el-button>
+                  </el-tooltip>
+                  <div slot="tip" class="el-upload__tip">
+                    {{ invitation_file_name }}
+                  </div>
+                </el-upload>
               </el-form-item>
             </el-col>
-            <!-- <el-col :sm="12" :md="12">
-              <el-form-item label="Tim Uji Kelayakan">
-                <el-select
-                  v-model="meetings.id_feasibility_test_team"
-                  placeholder="Pilih Tim"
-                  style="width: 100%"
-                  @change="handleChangeTimUji"
-                >
-                  <el-option
-                    v-for="item in timUjiKelayakan"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col> -->
           </el-row>
         </el-form>
       </el-col>
@@ -276,6 +288,8 @@ export default {
       docxData: {},
       invitationDocxData: {},
       loadingInvitationDocx: false,
+      invitation_file: null,
+      invitation_file_name: null,
       out: '',
       outInvitation: '',
       governmentInstitutions: [],
@@ -334,15 +348,20 @@ export default {
         return newX;
       });
       this.meetings.invitations = invitations;
-      await undanganRapatResource.store({
-        idProject: this.idProject,
-        meetings: this.meetings,
-      });
+
+      const formData = new FormData();
+      formData.append('idProject', this.idProject);
+      formData.append('meetings', JSON.stringify(this.meetings));
+      formData.append('invitation_file', this.invitation_file);
+
+      await undanganRapatResource.store(formData);
       this.$message({
         message: 'Data sukses tersimpan',
         type: 'success',
         duration: 5 * 1000,
       });
+      this.invitation_file = null;
+      this.invitation_file_name = null;
       this.getMeetings();
       this.loadingSubmit = false;
     },
@@ -622,6 +641,23 @@ export default {
       }
       this.loadingSendInvitation = false;
     },
+    handleUploadInvitationFile(file, fileList) {
+      if (file.raw.size > 1048576) {
+        this.showFileAlert();
+        return;
+      }
+
+      const extension = file.name.split('.');
+      if (extension[extension.length - 1].toLowerCase() !== 'pdf') {
+        this.$alert('File harus berformat PDF', '', {
+          center: true,
+        });
+        return;
+      }
+
+      this.invitation_file = file.raw;
+      this.invitation_file_name = file.name;
+    },
     download(url) {
       window.open(url, '_blank').focus();
     },
@@ -631,6 +667,11 @@ export default {
       }
 
       this.meetings.invitations.splice(idx, 1);
+    },
+    showFileAlert() {
+      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+        center: true,
+      });
     },
   },
 };

@@ -46,6 +46,25 @@ class AndalComposingController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->checkDocument) {
+            if (!File::exists(storage_path('app/public/workspace/'))) {
+                return 'false';
+            }
+    
+            $save_file_name = $request->idProject . '-andal' . '.docx';
+    
+            if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+                return 'true';
+            }
+
+            return 'false';
+        }
+
+        if($request->projectName) {
+            $project = Project::findOrFail($request->idProject);
+            return $project->project_title;
+        }
+
         if($request->checkWorkspace) {
             return $this->checkWorkspace($request->idProject);
         }
@@ -1718,6 +1737,7 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('district', ucwords(strtolower($project_district)));
         $templateProcessor->setValue('province', ucwords(strtolower($project_province)));
         $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->pic);
+        $templateProcessor->setValue('pemrakarsa_position', $project->initiator->pic_role);
         $templateProcessor->setValue('address', ucwords(strtolower($project_address)));
         $templateProcessor->setValue('pemrakarsa_address', ucwords(strtolower($project->initiator->address)));
         $templateProcessor->setValue('pemrakarsa_phone', ucwords(strtolower($project->initiator->phone)));

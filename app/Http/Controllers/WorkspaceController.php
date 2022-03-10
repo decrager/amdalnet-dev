@@ -115,6 +115,7 @@ class WorkspaceController extends Controller
                     'copy' => false,
                     'print' => false,
                     'download' => false,
+                    'comment' => true
                 ]
             ],
             'editorConfig' => [
@@ -201,6 +202,12 @@ class WorkspaceController extends Controller
 
         $result['status'] = 'success';
         return response()->json($result);
+    }
+
+    private function isReadOnly($user)
+    {
+        $role = $user->roles->first()->name;
+        return !($role === 'examiner' || $role === 'examiner-substance');
     }
 
     /**

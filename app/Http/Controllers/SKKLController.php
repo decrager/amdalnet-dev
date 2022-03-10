@@ -59,9 +59,13 @@ class SKKLController extends Controller
     {
         $data = $request->all();
         if($request->hasFile('skkl')) {
+            $project = Project::findOrFail($data['idProject']);
+            $file_name = $project->project_title .' - ' . $project->initiator->name;
+            
+
              //create file
              $file = $request->file('skkl');
-             $name = '/skkl/' . uniqid() . '.' . $file->extension();
+             $name = '/skkl/' . $file_name . '.' . $file->extension();
              $file->storePubliclyAs('public', $name);
  
              //create environmental expert  
@@ -210,39 +214,9 @@ class SKKLController extends Controller
     }
 
     private function getDocument($idProject) {
-        $skkl = ProjectSkkl::where('id_project', $idProject)->first();
         $project = Project::findOrFail($idProject);
 
-        // ============== PROJECT ADDRESS =============== //
-        $location = '';
-        if($project->address) {
-            if($project->address->first()) {
-                $district = $project->address->first()->district;
-                $province = $project->address->first()->province;
-                $address = $project->address->first()->address;
-                $location = $address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
-            }
-        }
-
-        // PHPWord
-        $templateProcessor = new TemplateProcessor('template_skkl.docx');
-        $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
-        $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
-        $templateProcessor->setValue('project_title', $project->project_title);
-        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
-        $templateProcessor->setValue('project_type', $project->project_type);
-        $templateProcessor->setValue('pic', $project->initiator->name);
-        $templateProcessor->setValue('pic_position', '');
-        $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
-        $templateProcessor->setValue('location', $location);
-
-        $save_file_name = $project->project_title .' - ' . $project->initiator->name . '.docx';
-        if (!File::exists(storage_path('app/public/skkl/'))) {
-            File::makeDirectory(storage_path('app/public/skkl/'));
-        }
-
-        $templateProcessor->saveAs(storage_path('app/public/skkl/' . $save_file_name));
-
+        // === DOKUMEN KA, ANDAL & RKL RPL === //
         // Date
         $andalDate = '';
         $andal = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($idProject) {
@@ -277,6 +251,47 @@ class SKKLController extends Controller
             $rklRplDate = $rklDate > $rplDate ? $rklDate->locale('id')->isoFormat('D MMMM Y') : $rplDate->locale('id')->isoFormat('D MMMM Y');
         }
 
+        // === SKKL === //
+        $skkl_download_name = null;
+        $update_date_skkl = null;
+        $skkl = ProjectSkkl::where('id_project', $idProject)->first();
+        if($skkl) {
+            $skkl_download_name = $skkl->file;
+            $update_date_skkl = $skkl->updated_at->locale('id')->isoFormat('D MMMM Y');
+        } else {
+            // ============== PROJECT ADDRESS =============== //
+            $location = '';
+            if($project->address) {
+                if($project->address->first()) {
+                    $district = $project->address->first()->district;
+                    $province = $project->address->first()->province;
+                    $address = $project->address->first()->address;
+                    $location = $address . ' ' . ucwords(strtolower($district)) . ', Provinsi ' . $province;
+                }
+            }
+
+            // PHPWord
+            $templateProcessor = new TemplateProcessor('template_skkl.docx');
+            $templateProcessor->setValue('project_title_big', strtoupper($project->project_title));
+            $templateProcessor->setValue('pemrakarsa_big', strtoupper($project->initiator->name));
+            $templateProcessor->setValue('project_title', $project->project_title);
+            $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+            $templateProcessor->setValue('project_type', $project->project_type);
+            $templateProcessor->setValue('pic', $project->initiator->name);
+            $templateProcessor->setValue('pic_position', $project->initiator->pic_role);
+            $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
+            $templateProcessor->setValue('location', $location);
+
+            $save_file_name = $project->project_title .' - ' . $project->initiator->name . '.docx';
+            if (!File::exists(storage_path('app/public/skkl/'))) {
+                File::makeDirectory(storage_path('app/public/skkl/'));
+            }
+
+            $templateProcessor->saveAs(storage_path('app/public/skkl/' . $save_file_name));
+            $skkl_download_name = Storage::url('skkl/' . $save_file_name);
+            $update_date_skkl = $project->updated_at->locale('id')->isoFormat('D MMMM Y');
+        }
+
         // === WORKFLOW === //
         // if($project->marking == 'amdal.recommendation-signed') {
         //     $project->workflow_apply('publish-amdal-skkl');
@@ -287,8 +302,9 @@ class SKKLController extends Controller
         return [ 
                 [
                     'name' => 'Persetujuan Lingkungan SKKL',
-                    'file' => Storage::url('skkl/' . $save_file_name),
-                    'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
+                    'file' => $skkl_download_name,
+                    'updated_at' => $update_date_skkl,
+                    'uploaded' => $skkl
                 ],
                 [
                     'name' => 'Dokumen KA',
@@ -331,7 +347,7 @@ class SKKLController extends Controller
         $templateProcessor->setValue('pemrakarsa_nib', $project->initiator->nib);
         $templateProcessor->setValue('project_type', $project->project_type);
         $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->name);
-        $templateProcessor->setValue('pemrakarsa_position', '');
+        $templateProcessor->setValue('pemrakarsa_position', $project->initiator->pic_role);
         $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
         $templateProcessor->setValue('project_address', $location);
 
