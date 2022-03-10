@@ -21,6 +21,7 @@ use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
@@ -613,6 +614,7 @@ class TestingMeetingController extends Controller
         $templateProcessor->setValue('meeting_time', $meeting_time . ' ' . $meeting_date);
         $templateProcessor->setValue('docs_date', $docs_date);
         $templateProcessor->setValue('kepala_sekretariat_tuk', $kepala_sekretariat_tuk);
+        $templateProcessor->setValue('validator_administrasi', Auth::user()->name);
         $templateProcessor->setValue('tim_penyusun', $tim_penyusun);
         $templateProcessor->cloneBlock('anggota_penyusun', count($anggota_penyusun), true, false, $anggota_penyusun);
         $templateProcessor->cloneBlock('meeting_invitations', count($meeting_invitations), true, false, $meeting_invitations);
@@ -646,7 +648,11 @@ class TestingMeetingController extends Controller
         $notesTable = new Table();
         $notesTable->addRow();
         $cell = $notesTable->addCell(6000);
-        Html::addHtml($cell, $verification->notes);
+        $final_notes = $verification->notes;
+        if($final_notes) {
+            $final_notes = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $final_notes);
+        }
+        Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-' . strtolower($project->project_title) . '.docx'));
@@ -696,9 +702,9 @@ class TestingMeetingController extends Controller
         } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
             if($tuk) {
-                $authority = ucwords(strtolower('PROVINSI' . strtoupper($tuk->provinceAuthority->name)));
-                $authority_big = 'PROVINSI' . strtoupper($tuk->provinceAuthority->name);
-                $authority_big_check = 'PROVINSI' . strtoupper($tuk->provinceAuthority->name);
+                $authority = ucwords(strtolower('PROVINSI ' . strtoupper($tuk->provinceAuthority->name)));
+                $authority_big = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
+                $authority_big_check = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
             }
         } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
