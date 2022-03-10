@@ -16,11 +16,6 @@ class MeetingReport extends Model
         return $this->hasMany(MeetingReportInvitation::class, 'id_meeting_report', 'id');
     }
 
-    public function initiator()
-    {
-        return $this->belongsTo(Initiator::class, 'id_initiator', 'id');
-    }
-
     public function project()
     {
         return $this->belongsTo(Project::class, 'id_project', 'id');
