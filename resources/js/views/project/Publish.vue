@@ -94,7 +94,7 @@
         <el-col :span="12">
           <h2>Hasil Penapisan Rencana Kegiatan</h2>
           <el-row style="padding-bottom: 16px"><el-col :span="12">No Registrasi</el-col>
-            <el-col :span="12">1611182998277</el-col></el-row>
+            <el-col :span="12">{{ project.registration_no || "Belum Mempunyai" }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
             <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>

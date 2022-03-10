@@ -1,7 +1,7 @@
 <template>
   <div class="form-container" style="padding: 24px">
     <workflow :is-penapisan="true" />
-    <div v-if="preProject">
+    <div v-if="preProject" v-loading="loading">
       <el-collapse v-model="activeName" :accordion="true">
         <el-collapse-item title="TAPAK PROYEK" name="1" disabled>
           <el-form
@@ -24,7 +24,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 1MB)" prop="fileKtr">
+                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 1MB, Opsional)" prop="fileKtr">
                   <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -37,24 +37,27 @@
                   </el-form-item>
                 </el-row>
                 <el-row>
-                  <el-form-item label="Deskripsi Lokasi" prop="location_desc">
+                  <el-form-item v-if="!isUmk" label="Deskripsi Lokasi" prop="location_desc">
                     <el-input v-model="currentProject.location_desc" size="medium" type="textarea" />
                   </el-form-item>
                 </el-row>
               </el-col>
               <el-col :span="12">
                 <el-row>
-                  <el-form-item label="" prop="filePdf">
+                  <el-form-item v-if="!isUmk" label="" prop="filePdf">
                     <div slot="label">
                       <span>Upload Peta PDF (Max 1MB)</span>
                     </div>
                     <classic-upload :name="filePdfName" :fid="'filePdf'" @handleFileUpload="handleFileTapakProyekPdfUpload" />
                   </el-form-item>
+                  <el-form-item v-else label="Deskripsi Lokasi" prop="location_desc">
+                    <el-input v-model="currentProject.location_desc" size="medium" type="textarea" />
+                  </el-form-item>
                 </el-row>
               </el-col>
               <el-col :span="12" style="margin-top: 17px;">
                 <el-row>
-                  <el-form-item label="" prop="fileMap">
+                  <el-form-item v-if="!isUmk" label="" prop="fileMap">
                     <div slot="label">
                       <span>Upload SHP Peta Tapak Proyek (File .zip max 1 MB)</span>
                       <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
@@ -64,79 +67,37 @@
                 </el-row>
               </el-col>
             </el-row>
-
             <div v-show="fileMap" id="mapView" style="height: 600px;" />
             <div style="margin-top: 10px">
               <span v-if="full_address !== ''" style="font-style: italic; color: red">Alamat : {{ full_address }} </span>
             </div>
-
-            <!-- Alamat -->
-            <el-row type="flex" justify="end" :gutter="4">
-              <el-col :span="24" :xs="24">
-                <el-form-item label="Alamat" prop="address">
-                  <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-                    <el-table-column label="No." width="80px">
-                      <template slot-scope="scope">
-                        {{ scope.$index + 1 }}
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="Provinsi" width="200px">
-                      <template slot-scope="scope">
-                        <el-select
-                          v-model="scope.row.prov"
-                          placeholder="Pilih"
-                          style="width: 100%"
-                          filterable
-                          @change="changeProvince(scope.row)"
-                        >
-                          <el-option
-                            v-for="item in getProvinceOptions"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                          />
-                        </el-select>
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="Kota/Kabupaten" width="300px">
-                      <template slot-scope="scope">
-                        <el-select
-                          v-model="scope.row.district"
-                          placeholder="Pilih"
-                          style="width: 100%"
-                          filterable
-                        >
-                          <el-option
-                            v-for="item in scope.row.districts"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                          />
-                        </el-select>
-                      </template>
-                    </el-table-column>
-
-                    <el-table-column label="Alamat">
-                      <template slot-scope="scope">
-                        <el-input v-model="scope.row.address" />
-                      </template>
-                    </el-table-column>
-
-                    <el-table-column width="100px">
-                      <template slot-scope="scope">
-                        <el-popconfirm
-                          title="Hapus Alamat ?"
-                          @confirm="currentProject.address.splice(scope.$index,1)"
-                        >
-                          <el-button slot="reference" type="danger" icon="el-icon-close" />
-                        </el-popconfirm>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                  <el-button
-                    type="primary"
-                    @click="handleAddAddressTable"
-                  >+</el-button>
+            <el-row :gutter="4">
+              <el-col :span="12">
+                <el-form-item label="Apakah Lokasi rencana Anda Masuk dalam Kawasan PIPPIB?" prop="pippib">
+                  <el-radio-group v-model="currentProject.pippib">
+                    <el-radio :label="'Y'">Ya</el-radio>
+                    <el-radio :label="'N'">Tidak</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item v-if="currentProject.pippib === 'Y'" label="Upload Surat Pengecualian PIPPIB (Max 1MB, Opsional)" prop="filepippib">
+                  <classic-upload :name="filepippibName" :fid="'ppippibFile'" @handleFileUpload="handleFilePIPPIBUpload($event)" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="4">
+              <el-col :span="12">
+                <el-form-item label="Apakah Rencana Kegiatan Anda Masuk dalam Kawasan Lindung?" prop="kawasan_lindung">
+                  <el-radio-group v-model="currentProject.kawasan_lindung">
+                    <el-radio :label="'Y'">Ya</el-radio>
+                    <el-radio :label="'N'">Tidak</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item v-if="currentProject.kawasan_lindung === 'Y'" label="Unggah Surat Pengecualian Dalam Kawasan Lindung (Max 1MB, Opsional)" prop="fileKawasanLindung">
+                  <classic-upload :name="fileKawasanLindungName" :fid="'kawasanLindungFile'" @handleFileUpload="handleFileKawasanLindungUpload($event)" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -184,13 +145,87 @@
             <el-row>
               <el-form-item prop="listSubProject">
                 <keep-alive>
-                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" />
+                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" />
                 </keep-alive>
                 <el-button
                   type="primary"
+                  :disabled="fromOss"
                   @click="handleAddSubProjectTable"
                 >+</el-button>
               </el-form-item>
+            </el-row>
+            <!-- Alamat -->
+            <el-row type="flex" justify="end" :gutter="4">
+              <el-col :span="24" :xs="24">
+                <el-form-item label="Alamat" prop="address">
+                  <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+                    <el-table-column label="No." width="80px">
+                      <template slot-scope="scope">
+                        {{ scope.$index + 1 }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="Provinsi" width="200px">
+                      <template slot-scope="scope">
+                        <el-select
+                          v-model="scope.row.prov"
+                          :disabled="fromOss"
+                          placeholder="Pilih"
+                          style="width: 100%"
+                          filterable
+                          @change="changeProvince(scope.row)"
+                        >
+                          <el-option
+                            v-for="item in getProvinceOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          />
+                        </el-select>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="Kota/Kabupaten" width="300px">
+                      <template slot-scope="scope">
+                        <el-select
+                          v-model="scope.row.district"
+                          :disabled="fromOss"
+                          placeholder="Pilih"
+                          style="width: 100%"
+                          filterable
+                        >
+                          <el-option
+                            v-for="item in scope.row.districts"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          />
+                        </el-select>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column label="Alamat">
+                      <template slot-scope="scope">
+                        <el-input v-model="scope.row.address" :disabled="fromOss" />
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column width="100px">
+                      <template slot-scope="scope">
+                        <el-popconfirm
+                          title="Hapus Alamat ?"
+                          @confirm="currentProject.address.splice(scope.$index,1)"
+                        >
+                          <el-button slot="reference" type="danger" icon="el-icon-close" />
+                        </el-popconfirm>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-button
+                    type="primary"
+                    :disabled="fromOss"
+                    @click="handleAddAddressTable"
+                  >+</el-button>
+                </el-form-item>
+              </el-col>
             </el-row>
             <el-row type="flex" justify="end">
               <el-col :span="5" style="padding-right: 0px">
@@ -512,6 +547,7 @@ import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
 const provinceResource = new Resource('provinces');
+const regionResource = new Resource('regions');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
@@ -549,12 +585,26 @@ export default {
       callback();
     };
 
-    var validateKtr = (rule, value, callback) => {
-      if (!this.currentProject.fileKtr){
-        callback(new Error('File KTR Belum Diunggah'));
-      }
-      callback();
-    };
+    // var validateKtr = (rule, value, callback) => {
+    //   if (!this.currentProject.fileKtr){
+    //     callback(new Error('File KTR Belum Diunggah'));
+    //   }
+    //   callback();
+    // };
+
+    // var validatePippib = (rule, value, callback) => {
+    //   if (!this.currentProject.filepippib){
+    //     callback(new Error('File PIPPIB Belum Diunggah'));
+    //   }
+    //   callback();
+    // };
+
+    // var validateKawasanLindung = (rule, value, callback) => {
+    //   if (!this.currentProject.fileKawasanLindung){
+    //     callback(new Error('File Kawasan Lindung Belum Diunggah'));
+    //   }
+    //   callback();
+    // };
 
     var validateMap = (rule, value, callback) => {
       if (!this.fileMap){
@@ -569,6 +619,9 @@ export default {
       callback();
     };
     return {
+      loading: false,
+      isUmk: false,
+      fromOss: false,
       mapItemId: '',
       full_address: '',
       mismatchMapData: false,
@@ -579,6 +632,8 @@ export default {
       activeName: '1',
       currentProject: {
         address: [],
+        pippib: 'N',
+        kawasan_lindung: 'N',
       },
       listSupportTable: [],
       listSubProject: [],
@@ -589,6 +644,8 @@ export default {
       filePdf: null,
       isOss: true,
       fileKtrName: 'No File Selected',
+      filepippibName: 'No File Selected',
+      fileKawasanLindungName: 'No File Selected',
       fileMapName: 'No File Selected',
       filePdfName: 'No File Selected',
       filePreAgreementName: 'No File Selected',
@@ -688,18 +745,21 @@ export default {
         project_title: [
           { required: true, trigger: 'change', message: 'Nama Kegiatan Belum Diisi' },
         ],
-        address: [
-          { validator: validateAddress, trigger: 'blur' },
-        ],
         location_desc: [
           { required: true, trigger: 'blur', message: 'Data Lokasi Kegiatan Belum Diisi' },
         ],
         description: [
           { required: true, trigger: 'blur', message: 'Data Deskripsi Kegiatan Belum Diisi' },
         ],
-        fileKtr: [
-          { validator: validateKtr, trigger: 'change' },
-        ],
+        // fileKtr: [
+        //   { validator: validateKtr, trigger: 'change' },
+        // ],
+        // filepippib: [
+        //   { validator: validatePippib, trigger: 'change' },
+        // ],
+        // fileKawasanLindung: [
+        //   { validator: validateKawasanLindung, trigger: 'change' },
+        // ],
         filePdf: [
           { validator: validatePdfMap, trigger: 'change' },
         ],
@@ -713,6 +773,9 @@ export default {
         ],
         listSubProject: [
           { validator: validateListSubProject, trigger: 'blur' },
+        ],
+        address: [
+          { validator: validateAddress, trigger: 'blur' },
         ],
       },
       statusKegiatanRules: {
@@ -812,12 +875,17 @@ export default {
     },
   },
   async created() {
+    this.loading = true;
+    // load info user and initiator
+    const { email } = await this.$store.dispatch('user/getInfo');
+    await this.$store.dispatch('getInitiator', email);
+    await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
+
+    await this.getProjectsFromOss();
     generateArcgisToken(this.token);
+
     // for step
     this.$store.dispatch('getStep', 0);
-
-    // get initiator data
-    const { email } = await this.$store.dispatch('user/getInfo');
     this.$store.dispatch('getInitiator', email);
 
     // for default value
@@ -846,6 +914,7 @@ export default {
       this.getDistricts(this.currentProject.id_prov);
     }
     this.getAllData();
+    this.loading = false;
   },
   methods: {
     async addAuthoritiesBasedOnAddress(address){
@@ -867,7 +936,13 @@ export default {
       console.log(this.currentProject);
     },
     async goToPendekatanStudi(){
-      await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
+      if (!this.filepippib && this.currentProject.pippib === 'Y'){
+        this.$alert('Maaf kegiatan anda masuk dalam PIPPIB mohon unggah dokumen pengecualian untuk melanjutkan penapisan', {
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+
       this.$refs.tapakProyek.validate((valid) => {
         if (valid) {
           this.activeName = '2';
@@ -877,16 +952,18 @@ export default {
         }
       });
     },
-    goToStatusKegiatan(){
+    async goToStatusKegiatan(){
       console.log(this.currentProject);
-      this.$refs.pendekatanStudi.validate((valid) => {
-        if (valid) {
-          this.activeName = '3';
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+      this.activeName = '3';
+      // this.$refs.pendekatanStudi.validate(async(valid) => {
+      //   if (valid) {
+      //     await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
+      //     this.activeName = '3';
+      //   } else {
+      //     console.log('error submit!!');
+      //     return false;
+      //   }
+      // });
     },
     goToJenisKegiatan(){
       this.$refs.statusKegiatan.validate((valid) => {
@@ -952,6 +1029,14 @@ export default {
     },
     calculateListSubProjectResult(){
       this.currentProject.listSubProject = this.listSubProject.map(e => {
+        if (!e.listSubProjectParams){
+          this.$message({
+            message: `Parameter untuk project dengan kbli ${e.kbli} belum diisi`,
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          throw new Error(`Parameter untuk project dengan kbli ${e.kbli} belum diisi`);
+        }
         e.listSubProjectParams = e.listSubProjectParams.filter(e => e.used);
 
         const { result, result_risk, scale, scale_unit } = this.sumResult(e.listSubProjectParams);
@@ -1015,9 +1100,17 @@ export default {
       this.currentProject.listSubProjectParams = choosenProject.listSubProjectParams;
     },
     handleStudyAccord(){
-      this.calculateListSubProjectResult();
-      this.calculateChoosenProject();
-      this.goToStatusKegiatan();
+      this.$refs.pendekatanStudi.validate(async(valid) => {
+        if (valid) {
+          await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
+          this.calculateListSubProjectResult();
+          this.calculateChoosenProject();
+          this.goToStatusKegiatan();
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     checkMapFile() {
       document.querySelector('#ktrFile').click();
@@ -1044,6 +1137,42 @@ export default {
       this.fileKtr = e.target.files[0];
       this.currentProject.fileKtr = e.target.files[0];
       this.fileKtrName = e.target.files[0].name;
+    },
+    handleFilePIPPIBUpload(e){
+      // reset validation
+      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filepippib').resetField();
+
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
+      this.filepippib = e.target.files[0];
+      this.currentProject.filepippib = e.target.files[0];
+      this.filepippibName = e.target.files[0].name;
+    },
+    handleFileKawasanLindungUpload(e){
+      // reset validation
+      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKawasanLindung').resetField();
+
+      if (e.target.files[0].size > 1048576){
+        this.showFileAlert();
+        return;
+      }
+
+      if (e.target.files[0].type !== 'application/pdf'){
+        this.$alert('File yang diterima hanya .PDF', 'Format Salah');
+        return;
+      }
+
+      this.fileKawasanLindung = e.target.files[0];
+      this.currentProject.fileKawasanLindung = e.target.files[0];
+      this.fileKawasanLindungName = e.target.files[0].name;
     },
     handleFilePreAgreementUpload(e){
       if (e.target.files[0].size > 1048576){
@@ -1307,10 +1436,60 @@ export default {
       await this.getProvinces();
       await this.getSectors();
       await this.getKblis();
-      await this.getProjectsFromOss();
     },
     async getProjectsFromOss() {
-      await this.$store.dispatch('getProjectOss');
+      console.log(this.$store.getters.ossByNib);
+
+      if (!this.$store.getters.ossByNib){
+        return;
+      }
+
+      this.fromOss = true;
+
+      // set is rencana kegiatan umk atau tidak
+      this.isUmk = this.$store.getters.ossByNib.flag_umk !== 'N';
+
+      const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => e.file_izin === '-' || !e.file_izin);
+      console.log(ossProjects);
+
+      const ossAddress = [];
+      const ossAddressDetail = [];
+
+      ossProjects.forEach(e => {
+        e.data_lokasi_proyek.forEach(e => {
+          ossAddress.push(e.proyek_daerah_id);
+          ossAddressDetail.push({ id: e.proyek_daerah_id, alamat_usaha: e.alamat_usaha });
+        });
+
+        // check kbli or not
+        if (e.nonKbli === 'Y'){
+          this.listSubProject.push({
+            nonKbli: true,
+            name: e.uraian_usaha,
+            id_proyek: e.id_proyek,
+          });
+        } else {
+          this.listSubProject.push({
+            kbli: e.kbli,
+            name: e.uraian_usaha,
+            id_proyek: e.id_proyek,
+          });
+        }
+      });
+
+      const alladdress = await regionResource.list({ ossAddress });
+
+      this.currentProject.address = alladdress.map(e => {
+        const alamatUsaha = ossAddressDetail.filter(address => address.id === e.region_id);
+        console.log(e);
+        return {
+          prov: e.province,
+          district: e.regency,
+          address: alamatUsaha[0].alamat_usaha,
+        };
+      });
+
+      console.log(this.listSubProject);
     },
     async getProjectFields() {
       await this.$store.dispatch('getProjectFields');

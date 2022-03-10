@@ -38,6 +38,8 @@ GET http://localhost:8000/api/formulators
 ###
 GET http://localhost:8000/api/rona-awals
 ###
+GET http://localhost:8000/api/regions?id=2
+###
 GET http://localhost:8000/api/support-docs?idProject=20
 ###
 GET http://localhost:8000/api/initiatorsByEmail?email=nurika@pemrakarsaa.com
@@ -53,6 +55,9 @@ content-type: application/json
 
 ###
 GET http://localhost:8000/api/fire
+###
+
+GET http://localhost:8000/api/ossNibs?nib=9120406222016
 
 
 ###
