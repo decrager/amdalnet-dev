@@ -300,6 +300,7 @@ Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf'
 Route::apiResource('ka-comment', 'KaCommentController');
 Route::apiResource('employee-tuk', 'EmployeeTUKController');
 Route::apiResource('tuk-management', 'TUKManagementController');
+Route::apiResource('regions', 'RegionController');
 Route::get('timeline', [ProjectController::class, 'timeline']);
 
 // Arcgis Service
