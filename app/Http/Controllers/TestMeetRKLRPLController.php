@@ -705,7 +705,7 @@ class TestMeetRKLRPLController extends Controller
         }
 
         $project = Project::findOrFail($id_project);
-        $testing_meeting = TestingMeeting::select('id', 'id_project', 'id_feasibility_test_team', 'updated_at', 'location', 'meeting_date', 'meeting_time')->where([['id_project', $id_project],['document_type', $document_type]])->first();
+        $testing_meeting = TestingMeeting::select('id', 'id_project', 'updated_at', 'location', 'meeting_date', 'meeting_time')->where([['id_project', $id_project],['document_type', $document_type]])->first();
         $invitations = TestingMeetingInvitation::where('id_testing_meeting', $testing_meeting->id)->get();
         Carbon::setLocale('id');
         
