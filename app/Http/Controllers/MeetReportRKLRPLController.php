@@ -109,6 +109,15 @@ class MeetReportRKLRPLController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->accept) {
+            $document_type = $request->documentType == 'rkl-rpl' ? 'rkl-rpl' : 'ukl-upl';
+            $meeting_report = MeetingReport::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
+            $meeting_report->is_accepted = $request->isAccepted;
+            $meeting_report->save();
+
+            return response()->json(['message' => 'Data sukses disimpan']);
+        }
+
         if($request->file) {
             $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
             $data = $request->all();
@@ -356,7 +365,8 @@ class MeetReportRKLRPLController extends Controller
             'project_name' => $meeting->project->project_title,
             'invitations' => $invitations,
             'notes' => null,
-            'file' => null
+            'file' => null,
+            'is_accepted' => null
         ];
 
         return $data;
@@ -430,7 +440,8 @@ class MeetReportRKLRPLController extends Controller
             'project_name' => $report->project->project_title,
             'invitations' => $invitations,
             'notes' => $report->notes,
-            'file' => $report->file
+            'file' => $report->file,
+            'is_accepted' => $report->is_accepted
         ];
 
         return $data;

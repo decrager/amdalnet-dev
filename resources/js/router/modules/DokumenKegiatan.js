@@ -39,9 +39,15 @@ const dokumenKegiatanRoutes = {
       meta: { title: 'Pengujian KA', icon: 'zip', noCache: true },
     },
     {
-      path: ':id(\\d+)/pengujian-rkl-rpl',
+      path: ':id(\\d+)/pengujian-andal-rkl-rpl',
       component: () => import('@/views/pengujian-rkl-rpl/index'),
       name: 'pengujianRKLRPL',
+      meta: { title: 'Pengujian RKL RPL', icon: 'zip', noCache: true },
+    },
+    {
+      path: ':id(\\d+)/uji-kelayakan',
+      component: () => import('@/views/pengujian-rkl-rpl/components/ujiKelayakan/index'),
+      name: 'ujiKelayakanAmdal',
       meta: { title: 'Pengujian RKL RPL', icon: 'zip', noCache: true },
     },
     {

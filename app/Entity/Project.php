@@ -125,6 +125,11 @@ class Project extends Model implements Auditable
         return $this->hasOne(ProjectSkkl::class, 'id_project', 'id');
     }
 
+    public function meetingReports()
+    {
+        return $this->hasMany(MeetingReport::class, 'id_project', 'id');
+    }
+
     public function getFillingDateAttribute()
     {
         Carbon::setLocale('id');
