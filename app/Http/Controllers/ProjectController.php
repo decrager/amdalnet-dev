@@ -40,6 +40,9 @@ class ProjectController extends Controller
             //this code to get project base on formulator
             return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
                 $q->select('id', 'id_project', 'status', 'document_type');
+            }, 'meetingReports' => function($q) {
+                $q->select('id', 'id_project', 'is_accepted', 'document_type');
+                $q->where('document_type', 'rkl-rpl');
             }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
                 ->where(function ($query) use ($request) {
                     return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
@@ -94,6 +97,9 @@ class ProjectController extends Controller
             $q->select('id', 'id_project', 'status', 'document_type');
         },'testingMeeting' => function($q) {
             $q->select('id', 'id_project', 'document_type', 'is_invitation_sent');
+        }, 'meetingReports' => function($q) {
+            $q->select('id', 'id_project', 'is_accepted', 'document_type');
+            $q->where('document_type', 'rkl-rpl');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(

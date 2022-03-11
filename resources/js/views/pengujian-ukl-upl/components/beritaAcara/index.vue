@@ -34,6 +34,41 @@
         />
       </el-col>
     </el-row>
+    <el-row v-if="reports.type === 'update'" :gutter="32">
+      <el-col :span="16" :offset="4" align="center">
+        <div
+          v-if="reports.is_accepted === null"
+          style="background-color: #e1e1e1; padding: 10px 0; margin-top: 5px"
+        >
+          <h3>Apakah UKL-UPL dapat dilanjutkan ke Uji Kelayakan?</h3>
+          <div style="text-align: center">
+            <el-button
+              :loading="loadingAccept"
+              type="primary"
+              @click="acceptOrNot(true)"
+            >
+              Ya
+            </el-button>
+            <el-button
+              :loading="loadingAccept"
+              type="danger"
+              @click="acceptOrNot(false)"
+            >
+              Tidak
+            </el-button>
+          </div>
+        </div>
+        <el-alert
+          v-else
+          :title="acceptedTitle"
+          type="success"
+          description="Terimakasih"
+          show-icon
+          center
+          :closable="false"
+        />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -59,6 +94,7 @@ export default {
       idProject: this.$route.params.id,
       loadingSubmit: false,
       loadingTuk: false,
+      loadingAccept: false,
       reports: {},
       docs: {},
       loadingDocs: false,
@@ -67,6 +103,15 @@ export default {
       out: '',
       governmentInstitutions: [],
     };
+  },
+  computed: {
+    acceptedTitle() {
+      if (this.reports.is_accepted) {
+        return 'UKL UPL Dilanjutkan ke Uji Kelayakan';
+      } else {
+        return 'UKL UPL Tidak Dilanjutkan ke Uji Kelayakan';
+      }
+    },
   },
   async created() {
     this.loadingTuk = true;
@@ -216,6 +261,27 @@ export default {
     },
     updateUploadFile({ name }) {
       this.reports.file = name;
+    },
+    acceptOrNot(accept) {
+      this.$confirm('Apakah anda yakin ?', 'Warning', {
+        confirmButtonText: 'Ya',
+        cancelButtonText: 'Tidak',
+        type: 'warning',
+      })
+        .then(() => {
+          this.loadingAccept = true;
+          meetingReportResource.store({
+            accept: 'true',
+            idProject: this.$route.params.id,
+            documentType: 'ukl-upl',
+            isAccepted: accept,
+          });
+          this.loadingAccept = false;
+          this.reports.is_accepted = accept;
+        })
+        .catch(() => {
+          this.loadingAccept = false;
+        });
     },
   },
 };

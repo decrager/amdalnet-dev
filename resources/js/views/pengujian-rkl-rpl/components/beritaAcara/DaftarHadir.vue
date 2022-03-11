@@ -91,7 +91,6 @@
       :on-change="handleUploadChange"
       :show-file-list="false"
       action=""
-      style="text-align: right"
     >
       <el-button
         :loading="loadingUpload"
@@ -101,7 +100,7 @@
         Unggah BA Final
       </el-button>
     </el-upload>
-    <div v-if="reports.file" style="text-align: right">
+    <div v-if="reports.file">
       <el-button
         type="text"
         size="medium"
@@ -114,7 +113,7 @@
     </div>
     <small
       v-if="errors.dokumen_file"
-      style="color: #f56c6c; display: block; text-align: right; margin-top: 5px"
+      style="color: #f56c6c; display: block; margin-top: 5px"
     >
       <span v-for="(error, index) in errors.dokumen_file" :key="index">
         {{ error }}
