@@ -7,7 +7,12 @@
             Dokumen Kesesuaian Tata Ruang
           </label>
           <a
-            v-if="attachment.kesesuaian_tata_ruang"
+            v-if="
+              !(
+                attachment.kesesuaian_tata_ruang === null ||
+                attachment.kesesuaian_tata_ruang === '/storage/'
+              )
+            "
             :href="attachment.kesesuaian_tata_ruang"
             download
           >
@@ -33,7 +38,12 @@
             Dokumen Persetujuan Awal
           </label>
           <a
-            v-if="attachment.persetujuan_awal"
+            v-if="
+              !(
+                attachment.persetujuan_awal === null ||
+                attachment.persetujuan_awal === '/storage/'
+              )
+            "
             :href="attachment.persetujuan_awal"
             download
           >
