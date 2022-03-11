@@ -27,13 +27,6 @@
         >
           <BeritaAcara v-if="activeName === 'beritaacara'" />
         </el-tab-pane>
-        <el-tab-pane
-          v-if="isExaminer || isFormulator || isAdmin || isSubtance"
-          label="Uji Kelayakan"
-          name="ujikelayakan"
-        >
-          <UjiKelayakan v-if="activeName === 'ujikelayakan'" />
-        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -43,7 +36,6 @@
 import Verifikasi from '@/views/pengujian-rkl-rpl/components/verifikasi/index';
 import UndanganRapat from '@/views/pengujian-rkl-rpl/components/undanganRapat/index';
 import BeritaAcara from '@/views/pengujian-rkl-rpl/components/beritaAcara/index';
-import UjiKelayakan from '@/views/pengujian-rkl-rpl/components/ujiKelayakan/index';
 import WorkFlow from '@/components/Workflow';
 import Resource from '@/api/resource';
 const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
@@ -54,7 +46,6 @@ export default {
     Verifikasi,
     UndanganRapat,
     BeritaAcara,
-    UjiKelayakan,
     WorkFlow,
   },
   data() {

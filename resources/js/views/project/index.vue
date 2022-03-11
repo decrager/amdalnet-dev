@@ -222,7 +222,16 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleUjiRklRpl(scope.row)"
+                  @click="handleUjiAndalRklRpl(scope.row)"
+                >
+                  Uji Andal RKL RPL
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && (((isAdmin || isSubtance || isExaminer || isSecretary || isChief) && isAndalRKLRPLAccepted(scope.row)) || (isFormulator && scope.row.feasibility_test))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiKelayakan(scope.row)"
                 >
                   Uji Kelayakan
                 </el-button>
@@ -603,6 +612,17 @@ export default {
       }
       return false;
     },
+    isAndalRKLRPLAccepted(project) {
+      if (project.meeting_reports) {
+        if (project.meeting_reports.length > 0) {
+          if (project.meeting_reports[0].is_accepted) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
     toTitleCase(str) {
       return str.replace(
         /\w\S*/g,
@@ -812,14 +832,25 @@ export default {
         path: `/uklupl/${project.id}/pengujian`,
       });
     },
-    handleUjiRklRpl(project) {
+    handleUjiAndalRklRpl(project) {
       if (this.isAmdal(project)) {
         this.$router.push({
-          path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
+          path: `/dokumen-kegiatan/${project.id}/pengujian-andal-rkl-rpl`,
         });
       } else {
         this.$router.push({
           path: `/uklupl/${project.id}/pengujian`,
+        });
+      }
+    },
+    handleUjiKelayakan(project) {
+      if (this.isAmdal(project)) {
+        this.$router.push({
+          path: `/dokumen-kegiatan/${project.id}/uji-kelayakan`,
+        });
+      } else {
+        this.$router.push({
+          path: `/uklupl/${project.id}/uji-kelayakan`,
         });
       }
     },
