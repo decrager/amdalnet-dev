@@ -22,13 +22,10 @@
               <a href="" class="footer__link">Konsultasi Publik</a>
             </li>
             <li class="footer__item">
-              <a href="" class="footer__link">Tentang Kami</a>
+              <a href="https://bit.ly/pelayananPDLUK" class="footer__link" target="_blank">Formulir Kepuasan Pelayanan Publik</a>
             </li>
             <li class="footer__item">
-              <a href="" class="footer__link">Kebijakan</a>
-            </li>
-            <li class="footer__item">
-              <a href="" class="footer__link">Materi</a>
+              <a href="" class="footer__link">Pengaduan Masyarakat</a>
             </li>
           </ul>
           <div class="footer__contact">

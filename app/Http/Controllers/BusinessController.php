@@ -27,7 +27,7 @@ class BusinessController extends Controller
             if($kbli != null){
                 return BusinessResource::collection(Business::distinct()->where('description', 'sector')->where('parent_id', $kbli->id)->get());
             } else {
-                return response()->json(['error' => 'kbli '+ $request->sectorsByKbli +' not found'], 404);
+                return response()->json(['error' => 'kbli '.$request->sectorsByKbli.' Tidak Ditemukan'], 404);
             }
           } else if ($request->fieldBySector) {
                 return BusinessResource::collection(Business::where('description', 'field')->where('parent_id', $request->fieldBySector)->get(['id','value']));

@@ -37,6 +37,8 @@ const getters = {
   lpjps: state => state.project.listLpjp,
   step: state => state.workflow.step,
   isPemerintah: state => state.initiator.isPemerintah,
+  pemrakarsa: state => state.initiator.initiator,
   jumlahAnggota: state => state.penyusun.jumlahAnggota,
+  ossByNib: state => state.oss.ossByNib,
 };
 export default getters;

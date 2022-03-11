@@ -8,6 +8,18 @@
       fit
       highlight-current-row
     >
+      <el-table-column align="center" label="No." width="50px">
+        <template slot-scope="scope">
+          {{ scope.$index + 1 }}
+        </template>
+      </el-table-column>
+
+      <el-table-column v-if="fromOss" align="center" label="Id Project" width="200px">
+        <template slot-scope="scope">
+          {{ scope.row.id_proyek }}
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Kegiatan Utama/Pendukung">
         <template slot-scope="scope">
           <el-select v-model="scope.row.type" filterable placeholder="Pilih" size="mini">
@@ -23,14 +35,14 @@
 
       <el-table-column align="center" label="Non KBLI" width="100px">
         <template slot-scope="scope">
-          <el-checkbox v-model="scope.row.nonKbli" @change="onChangeKbli(scope.row)" />
+          <el-checkbox v-model="scope.row.nonKbli" :disabled="fromOss" @change="onChangeKbli(scope.row)" />
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="KBLI" width="100px">
         <template slot-scope="scope">
           <div v-if="scope.row.nonKbli">{{ 'Non KBLI' }}</div>
-          <el-select v-else v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" :disabled="scope.row.nonKbli" @change="onChangeKbli(scope.row)">
+          <el-select v-else v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" :disabled="scope.row.nonKbli || fromOss" @change="onChangeKbli(scope.row)">
             <el-option
               v-for="item in listKbli"
               :key="item.value"
@@ -43,7 +55,7 @@
 
       <el-table-column align="center" label="Sektor">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)">
+          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)" @focus="onChangeSectorBlur(scope.row)">
             <el-option
               v-for="item in scope.row.listSector"
               :key="item.label"
@@ -121,6 +133,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    fromOss: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   data() {
     return {
@@ -154,6 +170,23 @@ export default {
       delete sproject.listSubProjectParams;
 
       await this.getSectorByKbli(sproject);
+      this.refresh++;
+      this.loading = false;
+    },
+    async onChangeSectorBlur(sproject){
+      if (sproject.listSector){
+        return;
+      }
+
+      this.loading = true;
+      try {
+        await this.getSectorByKbli(sproject);
+      } catch (error) {
+        console.error(error);
+        this.refresh++;
+        this.loading = false;
+      }
+
       this.refresh++;
       this.loading = false;
     },

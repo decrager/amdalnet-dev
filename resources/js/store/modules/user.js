@@ -86,7 +86,9 @@ const actions = {
           resolve(data);
         })
         .catch(error => {
-          reject(error);
+          if (!this.isCancel(error)){
+            reject(error);
+          }
         });
     });
   },

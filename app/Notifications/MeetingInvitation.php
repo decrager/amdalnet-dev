@@ -46,7 +46,7 @@ class MeetingInvitation extends Notification
         return (new MailMessage)
                     ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
                     ->line('Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title)
-                    ->attach(storage_path('app/public/meet-inv/' . $this->docxName()));
+                    ->attach(storage_path('app/public/' . $this->docxName()));
     }
 
     /**
@@ -82,11 +82,11 @@ class MeetingInvitation extends Notification
     private function docxName() {
         $name = '';
         if($this->meeting->document_type == 'ka') {
-           $name = 'ka-' . strtolower($this->meeting->project->project_title) . '.docx';
+           $name = 'meeting-ka/' . strtolower($this->meeting->project->project_title) . '.pdf';
         } else if($this->meeting->document_type == 'rkl-rpl') {
-            $name = 'andal-rkl-rpl-' . strtolower($this->meeting->project->project_title) . '.docx';
+            $name = 'meeting-andal-rkl-rpl/' . strtolower($this->meeting->project->project_title) . '.pdf';
         } else if($this->meeting->document_type == 'ukl-upl') {
-            $name = 'ukl-upl-' . strtolower($this->meeting->project->project_title) . '.docx';
+            $name = 'meeting-ukl-upl/' . strtolower($this->meeting->project->project_title) . '.pdf';
         }
 
         return $name;

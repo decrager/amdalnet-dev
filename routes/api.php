@@ -300,6 +300,7 @@ Route::get('dokumen-ukl-upl-pdf/{id}', [ExportDocument::class, 'exportUklUplPdf'
 Route::apiResource('ka-comment', 'KaCommentController');
 Route::apiResource('employee-tuk', 'EmployeeTUKController');
 Route::apiResource('tuk-management', 'TUKManagementController');
+Route::apiResource('regions', 'RegionController');
 Route::get('timeline', [ProjectController::class, 'timeline']);
 
 // Arcgis Service
@@ -341,6 +342,7 @@ Route::post('peraturan', [PeraturanController::class, 'store']);
 Route::post('peraturan/update', [PeraturanController::class, 'update']);
 Route::get('peraturan/delete/{id}', [PeraturanController::class, 'destroy']);
 Route::apiResource('regulations', 'RegulationsController');
+Route::apiResource('ossNibs', 'OssNibController');
 
 Route::apiResource('materials', 'MaterialController');
 Route::post('materials', [MaterialController::class, 'store']);
