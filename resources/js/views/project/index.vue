@@ -804,7 +804,7 @@ export default {
     },
     handleDokumenAndalRklRpl(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/dokumen-andal-rkl-rpl`,
+        path: `/amdal/${project.id}/dokumen-andal-rkl-rpl`,
       });
     },
     handleDokumenUklUpl(project) {
@@ -814,7 +814,7 @@ export default {
     },
     handleUjiKa(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/pengujian-ka`,
+        path: `/amdal/${project.id}/pengujian-ka`,
       });
     },
     handleUjiUKLUPL(project) {
@@ -825,7 +825,7 @@ export default {
     handleUjiAndalRklRpl(project) {
       if (this.isAmdal(project)) {
         this.$router.push({
-          path: `/dokumen-kegiatan/${project.id}/pengujian-andal-rkl-rpl`,
+          path: `/amdal/${project.id}/pengujian-andal-rkl-rpl`,
         });
       } else {
         this.$router.push({
@@ -836,7 +836,7 @@ export default {
     handleUjiKelayakan(project) {
       if (this.isAmdal(project)) {
         this.$router.push({
-          path: `/dokumen-kegiatan/${project.id}/uji-kelayakan`,
+          path: `/amdal/${project.id}/uji-kelayakan`,
         });
       } else {
         this.$router.push({
@@ -847,7 +847,7 @@ export default {
     handleRekomendasiUjiKelayakan(project) {
       if (this.isAmdal(project)) {
         this.$router.push({
-          path: `/dokumen-kegiatan/${project.id}/rekomendasi-uji-kelayakan`,
+          path: `/amdal/${project.id}/rekomendasi-uji-kelayakan`,
         });
       } else {
         this.$router.push({
@@ -857,7 +857,7 @@ export default {
     },
     handleFeasibilityTest(id) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${id}/skkl`,
+        path: `/amdal/${id}/skkl`,
       });
     },
     handlePKPLH(project) {
@@ -906,7 +906,7 @@ export default {
     },
     handleAndal(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/penyusunan-andal`,
+        path: `/amdal/${project.id}/penyusunan-andal`,
       });
     },
     handleMatUklUpl(project) {
@@ -916,7 +916,7 @@ export default {
     },
     handleRklRpl(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl`,
+        path: `/amdal/${project.id}/penyusunan-rkl-rpl`,
       });
     },
     handleLpjpTeam(project) {
