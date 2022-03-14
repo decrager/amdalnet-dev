@@ -40,6 +40,9 @@ const mutations = {
   SET_NOTIFICATIONS: (state, notifications) => {
     state.notifications = notifications;
   },
+  SET_USER: (state, user) => {
+    state.user = user;
+  },
 };
 
 const actions = {
@@ -83,10 +86,13 @@ const actions = {
           commit('SET_AVATAR', avatar);
           commit('SET_INTRODUCTION', introduction);
           commit('SET_ID', id);
+          commit('SET_USER', data);
           resolve(data);
         })
         .catch(error => {
-          reject(error);
+          if (!this.isCancel(error)){
+            reject(error);
+          }
         });
     });
   },

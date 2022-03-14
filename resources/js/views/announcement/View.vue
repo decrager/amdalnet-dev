@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import AnnouncementDetail from './components/Detail';
 import Workflow from '@/components/Workflow';
 import CreateFeedbackSPT from './components/CreateFeedbackSPT.vue';
@@ -33,13 +34,23 @@ export default {
       userInfo: {},
     };
   },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+  },
   created() {
     this.setData();
     this.$store.dispatch('getStep', 2);
   },
   methods: {
     async setData(){
-      this.userInfo = await this.$store.dispatch('user/getInfo');
+      // this.userInfo = await this.$store.dispatch('user/getInfo');
+      if (!this.userInfo.email) {
+        return false;
+      }
+
       fetchInitiatorByEmail(this.userInfo.email)
         .then(response => {
           if (response.data.length > 0 || this.userInfo.email === 'admin@laravue.dev') {

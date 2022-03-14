@@ -116,7 +116,7 @@ export default {
 
     window.Echo.channel('notif')
       .listen('NotificationEvent', e => {
-        this.$store.dispatch('user/getInfo');
+        // this.$store.dispatch('user/getInfo');
         console.log(e);
       });
   },
