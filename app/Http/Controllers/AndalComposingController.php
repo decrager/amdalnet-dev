@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use PDF;
+use PhpOffice\PhpWord\SimpleType\TblWidth;
 
 class AndalComposingController extends Controller
 {
@@ -2033,6 +2034,10 @@ class AndalComposingController extends Controller
             File::makeDirectory(storage_path('app/public/formulir/'));
         }
 
+        if (!File::exists(storage_path('app/public/workspace/'))) {
+            File::makeDirectory(storage_path('app/public/workspace/'));
+        }
+
         $ids = [4, 1, 2, 3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
             return array_search($model->getKey(), $ids);
@@ -2122,6 +2127,7 @@ class AndalComposingController extends Controller
         $operasi = [];
         $pasca_operasi = [];
         $metode_studi = [];
+        $html_content = [];
         foreach ($stages as $s) {
             $total = 0;
             $results[str_replace(' ', '_', strtolower($s->name))] = [];
@@ -2182,15 +2188,10 @@ class AndalComposingController extends Controller
                         $component, 
                         $pA, 
                         $ed_besaran_rencana_title,
-                        $ed_besaran_rencana,
                         $ed_kondisi_rona_title,
-                        $ed_kondisi_rona,
                         $ed_pengaruh_rencana_title,
-                        $ed_pengaruh_rencana,
                         $ed_intensitas_perhatian_title,
-                        $ed_intensitas_perhatian,
-                        $ed_kesimpulan_title,
-                        $ed_kesimpulan);
+                        $ed_kesimpulan_title);
                 } else if ($s->name == 'Konstruksi') {
                     $konstruksi[] = $this->getFormulirIm(
                         $s,
@@ -2200,15 +2201,10 @@ class AndalComposingController extends Controller
                         $component, 
                         $pA, 
                         $ed_besaran_rencana_title,
-                        $ed_besaran_rencana,
                         $ed_kondisi_rona_title,
-                        $ed_kondisi_rona,
                         $ed_pengaruh_rencana_title,
-                        $ed_pengaruh_rencana,
                         $ed_intensitas_perhatian_title,
-                        $ed_intensitas_perhatian,
-                        $ed_kesimpulan_title,
-                        $ed_kesimpulan);
+                        $ed_kesimpulan_title);
                 } else if ($s->name == 'Operasi') {
                     $operasi[] = $this->getFormulirIm(
                         $s,
@@ -2218,15 +2214,10 @@ class AndalComposingController extends Controller
                         $component, 
                         $pA, 
                         $ed_besaran_rencana_title,
-                        $ed_besaran_rencana,
                         $ed_kondisi_rona_title,
-                        $ed_kondisi_rona,
                         $ed_pengaruh_rencana_title,
-                        $ed_pengaruh_rencana,
                         $ed_intensitas_perhatian_title,
-                        $ed_intensitas_perhatian,
-                        $ed_kesimpulan_title,
-                        $ed_kesimpulan);
+                        $ed_kesimpulan_title);
                 } else {
                     $pasca_operasi[] = $this->getFormulirIm(
                         $s,
@@ -2236,15 +2227,10 @@ class AndalComposingController extends Controller
                         $component, 
                         $pA, 
                         $ed_besaran_rencana_title,
-                        $ed_besaran_rencana,
                         $ed_kondisi_rona_title,
-                        $ed_kondisi_rona,
                         $ed_pengaruh_rencana_title,
-                        $ed_pengaruh_rencana,
                         $ed_intensitas_perhatian_title,
-                        $ed_intensitas_perhatian,
-                        $ed_kesimpulan_title,
-                        $ed_kesimpulan);
+                        $ed_kesimpulan_title);
                 }
 
                 if ($pA->impactStudy) {
@@ -2259,6 +2245,16 @@ class AndalComposingController extends Controller
                     ];
                     $total_ms++;
                 }
+
+
+                // === HTML CONTENT === //
+                $html_content[] = $this->renderHtml('rencana', $s->id, $pA->id, 1300, $pA->initial_study_plan);
+                $html_content[] = $this->renderHtml('ed_besaran_rencana', $s->id, $pA->id, 800, $ed_besaran_rencana);
+                $html_content[] = $this->renderHtml('ed_kondisi_rona', $s->id, $pA->id, 800, $ed_kondisi_rona);
+                $html_content[] = $this->renderHtml('ed_pengaruh_rencana', $s->id, $pA->id, 800, $ed_pengaruh_rencana);
+                $html_content[] = $this->renderHtml('ed_intensitas_perhatian', $s->id, $pA->id, 800, $ed_intensitas_perhatian);
+                $html_content[] = $this->renderHtml('ed_kesimpulan', $s->id, $pA->id, 800, $ed_kesimpulan);
+
                 $total++;
             }
         }
@@ -2313,6 +2309,11 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneRowAndSetValues('pasca_operasi', $pasca_operasi);
         $templateProcessor->cloneRowAndSetValues('metode_studi', $metode_studi);
 
+        // === HTML CONTENT OVERWRITE === //
+        for($i = 0; $i < count($html_content); $i++) {
+            $templateProcessor->setComplexBlock($html_content[$i]['name'], $html_content[$i]['content']);
+        }
+
         if($type == 'andal') {
             $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
         } else {
@@ -2333,34 +2334,45 @@ class AndalComposingController extends Controller
                         $component, 
                         $pA, 
                         $ed_besaran_rencana_title,
-                        $ed_besaran_rencana,
                         $ed_kondisi_rona_title,
-                        $ed_kondisi_rona,
                         $ed_pengaruh_rencana_title,
-                        $ed_pengaruh_rencana,
                         $ed_intensitas_perhatian_title,
-                        $ed_intensitas_perhatian,
-                        $ed_kesimpulan_title,
-                        $ed_kesimpulan) {
+                        $ed_kesimpulan_title) {
         return [
             str_replace(' ', '_', strtolower($s->name)) => $total + 1,
             'component_name' => "$changeType $ronaAwal akibat $component",
-            'rencana' => $pA->initial_study_plan ?? '',
+            'rencana' => '${' . 'rencana_' . $s->id . '_' . $pA->id . '}',
             'rona_lingkungan' => $ronaAwal,
             'dampak_potensial' => "$changeType $ronaAwal akibat $component",
             'ed_besaran_rencana_title' => $ed_besaran_rencana_title,
-            'ed_besaran_rencana' => $ed_besaran_rencana,
+            'ed_besaran_rencana' => '${' . 'ed_besaran_rencana_' . $s->id . '_' . $pA->id . '}',
             'ed_kondisi_rona_title' => $ed_kondisi_rona_title,
-            'ed_kondisi_rona' => $ed_kondisi_rona,
+            'ed_kondisi_rona' => '${' . 'ed_kondisi_rona_' . $s->id . '_' . $pA->id . '}',
             'ed_pengaruh_rencana_title' => $ed_pengaruh_rencana_title,
-            'ed_pengaruh_rencana' => $ed_pengaruh_rencana,
+            'ed_pengaruh_rencana' => '${' . 'ed_pengaruh_rencana_' . $s->id . '_' . $pA->id . '}',
             'ed_intensitas_perhatian_title' => $ed_intensitas_perhatian_title,
-            'ed_intensitas_perhatian' => $ed_intensitas_perhatian,
+            'ed_intensitas_perhatian' => '${' . 'ed_intensitas_perhatian_' . $s->id . '_' . $pA->id . '}',
             'ed_kesimpulan_title' => $ed_kesimpulan_title,
-            'ed_kesimpulan' => $ed_kesimpulan,
+            'ed_kesimpulan' => '${' . 'ed_kesimpulan_' . $s->id . '_' . $pA->id . '}',
             'dph' => $pA->is_hypothetical_significant ? 'DPH' : 'DTPH',
             'batas_wilayah' => $pA->study_location ?? '',
             'batas_waktu' => $pA->study_length_year . ' tahun ' . $pA->study_length_month . ' bulan'
+        ];
+    }
+
+    private function renderHtml($name, $stage_id, $impact_id, $width, $data)
+    {
+        $table = new Table();
+        $table->addRow();
+        $cell = $table->addCell($width);
+        $content = '';
+        if($data) {
+            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $data);
+        }
+        Html::addHtml($cell, $content);
+        return [
+            'name' => '${' . $name . '_' . $stage_id . '_' . $impact_id . '}',
+            'content' => $table
         ];
     }
 

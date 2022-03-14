@@ -1142,7 +1142,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['rencana'] }}</span
+                >{!! $pra_konstruksi[$i]['rencana'] !!}</span
               >
             </p>
           </td>
@@ -1259,7 +1259,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['ed_besaran_rencana'] }}</span
+                >{!! $pra_konstruksi[$i]['ed_besaran_rencana'] !!}</span
               >
             </p>
             <p
@@ -1326,7 +1326,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['ed_kondisi_rona'] }}</span
+                >{!! $pra_konstruksi[$i]['ed_kondisi_rona'] !!}</span
               >
             </p>
             <p
@@ -1393,7 +1393,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['ed_pengaruh_rencana'] }}</span
+                >{!! $pra_konstruksi[$i]['ed_pengaruh_rencana'] !!}</span
               >
             </p>
             <p
@@ -1460,7 +1460,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['ed_intensitas_perhatian'] }}</span
+                >{!! $pra_konstruksi[$i]['ed_intensitas_perhatian'] !!}</span
               >
             </p>
             <p
@@ -1527,7 +1527,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['ed_kesimpulan'] }}</span
+                >{!! $pra_konstruksi[$i]['ed_kesimpulan'] !!}</span
               >
             </p>
           </td>
@@ -1727,7 +1727,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $konstruksi[$i]['rencana'] }}</span
+                >{!! $konstruksi[$i]['rencana'] !!}</span
               >
             </p>
           </td>
@@ -1844,7 +1844,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $konstruksi[$i]['ed_besaran_rencana'] }}</span
+                >{!! $konstruksi[$i]['ed_besaran_rencana'] !!}</span
               >
             </p>
             <p
@@ -1911,7 +1911,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $konstruksi[$i]['ed_kondisi_rona'] }}</span
+                >{!! $konstruksi[$i]['ed_kondisi_rona'] !!}</span
               >
             </p>
             <p
@@ -1978,7 +1978,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $konstruksi[$i]['ed_pengaruh_rencana'] }}</span
+                >{!! $konstruksi[$i]['ed_pengaruh_rencana'] !!}</span
               >
             </p>
             <p
@@ -2045,7 +2045,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $konstruksi[$i]['ed_intensitas_perhatian'] }}</span
+                >{!! $konstruksi[$i]['ed_intensitas_perhatian'] !!}</span
               >
             </p>
             <p
@@ -2112,7 +2112,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $konstruksi[$i]['ed_kesimpulan'] }}</span
+                >{!! $konstruksi[$i]['ed_kesimpulan'] !!}</span
               >
             </p>
           </td>
@@ -2312,7 +2312,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['rencana'] }}</span
+                >{!! $operasi[$i]['rencana'] !!}</span
               >
             </p>
           </td>
@@ -2429,7 +2429,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_besaran_rencana'] }}</span
+                >{!! $operasi[$i]['ed_besaran_rencana'] !!}</span
               >
             </p>
             <p
@@ -2496,7 +2496,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_kondisi_rona'] }}</span
+                >{!! $operasi[$i]['ed_kondisi_rona'] !!}</span
               >
             </p>
             <p
@@ -2563,7 +2563,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_pengaruh_rencana'] }}</span
+                >{!! $operasi[$i]['ed_pengaruh_rencana'] !!}</span
               >
             </p>
             <p
@@ -2630,7 +2630,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_intensitas_perhatian'] }}</span
+                >{!! $operasi[$i]['ed_intensitas_perhatian'] !!}</span
               >
             </p>
             <p
@@ -2697,7 +2697,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_kesimpulan'] }}</span
+                >{!! $operasi[$i]['ed_kesimpulan'] !!}</span
               >
             </p>
           </td>
@@ -2897,7 +2897,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $p_operasi[$i]['rencana'] }}</span
+                >{!! $p_operasi[$i]['rencana'] !!}</span
               >
             </p>
           </td>
@@ -3014,7 +3014,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $p_operasi[$i]['ed_besaran_rencana'] }}</span
+                >{!! $p_operasi[$i]['ed_besaran_rencana'] !!}</span
               >
             </p>
             <p
@@ -3081,7 +3081,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_kondisi_rona'] }}</span
+                >{!! $operasi[$i]['ed_kondisi_rona'] !!}</span
               >
             </p>
             <p
@@ -3148,7 +3148,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_pengaruh_rencana'] }}</span
+                >{!! $operasi[$i]['ed_pengaruh_rencana'] !!}</span
               >
             </p>
             <p
@@ -3215,7 +3215,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_intensitas_perhatian'] }}</span
+                >{!! $operasi[$i]['ed_intensitas_perhatian'] !!}</span
               >
             </p>
             <p
@@ -3282,7 +3282,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['ed_kesimpulan'] }}</span
+                >{!! $operasi[$i]['ed_kesimpulan'] !!}</span
               >
             </p>
           </td>
