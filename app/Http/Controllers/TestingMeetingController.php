@@ -95,8 +95,6 @@ class TestingMeetingController extends Controller
                             $email = $member->expertBank->email;
                         } else if($member->lukMember) {
                             $email = $member->lukMember->email;
-                        } else if($member->email) {
-                            $receiver_non_user[] = $member->email;
                         }
 
                         if($email) {
@@ -105,36 +103,37 @@ class TestingMeetingController extends Controller
                                 $receiver[] = $user;
                             }
                         }
+                    } else if($i->email) {
+                        $receiver_non_user[] = $i->email;
                     }
                 }
             }
 
-            Notification::send(User::findOrFail(213), new MeetingInvitation($meeting));
+            if((count($receiver) > 0) || (count($receiver_non_user) > 0)) {
+                if(count($receiver) > 0) {
+                    Notification::send($receiver, new MeetingInvitation($meeting));
+                }
 
-            // if(count($receiver) > 0) {
-            //     // === UPDATE STATUS INVITATION === //
-            //     $meeting->is_invitation_sent = true;
-            //     $meeting->save();
+                if(count($receiver_non_user) > 0) {
+                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
+                }
 
-            //     $this->meetingInvitation($request->idProject);
-            //     Notification::send($receiver, new MeetingInvitation($meeting));
+                // === UPDATE STATUS INVITATION === //
+                $meeting->is_invitation_sent = true;
+                $meeting->save();
 
-            //     if(count($receiver_non_user) > 0) {
-            //         Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
-            //     }
+                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 
-            //     return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
-
-            //     // === WORKFLOW === //
-            //     // $project = Project::findOrFail($request->idProject);
-            //     // if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
-            //     //     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
-            //     //     $project->workflow_apply('examine-amdal-form-ka');
-            //     //     $project->workflow_apply('held-amdal-form-ka-meeting');
-            //     //     $project->workflow_apply('approve-amdal-form-ka');
-            //     //     $project->save();
-            //     // }
-            // }
+                // === WORKFLOW === //
+                // $project = Project::findOrFail($request->idProject);
+                // if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
+                //     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
+                //     $project->workflow_apply('examine-amdal-form-ka');
+                //     $project->workflow_apply('held-amdal-form-ka-meeting');
+                //     $project->workflow_apply('approve-amdal-form-ka');
+                //     $project->save();
+                // }
+            }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
         }
