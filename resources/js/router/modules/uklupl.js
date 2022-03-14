@@ -30,10 +30,16 @@ const ukluplRoutes = {
       meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
     },
     {
-      path: ':id(\\d+)/pengujian',
+      path: ':id(\\d+)/uji-berkas-administrasi',
       component: () => import('@/views/pengujian-ukl-upl/index'),
-      name: 'pengujianUKLUPL',
-      meta: { title: 'Pengujian', icon: 'zip', noCache: true },
+      name: 'ujiBerkasAdministrasiUKLUPL',
+      meta: { title: 'Uji Berkas Administrasi', icon: 'zip', noCache: true },
+    },
+    {
+      path: ':id(\\d+)/berita-acara',
+      component: () => import('@/views/pengujian-ukl-upl/components/beritaAcara/index'),
+      name: 'beritaAcaraUKLUPL',
+      meta: { title: 'Berita Acara', icon: 'zip', noCache: true },
     },
     {
       path: ':id(\\d+)/rekomendasi-uji-kelayakan',
