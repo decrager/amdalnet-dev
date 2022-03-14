@@ -199,34 +199,61 @@
                   Matriks UKL/UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isSubtance || isAdmin || isSecretary || isChief) && isDocumentReviewed(scope.row, 'ka'))"
+                  v-if="isAmdal(scope.row) && ((isAdmin || isSecretary || isChief) && isDocumentReviewed(scope.row, 'ka'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleUjiKa(scope.row)"
+                  @click="handleUjiAdmKa(scope.row)"
                 >
-                  Uji KA
+                  Uji Berkas Administrasi KA
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && ((isSubtance || isAdmin || isSecretary || isChief) && isDocumentReviewed(scope.row, 'ukl-upl'))"
+                  v-if="isAmdal(scope.row) && ((isSubtance || isSecretary || isChief) && isInvitationSent(scope.row, 'ka'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleUjiUKLUPL(scope.row)"
+                  @click="handleBeritaAcaraKa(scope.row)"
                 >
-                  Uji UKL UPL
+                  Berita Acara KA
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isAdmin || isSubtance || isExaminer || isSecretary || isChief) && isDocumentReviewed(scope.row, 'andal-rkl-rpl'))"
+                  v-if="isAmdal(scope.row) && ((isAdmin || isExaminer || isSecretary || isChief) && isDocumentReviewed(scope.row, 'andal-rkl-rpl'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleUjiAndalRklRpl(scope.row)"
+                  @click="handleUjiAdmAndalRklRpl(scope.row)"
                 >
-                  Uji Andal RKL RPL
+                  Uji Berkas Administrasi Andal RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (((isAdmin || isSubtance || isExaminer || isSecretary || isChief) && isAndalRKLRPLAccepted(scope.row)) || (isFormulator && scope.row.feasibility_test))"
+                  v-if="isAmdal(scope.row) && ((isSubtance || isExaminer || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleBeritaAcaraAndalRklRpl(scope.row)"
+                >
+                  Berita Acara Andal RKL RPL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && ((isAdmin || isSecretary || isChief) && isDocumentReviewed(scope.row, 'ukl-upl'))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiAdmUKLUPL(scope.row)"
+                >
+                  Uji Berkas Administrasi
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && ((isSubtance || isSecretary || isChief) && isInvitationSent(scope.row, 'ukl-upl'))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleBeritaAcaraUKLUPL(scope.row)"
+                >
+                  Berita Acara
+                </el-button>
+                <el-button
+                  v-if="((isAdmin || isSubtance || isExaminer || isSecretary || isChief) && isMeetReportAccepted(scope.row)) || (isFormulator && scope.row.feasibility_test)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -602,7 +629,7 @@ export default {
       }
       return false;
     },
-    isAndalRKLRPLAccepted(project) {
+    isMeetReportAccepted(project) {
       if (project.meeting_reports) {
         if (project.meeting_reports.length > 0) {
           if (project.meeting_reports[0].is_accepted) {
@@ -812,26 +839,35 @@ export default {
         path: `/uklupl/${project.id}/dokumen`,
       });
     },
-    handleUjiKa(project) {
+    handleUjiAdmKa(project) {
       this.$router.push({
-        path: `/amdal/${project.id}/pengujian-ka`,
+        path: `/amdal/${project.id}/uji-berkas-administrasi-ka`,
       });
     },
-    handleUjiUKLUPL(project) {
+    handleUjiAdmUKLUPL(project) {
       this.$router.push({
-        path: `/uklupl/${project.id}/pengujian`,
+        path: `/uklupl/${project.id}/uji-berkas-administrasi`,
       });
     },
-    handleUjiAndalRklRpl(project) {
-      if (this.isAmdal(project)) {
-        this.$router.push({
-          path: `/amdal/${project.id}/pengujian-andal-rkl-rpl`,
-        });
-      } else {
-        this.$router.push({
-          path: `/uklupl/${project.id}/pengujian`,
-        });
-      }
+    handleUjiAdmAndalRklRpl(project) {
+      this.$router.push({
+        path: `/amdal/${project.id}/uji-berkas-administrasi-andal-rkl-rpl`,
+      });
+    },
+    handleBeritaAcaraKa(project) {
+      this.$router.push({
+        path: `/amdal/${project.id}/berita-acara-ka`,
+      });
+    },
+    handleBeritaAcaraAndalRklRpl(project) {
+      this.$router.push({
+        path: `/amdal/${project.id}/berita-acara-andal-rkl-rpl`,
+      });
+    },
+    handleBeritaAcaraUKLUPL(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/berita-acara`,
+      });
     },
     handleUjiKelayakan(project) {
       if (this.isAmdal(project)) {
