@@ -42,7 +42,7 @@ class ProjectController extends Controller
                 $q->select('id', 'id_project', 'status', 'document_type');
             }, 'meetingReports' => function($q) {
                 $q->select('id', 'id_project', 'is_accepted', 'document_type');
-                $q->where('document_type', 'rkl-rpl');
+                $q->where('document_type', '!=', 'ka');
             }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
                 ->where(function ($query) use ($request) {
                     return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
@@ -99,7 +99,7 @@ class ProjectController extends Controller
             $q->select('id', 'id_project', 'document_type', 'is_invitation_sent');
         }, 'meetingReports' => function($q) {
             $q->select('id', 'id_project', 'is_accepted', 'document_type');
-            $q->where('document_type', 'rkl-rpl');
+            $q->where('document_type', '!=', 'ka');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
@@ -429,6 +429,7 @@ class ProjectController extends Controller
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
                     'biz_name' => isset($business) ? $business->value : null,
                     'sector_name' => isset($sector) ? $sector->value : null,
+                    'id_proyek' => isset($subPro->id_proyek) ? $subPro->id_proyek : null,
                 ]);
 
                 foreach ($subPro->listSubProjectParams as $subProParam) {

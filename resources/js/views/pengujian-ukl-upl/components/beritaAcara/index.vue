@@ -1,74 +1,77 @@
 <template>
-  <div>
-    <div class="filter-container" align="right">
-      <el-button
-        :loading="loadingSubmit"
-        type="primary"
-        style="font-size: 0.8rem"
-        @click="handleSubmit"
-      >
-        {{ 'Simpan Perubahan' }}
-      </el-button>
-      <el-button
-        v-if="reports.type === 'update'"
-        :loading="loadingDocs"
-        type="info"
-        style="font-size: 0.8rem"
-        @click="downloadDocx"
-      >
-        {{ 'Download File DOCX' }}
-      </el-button>
-    </div>
-    <el-row :gutter="32">
-      <el-col :sm="24" :md="24">
-        <FormBerita :reports="reports" :loadingtuk="loadingTuk" />
-      </el-col>
-      <el-col :sm="24" :md="24">
-        <DaftarHadir
-          :invitations="reports.invitations"
-          :reports="reports"
-          :loadingtuk="loadingTuk"
-          @deleteinvitation="deleteInvitation($event)"
-          @updateuploadfile="updateUploadFile($event)"
-          @handleChangeRole="handleChangeRole($event)"
-        />
-      </el-col>
-    </el-row>
-    <el-row v-if="reports.type === 'update'" :gutter="32">
-      <el-col :span="16" :offset="4" align="center">
-        <div
-          v-if="reports.is_accepted === null"
-          style="background-color: #e1e1e1; padding: 10px 0; margin-top: 5px"
+  <div class="app-container">
+    <el-card>
+      <WorkflowUkl />
+      <div class="filter-container" align="right">
+        <el-button
+          :loading="loadingSubmit"
+          type="primary"
+          style="font-size: 0.8rem"
+          @click="handleSubmit"
         >
-          <h3>Apakah UKL-UPL dapat dilanjutkan ke Uji Kelayakan?</h3>
-          <div style="text-align: center">
-            <el-button
-              :loading="loadingAccept"
-              type="primary"
-              @click="acceptOrNot(true)"
-            >
-              Ya
-            </el-button>
-            <el-button
-              :loading="loadingAccept"
-              type="danger"
-              @click="acceptOrNot(false)"
-            >
-              Tidak
-            </el-button>
+          {{ 'Simpan Perubahan' }}
+        </el-button>
+        <el-button
+          v-if="reports.type === 'update'"
+          :loading="loadingDocs"
+          type="info"
+          style="font-size: 0.8rem"
+          @click="downloadDocx"
+        >
+          {{ 'Download File DOCX' }}
+        </el-button>
+      </div>
+      <el-row :gutter="32">
+        <el-col :sm="24" :md="24">
+          <FormBerita :reports="reports" :loadingtuk="loadingTuk" />
+        </el-col>
+        <el-col :sm="24" :md="24">
+          <DaftarHadir
+            :invitations="reports.invitations"
+            :reports="reports"
+            :loadingtuk="loadingTuk"
+            @deleteinvitation="deleteInvitation($event)"
+            @updateuploadfile="updateUploadFile($event)"
+            @handleChangeRole="handleChangeRole($event)"
+          />
+        </el-col>
+      </el-row>
+      <el-row v-if="reports.type === 'update'" :gutter="32">
+        <el-col :span="16" :offset="4" align="center">
+          <div
+            v-if="reports.is_accepted === null"
+            style="background-color: #e1e1e1; padding: 10px 0; margin-top: 5px"
+          >
+            <h3>Apakah UKL-UPL dapat dilanjutkan ke Uji Kelayakan?</h3>
+            <div style="text-align: center">
+              <el-button
+                :loading="loadingAccept"
+                type="primary"
+                @click="acceptOrNot(true)"
+              >
+                Ya
+              </el-button>
+              <el-button
+                :loading="loadingAccept"
+                type="danger"
+                @click="acceptOrNot(false)"
+              >
+                Tidak
+              </el-button>
+            </div>
           </div>
-        </div>
-        <el-alert
-          v-else
-          :title="acceptedTitle"
-          type="success"
-          description="Terimakasih"
-          show-icon
-          center
-          :closable="false"
-        />
-      </el-col>
-    </el-row>
+          <el-alert
+            v-else
+            :title="acceptedTitle"
+            type="success"
+            description="Terimakasih"
+            show-icon
+            center
+            :closable="false"
+          />
+        </el-col>
+      </el-row>
+    </el-card>
   </div>
 </template>
 
@@ -78,6 +81,7 @@ const meetingReportResource = new Resource('meet-report-rkl-rpl');
 const institutionResource = new Resource('government-institution');
 import FormBerita from '@/views/pengujian-ukl-upl/components/beritaAcara/FormBerita';
 import DaftarHadir from '@/views/pengujian-ukl-upl/components/beritaAcara/DaftarHadir';
+import WorkflowUkl from '@/components/WorkflowUkl';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
@@ -88,6 +92,7 @@ export default {
   components: {
     FormBerita,
     DaftarHadir,
+    WorkflowUkl,
   },
   data() {
     return {
@@ -114,6 +119,7 @@ export default {
     },
   },
   async created() {
+    this.$store.dispatch('getStep', 5);
     this.loadingTuk = true;
     this.idProject = this.$route.params.id;
     await this.getGovernmentInstitutions();

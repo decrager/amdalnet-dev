@@ -29,7 +29,6 @@ import tukRoutes from './modules/tuk';
 // import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
-import dokumenRoutes from './modules/DokumenKegiatan';
 import flowchartRoutes from './modules/flowchart';
 import scopingRoutes from './modules/scoping';
 import screeningRoutes from './modules/screening';
@@ -300,7 +299,6 @@ export const asyncRoutes = [
       },
     ],
   },
-  dokumenRoutes,
   errorRoutes,
   flowchartRoutes,
   businessRoutes,

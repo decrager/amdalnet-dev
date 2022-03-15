@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\Comment;
 use App\Entity\EnvImpactAnalysis;
+use App\Entity\EnvManageApproach;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
 use App\Entity\EnvPlanForm;
@@ -91,6 +92,27 @@ class MatriksRKLController extends Controller
                 }
             }
 
+            // ==== MANAGE APPROACH === //
+            $manage_approach = EnvManageApproach::where('id_project', $request->idProject)->get();
+            // TECHNOLOGY
+            $tech_approach_data = [];
+            $tech_approach = $manage_approach->where('approach_type', 'technology');
+            foreach($tech_approach as $ta) {
+                $tech_approach_data[]['tech_approach'] = count($tech_approach_data) + 1 . '. ' . $ta->description;
+            }
+            // SOCIAL ECONOMY
+            $soc_eco_approach_data = [];
+            $soc_eco_approach = $manage_approach->where('approach_type', 'social_economy');
+            foreach($soc_eco_approach as $so) {
+                $soc_eco_approach_data[]['soc_eco_approach'] = count($soc_eco_approach_data) + 1 . '. ' . $so->description;
+            }
+            // INSTITUTION
+            $institution_approach_data = [];
+            $institution_approach = $manage_approach->where('approach_type', 'institution');
+            foreach($institution_approach as $ins) {
+                $institution_approach_data[]['institution_approach'] = count($institution_approach_data) + 1 . '. ' . $ins->description;
+            }
+            
             // === IMPACT SOURCE === //
             $impact_source = EnvPlanSource::whereHas('impactIdentification', function($q) use($request) {
                 $q->where('id_project', $request->idProject);
@@ -116,6 +138,10 @@ class MatriksRKLController extends Controller
             $templateProcessor->setValue('district', $project_district);
             $templateProcessor->setValue('province', $project_province);
             $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+
+            $templateProcessor->cloneBlock('tech_approach_block', count($tech_approach_data), true, false, $tech_approach_data);
+            $templateProcessor->cloneBlock('soc_eco_approach_block', count($soc_eco_approach_data), true, false, $soc_eco_approach_data);
+            $templateProcessor->cloneBlock('institution_approach_block', count($institution_approach_data), true, false, $institution_approach_data);
 
             $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rkl', $poinA['a_pra_konstruksi_rkl']);
             $templateProcessor->cloneRowAndSetValues('a_konstruksi_rkl', $poinA['a_konstruksi_rkl']);

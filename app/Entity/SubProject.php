@@ -20,6 +20,7 @@ class SubProject extends Model
         'sector',
         'biz_name',
         'sector_name',
+        'id_proyek',
     ];
 
     public function project()
