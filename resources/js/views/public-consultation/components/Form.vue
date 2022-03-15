@@ -236,6 +236,8 @@ const defaultForm = {
   address: '',
   positive_feedback_summary: '',
   negative_feedback_summary: '',
+  doc_photo_files: [],
+  doc_photo_metadatas: [],
   doc_files: [],
   doc_metadatas: [],
   doc_daftar_hadir: {},
@@ -316,6 +318,11 @@ export default {
       formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
       formData.append('doc_undangan', this.postForm.doc_undangan);
 
+      for (let i = 0; i < this.postForm.doc_photo_files.length; i++) {
+        formData.append(`file-${i}`, this.postForm.doc_photo_files[i]);
+      }
+      formData.append('doc_photo_metadatas', JSON.stringify(this.postForm.doc_photo_metadatas));
+
       _.each(this.formData, (value, key) => {
         formData.append(key, value);
       });
@@ -353,12 +360,12 @@ export default {
         });
     },
     dropzoneS(file) {
-      this.postForm.doc_files.push(file);
-      this.postForm.doc_metadatas.push(this.createDocJson('Foto Dokumentasi', file));
+      this.postForm.doc_photo_files.push(file);
+      this.postForm.doc_photo_metadatas.push(this.createDocJson('Foto Dokumentasi', file));
     },
     dropzoneR(file) {
-      this.postForm.doc_files = this.postForm.doc_files.filter(d => d !== file);
-      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(m => m.filename !== file.name);
+      this.postForm.doc_photo_files = this.postForm.doc_photo_files.filter(d => d !== file);
+      this.postForm.doc_photo_metadatas = this.postForm.doc_photo_metadatas.filter(m => m.filename !== file.name);
     },
     createDocJson(doc_type, file) {
       return {
