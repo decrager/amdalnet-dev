@@ -429,6 +429,7 @@ class ProjectController extends Controller
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
                     'biz_name' => isset($business) ? $business->value : null,
                     'sector_name' => isset($sector) ? $sector->value : null,
+                    'id_proyek' => isset($subPro->id_proyek) ? $subPro->id_proyek : null,
                 ]);
 
                 foreach ($subPro->listSubProjectParams as $subProParam) {
