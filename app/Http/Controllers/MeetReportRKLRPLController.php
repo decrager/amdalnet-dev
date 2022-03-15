@@ -6,6 +6,7 @@ use App\Entity\ExpertBankTeam;
 use App\Entity\ExpertBankTeamMember;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
+use App\Entity\Formulator;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Initiator;
 use App\Entity\MeetingReport;
@@ -13,12 +14,15 @@ use App\Entity\MeetingReportInvitation;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\TestingMeeting;
+use App\Laravue\Models\User;
+use App\Notifications\AcceptToFeasibilityTest;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class MeetReportRKLRPLController extends Controller
@@ -114,6 +118,30 @@ class MeetReportRKLRPLController extends Controller
             $meeting_report = MeetingReport::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             $meeting_report->is_accepted = $request->isAccepted;
             $meeting_report->save();
+
+            // === SEND NOTIFICATION === //
+            $project = Project::findOrFail($request->idProject);
+            $user = [];
+            $pemrakarsa = User::where('email', $project->initiator->email)->first();
+            if($pemrakarsa) {
+                $user[] = $pemrakarsa;
+            }
+            $ketua_penyusun = Formulator::whereHas('teamMember', function($q) use($request) {
+                $q->where('position', 'Ketua');
+                $q->whereHas('team', function($query) use($request) {
+                    $query->where('id_project', $request->idProject);
+                });
+            })->first();
+            if($ketua_penyusun) {
+                $user_penyusun = User::where('email', $ketua_penyusun->email)->first();
+                if($user_penyusun) {
+                    $user[] = $user_penyusun;
+                }
+            }
+
+            if(count($user) > 0) {
+                Notification::send($user, new AcceptToFeasibilityTest($meeting_report));
+            }
 
             return response()->json(['message' => 'Data sukses disimpan']);
         }
