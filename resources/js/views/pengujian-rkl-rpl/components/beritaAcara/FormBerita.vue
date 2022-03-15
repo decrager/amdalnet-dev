@@ -2,11 +2,6 @@
   <el-form label-position="top" label-width="200px" style="max-width: 100%">
     <el-row v-loading="loadingtuk" :gutter="32">
       <el-col :sm="24" :md="12">
-        <el-form-item label="Tempat Rapat">
-          <el-input v-model="reports.location" />
-        </el-form-item>
-      </el-col>
-      <el-col :sm="24" :md="12">
         <el-form-item label="Tanggal Rapat">
           <el-date-picker
             v-model="reports.meeting_date"
@@ -17,7 +12,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :sm="24" :md="24">
+      <el-col :sm="24" :md="12">
         <el-form-item label="Waktu Rapat">
           <el-time-picker
             v-model="reports.meeting_time"
@@ -26,6 +21,11 @@
             value-format="HH:mm"
             style="width: 100%"
           />
+        </el-form-item>
+      </el-col>
+      <el-col :sm="24" :md="24">
+        <el-form-item label="Tempat Rapat">
+          <el-input v-model="reports.location" />
         </el-form-item>
       </el-col>
     </el-row>
