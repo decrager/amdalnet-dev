@@ -44,14 +44,27 @@ class UserRegistered extends Notification
     public function toMail($notifiable)
     {
         $url = url("/#/activate/".$this->user->id);
-        // TODO: tambahin detail password (untuk akun OSS yg auto register)
-        return (new MailMessage)
-                        ->subject('Pendaftaran Akun AMDALNET')
-                        ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
-                        ->line('Hai '.$this->user->name)
-                        ->line('')
-                        ->line('Akun AMDALNET anda telah berhasil dibuat silahkan aktivasi akun dengan menekan tombol dibawah ini.')
-                        ->action('Aktivasi Akun Anda', $url);
+        $raw_password = '';
+        if (property_exists($this->user, 'raw_password')) {
+            $raw_password = $this->user->getRawPassword();
+        }
+        if (!empty($raw_password)) {
+            return (new MailMessage)
+                            ->subject('Pendaftaran Akun AMDALNET')
+                            ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
+                            ->line('Hai '.$this->user->name)
+                            ->line('')
+                            ->line('Akun AMDALNET anda telah berhasil dibuat.')
+                            ->line('Password: ' . $raw_password);
+        } else {
+            return (new MailMessage)
+                            ->subject('Pendaftaran Akun AMDALNET')
+                            ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
+                            ->line('Hai '.$this->user->name)
+                            ->line('')
+                            ->line('Akun AMDALNET anda telah berhasil dibuat silahkan aktivasi akun dengan menekan tombol dibawah ini.')
+                            ->action('Aktivasi Akun Anda', $url);
+        }
     }
 
     /**

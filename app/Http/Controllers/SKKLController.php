@@ -8,8 +8,10 @@ use App\Entity\EnvMonitorPlan;
 use App\Entity\MeetingReport;
 use App\Entity\Project;
 use App\Entity\ProjectSkkl;
+use App\Services\OssService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 
@@ -36,6 +38,10 @@ class SKKLController extends Controller
 
         if($request->map) {
             return Project::findOrFail($request->idProject);
+        }
+
+        if ($request->skkl) {
+            return $this->getDetailSkkl($request->idProject);
         }
     }
 
@@ -78,6 +84,9 @@ class SKKLController extends Controller
 
              $skkl->file = Storage::url($name);
              $skkl->save();
+
+             // send SKKL to OSS
+             OssService::receiveLicense($project, $skkl->file);
 
              return response()->json(['message' => 'success']);
         }
@@ -402,5 +411,17 @@ class SKKLController extends Controller
                     'updated_at' => $uklUplDate
                 ]
             ];
+    }
+
+    private function getDetailSkkl($idProject)
+    {
+        $skkl = ProjectSkkl::where('id_project', $idProject)->first();
+
+        if (!$skkl) {
+            Log::error('SKKL with id_project ' . $idProject . ' not found.');
+            return false;
+        }
+
+        return $skkl;
     }
 }
