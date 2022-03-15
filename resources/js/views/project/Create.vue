@@ -73,7 +73,7 @@
             </div>
             <el-row :gutter="4">
               <el-col :span="12">
-                <el-form-item label="Apakah Lokasi rencana Anda Masuk dalam Kawasan PIPPIB?" prop="pippib">
+                <el-form-item label="Apakah Lokasi Rencana Usaha dan/atau Kegiatan Anda Masuk dalam Kawasan Peta Indikatif Penghentian Pemberian Izin Baru(PIPPIB)?" prop="pippib">
                   <el-radio-group v-model="currentProject.pippib">
                     <el-radio :label="'Y'">Ya</el-radio>
                     <el-radio :label="'N'">Tidak</el-radio>
@@ -88,7 +88,7 @@
             </el-row>
             <el-row :gutter="4">
               <el-col :span="12">
-                <el-form-item label="Apakah Rencana Kegiatan Anda Masuk dalam Kawasan Lindung?" prop="kawasan_lindung">
+                <el-form-item label="Apakah Lokasi Rencana Usaha dan/atau Kegiatan Anda Masuk dalam Kawasan Lindung?" prop="kawasan_lindung">
                   <el-radio-group v-model="currentProject.kawasan_lindung">
                     <el-radio :label="'Y'">Ya</el-radio>
                     <el-radio :label="'N'">Tidak</el-radio>
@@ -334,7 +334,7 @@
           label-width="200px"
           style="max-width: 100%"
         >
-          <el-collapse-item title="PERSETUJUAN AWAL" name="5" disabled>
+          <el-collapse-item title="PERSETUJUAN AWAL(Opsional)" name="5" disabled>
             <el-row>
               <el-col :span="12">
                 <el-form-item
@@ -381,7 +381,7 @@
               </el-col>
             </el-row>
           </el-collapse-item>
-          <el-collapse-item title="PERSETUJUAN TEKNIS ( PERTEK )" name="6" disabled>
+          <el-collapse-item title="PERSETUJUAN TEKNIS (Opsional)" name="6" disabled>
             <el-row>
               <el-col :span="24">
                 <el-form-item
