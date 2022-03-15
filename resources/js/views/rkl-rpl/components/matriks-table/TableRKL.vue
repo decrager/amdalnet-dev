@@ -445,6 +445,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const rklResource = new Resource('matriks-rkl');
 
@@ -515,6 +516,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isSubstance() {
       return this.$store.getters.roles.includes('examiner-substance');
     },
@@ -531,7 +536,7 @@ export default {
   created() {
     this.getRKL();
     this.getLastTimeRKL();
-    this.getUserInfo();
+    // this.getUserInfo();
   },
   methods: {
     async getRKL() {
@@ -708,9 +713,9 @@ export default {
         id,
       });
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
     handleAddImpactSource(idx) {
       this.list[idx].impact_source.push({
         id: null,

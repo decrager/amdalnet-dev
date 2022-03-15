@@ -117,6 +117,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
@@ -136,9 +137,9 @@ export default {
       showCreate: false,
       showEdit: false,
       loading: false,
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
       adminRoles: [
         'admin',
         'admin-standard',
@@ -160,20 +161,24 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isAdmin() {
       return this.userInfo.roles.some(r => this.adminRoles.includes(r));
     },
   },
   async created() {
     this.idBusiness = this.$route.params && this.$route.params.id;
-    this.getUserInfo();
+    // this.getUserInfo();
     this.getBusiness();
     this.getFilteredData(this.listQuery);
   },
   methods: {
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
     async getFilteredData(query) {
       query['business_id'] = this.idBusiness;
       this.loading = true;

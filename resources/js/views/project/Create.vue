@@ -504,6 +504,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Workflow from '@/components/Workflow';
 import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
@@ -783,6 +784,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     getProjectOption() {
       return this.$store.getters.projectOptions;
     },
@@ -844,7 +849,8 @@ export default {
     this.$store.dispatch('getStep', 0);
 
     // get initiator data
-    const { email } = await this.$store.dispatch('user/getInfo');
+    // const { email } = await this.$store.dispatch('user/getInfo');
+    const { email } = this.userInfo;
     this.$store.dispatch('getInitiator', email);
 
     // for default value

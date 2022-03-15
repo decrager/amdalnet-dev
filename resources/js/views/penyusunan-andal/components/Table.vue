@@ -329,6 +329,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 // import TanggapanDialog from '@/views/penyusunan-andal/components/TanggapanDialog.vue';
@@ -352,7 +353,7 @@ export default {
       selectedImpactCommentId: null,
       impactComment: null,
       impactColumnType: null,
-      userInfo: {},
+      // userInfo: {},
       hasilEvaluasiDampak: [
         {
           label: 'Positif',
@@ -410,6 +411,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isSubstance() {
       return this.$store.getters.roles.includes('examiner-substance');
     },
@@ -426,7 +431,7 @@ export default {
   created() {
     this.getCompose();
     this.getLastTime();
-    this.getUserInfo();
+    // this.getUserInfo();
   },
   methods: {
     async getCompose() {
@@ -511,9 +516,9 @@ export default {
         id,
       });
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },

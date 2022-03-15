@@ -31,7 +31,7 @@ export default {
       showCreateFeedback: false,
       showFeedbackList: false,
       showPublicConsultation: false,
-      userInfo: {},
+      // userInfo: {},
     };
   },
   computed: {

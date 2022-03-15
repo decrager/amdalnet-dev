@@ -143,6 +143,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const formulatorTeamsResource = new Resource('formulator-teams');
 import TimPenyusunTable from './table/TimPenyusunTable.vue';
@@ -195,6 +196,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isAdmin() {
       return this.userInfo.roles.includes('examiner-administration');
     },
@@ -203,7 +208,7 @@ export default {
     this.loadingSelectLpjp = true;
     this.loadingTimPenyusun = true;
     this.loadingTimAhli = true;
-    await this.getUserInfo();
+    // await this.getUserInfo();
     await this.getFormulators();
     await this.getProjectName();
     await this.getLpjp();
@@ -416,9 +421,9 @@ export default {
       const oldData = [...this.membersAhli];
       this.membersAhli = oldData.filter((old) => old.num !== num);
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
   },
 };
 </script>

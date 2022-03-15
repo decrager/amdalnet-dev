@@ -77,9 +77,9 @@ export default {
       out: '',
       showDocument: false,
       downloadDocxPath: '',
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
     };
   },
   computed: {

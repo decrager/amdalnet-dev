@@ -128,6 +128,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import FormulatorTable from './components/formulatorTable.vue';
 const kbliEnvParamResource = new Resource('kbli-env-params');
@@ -212,6 +213,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     getFormulatedTeam(){
       return this.$store.getters.teamType;
     },
@@ -470,8 +475,8 @@ export default {
       if (this.project.id_applicant){
         this.project.initiatorData = await initiatorResource.get(this.project.id_applicant);
       } else {
-        const data = await this.$store.dispatch('user/getInfo');
-        this.project.initiatorData = await initiatorByEmailResource.list({ email: data.email });
+        // const data = await this.$store.dispatch('user/getInfo');
+        this.project.initiatorData = await initiatorByEmailResource.list({ email: this.userInfo.email });
       }
     },
     // async getTeamOptions() {

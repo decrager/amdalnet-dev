@@ -399,6 +399,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import AnnouncementDialog from './components/AnnouncementDialog.vue';
@@ -465,6 +466,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     couldCreateProject(){
       return this.$store.getters.permissions.includes('create project');
     },
@@ -501,7 +506,7 @@ export default {
   },
   async created() {
     this.getProvinces();
-    this.userInfo = await this.$store.dispatch('user/getInfo');
+    // this.userInfo = await this.$store.dispatch('user/getInfo');
     if (this.userInfo.roles.includes('lpjp')){
       const lpjp = await lpjpResource.list({ email: this.userInfo.email });
       this.listQuery.lpjpId = lpjp.id;

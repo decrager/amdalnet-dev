@@ -1,4 +1,5 @@
 import { login, logout, getInfo } from '@/api/auth';
+import request from '@/utils/request';
 import { isLogged, setLogged, removeToken } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
@@ -90,7 +91,8 @@ const actions = {
           resolve(data);
         })
         .catch(error => {
-          if (!this.isCancel(error)){
+          console.log(error.code);
+          if (!request.isCancel(error)){
             reject(error);
           }
         });

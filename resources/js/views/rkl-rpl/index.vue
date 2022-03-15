@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Matriks from '@/views/rkl-rpl/components/Matriks';
 // import MapList from '@/views/rkl-rpl/components/MapList';
 // import DocsFrame from '@/views/rkl-rpl/components/DocsFrame';
@@ -60,14 +61,20 @@ export default {
       activeName: 'matriks',
     };
   },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+  },
   created() {
-    this.getUserInfo();
+    // this.getUserInfo();
     this.$store.dispatch('getStep', 5);
   },
   methods: {
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
   },
 };
 </script>

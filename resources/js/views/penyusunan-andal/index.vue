@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const cloneResource = new Resource('andal-clone');
 import Andal from '@/views/penyusunan-andal/components/Andal';
@@ -81,16 +82,22 @@ export default {
       idProject: this.$route.params.id,
       compose: [],
       lastTime: null,
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
       activeName: 'formulir-ka',
       loading: false,
     };
   },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+  },
   created() {
     this.checkExist();
-    this.getUserInfo();
+    // this.getUserInfo();
     this.$store.dispatch('getStep', 4);
   },
   methods: {
@@ -102,9 +109,9 @@ export default {
       });
       this.loading = false;
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
     handleSubmitTanggapan() {
       this.handleSubmit();
     },

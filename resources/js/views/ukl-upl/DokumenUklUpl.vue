@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
 import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
@@ -72,6 +73,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isFormulator() {
       return this.userInfo.roles.includes('formulator');
     },
@@ -81,7 +86,7 @@ export default {
   },
   async created() {
     this.$store.dispatch('getStep', 5);
-    this.userInfo = await this.$store.dispatch('user/getInfo');
+    // this.userInfo = await this.$store.dispatch('user/getInfo');
     await this.getData();
   },
   methods: {

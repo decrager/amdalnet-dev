@@ -168,7 +168,7 @@ export default {
       loadingStage: false,
       loadingSubmitComment: false,
       loadingSubmitReply: {},
-      userInfo: {},
+      // userInfo: {},
       isStageError: false,
       isColumnError: false,
       isCommentError: false,
@@ -200,7 +200,7 @@ export default {
   created() {
     this.getStages();
     this.getComments();
-    this.getUserInfo();
+    // this.getUserInfo();
   },
   methods: {
     async getStages() {

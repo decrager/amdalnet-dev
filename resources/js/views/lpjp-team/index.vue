@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import FormulatorTeamTable from '@/views/lpjp-team/components/FormulatorTeamTable.vue';
 import Pagination from '@/components/Pagination';
@@ -52,6 +53,12 @@ export default {
       total: 0,
     };
   },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+  },
   created() {
     this.getList();
     this.loading = false;
@@ -62,9 +69,11 @@ export default {
     },
     async getList() {
       this.loading = true;
-      const dataUser = await this.$store.dispatch('user/getInfo');
-      console.log(dataUser.roles.includes('lpjp'));
-      const lpjp = await lpjpResource.list({ email: dataUser.email });
+      // const dataUser = await this.$store.dispatch('user/getInfo');
+      // console.log(dataUser.roles.includes('lpjp'));
+      console.log(this.userInfo.roles.includes('lpjp'));
+      // const lpjp = await lpjpResource.list({ email: dataUser.email });
+      const lpjp = await lpjpResource.list({ email: this.userInfo.email });
       this.listQuery.lpjpId = lpjp.id;
       const { data, meta } = await formulatorTeamResource.list(this.listQuery);
       this.list = data;
