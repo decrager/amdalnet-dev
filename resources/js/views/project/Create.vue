@@ -898,12 +898,12 @@ export default {
       this.listSubProject = this.currentProject.listSubProject;
       this.fileMap = this.currentProject.fileMap;
       this.filePdf = this.currentProject.filePdf;
-      this.filePdfName = this.filePdf.name;
-      this.fileMapName = this.fileMap.name;
+      this.filePdfName = this.filePdf?.name;
+      this.fileMapName = this.fileMap?.name;
       this.fileKtr = this.currentProject.fileKtr;
-      this.fileKtrName = this.fileKtr.name;
+      this.fileKtrName = this.fileKtr?.name;
       this.filePreAgreement = this.currentProject.filePreAgreement;
-      this.filePreAgreementName = this.currentProject.filePreAgreement.name;
+      this.filePreAgreementName = this.currentProject.filePreAgreement?.name;
       this.handleFileTapakProyekMapUpload('a');
       this.handleFileTapakProyekPdfUpload('pdf');
       // this.fileName = this.getFileName(this.currentProject.map);
@@ -1184,7 +1184,11 @@ export default {
       // this.filePreAgreement = this.$refs.filePreAgreement.files[0];
     },
     handleFileTapakProyekPdfUpload(e){
-      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filePdf').resetField();
+      if (!e.target) {
+        return;
+      }
+
+      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filePdf')?.resetField();
 
       if (e.target.files[0].size > 1048576){
         this.showFileAlert();
@@ -1202,8 +1206,11 @@ export default {
       }
     },
     handleFileTapakProyekMapUpload(e){
+      if (!e.target){
+        return;
+      }
       // reset validation
-      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileMap').resetField();
+      this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileMap')?.resetField();
 
       if (e.target.files[0].size > 1048576){
         this.showFileAlert();
@@ -1512,6 +1519,13 @@ export default {
       }
       if (this.filePreAgreement) {
         this.currentProject.filePreAgreement = this.filePreAgreement;
+      }
+
+      // check if project in kawasan lindung without exception
+      console.log('perbandingan kawasan lindung', [this.currentProject.kawasan_lindung === 'Y', this.currentProject.fileKawasanLindung]);
+      if (this.currentProject.kawasan_lindung === 'Y' && !this.currentProject.fileKawasanLindung && this.currentProject.required_doc !== 'AMDAL') {
+        this.currentProject.required_doc = 'AMDAL';
+        this.currentProject.result_risk = 'Tinggi';
       }
 
       // this.$refs.currentProject.validate((valid) => {
