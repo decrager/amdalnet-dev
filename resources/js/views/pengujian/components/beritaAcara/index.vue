@@ -1,44 +1,48 @@
 <template>
-  <div>
-    <div class="filter-container" align="right">
-      <el-button
-        :loading="loadingSubmit"
-        type="primary"
-        style="font-size: 0.8rem"
-        @click="handleSubmit"
-      >
-        {{ 'Simpan Perubahan' }}
-      </el-button>
-      <el-button
-        v-if="reports.type === 'update'"
-        :loading="loadingDocs"
-        type="info"
-        style="font-size: 0.8rem"
-        @click="downloadDocx"
-      >
-        {{ 'Download File DOCX' }}
-      </el-button>
-    </div>
-    <el-row :gutter="32">
-      <el-col :sm="24" :md="24">
-        <FormBerita :reports="reports" :loadingtuk="loadingTuk" />
-      </el-col>
-      <el-col :sm="24" :md="24">
-        <DaftarHadir
-          :invitations="reports.invitations"
-          :reports="reports"
-          :loadingtuk="loadingTuk"
-          @deleteinvitation="deleteInvitation($event)"
-          @updateuploadfile="updateUploadFile($event)"
-          @handleChangeRole="handleChangeRole($event)"
-        />
-      </el-col>
-    </el-row>
+  <div class="app-container">
+    <el-card>
+      <WorkFlow />
+      <div class="filter-container" align="right">
+        <el-button
+          :loading="loadingSubmit"
+          type="primary"
+          style="font-size: 0.8rem"
+          @click="handleSubmit"
+        >
+          {{ 'Simpan Perubahan' }}
+        </el-button>
+        <el-button
+          v-if="reports.type === 'update'"
+          :loading="loadingDocs"
+          type="info"
+          style="font-size: 0.8rem"
+          @click="downloadDocx"
+        >
+          {{ 'Download File DOCX' }}
+        </el-button>
+      </div>
+      <el-row :gutter="32">
+        <el-col :sm="24" :md="24">
+          <FormBerita :reports="reports" :loadingtuk="loadingTuk" />
+        </el-col>
+        <el-col :sm="24" :md="24">
+          <DaftarHadir
+            :invitations="reports.invitations"
+            :reports="reports"
+            :loadingtuk="loadingTuk"
+            @deleteinvitation="deleteInvitation($event)"
+            @updateuploadfile="updateUploadFile($event)"
+            @handleChangeRole="handleChangeRole($event)"
+          />
+        </el-col>
+      </el-row>
+    </el-card>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
+import WorkFlow from '@/components/Workflow';
 const meetingReportResource = new Resource('meeting-report');
 const institutionResource = new Resource('government-institution');
 import FormBerita from '@/views/pengujian/components/beritaAcara/FormBerita';
@@ -53,6 +57,7 @@ export default {
   components: {
     FormBerita,
     DaftarHadir,
+    WorkFlow,
   },
   data() {
     return {
@@ -69,6 +74,7 @@ export default {
     };
   },
   async created() {
+    this.$store.dispatch('getStep', 3);
     this.loadingTuk = true;
     this.idProject = this.$route.params.id;
     await this.getGovernmentInstitutions();

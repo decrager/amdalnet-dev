@@ -99,8 +99,6 @@ class TestMeetRKLRPLController extends Controller
                             $email = $member->expertBank->email;
                         } else if($member->lukMember) {
                             $email = $member->lukMember->email;
-                        } else if($member->email) {
-                            $receiver_non_user[] = $member->email;
                         }
 
                         if($email) {
@@ -109,21 +107,24 @@ class TestMeetRKLRPLController extends Controller
                                 $receiver[] = $user;
                             }
                         }
+                    } else if($i->email) {
+                        $receiver_non_user[] = $i->email;
                     }
                 }
             }
 
-            if(count($receiver) > 0) {
-                // === UPDATE INVITATION STATUS === //
-                $meeting->is_invitation_sent = true;
-                $meeting->save();
-
-                $this->meetingInvitation($request->idProject, $document_type);
-                Notification::send($receiver, new MeetingInvitation($meeting));
+            if((count($receiver) > 0) || (count($receiver_non_user) > 0)) {
+                if(count($receiver) > 0) {
+                    Notification::send($receiver, new MeetingInvitation($meeting));
+                }
 
                 if(count($receiver_non_user) > 0) {
                     Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
                 }
+
+                // === UPDATE INVITATION STATUS === //
+                $meeting->is_invitation_sent = true;
+                $meeting->save();
 
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 

@@ -65,7 +65,7 @@ class KaReview extends Notification
         if($this->document_type == 'KA') {
             $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen';
         } else if($this->document_type == 'ANDAL RKL RPL') {
-            $path = '/dokumen-kegiatan' . '/' . $this->kaReviews->id_project . '/dokumen-andal-rkl-rpl';
+            $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen-andal-rkl-rpl';
         } else if($this->document_type == 'UKL UPL') {
             $path = '/uklupl' . '/' . $this->kaReviews->id_project . '/dokumen';
         }
