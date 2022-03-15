@@ -84,6 +84,15 @@ export default {
           imp['is_stage'] = false;
           dataFlat.push(imp);
           impactIdx++;
+
+          if (this.isMetodeStudiTable) {
+            dataFlat.push({
+              id: imp.id,
+              is_comment: true,
+              is_stage: false,
+              impact_study: {},
+            });
+          }
         });
         dummyId++;
       });
