@@ -6,6 +6,7 @@ use App\Entity\Business;
 use App\Entity\Kbli;
 use App\Entity\OssNib;
 use Illuminate\Http\Request;
+use stdClass;
 
 class OssNibController extends Controller
 {
@@ -19,6 +20,10 @@ class OssNibController extends Controller
         if ($request->nib) {
 
             $ossnib = OssNib::where('nib', $request->nib)->first();
+
+            if(!$ossnib){
+                return new stdClass();
+            }
 
             $dataChecklists = $ossnib->json_content['data_checklist'];
             $dataJsonContent = $ossnib->json_content;
