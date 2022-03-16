@@ -164,7 +164,7 @@
                   Dokumen UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isSubtance || isAdmin || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || ((isExaminer || isSubtance || isAdmin || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -173,7 +173,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isSubtance || isAdmin || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || ((isExaminer || isSubtance || isAdmin || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -281,7 +281,7 @@
                   Workspace KA
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isAdmin || isSubtance || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isAndalFormComplete(scope.row)) || ((isExaminer || isAdmin || isSubtance || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -290,7 +290,7 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || ((isExaminer || isAdmin || isSubtance || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isRklRplFormComplete(scope.row)) || ((isExaminer || isAdmin || isSubtance || isSecretary || isChief) && isInvitationSent(scope.row, 'rkl-rpl'))) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -639,16 +639,76 @@ export default {
       }
       return false;
     },
+    isMeetReportKaCreated(project) {
+      if (project.meeting_reports) {
+        if (project.meeting_reports.length > 0) {
+          return true;
+        }
+      }
+
+      return false;
+    },
     isMeetReportAccepted(project) {
       if (project.meeting_reports) {
         if (project.meeting_reports.length > 0) {
-          if (project.meeting_reports[0].is_accepted) {
+          const document = this.isAmdal(project) ? 'rkl-rpl' : 'ukl-upl';
+          const is_accepted = project.meeting_reports.find(x => {
+            return x.document_type === document && Boolean(x.is_accepted);
+          });
+          if (is_accepted) {
             return true;
           }
         }
       }
 
       return false;
+    },
+    isAndalFormComplete(project) {
+      if (project.impact_identifications_clone) {
+        if (project.impact_identifications_clone.length > 0) {
+          const withEnvImpactAnalysis = project.impact_identifications_clone.filter(x => {
+            return x.env_impact_analysis !== null;
+          });
+          if (withEnvImpactAnalysis.length > 0) {
+            const completes = withEnvImpactAnalysis.filter(y => {
+              return y.env_impact_analysis.condition_dev_no_plan !== null;
+            });
+            return withEnvImpactAnalysis.length === completes.length;
+          }
+        }
+      }
+
+      return false;
+    },
+    isRklRplFormComplete(project) {
+      let envManagePlan = false;
+      let envMonitorPlan = false;
+
+      if (project.impact_identifications_clone) {
+        if (project.impact_identifications_clone.length > 0) {
+          const withEnvManagePlan = project.impact_identifications_clone.filter(x => {
+            return x.env_manage_plan !== null;
+          });
+          if (withEnvManagePlan.length > 0) {
+            const completes = withEnvManagePlan.filter(y => {
+              return y.env_manage_plan.period !== null;
+            });
+            envManagePlan = Boolean(withEnvManagePlan.length === completes.length);
+          }
+
+          const withEnvMonitorPlan = project.impact_identifications_clone.filter(x => {
+            return x.env_monitor_plan !== null;
+          });
+          if (withEnvMonitorPlan.length > 0) {
+            const completes = withEnvMonitorPlan.filter(y => {
+              return y.env_monitor_plan.time_frequent !== null;
+            });
+            envMonitorPlan = Boolean(withEnvMonitorPlan.length === completes.length);
+          }
+        }
+      }
+
+      return envManagePlan && envMonitorPlan;
     },
     toTitleCase(str) {
       return str.replace(

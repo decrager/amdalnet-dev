@@ -17,42 +17,42 @@
           {{ scope.row.index }}. {{ scope.row.change_type_name }} {{ scope.row.rona_awal_name }} akibat {{ scope.row.component_name }}
         </div>
         <div v-if="scope.row.is_comment">
-          <Comment :impactidentification="scope.row.id" :commenttype="isAndal ? 'metode-studi-andal' : 'metode-studi-ka'" :kolom="kolom" />
+          <Comment :impactidentification="scope.row.id_impact_identification" :commenttype="isAndal ? 'metode-studi-andal' : 'metode-studi-ka'" :kolom="kolom" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Data dan Informasi yang Relevan dan Dibutuhkan" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.required_information" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
+          <el-input v-model="scope.row.impact_study.required_information" type="textarea" :rows="2" :readonly="!isFormulator" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Pengumpulan Data untuk Prakiraan" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.data_gathering_method" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
+          <el-input v-model="scope.row.impact_study.data_gathering_method" type="textarea" :rows="2" :readonly="!isFormulator" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Analisis Data untuk Prakiraan" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.analysis_method" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
+          <el-input v-model="scope.row.impact_study.analysis_method" type="textarea" :rows="2" :readonly="!isFormulator" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Prakiraan Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.forecast_method" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
+          <el-input v-model="scope.row.impact_study.forecast_method" type="textarea" :rows="2" :readonly="!isFormulator" />
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Metode Evaluasi Dampak Penting" align="left">
       <template slot-scope="scope">
         <div v-if="!scope.row.is_stage">
-          <el-input v-model="scope.row.impact_study.evaluation_method" type="textarea" :rows="2" :readonly="isAndal || !isFormulator" />
+          <el-input v-model="scope.row.impact_study.evaluation_method" type="textarea" :rows="2" :readonly="!isFormulator" />
         </div>
       </template>
     </el-table-column>

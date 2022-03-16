@@ -17,6 +17,7 @@ use App\Http\Resources\ProjectResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Services\OssService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -42,7 +43,17 @@ class ProjectController extends Controller
                 $q->select('id', 'id_project', 'status', 'document_type');
             }, 'meetingReports' => function($q) {
                 $q->select('id', 'id_project', 'is_accepted', 'document_type');
-                $q->where('document_type', '!=', 'ka');
+            }, 'impactIdentificationsClone' => function($q) {
+                $q->select('id', 'id_project');
+                $q->with('envImpactAnalysis', function($query) {
+                    $query->select('id', 'id_impact_identifications', 'condition_dev_no_plan');
+                });
+                $q->with('envManagePlan', function($query) {
+                    $query->select('id', 'id_impact_identifications', 'period');
+                });
+                $q->with('envMonitorPlan', function($query) {
+                    $query->select('id', 'id_impact_identifications', 'time_frequent');
+                });
             }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
                 ->where(function ($query) use ($request) {
                     return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
@@ -99,7 +110,17 @@ class ProjectController extends Controller
             $q->select('id', 'id_project', 'document_type', 'is_invitation_sent');
         }, 'meetingReports' => function($q) {
             $q->select('id', 'id_project', 'is_accepted', 'document_type');
-            $q->where('document_type', '!=', 'ka');
+        }, 'impactIdentificationsClone' => function($q) {
+            $q->select('id', 'id_project');
+            $q->with('envImpactAnalysis', function($query) {
+                $query->select('id', 'id_impact_identifications', 'condition_dev_no_plan');
+            });
+            $q->with('envManagePlan', function($query) {
+                $query->select('id', 'id_impact_identifications', 'period');
+            });
+            $q->with('envMonitorPlan', function($query) {
+                $query->select('id', 'id_impact_identifications', 'time_frequent');
+            });
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
@@ -449,6 +470,9 @@ class ProjectController extends Controller
 
             throw new Exception('Gagal Membuat Kegiatan karena ' . $e);
         }
+
+        // send status to OSS
+        OssService::receiveLicenseStatus($project, '10');
 
         return new ProjectResource($project);
 

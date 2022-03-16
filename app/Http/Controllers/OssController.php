@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Entity\Business;
 use App\Entity\BusinessEnvParam;
 use App\Entity\OssNib;
+use App\Entity\Project;
+use App\Services\OssService;
 use Error;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
@@ -246,6 +249,7 @@ class OssController extends Controller
         // }
         $existing = OssNib::where('nib', $nib)->first();
         $saved = false;
+        $errorMessage = '-';
         DB::beginTransaction();
         if ($existing) {
             if ($existing->nib_updated_date != $data['tgl_perubahan_nib']) {
@@ -259,29 +263,37 @@ class OssController extends Controller
                 $existing->company_name = $data['nama_perseroan'];
                 $existing->company_email = $data['email_perusahaan'];
                 $existing->json_content = $data;
-                $existing->save();
-                DB::commit();
-            }
-            $saved = true;
+                try {
+                    $existing->save();
+                    DB::commit();
+                    $saved = true;
+                } catch (Exception $e) {
+                    $errorMessage = $e->getMessage();
+                }
+            }            
         } else {
             // insert
-            $created = OssNib::create([
-                'nib' => $data['nib'],
-                'nib_submit_date' => $data['tgl_pengajuan_nib'],
-                'nib_published_date' => $data['tgl_terbit_nib'],
-                'nib_updated_date' => $data['tgl_perubahan_nib'],
-                'oss_id' => $data['oss_id'],
-                'id_izin' => $data['id_izin'],
-                'kd_izin' => $data['kd_izin'],
-                'company_name' => $data['nama_perseroan'],
-                'company_email' => $data['email_perusahaan'],
-                'json_content' => $data,
-            ]);
-            if ($created) {
-                DB::commit();
-                $saved = true;
-            } else {
-                DB::rollBack();
+            try {
+                $created = OssNib::create([
+                    'nib' => $data['nib'],
+                    'nib_submit_date' => $data['tgl_pengajuan_nib'],
+                    'nib_published_date' => $data['tgl_terbit_nib'],
+                    'nib_updated_date' => $data['tgl_perubahan_nib'],
+                    'oss_id' => $data['oss_id'],
+                    'id_izin' => $data['id_izin'],
+                    'kd_izin' => $data['kd_izin'],
+                    'company_name' => $data['nama_perseroan'],
+                    'company_email' => $data['email_perusahaan'],
+                    'json_content' => $data,
+                ]);
+                if ($created) {
+                    DB::commit();
+                    $saved = true;
+                } else {
+                    DB::rollBack();
+                }
+            } catch (Exception $e) {
+                $errorMessage = $e->getMessage();
             }
         }
         if ($saved) {
@@ -295,8 +307,41 @@ class OssController extends Controller
         return response()->json([
             'responreceiveNIB' => [
                 'status' => false,
-                'keterangan' => 'Gagal menyimpan data NIB.',
+                'keterangan' => 'Gagal menyimpan data NIB. Error msg: ' . $errorMessage,
             ]
+        ], 500);
+    }
+
+    public function receiveLicenseStatus(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'dataLicenseStatus' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json([
+                'code' => 400,
+                'status' => 400,
+                'message' => 'Invalid JSON input'
+            ], 400);
+        }
+        $validated = $request->only('dataLicenseStatus');
+        $project = Project::findOrFail($validated['dataLicenseStatus']['id_project']);
+        $success = OssService::receiveLicenseStatus($project, $validated['dataLicenseStatus']['status_code']);
+        if ($success) {
+            return response()->json([
+                'code' => 200,
+                'status' => 200,
+                'message' => 'ReceiveLicenseStatus Success',
+            ], 200);
+        }
+        return response()->json([
+            'code' => 500,
+            'status' => 500,
+            'message' => 'ReceiveLicenseStatus Failed',
         ], 500);
     }
 }

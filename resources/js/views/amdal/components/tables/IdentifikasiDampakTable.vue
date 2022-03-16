@@ -87,7 +87,8 @@ export default {
 
           if (this.isMetodeStudiTable) {
             dataFlat.push({
-              id: imp.id,
+              id: dummyId,
+              id_impact_identification: imp.id,
               is_comment: true,
               is_stage: false,
               impact_study: {},
