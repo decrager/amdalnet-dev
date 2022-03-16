@@ -207,6 +207,7 @@ export default {
         idProject: this.$route.params.id,
         notes: this.notes,
         status: 'revisi',
+        documentType: this.getDocumentType,
       });
       this.getData();
       this.loadingSubmit = false;
