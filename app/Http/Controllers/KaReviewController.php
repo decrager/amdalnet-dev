@@ -113,6 +113,15 @@ class KaReviewController extends Controller
 
             $review->save();
 
+            $document_type = '';
+            if($request->documentType == 'ka') {
+                $document_type = 'KA';
+            } else if($request->documentType == 'andal-rkl-rpl') {
+                $document_type = 'ANDAL RKL RPL';
+            } else if($request->documentType == 'ukl-upl') {
+                $document_type = 'UKL UPL';
+            }
+
             if($request->status == 'revisi') {
                 $formulator_team = FormulatorTeam::where('id_project', $request->idProject)->first();
                 if($formulator_team) {
@@ -122,15 +131,6 @@ class KaReviewController extends Controller
                             $email = $ketua->formulator->email;
                             $user = User::where('email', $email)->count();
                             if($user > 0) {
-                                $document_type = '';
-                                if($request->documentType == 'ka') {
-                                    $document_type = 'KA';
-                                } else if($request->documentType == 'andal-rkl-rpl') {
-                                    $document_type = 'ANDAL RKL RPL';
-                                } else if($request->documentType == 'ukl-upl') {
-                                    $document_type = 'UKL UPL';
-                                }
-                                
                                 $user = User::where('email', $email)->first();
                                 Notification::send([$user], new AppKaReview($review, $document_type));
                             }
