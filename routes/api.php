@@ -374,6 +374,7 @@ Route::get('oss/getField', [OssController::class, 'getField']);
 Route::get('oss/getParameterByFieldId/{id}', [OssController::class, 'getParamByFieldId']);
 Route::post('oss/calculateDoc', [OssController::class, 'calculateDoc']);
 Route::post('oss/receiveNib', [OssController::class, 'receiveNib']);
+Route::post('oss/receiveLicenseStatus', [OssController::class, 'receiveLicenseStatus']);
 
 Route::get('environmental-approval', [EnvironmentalApprovalController::class, 'index']);
 Route::post('environmental-approval', [EnvironmentalApprovalController::class, 'store']);

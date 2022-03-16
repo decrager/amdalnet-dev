@@ -1,7 +1,8 @@
 <template>
   <div class="app-container">
     <el-card>
-      <WorkFlow />
+      <WorkFlow v-if="isAmdal" />
+      <WorkflowUkl v-else />
       <div class="filter-container">
         <h3>TABEL UJI KELAYAKAN</h3>
         <el-button
@@ -63,12 +64,14 @@
 <script>
 import Resource from '@/api/resource';
 import WorkFlow from '@/components/Workflow';
+import WorkflowUkl from '@/components/WorkflowUkl';
 const feasibilityResource = new Resource('feasibility-test');
 
 export default {
   name: 'UjiKelayakan',
   components: {
     WorkFlow,
+    WorkflowUkl,
   },
   data() {
     return {
@@ -86,6 +89,7 @@ export default {
       idProject: this.$route.params.id,
       loading: false,
       loadingSubmit: false,
+      isAmdal: false,
     };
   },
   computed: {
@@ -94,7 +98,12 @@ export default {
     },
   },
   async created() {
-    this.$store.dispatch('getStep', 6);
+    this.isAmdal = this.$route.name === 'ujiKelayakanAmdal';
+    if (this.$route.name === 'ujiKelayakanAmdal') {
+      this.$store.dispatch('getStep', 6);
+    } else {
+      this.$store.dispatch('getStep', 5);
+    }
     this.getFeasibility();
   },
   methods: {

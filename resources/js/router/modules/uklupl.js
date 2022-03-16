@@ -42,6 +42,12 @@ const ukluplRoutes = {
       meta: { title: 'Berita Acara', icon: 'zip', noCache: true },
     },
     {
+      path: ':id(\\d+)/uji-kelayakan',
+      component: () => import('@/views/pengujian-rkl-rpl/components/ujiKelayakan/index'),
+      name: 'ujiKelayakanUKLUPL',
+      meta: { title: 'Uji Kelayakan', icon: 'zip', noCache: true },
+    },
+    {
       path: ':id(\\d+)/rekomendasi-uji-kelayakan',
       component: () =>
         import(
