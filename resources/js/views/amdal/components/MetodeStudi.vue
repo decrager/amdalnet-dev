@@ -7,7 +7,7 @@
     />
     <div style="text-align: right; margin: 2em 0 1em 0;">
       <el-button
-        v-if="!isAndal && isFormulator"
+        v-if="isFormulator"
         type="success"
         size="small"
         icon="el-icon-check"
@@ -22,7 +22,6 @@
 <script>
 import Resource from '@/api/resource';
 import IdentifikasiDampakTable from './tables/IdentifikasiDampakTable.vue';
-const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'MetodeStudi',
@@ -49,6 +48,7 @@ export default {
       this.data = data;
     },
     handleSaveForm() {
+      const impactIdtResource = this.isAndal ? new Resource('andal-clone') : new Resource('impact-identifications');
       impactIdtResource
         .store({
           study_data: this.data,
