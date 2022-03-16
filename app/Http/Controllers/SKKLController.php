@@ -86,7 +86,8 @@ class SKKLController extends Controller
              $skkl->save();
 
              // send SKKL to OSS
-             OssService::receiveLicense($project, $skkl->file);
+             // 2022-03-16: disable karena dokumen final diupload id OSS, bukan Amdalnet
+             // OssService::receiveLicense($project, $skkl->file, '50');
 
              return response()->json(['message' => 'success']);
         }

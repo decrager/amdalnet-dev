@@ -15,63 +15,13 @@ use Illuminate\Support\Facades\Storage;
 
 class OssService
 {
-    public static function receiveLicense($project = null, $fileUrl = '')
+    public static function receiveLicense($project = null, $fileUrl = '', $statusCode = '50')
     {
-        $dummy = [
-            'IZINFINAL' => [
-                'nib' => '9120309952269',
-                'id_produk' => '01234567890',
-                'id_proyek' => 'R-202110220716199227111',
-                'oss_id' => 'P-201912311331538836804',
-                'id_izin' => "I-202202231710411927449",
-                'kd_izin' => "029000000001",
-                'kd_daerah' => "1604000000",
-                'kewenangan' => "01",
-                'nomor_izin' => null, // di luar amdalnet
-                'tgl_terbit_izin' => '2022-03-08',
-                'tgl_berlaku_izin' => '2022-03-08',
-                'nama_ttd' => 'GAYA ANDALAN KAMI', // diisi di OSS
-                'nip_ttd' => '927824979067000', // diisi di OSS
-                'jabatan_ttd' => 'Pemrakarsa', // diisi di OSS
-                'status_izin' => '50',
-                'file_izin' => Storage::url('skkl/test-skkl.pdf'),
-                'keterangan' => 'Diterima',
-                'file_lampiran' => Storage::url('skkl/test-Andal.pdf'),
-                'nomenklatur_nomor_izin' => '',
-                'bln_berlaku_izin' => '1',
-                'thn_berlaku_izin' => '5',
-                'data_pnbp' => [
-                    'kd_akun' => '12345678',
-                    'kd_penerimaan' => '99999999',
-                    'nominal' => '20000000000',
-                ],
-            ]
-        ];
-    
-        // Lookup table oss_nibs
-        // filter by NIB
-        // get json_content, parse, filter data_proyek by projects.id_project
-        $initiator = Initiator::find($project->id_applicant);
-        if (!$initiator) {
-            Log::error('Initiator not found');
-            return false;
-        }
-        $ossNib = OssNib::where('nib', $initiator->nib)->first();
-        if (!$ossNib) {
-            Log::error('OSSNib not found');
-            return false;
-        }
-        $jsonContent = $ossNib->json_content;
-        $subProjects = $jsonContent['data_proyek'];
-        $subProjectsAmdalnet = SubProject::where('id_project', $project->id)->get();
-        if (empty($subProjectsAmdalnet)) {
-            Log::error('Sub projects not found');
-            return false;
-        }
-        $subProjectsAmdalnetIdProyeks = [];
-        foreach ($subProjectsAmdalnet as $sp) {
-            array_push($subProjectsAmdalnetIdProyeks, $sp->id_proyek);
-        }
+        $dataSubProject = OssService::getSubProjects($project);
+        $initiator = $dataSubProject['initiator'];
+        $ossNib = $dataSubProject['ossNib'];
+        $subProjects =  $dataSubProject['subProjects'];
+        $subProjectsAmdalnetIdProyeks = $dataSubProject['subProjectsAmdalnetIdProyeks'];
 
         foreach ($subProjects as $dataProject) {
             $dataProduct = null;
@@ -82,7 +32,7 @@ class OssService
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
                 // call endpoint receiveLicense
-                $statusIzin = OssService::getStatusIzin($project, $fileUrl);
+                $statusIzin = OssService::getStatusIzin($project, $fileUrl, $statusCode);
                 $data = [
                     'IZINFINAL' => [
                         'nib' => $initiator->nib,
@@ -123,12 +73,12 @@ class OssService
         return true;
     }
 
-    private static function getStatusIzin($project, $fileUrl)
+    private static function getStatusIzin($project, $fileUrl, $statusCode)
     {
         return [
-            'status_izin' => '50',
+            'status_izin' => $statusCode,
             'file_izin' => $fileUrl, // skkl
-            'keterangan' => 'Diterima',
+            'keterangan' => OssService::getStatusNameOss($statusCode),
             'file_lampiran' => null,
             'nomenklatur_nomor_izin' => null,
             'bln_berlaku_izin' => null,
@@ -136,43 +86,130 @@ class OssService
         ];
     }
 
-    public static function receiveLicenseStatus($project = null, $fileUrl = '')
+    private static function getStatusNameOss($statusCode)
     {
-        $dummy = [
-            'IZINSTATUS' => [
-                'nib' => '9120309952269',
-                'id_produk' => '01234567890',
-                'id_proyek' => 'R-202110220716199227111',
-                'oss_id' => 'P-201912311331538836804',
-                'id_izin' => "I-202202231710411927449",
-                'kd_izin' => "029000000001",
-                'kd_instansi' => "1604000000", // kode sektor (032)
-                'kd_status' => '10',
-                'tgl_status' => '2022-03-08',
-                'nip_status' => null, // NULL
-                'nama_status' => 'Dokumen Lengkap',
-                'keterangan' => 'Dokumen Lengkap', // tambahan keterangan utk pelaku usaha di OSS (nama_status di amdalnet?)
-                'data_pnbp' => [ // perlu diisi ga? NULL
-                    'kd_akun' => '12345678',
-                    'kd_penerimaan' => '99999999',
-                    'kd_billing' => '987654321',
-                    'tgl_billing' => '2022-03-08',
-                    'tgl_expire' => '2022-04-08',
-                    'nominal' => '2000000000',
-                    'url_dokumen' => Storage::url('formulir/test-KA.pdf'),
-                ],
-            ],
+        $dict = [
+            '10' => 'Dokumen Lengkap',
+            '11' => 'Dokumen Belum Lengkap',
+            '20' => 'Validasi',
+            '30' => 'Verifikasi Pembayaran',
+            '31' => 'Menunggu pembayaran PNBP',
+            '32' => 'Menunggu verifikasi bukti bayar PNBP',
+            '33' => 'Persetujuan Pembayaran',
+            '40' => 'Inspeksi',
+            '41' => 'Konfirmasi Persyaratan',
+            '42' => 'Data Konfirmasi Persyaratan',
+            '43' => 'Re-Konfirmasi Persyaratan',
+            '44' => 'Data Re-Konfirmasi Persyaratan',
+            '45' => 'Persyaratan terverifikasi',
+            '46' => 'Perlu perbaikan persyaratan',
+            '47' => 'Perlu perbaikan persyaratan',
+            '48' => 'Persetujuan Perizinan',
+            '60' => 'Peringatan',
+            '70' => 'Penghentian Sementara Kegiatan Berusaha',
+            '80' => 'Pengenaan Denda Administratif',
+            '93' => 'Penolakan Persyaratan',
+            '50' => 'Izin terbit/SS terverifikasi',
+            '90' => 'Ditolak',
         ];
 
-        $response = Http::withHeaders([
-            'user_key' => env('OSS_USER_KEY'),
-        ])->post(env('OSS_ENDPOINT') . '/kl/rba/receiveLicenseStatus', $dummy);
-        $respJson = $response->json();
-        // print_r($respJson);
-        if ((int)$respJson['responreceiveLicenseStatus']['kode'] == 200) {
-            return true;
+        return $dict[$statusCode];
+    }
+
+    private static function getStatusNameAmdalnet($statusCode)
+    {
+        $dict = [
+            '10' => 'Berkas Formulir Kerangka Acuan Sesuai',
+            '11' => 'Berkas Formulir Kerangka Acuan Dikembalikan',
+            '20' => 'Hasil Penapisan',
+            '40' => 'Penilaian Substansi Formulir KA/Andal RKL-RPL/UKL-UPL',
+            '45' => 'Berkas Administrasi Andal RKL-RPL/UKL-UPL Dinyatakan Lengkap dan Benar',
+            '46' => 'Perbaikan Andal RKL-RPL/UKL-UPL',
+            '48' => 'Uji Kelayakan Andal RKL-RPL/UKL-UPL',
+            '93' => 'Uji Administrasi Andal RKL-RPL Dikembalikan',
+            '50' => 'Penerbitan SKKL/PKPLH',
+            '90' => 'Penerbitan SKKL/PKPLH Ditolak',
+        ];
+
+        return $dict[$statusCode];
+    }
+
+    private static function getSubProjects($project)
+    {
+        $initiator = Initiator::find($project->id_applicant);
+        if (!$initiator) {
+            Log::error('Initiator not found');
+            return false;
         }
-        return false;
+        $ossNib = OssNib::where('nib', $initiator->nib)->first();
+        if (!$ossNib) {
+            Log::error('OSSNib not found');
+            return false;
+        }
+        $jsonContent = $ossNib->json_content;
+        $subProjects = $jsonContent['data_proyek'];
+        $subProjectsAmdalnet = SubProject::where('id_project', $project->id)->get();
+        if (empty($subProjectsAmdalnet)) {
+            Log::error('Sub projects not found');
+            return false;
+        }
+        $subProjectsAmdalnetIdProyeks = [];
+        foreach ($subProjectsAmdalnet as $sp) {
+            array_push($subProjectsAmdalnetIdProyeks, $sp->id_proyek);
+        }
+        
+        return [
+            'ossNib' => $ossNib,
+            'initiator' => $initiator,
+            'subProjects' => $subProjects,
+            'subProjectsAmdalnetIdProyeks' => $subProjectsAmdalnetIdProyeks,
+        ];
+    }
+
+    public static function receiveLicenseStatus($project = null, $statusCode)
+    {
+        $dataSubProject = OssService::getSubProjects($project);
+        $initiator = $dataSubProject['initiator'];
+        $ossNib = $dataSubProject['ossNib'];
+        $subProjects =  $dataSubProject['subProjects'];
+        $subProjectsAmdalnetIdProyeks = $dataSubProject['subProjectsAmdalnetIdProyeks'];
+
+        foreach ($subProjects as $dataProject) {
+            $dataProduct = null;
+            $idProduct = 0;
+            if (count($dataProject['data_proyek_produk']) > 0) {
+                $dataProduct = $dataProject['data_proyek_produk'][0];
+                $idProduct = $dataProduct['id_produk'];
+            }
+            if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
+                $data = [
+                    'IZINSTATUS' => [
+                        'nib' => $initiator->nib,
+                        'id_produk' => $idProduct,
+                        'id_proyek' => $dataProject['id_proyek'],
+                        'oss_id' => $ossNib->oss_id,
+                        'id_izin' => $ossNib->id_izin,
+                        'kd_izin' => $ossNib->kd_izin,
+                        'kd_instansi' => $dataProject['sektor'],
+                        'kd_status' => $statusCode,
+                        'tgl_status' => (string)$project->updated_at,
+                        'nip_status' => null, // NULL
+                        'nama_status' => OssService::getStatusNameOss($statusCode),
+                        'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
+                        'data_pnbp' => null,
+                    ],
+                ];
+                $response = Http::withHeaders([
+                    'user_key' => env('OSS_USER_KEY'),
+                ])->post(env('OSS_ENDPOINT') . '/kl/rba/receiveLicenseStatus', $data);
+                $respJson = $response->json();
+                // print_r($respJson);
+                // if ((int)$respJson['responreceiveLicenseStatus']['kode'] == 200) {
+                //     return true;
+                // }
+            }
+        }
+        return true;
     }
 }
 ?>

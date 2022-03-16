@@ -17,6 +17,7 @@ use App\Http\Resources\ProjectResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Services\OssService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -449,6 +450,9 @@ class ProjectController extends Controller
 
             throw new Exception('Gagal Membuat Kegiatan karena ' . $e);
         }
+
+        // send status to OSS
+        OssService::receiveLicenseStatus($project, '10');
 
         return new ProjectResource($project);
 
