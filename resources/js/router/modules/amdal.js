@@ -75,7 +75,7 @@ const amdalRoutes = {
       path: ':id(\\d+)/uji-kelayakan',
       component: () => import('@/views/pengujian-rkl-rpl/components/ujiKelayakan/index'),
       name: 'ujiKelayakanAmdal',
-      meta: { title: 'Pengujian RKL RPL', icon: 'zip', noCache: true },
+      meta: { title: 'Uji Kelayakan', icon: 'zip', noCache: true },
     },
     {
       path: ':id(\\d+)/rekomendasi-uji-kelayakan',
