@@ -100,6 +100,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const tukManagementResource = new Resource('tuk-management');
 import MemberTable from '@/views/tuk-management/components/ProfileMemberTable.vue';
@@ -121,8 +122,14 @@ export default {
       imageUrl: '',
       imageRaw: null,
       errors: {},
-      userInfo: {},
+      // userInfo: {},
     };
+  },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
   },
   created() {
     this.getTeamData();
@@ -130,7 +137,7 @@ export default {
   methods: {
     async getTeamData() {
       this.loading = true;
-      this.userInfo = await this.$store.dispatch('user/getInfo');
+      // this.userInfo = await this.$store.dispatch('user/getInfo');
       this.team = await tukManagementResource.list({
         type: 'profile',
         email: this.userInfo.email,

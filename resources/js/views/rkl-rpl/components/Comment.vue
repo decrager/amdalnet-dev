@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const matriksRklResource = new Resource('matriks-rkl');
 
@@ -47,16 +48,22 @@ export default {
       comment: null,
       loadingSubmit: false,
       loadingComments: false,
-      userInfo: {},
+      // userInfo: {},
       comments: [],
     };
+  },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
   },
   created() {
     this.getComments();
   },
   methods: {
     async getComments() {
-      await this.getUserInfo();
+      // await this.getUserInfo();
       const data = await matriksRklResource.list({
         idProject: this.idProject,
         idUser: this.userInfo.id,
@@ -82,9 +89,9 @@ export default {
       });
       this.loadingSubmit = false;
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
   },
 };
 </script>

@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Verifikasi from '@/views/pengujian-ukl-upl/components/verifikasi/index';
 import UndanganRapat from '@/views/pengujian-ukl-upl/components/undanganRapat/index';
 import WorkflowUkl from '@/components/WorkflowUkl';
@@ -41,13 +42,17 @@ export default {
   data() {
     return {
       activeName: 'verifikasi',
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
       isComplete: false,
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isSubtance() {
       return this.userInfo.roles.includes('examiner-substance');
     },
@@ -62,7 +67,7 @@ export default {
     },
   },
   async created() {
-    this.userInfo = await this.$store.dispatch('user/getInfo');
+    // this.userInfo = await this.$store.dispatch('user/getInfo');
     this.isComplete = await verifikasiRapatResource.list({
       checkComplete: 'true',
       idProject: this.$route.params.id,

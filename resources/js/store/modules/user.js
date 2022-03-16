@@ -1,4 +1,5 @@
 import { login, logout, getInfo } from '@/api/auth';
+import request from '@/utils/request';
 import { isLogged, setLogged, removeToken } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
@@ -39,6 +40,9 @@ const mutations = {
   },
   SET_NOTIFICATIONS: (state, notifications) => {
     state.notifications = notifications;
+  },
+  SET_USER: (state, user) => {
+    state.user = user;
   },
 };
 
@@ -83,10 +87,12 @@ const actions = {
           commit('SET_AVATAR', avatar);
           commit('SET_INTRODUCTION', introduction);
           commit('SET_ID', id);
+          commit('SET_USER', data);
           resolve(data);
         })
         .catch(error => {
-          if (!this.isCancel(error)){
+          console.log(error.code);
+          if (!request.isCancel(error)){
             reject(error);
           }
         });

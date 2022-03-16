@@ -22,6 +22,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import UserActivities from './components/activities';
 import InitiatorInformation from './components/initiator';
 import FormulatorInformation from './components/formulator';
@@ -49,6 +50,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userLogged': 'user',
+    }),
     isFormulator(){
       return this.$store.getters.roles.includes('formulator');
     },
@@ -68,36 +72,39 @@ export default {
   },
   methods: {
     async getUser(){
-      this.$store.dispatch('user/getInfo').then((response) => {
+      // this.$store.dispatch('user/getInfo').then((response) => {
+      if (this.userLogged) {
         if (this.isExaminer){
-          this.user = response;
+          // this.user = response;
           this.isLoading = false;
           return;
         }
 
-        this.avatar = response.avatar;
+        // this.avatar = response.avatar;
+        this.avatar = this.userLogged.avatar;
         let resource = null;
         if (this.isFormulator) {
           resource = new Resource('formulatorsByEmail');
         } else if (this.isInitiator) {
           resource = new Resource('initiatorsByEmail');
         }
-        resource.list({ email: response.email }).then((res) => {
+        resource.list({ email: this.userLogged.email }).then((res) => {
           this.user = res;
         });
 
         /* get */
 
         this.isLoading = false;
-      }).catch((error) => {
-        this.$message({
-          message: error.message,
-          type: 'error',
-          duration: 5 * 1000,
-        });
-        console.log(error);
-        this.isLoading = false;
-      });
+      }
+      // ).catch((error) => {
+      //   this.$message({
+      //     message: error.message,
+      //     type: 'error',
+      //     duration: 5 * 1000,
+      //   });
+      //   console.log(error);
+      //   this.isLoading = false;
+      // });
       // console.log('getUser: ', this.user);
     },
     isAllowed() {

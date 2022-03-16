@@ -539,6 +539,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Workflow from '@/components/Workflow';
 import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
@@ -846,6 +847,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     getProjectOption() {
       return this.$store.getters.projectOptions;
     },
