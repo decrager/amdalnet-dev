@@ -1,7 +1,6 @@
 <template>
   <el-button
-    class="pull-right"
-    type="success"
+    type="warning"
     size="small"
     icon="el-icon-download"
     @click="handleDownload()"
@@ -30,7 +29,7 @@ export default {
   },
   methods: {
     async getData() {
-      const data = skklResource.list({
+      const data = await skklResource.list({
         idProject: this.idProject,
         skklOss: 'true',
       });
