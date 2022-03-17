@@ -558,7 +558,7 @@ export default {
     },
   },
   async created() {
-    console.log('aaa', this.userInfo);
+    // console.log('aaa', this.userInfo);
     // this.addLoading = true;
     this.getProvinces();
     // this.userInfo = await this.$store.dispatch('user/getInfo');
