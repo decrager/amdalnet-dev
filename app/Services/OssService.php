@@ -211,5 +211,22 @@ class OssService
         }
         return true;
     }
+
+    public static function inqueryFileDS($nib, $idIzin)
+    {
+        $data = [
+            "INQUERYFILEDS" => [
+                "id_permohonan_izin" => $idIzin,
+            ]
+        ];
+        $sha1 = sha1(env('OSS_REQUEST_USERNAME') . env('OSS_REQUEST_PASSWORD') . $nib . date('Ymd'));
+        $response = Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+            'token' => $sha1,
+        ])->post(env('OSS_ENDPOINT') . '/kl/rba/inqueryFileDS', $data);
+        $respJson = $response->json();
+        // print_r($respJson);
+        return true;
+    }
 }
 ?>
