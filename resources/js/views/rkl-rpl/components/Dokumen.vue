@@ -87,9 +87,9 @@ export default {
       out: '',
       showDocument: false,
       showDocumentAndal: false,
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
     };
   },
   computed: {
@@ -112,7 +112,7 @@ export default {
   },
   async created() {
     this.loading = true;
-    this.userInfo = await this.$store.dispatch('user/getInfo');
+    // this.userInfo = await this.$store.dispatch('user/getInfo');
     await this.getDataAndal();
     await this.getData();
     this.loading = false;

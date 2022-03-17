@@ -56,9 +56,9 @@ export default {
       projectId: this.$route.params && this.$route.params.id,
       showDocument: true,
       projectName: '',
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
     };
   },
   computed: {

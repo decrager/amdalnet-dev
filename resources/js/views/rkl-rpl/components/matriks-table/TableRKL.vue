@@ -483,7 +483,7 @@ export default {
       selectedImpactCommentId: null,
       impactComment: null,
       impactColumnType: null,
-      userInfo: {},
+      // userInfo: {},
       errors: [],
       periode: [
         {
