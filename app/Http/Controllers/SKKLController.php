@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\Initiator;
 use App\Entity\MeetingReport;
+use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectSkkl;
 use App\Services\OssService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class SKKLController extends Controller
@@ -42,6 +46,10 @@ class SKKLController extends Controller
 
         if ($request->skkl) {
             return $this->getDetailSkkl($request->idProject);
+        }
+
+        if ($request->skklOss) {
+            return $this->getSkklOssFile($request->idProject);
         }
     }
 
@@ -424,5 +432,41 @@ class SKKLController extends Controller
         }
 
         return $skkl;
+    }
+
+    private function getDataNib($idProject)
+    {
+        $project = Project::findOrFail($idProject);
+        $initiator = Initiator::find($project->id_applicant);
+        if (!$initiator) {
+            Log::error('Initiator not found');
+            return false;
+        }
+        $ossNib = OssNib::where('nib', $initiator->nib)->first();
+        if (!$ossNib) {
+            Log::error('OSSNib not found');
+            return false;
+        }
+        $jsonContent = $ossNib->json_content;
+        return [
+            'nib' => isset($jsonContent['nib']) ? $jsonContent['nib'] : null,
+            'id_izin' => isset($jsonContent['id_izin']) ? $jsonContent['id_izin'] : null,
+        ];
+    }
+
+    private function getSkklOssFile($idProject)
+    {
+        $dataNib = $this->getDataNib($idProject);
+        $fileUrl = null;
+        try {
+            $resp = OssService::inqueryFileDS($dataNib['nib'], $dataNib['id_izin']);
+            $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+        return [
+            'file_url' => $fileUrl,
+            'user_key' => env('OSS_USER_KEY'),
+        ];
     }
 }
