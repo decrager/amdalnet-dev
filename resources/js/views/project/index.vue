@@ -487,9 +487,9 @@ export default {
       addLoading: false,
       searchString: '',
       sectionHeader: 'list-penapisan',
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
       filtered: [],
       initiator: {},
       announcement: {},
@@ -558,6 +558,7 @@ export default {
     },
   },
   async created() {
+    // console.log('aaa', this.userInfo);
     // this.addLoading = true;
     this.getProvinces();
     // this.userInfo = await this.$store.dispatch('user/getInfo');
