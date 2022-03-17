@@ -129,6 +129,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const projectStageResource = new Resource('project-stages');
 const kaCommentResource = new Resource('ka-comment');
@@ -167,13 +168,17 @@ export default {
       loadingStage: false,
       loadingSubmitComment: false,
       loadingSubmitReply: {},
-      userInfo: {},
+      // userInfo: {},
       isStageError: false,
       isColumnError: false,
       isCommentError: false,
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isSubstance() {
       return this.$store.getters.roles.includes('examiner-substance');
     },
@@ -195,7 +200,7 @@ export default {
   created() {
     this.getStages();
     this.getComments();
-    this.getUserInfo();
+    // this.getUserInfo();
   },
   methods: {
     async getStages() {
@@ -307,7 +312,7 @@ export default {
       });
     },
     async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
+      // this.userInfo = await this.$store.dispatch('user/getInfo');
     },
     clearError() {
       this.isStageError = false;

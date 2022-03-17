@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 
@@ -47,11 +48,15 @@ export default {
       comment: null,
       loadingSubmit: false,
       loadingComments: false,
-      userInfo: {},
+      // userInfo: {},
       comments: [],
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isExaminer() {
       return this.$store.getters.roles.includes('examiner');
     },
@@ -61,7 +66,7 @@ export default {
   },
   methods: {
     async getComments() {
-      await this.getUserInfo();
+      // await this.getUserInfo();
       const data = await andalComposingResource.list({
         idProject: this.idProject,
         idUser: this.userInfo.id,
@@ -87,9 +92,9 @@ export default {
       });
       this.loadingSubmit = false;
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
   },
 };
 </script>

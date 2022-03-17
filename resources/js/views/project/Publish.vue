@@ -128,6 +128,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import FormulatorTable from './components/formulatorTable.vue';
 const kbliEnvParamResource = new Resource('kbli-env-params');
@@ -212,6 +213,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     getFormulatedTeam(){
       return this.$store.getters.teamType;
     },
@@ -470,8 +475,8 @@ export default {
       if (this.project.id_applicant){
         this.project.initiatorData = await initiatorResource.get(this.project.id_applicant);
       } else {
-        const data = await this.$store.dispatch('user/getInfo');
-        this.project.initiatorData = await initiatorByEmailResource.list({ email: data.email });
+        // const data = await this.$store.dispatch('user/getInfo');
+        this.project.initiatorData = await initiatorByEmailResource.list({ email: this.userInfo.email });
       }
     },
     // async getTeamOptions() {
@@ -565,73 +570,80 @@ export default {
         });
     },
     async handleSubmit() {
-      this.fullLoading = true;
-      this.project.id_applicant = this.project.initiatorData.id ? this.project.initiatorData.id : 0;
+      this.$confirm('Anda akan menyimpan hasil penapisan rencana usaha dan/atau kegiatan. Pastikan data yang anda isikan sudah sesuai, karena hasil penapisan yang sudah diproses, tidak dapat diubah.', 'Perhatian', {
+        confirmButtonText: 'Simpan',
+        cancelButtonText: 'Batalkan',
+        type: 'warning',
+      }).then(() => {
+        this.fullLoading = true;
+        this.project.id_applicant = this.project.initiatorData.id ? this.project.initiatorData.id : 0;
 
-      if (!this.project.id_project){
-        this.project.id_project = 1;
-      }
+        if (!this.project.id_project){
+          this.project.id_project = 1;
+        }
 
-      // make form data because we got file
-      const formData = new FormData();
-      formData.append('geomFromGeojson', JSON.stringify(this.geomFromGeojson));
-      formData.append('geomProperties', JSON.stringify(this.geomProperties));
-      formData.append('geomStyles', JSON.stringify(this.geomStyles));
+        // make form data because we got file
+        const formData = new FormData();
+        formData.append('geomFromGeojson', JSON.stringify(this.geomFromGeojson));
+        formData.append('geomProperties', JSON.stringify(this.geomProperties));
+        formData.append('geomStyles', JSON.stringify(this.geomStyles));
 
-      // for formulator team mandiri
-      if (this.project.type_formulator_team === 'mandiri') {
-        formData.append('formulatorTeams', JSON.stringify(this.listFormulatorTeam));
-        for (var u = 0; u < this.listFormulatorTeam.length; u++){
-          formData.append('listFormulatorTeam[' + u + ']', this.listFormulatorTeam[u]);
+        // for formulator team mandiri
+        if (this.project.type_formulator_team === 'mandiri') {
+          formData.append('formulatorTeams', JSON.stringify(this.listFormulatorTeam));
+          for (var u = 0; u < this.listFormulatorTeam.length; u++){
+            formData.append('listFormulatorTeam[' + u + ']', this.listFormulatorTeam[u]);
 
-          if (this.listFormulatorTeam[u].fileDoc){
-            const formulatorFile = this.listFormulatorTeam[u].fileDoc;
-            formData.append('formulatorFiles[' + u + ']', formulatorFile);
+            if (this.listFormulatorTeam[u].fileDoc){
+              const formulatorFile = this.listFormulatorTeam[u].fileDoc;
+              formData.append('formulatorFiles[' + u + ']', formulatorFile);
+            }
           }
         }
-      }
 
-      // eslint-disable-next-line no-undef
-      _.each(this.project, (value, key) => {
-        if (key === 'listSubProject' || key === 'address'){
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, value);
-        }
-      });
-
-      if (this.project.id !== undefined) {
-        // update
-        projectResource.updateMultipart(this.project.id, formData).then(response => {
-          this.$message({
-            type: 'success',
-            message: 'Project info has been updated successfully',
-            duration: 5 * 1000,
-          });
-          this.fullLoading = false;
-          this.$router.push('/project');
-        }).catch(error => {
-          console.log(error);
+        // eslint-disable-next-line no-undef
+        _.each(this.project, (value, key) => {
+          if (key === 'listSubProject' || key === 'address'){
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, value);
+          }
         });
-      } else {
-        projectResource
-          .store(formData)
-          .then((response) => {
+
+        if (this.project.id !== undefined) {
+        // update
+          projectResource.updateMultipart(this.project.id, formData).then(response => {
             this.$message({
-              message:
+              type: 'success',
+              message: 'Project info has been updated successfully',
+              duration: 5 * 1000,
+            });
+            this.fullLoading = false;
+            this.$router.push('/project');
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          projectResource
+            .store(formData)
+            .then((response) => {
+              this.$message({
+                message:
                     'New Project ' +
                     this.project.project_title +
                     ' has been created successfully.',
-              type: 'success',
-              duration: 5 * 1000,
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.$router.push('/project');
+            })
+            .catch((error) => {
+              this.fullLoading = false;
+              console.log(error);
             });
-            this.$router.push('/project');
-          })
-          .catch((error) => {
-            this.fullLoading = false;
-            console.log(error);
-          });
-      }
+        }
+      }).catch(() => {
+      });
     },
     getMapPdf() {
       axios.get(`api/map-pdf?file_type=PDF&attachment_type=tapak?id_project=${this.project.id}`)
