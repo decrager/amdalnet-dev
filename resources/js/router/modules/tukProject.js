@@ -20,6 +20,18 @@ const tukProjectRoutes = {
         roles: ['examiner-secretary'],
       },
     },
+    {
+      path: ':id(\\d+)/member',
+      component: () =>
+        import('@/views/tuk-project/components/AssignMember.vue'),
+      name: 'tukProjectMember',
+      meta: {
+        title: 'Daftar Kegiatan',
+        icon: 'layout-fluid',
+        noCache: true,
+        roles: ['examiner-secretary'],
+      },
+    },
   ],
 };
 

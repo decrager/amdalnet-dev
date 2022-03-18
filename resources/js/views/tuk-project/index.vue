@@ -1,7 +1,23 @@
 <template>
   <div class="app-container">
     <el-card>
-      <!-- <div class="filter-container"><p>Filter</p></div> -->
+      <div class="filter-container">
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian kegiatan..."
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
+      </div>
       <TukProjectTable
         :list="list"
         :loading="loading"
@@ -56,6 +72,12 @@ export default {
       this.list = data;
       this.total = total;
       this.loading = false;
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getData();
+      this.listQuery.search = null;
     },
   },
 };

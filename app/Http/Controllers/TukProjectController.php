@@ -22,16 +22,22 @@ class TukProjectController extends Controller
         
         return Project::select('id', 'registration_no', 'project_title', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district')
                     ->where(function($q) use($team) {
-                    if($team->authority == 'Pusat') {
-                        $q->where('authority', 'Pusat');
-                    } else if($team->authority == 'Provinsi') {
-                        $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]]);
-                    } else if($team->authority == 'Kabupaten/Kota') {
-                        $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
-                    }
-                })->with(['address', 'initiator' => function($q) {
-                    $q->select('id', 'name');
-                }])->orderBy('created_at', 'DESC')->paginate($request->limit);
+                        if($team->authority == 'Pusat') {
+                            $q->where('authority', 'Pusat');
+                        } else if($team->authority == 'Provinsi') {
+                            $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]]);
+                        } else if($team->authority == 'Kabupaten/Kota') {
+                            $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                        }
+                    })
+                    ->where(function($q) use($request) {
+                        if($request->search) {
+                            $q->whereRaw("LOWER(project_title) LIKE '%" . strtolower($request->search) . "%'");
+                        }
+                    })
+                    ->with(['address', 'initiator' => function($q) {
+                        $q->select('id', 'name');
+                    }])->orderBy('created_at', 'DESC')->paginate($request->limit);
     }
 
     /**
