@@ -93,9 +93,8 @@ class SKKLController extends Controller
              $skkl->file = Storage::url($name);
              $skkl->save();
 
-             // send SKKL to OSS
-             // 2022-03-16: disable karena dokumen final diupload id OSS, bukan Amdalnet
-             // OssService::receiveLicense($project, $skkl->file, '50');
+             // send status 45 to OSS
+             OssService::receiveLicenseStatus($project, '45');
 
              return response()->json(['message' => 'success']);
         }
