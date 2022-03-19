@@ -71,6 +71,7 @@ export default {
     return {
       id_project: 0,
       impacts: [],
+      masters: [],
       isLoading: false,
       totalChanges: 0,
       stages: [],
@@ -92,6 +93,7 @@ export default {
   methods: {
     async getImpacts(){
       this.impacts = null;
+      this.masters = null;
       this.isLoading = true;
       impactsResource.list({
         id_project: this.id_project,
