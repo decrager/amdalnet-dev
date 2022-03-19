@@ -8,6 +8,12 @@
       fit
       highlight-current-row
     >
+      <el-table-column align="center" width="55">
+        <template slot-scope="scope">
+          <el-checkbox v-model="scope.row.isUsed" @change="onChangeIsUsed(scope.row)" />
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="No." width="50px">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
@@ -196,6 +202,8 @@ export default {
       this.refresh++;
       this.loading = false;
     },
+    async onChangeIsUsed(sproject){
+    },
     async onChangeFieldType(sproject){
       this.loading = true;
       const { value } = await kbliResource.get(sproject.biz_type);
@@ -253,6 +261,9 @@ export default {
     },
     handleRefreshDialog(){
       this.refresh++;
+    },
+    handleSelectionChange(value){
+      this.$emit('checksubpro', value);
     },
   },
 };

@@ -581,7 +581,7 @@ export default {
     };
     var validateListSubProject = (rule, value, callback) => {
       if (this.listSubProject.length < 1) {
-        callback(new Error('Mohon Masukan 1 Kegiatan'));
+        callback(new Error('Mohon Pilih Minimal 1 Kegiatan'));
       }
       callback();
     };
@@ -622,6 +622,7 @@ export default {
     return {
       loading: false,
       isUmk: false,
+      isPemerintah: false,
       fromOss: false,
       mapItemId: '',
       full_address: '',
@@ -638,6 +639,7 @@ export default {
       },
       listSupportTable: [],
       listSubProject: [],
+      checkedSubProject: [],
       loadingSupportTable: false,
       isUpload: 'Upload',
       fileName: 'No File Selected.',
@@ -875,23 +877,30 @@ export default {
     getListKbli() {
       return this.$store.getters.kblis;
     },
-    isPemerintah() {
-      return this.$store.getters.isPemerintah;
-    },
   },
   async created() {
     this.loading = true;
+    await this.$store.dispatch('getInitiator', this.userInfo.email);
+    if (this.$store.getters.isPemerintah){
+      this.currentProject.isPemerintah = 'true';
+    }
+    console.log(this.currentProject);
     // load info user and initiator
-    const { email } = await this.$store.dispatch('user/getInfo');
-    await this.$store.dispatch('getInitiator', email);
-    await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
+    // const { email } = await this.$store.dispatch('user/getInfo');
 
-    await this.getProjectsFromOss();
+    console.log(this.userInfo);
+
+    if (!this.$store.getters.isPemerintah && !this.$route.params.project) {
+      console.log('masuk pak eko');
+      await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
+
+      await this.getProjectsFromOss();
+    }
+
     generateArcgisToken(this.token);
 
     // for step
     this.$store.dispatch('getStep', 0);
-    this.$store.dispatch('getInitiator', email);
 
     // for default value
     // this.currentProject.study_approach = 'Tunggal';
@@ -900,7 +909,7 @@ export default {
 
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
-      this.listSubProject = this.currentProject.listSubProject;
+      this.listSubProject = this.currentProject.listSubProjectNonChecked;
       this.fileMap = this.currentProject.fileMap;
       this.filePdf = this.currentProject.filePdf;
       this.filePdfName = this.filePdf?.name;
@@ -922,6 +931,10 @@ export default {
     this.loading = false;
   },
   methods: {
+    checksubpro(val){
+      console.log(val);
+      this.checkedSubProject = val;
+    },
     async addAuthoritiesBasedOnAddress(address){
       let tempFile = address[0].prov;
       for (let i = 1; i < address.length; i++) {
@@ -1033,7 +1046,9 @@ export default {
       return { result, result_risk, scale, scale_unit };
     },
     calculateListSubProjectResult(){
-      this.currentProject.listSubProject = this.listSubProject.map(e => {
+      this.currentProject.listSubProjectNonChecked = this.listSubProject;
+
+      this.currentProject.listSubProject = this.listSubProject.filter(e => e.isUsed).map(e => {
         if (!e.listSubProjectParams){
           this.$message({
             message: `Parameter untuk project dengan kbli ${e.kbli} belum diisi`,

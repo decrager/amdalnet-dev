@@ -269,6 +269,9 @@ export default {
       'read project': 'membaca proyek',
       'update project': 'pembaruan proyek',
       'drop project': 'jatuhkan proyek',
+      'create ka': 'buat kerangka acuan',
+      'read ka': 'membaca kerangka acuan',
+      'update ka': 'pembaruan kerangka acuan',
     },
   },
   guide: {
