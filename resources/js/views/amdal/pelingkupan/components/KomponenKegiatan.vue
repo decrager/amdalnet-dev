@@ -2,7 +2,7 @@
   <div class="master-komponen">
     <el-card shadow="never">
       <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold; text-transform: uppercase;">
-        <span>Komponen Kegiatan ({{ this.components.length }})</span>
+        <span>Komponen Kegiatan ({{ components.length }})</span>
       </div>
 
       <components-list
@@ -31,10 +31,18 @@ import ComponentsList from './tables/ComponentsList.vue';
 export default {
   name: 'KomponenKegiatan',
   components: { FormKomponenKegiatan, ComponentsList },
+  props: {
+    components: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
+  },
   data(){
     return {
       selectedData: null,
-      components: [],
+      // components: [],
       mode: 0,
       showForm: false,
     };

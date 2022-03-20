@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      :title="operations[mode] + ' Komponen Kegiatan'"
+      :title="operations[mode] + ' Komponen Lingkungan'"
       :visible.sync="show"
       width="60%"
       height="450"
@@ -14,8 +14,9 @@
 
         <el-form-item
           v-if="mode === 0"
-          label="Tahap"
+          label="Tipe Komponen Lingkungan"
         >
+        <!--
           <el-select
             v-model="value"
             placeholder="Select"
@@ -26,21 +27,19 @@
               :label="item.label"
               :value="item.value"
             />
-          </el-select>
+          </el-select> -->
 
         </el-form-item>
         <div v-else>
           <div>Tahap</div>
-          <div class="header">
+          <div class="header" style="font-weght:bold; text-transform: uppercase;font-size:110%; color:#202020;">
             {{ data.project_stage_name || 'UNKNOWN' }}
           </div>
         </div>
 
-        <el-form-item
-          v-if="mode===0"
-          label="Komponen Kegiatan"
-        >
+        <el-form-item label="Komponen Kegiatan">
           <el-autocomplete
+            v-if="mode===0"
             v-model="data.name"
             class="inline-input"
             clearable
@@ -51,13 +50,11 @@
             @clear="clear"
             @select="handleSelect"
           />
-        </el-form-item>
-        <div v-else class="header">
-          {{ data.name }}
-
+          <span v-else>
+            {{ data.name }}
+          </span>
           <i v-if="data.is_master" class="el-icon-success" />
-        </div>
-
+        </el-form-item>
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Deskripsi">
@@ -91,10 +88,10 @@
 </template>
 <script>
 import Resource from '@/api/resource';
-const componentResource = new Resource('components');
+const ronaAwalResource = new Resource('rona-awals');
 
 export default {
-  name: 'FormKomponenKegiatan',
+  name: 'FormKomponenLingkungan',
   props: {
     mode: {
       type: Number,
@@ -137,16 +134,15 @@ export default {
     /**
      * Big Notes:
      * data = {
-     *   id, name, is_master, id_project_stage, project_stage_name,  // from components table
-     *     description, measurement // to go to projects_component
+     *   id, name, id_component_type, is_master, // from rona_awal table
+     *     description, measurement // to go to projects_rona_awals
      * }
      **/
       this.data = {
         id: 0,
         name: '',
+        id_component_type: 0,
         is_master: false,
-        id_project_stage: 0,
-        project_stage_name: '',
         description: '',
         measurement: '',
         value: '',
@@ -174,9 +170,12 @@ export default {
       if (queryString.length < 3) {
         return cb([]);
       }
-      var results = await componentResource.list({
+      var response = await ronaAwalResource.list({
         q: queryString,
       });
+
+      var results = response.data;
+
       // var results = queryString ? options.filter(this.createFilter(queryString)) : options;
       // call callback function to return suggestions
       if (results.length === 1) {
@@ -186,15 +185,15 @@ export default {
         this.data.id = 0;
         this.data.is_master = false;
         this.data.name = queryString;
+        this.data.value = queryString;
       }
       cb(results);
     },
     handleSelect(item){
       this.data.id = item.id;
       this.data.name = item.name;
+      this.data.id_component_type = item.id_component_type;
       this.data.is_master = item.is_master;
-      this.data.id_project_stage = item.id_project_stage;
-      this.data.project_stage_name = item.project_stage_name;
     },
     handleClose(){
       this.initData();
@@ -209,11 +208,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.header{
-  font-weight:bold;
-  text-transform: uppercase;
-  font-size:110%;
-  color:#202020;
-}
-</style>

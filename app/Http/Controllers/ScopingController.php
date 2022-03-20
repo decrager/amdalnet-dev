@@ -26,10 +26,10 @@ class ScopingController extends Controller
         if ($request->check_formulir_ka && $request->id_project) {
             return $this->checkFormulirKA($request);
         }
-        return $this->getScopingData($request);        
+        return $this->getScopingData($request);
     }
 
-    private function checkFormulirKA(Request $request) {    
+    private function checkFormulirKA(Request $request) {
         // check if formulir KA is complete
         try {
             $impacts = ImpactIdentification::select('id')
@@ -94,7 +94,7 @@ class ScopingController extends Controller
         $component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();
         foreach ($component_types as $ctype) {
             $sp_rona_awals = SubProjectRonaAwal::with(['ronaAwal'])
-                ->where('id_sub_project_component', $id_sub_project_component)->get();                            
+                ->where('id_sub_project_component', $id_sub_project_component)->get();
             $rawals = [];
             foreach ($sp_rona_awals as $rona_awal) {
                 if ($ctype->id == $rona_awal->id_component_type) {
@@ -168,13 +168,13 @@ class ScopingController extends Controller
             }
             if (count($errors) > 0) {
                 return response()->json(['errors' => join(', ', $errors)], 403);
-            }            
+            }
             if (isset($component['id_component']) && $component['id_component'] != null) {
                 $component['name'] = null;
                 $component['id_project_stage'] = null;
             }
-            DB::beginTransaction();            
-            if (isset($component['id']) && $component['id'] != null) {                
+            DB::beginTransaction();
+            if (isset($component['id']) && $component['id'] != null) {
                 // edit
                 $edit = SubProjectComponent::find($component['id']);
                 $edit->name = $component['name'];

@@ -22,15 +22,28 @@ class RonaAwalController extends Controller
             return RonaAwalResource::collection(RonaAwal::select('rona_awal.*')
                 ->orderBy('name', 'asc')
                 ->get());
-        } else {
-            return RonaAwal::select('rona_awal.*', 'components.name as component')->where(function ($query) use ($request) {
-                return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
-            })->where(
-                function ($query) use ($request) {
-                    return $request->idComponentType ? $query->where('idComponentType', $request->idComponentType) : '';
-                }
-            )->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
         }
+
+        if (isset($params['q']) && $params['q']) {
+            return RonaAwalResource::collection(
+                RonaAwal::select(
+                    'rona_awal.*',
+                    'rona_awal.name as value'
+                )
+                ->where('name','ilike','%'.$request->q.'%')
+                ->orderBy('name', 'ASC')
+                ->limit(10)
+                ->get());
+        }
+
+        return RonaAwal::select('rona_awal.*', 'components.name as component')->where(function ($query) use ($request) {
+            return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
+        })->where(
+            function ($query) use ($request) {
+                return $request->idComponentType ? $query->where('idComponentType', $request->idComponentType) : '';
+            }
+        )->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
+
     }
 
     /**
@@ -144,7 +157,7 @@ class RonaAwalController extends Controller
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }
-    
+
         return response()->json(null, 204);
     }
 }
