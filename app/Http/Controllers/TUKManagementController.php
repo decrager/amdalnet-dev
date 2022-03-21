@@ -6,6 +6,7 @@ use App\Entity\ExpertBank;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\LukMember;
+use App\Entity\TukSecretaryMember;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
@@ -13,6 +14,8 @@ use App\Notifications\TUKAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class TUKManagementController extends Controller
 {
@@ -23,6 +26,16 @@ class TUKManagementController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->type == 'editSecretaryMember') {
+            return TukSecretaryMember::findOrFail($request->id);
+        }
+
+        if($request->type == 'secretaryMember') {
+            $members = TukSecretaryMember::select('id', 'id_feasibility_test_team', 'name', 'nik', 'position', 'institution')->where('id_feasibility_test_team', $request->id)->orderBy('id', 'desc')->get();
+
+            return $members;
+        }
+
         if($request->type == 'profileMember') {
             $id_team = $this->getIdTeamByMemberEmail($request->email);
             if($id_team == null) {
@@ -270,6 +283,83 @@ class TUKManagementController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->secretaryMember) {
+            $input = $request->all();
+
+            $validator = $request->secretaryType == 'create' ? $this->validateSecretaryCreate($input) : $this->validateSecretaryUpdate($input);
+
+            if($validator->fails()) {
+                return response()->json(['errors' => $validator->messages()]);
+            }
+            
+            DB::beginTransaction();
+
+            $secretary_member = null;
+
+            if($request->secretaryType == 'create') {
+                $secretary_member = new TukSecretaryMember();
+                $secretary_member->id_feasibility_test_team = $request->idfeasibilityTestTeam;
+
+                $is_user_exist = User::where('email', $request->email)->count();
+                if($is_user_exist == 0) {
+                    $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_ADMINISTRATION);
+                    $user = User::create([
+                        'name' => ucfirst($request->name),
+                        'email' => $request->email,
+                        'password' => Hash::make('amdalnet')
+                    ]);
+                    $user->syncRoles($valsubRole);
+                }
+            } else {
+                $secretary_member = TukSecretaryMember::findOrFail($request->idSecretaryMember);
+                if(($secretary_member->email !== $request->email) || ($secretary_member->name !== $request->name)) {
+                    $user = User::where('email', $secretary_member->email)->first();
+
+                    if($secretary_member->email !== $request->email) {
+                        $user->email = $request->email;
+                    }
+
+                    if($secretary_member->name !== $request->name) {
+                        $user->name = $request->name;
+                    }
+
+                    $user->save();
+                }
+            }
+
+            $secretary_member->status = $request->status;
+            $secretary_member->nik = $request->nik;
+            $secretary_member->nip = $request->nip;
+            $secretary_member->name = $request->name;
+            $secretary_member->institution = $request->institution;
+            $secretary_member->email = $request->email;
+            $secretary_member->position = $request->position;
+            $secretary_member->phone = $request->phone;
+            $secretary_member->sex = $request->sex;
+            $secretary_member->id_province = $request->id_province;
+            $secretary_member->id_district = $request->id_district;
+            $secretary_member->address = $request->address;
+
+            if($request->hasFile('cv')) {
+                $file = $request->file('cv');
+                $name = '/cv/' . uniqid() . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+
+                $secretary_member->cv = Storage::url($name);
+            }
+
+            $saved = $secretary_member->save();
+
+            if(!$saved) {
+                DB::rollback();
+            } else {
+
+                DB::commit();
+            }
+
+            return response()->json(['error' => null, 'message' => 'success']);
+        }
+
         if($request->profile) {
             $data = $request->all();
             $validator = \Validator::make($data, [
@@ -329,6 +419,18 @@ class TUKManagementController extends Controller
                             $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_ADMINISTRATION);
                             $user->syncRoles($valsubRole);
                         }
+                    }
+                }
+            }
+
+            // === DELETED SECRETARY MEMBERS === //
+            $deleted_secretary = json_decode($request->deletedSecretaryMember, true);
+            if(count($deleted_secretary) > 0) {
+                for($i = 0; $i < count($deleted_secretary); $i++) {
+                    $secretary = TukSecretaryMember::find($deleted_secretary[$i]);
+                    if($secretary) {
+                        User::where('email', $secretary->email)->delete();
+                        $secretary->delete();
                     }
                 }
             }
@@ -626,6 +728,74 @@ class TUKManagementController extends Controller
 
         $data = $request->all();
         $validator = \Validator::make($data, $rules, $messages);
+
+        return $validator;
+    }
+
+    private function validateSecretaryCreate($data) {
+        $validator = \Validator::make($data,[
+            'status' => 'required',
+            'nik' => 'required',
+            'name' => 'required',
+            'institution' => 'required',
+            'email' => 'required|email|unique:luk_members,email',
+            'position' => 'required',
+            'phone' => 'required',
+            'sex' => 'required',
+            'id_province' => 'required',
+            'id_district' => 'required',
+            'address' => 'required',
+            'cv' => 'max:1024'
+        ],[
+            'status.required' => 'Status Wajib Dipilih',
+            'nik.required' => 'NIK Wajib Diisi',
+            'name.required' => 'Nama Wajib Diisi',
+            'institution.required' => 'Instansi Wajib Diisi',
+            'email.required' => 'Email Wajib Diisi',
+            'email.email' => 'Email Tidak Valid',
+            'email.unique' => 'Email Sudah Terdaftar',
+            'position.required' => 'Jabatan Wajib Diisi',
+            'phone.required' => 'No. Telepon Wajib Diisi',
+            'sex.required' => 'Jenis Kelamin Wajib Dipilih',
+            'id_province.required' => 'Provinsi Wajib Dipilih',
+            'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
+            'address.required' => 'Alamat Wajib Diisi',
+            'cv.max' => 'Ukuran file tidak boleh melebihi 1 MB'
+        ]);
+
+        return $validator;
+    }
+
+    private function validateSecretaryUpdate($data) {
+        $validator = \Validator::make($data,[
+            'status' => 'required',
+            'nik' => 'required',
+            'name' => 'required',
+            'institution' => 'required',
+            'email' => 'required|email',
+            'position' => 'required',
+            'phone' => 'required',
+            'sex' => 'required',
+            'id_province' => 'required',
+            'id_district' => 'required',
+            'address' => 'required',
+            'cv' => 'max:1024'
+        ],[
+            'status.required' => 'Status Wajib Dipilih',
+            'nik.required' => 'NIK Wajib Diisi',
+            'name.required' => 'Nama Wajib Diisi',
+            'institution.required' => 'Instansi Wajib Diisi',
+            'email.required' => 'Email Wajib Diisi',
+            'email.email' => 'Email Tidak Valid',
+            'email.unique' => 'Email Sudah Terdaftar',
+            'position.required' => 'Jabatan Wajib Diisi',
+            'phone.required' => 'No. Telepon Wajib Diisi',
+            'sex.required' => 'Jenis Kelamin Wajib Dipilih',
+            'id_province.required' => 'Provinsi Wajib Dipilih',
+            'id_district.required' => 'Kota/Kabupaten Wajib Dipilih',
+            'address.required' => 'Alamat Wajib Diisi',
+            'cv.max' => 'Ukuran file tidak boleh melebihi 1 MB'
+        ]);
 
         return $validator;
     }

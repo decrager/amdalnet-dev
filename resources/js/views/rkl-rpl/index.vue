@@ -8,17 +8,14 @@
 </template>
 
 <script>
-// import Resource from '@/api/resource';
 import Matriks from '@/views/rkl-rpl/components/Matriks';
 import WorkFlow from '@/components/Workflow';
-// const rklResource = new Resource('matriks-rkl');
 
 export default {
   name: 'MatriksRKLRPL',
   components: {
     Matriks,
     WorkFlow,
-    // Dokumen,
   },
   data() {
     return {

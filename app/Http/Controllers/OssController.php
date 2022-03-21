@@ -252,25 +252,23 @@ class OssController extends Controller
         $errorMessage = '-';
         DB::beginTransaction();
         if ($existing) {
-            if ($existing->nib_updated_date != $data['tgl_perubahan_nib']) {
-                // update
-                $existing->nib_submit_date = $data['tgl_pengajuan_nib'];
-                $existing->nib_published_date = $data['tgl_terbit_nib'];
-                $existing->nib_updated_date = $data['tgl_perubahan_nib'];
-                $existing->oss_id = $data['oss_id'];
-                $existing->id_izin = $data['id_izin'];
-                $existing->kd_izin = $data['kd_izin'];
-                $existing->company_name = $data['nama_perseroan'];
-                $existing->company_email = $data['email_perusahaan'];
-                $existing->json_content = $data;
-                try {
-                    $existing->save();
-                    DB::commit();
-                    $saved = true;
-                } catch (Exception $e) {
-                    $errorMessage = $e->getMessage();
-                }
-            }            
+            // update
+            $existing->nib_submit_date = $data['tgl_pengajuan_nib'];
+            $existing->nib_published_date = $data['tgl_terbit_nib'];
+            $existing->nib_updated_date = $data['tgl_perubahan_nib'];
+            $existing->oss_id = $data['oss_id'];
+            $existing->id_izin = $data['id_izin'];
+            $existing->kd_izin = $data['kd_izin'];
+            $existing->company_name = $data['nama_perseroan'];
+            $existing->company_email = $data['email_perusahaan'];
+            $existing->json_content = $data;
+            try {
+                $existing->save();
+                DB::commit();
+                $saved = true;
+            } catch (Exception $e) {
+                $errorMessage = $e->getMessage();
+            }          
         } else {
             // insert
             try {

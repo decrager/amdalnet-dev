@@ -26,6 +26,7 @@ import ukluplRoutes from './modules/uklupl';
 // import formulatorRoutes from './modules/formulator';
 // import lukRoutes from './modules/luk';
 import tukRoutes from './modules/tuk';
+import tukProfileRoutes from './modules/tukProfile';
 // import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
@@ -232,24 +233,6 @@ export const asyncRoutes = [
       },
     ],
   },
-  {
-    path: '/tuk-profile',
-    component: Layout,
-    meta: { title: 'Profil TUK', icon: 'zip', roles: ['examiner-secretary'] },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/tuk-management/Profile.vue'),
-        name: 'tukProfile',
-        meta: {
-          title: 'Profil TUK',
-          icon: 'user',
-          noCache: true,
-          roles: ['examiner-secretary'],
-        },
-      },
-    ],
-  },
   // {
   //   path: '/fka',
   //   component: Layout,
@@ -264,6 +247,7 @@ export const asyncRoutes = [
   //   ],
   // },
   // ukluplStaticRoutes,
+  tukProfileRoutes,
   adminRoutes,
   projectRoutes,
   screeningRoutes,

@@ -28,7 +28,6 @@ import Resource from '@/api/resource';
 const cloneResource = new Resource('andal-clone');
 const andalComposingResource = new Resource('andal-composing');
 import Andal from '@/views/penyusunan-andal/components/Andal';
-// import Dokumen from '@/views/penyusunan-andal/components/Dokumen';
 import FormulirKA from '@/views/penyusunan-andal/components/FormulirKA';
 import WorkFlow from '@/components/Workflow';
 
@@ -38,7 +37,6 @@ export default {
     Andal,
     WorkFlow,
     FormulirKA,
-    // Dokumen,
   },
   data() {
     return {

@@ -77,7 +77,6 @@
       <div
         style="
           display: flex;
-          justify-content: space-between;
           align-items: center;
           margin-bottom: 5px;
         "
@@ -85,6 +84,18 @@
         <h4>Daftar Anggota Tim Uji Kelayakan</h4>
       </div>
       <MemberTable :loading="loadingMember" :list="listMember" />
+      <div
+        style="
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          margin-bottom: 5px;
+        "
+      >
+        <h4>Daftar Anggota Sekretariat</h4>
+        <el-button type="warning" style="margin-left: 15px;" @click="handleAddSecretaryMember">Tambahkan Anggota</el-button>
+      </div>
+      <SecretaryMemberTable :loading="loadingSecretaryMember" :list="listSecretaryMember" @handleDeleteSecretaryMember="handleDeleteSecretaryMember($event)" />
       <div v-if="team.id" style="text-align: right; margin-top: 12px">
         <el-button
           :loading="loadingSubmit"
@@ -104,24 +115,29 @@ import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const tukManagementResource = new Resource('tuk-management');
 import MemberTable from '@/views/tuk-management/components/ProfileMemberTable.vue';
+import SecretaryMemberTable from '@/views/tuk-management/components/SecretaryMemberTable.vue';
 
 export default {
   name: 'ProfileTuk',
   components: {
     MemberTable,
+    SecretaryMemberTable,
   },
   props: {},
   data() {
     return {
       team: {},
       listMember: [],
+      listSecretaryMember: [],
       loadingSubmit: false,
       loading: false,
       loadingMember: false,
+      loadingSecretaryMember: false,
       members: [],
       imageUrl: '',
       imageRaw: null,
       errors: {},
+      deletedSecretaryMembers: [],
       // userInfo: {},
     };
   },
@@ -145,6 +161,7 @@ export default {
       this.imageUrl = this.team.logo;
       this.loading = false;
       await this.getMemberData();
+      await this.getSecretaryMemberData();
     },
     async getMemberData() {
       this.loadingMember = true;
@@ -153,6 +170,14 @@ export default {
         email: this.userInfo.email,
       });
       this.loadingMember = false;
+    },
+    async getSecretaryMemberData() {
+      this.loadingSecretaryMember = true;
+      this.listSecretaryMember = await tukManagementResource.list({
+        type: 'secretaryMember',
+        id: this.team.id,
+      });
+      this.loadingSecretaryMember = false;
     },
     async handleSubmit() {
       this.errors = {};
@@ -164,6 +189,7 @@ export default {
       formData.append('address', this.team.address);
       formData.append('logo', this.imageRaw);
       formData.append('idTeam', this.team.id);
+      formData.append('deletedSecretaryMember', JSON.stringify(this.deletedSecretaryMembers));
 
       // === MEMBER ROLES === //
       const members = this.listMember
@@ -200,6 +226,13 @@ export default {
     handleUpload(file) {
       this.imageUrl = URL.createObjectURL(file.raw);
       this.imageRaw = file.raw;
+    },
+    handleAddSecretaryMember() {
+      this.$router.push({ name: 'createTukSecretaryMember', params: { id: this.team.id }});
+    },
+    handleDeleteSecretaryMember({ id }) {
+      this.deletedSecretaryMembers.push(id);
+      this.listSecretaryMember = this.listSecretaryMember.filter(x => x.id !== id);
     },
   },
 };

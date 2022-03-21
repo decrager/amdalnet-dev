@@ -56,7 +56,13 @@ class OssService
                         'nomenklatur_nomor_izin' => $statusIzin['nomenklatur_nomor_izin'],
                         'bln_berlaku_izin' => $statusIzin['bln_berlaku_izin'],
                         'thn_berlaku_izin' => $statusIzin['thn_berlaku_izin'],
-                        'data_pnbp' => null,
+                        'data_pnbp' => [
+                            [
+                                'kd_akun' => null,
+                                'kd_penerimaan' => null,
+                                'nominal' => null,
+                            ],
+                        ]                           
                     ]
                 ];
                 // print_r($data);
@@ -196,7 +202,15 @@ class OssService
                         'nip_status' => null, // NULL
                         'nama_status' => OssService::getStatusNameOss($statusCode),
                         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
-                        'data_pnbp' => null,
+                        'data_pnbp' => [
+                            'kd_akun' => null,
+                            'kd_penerimaan' => null,
+                            'kd_billing' => null,
+                            'tgl_billing' => null,
+                            'tgl_expire' => null,
+                            'nominal' => null,
+                            'url_dokumen' => null,
+                        ],  
                     ],
                 ];
                 $response = Http::withHeaders([
@@ -209,6 +223,23 @@ class OssService
                 // }
             }
         }
+        return true;
+    }
+
+    public static function inqueryFileDS($nib, $idIzin)
+    {
+        $data = [
+            "INQUERYFILEDS" => [
+                "id_permohonan_izin" => $idIzin,
+            ]
+        ];
+        $sha1 = sha1(env('OSS_REQUEST_USERNAME') . env('OSS_REQUEST_PASSWORD') . $nib . date('Ymd'));
+        $response = Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+            'token' => $sha1,
+        ])->post(env('OSS_ENDPOINT') . '/kl/rba/inqueryFileDS', $data);
+        $respJson = $response->json();
+        // print_r($respJson);
         return true;
     }
 }
