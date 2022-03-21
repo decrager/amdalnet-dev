@@ -145,7 +145,7 @@
             <el-row>
               <el-form-item prop="listSubProject">
                 <keep-alive>
-                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" />
+                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" @handlechecked="handlechecked($event)" />
                 </keep-alive>
                 <el-button
                   type="primary"
@@ -159,7 +159,12 @@
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
                   <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-                    <el-table-column label="No." width="80px">
+                    <el-table-column align="center" width="55">
+                      <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.isUsed" />
+                      </template>
+                    </el-table-column>
+                    <el-table-column align="center" label="No." width="55">
                       <template slot-scope="scope">
                         {{ scope.$index + 1 }}
                       </template>
@@ -548,7 +553,7 @@ import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
 const provinceResource = new Resource('provinces');
-const regionResource = new Resource('regions');
+// const regionResource = new Resource('regions');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
@@ -897,6 +902,12 @@ export default {
       await this.getProjectsFromOss();
     }
 
+    // set is rencana kegiatan umk atau tidak
+    this.isUmk = this.$store.getters.ossByNib.flag_umk ? this.$store.getters.ossByNib.flag_umk !== 'N' : false;
+
+    // set flag from oss
+    this.fromOss = !!this.$store.getters.ossByNib.data_proyek;
+
     generateArcgisToken(this.token);
 
     // for step
@@ -909,6 +920,7 @@ export default {
 
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
+      this.currentProject.address = this.currentProject.addressTemp;
       this.listSubProject = this.currentProject.listSubProjectNonChecked;
       this.fileMap = this.currentProject.fileMap;
       this.filePdf = this.currentProject.filePdf;
@@ -931,6 +943,17 @@ export default {
     this.loading = false;
   },
   methods: {
+    handlechecked(val){
+      console.log(val);
+      this.currentProject.address.map(e => {
+        if (e.id_proyek === val.id_proyek){
+          e.isUsed = val.isUsed;
+        }
+
+        return e;
+      });
+      this.refresh++;
+    },
     checksubpro(val){
       console.log(val);
       this.checkedSubProject = val;
@@ -1467,25 +1490,23 @@ export default {
     async getProjectsFromOss() {
       console.log(this.$store.getters.ossByNib);
 
-      if (!this.$store.getters.ossByNib){
+      if (!this.$store.getters.ossByNib.data_proyek){
         return;
       }
 
-      this.fromOss = true;
-
-      // set is rencana kegiatan umk atau tidak
-      this.isUmk = this.$store.getters.ossByNib.flag_umk !== 'N';
+      // this.fromOss = true;
 
       const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => e.file_izin === '-' || !e.file_izin);
       console.log(ossProjects);
 
-      const ossAddress = [];
-      const ossAddressDetail = [];
-
       ossProjects.forEach(e => {
-        e.data_lokasi_proyek.forEach(e => {
-          ossAddress.push(e.proyek_daerah_id);
-          ossAddressDetail.push({ id: e.proyek_daerah_id, alamat_usaha: e.alamat_usaha });
+        e.data_lokasi_proyek.forEach(i => {
+          this.currentProject.address.push({
+            prov: i.province,
+            district: i.regency,
+            address: i.alamat_usaha,
+            id_proyek: e.id_proyek,
+          });
         });
 
         // check kbli or not
@@ -1494,26 +1515,18 @@ export default {
             nonKbli: true,
             name: e.uraian_usaha,
             id_proyek: e.id_proyek,
+            kewenangan: this.$store.getters.ossByNib.kewenangan,
+            lokasi: e.data_lokasi_proyek,
           });
         } else {
           this.listSubProject.push({
             kbli: e.kbli,
             name: e.uraian_usaha,
             id_proyek: e.id_proyek,
+            kewenangan: this.$store.getters.ossByNib.kewenangan,
+            lokasi: e.data_lokasi_proyek,
           });
         }
-      });
-
-      const alladdress = await regionResource.list({ ossAddress });
-
-      this.currentProject.address = alladdress.map(e => {
-        const alamatUsaha = ossAddressDetail.filter(address => address.id === e.region_id);
-        console.log(e);
-        return {
-          prov: e.province,
-          district: e.regency,
-          address: alamatUsaha[0].alamat_usaha,
-        };
       });
 
       console.log(this.listSubProject);
@@ -1528,6 +1541,10 @@ export default {
       this.$router.push('/project');
     },
     handleSubmit() {
+      // filter address by is used
+      this.currentProject.addressTemp = this.currentProject.address;
+      this.currentProject.address = this.currentProject.addressTemp.filter(e => e.isUsed);
+
       if (this.fileMap){
         this.currentProject.fileMap = this.fileMap;
       }

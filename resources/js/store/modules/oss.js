@@ -4,7 +4,7 @@ const ossNibResource = new Resource('ossNibs');
 const oss = {
   namespace: true,
   state: {
-    ossByNib: [],
+    ossByNib: {},
   },
   mutations: {
     SET_OSS_BY_NIB(state, payload) {

@@ -203,6 +203,7 @@ export default {
       this.loading = false;
     },
     async onChangeIsUsed(sproject){
+      this.$emit('handlechecked', sproject);
     },
     async onChangeFieldType(sproject){
       this.loading = true;
