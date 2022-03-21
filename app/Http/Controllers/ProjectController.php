@@ -471,8 +471,10 @@ class ProjectController extends Controller
             throw new Exception('Gagal Membuat Kegiatan karena ' . $e);
         }
 
-        // send status to OSS
-        OssService::receiveLicenseStatus($project, '10');
+        // send status to OSS if not pemerintah
+        if(!isset($request['isPemerintah'])){
+            OssService::receiveLicenseStatus($project, '10');
+        }
 
         return new ProjectResource($project);
 

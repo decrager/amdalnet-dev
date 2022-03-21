@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Business;
 use App\Entity\Kbli;
 use App\Entity\OssNib;
+use App\Entity\Region;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -28,19 +29,6 @@ class OssNibController extends Controller
             $dataChecklists = $ossnib->json_content['data_checklist'];
             $dataJsonContent = $ossnib->json_content;
 
-            // $ossnib->json_content['data_proyek']->map(function ($object) {
-            //     $object->hihi = 'a';
-            // });
-
-            // $dataJsonContent = array_map(function ($a) {
-            //     foreach ($dataChecklists as $dataChecklist) {
-            //         if ($a['id_proyek'] === $dataChecklist['id_proyek']) {
-            //             $a['file_izin'] = $dataChecklist['file_izin'];
-            //         }
-            //     }
-            //     return $a;
-            // }, $dataJsonContent);
-
             foreach ($dataJsonContent['data_proyek'] as $key => &$dataProyek) {
                 $kbli = Business::where('value', $dataProyek['kbli'])->first();
 
@@ -51,18 +39,15 @@ class OssNibController extends Controller
                 foreach ($dataChecklists as $dataChecklist) {
                     if ($dataProyek['id_proyek'] === $dataChecklist['id_proyek']) {
                         $dataProyek['file_izin'] = $dataChecklist['file_izin'];
-                        // $ossnib->json_content['data_proyek'][$key]['file_izin'] = $dataChecklist['file_izin'];
                     }
                 }
+
+                foreach($dataProyek['data_lokasi_proyek'] as $key => &$dataLokasiProyek){
+                    $region = Region::where('region_id', $dataLokasiProyek['proyek_daerah_id'])->first();
+                    $dataLokasiProyek['province'] = $region['province'];
+                    $dataLokasiProyek['regency'] = $region['regency'];
+                }
             }
-
-            //filter
-            // $dataJsonContent['data_proyek'] = array_filter($dataJsonContent['data_proyek'], function($value) {
-            //     return $value['file_izin'] !== '-';
-            // });
-            
-
-            // return $dataChecklist;
             return $dataJsonContent;
         }
     }

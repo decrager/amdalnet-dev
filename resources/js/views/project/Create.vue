@@ -145,7 +145,7 @@
             <el-row>
               <el-form-item prop="listSubProject">
                 <keep-alive>
-                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" />
+                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" @handlechecked="handlechecked($event)" />
                 </keep-alive>
                 <el-button
                   type="primary"
@@ -158,8 +158,13 @@
             <el-row type="flex" justify="end" :gutter="4">
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
-                  <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
-                    <el-table-column label="No." width="80px">
+                  <el-table :key="refresh" :data="currentProject.address" height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+                    <el-table-column align="center" width="55">
+                      <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.isUsed" />
+                      </template>
+                    </el-table-column>
+                    <el-table-column align="center" label="No." width="55">
                       <template slot-scope="scope">
                         {{ scope.$index + 1 }}
                       </template>
@@ -548,7 +553,7 @@ import SubProjectTable from './components/SubProjectTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
 const provinceResource = new Resource('provinces');
-const regionResource = new Resource('regions');
+// const regionResource = new Resource('regions');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
@@ -581,7 +586,7 @@ export default {
     };
     var validateListSubProject = (rule, value, callback) => {
       if (this.listSubProject.length < 1) {
-        callback(new Error('Mohon Masukan 1 Kegiatan'));
+        callback(new Error('Mohon Pilih Minimal 1 Kegiatan'));
       }
       callback();
     };
@@ -622,6 +627,7 @@ export default {
     return {
       loading: false,
       isUmk: false,
+      isPemerintah: false,
       fromOss: false,
       mapItemId: '',
       full_address: '',
@@ -638,6 +644,7 @@ export default {
       },
       listSupportTable: [],
       listSubProject: [],
+      checkedSubProject: [],
       loadingSupportTable: false,
       isUpload: 'Upload',
       fileName: 'No File Selected.',
@@ -875,23 +882,36 @@ export default {
     getListKbli() {
       return this.$store.getters.kblis;
     },
-    isPemerintah() {
-      return this.$store.getters.isPemerintah;
-    },
   },
   async created() {
     this.loading = true;
+    await this.$store.dispatch('getInitiator', this.userInfo.email);
+    if (this.$store.getters.isPemerintah){
+      this.currentProject.isPemerintah = 'true';
+    }
+    console.log(this.currentProject);
     // load info user and initiator
-    const { email } = await this.$store.dispatch('user/getInfo');
-    await this.$store.dispatch('getInitiator', email);
-    await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
+    // const { email } = await this.$store.dispatch('user/getInfo');
 
-    await this.getProjectsFromOss();
+    console.log(this.userInfo);
+
+    if (!this.$store.getters.isPemerintah && !this.$route.params.project) {
+      console.log('masuk pak eko');
+      await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
+
+      await this.getProjectsFromOss();
+    }
+
+    // set is rencana kegiatan umk atau tidak
+    this.isUmk = this.$store.getters.ossByNib.flag_umk ? this.$store.getters.ossByNib.flag_umk !== 'N' : false;
+
+    // set flag from oss
+    this.fromOss = !!this.$store.getters.ossByNib.data_proyek;
+
     generateArcgisToken(this.token);
 
     // for step
     this.$store.dispatch('getStep', 0);
-    this.$store.dispatch('getInitiator', email);
 
     // for default value
     // this.currentProject.study_approach = 'Tunggal';
@@ -900,7 +920,8 @@ export default {
 
     if (this.$route.params.project) {
       this.currentProject = this.$route.params.project;
-      this.listSubProject = this.currentProject.listSubProject;
+      this.currentProject.address = this.currentProject.addressTemp;
+      this.listSubProject = this.currentProject.listSubProjectNonChecked;
       this.fileMap = this.currentProject.fileMap;
       this.filePdf = this.currentProject.filePdf;
       this.filePdfName = this.filePdf?.name;
@@ -922,6 +943,21 @@ export default {
     this.loading = false;
   },
   methods: {
+    handlechecked(val){
+      console.log(val);
+      this.currentProject.address.map(e => {
+        if (e.id_proyek === val.id_proyek){
+          e.isUsed = val.isUsed;
+        }
+
+        return e;
+      });
+      this.refresh++;
+    },
+    checksubpro(val){
+      console.log(val);
+      this.checkedSubProject = val;
+    },
     async addAuthoritiesBasedOnAddress(address){
       let tempFile = address[0].prov;
       for (let i = 1; i < address.length; i++) {
@@ -1033,7 +1069,9 @@ export default {
       return { result, result_risk, scale, scale_unit };
     },
     calculateListSubProjectResult(){
-      this.currentProject.listSubProject = this.listSubProject.map(e => {
+      this.currentProject.listSubProjectNonChecked = this.listSubProject;
+
+      this.currentProject.listSubProject = this.listSubProject.filter(e => e.isUsed).map(e => {
         if (!e.listSubProjectParams){
           this.$message({
             message: `Parameter untuk project dengan kbli ${e.kbli} belum diisi`,
@@ -1452,53 +1490,44 @@ export default {
     async getProjectsFromOss() {
       console.log(this.$store.getters.ossByNib);
 
-      if (!this.$store.getters.ossByNib){
+      if (!this.$store.getters.ossByNib.data_proyek){
         return;
       }
 
-      this.fromOss = true;
-
-      // set is rencana kegiatan umk atau tidak
-      this.isUmk = this.$store.getters.ossByNib.flag_umk !== 'N';
+      // this.fromOss = true;
 
       const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => e.file_izin === '-' || !e.file_izin);
       console.log(ossProjects);
 
-      const ossAddress = [];
-      const ossAddressDetail = [];
-
       ossProjects.forEach(e => {
-        e.data_lokasi_proyek.forEach(e => {
-          ossAddress.push(e.proyek_daerah_id);
-          ossAddressDetail.push({ id: e.proyek_daerah_id, alamat_usaha: e.alamat_usaha });
+        e.data_lokasi_proyek.forEach(i => {
+          this.currentProject.address.push({
+            prov: i.province,
+            district: i.regency,
+            address: i.alamat_usaha,
+            id_proyek: e.id_proyek,
+          });
         });
 
         // check kbli or not
         if (e.nonKbli === 'Y'){
           this.listSubProject.push({
             nonKbli: true,
+            kbli: e.kbli,
             name: e.uraian_usaha,
             id_proyek: e.id_proyek,
+            kewenangan: this.$store.getters.ossByNib.kewenangan,
+            lokasi: e.data_lokasi_proyek,
           });
         } else {
           this.listSubProject.push({
             kbli: e.kbli,
             name: e.uraian_usaha,
             id_proyek: e.id_proyek,
+            kewenangan: this.$store.getters.ossByNib.kewenangan,
+            lokasi: e.data_lokasi_proyek,
           });
         }
-      });
-
-      const alladdress = await regionResource.list({ ossAddress });
-
-      this.currentProject.address = alladdress.map(e => {
-        const alamatUsaha = ossAddressDetail.filter(address => address.id === e.region_id);
-        console.log(e);
-        return {
-          prov: e.province,
-          district: e.regency,
-          address: alamatUsaha[0].alamat_usaha,
-        };
       });
 
       console.log(this.listSubProject);
@@ -1513,6 +1542,10 @@ export default {
       this.$router.push('/project');
     },
     handleSubmit() {
+      // filter address by is used
+      this.currentProject.addressTemp = this.currentProject.address;
+      this.currentProject.address = this.currentProject.addressTemp.filter(e => e.isUsed);
+
       if (this.fileMap){
         this.currentProject.fileMap = this.fileMap;
       }

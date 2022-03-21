@@ -3,20 +3,34 @@
     <el-table
       :key="refresh"
       v-loading="loading"
+      height="800"
       :header-cell-style="{ background: '#099C4B', color: 'white' }"
       :data="list"
       fit
       highlight-current-row
     >
+      <el-table-column align="center" width="55">
+        <template slot-scope="scope">
+          <el-checkbox v-model="scope.row.isUsed" @change="onChangeIsUsed(scope.row)" />
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="No." width="50px">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
         </template>
       </el-table-column>
 
-      <el-table-column v-if="fromOss" align="center" label="Id Project" width="200px">
+      <el-table-column v-if="fromOss" align="left" header-align="center" label="Project" width="400px">
         <template slot-scope="scope">
-          {{ scope.row.id_proyek }}
+          <div><b>ID Proyek :</b> {{ scope.row.id_proyek }}</div>
+          <div><b>Nama Kegiatan :</b> {{ scope.row.name }}</div>
+          <div><b>KBLI :</b> {{ scope.row.kbli }}</div>
+          <div><b>Kewenangan :</b> {{ getKewenangan(scope.row.kewenangan) }}</div>
+          <div><b>Alamat :</b></div>
+          <ul style="margin-block-start: 0px">
+            <li v-for="(lokasi, index) in scope.row.lokasi" :key="index">Provinsi {{ lokasi.province.toLowerCase() }}, {{ lokasi.regency.toLowerCase() }}, {{ lokasi.alamat_usaha.toLowerCase() }}</li>
+          </ul>
         </template>
       </el-table-column>
 
@@ -156,6 +170,15 @@ export default {
     };
   },
   methods: {
+    getKewenangan(val){
+      if (val === '00'){
+        return 'pusat';
+      } else if (val === '01'){
+        return 'provinsi';
+      } else {
+        return 'kabupaten';
+      }
+    },
     async onChangeKbli(sproject){
       this.loading = true;
       // await this.getBusinessByKbli(sproject);
@@ -195,6 +218,9 @@ export default {
       await this.getFieldBySector(sproject);
       this.refresh++;
       this.loading = false;
+    },
+    async onChangeIsUsed(sproject){
+      this.$emit('handlechecked', sproject);
     },
     async onChangeFieldType(sproject){
       this.loading = true;
@@ -253,6 +279,9 @@ export default {
     },
     handleRefreshDialog(){
       this.refresh++;
+    },
+    handleSelectionChange(value){
+      this.$emit('checksubpro', value);
     },
   },
 };
