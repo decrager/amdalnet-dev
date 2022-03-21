@@ -182,7 +182,6 @@ export default {
       membersAhli: [],
       formulators: [],
       compositionError: false,
-      userInfo: {},
       timPenyusun: [
         {
           label: 'Lembaga Penyedia Jasa Penyusun',
@@ -197,8 +196,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
     isAdmin() {
       return this.userInfo.roles.includes('examiner-administration');
