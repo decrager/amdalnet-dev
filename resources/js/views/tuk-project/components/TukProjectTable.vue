@@ -36,8 +36,10 @@
     </el-table-column>
 
     <el-table-column align="center" label="Anggota Uji Kelayakan">
-      <template>
-        <el-button type="warning">Ubah</el-button>
+      <template slot-scope="scope">
+        <el-button type="warning" @click="handleTukProjectMember(scope.row.id)">
+          Ubah
+        </el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -85,6 +87,10 @@ export default {
         })
         .join(' ');
       return newWords;
+    },
+    handleTukProjectMember(id) {
+      // eslint-disable-next-line object-curly-spacing
+      this.$router.push({ name: 'tukProjectMember', params: { id } });
     },
   },
 };

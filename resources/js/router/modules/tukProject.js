@@ -25,6 +25,7 @@ const tukProjectRoutes = {
       component: () =>
         import('@/views/tuk-project/components/AssignMember.vue'),
       name: 'tukProjectMember',
+      hidden: true,
       meta: {
         title: 'Daftar Kegiatan',
         icon: 'layout-fluid',
