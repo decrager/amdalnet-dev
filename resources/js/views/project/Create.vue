@@ -158,7 +158,7 @@
             <el-row type="flex" justify="end" :gutter="4">
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
-                  <el-table :key="refresh" :data="currentProject.address" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+                  <el-table :key="refresh" :data="currentProject.address" height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
                     <el-table-column align="center" width="55">
                       <template slot-scope="scope">
                         <el-checkbox v-model="scope.row.isUsed" />
@@ -1513,6 +1513,7 @@ export default {
         if (e.nonKbli === 'Y'){
           this.listSubProject.push({
             nonKbli: true,
+            kbli: e.kbli,
             name: e.uraian_usaha,
             id_proyek: e.id_proyek,
             kewenangan: this.$store.getters.ossByNib.kewenangan,
