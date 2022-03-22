@@ -57,7 +57,7 @@
           >
             <h4>MASUKAN/SARAN PERBAIKAN</h4>
             <div class="comment-list">
-              <div v-if="isSubstance || isExaminer" class="comment-card">
+              <div v-if="!isFormulator" class="comment-card">
                 <el-card style="margin-bottom: 10px">
                   <div class="comment-body" style="padding-top: 20px">
                     <el-select
@@ -194,7 +194,7 @@
               </div>
             </div>
             <el-button
-              v-if="scope.row.type == 'subtitle'"
+              v-if="scope.row.type == 'subtitle' && isFormulator"
               icon="el-icon-plus"
               circle
               @click="handleAddImpactSource(scope.$index)"
@@ -227,7 +227,7 @@
             </div>
           </div>
           <el-button
-            v-if="scope.row.type == 'subtitle'"
+            v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
             @click="handleAddIndicator(scope.$index)"
@@ -261,7 +261,7 @@
               </div>
             </div>
             <el-button
-              v-if="scope.row.type == 'subtitle'"
+              v-if="scope.row.type == 'subtitle' && isFormulator"
               icon="el-icon-plus"
               circle
               @click="handleAddCollectionMethod(scope.$index)"
@@ -295,7 +295,7 @@
               </div>
             </div>
             <el-button
-              v-if="scope.row.type == 'subtitle'"
+              v-if="scope.row.type == 'subtitle' && isFormulator"
               icon="el-icon-plus"
               circle
               @click="handleAddLocation(scope.$index)"
@@ -550,17 +550,8 @@ export default {
       'userInfo': 'user',
       'userId': 'userId',
     }),
-    isSubstance() {
-      return this.$store.getters.roles.includes('examiner-substance');
-    },
-    isExaminer() {
-      return this.$store.getters.roles.includes('examiner');
-    },
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
-    },
-    isAdmin() {
-      return this.userInfo.roles.includes('examiner-administration');
     },
   },
   created() {

@@ -33,7 +33,7 @@
       <template slot-scope="scope">
         <el-select
           v-if="
-            teamtype === 'mandiri' && scope.row.membership_status !== 'ATPA' && !isadmin
+            teamtype === 'mandiri' && scope.row.membership_status !== 'ATPA'
           "
           v-model="scope.row.position"
           placeholder="Pilih Jabatan"
@@ -80,7 +80,7 @@
     </el-table-column>
 
     <el-table-column
-      v-if="teamtype === 'mandiri' && !isadmin"
+      v-if="teamtype === 'mandiri'"
       label=""
       width="80px"
       align="center"
@@ -111,7 +111,6 @@ export default {
       type: String,
       default: () => '',
     },
-    isadmin: Boolean,
   },
   data() {
     return {

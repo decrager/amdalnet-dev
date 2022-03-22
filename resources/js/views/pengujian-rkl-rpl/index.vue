@@ -53,18 +53,6 @@ export default {
       'userInfo': 'user',
       'userId': 'userId',
     }),
-    isSubtance() {
-      return this.userInfo.roles.includes('examiner-substance');
-    },
-    isAdmin() {
-      return this.userInfo.roles.includes('examiner-administration');
-    },
-    isExaminer() {
-      return this.userInfo.roles.includes('examiner');
-    },
-    isFormulator() {
-      return this.userInfo.roles.includes('formulator');
-    },
   },
   async created() {
     // this.userInfo = await this.$store.dispatch('user/getInfo');
