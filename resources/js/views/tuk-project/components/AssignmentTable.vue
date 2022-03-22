@@ -65,7 +65,7 @@
             placeholder="Select"
           >
             <el-option
-              v-for="item in scope.row.type == 'tuk' ? roleTuk : roleSecretary"
+              v-for="item in roles"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -101,17 +101,7 @@ export default {
   },
   data() {
     return {
-      roleTuk: [
-        {
-          label: 'Validator Substansi',
-          value: 'valsub',
-        },
-        {
-          label: 'Validator Administrasi',
-          value: 'valadm',
-        },
-      ],
-      roleSecretary: [
+      roles: [
         {
           label: 'Penanggung Jawab Materi',
           value: 'pjm',
