@@ -522,8 +522,8 @@ class DashboardController extends Controller
     private function getDistricts($id_province)
     {
         $districts = [];
-        $districts = District::select('id','id_prov')->where('id_prov', $id_province)->get();
-        foreach($districts as $d) {
+        $districts_data = District::select('id','id_prov')->where('id_prov', $id_province)->get();
+        foreach($districts_data as $d) {
             $districts[] = $d->id;
         }
 
