@@ -254,7 +254,7 @@
                   Berita Acara
                 </el-button>
                 <el-button
-                  v-if="((tukAccess(scope.row, 'valsub') || tukAccess(scope.row, 'valadm')) && isMeetReportAccepted(scope.row)) || (isFormulator && scope.row.feasibility_test)"
+                  v-if="(isValAdmOrAddByAdmin(scope.row) && isMeetReportAccepted(scope.row)) || (isFormulator && scope.row.feasibility_test)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -726,6 +726,23 @@ export default {
         if (project.tuk_project) {
           if (project.tuk_project.length > 0) {
             if (project.tuk_project[0].role === role || project.tuk_project[0].role === 'pjm') {
+              return true;
+            }
+          }
+        }
+      }
+
+      return false;
+    },
+    isValAdmOrAddByAdmin(project) {
+      if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
+        if (project.tuk_project) {
+          if (project.tuk_project.length > 0) {
+            if (
+              project.tuk_project[0].id_feasibility_test_team_member !== null ||
+              project.tuk_project[0].role === 'valadm' ||
+              project.tuk_project[0].role === 'pjm'
+            ) {
               return true;
             }
           }
