@@ -194,7 +194,7 @@
               </div>
             </div>
             <el-button
-              v-if="scope.row.type == 'subtitle'"
+              v-if="scope.row.type == 'subtitle' && isFormulator"
               icon="el-icon-plus"
               circle
               @click="handleAddImpactSource(scope.$index)"
@@ -227,7 +227,7 @@
             </div>
           </div>
           <el-button
-            v-if="scope.row.type == 'subtitle'"
+            v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
             @click="handleAddIndicator(scope.$index)"
@@ -261,7 +261,7 @@
               </div>
             </div>
             <el-button
-              v-if="scope.row.type == 'subtitle'"
+              v-if="scope.row.type == 'subtitle' && isFormulator"
               icon="el-icon-plus"
               circle
               @click="handleAddCollectionMethod(scope.$index)"
@@ -295,7 +295,7 @@
               </div>
             </div>
             <el-button
-              v-if="scope.row.type == 'subtitle'"
+              v-if="scope.row.type == 'subtitle' && isFormulator"
               icon="el-icon-plus"
               circle
               @click="handleAddLocation(scope.$index)"

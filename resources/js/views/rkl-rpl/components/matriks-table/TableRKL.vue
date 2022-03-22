@@ -193,7 +193,7 @@
             </div>
           </div>
           <el-button
-            v-if="scope.row.type == 'subtitle'"
+            v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
             @click="handleAddImpactSource(scope.$index)"
@@ -227,7 +227,7 @@
             </div>
           </div>
           <el-button
-            v-if="scope.row.type == 'subtitle'"
+            v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
             @click="handleAddSuccessIndicator(scope.$index)"
@@ -259,7 +259,7 @@
             </div>
           </div>
           <el-button
-            v-if="scope.row.type == 'subtitle'"
+            v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
             @click="handleAddForm(scope.$index)"
@@ -291,7 +291,7 @@
             </div>
           </div>
           <el-button
-            v-if="scope.row.type == 'subtitle'"
+            v-if="scope.row.type == 'subtitle' && isFormulator"
             icon="el-icon-plus"
             circle
             @click="handleAddLocation(scope.$index)"
