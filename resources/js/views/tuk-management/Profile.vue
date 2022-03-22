@@ -191,24 +191,6 @@ export default {
       formData.append('idTeam', this.team.id);
       formData.append('deletedSecretaryMember', JSON.stringify(this.deletedSecretaryMembers));
 
-      // === MEMBER ROLES === //
-      const members = this.listMember
-        .filter((x) => {
-          if (x.type === 'luk_member') {
-            if (x.role !== 'examiner-secretary') {
-              return true;
-            }
-          }
-        })
-        .map((y) => {
-          return {
-            id: y.id,
-            role: y.role,
-          };
-        });
-
-      formData.append('members', JSON.stringify(members));
-
       const data = await tukManagementResource.store(formData);
       if (data.errors === null) {
         this.$message({
