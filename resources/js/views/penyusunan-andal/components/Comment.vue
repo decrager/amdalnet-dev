@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-input
-      v-if="isExaminer"
+      v-if="!isFormulator"
       v-model="comment"
       type="textarea"
       :rows="3"
       placeholder="Silahkan isi komentar"
     />
-    <div v-if="isExaminer" class="send-btn-container">
+    <div v-if="!isFormulator" class="send-btn-container">
       <el-button
         :loading="loadingSubmit"
         type="primary"
@@ -57,8 +57,8 @@ export default {
       'userInfo': 'user',
       'userId': 'userId',
     }),
-    isExaminer() {
-      return this.$store.getters.roles.includes('examiner');
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
     },
   },
   created() {
@@ -71,7 +71,7 @@ export default {
         idProject: this.idProject,
         idUser: this.userInfo.id,
         comment: 'true',
-        role: this.$store.getters.roles.includes('examiner') ? 'true' : 'false',
+        role: this.$store.getters.roles.includes('formulator') ? 'false' : 'true',
       });
       this.comments = data;
     },
