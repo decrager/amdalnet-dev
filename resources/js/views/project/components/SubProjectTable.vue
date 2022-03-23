@@ -3,7 +3,7 @@
     <el-table
       :key="refresh"
       v-loading="loading"
-      height="800"
+      max-height="800"
       :header-cell-style="{ background: '#099C4B', color: 'white' }"
       :data="list"
       fit
