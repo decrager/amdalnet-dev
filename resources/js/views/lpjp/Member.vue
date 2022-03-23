@@ -63,10 +63,11 @@ export default {
         reg_no: null,
         cert_no: null,
         membership_status: null,
-        status: null,
         cert_file: null,
         cv_file: null,
         type: 'new',
+        date_start: null,
+        date_end: null,
       });
     },
     handleDelete({ id, type, num }) {
