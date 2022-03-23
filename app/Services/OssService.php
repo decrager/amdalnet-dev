@@ -188,7 +188,9 @@ class OssService
                 $idProduct = $dataProduct['id_produk'];
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
-                $subProjectAmdalnet = SubProject::where('id_proyek', $dataProject['id_proyek'])->first();
+                $subProjectAmdalnet = SubProject::where('id_proyek', $dataProject['id_proyek'])
+                    ->orderBy('created_at', 'desc')
+                    ->first();
                 $kdIzinNew = $ossNib->kd_izin;
                 // mapping kode izin:
                 // 029000000002	Persetujuan SKKL
@@ -202,6 +204,18 @@ class OssService
                     } else if ($subProjectAmdalnet->result == 'SPPL') {
                         $kdIzinNew = '029000000010';
                     }
+                }
+                // kewenangan:
+                // 00 : kewenangan pusat
+                // 01 : kewenangan provinsi
+                // 02 : kewenangan kabupaten
+                $authorityNew = $ossNib->kewenangan;
+                if (strtolower($project->authority) == 'pusat') {
+                    $authorityNew = '00';
+                } else if (strtolower($project->authority) == 'provinsi') {
+                    $authorityNew = '01';
+                } else if (strtolower($project->authority) == 'kabupaten') {
+                    $authorityNew = '02';
                 }
                 $data = [
                     'IZINSTATUS' => [
@@ -219,7 +233,7 @@ class OssService
                         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
                         'id_daerah' => $ossNib->kd_daerah,
                         'kewenangan' => $ossNib->kewenangan,
-                        'kewenangan_new' => $ossNib->kewenangan, // TODO: dari form penapisan
+                        'kewenangan_new' => $authorityNew,
                         'kd_izin_new' => $kdIzinNew,
                     ],
                 ];
