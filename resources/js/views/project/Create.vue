@@ -158,7 +158,7 @@
             <el-row type="flex" justify="end" :gutter="4">
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
-                  <el-table :key="refresh" :data="currentProject.address" height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+                  <el-table :key="refresh" :data="currentProject.address" max-height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
                     <el-table-column align="center" width="55">
                       <template slot-scope="scope">
                         <el-checkbox v-model="scope.row.isUsed" />
@@ -213,7 +213,7 @@
                       </template>
                     </el-table-column>
 
-                    <el-table-column width="100px">
+                    <!-- <el-table-column width="100px">
                       <template slot-scope="scope">
                         <el-popconfirm
                           title="Hapus Alamat ?"
@@ -222,7 +222,7 @@
                           <el-button slot="reference" type="danger" icon="el-icon-close" />
                         </el-popconfirm>
                       </template>
-                    </el-table-column>
+                    </el-table-column> -->
                   </el-table>
                   <el-button
                     type="primary"
@@ -238,6 +238,38 @@
                   Kembali
                 </el-button>
                 <el-button size="medium" type="primary" @click="handleStudyAccord">
+                  Lanjutkan
+                </el-button>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-collapse-item>
+        <el-collapse-item v-if="currentProject.isPemerintah" title="PENENTUAN KEWENANGAN" name="7" disabled>
+          <el-form
+            ref="penentuanKewenangan"
+            :model="currentProject"
+            :rules="penentuanKewenanganRules"
+            label-position="top"
+            label-width="200px"
+            style="max-width: 100%"
+          >
+            <el-row>
+              <el-form-item prop="listKewenangan">
+                <keep-alive>
+                  <kewenangan-table :list="currentProject.listKewenangan" />
+                </keep-alive>
+                <el-button
+                  type="primary"
+                  @click="handleAddKewenangan"
+                >+</el-button>
+              </el-form-item>
+            </el-row>
+            <el-row type="flex" justify="end">
+              <el-col :span="5">
+                <el-button size="medium" @click="activeName = '2'">
+                  Kembali
+                </el-button>
+                <el-button size="medium" type="primary" @click="goToStatusKegiatanPemerintah">
                   Lanjutkan
                 </el-button>
               </el-col>
@@ -278,7 +310,7 @@
             </el-row>
             <el-row type="flex" justify="end">
               <el-col :span="5">
-                <el-button size="medium" @click="activeName = '2'">
+                <el-button size="medium" @click="handleBackStatusKegiatan">
                   Kembali
                 </el-button>
                 <el-button size="medium" type="primary" @click="goToJenisKegiatan">
@@ -550,10 +582,11 @@ import ClassicUpload from '@/components/ClassicUpload';
 import Resource from '@/api/resource';
 // import SupportTable from './components/SupportTable.vue';
 import SubProjectTable from './components/SubProjectTable.vue';
+import KewenanganTable from './components/KewenanganTable.vue';
 import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
 const provinceResource = new Resource('provinces');
-// const regionResource = new Resource('regions');
+const districtResource = new Resource('districts');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
@@ -576,6 +609,7 @@ export default {
     ClassicUpload,
     Workflow,
     SubProjectTable,
+    KewenanganTable,
   },
   data() {
     var validateAddress = (rule, value, callback) => {
@@ -585,8 +619,14 @@ export default {
       callback();
     };
     var validateListSubProject = (rule, value, callback) => {
-      if (this.listSubProject.length < 1) {
+      if (this.listSubProject.filter(e => e.isUsed).length < 1) {
         callback(new Error('Mohon Pilih Minimal 1 Kegiatan'));
+      }
+      callback();
+    };
+    var validateListKewenangan = (rule, value, callback) => {
+      if (this.currentProject.listKewenangan.length < 1) {
+        callback(new Error('Mohon Pilih Minimal 1 Kewenangan'));
       }
       callback();
     };
@@ -641,6 +681,7 @@ export default {
         address: [],
         pippib: 'N',
         kawasan_lindung: 'N',
+        listKewenangan: [],
       },
       listSupportTable: [],
       listSubProject: [],
@@ -784,6 +825,11 @@ export default {
         ],
         address: [
           { validator: validateAddress, trigger: 'blur' },
+        ],
+      },
+      penentuanKewenanganRules: {
+        listKewenangan: [
+          { validator: validateListKewenangan, trigger: 'blur' },
         ],
       },
       statusKegiatanRules: {
@@ -960,21 +1006,35 @@ export default {
     },
     async addAuthoritiesBasedOnAddress(address){
       let tempFile = address[0].prov;
+      let tempKabFile = address[0].district;
       for (let i = 1; i < address.length; i++) {
         if (address[i].prov !== tempFile) {
           this.currentProject.authority = 'Pusat';
           delete this.currentProject.auth_province;
+          delete this.currentProject.auth_district;
           return;
         }
 
+        if (address[i].district !== tempKabFile) {
+          this.currentProject.authority = 'Provinsi';
+          const authProv = await provinceResource.list({ provName: tempFile });
+          this.currentProject.auth_province = authProv.id;
+          delete this.currentProject.auth_district;
+        }
+
+        tempKabFile = address[i].district;
         tempFile = address[i].prov;
       }
 
-      this.currentProject.authority = 'Provinsi';
-      const authProv = await provinceResource.list({ provName: tempFile });
-      this.currentProject.auth_province = authProv.id;
+      if (this.currentProject.authority === 'Provinsi'){
+        return;
+      }
 
-      console.log(this.currentProject);
+      this.currentProject.authority = 'Kabupaten';
+      const authDistrict = await districtResource.list({ districtName: tempKabFile });
+      this.currentProject.auth_district = authDistrict.id;
+
+      console.log('kewenangan by alamat', this.currentProject);
     },
     async goToPendekatanStudi(){
       if (!this.filepippib && this.currentProject.pippib === 'Y'){
@@ -993,9 +1053,56 @@ export default {
         }
       });
     },
+    async goToStatusKegiatanPemerintah(){
+      this.$refs.penentuanKewenangan.validate((valid) => {
+        if (valid) {
+          this.calculateAuthorities();
+          this.activeName = '3';
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    calculateAuthorities(){
+      let finalAuth = this.currentProject.listKewenangan[0].authority;
+
+      if (finalAuth === 'Pusat'){
+        this.currentProject.authority = 'Pusat';
+        delete this.currentProject.auth_province;
+        delete this.currentProject.auth_district;
+        return;
+      }
+
+      this.currentProject.listKewenangan.forEach(element => {
+        if (element.authority === 'Pusat'){
+          this.currentProject.authority = 'Pusat';
+          delete this.currentProject.auth_province;
+          delete this.currentProject.auth_district;
+          return;
+        } else if (element.authority === 'Provinsi' && finalAuth !== 'Pusat'){
+          finalAuth = 'Provinsi';
+          delete this.currentProject.auth_district;
+        } else if (finalAuth !== 'Provinsi'){
+          finalAuth = 'Kabupaten';
+        }
+      });
+
+      if (this.currentProject.authority === 'Pusat'){
+        return;
+      } else if (finalAuth === 'Provinsi' && this.currentProject.authority === 'Kabupaten'){
+        this.currentProject.authority = finalAuth;
+      }
+
+      console.log('authority pemerintah', this.currentProject);
+    },
     async goToStatusKegiatan(){
       console.log(this.currentProject);
-      this.activeName = '3';
+      if (this.currentProject.isPemerintah){
+        this.activeName = '7';
+      } else {
+        this.activeName = '3';
+      }
       // this.$refs.pendekatanStudi.validate(async(valid) => {
       //   if (valid) {
       //     await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
@@ -1005,6 +1112,11 @@ export default {
       //     return false;
       //   }
       // });
+    },
+    async handleBackStatusKegiatan(){
+      delete this.currentProject.authority;
+      await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
+      this.activeName = this.currentProject.isPemerintah ? '7' : '2';
     },
     goToJenisKegiatan(){
       this.$refs.statusKegiatan.validate((valid) => {
@@ -1729,11 +1841,18 @@ export default {
     handleAddSupportTable() {
       this.listSupportTable.push({});
     },
+    handleAddKewenangan() {
+      this.currentProject.listKewenangan.push({});
+    },
     handleAddSubProjectTable() {
-      this.listSubProject.push({});
+      this.listSubProject.push({
+        isUsed: true,
+      });
     },
     handleAddAddressTable() {
-      this.currentProject.address.push({});
+      this.currentProject.address.push({
+        isUsed: true,
+      });
     },
     handleKbliSelect(item) {
       this.getSectorsByKbli(item.value);

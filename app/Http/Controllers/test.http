@@ -51,17 +51,21 @@ POST http://localhost:8000/api/auth/login
 content-type: application/json
 
 {"email":"admin@amdalnet.dev","password":"amdalnet"}
+###
+POST http://localhost:8000/api/projects
+content-type: application/json
+
+{"email":"admin@amdalnet.dev","password":"amdalnet"}
 
 
 ###
 GET http://localhost:8000/api/fire
 ###
-
 GET http://localhost:8000/api/ossNibs?nib=9120406222016
-
-
 ###
 GET http://localhost:8000/api/oss/sectorByKbli/27401
+###
+GET http://localhost:8000/api/authorities?sectors=Kehutanan
 ###
 GET http://localhost:8000/api/oss/getField?kbli=27401&sector=Perindustrian
 ###

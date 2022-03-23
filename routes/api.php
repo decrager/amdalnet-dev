@@ -301,6 +301,7 @@ Route::apiResource('ka-comment', 'KaCommentController');
 Route::apiResource('employee-tuk', 'EmployeeTUKController');
 Route::apiResource('tuk-management', 'TUKManagementController');
 Route::apiResource('regions', 'RegionController');
+Route::apiResource('authorities', 'AuthorityController');
 Route::get('timeline', [ProjectController::class, 'timeline']);
 Route::apiResource('tuk-project', 'TukProjectController');
 
