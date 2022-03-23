@@ -17,7 +17,7 @@
         >
           <i class="el-icon-download" /> {{ scope.row.name }}
         </a>
-        <el-upload
+        <!-- <el-upload
           v-if="(scope.row.name === 'Persetujuan Lingkungan SKKL') && !scope.row.uploaded"
           action="#"
           :auto-upload="false"
@@ -27,7 +27,7 @@
           :disabled="loadingUpload"
         >
           <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
-        </el-upload>
+        </el-upload> -->
       </template>
     </el-table-column>
 

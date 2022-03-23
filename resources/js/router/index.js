@@ -27,6 +27,7 @@ import ukluplRoutes from './modules/uklupl';
 // import lukRoutes from './modules/luk';
 import tukRoutes from './modules/tuk';
 import tukProfileRoutes from './modules/tukProfile';
+import tukProjectRoutes from './modules/tukProject';
 // import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
@@ -248,6 +249,7 @@ export const asyncRoutes = [
   // },
   // ukluplStaticRoutes,
   tukProfileRoutes,
+  tukProjectRoutes,
   adminRoutes,
   projectRoutes,
   screeningRoutes,

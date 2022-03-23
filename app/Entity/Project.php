@@ -53,7 +53,7 @@ class Project extends Model implements Auditable
 
     protected $guarded = [];
     
-    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document'];
+    protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document'];
 
     public function team()
     {
@@ -130,6 +130,11 @@ class Project extends Model implements Auditable
         return $this->hasMany(MeetingReport::class, 'id_project', 'id');
     }
 
+    public function tukProject()
+    {
+        return $this->hasMany(TukProject::class, 'id_project', 'id');
+    }
+
     public function getFillingDateAttribute()
     {
         Carbon::setLocale('id');
@@ -149,6 +154,21 @@ class Project extends Model implements Auditable
         }
 
         $save_file_name = $this->id . '-rkl-rpl' . '.docx';
+
+        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getUklUplDocumentAttribute()
+    {
+        if (!File::exists(storage_path('app/public/workspace/'))) {
+            return false;
+        }
+
+        $save_file_name = 'ukl-upl-' . strtolower($this->project_title) . '.docx';
 
         if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
             return true;

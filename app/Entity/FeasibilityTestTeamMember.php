@@ -25,4 +25,9 @@ class FeasibilityTestTeamMember extends Model
     {
         return $this->belongsTo(FeasibilityTestTeam::class, 'id_feasibility_test_team', 'id');
     }
+
+    public function tukProject()
+    {
+        return $this->hasMany(TukProject::class, 'id_feasibility_test_team_member', 'id');
+    }
 }

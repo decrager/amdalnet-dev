@@ -188,6 +188,35 @@ class OssService
                 $idProduct = $dataProduct['id_produk'];
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
+                $subProjectAmdalnet = SubProject::where('id_proyek', $dataProject['id_proyek'])
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                $kdIzinNew = $ossNib->kd_izin;
+                // mapping kode izin:
+                // 029000000002	Persetujuan SKKL
+                // 029000000010	SPPL
+                // 029000000001	Persetujuan PKPLH
+                if ($subProjectAmdalnet) {
+                    if ($subProjectAmdalnet->result == 'AMDAL') {
+                        $kdIzinNew = '029000000002';
+                    } else if ($subProjectAmdalnet->result == 'UKL-UPL') {
+                        $kdIzinNew = '029000000001';
+                    } else if ($subProjectAmdalnet->result == 'SPPL') {
+                        $kdIzinNew = '029000000010';
+                    }
+                }
+                // kewenangan:
+                // 00 : kewenangan pusat
+                // 01 : kewenangan provinsi
+                // 02 : kewenangan kabupaten
+                $authorityNew = $ossNib->kewenangan;
+                if (strtolower($project->authority) == 'pusat') {
+                    $authorityNew = '00';
+                } else if (strtolower($project->authority) == 'provinsi') {
+                    $authorityNew = '01';
+                } else if (strtolower($project->authority) == 'kabupaten') {
+                    $authorityNew = '02';
+                }
                 $data = [
                     'IZINSTATUS' => [
                         'nib' => $initiator->nib,
@@ -202,20 +231,15 @@ class OssService
                         'nip_status' => null, // NULL
                         'nama_status' => OssService::getStatusNameOss($statusCode),
                         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
-                        'data_pnbp' => [
-                            'kd_akun' => null,
-                            'kd_penerimaan' => null,
-                            'kd_billing' => null,
-                            'tgl_billing' => null,
-                            'tgl_expire' => null,
-                            'nominal' => null,
-                            'url_dokumen' => null,
-                        ],  
+                        'id_daerah' => $ossNib->kd_daerah,
+                        'kewenangan' => $ossNib->kewenangan,
+                        'kewenangan_new' => $authorityNew,
+                        'kd_izin_new' => $kdIzinNew,
                     ],
                 ];
                 $response = Http::withHeaders([
                     'user_key' => env('OSS_USER_KEY'),
-                ])->post(env('OSS_ENDPOINT') . '/kl/rba/receiveLicenseStatus', $data);
+                ])->post(env('OSS_ENDPOINT') . '/out/rba/receivelicensestatuslingkungan', $data);
                 $respJson = $response->json();
                 // print_r($respJson);
                 // if ((int)$respJson['responreceiveLicenseStatus']['kode'] == 200) {

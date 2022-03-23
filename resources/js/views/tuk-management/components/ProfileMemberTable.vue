@@ -35,23 +35,6 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Peran" align="center">
-      <template slot-scope="scope">
-        <el-select
-          v-if="showRole(scope.row)"
-          v-model="list[scope.$index].role"
-          placeholder="Pilih Peran"
-        >
-          <el-option
-            v-for="item in roles"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </template>
-    </el-table-column>
-
     <el-table-column label="File" align="center">
       <template slot-scope="scope">
         <el-button
@@ -79,34 +62,9 @@ export default {
     },
     loading: Boolean,
   },
-  data() {
-    return {
-      roles: [
-        {
-          label: 'Validator Substansi',
-          value: 'examiner-substance',
-        },
-        {
-          label: 'Validator Administrasi',
-          value: 'examiner-administration',
-        },
-      ],
-    };
-  },
   methods: {
     download(url) {
       window.open(url, '_blank').focus();
-    },
-    showRole(data) {
-      if (data.role === 'examiner-secretary') {
-        return false;
-      }
-
-      if (data.type === 'expert_bank') {
-        return false;
-      }
-
-      return true;
     },
   },
 };

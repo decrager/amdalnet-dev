@@ -154,17 +154,8 @@ export default {
     };
   },
   computed: {
-    isSubstance() {
-      return this.$store.getters.roles.includes('examiner-substance');
-    },
-    isExaminer() {
-      return this.$store.getters.roles.includes('examiner');
-    },
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
-    },
-    isAdmin() {
-      return this.userInfo.roles.includes('examiner-administration');
     },
   },
   mounted() {

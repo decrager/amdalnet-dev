@@ -36,14 +36,6 @@ class LpjpController extends Controller
 
             $num = 1;
             foreach($members as $m) {
-                $status = 'Tidak Aktif';
-
-                if($m->date_end) {
-                    if($m->date_end >= date('Y-m-d H:i:s')) {
-                        $status = 'Aktif';
-                    }
-                }
-
                 $formulators[] = [
                     'num' => $num,
                     'id' => $m->id,
@@ -51,8 +43,9 @@ class LpjpController extends Controller
                     'reg_no' => $m->reg_no,
                     'cert_no' => $m->cert_no,
                     'membership_status' => $m->membership_status,
-                    'status' => $status,
                     'cert_file' => $m->cert_file,
+                    'date_start' => $m->date_start,
+                    'date_end' => $m->date_end,
                     'cv_file' => $m->file,
                     'type' => 'update'
                 ];

@@ -303,6 +303,7 @@ Route::apiResource('tuk-management', 'TUKManagementController');
 Route::apiResource('regions', 'RegionController');
 Route::apiResource('authorities', 'AuthorityController');
 Route::get('timeline', [ProjectController::class, 'timeline']);
+Route::apiResource('tuk-project', 'TukProjectController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
