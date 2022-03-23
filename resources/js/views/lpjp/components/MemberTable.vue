@@ -51,7 +51,9 @@
 
     <el-table-column label="Status" align="center">
       <template slot-scope="scope">
-        <span>{{ scope.row.status }}</span>
+        <span>{{
+          calculateStatus(scope.row.date_start, scope.row.date_end)
+        }}</span>
       </template>
     </el-table-column>
 
@@ -150,9 +152,22 @@ export default {
       this.list[idx].cert_no = this.formulators[indx].cert_no;
       this.list[idx].membership_status =
         this.formulators[indx].membership_status;
-      this.list[idx].status = this.isActive(this.formulators[indx].date_end);
       this.list[idx].cert_file = this.formulators[indx].cert_file;
       this.list[idx].cv_file = this.formulators[indx].cv_file;
+      this.list[idx].date_start = this.formulators[indx].date_start;
+      this.list[idx].date_end = this.formulators[indx].date_end;
+    },
+    calculateStatus(awal, akhir) {
+      const tglAwal = new Date(awal);
+      const tglAkhir = new Date(akhir);
+      if (
+        new Date().getTime() >= tglAwal.getTime() &&
+        new Date().getTime() <= tglAkhir.getTime()
+      ) {
+        return 'Aktif';
+      } else {
+        return 'NonAktif';
+      }
     },
   },
 };
