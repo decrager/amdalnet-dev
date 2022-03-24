@@ -175,19 +175,26 @@ class OssService
     public static function receiveLicenseStatus($project = null, $statusCode)
     {
         $dataSubProject = OssService::getSubProjects($project);
-        $initiator = $dataSubProject['initiator'];
         $ossNib = $dataSubProject['ossNib'];
         $subProjects =  $dataSubProject['subProjects'];
         $subProjectsAmdalnetIdProyeks = $dataSubProject['subProjectsAmdalnetIdProyeks'];
+        $jsonContent = $ossNib->json_content;
+        $idIzin = $ossNib->id_izin;
+        $dataChecklist = $jsonContent['data_checklist'];
 
         foreach ($subProjects as $dataProject) {
-            $dataProduct = null;
-            $idProduct = 0;
+            $idProduct = null;
             if (count($dataProject['data_proyek_produk']) > 0) {
                 $dataProduct = $dataProject['data_proyek_produk'][0];
                 $idProduct = $dataProduct['id_produk'];
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
+                foreach ($dataChecklist as $c) {
+                    if ($c['id_proyek'] == $dataProject['id_proyek']) {
+                        $idIzin = $c['id_izin'];
+                        break;
+                    }
+                }
                 $subProjectAmdalnet = SubProject::where('id_proyek', $dataProject['id_proyek'])
                     ->orderBy('created_at', 'desc')
                     ->first();
@@ -219,11 +226,11 @@ class OssService
                 }
                 $data = [
                     'IZINSTATUS' => [
-                        'nib' => $initiator->nib,
+                        'nib' => $ossNib->nib,
                         'id_produk' => $idProduct,
                         'id_proyek' => $dataProject['id_proyek'],
                         'oss_id' => $ossNib->oss_id,
-                        'id_izin' => $ossNib->id_izin,
+                        'id_izin' => $idIzin,
                         'kd_izin' => $ossNib->kd_izin,
                         'kd_instansi' => $dataProject['sektor'],
                         'kd_status' => $statusCode,
@@ -231,8 +238,8 @@ class OssService
                         'nip_status' => null, // NULL
                         'nama_status' => OssService::getStatusNameOss($statusCode),
                         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
-                        'id_daerah' => $ossNib->kd_daerah,
-                        'kewenangan' => $ossNib->kewenangan,
+                        'id_daerah' => $jsonContent['kd_daerah'],
+                        'kewenangan' => $jsonContent['kewenangan'],
                         'kewenangan_new' => $authorityNew,
                         'kd_izin_new' => $kdIzinNew,
                     ],
