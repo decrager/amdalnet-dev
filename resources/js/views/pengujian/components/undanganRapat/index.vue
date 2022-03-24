@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div>
     <el-row :gutter="32">
@@ -115,11 +116,7 @@
 
           <el-table-column label="Peran">
             <template slot-scope="scope">
-              <span v-if="scope.row.type == 'tuk'">
-                {{ scope.row.role }} TUK
-              </span>
               <el-select
-                v-else
                 v-model="scope.row.role"
                 placeholder="Pilih Peran"
                 style="width: 100%"
@@ -137,16 +134,42 @@
 
           <el-table-column label="Nama Anggota">
             <template slot-scope="scope">
-              <span v-if="scope.row.type == 'tuk'">{{ scope.row.name }}</span>
+              <span v-if="scope.row.type == 'Ketua TUK'">{{
+                scope.row.name
+              }}</span>
+              <el-select
+                v-else-if="
+                  scope.row.type === 'Anggota TUK' ||
+                  scope.row.type === 'Anggota Sekretariat TUK'
+                "
+                v-model="scope.row.tuk_member_id"
+                placeholder="Pilih Anggota"
+                style="width: 100%"
+                filterable
+                @change="handleChangeName($event, scope.row.type, scope.$index)"
+              >
+                <el-option
+                  v-for="item in scope.row.tuk_options"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
               <el-input v-else v-model="scope.row.name" />
             </template>
           </el-table-column>
 
           <el-table-column label="Instansi">
             <template slot-scope="scope">
-              <span v-if="scope.row.type == 'tuk'">{{
-                scope.row.institution
-              }}</span>
+              <span
+                v-if="
+                  scope.row.type == 'Ketua TUK' ||
+                  scope.row.type == 'Anggota TUK' ||
+                  scope.row.type == 'Anggota Sekretariat TUK'
+                "
+              >
+                {{ scope.row.institution }}
+              </span>
               <el-select
                 v-else-if="isGovernmentInstitution(scope.row.role)"
                 v-model="scope.row.id_government_institution"
@@ -168,9 +191,24 @@
           <el-table-column label="E-mail">
             <template slot-scope="scope">
               <div>
-                <span v-if="scope.row.type == 'tuk'">{{
-                  scope.row.email
-                }}</span>
+                <div
+                  v-if="
+                    scope.row.type == 'Ketua TUK' ||
+                    scope.row.type === 'Anggota TUK' ||
+                    scope.row.type === 'Anggota Sekretariat TUK'
+                  "
+                  class="email-column"
+                >
+                  <span>
+                    {{ scope.row.email }}
+                  </span>
+                  <el-button
+                    type="text"
+                    icon="el-icon-close"
+                    style="display: block"
+                    @click.prevent="deleteRow(scope.$index, scope.row.id)"
+                  />
+                </div>
                 <div v-else class="email-column">
                   <el-input v-model="scope.row.email" />
                   <el-button
@@ -248,6 +286,18 @@ export default {
       timUjiKelayakan: [],
       peran: [
         {
+          label: 'Ketua TUK',
+          value: 'Ketua TUK',
+        },
+        {
+          label: 'Anggota TUK',
+          value: 'Anggota TUK',
+        },
+        {
+          label: 'Anggota Sekretariat TUK',
+          value: 'Anggota Sekretariat TUK',
+        },
+        {
           label: 'Kementerian',
           value: 'Kementerian',
         },
@@ -266,10 +316,6 @@ export default {
         {
           label: 'Tenaga Ahli',
           value: 'Tenaga Ahli',
-        },
-        {
-          label: 'Masyarakat',
-          value: 'Masyarakat',
         },
         {
           label: 'Lainnya',
@@ -293,6 +339,7 @@ export default {
       out: '',
       outInvitation: '',
       governmentInstitutions: [],
+      members: [],
     };
   },
   computed: {
@@ -303,8 +350,8 @@ export default {
   },
   async created() {
     this.loading = true;
+    await this.getTukMembers();
     await this.getGovernmentInstitutions();
-    await this.getTimUjiKelayakan();
     await this.getMeetings();
   },
   methods: {
@@ -316,10 +363,19 @@ export default {
       });
       const invitations = data.invitations.map((x) => {
         let institution_options = [];
+        let tuk_options = [];
 
         if (this.isGovernmentInstitution(x.role)) {
           institution_options = this.governmentInstitutions.filter(
             (y) => y.institution_type === x.role
+          );
+        } else if (x.role === 'Anggota TUK') {
+          tuk_options = this.members.filter(
+            (x) => x.role === 'Anggota' || x.role === 'Kepala Sekretariat'
+          );
+        } else if (x.role === 'Anggota Sekretariat TUK') {
+          tuk_options = this.members.filter(
+            (x) => x.role === 'Anggota Sekretariat'
           );
         }
 
@@ -331,14 +387,22 @@ export default {
           type: x.type,
           type_member: x.type_member,
           id_government_institution: x.id_government_institution,
-          institution_options: institution_options,
+          institution_options,
           institution: x.institution,
+          tuk_options,
+          tuk_member_id: x.tuk_member_id,
         };
       });
       data.invitations = invitations;
       this.meetings = data;
       this.loading = false;
       this.loadingTuk = false;
+    },
+    async getTukMembers() {
+      this.members = await undanganRapatResource.list({
+        tukMember: 'true',
+        idProject: this.$route.params.id,
+      });
     },
     async handleSubmit() {
       this.loadingSubmit = true;
@@ -365,36 +429,6 @@ export default {
       this.getMeetings();
       this.loadingSubmit = false;
     },
-    async getTimUjiKelayakan() {
-      const data = await undanganRapatResource.list({
-        expert_bank_team: 'true',
-      });
-      this.timUjiKelayakan = data.map((x) => {
-        let name = '';
-        const team_number = x.team_number ? x.team_number : '';
-
-        if (x.authority === 'Pusat') {
-          name = 'Tim Uji Kelayakan Pusat';
-        } else if (x.authority === 'Provinsi') {
-          if (x.province_authority) {
-            name = `Tim Uji Kelayakan Provinsi ${this.capitalize(
-              x.province_authority.name
-            )} ${team_number}`;
-          }
-        } else if (x.authority === 'Kabupaten/Kota') {
-          if (x.district_authority) {
-            name = `Tim Uji Kelayakan ${this.capitalize(
-              x.district_authority.name
-            )} ${team_number}`;
-          }
-        }
-
-        return {
-          id: x.id,
-          name,
-        };
-      });
-    },
     async getGovernmentInstitutions() {
       this.governmentInstitutions = await institutionResource.list({
         meeting: 'true',
@@ -420,6 +454,8 @@ export default {
         id_government_institution: null,
         institution_options: [],
         institution: null,
+        tuk_options: [],
+        tuk_member_id: null,
       });
     },
     isGovernmentInstitution(role) {
@@ -431,11 +467,70 @@ export default {
       );
     },
     handleChangeRole(val, idx) {
+      this.meetings.invitations[idx].tuk_member_id = null;
+
       if (this.isGovernmentInstitution(val)) {
         const institution = this.governmentInstitutions.filter(
           (x) => x.institution_type === val
         );
         this.meetings.invitations[idx].institution_options = institution;
+        this.meetings.invitations[idx].name = null;
+        this.meetings.invitations[idx].email = null;
+        this.meetings.invitations[idx].institution = null;
+        this.meetings.invitations[idx].type = 'institution';
+        this.meetings.invitations[idx].type_member = 'institution';
+      } else {
+        if (val === 'Ketua TUK') {
+          const ketua = this.members.find((x) => x.role === 'Ketua');
+          if (ketua) {
+            this.meetings.invitations[idx] = {
+              id: null,
+              role: 'Ketua TUK',
+              name: ketua.name,
+              email: ketua.email,
+              type: 'Ketua TUK',
+              type_member: 'Ketua TUK',
+              institution: ketua.institution,
+              tuk_options: [],
+              tuk_member_id: ketua.id,
+            };
+          }
+        } else if (val === 'Anggota TUK' || val === 'Anggota Sekretariat TUK') {
+          this.meetings.invitations[idx].role = val;
+          this.meetings.invitations[idx].type = val;
+          this.meetings.invitations[idx].type_member = val;
+          this.meetings.invitations[idx].name = null;
+          this.meetings.invitations[idx].email = null;
+          this.meetings.invitations[idx].institution = null;
+
+          if (val === 'Anggota TUK') {
+            this.meetings.invitations[idx].tuk_options = this.members.filter(
+              (x) => x.role === 'Anggota' || x.role === 'Kepala Sekretariat'
+            );
+          } else {
+            this.meetings.invitations[idx].tuk_options = this.members.filter(
+              (x) => x.role === 'Anggota Sekretariat'
+            );
+          }
+        }
+      }
+    },
+    handleChangeName(val, type, idx) {
+      let tuk = null;
+
+      if (type === 'Anggota TUK') {
+        tuk = this.meetings.invitations[idx].tuk_options.find(
+          (x) => x.id === val && x.type === 'tuk'
+        );
+      } else {
+        tuk = this.meetings.invitations[idx].tuk_options.find(
+          (x) => x.id === val && x.type === 'tuk_secretary'
+        );
+      }
+
+      if (tuk) {
+        this.meetings.invitations[idx].institution = tuk.institution;
+        this.meetings.invitations[idx].email = tuk.email;
       }
     },
     capitalize(mySentence) {
