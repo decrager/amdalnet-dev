@@ -142,6 +142,21 @@ class ProjectController extends Controller
             })->orWhereHas('tukSecretaryMember', function($query) {
                 $query->where('email', Auth::user()->email);
             });
+        }, 'testingMeeting' => function($q) {
+            $q->select('id', 'document_type', 'id_project');
+            $q->whereHas('invitations', function($que) {
+                $que->where(function($queryy) {
+                    $queryy->whereHas('feasibilityTestTeamMember', function($quer) {
+                        $quer->whereHas('lukMember', function($qu) {
+                            $qu->where('email', Auth::user()->email);
+                        })->orWhereHas('expertBank', function($qu) {
+                            $qu->where('email', Auth::user()->email);
+                        });
+                    })->orWhereHas('tukSecretaryMember', function($quer) {
+                        $quer->where('email', Auth::user()->email);
+                    });
+                })->orWhere('email', Auth::user()->email);
+            });
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
@@ -186,6 +201,20 @@ class ProjectController extends Controller
                             });
                         })->orWhereHas('tukSecretaryMember', function($que) {
                             $que->where('email', Auth::user()->email);
+                        });
+                    })->orWhereHas('testingMeeting', function($q) {
+                        $q->whereHas('invitations', function($que) {
+                            $que->where(function($queryy) {
+                                $queryy->whereHas('feasibilityTestTeamMember', function($quer) {
+                                    $quer->whereHas('lukMember', function($qu) {
+                                        $qu->where('email', Auth::user()->email);
+                                    })->orWhereHas('expertBank', function($qu) {
+                                        $qu->where('email', Auth::user()->email);
+                                    });
+                                })->orWhereHas('tukSecretaryMember', function($quer) {
+                                    $quer->where('email', Auth::user()->email);
+                                });
+                            })->orWhere('email', Auth::user()->email);
                         });
                     });
                 }
