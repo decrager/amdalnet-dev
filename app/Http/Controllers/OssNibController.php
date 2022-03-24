@@ -6,6 +6,7 @@ use App\Entity\Business;
 use App\Entity\Kbli;
 use App\Entity\OssNib;
 use App\Entity\Region;
+use App\Entity\SubProject;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -46,6 +47,12 @@ class OssNibController extends Controller
                     $region = Region::where('region_id', $dataLokasiProyek['proyek_daerah_id'])->first();
                     $dataLokasiProyek['province'] = $region['province'];
                     $dataLokasiProyek['regency'] = $region['regency'];
+                }
+
+                $isExistSubProject = SubProject::where('id_proyek', $dataProyek['id_proyek'])->first();
+
+                if($isExistSubProject){
+                    $dataProyek['status_tapis'] = 'Y';
                 }
             }
             return $dataJsonContent;
