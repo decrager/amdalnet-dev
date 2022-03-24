@@ -30,7 +30,7 @@ class ProjectRonaAwalController extends Controller
             if (isset($params['with_component_type']) && $params['with_component_type']){
                 $component_types = ComponentType::select('component_types.*')
                     ->orderBy('id', 'asc')
-                    ->get();                
+                    ->get();
                 $data = [];
                 foreach ($rona_awals as $rona_awal) {
                     $id_component_type = $rona_awal['id_component_type_master'];
@@ -92,7 +92,28 @@ class ProjectRonaAwalController extends Controller
      */
     public function store(Request $request)
     {
-        $all_params = $request->all();
+
+        $params = $request->all();
+        if(isset($params['id_project']) && isset($params['component'])){
+            $pc = ProjectRonaAwal::firstOrNew([
+                'id_project' => $request->id_project,
+                'id_rona_awal' => $params['component']['id']
+            ]);
+            $pc->description = $params['component']['description'];
+            $pc->measurement = $params['component']['measurement'];
+            if ($pc->save()) {
+                return response()->json([
+                    'code' => 200,
+                    'data' =>  $pc
+
+                ]);
+            }
+            return response()->json(['code' => 500]);
+        }
+
+        return response()->json(['code' => 500]);
+
+        /* $all_params = $request->all();
         if (isset($all_params['rona_awals'])){
             $validator = $request->validate([
                 'rona_awals' => 'required',
@@ -143,7 +164,7 @@ class ProjectRonaAwalController extends Controller
                 DB::rollBack();
                 return response()->json(['code' => 500]);
             }
-        }
+        }*/
     }
 
     /**

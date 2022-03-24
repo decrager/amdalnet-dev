@@ -88,6 +88,21 @@ export default {
   padding: 0.5em;
 }
 
+.scoping p {
+  cursor: pointer;
+}
+.scoping p.highlighted {
+  background: #eee;
+  border-color: #aaa;
+}
+
+.scoping p.selected {
+  background: #e9efe9;
+  border-color: #afc6af;
+  font-weight: bold;
+  color: #216221;
+}
+
 .master-komponen .el-card__body .components-container {
   max-height: 350px;
   overflow-y: auto;

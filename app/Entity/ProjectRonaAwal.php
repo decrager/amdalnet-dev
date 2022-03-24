@@ -14,8 +14,8 @@ class ProjectRonaAwal extends Model
     protected $fillable = [
         'id_project',
         'id_rona_awal',
-        'name',
-        'id_component_type'
+        'description',
+        'measurement',
     ];
 
     public function rona_awal(){

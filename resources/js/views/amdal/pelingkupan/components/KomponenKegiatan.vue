@@ -16,6 +16,7 @@
       <form-komponen-kegiatan
         :show="showForm"
         :mode="mode"
+        :stages="projectStages"
         :input="selectedData"
         @onSave="onSaveData"
         @onClose="showForm = false"
@@ -33,6 +34,12 @@ export default {
   components: { FormKomponenKegiatan, ComponentsList },
   props: {
     components: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
+    projectStages: {
       type: Array,
       default: function() {
         return [];

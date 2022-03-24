@@ -16,6 +16,7 @@
       <form-komponen-lingkungan
         :show="showForm"
         :mode="mode"
+        :component-types="componentTypes"
         :input="selectedData"
         @onSave="onSaveData"
         @onClose="showForm = false"
@@ -35,7 +36,13 @@ export default {
     components: {
       type: Array,
       default: function() {
-
+        return [];
+      },
+    },
+    componentTypes: {
+      type: Array,
+      default: function() {
+        return [];
       },
     },
   },
@@ -61,6 +68,7 @@ export default {
     editComponent(id){
       this.selectedData = this.components.find(e => e.id === id);
       this.mode = 1;
+      console.log(this.selectedData);
       this.showForm = true;
     },
     removeComponent(id){

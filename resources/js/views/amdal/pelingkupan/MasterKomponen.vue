@@ -2,10 +2,16 @@
   <div style="border:1px solid #e0e0e0; border-radius:0.5em; padding: 2.5em 1.5em;">
     <el-row :gutter="10">
       <el-col :span="8">
-        <komponen-kegiatan :components="components" />
+        <komponen-kegiatan
+          :components="components"
+          :project-stages="projectStages"
+        />
       </el-col>
       <el-col :span="8">
-        <komponen-lingkungan :components="hues" />
+        <komponen-lingkungan
+          :components="hues"
+          :component-types="componentTypes"
+        />
       </el-col>
       <el-col :span="8">
         &nbsp;
@@ -33,6 +39,18 @@ export default {
         return [];
       },
     },
+    projectStages: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
+    componentTypes: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
   },
   data() {
     return {
@@ -44,6 +62,17 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style>
+
+.components-container{
+  margin:0 0 1em;
+}
+.master-komponen .el-card__body p  {
+  margin: 0 0 0.2em 0;
+  border: 1px solid #e0e0e0;
+  border-radius:0.3em;
+  padding: 0.5em;
+  text-align: center;
+}
 
 </style>

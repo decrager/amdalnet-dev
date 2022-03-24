@@ -35,6 +35,22 @@ class RonaAwalController extends Controller
                 ->limit(10)
                 ->get());
         }
+        if ((isset($params['id_component_type']) && $params['id_component_type']) &&
+            (isset($params['project_id']) && $params['project_id'])) {
+            return RonaAwalResource::collection(
+                RonaAwal::select(
+                    'rona_awal.*',
+                    'rona_awal.name as value'
+                )
+                ->where('id_component_type', $request->id_component_type)
+                ->where(function ($query) use ($request) {
+                    $query->where('is_master', true);
+                    $query->orWhere('originator_id', $request->project_id);
+                    return $query;
+                })
+                ->orderBy('name', 'ASC')
+                ->get());
+        }
 
         return RonaAwal::select('rona_awal.*', 'components.name as component')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';

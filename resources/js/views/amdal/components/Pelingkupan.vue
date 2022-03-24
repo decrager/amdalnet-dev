@@ -1,10 +1,23 @@
 <template>
-  <div>
+  <div class="scoping-wrapper">
+    <div style="margin: 3em auto;">
+      <master-komponen
+        :components="components"
+        :hues="hues"
+        :component-types="componentTypes"
+        :project-stages="projectStages"
+      />
+    </div>
+
     <el-tabs type="card">
       <el-tab-pane v-for="s of projectStages" :key="s.id" :label="s.name">
         <pelingkupan-table
+          :master-components="components"
+          :master-hues="hues"
           :id-project="idProject"
           :id-project-stage="s.id"
+          :project-stages="projectStages"
+          :component-types="componentTypes"
           :current-id-sub-project="currentIdSubProject"
           @handleCurrentIdSubProject="handleCurrentIdSubProject"
         />
@@ -25,17 +38,22 @@
 <script>
 
 import Resource from '@/api/resource';
+import MasterKomponen from './../pelingkupan/MasterKomponen.vue';
 import PelingkupanTable from './tables/PelingkupanTable.vue';
 import Comment from './Comment.vue';
 const projectStageResource = new Resource('project-stages');
+const componentTypeResource = new Resource('component-types');
 
 export default {
   name: 'Pelingkupan',
-  components: { PelingkupanTable, Comment },
+  components: { PelingkupanTable, Comment, MasterKomponen },
   data() {
     return {
       idProject: 0,
       projectStages: [],
+      components: [],
+      hues: [],
+      componentTypes: [],
       currentIdSubProject: 0,
       commentColumn: [
         {
@@ -59,10 +77,6 @@ export default {
           value: 'Kesehatan Masyarakat',
         },
         {
-          label: 'Kegiatan Lain Sekitar',
-          value: 'Kegiatan Lain Sekitar',
-        },
-        {
           label: 'Lainnya',
           value: 'Lainnya',
         },
@@ -79,6 +93,7 @@ export default {
   },
   mounted() {
     this.getData();
+    this.getComponentTypes();
   },
   methods: {
     handleSaveForm() {
@@ -94,6 +109,10 @@ export default {
       });
       this.projectStages = prjStages.data;
     },
+    async getComponentTypes(){
+      const compTypes = await componentTypeResource.list({});
+      this.componentTypes = compTypes.data;
+    },
   },
 };
 </script>
@@ -101,4 +120,5 @@ export default {
 .save-changes {
   text-align:right;
 }
+
 </style>

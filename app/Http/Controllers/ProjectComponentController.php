@@ -26,7 +26,7 @@ class ProjectComponentController extends Controller
                 ->get();
             return ProjectComponentResource::collection($components);
         } else {
-            return ProjectComponentResource::collection(ProjectComponent::with('component')->get()); 
+            return ProjectComponentResource::collection(ProjectComponent::with('component')->get());
         }
     }
 
@@ -48,6 +48,28 @@ class ProjectComponentController extends Controller
      */
     public function store(Request $request)
     {
+
+        $params = $request->all();
+        if(isset($params['id_project']) && isset($params['component'])){
+            $pc = ProjectComponent::firstOrNew([
+                'id_project' => $request->id_project,
+                'id_component' => $params['component']['id']
+            ]);
+            $pc->description = $params['component']['description'];
+            $pc->measurement = $params['component']['measurement'];
+            if ($pc->save()) {
+                return response()->json([
+                    'code' => 200,
+                    'data' =>  $pc
+
+                ]);
+            }
+            return response()->json(['code' => 500]);
+        }
+
+        return response()->json(['code' => 500]);
+
+        /*
         $all_params = $request->all();
         if (isset($all_params['components'])){
             $validator = $request->validate([
@@ -100,7 +122,7 @@ class ProjectComponentController extends Controller
                 DB::rollBack();
                 return response()->json(['code' => 500]);
             }
-        }
+        }*/
     }
 
     /**

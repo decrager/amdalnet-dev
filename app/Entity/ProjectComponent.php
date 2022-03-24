@@ -14,8 +14,8 @@ class ProjectComponent extends Model
     protected $fillable = [
         'id_project',
         'id_component',
-        'name',
-        'id_project_stage'
+        'description',
+        'measurement'
     ];
 
     public function component(){

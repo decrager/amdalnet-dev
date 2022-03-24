@@ -1,13 +1,27 @@
 <template>
   <div
     v-if="components.length > 0"
-    :class="className"
+    :class="className + ' component-list'"
   >
-    <p v-for="comp in components" :key="comp.id+'_'+id">
-      <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
-      <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
-      {{ comp.name }}  <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
-    </p>
+    <div
+      v-for="(comp) in components"
+      :key="comp.id+'_'+id"
+    >
+      <!-- <p
+        v-if="selected.includes(comp.id)"
+        class="selected"
+      >
+        <el-button type="primary" icon="el-icon-close" size="mini" plain circle style="float:right; width:20px; padding: 3px 0;" @click="deSelect(comp.id)" />
+        {{ comp.name }} <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
+      </p> -->
+      <p
+        :data-id="comp.id"
+      >
+        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
+        <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
+        {{ comp.name }}  <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
+      </p>
+    </div>
   </div>
 </template>
 <script>
@@ -24,7 +38,21 @@ export default {
     showDelete: { type: Boolean, default: true },
     showEdit: { type: Boolean, default: true },
     className: { type: String, default: 'components-container' },
+    // selectable & clickable
+    selectable: { type: Boolean, default: false },
+    multipleSelect: { type: Boolean, default: false },
+    highlighted: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
 
+  },
+  data(){
+    return {
+      selected: [],
+    };
   },
   methods: {
     removeComponent(id){
@@ -35,6 +63,33 @@ export default {
       // const e = this.components.find( c => c.id === id);
       this.$emit('edit', id);
     },
+    select(e){
+      if (this.selectable){
+        const id = parseInt(e.currentTarget.getAttribute('data-id'));
+        if (this.multipleSelect){
+          this.selected.push(id);
+        } else {
+          this.selected = [];
+          this.selected.push(id);
+        }
+        this.$emit('onSelect', this.selected);
+      }
+    },
+    deSelect(id){
+      if (this.selected.length > 0) {
+        const idx = this.selected.findIndex(s => s === id);
+        if (idx >= 0){
+          this.selected.splice(idx, 1);
+        }
+      }
+      this.$emit('onSelect', this.selected);
+    },
+    deSelectAll(){
+      this.selected = [];
+    },
   },
 };
 </script>
+<style>
+
+</style>
