@@ -7,8 +7,8 @@
       :project-stages="project_stages"
     />
     <tabel-pelingkupan
-      :components="components"
-      :hues="hues"
+      :master-components="components"
+      :master-hues="hues"
       :component-types="component_types"
       :project-stages="project_stages"
     />
@@ -20,6 +20,8 @@ import MasterKomponen from './MasterKomponen.vue';
 
 import Resource from '@/api/resource';
 // const ronaAwalResource = new Resource('rona-awals');
+const projectComponentResource = new Resource('project-components');
+const projectHueResource = new Resource('project-rona-awals');
 
 export default {
   name: 'ModulPelingkupan',
@@ -36,6 +38,8 @@ export default {
   mounted() {
     this.getComponentTypes();
     this.getProjectStages();
+    this.getComponentMasterData();
+    this.getHueMasterData();
   },
   methods: {
     async initData(){
@@ -52,6 +56,24 @@ export default {
       await ctResource.list({}).then((res) => {
         this.project_stages = res.data;
       }).finally({});
+    },
+    async getComponentMasterData(){
+      const idProject = parseInt(this.$route.params && this.$route.params.id);
+      this.components = [];
+      await projectComponentResource.list({
+        id_project: idProject,
+      }).then((res) => {
+        this.components = res;
+      });
+    },
+    async getHueMasterData(){
+      const idProject = parseInt(this.$route.params && this.$route.params.id);
+      this.hues = [];
+      await projectHueResource.list({
+        id_project: idProject,
+      }).then((res) => {
+        this.hues = res.data;
+      });
     },
   },
 };
@@ -81,11 +103,13 @@ export default {
 }
 
 .master-komponen .el-card__body p, .scoping p {
-  font-size:90%;
+
   margin: 0 0 0.2em 0;
   border: 1px solid #e0e0e0;
   border-radius:0.3em;
   padding: 0.5em;
+  text-align: center;
+  line-height:130%;
 }
 
 .scoping p {

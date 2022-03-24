@@ -43,6 +43,9 @@ import PelingkupanTable from './tables/PelingkupanTable.vue';
 import Comment from './Comment.vue';
 const projectStageResource = new Resource('project-stages');
 const componentTypeResource = new Resource('component-types');
+const projectComponentResource = new Resource('project-components');
+const projectHueResource = new Resource('project-rona-awals');
+//
 
 export default {
   name: 'Pelingkupan',
@@ -94,6 +97,7 @@ export default {
   mounted() {
     this.getData();
     this.getComponentTypes();
+    this.getComponentMasterData();
   },
   methods: {
     handleSaveForm() {
@@ -112,6 +116,24 @@ export default {
     async getComponentTypes(){
       const compTypes = await componentTypeResource.list({});
       this.componentTypes = compTypes.data;
+    },
+    async getComponentMasterData(){
+      const idProject = parseInt(this.$route.params && this.$route.params.id);
+      this.components = [];
+      await projectComponentResource.list({
+        id_project: idProject,
+      }).then((res) => {
+        this.components = res;
+      });
+    },
+    async getHueMasterData(){
+      const idProject = parseInt(this.$route.params && this.$route.params.id);
+      this.hues = [];
+      await projectHueResource.list({
+        id_project: idProject,
+      }).then((res) => {
+        this.hues = res.data;
+      });
     },
   },
 };

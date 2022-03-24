@@ -52,14 +52,6 @@ export default {
       },
     },
   },
-  data() {
-    return {
-      // kegiatan: [],
-    };
-  },
-  methods: {
-
-  },
 };
 </script>
 <style>

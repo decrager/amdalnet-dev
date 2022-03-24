@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Entity\ProjectStage;
 use App\Entity\SubProjectComponent;
+use App\Entity\Component;
 use App\Entity\SubProjectRonaAwal;
 use App\Http\Resources\SubProjectComponentResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubProjectComponentController extends Controller
 {
@@ -61,7 +63,7 @@ class SubProjectComponentController extends Controller
             }
         } else if (isset($params['id_sub_project'])){
             $id_sub_project = $params['id_sub_project'];
-            
+
             if (isset($params['id_project_stage'])) {
                 $id_project_stage = $params['id_project_stage'];
                 $level1 = SubProjectComponent::with('component')
@@ -81,8 +83,24 @@ class SubProjectComponentController extends Controller
                 return SubProjectComponentResource::collection($components);
             }
         } else {
-            return SubProjectComponentResource::collection(SubProjectComponent::with('component')->get()); 
+            return SubProjectComponentResource::collection(SubProjectComponent::with('component')->get());
         }
+    }
+
+    public function getSubProjectComponents(Request $request){
+        $params = $request->all();
+        if (!isset($params['id_project']) || !$params['id_project'])
+        {
+            return response('no project specified', 500);
+        }
+
+        return response(Component::from('components').
+              selectRaw(
+                  'components.*',
+                  'components.name as value',
+                  'project_stages.name as project_stage_name'
+              )
+            );
     }
 
     /**

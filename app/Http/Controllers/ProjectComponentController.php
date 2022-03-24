@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ProjectComponent;
+use App\Entity\Component;
 use App\Http\Resources\ProjectComponentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,7 @@ class ProjectComponentController extends Controller
      */
     public function index(Request $request)
     {
+        /*
         $params = $request->all();
         if (isset($params['id_project'])){
             $components = ProjectComponent::select('project_components.*',
@@ -27,7 +29,32 @@ class ProjectComponentController extends Controller
             return ProjectComponentResource::collection($components);
         } else {
             return ProjectComponentResource::collection(ProjectComponent::with('component')->get());
-        }
+        }*/
+
+        /**
+         * 20220324
+         * id, id_project_stage, name, is_master, description, measurement, id_project_component
+         */
+
+        /* $params = $request->all();) */
+        return response(Component::from('components')
+          ->selectRaw('
+            components.*,
+            components.name as value,
+            project_stages.name as project_stage_name,
+            project_components.id as id_project_component,
+            project_components.description as description,
+            project_components.measurement as measurement
+          ')
+          ->join('project_components', 'project_components.id_component', '=', 'components.id' )
+          ->leftJoin('project_stages', 'project_stages.id', 'components.id_project_stage')
+          ->where(function ($q) use ($request) {
+              $q->where('components.is_master', true);
+              $q->orWhere('components.originator_id', $request->id_project);
+              return $q;
+          })
+          ->where('project_components.id_project', $request->id_project)->get());
+
     }
 
     /**

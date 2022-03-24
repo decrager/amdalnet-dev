@@ -38,6 +38,7 @@ use App\Http\Controllers\MediumLowUklUplTemplateController;
 use App\Http\Controllers\EnvironmentalManagemenSopController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\VideoTutorialController;
+use App\Http\Controllers\ProjectOtherComponentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -325,7 +326,7 @@ Route::apiResource('env-manage-docs', 'EnvManageDocController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('public-questions', 'PublicQuestionController');
 Route::apiResource('ka-reviews', 'KaReviewController');
-
+Route::apiResource('project-other-components', 'ProjectOtherComponentController');
 // notification
 Route::get('mark-all-read/{user}', function (User $user) {
     $user->unreadNotifications->markAsRead();

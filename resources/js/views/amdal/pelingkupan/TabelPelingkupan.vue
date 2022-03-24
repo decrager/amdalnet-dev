@@ -8,7 +8,10 @@
         :label="stage.name"
         :name="'stage'+stage.id"
       >
-        <el-row :gutter="1" style="margin-top: 1em;">
+        <el-row
+          :gutter="1"
+          style="margin-top: 1em;"
+        >
           <el-col :span="4">
             <el-card v-if="subProjects.length > 0" shadow="never">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
@@ -21,8 +24,8 @@
                 :show-delete="false"
                 :show-edit="false"
                 :class-name="'scoping'"
-                :multiple-select="true"
                 :selectable="true"
+                :de-select-all="deSelectAllSPUtama"
                 @onSelect="onSelectSubProjects"
               />
             </el-card>
@@ -37,7 +40,7 @@
                 :show-edit="false"
                 :class-name="'scoping'"
                 :selectable="true"
-                :multiple-select="true"
+                :de-select-all="deSelectAllSPPendukung"
                 @onSelect="onSelectSubProjects"
               />
             </el-card>
@@ -48,15 +51,22 @@
                 <span>Komponen Kegiatan</span>
               </div>
               <components-list
+                v-if="components && components.length > 0"
                 :id="'scopingComp'+index"
                 :components="components.filter(c => c.id_project_stage === stage.id)"
-                :show-delete="false"
-                :show-edit="false"
                 :selectable="true"
                 :class-name="'scoping'"
                 @onSelect="onSelectComponents"
               />
-            <!-- <el-button v-if="(components.filter(c => c.id_project_stage === stage.id )).length > 0" icon="el-icon-plus" size="mini" circle type="primary" plain/> -->
+              <el-button
+                v-if="masterComponents && (masterComponents.filter(c => c.id_project_stage === stage.id ).length > 0) && (activeScoping.sub_projects !== null)"
+                icon="el-icon-plus"
+                size="mini"
+                circle
+                type="primary"
+                plain
+                @click="showForm = true"
+              />
             </el-card>
           </el-col>
           <el-col :span="16">
@@ -81,7 +91,7 @@
                   >
                     <components-list
                       :id="'scopingHue'+index+'_hue_'+ct.id"
-                      :components="hues.filter(h => h.id_component_type === ct.id)"
+                      :components="masterHues.filter(h => h.id_component_type === ct.id)"
                       :show-delete="false"
                       :show-edit="false"
                       :selectable="true"
@@ -96,30 +106,39 @@
         </el-row>
       </el-tab-pane>
     </el-tabs>
-    <form-pelingkupan
+    <form-add-component
+      :show="showForm"
+      :data="activeScoping"
+      :master-components="masterComponents.filter(c => c.id_project_stage === id_project_stage)"
+      @onClose="showForm = false"
+    />
+    <!-- <form-pelingkupan
       :show="showForm"
       :input="activeScoping"
       @onClose="showForm = false "
       @onSave="handleSaveForm"
-    />
+    /> -->
   </div>
 </template>
 <script>
 import Resource from '@/api/resource';
 import ComponentsList from './components/tables/ComponentsList.vue';
-import FormPelingkupan from './components/forms/FormPelingkupan.vue';
+// import FormPelingkupan from './components/forms/FormPelingkupan.vue';
+import FormAddComponent from './components/forms/FormAddComponent.vue';
+const projectResource = new Resource('projects');
+// const subProjectComponent = new Resource();
 
 export default {
   name: 'TabelPelingkupan',
-  components: { ComponentsList, FormPelingkupan },
+  components: { ComponentsList, FormAddComponent /* FormPelingkupan*/ },
   props: {
-    components: {
+    masterComponents: {
       type: Array,
       default: function() {
         return [];
       },
     },
-    hues: {
+    masterHues: {
       type: Array,
       default: function() {
         return [];
@@ -141,6 +160,7 @@ export default {
   data(){
     return {
       id_project: 0,
+      id_project_stage: null,
       mapping: [],
       subProjects: [],
       activeName: 'stage4',
@@ -149,8 +169,10 @@ export default {
         project_stage: null,
         component: null,
         rona_awal: null,
-        sub_projects: [],
+        sub_projects: null,
       },
+      components: [],
+      hues: [],
       highlights: {
         components: [],
         hues: [],
@@ -158,6 +180,8 @@ export default {
       },
       showForm: false,
       mode: 0,
+      deSelectAllSPUtama: false,
+      deSelectAllSPPendukung: false,
     };
   },
   /* watch: {
@@ -174,33 +198,29 @@ export default {
   methods: {
     initActiveScoping() {
       const ps = this.projectStages.find(ps => ps.id === parseInt(this.activeName.charAt(this.activeName.length - 1)));
+      this.id_project_stage = parseInt(this.activeName.charAt(this.activeName.length - 1));
       this.activeScoping.id_project = this.$route.params && this.$route.params.id;
       this.activeScoping.project_stage = ps;
       this.activeScoping.component = null;
       this.activeScoping.rona_awal = null;
-      this.activeScoping.sub_projects = [];
+      this.activeScoping.sub_projects = null;
     },
     initMapping() {
-      /*
-        element = {
-          id_project,
-          component,
-          hue,
-          subprojects
-        }
-      */
+
     },
     async getSubProjects(){
       const id = this.$route.params && this.$route.params.id;
-      const projectResource = new Resource('projects');
       await projectResource.list({ id: id })
         .then((res) => {
           if (res.list_sub_project) {
             this.subProjects = res.list_sub_project;
-            console.log('ada sbproject!', this.subProjects);
+            // console.log('ada sbproject!', this.subProjects);
           }
         })
-        .finally();
+        .finally(() => {});
+    },
+    async getSubProjectComponentsHues(){
+
     },
     dumpHues(){
       // console.log(hues);
@@ -211,8 +231,10 @@ export default {
       if (sel.length > 0){
         this.activeScoping.component = this.components.find(c => c.id === sel[0]);
       } else {
-        this.initActiveScoping();
+        // this.initActiveScoping();
+        this.activeScoping.component = null;
       }
+      this.showForm = true;
       console.log(this.activeScoping);
     },
     onSelectHues(sel){
@@ -225,33 +247,27 @@ export default {
       console.log(this.activeScoping);
     },
     onSelectSubProjects(sel) {
-      this.activeScoping.sub_projects = [];
-      if (sel.length >= 0){
-        sel.forEach(s => {
-          const sp = this.activeScoping.sub_projects.find(p => p.id === s);
-          if (!sp) {
-            const sub = this.subProjects.find(subp => subp.id === s);
-            this.activeScoping.sub_projects.push({
-              id: s,
-              name: sub.name,
-              type: sub.type,
-              com_description: '',
-              com_measurement: '',
-              hue_description: '',
-              hue_measurement: '',
-            });
-          }
-        });
-        /*
-        foreach(s in sel){
-          if (!this.activeScoping.sub_projects.includes(s)) {
-            this.activeScoping.sub_projects.push(s);
-          }
-        }*/
-      }
+      console.log('selectSubProject', sel.length);
+      if (sel.length > 0){
+        var sp = this.subProjects.find(sub => sub.id === sel[0]);
+        console.log(sp);
+        if (sp.type === 'pendukung') {
+          this.deSelectAllSPUtama = true;
+          this.deSelectAllSPPendukung = false;
+        } else {
+          this.deSelectAllSPPendukung = true;
+          this.deSelectAllSPUtama = false;
+        }
+        this.initActiveScoping();
+        this.activeScoping.sub_projects = sp;
 
-      this.activeScoping.project_stage = this.projectStages.find(p => p.id === parseInt(this.activeName.charAt(this.activeName.length - 1)));
-      this.showForm = true;
+        // get sub components
+      } else {
+        // clear board? or show all?
+      }
+    },
+    addComponent(){
+
     },
     handleTabClick(tab, event){
       this.initActiveScoping();
@@ -273,7 +289,7 @@ export default {
 };
 </script>
 <style>
-.scoping  p { font-size: 96%; text-align:left; }
+.scoping  p { font-size: 96%; }
 
 table#scoupingTable{
   width:100%;

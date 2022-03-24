@@ -17,6 +17,8 @@ class ProjectRonaAwalController extends Controller
      */
     public function index(Request $request)
     {
+        //
+        /*
         $params = $request->all();
         if (isset($params['id_project'])){
             $rona_awals = ProjectRonaAwal::select('project_rona_awals.*',
@@ -71,7 +73,7 @@ class ProjectRonaAwalController extends Controller
             }
         } else {
             return ProjectRonaAwalResource::collection(ProjectRonaAwal::with('rona_awal')->get());
-        }
+        }*/
     }
 
     /**

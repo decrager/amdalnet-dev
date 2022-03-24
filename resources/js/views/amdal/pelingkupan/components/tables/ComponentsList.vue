@@ -7,15 +7,21 @@
       v-for="(comp) in components"
       :key="comp.id+'_'+id"
     >
-      <!-- <p
-        v-if="selected.includes(comp.id)"
-        class="selected"
-      >
-        <el-button type="primary" icon="el-icon-close" size="mini" plain circle style="float:right; width:20px; padding: 3px 0;" @click="deSelect(comp.id)" />
-        {{ comp.name }} <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
-      </p> -->
       <p
+        v-if="selected.includes(comp.id)"
         :data-id="comp.id"
+        class="selected"
+        @click.self="deSelect"
+      >
+        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
+        <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
+        <!-- <el-button type="primary" icon="el-icon-close" size="mini" plain circle style="float:right; width:20px; padding: 3px 0;" @click="deSelect(comp.id)" />-->
+        {{ comp.name }} <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
+      </p>
+      <p
+        v-if="!selected.includes(comp.id)"
+        :data-id="comp.id"
+        @click.self="select"
       >
         <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
         <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
@@ -47,12 +53,23 @@ export default {
         return [];
       },
     },
-
+    /* deSelectAll: {
+      type: Boolean,
+      default: false,
+    },*/
   },
   data(){
     return {
       selected: [],
     };
+  },
+  watch: {
+    deSelectAll: function(val) {
+      console.log('deselect?', val);
+      if (val === true){
+        this.selected = [];
+      }
+    },
   },
   methods: {
     removeComponent(id){
@@ -64,6 +81,7 @@ export default {
       this.$emit('edit', id);
     },
     select(e){
+      console.log('ComponentList: ', e);
       if (this.selectable){
         const id = parseInt(e.currentTarget.getAttribute('data-id'));
         if (this.multipleSelect){
@@ -75,9 +93,11 @@ export default {
         this.$emit('onSelect', this.selected);
       }
     },
-    deSelect(id){
+    deSelect(e){
+      const id = parseInt(e.currentTarget.getAttribute('data-id'));
       if (this.selected.length > 0) {
         const idx = this.selected.findIndex(s => s === id);
+        console.log(idx);
         if (idx >= 0){
           this.selected.splice(idx, 1);
         }
