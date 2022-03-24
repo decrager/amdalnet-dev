@@ -35,4 +35,9 @@ class FeasibilityTestTeam extends Model
     {
         return $this->belongsTo(District::class, 'id_district_name', 'id');
     }
+
+    public function secretary()
+    {
+        return $this->hasMany(TukSecretaryMember ::class, 'id_feasibility_test_team', 'id');
+    }
 }

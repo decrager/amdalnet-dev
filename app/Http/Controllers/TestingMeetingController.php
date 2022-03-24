@@ -15,6 +15,10 @@ use App\Entity\PublicConsultation;
 use App\Entity\TestingMeeting;
 use App\Entity\TestingMeetingInvitation;
 use App\Entity\TestingVerification;
+use App\Entity\TukProject;
+use App\Entity\TukSecretaryMember;
+use App\Laravue\Acl;
+use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use App\Notifications\MeetingInvitation;
 use App\Utils\Html;
@@ -24,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
@@ -50,6 +55,10 @@ class TestingMeetingController extends Controller
 
         if($request->expert_bank_team) {
             return FeasibilityTestTeam::with(['provinceAuthority', 'districtAuthority'])->get();
+        }
+
+        if($request->tukMember) {
+            return $this->getTukMember($request->idProject);
         }
 
         if($request->idProject) {
@@ -103,8 +112,30 @@ class TestingMeetingController extends Controller
                                 $receiver[] = $user;
                             }
                         }
+
+                    } else if($i->id_tuk_secretary_member) {
+                        $secretary = TukSecretaryMember::find($i->id_tuk_secretary_member);
+                        if($secretary) {
+                            $user = User::where('email', $secretary->email)->first();
+                            if($user) {
+                                $receiver[] = $user;
+                            }
+                        }
                     } else if($i->email) {
-                        $receiver_non_user[] = $i->email;
+                        $user = User::where('email', $i->email)->count();
+                        if($user === 0) {
+                            $role = Role::findByName(Acl::ROLE_EXAMINER);
+                            $user = User::create([
+                                'name' => ucfirst($i->name),
+                                'email' => $i->email,
+                                'password' => Hash::make('amdalnet')
+                            ]);
+                            $user->syncRoles($role);
+                        } else {
+                            $user = User::where('email', $i->email)->first();
+                        }
+
+                        $receiver[] = $user;
                     }
                 }
             }
@@ -198,55 +229,39 @@ class TestingMeetingController extends Controller
         $meeting->save();
 
         // Delete invitations
-        if($data['type'] == 'update') {
-            if(count($data['deleted_invitations']) > 0) {
-                for($a = 0; $a < count($data['deleted_invitations']); $a++) {
-                    TestingMeetingInvitation::destroy($data['deleted_invitations'][$a]);
-                }
+        if(count($data['deleted_invitations']) > 0) {
+            for($a = 0; $a < count($data['deleted_invitations']); $a++) {
+                TestingMeetingInvitation::destroy($data['deleted_invitations'][$a]);
             }
         }
 
         // Save meetings invitation members
         for($i = 0; $i < count($data['invitations']); $i++) {
-            if($data['type'] == 'new') {
-                $invitation = new TestingMeetingInvitation();
-                $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
-                $invitation->id_testing_meeting = $meeting->id;
+            $invitation = null;
 
-                if($data['invitations'][$i]['type'] == 'other') {
-                    $invitation->role = $data['invitations'][$i]['role'];
-                    $invitation->name = $data['invitations'][$i]['name'];
-                    $invitation->email = $data['invitations'][$i]['email'];
-                    $invitation->institution = $data['invitations'][$i]['institution'];
-                    $invitation->id_government_institution = $data['invitations'][$i]['id_government_institution'];
-                }
-    
-                $invitation->save();
+            if($data['invitations'][$i]['id'] == null) {
+                $invitation = new TestingMeetingInvitation();
+                $invitation->id_testing_meeting = $meeting->id;
             } else {
-                $invitation = new TestingMeetingInvitation();
+                $invitation = TestingMeetingInvitation::findOrFail($data['invitations'][$i]['id']);
+            }
 
-                if($data['invitations'][$i]['type'] == 'tuk') {
-                    continue;
-                }
+            if($data['invitations'][$i]['type'] == 'Ketua TUK' || $data['invitations'][$i]['type'] == 'Anggota TUK') {
+                $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['tuk_member_id'];
+            } else if($data['invitations'][$i]['type'] == 'Anggota Sekretariat TUK') {
+                $invitation->id_tuk_secretary_member = $data['invitations'][$i]['tuk_member_id'];
+            } else if($data['invitations'][$i]['type'] == 'institution' || $data['invitations'][$i]['type'] == 'other') {
+                $invitation->role = $data['invitations'][$i]['role'];
+                $invitation->name = $data['invitations'][$i]['name'];
+                $invitation->email = $data['invitations'][$i]['email'];
+                $invitation->institution = $data['invitations'][$i]['institution'];
 
-                if($data['invitations'][$i]['type'] == 'other') {
-                    $invitation = TestingMeetingInvitation::where('email', $data['invitations'][$i]['email'])->first();
-
-                    if(!$invitation) {
-                        $invitation = new TestingMeetingInvitation();
-                    }
-
-                    $invitation->role = $data['invitations'][$i]['role'];
-                    $invitation->name = $data['invitations'][$i]['name'];
-                    $invitation->email = $data['invitations'][$i]['email'];
-                    $invitation->institution = $data['invitations'][$i]['institution'];
+                if($data['invitations'][$i]['type'] == 'institution') {
                     $invitation->id_government_institution = $data['invitations'][$i]['id_government_institution'];
                 }
-
-                $invitation->id_feasibility_test_team_member = $data['invitations'][$i]['type'] == 'tuk' ? $data['invitations'][$i]['id'] : null;
-                $invitation->id_testing_meeting = $meeting->id;
-                $invitation->save();
             }
+
+            $invitation->save();
 
         }
 
@@ -307,15 +322,6 @@ class TestingMeetingController extends Controller
 
     private function getFreshMeetings($id_project) {
         $project = Project::findOrFail($id_project);
-        $tuk = null;
-
-        if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
-            $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
-        } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
-            $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
-        } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
-            $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
-        }
 
         $data = [
             'type' => 'new',
@@ -328,7 +334,7 @@ class TestingMeetingController extends Controller
             'location' => null,
             'expert_bank_team_id' => null,
             'project_name' => $project->project_title,
-            'invitations' => $tuk ? $this->getTukMember($tuk->id) : [],
+            'invitations' => [],
             'file' => null,
             'invitation_file' => null,
             'deleted_invitations' => []
@@ -353,23 +359,39 @@ class TestingMeetingController extends Controller
                     if($i->feasibilityTestTeamMember->id_expert_bank) {
                         $name = $i->feasibilityTestTeamMember->expertBank->name;
                         $email = $i->feasibilityTestTeamMember->expertBank->email;
-                        $type_member = 'expert';
+                        $institution = $i->feasibilityTestTeamMember->expertBank->institution;
                     } else if($i->feasibilityTestTeamMember->id_luk_member) {
                         $name = $i->feasibilityTestTeamMember->lukMember->name;
                         $email = $i->feasibilityTestTeamMember->lukMember->email;
                         $institution = $i->feasibilityTestTeamMember->lukMember->institution;
-                        $type_member = 'employee';
+                    }
+
+                    if($i->feasibilityTestTeamMember->position == 'Ketua') {
+                        $type_member = 'Ketua TUK';
+                    } else {
+                        $type_member = 'Anggota TUK';
                     }
 
                     $invitations[] = [
-                        'id' => $i->id_feasibility_test_team_member,
-                        'role' => $i->feasibilityTestTeamMember->position,
+                        'id' => $i->id,
+                        'role' => $type_member,
                         'name' => $name,
                         'email' => $email,
-                        'type' => 'tuk',
+                        'type' => $type_member,
                         'type_member' => $type_member,
                         'institution' => $institution,
-                        'id_government_institution' => null
+                        'tuk_member_id' => $i->id_feasibility_test_team_member,
+                    ];
+                } else if($i->id_tuk_secretary_member) {
+                    $invitations[] = [
+                        'id' => $i->id,
+                        'role' => 'Anggota Sekretariat TUK',
+                        'name' => $i->tukSecretaryMember->name,
+                        'email' => $i->tukSecretaryMember->email,
+                        'type' => 'Anggota Sekretariat TUK',
+                        'type_member' => 'Anggota Sekretariat TUK',
+                        'institution' => $i->tukSecretaryMember->institution,
+                        'tuk_member_id' => $i->id_tuk_secretary_member,
                     ];
                 } else {
                     $invitations[] = [
@@ -414,35 +436,66 @@ class TestingMeetingController extends Controller
 
     private function getTukMember($id)
     {
-        $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $id)->get();
-            $newMembers = [];
+        $project = Project::findOrFail($id);
+        $newMembers = [];
+        $tuk = null;
+
+        if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
+            $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
+        } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
+            $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
+        } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
+            $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
+        }
+
+        if($tuk) {
+            $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $tuk->id)->get();
             
             foreach($members as $m) {
                 $name = '';
                 $email = '';
                 $type_member = '';
-
+                $institution = '';
+    
                 if($m->expertBank) {
                     $name = $m->expertBank->name;
                     $email = $m->expertBank->email;
+                    $institution = $m->expertBank->institution;
                     $type_member = 'expert';
                 } else if($m->lukMember) {
                     $name = $m->lukMember->name;
                     $email = $m->lukMember->email;
+                    $institution = $m->lukMember->institution;
                     $type_member = 'employee';
                 }
-
+    
                 $newMembers[] = [
                     'id' => $m->id,
                     'role' => $m->position,
                     'name' => $name,
                     'email' => $email,
+                    'institution' => $institution,
                     'type' => 'tuk',
                     'type_member' => $type_member
                 ];
             }
 
-            return $newMembers;
+            // === SECRETARY MEMBER === //
+            $secretary = TukSecretaryMember::where('id_feasibility_test_team', $tuk->id)->get();
+            foreach($secretary as $s) {
+                $newMembers[] = [
+                    'id' => $s->id,
+                    'role' => 'Anggota Sekretariat',
+                    'name' => $s->name,
+                    'email' => $s->email,
+                    'institution' => $s->institution,
+                    'type' => 'tuk_secretary',
+                    'type_member' => 'secretary-member'
+                ];
+            }
+        }
+
+        return $newMembers;
     } 
 
     private function dokumen($id_project) {
@@ -750,17 +803,28 @@ class TestingMeetingController extends Controller
                         }
                     }
                 }
-            } else if($i->id_government_institution) {
-                $institution = GovernmentInstitution::find($i->id_government_institution);
-                if($institution) {
-                    $instansi[] = [
-                        'name' => count($instansi) + 1 . '. Wakil dari ' . $institution->name
+            } else if($i->id_tuk_secretary_member) {
+                $secretary = TukSecretaryMember::find($i->id_tuk_secretary_member);
+                if($secretary) {
+                    $member[] = [
+                        'name' => count($member) + 1 . '. ' . $secretary->name . ' (Anggota Sekretariat)'
                     ];
                 }
-            } else {
-                if($i->role == 'Tenaga Ahli') {
-                    $member[] = [
-                        'name' => count($ahli) + 1 . '. ' . $i->name
+            } else if($i->role == 'Tenaga Ahli') {
+                $ahli[] = [
+                    'name' => count($ahli) + 1 . '. ' . $i->name
+                ];
+            }  else {
+                if($i->id_government_institution) {
+                    $institution = GovernmentInstitution::find($i->id_government_institution);
+                    if($institution) {
+                        $instansi[] = [
+                            'name' => count($instansi) + 1 . '. Wakil dari ' . $institution->name
+                        ];
+                    }
+                } else {
+                    $instansi[] = [
+                        'name' => count($instansi) + 1 . '. Wakil dari ' . $i->institution
                     ];
                 }
             }
@@ -959,6 +1023,31 @@ class TestingMeetingController extends Controller
             return true;
         } else {
             return false;
+        }
+    }
+
+    private function addToTukProject($id_project, $id_member, $type)
+    {
+        $column = null;
+        if($type == 'member') {
+            $column = 'id_feasibility_test_team_member';
+        } else if($type == 'secretary') {
+            $column = 'id_tuk_secretary_member';
+        }
+
+        $tuk_project_count = TukProject::where([['id_project', $id_project],[$column, $id_member]])->count();
+        if($tuk_project_count === 0) {
+            $tuk_project = new TukProject();
+            $tuk_project->id_project = $id_project;
+
+            if($type == 'member') {
+                $tuk_project->id_feasibility_test_team_member = $id_member;
+            } else if($type == 'secretary') {
+                $tuk_project->id_tuk_secretary_member = $id_member;
+            }
+
+            $tuk_project->role = 'valsub';
+            $tuk_project->save();
         }
     }
 }

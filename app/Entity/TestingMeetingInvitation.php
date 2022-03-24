@@ -30,4 +30,9 @@ class TestingMeetingInvitation extends Model
     {
         return $this->belongsTo(GovernmentInstitution::class, 'id_government_institution', 'id');
     }
+
+    public function tukSecretaryMember()
+    {
+        return $this->belongsTo(TukSecretaryMember::class, 'id_tuk_secretary_member', 'id');
+    }
 }
