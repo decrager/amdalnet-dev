@@ -53,10 +53,10 @@ export default {
         return [];
       },
     },
-    /* deSelectAll: {
+    deSelectAll: {
       type: Boolean,
       default: false,
-    },*/
+    },
   },
   data(){
     return {
@@ -104,9 +104,9 @@ export default {
       }
       this.$emit('onSelect', this.selected);
     },
-    deSelectAll(){
+    /* deSelectAll(){
       this.selected = [];
-    },
+    },*/
   },
 };
 </script>
