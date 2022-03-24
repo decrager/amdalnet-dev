@@ -76,17 +76,20 @@ export default {
       return '';
     },
     capitalize(mySentence) {
-      const words = mySentence.split(' ');
-
-      const newWords = words
-        .map((word) => {
-          return (
-            word.toLowerCase()[0].toUpperCase() +
-            word.toLowerCase().substring(1)
-          );
-        })
-        .join(' ');
-      return newWords;
+      if (mySentence) {
+        const words = mySentence.split(' ');
+        const newWords = words
+          .map((word) => {
+            return (
+              word.toLowerCase()[0].toUpperCase() +
+              word.toLowerCase().substring(1)
+            );
+          })
+          .join(' ');
+        return newWords;
+      } else {
+        return '';
+      }
     },
     handleTukProjectMember(id) {
       // eslint-disable-next-line object-curly-spacing
