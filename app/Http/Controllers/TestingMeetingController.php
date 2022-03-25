@@ -230,9 +230,7 @@ class TestingMeetingController extends Controller
 
         // Delete invitations
         if(count($data['deleted_invitations']) > 0) {
-            for($a = 0; $a < count($data['deleted_invitations']); $a++) {
-                TestingMeetingInvitation::destroy($data['deleted_invitations'][$a]);
-            }
+            TestingMeetingInvitation::whereIn('id', $data['deleted_invitations'])->delete();
         }
 
         // Save meetings invitation members
