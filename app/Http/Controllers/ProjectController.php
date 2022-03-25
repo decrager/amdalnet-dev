@@ -143,7 +143,7 @@ class ProjectController extends Controller
                 $query->where('email', Auth::user()->email);
             });
         }, 'testingMeeting' => function($q) {
-            $q->select('id', 'document_type', 'id_project');
+            $q->select('id', 'document_type', 'id_project', 'is_invitation_sent');
             $q->whereHas('invitations', function($que) {
                 $que->where(function($queryy) {
                     $queryy->whereHas('feasibilityTestTeamMember', function($quer) {
