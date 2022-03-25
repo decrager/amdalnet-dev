@@ -409,6 +409,7 @@ export default {
       const invitations = this.meetings.invitations.map((x) => {
         const newX = x;
         newX.institution_options = [];
+        newX.tuk_options = [];
         return newX;
       });
       this.meetings.invitations = invitations;
