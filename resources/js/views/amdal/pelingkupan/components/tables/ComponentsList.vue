@@ -58,11 +58,22 @@ export default {
       default: false,
     },
   },
+  /*
+  setup(props, context){
+        let { deSelectAll } = toRefs(props);
+
+        watch(deSelectAll, (newValue, oldValue) => {
+          if (newValue === true){
+            this.selected = [];
+          }
+        });
+    },*/
   data(){
     return {
       selected: [],
     };
   },
+
   watch: {
     deSelectAll: function(val) {
       console.log('deselect?', val);
@@ -71,6 +82,7 @@ export default {
       }
     },
   },
+
   methods: {
     removeComponent(id){
       // const e = this.components.find( c => c.id === id);

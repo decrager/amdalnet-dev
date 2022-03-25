@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
 use App\Entity\SubProjectRonaAwal;
+use App\Entity\ImpactIdentification;
 use App\Http\Resources\SubProjectRonaAwalResource;
 use Illuminate\Http\Request;
+
 
 class SubProjectRonaAwalController extends Controller
 {
@@ -33,7 +35,7 @@ class SubProjectRonaAwalController extends Controller
             if (isset($params['with_component_type']) && $params['with_component_type']){
                 $component_types = ComponentType::select('component_types.*')
                     ->orderBy('id', 'asc')
-                    ->get();                
+                    ->get();
                 $data = [];
                 foreach ($rona_awals as $rona_awal) {
                     $id_component_type = $rona_awal['id_component_type_master'];
@@ -92,7 +94,31 @@ class SubProjectRonaAwalController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // id, name, description, measurement, id_sub_project_component
+        $params = $request->all();
+        if(isset($params['id_sub_project_component']) && $params['id_sub_project_component']) {
+            $spr = SubProjectRonaAwal::firstOrNew([
+                'id_sub_project_component' => $request->id_sub_project_component,
+                'id_rona_awal' => $request->id,
+            ]);
+
+            $spr->description_specific = $request->description;
+            $spr->unit = $request->measurement;
+            if ($spr->save()){
+                // save impact
+                $imp = ImpactIdentification::firstOrCreate([
+                    'id_project' => $request->id_project,
+                    'id_project_component' => $request->id_project_components,
+                    'id_project_rona_awal' => $request->id_project_rona_awal,
+                ]);
+
+                return response({
+                    'id_sub_project_rona_awal': $spr->id,
+                    'id_impact_identification': $imp->id
+                  }, 200);
+            }
+        }
+        return response(500);
     }
 
     /**

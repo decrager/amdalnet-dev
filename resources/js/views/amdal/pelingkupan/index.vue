@@ -72,7 +72,8 @@ export default {
       await projectHueResource.list({
         id_project: idProject,
       }).then((res) => {
-        this.hues = res.data;
+        this.hues = res;
+        console.log('hues:', this.hues);
       });
     },
   },

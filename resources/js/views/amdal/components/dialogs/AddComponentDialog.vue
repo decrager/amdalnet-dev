@@ -92,7 +92,7 @@
         <el-input v-model="component.description_specific" type="textarea" :rows="2" />
       </el-form-item> -->
       <div style="font-weight:bold; ">{{ component.name }} pada {{ currentSubProjectName }}</div>
-      <el-form-item label="Deskripsi">
+      <!--  <el-form-item label="Deskripsi">
         <componenteditor
           v-model="component.description_specific"
           output-format="html"
@@ -102,7 +102,7 @@
           :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
           style="width:100%"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="Besaran">
         <el-input
           v-model="component.unit"
@@ -124,7 +124,7 @@
 <script>
 import Resource from '@/api/resource';
 // const componentResource = new Resource('components');
-import CDescEditor from '@/components/Tinymce';
+// import CDescEditor from '@/components/Tinymce';
 import DeskripsiBesaran from './DeskripsiBesaran.vue';
 // const projectStageResource = new Resource('project-stages');
 const scopingResource = new Resource('scoping');
@@ -133,7 +133,8 @@ const scopingResource = new Resource('scoping');
 export default {
   name: 'AddComponentDialog',
   components: {
-    'componenteditor': CDescEditor, DeskripsiBesaran,
+    // 'componenteditor': CDescEditor,
+    DeskripsiBesaran,
   },
   props: {
     show: Boolean,

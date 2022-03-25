@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
+use App\Entity\RonaAwal;
 use App\Entity\ProjectRonaAwal;
 use App\Http\Resources\ProjectRonaAwalResource;
 use Illuminate\Http\Request;
@@ -17,6 +18,27 @@ class ProjectRonaAwalController extends Controller
      */
     public function index(Request $request)
     {
+        $params = $request->all();
+        return response(RonaAwal::from('rona_awal')
+          ->selectRaw('
+            rona_awal.*,
+            rona_awal.name as value,
+            project_rona_awals.description as description,
+            project_rona_awals.measurement as measurement,
+            project_rona_awals.id as id_project_rona_awal
+          ')
+          ->join('project_rona_awals', 'project_rona_awals.id_rona_awal', '=', 'rona_awal.id' )
+          ->where(function ($q) use ($request) {
+              $q->where('rona_awal.is_master', true);
+              $q->orWhere('rona_awal.originator_id', $request->id_project);
+              return $q;
+          })
+          ->where('project_rona_awals.id_project', $request->id_project)->get());
+
+
+
+
+
         //
         /*
         $params = $request->all();

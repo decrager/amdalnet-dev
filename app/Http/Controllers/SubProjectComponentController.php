@@ -87,20 +87,27 @@ class SubProjectComponentController extends Controller
         }
     }
 
-    public function getSubProjectComponents(Request $request){
+    public function subProjectComponents(Request $request){
         $params = $request->all();
         if (!isset($params['id_project']) || !$params['id_project'])
         {
             return response('no project specified', 500);
         }
 
-        return response(Component::from('components').
-              selectRaw(
+        return response(Component::from('components')->
+              select(
                   'components.*',
-                  'components.name as value',
-                  'project_stages.name as project_stage_name'
+                  'project_stages.name as project_stage_name',
+                  'sub_project_components.id as id_sub_project_component',
+                  'sub_project_components.description_specific as description',
+                  'sub_project_components.unit as measurement'
               )
-            );
+              ->join('sub_project_components', 'sub_project_components.id_component','=', 'components.id')
+              ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+              ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
+              ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+              ->where('projects.id', $request->id_project)
+              ->get());
     }
 
     /**
@@ -121,7 +128,21 @@ class SubProjectComponentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // id_sub_project, id_component, desc, unit
+        $params = $request->all();
+        if(isset($params['id_sub_project']) && $params['id_sub_project']) {
+            $spc = SubProjectComponent::firstOrNew([
+                'id_sub_project' => $request->id_sub_project,
+                'id_component' => $request->id_component,
+            ]);
+
+            $spc->description_specific = $request->description;
+            $spc->unit = $request->measurement;
+            if ($spc->save()){
+                return response($spc->id, 200);
+            }
+
+        }
     }
 
     /**

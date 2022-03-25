@@ -29,7 +29,7 @@
                 @onSelect="onSelectSubProjects"
               />
             </el-card>
-            <el-card v-if="subProjects.length > 0" shadow="never">
+            <el-card v-if="subProjects.length > 0" shadow="never" style="margin-top:1em;">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Pendukung</span>
               </div>
@@ -50,14 +50,17 @@
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Komponen Kegiatan</span>
               </div>
-              <components-list
-                v-if="components && components.length > 0"
-                :id="'scopingComp'+index"
-                :components="components.filter(c => c.id_project_stage === stage.id)"
-                :selectable="true"
-                :class-name="'scoping'"
-                @onSelect="onSelectComponents"
-              />
+              <div style="margin-bottom:1em; ">
+                <components-list
+                  v-if="components && components.length > 0"
+                  :id="'scopingComp'+index"
+                  :components="components.filter(c => c.id_project_stage === stage.id)"
+                  :selectable="activeScoping.sub_projects !== null"
+                  :class-name="'scoping'"
+                  :de-select-all="deSelectAllComponents"
+                  @onSelect="onSelectComponents"
+                />
+              </div>
               <el-button
                 v-if="masterComponents && (masterComponents.filter(c => c.id_project_stage === stage.id ).length > 0) && (activeScoping.sub_projects !== null)"
                 icon="el-icon-plus"
@@ -91,12 +94,22 @@
                   >
                     <components-list
                       :id="'scopingHue'+index+'_hue_'+ct.id"
-                      :components="masterHues.filter(h => h.id_component_type === ct.id)"
+                      :components="hues.filter(h => h.id_component_type === ct.id)"
                       :show-delete="false"
                       :show-edit="false"
                       :selectable="true"
                       :class-name="'scoping'"
+                      :de-select-all="deSelectAllHues"
                       @onSelect="onSelectHues"
+                    />
+                    <el-button
+                      v-if="masterHues && (masterHues.filter(c => c.id_component_type === ct.id ).length > 0) && (activeScoping.sub_projects !== null) && (activeScoping.component !== null )"
+                      icon="el-icon-plus"
+                      size="mini"
+                      circle
+                      type="primary"
+                      plain
+                      @click="addHue(ct.id)"
                     />
                   </td>
                 </tr>
@@ -111,6 +124,16 @@
       :data="activeScoping"
       :master-components="masterComponents.filter(c => c.id_project_stage === id_project_stage)"
       @onClose="showForm = false"
+      @onSave="onSaveComponent"
+    />
+    <form-add-hue
+      v-if="(activeScoping.component !== null) && (activeScoping.id_component_type !== null)"
+      :show="showAddHue"
+      :data="activeScoping"
+      :master-component="masterComponents.find(c => c.id === activeScoping.component.id)"
+      :master-hues="masterHues.filter(c => c.id_component_type === activeScoping.id_component_type)"
+      @onClose="showAddHue = false"
+      @onSave="onSaveHue"
     />
     <!-- <form-pelingkupan
       :show="showForm"
@@ -125,12 +148,14 @@ import Resource from '@/api/resource';
 import ComponentsList from './components/tables/ComponentsList.vue';
 // import FormPelingkupan from './components/forms/FormPelingkupan.vue';
 import FormAddComponent from './components/forms/FormAddComponent.vue';
+import FormAddHue from './components/forms/FormAddHue.vue';
 const projectResource = new Resource('projects');
-// const subProjectComponent = new Resource();
+const subProjectComponent = new Resource('subproject-components');
+// const subProjectHue = new Resource('subproject-hues');
 
 export default {
   name: 'TabelPelingkupan',
-  components: { ComponentsList, FormAddComponent /* FormPelingkupan*/ },
+  components: { ComponentsList, FormAddComponent, FormAddHue /* FormPelingkupan*/ },
   props: {
     masterComponents: {
       type: Array,
@@ -170,6 +195,7 @@ export default {
         component: null,
         rona_awal: null,
         sub_projects: null,
+        id_component_type: null,
       },
       components: [],
       hues: [],
@@ -179,9 +205,13 @@ export default {
         subProjects: [],
       },
       showForm: false,
+      showAddHue: false,
       mode: 0,
       deSelectAllSPUtama: false,
       deSelectAllSPPendukung: false,
+      deSelectAllComponents: false,
+      deSelectAllHues: false,
+      current_component_type: null,
     };
   },
   /* watch: {
@@ -192,18 +222,21 @@ export default {
   mounted(){
     this.id_project = this.$route.params && this.$route.params.id;
     this.getSubProjects();
+    this.getSubProjectComponentsHues();
     this.initMapping();
     this.initActiveScoping();
   },
   methods: {
     initActiveScoping() {
       const ps = this.projectStages.find(ps => ps.id === parseInt(this.activeName.charAt(this.activeName.length - 1)));
+      this.current_component_type = null;
       this.id_project_stage = parseInt(this.activeName.charAt(this.activeName.length - 1));
       this.activeScoping.id_project = this.$route.params && this.$route.params.id;
       this.activeScoping.project_stage = ps;
       this.activeScoping.component = null;
       this.activeScoping.rona_awal = null;
       this.activeScoping.sub_projects = null;
+      this.activeScoping.id_component_type = null;
     },
     initMapping() {
 
@@ -220,7 +253,12 @@ export default {
         .finally(() => {});
     },
     async getSubProjectComponentsHues(){
-
+      this.components = [];
+      await subProjectComponent.list({ id_project: this.id_project })
+        .then((res) => {
+          this.components = res;
+        })
+        .finally(() => {});
     },
     dumpHues(){
       // console.log(hues);
@@ -234,7 +272,7 @@ export default {
         // this.initActiveScoping();
         this.activeScoping.component = null;
       }
-      this.showForm = true;
+      // this.showForm = true;
       console.log(this.activeScoping);
     },
     onSelectHues(sel){
@@ -248,6 +286,7 @@ export default {
     },
     onSelectSubProjects(sel) {
       console.log('selectSubProject', sel.length);
+      this.initActiveScoping();
       if (sel.length > 0){
         var sp = this.subProjects.find(sub => sub.id === sel[0]);
         console.log(sp);
@@ -258,16 +297,32 @@ export default {
           this.deSelectAllSPPendukung = true;
           this.deSelectAllSPUtama = false;
         }
-        this.initActiveScoping();
+
         this.activeScoping.sub_projects = sp;
 
         // get sub components
       } else {
         // clear board? or show all?
+        this.deSelectAllComponents = true;
+        this.deSelectAllHues = true;
+        this.deSelectAllComponents = false;
+        this.deSelectAllHues = false;
       }
+    },
+    onSaveComponent(obj){
+      this.components.push(obj);
+    },
+    onSaveHue(obj){
+      this.hues.push(obj);
     },
     addComponent(){
 
+    },
+    addHue(id){
+      this.activeScoping.id_component_type = id;
+      this.current_component_type = id;
+      console.log(this.masterHues.filter(c => c.id_component_type === this.current_component_type));
+      this.showAddHue = true;
     },
     handleTabClick(tab, event){
       this.initActiveScoping();
