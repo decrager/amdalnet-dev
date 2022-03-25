@@ -332,7 +332,6 @@ export default {
       this.loadingTuk = false;
     },
     handleChangeName({ val, type, idx }) {
-      console.log('metia');
       let tuk = null;
 
       if (type === 'Anggota TUK') {
