@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div>
     <h5>Daftar Undangan</h5>
@@ -16,9 +17,7 @@
 
       <el-table-column label="Peran">
         <template slot-scope="scope">
-          <span v-if="scope.row.type == 'tuk'">{{ scope.row.role }} TUK</span>
           <el-select
-            v-else
             v-model="scope.row.role"
             placeholder="Pilih Peran"
             style="width: 100%"
@@ -36,16 +35,40 @@
 
       <el-table-column label="Nama Anggota">
         <template slot-scope="scope">
-          <span v-if="scope.row.type == 'tuk'">{{ scope.row.name }} TUK</span>
+          <span v-if="scope.row.type == 'Ketua TUK'">{{ scope.row.name }}</span>
+          <el-select
+            v-else-if="
+              scope.row.type === 'Anggota TUK' ||
+              scope.row.type === 'Anggota Sekretariat TUK'
+            "
+            v-model="scope.row.tuk_member_id"
+            placeholder="Pilih Anggota"
+            style="width: 100%"
+            filterable
+            @change="handleChangeName($event, scope.row.type, scope.$index)"
+          >
+            <el-option
+              v-for="item in scope.row.tuk_options"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
           <el-input v-else v-model="scope.row.name" />
         </template>
       </el-table-column>
 
       <el-table-column label="Instansi">
         <template slot-scope="scope">
-          <span v-if="scope.row.type == 'tuk'">{{
-            scope.row.institution
-          }}</span>
+          <span
+            v-if="
+              scope.row.type == 'Ketua TUK' ||
+              scope.row.type == 'Anggota TUK' ||
+              scope.row.type == 'Anggota Sekretariat TUK'
+            "
+          >
+            {{ scope.row.institution }}
+          </span>
           <el-select
             v-else-if="isGovernmentInstitution(scope.row.role)"
             v-model="scope.row.id_government_institution"
@@ -66,15 +89,34 @@
 
       <el-table-column label="E-mail">
         <template slot-scope="scope">
-          <div class="email-column">
-            <span v-if="scope.row.type == 'tuk'">{{ scope.row.email }}</span>
-            <el-input v-else v-model="scope.row.email" />
-            <el-button
-              type="text"
-              icon="el-icon-close"
-              style="display: block"
-              @click.prevent="deleteRow(scope.row.id, scope.row.type)"
-            />
+          <div>
+            <div
+              v-if="
+                scope.row.type == 'Ketua TUK' ||
+                scope.row.type === 'Anggota TUK' ||
+                scope.row.type === 'Anggota Sekretariat TUK'
+              "
+              class="email-column"
+            >
+              <span>
+                {{ scope.row.email }}
+              </span>
+              <el-button
+                type="text"
+                icon="el-icon-close"
+                style="display: block"
+                @click.prevent="deleteRow(scope.$index, scope.row.id)"
+              />
+            </div>
+            <div v-else class="email-column">
+              <el-input v-model="scope.row.email" />
+              <el-button
+                type="text"
+                icon="el-icon-close"
+                style="display: block"
+                @click.prevent="deleteRow(scope.$index, scope.row.id)"
+              />
+            </div>
           </div>
         </template>
       </el-table-column>
@@ -152,6 +194,18 @@ export default {
     return {
       peran: [
         {
+          label: 'Ketua TUK',
+          value: 'Ketua TUK',
+        },
+        {
+          label: 'Anggota TUK',
+          value: 'Anggota TUK',
+        },
+        {
+          label: 'Anggota Sekretariat TUK',
+          value: 'Anggota Sekretariat TUK',
+        },
+        {
           label: 'Kementerian',
           value: 'Kementerian',
         },
@@ -172,10 +226,6 @@ export default {
           value: 'Tenaga Ahli',
         },
         {
-          label: 'Masyarakat',
-          value: 'Masyarakat',
-        },
-        {
           label: 'Lainnya',
           value: 'Lainnya',
         },
@@ -193,14 +243,17 @@ export default {
   methods: {
     addTableRow() {
       this.invitations.push({
-        id: Math.random(),
+        id: null,
         role: null,
         name: null,
         email: null,
         type: 'other',
+        type_member: 'other',
         id_government_institution: null,
         institution_options: [],
         institution: null,
+        tuk_options: [],
+        tuk_member_id: null,
       });
     },
     isGovernmentInstitution(role) {
@@ -214,8 +267,11 @@ export default {
     handleChangeRole(val, idx) {
       this.$emit('handleChangeRole', { val, idx });
     },
-    deleteRow(id, personType) {
-      this.$emit('deleteinvitation', { id, personType });
+    handleChangeName(val, type, idx) {
+      this.$emit('handleChangeName', { val, type, idx });
+    },
+    deleteRow(idx, id) {
+      this.$emit('deleteinvitation', { idx, id });
     },
     async handleUploadChange(file, fileList) {
       this.loadingUpload = true;

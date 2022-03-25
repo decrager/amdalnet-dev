@@ -33,6 +33,7 @@
             @deleteinvitation="deleteInvitation($event)"
             @updateuploadfile="updateUploadFile($event)"
             @handleChangeRole="handleChangeRole($event)"
+            @handleChangeName="handleChangeName($event)"
           />
         </el-col>
       </el-row>
@@ -71,17 +72,25 @@ export default {
       projects: '',
       out: '',
       governmentInstitutions: [],
+      members: [],
     };
   },
   async created() {
     this.$store.dispatch('getStep', 3);
     this.loadingTuk = true;
     this.idProject = this.$route.params.id;
+    await this.getTukMembers();
     await this.getGovernmentInstitutions();
     await this.getReports();
     this.loadingTuk = false;
   },
   methods: {
+    async getTukMembers() {
+      this.members = await meetingReportResource.list({
+        tukMember: 'true',
+        idProject: this.$route.params.id,
+      });
+    },
     async downloadDocx() {
       this.loadingDocs = true;
       const data = await meetingReportResource.list({
@@ -148,10 +157,19 @@ export default {
       if (data.type !== 'notexist') {
         const invitations = data.invitations.map((x) => {
           let institution_options = [];
+          let tuk_options = [];
 
           if (this.isGovernmentInstitution(x.role)) {
             institution_options = this.governmentInstitutions.filter(
               (y) => y.institution_type === x.role
+            );
+          } else if (x.role === 'Anggota TUK') {
+            tuk_options = this.members.filter(
+              (x) => x.role === 'Anggota' || x.role === 'Kepala Sekretariat'
+            );
+          } else if (x.role === 'Anggota Sekretariat TUK') {
+            tuk_options = this.members.filter(
+              (x) => x.role === 'Anggota Sekretariat'
             );
           }
 
@@ -161,9 +179,12 @@ export default {
             name: x.name,
             email: x.email,
             type: x.type,
+            type_member: x.type_member,
             id_government_institution: x.id_government_institution,
-            institution_options: institution_options,
+            institution_options,
             institution: x.institution,
+            tuk_options,
+            tuk_member_id: x.tuk_member_id,
           };
         });
         data.invitations = invitations;
@@ -184,11 +205,52 @@ export default {
       );
     },
     handleChangeRole({ val, idx }) {
+      this.reports.invitations[idx].tuk_member_id = null;
+
       if (this.isGovernmentInstitution(val)) {
         const institution = this.governmentInstitutions.filter(
           (x) => x.institution_type === val
         );
         this.reports.invitations[idx].institution_options = institution;
+        this.reports.invitations[idx].name = null;
+        this.reports.invitations[idx].email = null;
+        this.reports.invitations[idx].institution = null;
+        this.reports.invitations[idx].type = 'institution';
+        this.reports.invitations[idx].type_member = 'institution';
+      } else {
+        if (val === 'Ketua TUK') {
+          const ketua = this.members.find((x) => x.role === 'Ketua');
+          if (ketua) {
+            this.reports.invitations[idx] = {
+              id: null,
+              role: 'Ketua TUK',
+              name: ketua.name,
+              email: ketua.email,
+              type: 'Ketua TUK',
+              type_member: 'Ketua TUK',
+              institution: ketua.institution,
+              tuk_options: [],
+              tuk_member_id: ketua.id,
+            };
+          }
+        } else if (val === 'Anggota TUK' || val === 'Anggota Sekretariat TUK') {
+          this.reports.invitations[idx].role = val;
+          this.reports.invitations[idx].type = val;
+          this.reports.invitations[idx].type_member = val;
+          this.reports.invitations[idx].name = null;
+          this.reports.invitations[idx].email = null;
+          this.reports.invitations[idx].institution = null;
+
+          if (val === 'Anggota TUK') {
+            this.reports.invitations[idx].tuk_options = this.members.filter(
+              (x) => x.role === 'Anggota' || x.role === 'Kepala Sekretariat'
+            );
+          } else {
+            this.reports.invitations[idx].tuk_options = this.members.filter(
+              (x) => x.role === 'Anggota Sekretariat'
+            );
+          }
+        }
       }
     },
     async handleSubmit() {
@@ -197,6 +259,15 @@ export default {
       }
 
       this.loadingSubmit = true;
+
+      const invitations = this.reports.invitations.map((x) => {
+        const newX = x;
+        newX.institution_options = [];
+        newX.tuk_options = [];
+        return newX;
+      });
+      this.reports.invitations = invitations;
+
       await meetingReportResource.store({
         idProject: this.idProject,
         reports: this.reports,
@@ -211,10 +282,31 @@ export default {
       this.loadingSubmit = false;
       this.loadingTuk = false;
     },
-    deleteInvitation({ id, personType }) {
-      this.reports.invitations = this.reports.invitations.filter((inv) => {
-        return !(inv.id === id && inv.type === personType);
-      });
+    handleChangeName({ val, type, idx }) {
+      console.log('metia');
+      let tuk = null;
+
+      if (type === 'Anggota TUK') {
+        tuk = this.reports.invitations[idx].tuk_options.find(
+          (x) => x.id === val && x.type === 'tuk'
+        );
+      } else {
+        tuk = this.reports.invitations[idx].tuk_options.find(
+          (x) => x.id === val && x.type === 'tuk_secretary'
+        );
+      }
+
+      if (tuk) {
+        this.reports.invitations[idx].institution = tuk.institution;
+        this.reports.invitations[idx].email = tuk.email;
+      }
+    },
+    deleteInvitation({ idx, id }) {
+      if (id) {
+        this.reports.deleted_invitations.push(id);
+      }
+
+      this.reports.invitations.splice(idx, 1);
     },
     updateUploadFile({ name }) {
       this.reports.file = name;
