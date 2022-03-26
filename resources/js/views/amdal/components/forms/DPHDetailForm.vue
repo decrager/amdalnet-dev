@@ -13,7 +13,7 @@
       </el-row>-->
       <div class="detail-header">
         <div class="stage">
-          <div class="label">Kegiatan {{ data.type }}: {{ data.kegiatan }}</div>
+          <!-- <div class="label">Kegiatan {{ data.type }}: {{ data.kegiatan }}</div> -->
           <div class="label">Tahap</div>
           <div>{{ data.stage }}</div>
         </div>

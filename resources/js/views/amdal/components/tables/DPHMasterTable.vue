@@ -17,7 +17,7 @@
     </el-row>
     <!-- tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase())) -->
 
-    <div style="text-align:right;">
+    <!-- <div style="text-align:right;">
       <el-select
         v-if="subProjects"
         v-model="search"
@@ -39,7 +39,7 @@
           </div>
         </el-option>
       </el-select>
-    </div>
+    </div>-->
     <el-table
       :data="impacts.filter(data => !search || data.kegiatan === search)"
       max-height="400"

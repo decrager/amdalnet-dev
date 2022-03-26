@@ -21,6 +21,7 @@
                 v-if="subProjects.length > 0"
                 :id="'main_'+stage.id"
                 :components="subProjects.filter(s => s.type === 'utama')"
+                :active-component="activeScoping.sub_projects"
                 :show-delete="false"
                 :show-edit="false"
                 :class-name="'scoping'"
@@ -38,6 +39,7 @@
                 :components="subProjects.filter(s => s.type === 'pendukung')"
                 :show-delete="false"
                 :show-edit="false"
+                :active-component="activeScoping.sub_projects"
                 :class-name="'scoping'"
                 :selectable="true"
                 :de-select-all="deSelectAllSPPendukung"
@@ -53,12 +55,16 @@
               <div style="margin-bottom:1em; ">
                 <components-list
                   v-if="components && components.length > 0"
-                  :id="'scopingComp'+index"
-                  :components="components.filter(c => c.id_project_stage === stage.id)"
+                  :id="'scopingComp_'+'stage_'+stage.id+'_'+index"
+                  :key="'comp_'+ stage.id +'_'+index"
+                  :components="(activeScoping.sub_projects === null) ? components.filter(c => c.id_project_stage === stage.id) : components.filter(c => (c.id_project_stage === stage.id) && (c.id_sub_project === activeScoping.sub_projects.id))"
                   :selectable="activeScoping.sub_projects !== null"
                   :class-name="'scoping'"
-                  :de-select-all="deSelectAllComponents"
+                  :active-component="activeComponent"
+                  :de-select-all="activeComponent === null"
+                  @edit="showForm = true "
                   @onSelect="onSelectComponents"
+                  @onDeselect="deselectComponents"
                 />
               </div>
               <el-button
@@ -90,16 +96,18 @@
                 <tr>
                   <td
                     v-for="ct in componentTypes"
-                    :key="'stage_'+ index +'_body_ct_'+ct.id"
+                    :key="'stage_'+ stage.id +'_body_ct_'+ct.id"
                   >
                     <components-list
-                      :id="'scopingHue'+index+'_hue_'+ct.id"
-                      :components="hues.filter(h => h.id_component_type === ct.id)"
-                      :show-delete="false"
-                      :show-edit="false"
-                      :selectable="true"
+                      :id="'scopingHue_'+stage.id+'_hue_'+ct.id"
+                      :key="'scopingHue_key_'+stage.id+'_hue_'+ct.id"
+                      :components="(activeScoping.sub_projects === null) ? hues.filter(h => h.id_component_type === ct.id) : ((activeComponent === null ) ? [] : hues.filter(h => (h.id_component_type === ct.id) && (h.id_sub_project_component === activeComponent.id_sub_project_component)))"
+                      :selectable="(activeScoping.sub_projects !== null) && (activeScoping.component !== null )"
                       :class-name="'scoping'"
-                      :de-select-all="deSelectAllHues"
+                      :active-component="activeHue"
+                      :de-select-all="activeHue === null"
+                      @edit="showAddHue = true"
+                      @onSave="onSaveHue"
                       @onSelect="onSelectHues"
                     />
                     <el-button
@@ -151,7 +159,7 @@ import FormAddComponent from './components/forms/FormAddComponent.vue';
 import FormAddHue from './components/forms/FormAddHue.vue';
 const projectResource = new Resource('projects');
 const subProjectComponent = new Resource('subproject-components');
-// const subProjectHue = new Resource('subproject-hues');
+const subProjectHue = new Resource('sub-project-rona-awals');
 
 export default {
   name: 'TabelPelingkupan',
@@ -189,6 +197,8 @@ export default {
       mapping: [],
       subProjects: [],
       activeName: 'stage4',
+      activeComponent: null,
+      activeHue: null,
       activeScoping: {
         id_project: 0,
         project_stage: null,
@@ -222,7 +232,8 @@ export default {
   mounted(){
     this.id_project = this.$route.params && this.$route.params.id;
     this.getSubProjects();
-    this.getSubProjectComponentsHues();
+    this.getSubProjectComponent();
+    this.getSubProjectsHues();
     this.initMapping();
     this.initActiveScoping();
   },
@@ -237,6 +248,8 @@ export default {
       this.activeScoping.rona_awal = null;
       this.activeScoping.sub_projects = null;
       this.activeScoping.id_component_type = null;
+      this.activeComponent = null;
+      this.activeHue = null;
     },
     initMapping() {
 
@@ -256,7 +269,38 @@ export default {
       this.components = [];
       await subProjectComponent.list({ id_project: this.id_project })
         .then((res) => {
+          /* const result = [];
+          res.forEach((r)=>{
+            const rec = {
+                id_sub_project_component : r.id_project_component,
+                description: r.description,
+                measurement: r.measurement,
+                id_sub_project : r.id_sub_project
+            };
+            const idx = result.findIndex(s => s.id === r.id);
+            if (idx >= 0 ){
+              result[idx].records.push(rec);
+            }else {
+              result.push({
+                id: r.id,
+                name: r.name,
+                value: r.name,
+                id_project_stage: r.id_project_stage,
+                records: [rec],
+              });
+            }
+          });
+          // this.components = result;*/
           this.components = res;
+          console.log('realigned: ', res);
+        })
+        .finally(() => {});
+    },
+    async getSubProjectsHues(){
+      this.hues = [];
+      await subProjectHue.list({ id_project: this.id_project, scoping: true })
+        .then((res) => {
+          this.hues = res;
         })
         .finally(() => {});
     },
@@ -266,26 +310,30 @@ export default {
     },
     // components and hues
     onSelectComponents(sel){
+      this.activeScoping.component = null;
+      this.activeScoping.rona_awal = null;
+      this.activeComponent = null;
+      this.activeHue = null;
+
       if (sel.length > 0){
         this.activeScoping.component = this.components.find(c => c.id === sel[0]);
-      } else {
-        // this.initActiveScoping();
-        this.activeScoping.component = null;
+        this.activeComponent = this.activeScoping.component;
       }
-      // this.showForm = true;
-      console.log(this.activeScoping);
+      console.log('components:', this.activeScoping);
     },
     onSelectHues(sel){
+      this.activeScoping.rona_awal = null;
+      this.activeHue = null;
       if (sel.length > 0){
-        this.activeScoping.rona_awal = this.hues.find(h => h.id === sel[0]);
-      } else {
-        this.activeScoping.rona_awal = null;
-        // this.initActiveScoping();
+        const hue = this.hues.find(h => h.id === sel[0]);
+        this.activeScoping.rona_awal = hue;
+        this.activeHue = hue;
       }
-      console.log(this.activeScoping);
+      console.log('hues', this.activeScoping);
     },
     onSelectSubProjects(sel) {
       console.log('selectSubProject', sel.length);
+      this.deSelectAllComponents = true;
       this.initActiveScoping();
       if (sel.length > 0){
         var sp = this.subProjects.find(sub => sub.id === sel[0]);
@@ -299,21 +347,44 @@ export default {
         }
 
         this.activeScoping.sub_projects = sp;
-
         // get sub components
       } else {
         // clear board? or show all?
-        this.deSelectAllComponents = true;
-        this.deSelectAllHues = true;
-        this.deSelectAllComponents = false;
-        this.deSelectAllHues = false;
+
       }
+      console.log('subproject', this.activeScoping);
     },
     onSaveComponent(obj){
+      /* const rec = {
+          id_sub_project_component : obj.id_project_component,
+          description: obj.description,
+          measurement: obj.measurement,
+          id_sub_project : obj.id_sub_project
+        };
+      const idx = this.components.findIndex(c => c.id === obj.id);
+      if(idx >= 0){
+        this.components[idx].records.push(rec);
+        this.activeComponent = this.components[idx];
+      } else {
+        this.components.push({
+          id: obj.id,
+          name: obj.name,
+          value: obj.name,
+          id_project_stage: obj.id_project_stage,
+          records: [rec]
+        });
+      }*/
       this.components.push(obj);
+      this.activeComponent = obj;
+      this.activeScoping.component = obj;
+      console.log(this.activeComponent);
     },
     onSaveHue(obj){
       this.hues.push(obj);
+      this.activeHue = obj;
+      this.activeScoping.rona_awal = obj;
+      this.getSubProjectsHues();
+      console.log('hues ', obj);
     },
     addComponent(){
 

@@ -20,6 +20,7 @@ use PhpParser\Node\Expr\Empty_;
 use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
+use App\Entity\ProjectComponent;
 
 class ImpactIdentificationController extends Controller
 {
@@ -493,6 +494,65 @@ class ImpactIdentificationController extends Controller
     public function store(Request $request)
     {
         $params = $request->all();
+        /*if(isset($params['scoping']) && ($params['scoping'])){
+            $validator = $request->validate([
+                'id_project' => 'required',
+                'id_project_component' => 'required',
+                'id_project_rona_awal' => 'required',
+            ]);
+
+            $impact = ImpactIdentification::firstOrCreate($validator);
+            if(!$impact) return response(500);
+
+            // pie A,
+            $pComponent = ProjectComponent::where('id', $request['id_project_component'])->first();
+            $pHue = ProjectRonaAwal::where('id', $request['id_project_rona_awal'])->first();
+            if ($pComponent && $pHue){
+                $text = "<p><strong>Deskripsi</strong></p>";
+                $text .= "<p>".$pComponent->description."</p>";
+                $text .= "<p><strong>Besaran</strong></p>";
+                $text .= "<p>".$pComponent->unit."</p>";
+
+
+
+                $spComponents = SubProjectComponent::select(
+                    'sub_projects_components.id', 'sub_projects_components.description_specific', 'sub_projects_components.unit' )
+                    ->join('sub_projects', 'sub_projects.id', '=','sub_projects_components.id')
+                    ->where('sub_projects_components.id_component', $request[''])
+
+                $pie_A = PotentialImpactEvaluation::create([
+                    'id_impact_identification' => $created->id,
+                    'id_pie_param' => 1,
+                    'text' => $text
+                ]);
+
+
+                $pie_B = PotentialImpactEvaluation::create([
+                    'id_impact_identification' => $created->id,
+                    'id_pie_param' => 2,
+                ]);
+                $pie_C = PotentialImpactEvaluation::create([
+                    'id_impact_identification' => $created->id,
+                    'id_pie_param' => 3,
+                ]);
+                $pie_D = PotentialImpactEvaluation::create([
+                    'id_impact_identification' => $created->id,
+                    'id_pie_param' => 4,
+                ]);
+
+                $text = "<p><strong>Deskripsi</strong></p>";
+                $text .= "<p>".$subProjHue->description_specific."</p>";
+                $text .= "<p><strong>Besaran</strong></p>";
+                $text .= "<p>".$subProjHue->unit."</p>";
+                $pie_E = PotentialImpactEvaluation::create([
+                    'id_impact_identification' => $created->id,
+                    'id_pie_param' => 5,
+                    'text' => $text
+                ]);
+
+            return response(200);
+        }*/
+
         if (isset($params['checked']) && isset($params['id_project'])){
             return $this->saveMatriks($params);
         } else if (isset($params['study_data'])) {
@@ -521,7 +581,7 @@ class ImpactIdentificationController extends Controller
                 //     $project->save();
                 // }
 
-                // init pies
+                // init pies //proe
                 // A
                 $subProj = SubProjectComponent::where('id', $request['id_sub_project_component'])->first();
                 $subProjHue = SubProjectRonaAwal::where('id', $request['id_sub_project_rona_awal'])->first();
@@ -656,31 +716,40 @@ class ImpactIdentificationController extends Controller
         $impacts = $impactClasses[$request->mode]::from($tables[$request->mode].' AS ii')
         ->selectRaw('ii.id, ii.id_change_type,
             '.$ctStatement[$request->mode].' as change_type_name,
-            COALESCE(c.id_project_stage, spc.id_project_stage) as project_stage,
+            -- COALESCE(c.id_project_stage, spc.id_project_stage) as project_stage,
+            c.id_project_stage as project_stage,
             ps.name as stage,
-            COALESCE(c."name", spc."name") as komponen,
-            COALESCE(ra."name", spra."name") as rona_awal,
+            -- COALESCE(c."name", spc."name") as komponen,
+            c."name" as komponen,
+            -- COALESCE(ra."name", spra."name") as rona_awal,
+            ra."name" as rona_awal,
             ii.initial_study_plan,
             ii.is_hypothetical_significant,
             ii.is_managed,
             ii.study_length_month,
             ii.study_length_year,
             ii.study_location,
-            count(cm.id) as comment,
-            sp."name" as kegiatan,
-            sp.type
+            array_agg(row_to_json(sp)) as sub_projects,
+            count(cm.id) as comment
+            -- sp."name" as kegiatan,
+            -- sp.type
         ')
+
+        // ->leftJoin('sub_project_rona_awals AS spra', 'ii.id_sub_project_rona_awal', '=', 'spra.id')
+        // ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
+        ->join('project_rona_awals AS spra', 'ii.id_project_rona_awal', '=', 'spra.id')
+        ->join('project_components AS spc', 'ii.id_project_component', '=', 'spc.id')
+        //->join('projects', 'projects.id', '=', 'spc.id_project')
+        ->leftJoin('sub_projects as sp', 'sp.id_project', '=', 'ii.id_project')
         ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
-        ->leftJoin('sub_project_rona_awals AS spra', 'ii.id_sub_project_rona_awal', '=', 'spra.id')
-        ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
-        ->leftJoin('sub_projects as sp', 'sp.id', '=', 'spc.id_sub_project')
         ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
         ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
         ->leftJoin('comments as cm', function ($join) use ($request, $comments) {
             $join->on('cm.id_impact_identification', '=', 'ii.id')
               ->on('cm.document_type', '=', DB::raw('\''.$comments[$request->mode].'\''));
         })
-        ->join('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'));
+        //->join('project_stages as ps', 'ps.id', '=', DB::raw('COALESCE(c.id_project_stage, spc.id_project_stage)'));
+        ->join('project_stages as ps', 'ps.id', '=','c.id_project_stage');
 
         if($request->id_project) {
             /**
@@ -699,9 +768,9 @@ class ImpactIdentificationController extends Controller
                 return $query;
             })*/
             ->groupBy('ii.id', 'ct.name', 'c.id_project_stage',
-                'spc.id_project_stage', 'ps.name',
-                'c.name', 'spc.name',
-                'ra.name', 'spra.name', 'sp.name', 'sp.type')
+                /*'spc.id_project_stage',*/ 'ps.name',
+                'c.name', /*'spc.name',*/
+                'ra.name'/*, 'spra.name'*/) /*, 'sp.name', 'sp.type')*/
             ->orderBy('ii.id', 'asc')
             ->get());
         //return response($impacts);
@@ -710,9 +779,9 @@ class ImpactIdentificationController extends Controller
         {
             $res = $impacts->where('ii.id', $request->id)
             ->groupBy('ii.id', 'ct.name', 'c.id_project_stage',
-                'spc.id_project_stage', 'ps.name',
-                'c.name', 'spc.name',
-                'ra.name', 'spra.name', 'sp.name', 'sp.type')
+                /*'spc.id_project_stage',*/ 'ps.name',
+                'c.name', /*'spc.name',*/
+                'ra.name') //, 'spra.name', 'sp.name', 'sp.type')
             ->first();
             if($res) return response($res);
             return response('Dampak tidak ditemukan',404);

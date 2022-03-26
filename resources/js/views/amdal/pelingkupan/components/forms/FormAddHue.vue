@@ -137,7 +137,13 @@ export default {
       this.hue.id_project_rona_awal = this.selected.id_project_rona_awal;
       await subProjectHueResource.store(this.hue)
         .then((res) => {
-          this.hue.id_sub_project_rona_awal = res;
+          this.hue.id_sub_project_rona_awal = res.id_sub_project_rona_awal;
+          this.$message({
+            message: 'Komponen lingkungan berhasil disimpan',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+
           this.$emit('onSave', {
             id: this.hue.id,
             name: this.hue.name,
@@ -147,6 +153,14 @@ export default {
             description: this.hue.description,
             measurement: this.hue.measurement,
           });
+        })
+        .catch((err) => {
+          this.$message({
+            message: 'Gagal menyimpan komponen kegiatan',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          console.log(err);
         })
         .finally(() => {
           this.isSaving = false;

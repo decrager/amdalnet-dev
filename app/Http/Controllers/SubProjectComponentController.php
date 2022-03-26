@@ -99,6 +99,7 @@ class SubProjectComponentController extends Controller
                   'components.*',
                   'project_stages.name as project_stage_name',
                   'sub_project_components.id as id_sub_project_component',
+                  'sub_projects.id as id_sub_project',
                   'sub_project_components.description_specific as description',
                   'sub_project_components.unit as measurement'
               )

@@ -8,7 +8,16 @@
       :key="comp.id+'_'+id"
     >
       <p
-        v-if="selected.includes(comp.id)"
+        v-if="isMasterComponent"
+        :data-id="comp.id"
+        @click.self="select"
+      >
+        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
+        <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
+        {{ comp.name }}  <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
+      </p>
+      <p
+        v-else-if="(activeComponent !== null) && (activeComponent.id === comp.id )"
         :data-id="comp.id"
         class="selected"
         @click.self="deSelect"
@@ -19,12 +28,12 @@
         {{ comp.name }} <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
       </p>
       <p
-        v-if="!selected.includes(comp.id)"
+        v-else
         :data-id="comp.id"
         @click.self="select"
       >
-        <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
-        <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" />
+        <!-- <el-button v-if="showDelete" type="danger" icon="el-icon-close" size="mini" plain square style="float:left; width:20px; padding: 3px 0;" @click="removeComponent(comp.id)" />
+        <i v-if="showEdit" class="el-icon-edit" size="mini" style="float:right; padding:5px; cursor:pointer;" @click="editComponent(comp.id)" /> -->
         {{ comp.name }}  <i v-if="comp.is_master" class="el-icon-success" style="color:#2e6b2e;" />
       </p>
     </div>
@@ -47,6 +56,10 @@ export default {
     // selectable & clickable
     selectable: { type: Boolean, default: false },
     multipleSelect: { type: Boolean, default: false },
+    activeComponent: {
+      type: Object,
+      default: null,
+    },
     highlighted: {
       type: Array,
       default: function() {
@@ -54,6 +67,10 @@ export default {
       },
     },
     deSelectAll: {
+      type: Boolean,
+      default: false,
+    },
+    isMasterComponent: {
       type: Boolean,
       default: false,
     },
@@ -76,9 +93,9 @@ export default {
 
   watch: {
     deSelectAll: function(val) {
-      console.log('deselect?', val);
+      console.log('deselect? ' + this.id, val);
       if (val === true){
-        this.selected = [];
+        this.doDeselectAll();
       }
     },
   },
@@ -115,6 +132,10 @@ export default {
         }
       }
       this.$emit('onSelect', this.selected);
+    },
+    doDeselectAll(){
+      this.selected = [];
+      this.$emit('onDeselect', true);
     },
     /* deSelectAll(){
       this.selected = [];

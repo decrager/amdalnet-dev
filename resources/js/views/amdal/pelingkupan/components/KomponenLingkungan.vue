@@ -7,6 +7,7 @@
       <components-list
         :id="'rona'"
         :components="components"
+        :is-master-component="true"
         @edit="editComponent"
         @delete="removeComponent"
       />

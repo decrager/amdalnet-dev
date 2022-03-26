@@ -8,6 +8,7 @@
       <components-list
         :id="'kegiatan'"
         :components="components"
+        :is-master-component="true"
         @edit="editComponent"
         @delete="removeComponent"
       />

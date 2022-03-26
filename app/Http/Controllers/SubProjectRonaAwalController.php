@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
 use App\Entity\SubProjectRonaAwal;
+use App\Entity\RonaAwal;
 use App\Entity\ImpactIdentification;
 use App\Http\Resources\SubProjectRonaAwalResource;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 
 class SubProjectRonaAwalController extends Controller
 {
@@ -19,6 +20,39 @@ class SubProjectRonaAwalController extends Controller
     public function index(Request $request)
     {
         $params = $request->all();
+
+        if(isset($params['id_project'] ) && (isset($params['scoping']) && ($params['scoping']))) {
+            return DB::select( DB::raw("
+            select rona_awal.*,
+            rona_awal.name as value,
+            sub_project_rona_awals.description_specific as description,
+            sub_project_rona_awals.unit as measurement,
+            sub_project_rona_awals.id as id_sub_project_rona_awal,
+            sub_project_components.id as id_sub_project_component
+          from rona_awal
+          join sub_project_rona_awals on sub_project_rona_awals.id_rona_awal = rona_awal.id
+          join sub_project_components on sub_project_components.id = sub_project_rona_awals.id_sub_project_component
+          join sub_projects on sub_projects.id = sub_project_components.id_sub_project
+          join projects on projects.id = sub_projects.id_project
+          where projects.id = :val"), ['val' =>$request->id_project]);
+
+
+            /*return response(RonaAwal::from('rona_awal')->select(
+                'rona_awal.*',
+                'rona_awal.name as value',
+                'sub_project_rona_awals.description_specific as description',
+                'sub_project_rona_awals.unit as measurement',
+                'sub_project_rona_awals.id as id_sub_project_rona_awal',
+                'sub_project_components."id" as id_sub_project_component'
+            )
+            ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_rona_awal', '=', 'rona_awal.id' )
+            ->join('sub_project_components', 'sub_project_components.id','','sub_project_rona_awals.id_sub_project_component')
+            ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+            ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
+            ->where('projects.id',$request->id_project)
+            ->get(), 200);*/
+        }
+
         if (isset($params['id_project'])){
             $rona_awals = SubProjectRonaAwal::select('sub_project_rona_awals.*',
                 'rona_awal.name AS name_master',
@@ -76,6 +110,30 @@ class SubProjectRonaAwalController extends Controller
         }
     }
 
+    public function subProjectHues(Request $request)
+    {
+        $params = $request->all();
+
+        $res = RonaAwal::from("rona_awal")
+        ->select(
+            'rona_awal.*',
+            'rona_awal.name as value',
+            'sub_project_rona_awals.description_specific as description',
+            'sub_project_rona_awals.unit as measurement',
+            'sub_project_rona_awals.id as id_sub_project_rona_awal',
+
+
+        )
+        ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_rona_awal', '=', 'rona_awal.id' )
+        ->join('sub_project_components', 'sub_project_components.id','','sub_project_rona_awals.id_sub_project_component')
+        ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+        ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
+        ->where('projects.id',$request->id_project);
+
+        return response($res->get(), 200);
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -108,14 +166,15 @@ class SubProjectRonaAwalController extends Controller
                 // save impact
                 $imp = ImpactIdentification::firstOrCreate([
                     'id_project' => $request->id_project,
-                    'id_project_component' => $request->id_project_components,
+                    'id_project_component' => $request->id_project_component,
                     'id_project_rona_awal' => $request->id_project_rona_awal,
                 ]);
 
-                return response({
-                    'id_sub_project_rona_awal': $spr->id,
-                    'id_impact_identification': $imp->id
-                  }, 200);
+                return response([
+                    'id_sub_project_rona_awal' =>  $spr->id,
+                    'id_impact_identification'=> $imp->id
+                ], 200);
+                // return response($spr->id, 200);
             }
         }
         return response(500);

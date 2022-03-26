@@ -102,25 +102,26 @@ export default {
         this.components = [];
         this.subProjects = [];
         this.hues = [];
-        const data = res;
+        // const data = res;
         res.map((e) => {
           e.hasChanges = false;
+          console.log('each impact: ', e);
 
           if (this.components.findIndex(c => c.value === e.komponen) < 0) {
             this.components.push({ text: e.komponen, value: e.komponen });
           }
 
-          if (this.subProjects.findIndex(s => s.value === e.kegiatan) < 0) {
+          /* if (this.subProjects.findIndex(s => s.value === e.kegiatan) < 0) {
             const temp = data.filter(d => d.kegiatan === e.kegiatan);
             this.subProjects.push({
               text: e.kegiatan,
               label: (e.kegiatan)
-                .replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+                .replace(/\w\S*//* g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
               value: e.kegiatan,
               type: e.type,
               count: temp.length,
             });
-          }
+          }*/
 
           if (this.hues.findIndex(c => (c.value).toLowerCase() === (e.rona_awal).toLowerCase()) < 0) {
             this.hues.push({
@@ -128,6 +129,8 @@ export default {
                 .replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
               value: e.rona_awal });
           }
+          console.log('hues', this.hues);
+          console.log('komp', this.components);
         });
         const order = [4, 1, 2, 3]; // stage's order
         this.impacts = res.sort((a, b) => order.indexOf(a.project_stage) - order.indexOf(b.project_stage));

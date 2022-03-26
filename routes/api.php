@@ -269,6 +269,7 @@ Route::apiResource('scoping', 'ScopingController');
 Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('subproject-components', [SubProjectComponentController::class,'subProjectComponents']);
+Route::get('subproject-hues', [SubProjectRonaAwalController::class,'subProjectHues']);
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('map-pdf', [ProjectMapAttachmentController::class, 'getMapPdf']);

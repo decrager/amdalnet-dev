@@ -4,6 +4,7 @@
     :visible.sync="show"
     width="50%"
     :before-close="handleClose"
+    @open="onOpen"
   >
     <div v-loading="isSaving">
       <el-form label-position="top" :model="data">
@@ -133,6 +134,9 @@ export default {
     handleClose(){
       this.$emit('onClose', true);
     },
+    onOpen(){
+      this.initComponent();
+    },
     initComponent(){
       this.component = {
         id: null,
@@ -166,6 +170,7 @@ export default {
           id: this.component.id,
           name: this.component.name,
           value: this.component.value,
+          id_sub_project: this.component.id_sub_project,
           id_sub_project_component: res,
           description: this.component.description,
           measurement: this.component.measurement,
