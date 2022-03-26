@@ -78,9 +78,19 @@ class ProjectComponentController extends Controller
 
         $params = $request->all();
         if(isset($params['id_project']) && isset($params['component'])){
+            $master = Component::first('id', $params['component']['id']);
+            if(!$master){
+                $master = Component::create([
+                    'name' => $params['component']['name'],
+                    'id_project_stage' => $params['component']['id_project_stage'],
+                    'originator_id' => $params['id_project'],
+                    'is_master' => false,
+                ]);
+            }
+
             $pc = ProjectComponent::firstOrNew([
                 'id_project' => $request->id_project,
-                'id_component' => $params['component']['id']
+                'id_component' => $master->id,
             ]);
             $pc->description = $params['component']['description'];
             $pc->measurement = $params['component']['measurement'];
