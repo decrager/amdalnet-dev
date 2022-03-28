@@ -13,7 +13,7 @@
       </el-row>-->
       <div class="detail-header">
         <div class="stage">
-          <div class="label">Kegiatan {{ data.type }}: {{ data.kegiatan }}</div>
+          <!-- <div class="label">Kegiatan {{ data.type }}: {{ data.kegiatan }}</div> -->
           <div class="label">Tahap</div>
           <div>{{ data.stage }}</div>
         </div>
@@ -247,10 +247,22 @@ export default {
           id_impact_identification: [this.data.id],
           mode: this.mode,
         }).then((res) => {
-          // console.log('calling ', res.length);
           if (res && (res.length > 0)) {
-            this.data.pie = res;
-            this.pies = res;
+            // this.data.pie = res;
+            // this.pies = res;
+            const pies = [];
+            res.forEach((e) => {
+              pies.push({
+                id: e.id,
+                id_impact_identification: e.id_impact_identification,
+                id_pie_param: e.id_pie_param,
+                text: e.text,
+              });
+            });
+
+            this.pies = pies;
+            this.data.pie = pies;
+            console.log('getPies', this.pies[0].text);
           } else {
             const pies = [];
             this.pieParams.forEach((e) => {
@@ -263,11 +275,12 @@ export default {
             });
             this.pies = pies;
             this.data.pie = pies;
-            // console.log('empty pies', this.pies);
+            console.log('empty pies', this.pies);
           }
-          this.isLoadingPie = false;
 
           this.$emit('pieData', this.pies);
+        }).finally(() => {
+          this.isLoadingPie = false;
         });
       }
     },

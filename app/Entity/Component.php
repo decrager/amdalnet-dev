@@ -9,8 +9,11 @@ class Component extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'components';
     protected $fillable = [
         'id_project_stage',
         'name',
+        'is_master',
+        'originator_id'
     ];
 }

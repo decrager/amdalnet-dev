@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
+use App\Entity\RonaAwal;
 use App\Entity\ProjectRonaAwal;
 use App\Http\Resources\ProjectRonaAwalResource;
 use Illuminate\Http\Request;
@@ -18,6 +19,29 @@ class ProjectRonaAwalController extends Controller
     public function index(Request $request)
     {
         $params = $request->all();
+        return response(RonaAwal::from('rona_awal')
+          ->selectRaw('
+            rona_awal.*,
+            rona_awal.name as value,
+            project_rona_awals.description as description,
+            project_rona_awals.measurement as measurement,
+            project_rona_awals.id as id_project_rona_awal
+          ')
+          ->join('project_rona_awals', 'project_rona_awals.id_rona_awal', '=', 'rona_awal.id' )
+          ->where(function ($q) use ($request) {
+              $q->where('rona_awal.is_master', true);
+              $q->orWhere('rona_awal.originator_id', $request->id_project);
+              return $q;
+          })
+          ->where('project_rona_awals.id_project', $request->id_project)->get());
+
+
+
+
+
+        //
+        /*
+        $params = $request->all();
         if (isset($params['id_project'])){
             $rona_awals = ProjectRonaAwal::select('project_rona_awals.*',
                 'rona_awal.name AS name_master',
@@ -30,7 +54,7 @@ class ProjectRonaAwalController extends Controller
             if (isset($params['with_component_type']) && $params['with_component_type']){
                 $component_types = ComponentType::select('component_types.*')
                     ->orderBy('id', 'asc')
-                    ->get();                
+                    ->get();
                 $data = [];
                 foreach ($rona_awals as $rona_awal) {
                     $id_component_type = $rona_awal['id_component_type_master'];
@@ -71,7 +95,7 @@ class ProjectRonaAwalController extends Controller
             }
         } else {
             return ProjectRonaAwalResource::collection(ProjectRonaAwal::with('rona_awal')->get());
-        }
+        }*/
     }
 
     /**
@@ -92,7 +116,43 @@ class ProjectRonaAwalController extends Controller
      */
     public function store(Request $request)
     {
-        $all_params = $request->all();
+
+        $params = $request->all();
+        if(isset($params['id_project']) && isset($params['component'])){
+            $master = RonaAwal::where('id', $params['component']['id'])->first();
+            if(!$master){
+                $master = RonaAwal::create([
+                    'name' => $params['component']['name'],
+                    'id_component_type' => $params['component']['id_component_type'],
+                    'is_master' => false,
+                    'originator_id' => $request->id_project
+                ]);
+
+                if(!$master){
+                    return response( 'Komponen Kegiatan gagal tersimpan', 500);
+                }
+            }
+            return response($master, 200);
+
+            $pc = ProjectRonaAwal::firstOrNew([
+                'id_project' => $request->id_project,
+                'id_rona_awal' => $params['component']['id']
+            ]);
+            $pc->description = $params['component']['description'];
+            $pc->measurement = $params['component']['measurement'];
+            if ($pc->save()) {
+                return response()->json([
+                    'code' => 200,
+                    'data' =>  $pc
+
+                ]);
+            }
+            return response()->json(['code' => 500]);
+        }
+
+        return response()->json(['code' => 500]);
+
+        /* $all_params = $request->all();
         if (isset($all_params['rona_awals'])){
             $validator = $request->validate([
                 'rona_awals' => 'required',
@@ -143,7 +203,7 @@ class ProjectRonaAwalController extends Controller
                 DB::rollBack();
                 return response()->json(['code' => 500]);
             }
-        }
+        }*/
     }
 
     /**

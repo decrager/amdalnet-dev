@@ -91,7 +91,7 @@ const actions = {
           resolve(data);
         })
         .catch(error => {
-          console.log(error.code);
+          // console.log(error.code);
           if (!request.isCancel(error)){
             reject(error);
           }

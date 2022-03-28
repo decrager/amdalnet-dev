@@ -25,10 +25,11 @@
 
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="PELINGKUPAN">
-          <pelingkupan
+          <modul-pelingkupan />
+          <!-- <pelingkupan
             v-if="activeName === '1'"
             @handleReloadVsaList="handleReloadVsaList"
-          />
+          /> -->
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
           <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
@@ -74,7 +75,8 @@
 </template>
 
 <script>
-import Pelingkupan from './components/Pelingkupan.vue';
+// import Pelingkupan from './components/Pelingkupan.vue';
+import ModulPelingkupan from './pelingkupan/index.vue';
 import MatriksIdentifikasiDampakTable from './components/tables/MatriksIdentifikasiDampakTable.vue';
 import MatriksDPHTable from './components/tables/MatriksDPHTable.vue';
 // import DampakHipotetik from './components/DampakHipotetik.vue';
@@ -91,7 +93,8 @@ const scopingResource = new Resource('scoping');
 export default {
   name: 'FormulirAmdal',
   components: {
-    Pelingkupan,
+    // Pelingkupan,
+    ModulPelingkupan, // dengan master komponen lokal
     MatriksIdentifikasiDampakTable,
     // DampakHipotetik,
     DampakHipotetikMD,

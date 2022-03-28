@@ -24,14 +24,53 @@ class ComponentController extends Controller
         // }
         $params = $request->all();
         if (isset($params['all']) && $params['all']) {
-            return ComponentResource::collection(Component::all());
-        } else {
-            return Component::select('components.*', 'project_stages.name as project_stage')->where(function ($query) use ($request) {
-                return $request->idProjectStage ? $query->where('id_project_stage', $request->idProjectStage) : '';
-            })->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')
-            ->orderBy(($request->orderBy ? 'components.'.$request->orderBy : 'components.id'), ($request->orderBy ? $request->order : 'DESC'))
-            ->paginate($request->limit ? $request->limit : 10);
+            return ComponentResource::collection(Component::where('is_master', true)->get());
         }
+        if (isset($params['q']) && $params['q']){
+            // query
+            return Component::select(
+                'components.*',
+                'components.name as value',
+                'project_stages.name as project_stage_name'
+                )
+                ->where( function ($query) use ($request) {
+                    $query->where('components.name', 'ilike', '%'.$request->q.'%');
+                    if($request->idProjectStage){
+                        $query->where('id_project_stage', '=', $request->idProjectStage);
+                    }
+                    return $query;
+                })
+                ->leftJoin('project_stages', 'components.id_project_stage', '=','project_stages.id')
+                ->orderBy('components.name', 'ASC')
+                ->limit(20)
+                ->get();
+        }
+
+        if ((isset($params['stage_id']) && $params['stage_id']) &&
+        (isset($params['project_id']) && $params['project_id'])) {
+            return Component::select(
+                'components.*',
+                'components.name as value',
+                'project_stages.name as project_stage_name'
+                )
+                ->where('id_project_stage', $request->stage_id)
+                ->where( function ($query) use ($request) {
+                    $query->where('components.is_master', true );
+                    $query->orWhere('components.originator_id', $request->project_id);
+                    return $query;
+                })
+                ->leftJoin('project_stages', 'components.id_project_stage', '=','project_stages.id')
+                ->orderBy('components.name', 'ASC')
+                ->get();
+        }
+
+
+        return Component::select('components.*', 'project_stages.name as project_stage')->where(function ($query) use ($request) {
+            return $request->idProjectStage ? $query->where('id_project_stage', $request->idProjectStage) : '';
+        })->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')
+        ->orderBy(($request->orderBy ? 'components.'.$request->orderBy : 'components.id'), ($request->orderBy ? $request->order : 'DESC'))
+        ->paginate($request->limit ? $request->limit : 10);
+
     }
 
     /**

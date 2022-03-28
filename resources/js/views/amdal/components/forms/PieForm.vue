@@ -2,7 +2,7 @@
   <div v-loading="loading" class="pies-form">
     <fieldset>
       <legend>Evaluasi Dampak Potensial <span v-if="!isFormulator" style="font-size:80%; font-style: italic; color: blue;">&nbsp;&nbsp;read-only</span></legend>
-      <el-form v-if="data" ref="form" label-position="top" label-width="120px">
+      <el-form v-if="data && params" ref="form" label-position="top" label-width="120px">
         <el-row
           :gutter="15"
           class="pies-input"

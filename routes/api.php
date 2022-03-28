@@ -38,6 +38,8 @@ use App\Http\Controllers\MediumLowUklUplTemplateController;
 use App\Http\Controllers\EnvironmentalManagemenSopController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\VideoTutorialController;
+use App\Http\Controllers\ProjectOtherComponentController;
+use App\Http\Controllers\SubProjectComponentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -266,6 +268,8 @@ Route::get('ka-docx/{id}', [ExportDocument::class, 'KADocx']);
 Route::apiResource('scoping', 'ScopingController');
 Route::apiResource('sub-project-components', 'SubProjectComponentController');
 Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
+Route::get('subproject-components', [SubProjectComponentController::class,'subProjectComponents']);
+Route::get('subproject-hues', [SubProjectRonaAwalController::class,'subProjectHues']);
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('map-pdf', [ProjectMapAttachmentController::class, 'getMapPdf']);
@@ -327,7 +331,7 @@ Route::apiResource('env-manage-docs', 'EnvManageDocController');
 Route::apiResource('env-monitor-plans', 'EnvMonitorPlanController');
 Route::apiResource('public-questions', 'PublicQuestionController');
 Route::apiResource('ka-reviews', 'KaReviewController');
-
+Route::apiResource('project-other-components', 'ProjectOtherComponentController');
 // notification
 Route::get('mark-all-read/{user}', function (User $user) {
     $user->unreadNotifications->markAsRead();

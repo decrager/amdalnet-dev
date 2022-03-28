@@ -22,7 +22,7 @@
               size="mini"
               class="pull-right"
               icon="el-icon-caret-right"
-              @click="handleViewComponents(scope.row.id)"
+              @click="handleViewComponents(scope.row)"
             />
           </template>
         </el-table-column>
@@ -48,7 +48,7 @@
               size="mini"
               class="pull-right"
               icon="el-icon-caret-right"
-              @click="handleViewComponents(scope.row.id)"
+              @click="handleViewComponents(scope.row)"
             />
           </template>
         </el-table-column>
@@ -84,7 +84,7 @@
                         type="default"
                         size="medium"
                         :style="componentButtonStyle(comp.id)"
-                        @click="handleViewRonaAwals(comp.id)"
+                        @click="handleViewRonaAwals(comp)"
                       >
                         <el-button
                           v-if="!isAndal && isFormulator"
@@ -149,24 +149,33 @@
       :show="kKDialogueVisible"
       :sub-projects="subProjects"
       :id-project-stage="idProjectStage"
+      :project-stages="projectStages"
+      :project-stage="projectStages.find(p => p.id === idProjectStage)"
       :sub-project-component="editSubProjectComponent"
       :is-edit="isEditComponent"
       :current-id-sub-project="currentIdSubProject"
       :selected-id-sub-project-component="currentIdSubProjectComponent"
+      :master-components="masterComponents.filter(c => c.id_project_stage === idProjectStage)"
       @handleCloseAddComponent="handleCloseAddComponent"
       @handleSetCurrentIdSubProjectComponent="handleSetCurrentIdSubProjectComponent"
+      @currentSubProject="onCurrentSubProject"
     />
     <add-rona-awal-dialog
       v-if="!isAndal && isFormulator"
       :key="ronaAwalDialogKey"
       :show="kLDialogueVisible"
+      :component-types="componentTypes"
       :sub-projects="subProjects"
       :id-project="idProject"
       :id-project-stage="idProjectStage"
-      :current-id-sub-project="currentIdSubProject"
+      :project-stage="projectStages.find(p => p.id === idProjectStage)"
+      :current-id-sub-project="currentSubProject.id"
       :current-id-sub-project-component="currentIdSubProjectComponent"
       :current-id-component-type="currentIdComponentType"
       :sub-project-components="subProjectComponents"
+      :current-sub-project-name="currentSubProject.name"
+      :current-component="currentComponent"
+      :master-hues="masterHues.filter(h => h.id_component_type === currentIdComponentType)"
       @handleCloseAddRonaAwal="handleCloseAddRonaAwal"
     />
   </el-row>
@@ -196,6 +205,22 @@ export default {
       type: Number,
       default: () => 0,
     },
+    masterComponents: {
+      type: Array,
+      default: () => [],
+    },
+    masterHues: {
+      type: Array,
+      default: () => [],
+    },
+    projectStages: {
+      type: Array,
+      default: () => [],
+    },
+    componentTypes: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -224,6 +249,9 @@ export default {
       isEditComponent: false,
       loadingSubProjects: true,
       loadingKomponen: true,
+      currentSubProject: { id: 0, name: '' },
+      currentComponentName: '',
+      currentComponent: null,
     };
   },
   computed: {
@@ -255,6 +283,7 @@ export default {
     },
     handleAddRonaAwal(idComponentType) {
       this.currentIdComponentType = idComponentType;
+      console.log(this.currentComponent);
       this.kLDialogueVisible = true;
     },
     handleCloseAddComponent(idSubProjectComponent) {
@@ -313,7 +342,20 @@ export default {
         this.kKDialogueVisible = true;
       }
     },
-    async handleViewComponents(idSubProject) {
+    async handleViewComponents(subP) {
+      const idSubProject = subP.id;
+      this.currentIdSubProject = idSubProject;
+
+      /* let subP = this.subProjects.utama.find(spu => spu.id === idSubProject);
+      if (!subP){
+        subP = this.subProjects.pendukung.find(spp => spp.id === idSubProject);
+      }*/
+      this.currentSubProject = {
+        id: idSubProject,
+        name: subP.name,
+      };
+
+      console.log('handleViewCompoents: ', this.currentSubProject);
       this.$emit('handleCurrentIdSubProject', idSubProject);
       this.getComponents(idSubProject);
       this.subProjectComponents = [];
@@ -345,8 +387,14 @@ export default {
         return { backgroundColor: '#ffffff', color: '#099C4B' };
       }
     },
-    async handleViewRonaAwals(idSubProjectComponent) {
-      this.currentIdSubProjectComponent = idSubProjectComponent;
+    async handleViewRonaAwals(comp) {
+      const idSubProjectComponent = comp.id;
+      this.currentIdSubProjectComponent = comp.id;
+      this.currentComponent = this.masterComponents.find(c => c.id === comp.component.id);
+      if (!this.currentComponent){
+        this.currentComponent = comp.component;
+      }
+      console.log('viewRonaAwals', this.currentComponent, comp);
       this.componentButtonStyle(idSubProjectComponent);
       this.getRonaAwals(idSubProjectComponent);
       // this.componentButtonStyle = { backgroundColor: '#facd7a' };
@@ -422,6 +470,9 @@ export default {
         this.subProjectRonaAwals = ronaAwals.data;
       }
       this.loadingKomponen = false;
+    },
+    onCurrentSubProject(val){
+      // this.currentSubProject = val;
     },
   },
 };

@@ -6,7 +6,7 @@
     :before-close="handleClose"
   >
     <el-form label-position="top" :model="ronaAwal">
-      <el-form-item label="Tahap Kegiatan">
+      <!-- <el-form-item label="Tahap Kegiatan">
         <el-select
           v-model="idProjectStage"
           v-loading="loadingProjectStages"
@@ -20,8 +20,18 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="Kegiatan Utama/Pendukung">
+      </el-form-item>-->
+      <div style="line-height: 180% !important;">
+        <div><strong>Tahap Kegiatan</strong></div>
+        <div style="font-size:120%">{{ projectStage.name || 'Belum dipilih' }}</div>
+      </div>
+
+      <div style="line-height: 180% !important; margin: 2em 0;">
+        <div><strong>Kegiatan Utama/Pendukung</strong></div>
+        <div style="font-size:120%">{{ currentSubProjectName || 'Belum dipilih' }}</div>
+      </div>
+
+      <!-- <el-form-item label="Kegiatan Utama/Pendukung">
         <el-select
           v-model="currentIdSubProject"
           v-loading="loadingSubProjects"
@@ -35,9 +45,19 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="Komponen Kegiatan">
-        <el-select
+      </el-form-item> -->
+
+      <el-form-item
+        label="Komponen Kegiatan"
+        style="padding: 1em; border: 1px solid #e0e0e0; border-radius: 1em;"
+      >
+
+        <div style="font-size:120%">{{ currentComponent? currentComponent.name : 'Belum dipilih' }}</div>
+        <deskripsi-besaran
+          :data="currentComponent"
+        />
+
+        <!-- <el-select
           v-model="currentIdSubProjectComponent"
           v-loading="loadingSubProjectComponents"
           placeholder="Pilih Komponen Kegiatan"
@@ -49,7 +69,7 @@
             :label="item.name"
             :value="item.id"
           />
-        </el-select>
+        </el-select> -->
       </el-form-item>
       <el-form-item label="Tipe Komponen Lingkungan">
         <el-select
@@ -77,10 +97,26 @@
         />
       </el-form-item>
       <el-form-item :label="deskripsiKhusus()">
-        <el-input v-model="ronaAwal.description_specific" type="textarea" :rows="2" />
+        <hueeditor
+          v-model="ronaAwal.description_specific"
+          output-format="html"
+          :menubar="''"
+          :image="false"
+          :height="100"
+          :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+          style="width:100%"
+        />
+
+        <!-- <el-input v-model="ronaAwal.description_specific" type="textarea" :rows="2" />-->
       </el-form-item>
-      <el-form-item label="Besaran Dampak">
-        <el-input v-model="ronaAwal.unit" type="textarea" :rows="2" />
+      <el-form-item label="Besaran">
+        <el-input
+          v-model="ronaAwal.unit"
+          type="textarea"
+          :autosize="{ minRows: 3, maxRows: 5}"
+        />
+
+        <!-- <el-input v-model="ronaAwal.unit" type="textarea" :rows="2" /> -->
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -92,8 +128,10 @@
 
 <script>
 import Resource from '@/api/resource';
+import HDescEditor from '@/components/Tinymce';
+import DeskripsiBesaran from './DeskripsiBesaran.vue';
 const ronaAwalResource = new Resource('rona-awals');
-const projectStageResource = new Resource('project-stages');
+// const projectStageResource = new Resource('project-stages');
 const componentTypeResource = new Resource('component-types');
 const scopingResource = new Resource('scoping');
 const subProjectComponentResource = new Resource('sub-project-components');
@@ -101,6 +139,10 @@ const impactIdtResource = new Resource('impact-identifications');
 
 export default {
   name: 'AddRonaAwalDialog',
+  components: {
+    'hueeditor': HDescEditor,
+    DeskripsiBesaran,
+  },
   props: {
     show: Boolean,
     idProject: {
@@ -131,6 +173,18 @@ export default {
       type: Array,
       default: () => [],
     },
+    projectStage: {
+      type: Object,
+      default: () => null,
+    },
+    currentSubProjectName: {
+      type: String,
+      default: () => '',
+    },
+    currentComponent: {
+      type: Object,
+      default: () => null,
+    },
   },
   data() {
     return {
@@ -140,6 +194,7 @@ export default {
       subProjectComponentsArray: [],
       currentSubProjectComponentName: '',
       projectStages: [],
+      // currentSubjProject: null,
       componentTypes: [],
       disableDescCommon: false,
       loadingProjectStages: true,
@@ -246,10 +301,10 @@ export default {
         });
       });
       this.ronaAwalList = raList;
-      const ps = await projectStageResource.list({
+      /* const ps = await projectStageResource.list({
         ordered: true,
       });
-      this.projectStages = ps.data;
+      this.projectStages = ps.data;*/
       this.loadingProjectStages = false;
 
       this.subProjects.utama.map((u) => {
@@ -270,6 +325,7 @@ export default {
           this.currentSubProjectComponentName = c.name;
         }
       });
+      // this.currentSubjProject = this.subProjectsArray.find(s => s.id = currentIdSubProject);
       this.loadingSubProjectComponents = false;
       // common desc
       const comps = await subProjectComponentResource.list({
