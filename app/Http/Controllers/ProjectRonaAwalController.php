@@ -132,7 +132,6 @@ class ProjectRonaAwalController extends Controller
                     return response( 'Komponen Kegiatan gagal tersimpan', 500);
                 }
             }
-            return response($master, 200);
 
             $pc = ProjectRonaAwal::firstOrNew([
                 'id_project' => $request->id_project,

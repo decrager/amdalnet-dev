@@ -61,6 +61,8 @@
                   :selectable="activeScoping.sub_projects !== null"
                   :class-name="'scoping'"
                   :active-component="activeComponent"
+                  :show-edit="isFormulator"
+                  :show-delete="isFormulator"
                   :de-select-all="activeComponent === null"
                   @edit="showForm = true "
                   @onSelect="onSelectComponents"
@@ -68,7 +70,7 @@
                 />
               </div>
               <el-button
-                v-if="masterComponents && (masterComponents.filter(c => c.id_project_stage === stage.id ).length > 0) && (activeScoping.sub_projects !== null)"
+                v-if="isFormulator && masterComponents && (masterComponents.filter(c => c.id_project_stage === stage.id ).length > 0) && (activeScoping.sub_projects !== null)"
                 icon="el-icon-plus"
                 size="mini"
                 circle
@@ -104,6 +106,8 @@
                       :components="(activeScoping.sub_projects === null) ? hues.filter(h => h.id_component_type === ct.id) : ((activeComponent === null ) ? [] : hues.filter(h => (h.id_component_type === ct.id) && (h.id_sub_project_component === activeComponent.id_sub_project_component)))"
                       :selectable="(activeScoping.sub_projects !== null) && (activeScoping.component !== null )"
                       :class-name="'scoping'"
+                      :show-edit="isFormulator"
+                      :show-delete="isFormulator"
                       :active-component="activeHue"
                       :de-select-all="activeHue === null"
                       @edit="showAddHue = true"
@@ -200,13 +204,10 @@ export default {
         sub_projects: null,
         id_component_type: null,
       },
+      savedComponents: [],
+      savedHues: [],
       components: [],
       hues: [],
-      highlights: {
-        components: [],
-        hues: [],
-        subProjects: [],
-      },
       showForm: false,
       showAddHue: false,
       mode: 0,
@@ -216,6 +217,14 @@ export default {
       deSelectAllHues: false,
       current_component_type: null,
     };
+  },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
+    },
   },
   mounted(){
     this.id_project = this.$route.params && this.$route.params.id;
