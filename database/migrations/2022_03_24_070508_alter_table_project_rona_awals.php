@@ -21,8 +21,8 @@ class AlterTableProjectRonaAwals extends Migration
             $table->dropColumn('id_component_type');
             // $table->integer('id_component')->nullable();
 
-            $table->foreign('id_project')->references('id')->on('projects')->onDelete('cascade');
-            $table->foreign('id_rona_awal')->references('id')->on('rona_awal')->nullOnDelete();
+            // $table->foreign('id_project')->references('id')->on('projects')->onDelete('cascade');
+            // $table->foreign('id_rona_awal')->references('id')->on('rona_awal')->nullOnDelete();
         });
     }
 
