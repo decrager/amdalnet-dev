@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\EnvManageDoc;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\FormulatorTeam;
@@ -608,7 +609,7 @@ class TestMeetRKLRPLController extends Controller
          }
 
         // === PETA === //
-        $checkPeta = $this->checkPeta($id_project);
+        $checkPeta = $this->checkPeta($id_project, $document_type);
         
         // === KONSULTASI PUBLIK === //
         $checkKonsulPublik = $this->checkKonsulPublik($id_project);
@@ -707,25 +708,27 @@ class TestMeetRKLRPLController extends Controller
         if($verification->forms) {
             if($verification->forms->first()) {
                 foreach($verification->forms as $f) {
-                    $templateProcessor->setValue($f->name . '_exist', 
-                                $this->checkFileAdmExist(
-                                                'exist', 
-                                                $f->name, 
-                                                $project, 
-                                                $checkPeta, 
-                                                $checkKonsulPublik, 
-                                                $checkCvPenyusun));
-                    $templateProcessor->setValue($f->name . '_not_exist', 
-                    $this->checkFileAdmExist(
-                                    'not_exist', 
-                                    $f->name, 
-                                    $project, 
-                                    $checkPeta, 
-                                    $checkKonsulPublik, 
-                                    $checkCvPenyusun));
-                    $templateProcessor->setValue($f->name . '_yes', $f->suitability == 'Sesuai' ? 'V' : '');
-                    $templateProcessor->setValue($f->name . '_no', $f->suitability == 'Tidak Sesuai' ? 'V' : '');
-                    $templateProcessor->setValue($f->name . '_ket', $f->description);
+                    if(!($document_type == 'ukl-upl' && $f->name == 'peta_titik')) {
+                        $templateProcessor->setValue($f->name . '_exist', 
+                                    $this->checkFileAdmExist(
+                                                    'exist', 
+                                                    $f->name, 
+                                                    $project, 
+                                                    $checkPeta, 
+                                                    $checkKonsulPublik, 
+                                                    $checkCvPenyusun));
+                        $templateProcessor->setValue($f->name . '_not_exist', 
+                        $this->checkFileAdmExist(
+                                        'not_exist', 
+                                        $f->name, 
+                                        $project, 
+                                        $checkPeta, 
+                                        $checkKonsulPublik, 
+                                        $checkCvPenyusun));
+                        $templateProcessor->setValue($f->name . '_yes', $f->suitability == 'Sesuai' ? 'V' : '');
+                        $templateProcessor->setValue($f->name . '_no', $f->suitability == 'Tidak Sesuai' ? 'V' : '');
+                        $templateProcessor->setValue($f->name . '_ket', $f->description);
+                    }
                 }
             }
         }
@@ -1005,15 +1008,25 @@ class TestMeetRKLRPLController extends Controller
                 return '';
             }
         } else if($type == 'pertek') {
-           return '';
+            $env_manage_docs = EnvManageDoc::where([['id_project', $project->id],['type', 'DPT']])->count();
+            if($is_exist == 'exist') {
+                return $env_manage_docs > 0 ? 'V' : '';
+            } else {
+                return $env_manage_docs === 0 ? 'V' : '';
+            }
         } else if($type == 'peta_titik') {
-            return '';
+            $maps = ProjectMapAttachment::where('id_project', $project->id)->whereIn('attachment_type', ['pengelolaan', 'pemantauan'])->count();
+            if($is_exist == 'exist') {
+                return $maps > 0 ? 'V' : '';
+            } else {
+                return $maps == 0 ? 'V' : '';
+            }
          }
 
         return '';
     }
 
-    private function checkPeta($id_project)
+    private function checkPeta($id_project, $document_type)
     {
         $total = 0;
         $maps = ProjectMapAttachment::where('id_project', $id_project)->get();
@@ -1026,6 +1039,12 @@ class TestMeetRKLRPLController extends Controller
                 $total++;
             } else if($m->attachment_type == 'study') {
                 $total++;
+            }
+
+            if($document_type == 'ukl-upl') {
+                if($m->attachment_type == 'pengelolaan' || $m->attachment_type == 'pemantauan') {
+                    $total++;
+                }
             }
         }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Announcement;
+use App\Entity\EnvManageDoc;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\FormulatorTeam;
@@ -232,10 +233,14 @@ class TestVerifRKLRPLController extends Controller
         $peta_ekologis = null;
         $peta_sosial = null;
         $peta_wilayah_studi = null;
+        $peta_titik_pengelolaan = null;
+        $peta_titik_pemantauan = null;
         $peta_tapak_pdf = null;
         $peta_ekologis_pdf = null;
         $peta_sosial_pdf = null;
         $peta_wilayah_studi_pdf = null;
+        $peta_titik_pengelolaan_pdf = null;
+        $peta_titik_pemantauan_pdf = null;
         $maps = ProjectMapAttachment::where('id_project', $id_project)->get();
         foreach($maps as $m) {
             if($m->attachment_type == 'tapak') {
@@ -261,6 +266,18 @@ class TestVerifRKLRPLController extends Controller
                     $peta_wilayah_studi = Storage::url('/map' . '/' . $m->stored_filename);
                 } else if($m->file_type == 'PDF') {
                     $peta_wilayah_studi_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                }
+            } else if($m->attachment_type == 'pemantauan') {
+                if($m->file_type == 'SHP') {
+                    $peta_titik_pemantauan = Storage::url('/map' . '/' . $m->stored_filename);
+                } else if($m->file_type == 'PDF') {
+                    $peta_titik_pemantauan_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                }
+            } else if($m->attachment_type == 'pengelolaan') {
+                if($m->file_type == 'SHP') {
+                    $peta_titik_pengelolaan = Storage::url('/map' . '/' . $m->stored_filename);
+                } else if($m->file_type == 'PDF') {
+                    $peta_titik_pengelolaan_pdf = Storage::url('/map' . '/' . $m->stored_filename);
                 }
             }
         }
@@ -297,6 +314,13 @@ class TestVerifRKLRPLController extends Controller
         $is_disabled = false;
         
         $form = [];
+
+        // Dokumen Persetujuan Teknis
+        $dokumen_pertek = null;
+        $env_manage_docs = EnvManageDoc::where([['id_project', $project->id],['type', 'DPT']])->first();
+        if($env_manage_docs) {
+            $dokumen_pertek = $env_manage_docs->filepath;
+        }
         
         if($verification) {
             // Verification Form Disable
@@ -326,10 +350,15 @@ class TestVerifRKLRPLController extends Controller
                                 $peta_sosial, 
                                 $peta_ekologis, 
                                 $peta_wilayah_studi,
+                                $peta_titik_pemantauan,
+                                $peta_titik_pengelolaan,
                                 $peta_tapak_pdf,
                                 $peta_sosial_pdf,
                                 $peta_ekologis_pdf,
-                                $peta_wilayah_studi_pdf);
+                                $peta_wilayah_studi_pdf,
+                                $peta_titik_pemantauan_pdf,
+                                $peta_titik_pengelolaan_pdf,
+                                $project->required_doc);
                         }
 
 
@@ -385,10 +414,15 @@ class TestVerifRKLRPLController extends Controller
                         $peta_sosial, 
                         $peta_ekologis, 
                         $peta_wilayah_studi,
+                        $peta_titik_pemantauan,
+                        $peta_titik_pengelolaan,
                         $peta_tapak_pdf,
                         $peta_sosial_pdf,
                         $peta_ekologis_pdf,
-                        $peta_wilayah_studi_pdf),
+                        $peta_wilayah_studi_pdf,
+                        $peta_titik_pemantauan_pdf,
+                        $peta_titik_pengelolaan_pdf,
+                        $project->required_doc),
                     'suitability' => null,
                     'description' => null,
                     'type' => 'non-download'
@@ -411,19 +445,30 @@ class TestVerifRKLRPLController extends Controller
                     'description' => null,
                     'type' => 'non-download'
                   ],
-                  [
+            ];
+
+            if($project->required_doc == 'AMDAL') {
+                $form[] = [
                     'name' => 'pertek',
                     'suitability' => null,
                     'description' => null,
                     'type' => 'non-download'
-                  ],
-                  [
-                    'name' => 'peta_titik',
+                ];
+                $form[] =  [
+                  'name' => 'peta_titik',
+                  'suitability' => null,
+                  'description' => null,
+                  'type' => 'non-download'
+                ];
+            } else if($project->required_doc == 'UKL-UPL') {
+                $form[] = [
+                    'name' => 'pertek',
+                    'link' => $dokumen_pertek,
                     'suitability' => null,
                     'description' => null,
-                    'type' => 'non-download'
-                  ],
-            ];
+                    'type' => 'download'
+                ];
+            }
         }
 
 
@@ -451,35 +496,57 @@ class TestVerifRKLRPLController extends Controller
         $peta_sosial, 
         $peta_ekologis, 
         $peta_wilayah_studi,
+        $peta_titik_pemantauan,
+        $peta_titik_pengelolaan,
         $peta_tapak_pdf,
         $peta_sosial_pdf,
         $peta_ekologis_pdf,
-        $peta_wilayah_studi_pdf) {
-        return [
+        $peta_wilayah_studi_pdf,
+        $peta_titik_pemantauan_pdf,
+        $peta_titik_pengelolaan_pdf,
+        $document_type) {
+        $peta_link = [
             [
               'name' => 'Peta Tapak Proyek',
               'link' => $peta_tapak,
               'pdf' => $peta_tapak_pdf
             ],
-            [
+        ];
+
+        if($document_type == 'AMDAL') {
+            $peta_link[] = [
               'name' => 'Peta Batas Sosial',
               'link' => $peta_sosial,
               'pdf' => $peta_sosial_pdf
-            ],
-            [
+            ];
+            $peta_link[] = [
               'name' => 'Peta Batas Ekologis',
               'link' => $peta_ekologis,
               'pdf' => $peta_ekologis_pdf
-            ],
-            [
+            ];
+            $peta_link[] = [
               'name' => 'Peta Batas Wilayah Studi',
               'link' => $peta_wilayah_studi,
               'pdf' => $peta_wilayah_studi_pdf
-            ],
-            [
-                'name' => 'Webgis'
-            ]
+            ];
+        } else {
+            $peta_link[] = [
+                'name' => 'Peta Titik Pengelolaan',
+                'link' => $peta_titik_pengelolaan,
+                'pdf' => $peta_titik_pengelolaan_pdf
+            ];
+            $peta_link[] = [
+                'name' => 'Peta Titik Pemantauan',
+                'link' => $peta_titik_pemantauan,
+                'pdf' => $peta_titik_pemantauan_pdf
+            ];
+        }
+
+        $peta_link[] = [
+            'name' => 'Webgis'
         ];
+
+        return $peta_link;
     }
 
     private function exportNoDocx($id_project, $document_type)
