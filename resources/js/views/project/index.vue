@@ -317,7 +317,7 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
-                  v-if="scope.row.feasibility_test && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
+                  v-if="isPJM(scope.row) && isMeetReportAccepted(scope.row)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -326,7 +326,7 @@
                   Surat Rekomendasi Uji Kelayakan
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && scope.row.feasibility_test && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
+                  v-if="isAmdal(scope.row) && isFeasib(scope.row) && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -335,7 +335,7 @@
                   SKKL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && scope.row.feasibility_test && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
+                  v-if="isUklUpl(scope.row) && isFeasib(scope.row) && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -729,6 +729,28 @@ export default {
               return true;
             }
           }
+        }
+      }
+
+      return false;
+    },
+    isPJM(project) {
+      if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
+        if (project.tuk_project) {
+          if (project.tuk_project.length > 0) {
+            if (project.tuk_project[0].role === 'pjm') {
+              return true;
+            }
+          }
+        }
+      }
+
+      return false;
+    },
+    isFeasib(project) {
+      if (project.feasibility_test_recap) {
+        if (project.feasibility_test_recap.is_feasib) {
+          return true;
         }
       }
 

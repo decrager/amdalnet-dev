@@ -81,7 +81,7 @@ const amdalRoutes = {
       path: ':id(\\d+)/rekomendasi-uji-kelayakan',
       component: () =>
         import(
-          '@/views/pengujian-rkl-rpl/components/ujiKelayakan/SuratRekomendasi'
+          '@/views/pengujian-rkl-rpl/components/rekomendasi/index'
         ),
       name: 'rekomendasiUjiKelayakan',
       meta: {

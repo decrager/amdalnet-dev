@@ -1,44 +1,41 @@
 <template>
-  <div class="app-container" style="padding: 24px">
-    <el-card v-loading="loading">
-      <workflow />
-      <h2>Rekomendasi Hasil Uji Kelayakan</h2>
-      <div>
-        <el-button
+  <div :loading="loading" style="padding: 24px">
+    <h2>Rekomendasi Hasil Uji Kelayakan</h2>
+    <div>
+      <el-button
+        v-if="projects !== null"
+        :loading="loadingPDF"
+        type="danger"
+        @click="exportPdf"
+      >
+        Export to .PDF
+      </el-button>
+      <a
+        v-if="projects !== null"
+        class="el-button el-button--primary el-button--medium"
+        :href="projects"
+        download
+      >
+        Export to .DOCX
+      </a>
+    </div>
+    <el-row :gutter="20" style="margin-top: 20px">
+      <el-col :span="16">
+        <div class="grid-content bg-purple" />
+        <iframe
           v-if="projects !== null"
-          :loading="loadingPDF"
-          type="danger"
-          @click="exportPdf"
-        >
-          Export to .PDF
-        </el-button>
-        <a
-          v-if="projects !== null"
-          class="el-button el-button--primary el-button--medium"
-          :href="projects"
-          download
-        >
-          Export to .DOCX
-        </a>
-      </div>
-      <el-row :gutter="20" style="margin-top: 20px">
-        <el-col :span="16">
-          <div class="grid-content bg-purple" />
-          <iframe
-            v-if="projects !== null"
-            :src="
-              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
-            "
-            width="100%"
-            height="723px"
-            frameborder="0"
-          />
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple" />
-        </el-col>
-      </el-row>
-    </el-card>
+          :src="
+            'https://docs.google.com/gview?url=' + projects + '&embedded=true'
+          "
+          width="100%"
+          height="723px"
+          frameborder="0"
+        />
+      </el-col>
+      <el-col :span="8">
+        <div class="grid-content bg-purple" />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -46,12 +43,8 @@
 import Resource from '@/api/resource';
 const feasibilityTestResource = new Resource('feasibility-test');
 import axios from 'axios';
-import Workflow from '@/components/Workflow';
 
 export default {
-  components: {
-    Workflow,
-  },
   data() {
     return {
       idProject: 0,
@@ -65,7 +58,6 @@ export default {
   },
   created() {
     this.getData();
-    this.$store.dispatch('getStep', 6);
   },
   methods: {
     async getData() {
