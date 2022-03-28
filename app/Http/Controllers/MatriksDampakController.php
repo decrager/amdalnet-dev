@@ -91,7 +91,6 @@ class MatriksDampakController extends Controller
 
         $components_by_stage = $this->getComponentsGroupByStage($id);
         $component_ronas = $this->getComponentRonas($id);
-        return response($component_ronas);
 
         foreach ($components_by_stage as $cstage) {
             $index = 1;
