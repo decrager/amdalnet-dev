@@ -9,10 +9,12 @@ use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
+use App\Entity\TukSecretaryMember;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PDF;
 
 class FeasibilityTestController extends Controller
@@ -34,9 +36,21 @@ class FeasibilityTestController extends Controller
         }
 
         if($request->idProject) {
-            $feasibility = FeasibilityTest::where('id_project', $request->idProject)->first();
+            $feasibility = FeasibilityTest::where('id_project', $request->idProject)->where(function($q) {
+                $q->where(function($qu) {
+                    $qu->whereHas('feasibilityTestTeamMember', function($query) {
+                        $query->whereHas('lukMember', function($que) {
+                            $que->where('email', Auth::user()->email);
+                        })->orWhereHas('expertBank', function($que) {
+                            $que->where('email', Auth::user()->email);
+                        });
+                    })->orWhereHas('tukSecretaryMember', function($query) {
+                        $query->where('email', Auth::user()->email);
+                    });
+                })->orWhere('email', Auth::user()->email);
+            })->first();
             if($feasibility) {
-                return $this->getExistData($request->idProject);
+                return $this->getExistData($feasibility);
             } else {
                 return $this->getFreshData($request->idProject);
             }
@@ -68,8 +82,26 @@ class FeasibilityTestController extends Controller
         if($data['type'] == 'new') {
             $feasibility = new FeasibilityTest();
             $feasibility->id_project = $data['idProject'];
+
+            // === INPUT USER === //
+            $tuk_member = FeasibilityTestTeamMember::whereHas('lukMember', function($query) {
+                                $query->where('email', Auth::user()->email);
+                            })->orWhereHas('expertBank', function($query) {
+                                $query->where('email', Auth::user()->email);
+                            })->first();
+            
+            if($tuk_member) {
+                $feasibility->id_feasibility_test_team_member = $tuk_member->id;
+            } else {
+                $tuk_secretary = TukSecretaryMember::where('email', Auth::user()->email)->first();
+                if($tuk_secretary) {
+                    $feasibility->id_tuk_secretary_member = $tuk_secretary->id;
+                } else {
+                    $feasibility->email = Auth::user()->email;
+                }
+            }
         } else {
-            $feasibility = FeasibilityTest::where('id_project', $data['idProject'])->first();
+            $feasibility = FeasibilityTest::findOrFail($data['id']);
         }
 
         $feasibility->conclusion = $data['conclusion'];
@@ -157,9 +189,7 @@ class FeasibilityTestController extends Controller
         //
     }
 
-    private function getExistData($idProject) {
-        $feasibility = FeasibilityTest::where('id_project', $idProject)->first();
-
+    private function getExistData($feasibility) {
         $data = [];
         
         if($feasibility->detail->first()) {
@@ -197,7 +227,7 @@ class FeasibilityTestController extends Controller
         return [
             'type' => 'update',
             'id' => $feasibility->id,
-            'idProject' => $idProject,
+            'idProject' => $feasibility->id_project,
             'conclusion' => $feasibility->conclusion,
             'detail' => $data
         ];
