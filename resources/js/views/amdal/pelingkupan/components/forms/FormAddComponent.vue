@@ -41,7 +41,7 @@
               :value="item.id"
             >
               <span>{{ item.name }} &nbsp;<i v-if="item.is_master" class="el-icon-success" style="color:#2e6b2e;" /></span>
-            </el-option>>
+            </el-option>
           </el-select>
           <!-- <deskripsi-besaran v-if="component.id !== null "
           :data="masterComponents.find(e => e.id === component.id)"

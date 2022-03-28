@@ -42,6 +42,29 @@ class ImpactIdentificationController extends Controller
             $list = $list->where('id_rona_awal', $request->id_rona_awal);
         }
         if ($request->join_tables){
+            // versi pelingkupan 22 maret 2022
+            $list = ImpactIdentification::with('impactStudy')
+                ->select('impact_identifications.*',
+                'c.id_project_stage as id_project_stage',
+                'c.id_project_stage AS id_project_stage_master',
+                'c.name AS component_name_master',
+                'c.name AS component_name',
+                'ra.name AS rona_awal_name_master',
+                'ra.name AS rona_awal_name',
+                'ct.name AS change_type_name')
+                ->leftJoin('project_components AS pc', 'impact_identifications.id_project_component', '=', 'pc.id')
+                ->leftJoin('project_rona_awals AS pra', 'impact_identifications.id_project_rona_awal', '=', 'pra.id')
+                ->leftJoin('change_types AS ct', 'impact_identifications.id_change_type', '=', 'ct.id')
+                ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
+                ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
+                ->where('impact_identifications.id_project', $request->id_project)
+                ->whereNotNull('pc.id')
+                ->whereNotNull('pra.id')
+                ->orderBy('impact_identifications.id', 'asc')
+                ->get();
+            return ImpactIdentificationResource::collection($list);
+
+            /*
             $list = ImpactIdentification::with('impactStudy')
                 ->select('impact_identifications.*',
                 'pc.id_project_stage',
@@ -62,6 +85,8 @@ class ImpactIdentificationController extends Controller
                 ->orderBy('impact_identifications.id', 'asc')
                 ->get();
             return ImpactIdentificationResource::collection($list);
+
+            */
         }
         return ImpactIdentificationResource::collection($list);
     }
