@@ -30,4 +30,9 @@ class TukSecretaryMember extends Model
     {
         return $this->hasMany(TukProject::class, 'id_tuk_secretary_member', 'id');
     }
+
+    public function feasibilityTest()
+    {
+        return $this->hasMany(FeasibilityTest::class, 'id_tuk_secretary_member', 'id');
+    }
 }

@@ -5,16 +5,21 @@ namespace App\Http\Controllers;
 use App\Entity\EligibilityCriteria;
 use App\Entity\FeasibilityTest;
 use App\Entity\FeasibilityTestDetail;
+use App\Entity\FeasibilityTestRecap;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
+use App\Entity\TestingMeetingInvitation;
 use App\Entity\TukSecretaryMember;
+use App\Laravue\Models\User;
+use App\Notifications\FeasibilityTestRecapNotification;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use PDF;
 
 class FeasibilityTestController extends Controller
@@ -26,6 +31,23 @@ class FeasibilityTestController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->checkRecap) {
+            $recap = FeasibilityTestRecap::where('id_project', $request->idProject)->first();
+            if($recap) {
+                return $recap->is_feasib;
+            } else {
+                return false;
+            }
+        }
+
+        if($request->finalRecap) {
+            return response()->json(FeasibilityTestRecap::where('id_project', $request->idProject)->first());
+        }
+
+        if($request->recap) {
+            return $this->getRecap($request->idProject);
+        }
+
         if($request->pdf) {
             return $this->exportPDF($request->idProject);
         }
@@ -75,6 +97,23 @@ class FeasibilityTestController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->recap) {
+            $recap = new FeasibilityTestRecap();
+            $recap->id_project = $request->idProject;
+            $recap->recap = $request->recap;
+            $recap->is_feasib = $request->isFeasib;
+            $recap->save();
+
+            $project = Project::findOrFail($request->idProject);
+            $user = User::where('email', $project->initiator->email)->first();
+
+            if($user) {
+                Notification::send([$user], new FeasibilityTestRecapNotification($recap));
+            }
+
+            return response()->json(['message' => 'Data successfully saved']);
+        }
+
         $data = $request->feasibility;
 
         $feasibility = null;
@@ -404,5 +443,51 @@ class FeasibilityTestController extends Controller
             ));
 
         return $pdf->download('hehey.pdf');
+    }
+
+    private function getRecap($id_project)
+    {
+        // === ANGGOTA TUK  === //
+        $tuk_member = FeasibilityTestTeamMember::select('id', 'id_luk_member', 'id_expert_bank', 'position')
+                        ->whereHas('feasibilityTest', function($q) use($id_project) {
+                            $q->where('id_project', $id_project);
+                        })->with(['feasibilityTest.detail.eligibility', 'lukMember' => function($q) {
+                            $q->select('id', 'name', 'institution');
+                        }, 'expertBank' => function($q) {
+                            $q->select('id', 'name', 'institution');
+                        }])->get();
+        
+        // === ANGGOTA SEKRETARIAT TUK === //
+        $tuk_secretary_member = TukSecretaryMember::select('id', 'name', 'institution')
+                                    ->whereHas('feasibilityTest', function($q) use($id_project) {
+                                        $q->where('id_project', $id_project);
+                                    })->with('feasibilityTest.detail.eligibility')->get();
+                                    
+        // === AHLI DARI UNDANGAN === //
+        $tuk_invitation = FeasibilityTest::where([['id_project', $id_project],['email', '!=', null]])->with('detail.eligibility')->get();
+        $email = [];
+        $invitations = [];
+        foreach($tuk_invitation as $t) {
+            if(!in_array($t->email, $email)) {
+                $email[] = $t->email;
+            }
+        }
+
+        if(count($email) > 0) {
+            $invitations = TestingMeetingInvitation::select('id', 'name', 'email', 'institution', 'id_government_institution', 'role')
+                            ->whereIn('email', $email)
+                            ->whereHas('meeting', function($q) use($id_project) {
+                                $q->where('id_project', $id_project);
+                            })->with('governmentInstitution')->get();
+        }
+        
+        return [
+            'tuk_member' => $tuk_member,
+            'tuk_secretary_member' => $tuk_secretary_member,
+            'tuk_invitations' => [
+                'invitations' => $invitations,
+                'data' => $tuk_invitation
+            ]
+        ];
     }
 }
