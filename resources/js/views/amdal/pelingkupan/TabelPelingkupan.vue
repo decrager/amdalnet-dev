@@ -287,6 +287,7 @@ export default {
             }
           });
           // this.components = result;*/
+          this.savedComponents = res;
           this.components = res;
           console.log('realigned: ', res);
         })
@@ -296,6 +297,7 @@ export default {
       this.hues = [];
       await subProjectHue.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
+          this.savedHues = res;
           this.hues = res;
         })
         .finally(() => {});
