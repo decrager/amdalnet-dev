@@ -129,7 +129,7 @@ export default {
 }
 
 .master-komponen .el-card__body .components-container {
-  max-height: 350px;
+  max-height: 300px;
   overflow-y: auto;
   padding: 5px 0;
   margin: 0 auto 0.6em;

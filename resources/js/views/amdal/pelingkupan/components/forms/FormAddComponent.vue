@@ -39,7 +39,9 @@
               :key="item.value"
               :label="item.name"
               :value="item.id"
-            />
+            >
+              <span>{{ item.name }} &nbsp;<i v-if="item.is_master" class="el-icon-success" style="color:#2e6b2e;" /></span>
+            </el-option>>
           </el-select>
           <!-- <deskripsi-besaran v-if="component.id !== null "
           :data="masterComponents.find(e => e.id === component.id)"
@@ -59,20 +61,22 @@
         </el-form-item>
 
         <el-form-item label="Deskripsi">
-          <!-- <scopingceditor
-          v-model="component.description_specific"
-          output-format="html"
-          :menubar="''"
-          :image="false"
-          :height="100"
-          :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-          style="width:100%"
-        /> -->
+          <scopingceditor
+            :key="'comp_editor_scoping_3'"
+            v-model="component.description"
+            output-format="html"
+            :menubar="''"
+            :image="false"
+            :height="100"
+            :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+            style="width:100%"
+          />
+        <!--
           <el-input
             v-model="component.description"
             type="textarea"
             :autosize="{ minRows: 3, maxRows: 5}"
-          />
+          /> -->
         </el-form-item>
         <el-form-item label="Besaran">
           <el-input
@@ -93,13 +97,13 @@
 <script>
 
 import Resource from '@/api/resource';
-// import DeskripsiBesaran from '../../../components/dialogs/DeskripsiBesaran.vue';
-// import SCEditor from '@/components/Tinymce';
+import SCEditor from '@/components/Tinymce';
 
 const subProjectComponentResource = new Resource('sub-project-components');
+
 export default {
   name: 'FormAddComponent',
-  //  components: { 'scopingceditor': SCEditor  },
+  components: { 'scopingceditor': SCEditor },
   props: {
     data: {
       type: Object,

@@ -143,18 +143,11 @@
       @onClose="showAddHue = false"
       @onSave="onSaveHue"
     />
-    <!-- <form-pelingkupan
-      :show="showForm"
-      :input="activeScoping"
-      @onClose="showForm = false "
-      @onSave="handleSaveForm"
-    /> -->
   </div>
 </template>
 <script>
 import Resource from '@/api/resource';
 import ComponentsList from './components/tables/ComponentsList.vue';
-// import FormPelingkupan from './components/forms/FormPelingkupan.vue';
 import FormAddComponent from './components/forms/FormAddComponent.vue';
 import FormAddHue from './components/forms/FormAddHue.vue';
 const projectResource = new Resource('projects');
@@ -224,18 +217,10 @@ export default {
       current_component_type: null,
     };
   },
-  /* watch: {
-    components: function(val) {
-      console.log('components...', val);
-    },
-  },*/
   mounted(){
     this.id_project = this.$route.params && this.$route.params.id;
-    this.getSubProjects();
-    this.getSubProjectComponent();
-    this.getSubProjectsHues();
-    this.initMapping();
     this.initActiveScoping();
+    this.initMapping();
   },
   methods: {
     initActiveScoping() {
@@ -252,7 +237,9 @@ export default {
       this.activeHue = null;
     },
     initMapping() {
-
+      this.getSubProjects();
+      this.getSubProjectComponents();
+      this.getSubProjectsHues();
     },
     async getSubProjects(){
       const id = this.$route.params && this.$route.params.id;
@@ -265,9 +252,9 @@ export default {
         })
         .finally(() => {});
     },
-    async getSubProjectComponentsHues(){
+    async getSubProjectComponents(){
       this.components = [];
-      await subProjectComponent.list({ id_project: this.id_project })
+      await subProjectComponent.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
           /* const result = [];
           res.forEach((r)=>{

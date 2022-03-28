@@ -52,13 +52,23 @@
           </div>
         </el-form-item>
         <el-form-item v-if="selected !== null " :label="'Deskripsi '+ selected.name +' terkait '+ masterComponent.name ">
-
+          <hueeditor
+            :key="'hue_scoping_editor_3'"
+            v-model="hue.description"
+            output-format="html"
+            :menubar="''"
+            :image="false"
+            :height="100"
+            :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+            style="width:100%"
+          />
+          <!--
           <el-input
             v-model="hue.description"
             type="textarea"
             :autosize="{ minRows: 3, maxRows: 5}"
           />
-
+          -->
         </el-form-item>
         <el-form-item v-if="selected !== null " label="Besaran">
 
@@ -69,16 +79,6 @@
           />
 
         </el-form-item>
-        <!-- <hueeditor
-            v-model="hue.description"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :height="100"
-            :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-            style="width:100%"
-          /> -->
-
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" @click="handleClose">Batal</el-button>
@@ -90,11 +90,12 @@
 <script>
 import Resource from '@/api/resource';
 import Deskripsi from '../helpers/Deskripsi.vue';
+import SCHEditor from '@/components/Tinymce';
 const subProjectHueResource = new Resource('sub-project-rona-awals');
 
 export default {
   name: 'FormAddHue',
-  components: { Deskripsi },
+  components: { Deskripsi, 'hueeditor': SCHEditor },
   props: {
     show: { type: Boolean, default: false },
     data: {

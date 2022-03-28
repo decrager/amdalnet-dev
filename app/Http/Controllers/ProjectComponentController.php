@@ -36,7 +36,7 @@ class ProjectComponentController extends Controller
          * id, id_project_stage, name, is_master, description, measurement, id_project_component
          */
 
-        /* $params = $request->all();) */
+        $params = $request->all();
         return response(Component::from('components')
           ->selectRaw('
             components.*,
@@ -54,7 +54,6 @@ class ProjectComponentController extends Controller
               return $q;
           })
           ->where('project_components.id_project', $request->id_project)->get());
-
     }
 
     /**
@@ -78,7 +77,7 @@ class ProjectComponentController extends Controller
 
         $params = $request->all();
         if(isset($params['id_project']) && isset($params['component'])){
-            $master = Component::first('id', $params['component']['id']);
+            $master = Component::where('id', $params['component']['id'])->first();
             if(!$master){
                 $master = Component::create([
                     'name' => $params['component']['name'],
@@ -86,6 +85,9 @@ class ProjectComponentController extends Controller
                     'originator_id' => $params['id_project'],
                     'is_master' => false,
                 ]);
+                if (!$master){
+                    return response( 'Komponen Kegiatan gagal tersimpan', 500);
+                }
             }
 
             $pc = ProjectComponent::firstOrNew([

@@ -14,5 +14,7 @@ class RonaAwal extends Model
     protected $fillable = [
         'id_component_type',
         'name',
+        'is_master',
+        'originator_id'
     ];
 }

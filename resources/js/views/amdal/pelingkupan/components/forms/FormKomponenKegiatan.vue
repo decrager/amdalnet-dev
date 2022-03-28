@@ -61,7 +61,7 @@
                 :value="item.id"
               />
             </el-select>
-            <el-checkbox v-model="noMaster"><span style="font-size: 90%;">Menambahkan Komponen Kegiatan</span></el-checkbox>
+            <el-checkbox v-model="noMaster" @change="onChangeInput"><span style="font-size: 90%;">Menambahkan Komponen Kegiatan</span></el-checkbox>
             <el-input
               v-if="noMaster"
               v-model="data.name"
@@ -173,6 +173,7 @@ export default {
      * }
      **/
       this.master = [];
+      this.is_master = false;
       this.name = '';
       this.data = {
         id: null,
@@ -212,6 +213,9 @@ export default {
     async handleSaveForm(){
       // save data in this form!
       this.saving = true;
+      if (this.noMaster === true) {
+        this.data.id = null;
+      }
       await projectComponentResource.store({
         id_project: this.project_id,
         component: this.data,
@@ -273,6 +277,11 @@ export default {
     handleClose(){
       this.initData();
       this.close();
+    },
+    onChangeInput(val){
+      if (val === true){
+        this.data.name = this.name;
+      }
     },
     close(){
       this.$emit('onClose', true);

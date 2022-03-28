@@ -88,6 +88,21 @@ class SubProjectComponentController extends Controller
     }
 
     public function subProjectComponents(Request $request){
+
+        /* $params = $request->all();
+        if (!isset($params['id_project']) || !$params['id_project'])
+        {
+            return response('no project id is specified', 500);
+        }
+
+        return SubProjectComponent::from('sub_project_components')
+          ->select(
+              'sub_project_components.id',
+              ''
+          )*/
+
+
+        // commented by HH, on 20220326
         $params = $request->all();
         if (!isset($params['id_project']) || !$params['id_project'])
         {
@@ -109,6 +124,7 @@ class SubProjectComponentController extends Controller
               ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
               ->where('projects.id', $request->id_project)
               ->get());
+
     }
 
     /**

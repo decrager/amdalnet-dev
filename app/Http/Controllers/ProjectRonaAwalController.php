@@ -119,6 +119,21 @@ class ProjectRonaAwalController extends Controller
 
         $params = $request->all();
         if(isset($params['id_project']) && isset($params['component'])){
+            $master = RonaAwal::where('id', $params['component']['id'])->first();
+            if(!$master){
+                $master = RonaAwal::create([
+                    'name' => $params['component']['name'],
+                    'id_component_type' => $params['component']['id_component_type'],
+                    'is_master' => false,
+                    'originator_id' => $request->id_project
+                ]);
+
+                if(!$master){
+                    return response( 'Komponen Kegiatan gagal tersimpan', 500);
+                }
+            }
+            return response($master, 200);
+
             $pc = ProjectRonaAwal::firstOrNew([
                 'id_project' => $request->id_project,
                 'id_rona_awal' => $params['component']['id']

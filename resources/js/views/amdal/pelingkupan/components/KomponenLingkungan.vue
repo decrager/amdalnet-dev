@@ -4,14 +4,15 @@
       <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold; text-transform: uppercase;">
         <span>Komponen Lingkungan ({{ components.length }})</span>
       </div>
-      <components-list
-        :id="'rona'"
-        :components="components"
-        :is-master-component="true"
-        @edit="editComponent"
-        @delete="removeComponent"
-      />
-
+      <div>
+        <components-list
+          :id="'rona'"
+          :components="components"
+          :is-master-component="true"
+          @edit="editComponent"
+          @delete="removeComponent"
+        />
+      </div>
       <!-- form -->
       <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
       <form-komponen-lingkungan
