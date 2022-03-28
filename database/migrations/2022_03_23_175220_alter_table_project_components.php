@@ -21,8 +21,8 @@ class AlterTableProjectComponents extends Migration
             $table->dropColumn('id_project_stage');
             // $table->integer('id_component')->nullable();
 
-            $table->foreign('id_project')->references('id')->on('projects')->onDelete('cascade');
-            $table->foreign('id_component')->references('id')->on('components')->nullOnDelete();
+            // $table->foreign('id_project')->references('id')->on('projects')->onDelete('cascade');
+            // $table->foreign('id_component')->references('id')->on('components')->nullOnDelete();
         });
     }
 
