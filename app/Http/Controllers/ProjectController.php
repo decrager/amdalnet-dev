@@ -42,27 +42,27 @@ class ProjectController extends Controller
             //this code to get project base on formulator
             return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
                 $q->select('id', 'id_project', 'status', 'document_type');
-            }, 'meetingReports' => function($q) {
+            }, 'meetingReports' => function ($q) {
                 $q->select('id', 'id_project', 'is_accepted', 'document_type');
-            }, 'impactIdentificationsClone' => function($q) {
+            }, 'impactIdentificationsClone' => function ($q) {
                 $q->select('id', 'id_project');
-                $q->with('envImpactAnalysis', function($query) {
+                $q->with('envImpactAnalysis', function ($query) {
                     $query->select('id', 'id_impact_identifications', 'condition_dev_no_plan');
                 });
-                $q->with('envManagePlan', function($query) {
+                $q->with('envManagePlan', function ($query) {
                     $query->select('id', 'id_impact_identifications', 'period');
                 });
-                $q->with('envMonitorPlan', function($query) {
+                $q->with('envMonitorPlan', function ($query) {
                     $query->select('id', 'id_impact_identifications', 'time_frequent');
                 });
-            }, 'tukProject' => function($q) {
-                $q->whereHas('feasibilityTestTeamMember', function($query) {
-                    $query->whereHas('lukMember', function($quer) {
+            }, 'tukProject' => function ($q) {
+                $q->whereHas('feasibilityTestTeamMember', function ($query) {
+                    $query->whereHas('lukMember', function ($quer) {
                         $quer->where('email', Auth::user()->email);
-                    })->orWhereHas('expertBank', function($quer) {
+                    })->orWhereHas('expertBank', function ($quer) {
                         $quer->where('email', Auth::user()->email);
                     });
-                })->orWhereHas('tukSecretaryMember', function($query) {
+                })->orWhereHas('tukSecretaryMember', function ($query) {
                     $query->where('email', Auth::user()->email);
                 });
             }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
@@ -117,47 +117,47 @@ class ProjectController extends Controller
 
         return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
             $q->select('id', 'id_project', 'status', 'document_type');
-        },'testingMeeting' => function($q) {
+        }, 'testingMeeting' => function ($q) {
             $q->select('id', 'id_project', 'document_type', 'is_invitation_sent');
-        }, 'meetingReports' => function($q) {
+        }, 'meetingReports' => function ($q) {
             $q->select('id', 'id_project', 'is_accepted', 'document_type');
-        }, 'impactIdentificationsClone' => function($q) {
+        }, 'impactIdentificationsClone' => function ($q) {
             $q->select('id', 'id_project');
-            $q->with('envImpactAnalysis', function($query) {
+            $q->with('envImpactAnalysis', function ($query) {
                 $query->select('id', 'id_impact_identifications', 'condition_dev_no_plan');
             });
-            $q->with('envManagePlan', function($query) {
+            $q->with('envManagePlan', function ($query) {
                 $query->select('id', 'id_impact_identifications', 'period');
             });
-            $q->with('envMonitorPlan', function($query) {
+            $q->with('envMonitorPlan', function ($query) {
                 $query->select('id', 'id_impact_identifications', 'time_frequent');
             });
-        }, 'tukProject' => function($q) {
-            $q->whereHas('feasibilityTestTeamMember', function($query) {
-                $query->whereHas('lukMember', function($quer) {
+        }, 'tukProject' => function ($q) {
+            $q->whereHas('feasibilityTestTeamMember', function ($query) {
+                $query->whereHas('lukMember', function ($quer) {
                     $quer->where('email', Auth::user()->email);
-                })->orWhereHas('expertBank', function($quer) {
+                })->orWhereHas('expertBank', function ($quer) {
                     $quer->where('email', Auth::user()->email);
                 });
-            })->orWhereHas('tukSecretaryMember', function($query) {
+            })->orWhereHas('tukSecretaryMember', function ($query) {
                 $query->where('email', Auth::user()->email);
             });
-        }, 'testingMeeting' => function($q) {
+        }, 'testingMeeting' => function ($q) {
             $q->select('id', 'document_type', 'id_project', 'is_invitation_sent');
-            $q->whereHas('invitations', function($que) {
-                $que->where(function($queryy) {
-                    $queryy->whereHas('feasibilityTestTeamMember', function($quer) {
-                        $quer->whereHas('lukMember', function($qu) {
+            $q->whereHas('invitations', function ($que) {
+                $que->where(function ($queryy) {
+                    $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
+                        $quer->whereHas('lukMember', function ($qu) {
                             $qu->where('email', Auth::user()->email);
-                        })->orWhereHas('expertBank', function($qu) {
+                        })->orWhereHas('expertBank', function ($qu) {
                             $qu->where('email', Auth::user()->email);
                         });
-                    })->orWhereHas('tukSecretaryMember', function($quer) {
+                    })->orWhereHas('tukSecretaryMember', function ($quer) {
                         $quer->where('email', Auth::user()->email);
                     });
                 })->orWhere('email', Auth::user()->email);
             });
-        }, 'feasibilityTestRecap' => function($q) {
+        }, 'feasibilityTestRecap' => function ($q) {
             $q->select('id', 'id_project', 'is_feasib', 'updated_at');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
@@ -170,66 +170,66 @@ class ProjectController extends Controller
                 return $request->initiatorId ? $query->where('projects.id_applicant', $request->initiatorId) : '';
             }
         )
-        ->where(function($query) use ($request){
-            return $request->filters ? $query->where('projects.required_doc', $request->filters ) : '';
-        })
-        ->where(
-            function ($query) use ($request) {
-                //return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
+            ->where(function ($query) use ($request) {
+                return $request->filters ? $query->where('projects.required_doc', $request->filters) : '';
+            })
+            ->where(
+                function ($query) use ($request) {
+                    //return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
 
-                if ($request->search){
-                    $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
-                    ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                    if ($request->search) {
+                        $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                    }
+                    return $query;
                 }
-                return $query;
-            }
-        )
-        ->where(
-            function($query) use($request) {
-                if($request->tuk) {
-                    $query->whereHas('tukProject', function($q) {
-                        $q->whereHas('feasibilityTestTeamMember', function($que) {
-                            $que->whereHas('lukMember', function($quer) {
-                                $quer->where('email', Auth::user()->email);
-                            })->orWhereHas('expertBank', function($quer) {
-                                $quer->where('email', Auth::user()->email);
-                            });
-                        })->orWhereHas('tukSecretaryMember', function($que) {
-                            $que->where('email', Auth::user()->email);
-                        });
-                    })->orWhereHas('testingMeeting', function($q) {
-                        $q->whereHas('invitations', function($que) {
-                            $que->where(function($queryy) {
-                                $queryy->whereHas('feasibilityTestTeamMember', function($quer) {
-                                    $quer->whereHas('lukMember', function($qu) {
-                                        $qu->where('email', Auth::user()->email);
-                                    })->orWhereHas('expertBank', function($qu) {
-                                        $qu->where('email', Auth::user()->email);
-                                    });
-                                })->orWhereHas('tukSecretaryMember', function($quer) {
+            )
+            ->where(
+                function ($query) use ($request) {
+                    if ($request->tuk) {
+                        $query->whereHas('tukProject', function ($q) {
+                            $q->whereHas('feasibilityTestTeamMember', function ($que) {
+                                $que->whereHas('lukMember', function ($quer) {
+                                    $quer->where('email', Auth::user()->email);
+                                })->orWhereHas('expertBank', function ($quer) {
                                     $quer->where('email', Auth::user()->email);
                                 });
-                            })->orWhere('email', Auth::user()->email);
+                            })->orWhereHas('tukSecretaryMember', function ($que) {
+                                $que->where('email', Auth::user()->email);
+                            });
+                        })->orWhereHas('testingMeeting', function ($q) {
+                            $q->whereHas('invitations', function ($que) {
+                                $que->where(function ($queryy) {
+                                    $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
+                                        $quer->whereHas('lukMember', function ($qu) {
+                                            $qu->where('email', Auth::user()->email);
+                                        })->orWhereHas('expertBank', function ($qu) {
+                                            $qu->where('email', Auth::user()->email);
+                                        });
+                                    })->orWhereHas('tukSecretaryMember', function ($quer) {
+                                        $quer->where('email', Auth::user()->email);
+                                    });
+                                })->orWhere('email', Auth::user()->email);
+                            });
                         });
-                    });
+                    }
                 }
-            }
-        )
-        ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
-        ->leftJoin('users', 'initiators.email', '=', 'users.email')
-        ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
-        ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
-        ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
-        ->distinct()
-        ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
-        ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
+            )
+            ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+            ->leftJoin('users', 'initiators.email', '=', 'users.email')
+            ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
+            ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
+            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->distinct()
+            // ->groupBy('projects.id', 'projects.id_project', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
+            ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
     }
 
     /**
@@ -516,7 +516,7 @@ class ProjectController extends Controller
         }
 
         // send status to OSS if not pemerintah
-        if(!isset($request['isPemerintah'])){
+        if (!isset($request['isPemerintah'])) {
             OssService::receiveLicenseStatus($project, '45');
         }
 
