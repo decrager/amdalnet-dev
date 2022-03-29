@@ -64,6 +64,10 @@
               </template>
             </el-table-column>
           </el-table>
+          <div>
+            <h4>Kesimpulan</h4>
+            <div>{{ scope.row.conclusion }}</div>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -194,6 +198,7 @@ export default {
             ? x.luk_member.institution
             : x.expert_bank.institution,
           input_time: x.feasibility_test[0].input_time,
+          conclusion: x.feasibility_test[0].conclusion,
           detail,
         };
       });
@@ -211,6 +216,7 @@ export default {
           name: x.name,
           institution: x.institution,
           input_time: x.feasibility_test[0].input_time,
+          conclusion: x.feasibility_test[0].conclusion,
           detail,
         };
       });
@@ -233,6 +239,7 @@ export default {
             ? x.government_institution.name
             : x.institution,
           input_time: feasibility_test.input_time,
+          conclusion: feasibility_test.conclusion,
           detail,
         };
       });

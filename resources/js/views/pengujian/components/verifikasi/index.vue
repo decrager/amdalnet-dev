@@ -131,6 +131,12 @@
             verifications.old_notes === null
           "
           v-model="verifications.notes"
+          output-format="html"
+          :menubar="''"
+          :image="false"
+          :toolbar="[
+            'bold italic underline bullist numlist  preview undo redo fullscreen',
+          ]"
           :height="200"
         />
         <div v-else v-html="verifications.old_notes" />
