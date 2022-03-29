@@ -20,7 +20,7 @@ applyPolyfills().then(() => {
 });
 
 // tell Vue.js to ignore Calcite Components
-Vue.config.ignoredElements = [/calcite-\w*/];
+// Vue.config.ignoredElements = [/calcite-\w*/];
 
 import * as filters from './filters'; // global filters
 
