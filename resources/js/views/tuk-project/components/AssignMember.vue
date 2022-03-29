@@ -201,19 +201,38 @@ export default {
     },
     changeName({ event, idx }) {
       const [id, typeMember] = event.split('-');
-      this.members[idx].type = typeMember;
 
-      const master = this.masterMembers.find((x) => {
-        return x.id === +id && x.type === typeMember;
+      // === CHECX IF EXIST === //
+      const is_exist = this.members.find((x) => {
+        return x.idType === event && x.type === typeMember;
       });
 
-      this.members[idx].nik = master.nik;
-      this.members[idx].institution = master.institution;
-      this.members[idx].position =
-        typeMember === 'tuk'
-          ? 'Anggota Tim Uji Kelayakan'
-          : 'Anggota Sekretariat Uji Kelayakan';
-      this.members[idx].role = null;
+      if (is_exist) {
+        this.$alert('Anggota tersebut sudah ditambahkan sebelumnya', '', {
+          center: true,
+        });
+
+        this.members[idx].idType = null;
+        this.members[idx].type = null;
+        this.members[idx].nik = null;
+        this.members[idx].institution = null;
+        this.members[idx].position = null;
+        this.members[idx].role = null;
+      } else {
+        this.members[idx].type = typeMember;
+
+        const master = this.masterMembers.find((x) => {
+          return x.id === +id && x.type === typeMember;
+        });
+
+        this.members[idx].nik = master.nik;
+        this.members[idx].institution = master.institution;
+        this.members[idx].position =
+          typeMember === 'tuk'
+            ? 'Anggota Tim Uji Kelayakan'
+            : 'Anggota Sekretariat Uji Kelayakan';
+        this.members[idx].role = null;
+      }
     },
     handleDelete({ num, id }) {
       this.members = this.members.filter((x) => {
