@@ -308,11 +308,20 @@
                   Workspace UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork"
+                  v-if="isInitiator && !isScoping && !isDigiWork && isPemerintah"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleGenerateSPPL(scope.row)"
+                >
+                  Unduh SPPL
+                </el-button>
+                <el-button
+                  v-if="isInitiator && !isScoping && !isDigiWork && !isPemerintah"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDownloadSPPLFromOSS(scope.row)"
                 >
                   Unduh SPPL
                 </el-button>
@@ -463,6 +472,7 @@ const lpjpResource = new Resource('lpjpsByEmail');
 const formulatorResource = new Resource('formulatorsByEmail');
 const andalComposingResource = new Resource('andal-composing');
 const rklResource = new Resource('matriks-rkl');
+const skklResource = new Resource('skkl');
 // const kbliResource = new Resource('business');
 
 export default {
@@ -510,6 +520,7 @@ export default {
         { value: 'Menengah Rendah', label: 'UKL-UPL MR' },
         { value: 'Rendah', label: 'SPPL' },
       ],
+      isPemerintah: false,
     };
   },
   computed: {
@@ -569,6 +580,10 @@ export default {
       const initiator = await initiatorResource.list({ email: this.userInfo.email });
       this.listQuery.initiatorId = initiator.id;
       this.initiator = initiator;
+      await this.$store.dispatch('getInitiator', this.userInfo.email);
+      if (this.$store.getters.isPemerintah){
+        this.isPemerintah = true;
+      }
     } else if (this.userInfo.roles.includes('formulator')) {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
@@ -1045,6 +1060,41 @@ export default {
       this.$router.push({
         path: `/uklupl/${project.id}/pkplh`,
       });
+    },
+    async handleDownloadSPPLFromOSS(project) {
+      const data = await skklResource.list({
+        idProject: project.id,
+        skklOss: 'true',
+      });
+      if ('file_url' in data && 'user_key' in data) {
+        axios({
+          url: data.file_url,
+          method: 'GET',
+          responseType: 'blob',
+          headers: {
+            user_key: data.user_key,
+          },
+        }).then((response) => {
+          const cd = response.headers['content-disposition'];
+          const fileName = cd.split('filename=')[1].replaceAll('"', '');
+          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+          var fileLink = document.createElement('a');
+          fileLink.href = fileURL;
+          fileLink.setAttribute(
+            'download',
+            `${fileName}`
+          );
+          document.body.appendChild(fileLink);
+          fileLink.click();
+          this.loading = false;
+        });
+      } else {
+        this.$message({
+          message: 'URL file tidak ada.',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      }
     },
     async handleGenerateSPPL(project) {
       project.listSubProject = project.listSubProject.map((e, i) => {
