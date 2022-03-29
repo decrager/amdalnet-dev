@@ -1,7 +1,16 @@
 <template>
   <el-row v-loading="loading">
     <el-col :md="24" :sm="24">
-      <Tinymce v-model="evaluation" :height="300" />
+      <Tinymce
+        v-model="evaluation"
+        output-format="html"
+        :menubar="''"
+        :image="false"
+        :toolbar="[
+          'bold italic underline bullist numlist  preview undo redo fullscreen',
+        ]"
+        :height="300"
+      />
     </el-col>
     <el-col :md="24" :sm="24" style="text-align: right">
       <el-button
