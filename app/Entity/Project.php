@@ -112,7 +112,7 @@ class Project extends Model implements Auditable
 
     public function feasibilityTest()
     {
-        return $this->hasOne(FeasibilityTest::class, 'id_project', 'id');
+        return $this->hasMany(FeasibilityTest::class, 'id_project', 'id');
     }
 
     public function kaReviews()
@@ -133,6 +133,11 @@ class Project extends Model implements Auditable
     public function tukProject()
     {
         return $this->hasMany(TukProject::class, 'id_project', 'id');
+    }
+
+    public function feasibilityTestRecap()
+    {
+        return $this->hasOne(FeasibilityTestRecap::class, 'id_project', 'id');
     }
 
     public function getFillingDateAttribute()

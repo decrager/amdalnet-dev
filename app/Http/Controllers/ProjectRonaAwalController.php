@@ -132,11 +132,10 @@ class ProjectRonaAwalController extends Controller
                     return response( 'Komponen Kegiatan gagal tersimpan', 500);
                 }
             }
-            return response($master, 200);
 
             $pc = ProjectRonaAwal::firstOrNew([
                 'id_project' => $request->id_project,
-                'id_rona_awal' => $params['component']['id']
+                'id_rona_awal' => $master->id,
             ]);
             $pc->description = $params['component']['description'];
             $pc->measurement = $params['component']['measurement'];

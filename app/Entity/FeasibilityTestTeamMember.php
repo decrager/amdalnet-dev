@@ -30,4 +30,9 @@ class FeasibilityTestTeamMember extends Model
     {
         return $this->hasMany(TukProject::class, 'id_feasibility_test_team_member', 'id');
     }
+
+    public function feasibilityTest()
+    {
+        return $this->hasMany(FeasibilityTest::class, 'id_feasibility_test_team_member', 'id');
+    }
 }

@@ -157,6 +157,8 @@ class ProjectController extends Controller
                     });
                 })->orWhere('email', Auth::user()->email);
             });
+        }, 'feasibilityTestRecap' => function($q) {
+            $q->select('id', 'id_project', 'is_feasib', 'updated_at');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(

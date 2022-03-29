@@ -12,6 +12,7 @@
       :component-types="component_types"
       :project-stages="project_stages"
     />
+    <Comment :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
   </div>
 </template>
 <script>
@@ -33,6 +34,32 @@ export default {
       project_stages: [],
       components: [], // master lokal
       hues: [], // master lokal
+      commentColumn: [
+        {
+          label: 'Komponen Kegiatan',
+          value: 'Komponen Kegiatan',
+        },
+        {
+          label: 'Geofisika Kimia',
+          value: 'Geofisika Kimia',
+        },
+        {
+          label: 'Biologi',
+          value: 'Biologi',
+        },
+        {
+          label: 'Sosial Ekonomi Budaya',
+          value: 'Sosial Ekonomi Budaya',
+        },
+        {
+          label: 'Kesehatan Masyarakat',
+          value: 'Kesehatan Masyarakat',
+        },
+        {
+          label: 'Lainnya',
+          value: 'Lainnya',
+        },
+      ],
     };
   },
   mounted() {
