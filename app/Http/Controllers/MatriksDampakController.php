@@ -12,6 +12,7 @@ use App\Entity\ProjectRonaAwal;
 use App\Entity\ProjectComponent;
 use Illuminate\Http\Request;
 use Exception;
+use App\Entity\SubProject;
 
 class MatriksDampakController extends Controller
 {
@@ -67,8 +68,23 @@ class MatriksDampakController extends Controller
         }
     }
 
-    private function getComponentRonas($id)
+    private function getComponentRonas(Request $request, $id)
     {
+        $impact_table = ($request->isAndal === true) ? 'impact_identification_clones' : 'impact_identifications';
+        return ProjectRonaAwal::from('project_rona_awals as pra')
+            ->select('pra.id', 'c.name as component_name', 'ra.name as rona_awal_name',
+            'c.name AS component_name_master', 'ra.name AS rona_awal_name_master',
+            'c.id_project_stage', 'c.id_project_stage AS id_project_stage_master'
+
+            )
+            ->join( $impact_table.' as ii', 'ii.id_project_rona_awal', '=', 'pra.id')
+            ->join('project_components as pc', 'pc.id', '=', 'ii.id_project_component')
+            ->leftJoin('components as c', 'c.id', '=', 'pc.id_component')
+            ->leftJoin('rona_awal as ra', 'ra.id', '=', 'pra.id_rona_awal')
+            ->where('ii.id_project', $id)->get();
+
+            /*
+        // commented by HH, 20220329
         return SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
             ->select('spra.id', 'c.name AS component_name', 'ra.name AS rona_awal_name',
                 'c.name AS component_name_master', 'ra.name AS rona_awal_name_master',
@@ -82,6 +98,7 @@ class MatriksDampakController extends Controller
             ->whereNotNull('spc.id')
             ->whereNotNull('spra.id')
             ->get();
+        */
     }
 
     private function getTableData(Request $request, $id, $is_dph = false)
@@ -90,7 +107,7 @@ class MatriksDampakController extends Controller
         $rona_mapping = $this->getRonaMapping($id);
 
         $components_by_stage = $this->getComponentsGroupByStage($id);
-        $component_ronas = $this->getComponentRonas($id);
+        $component_ronas = $this->getComponentRonas($request, $id);
 
         foreach ($components_by_stage as $cstage) {
             $index = 1;
