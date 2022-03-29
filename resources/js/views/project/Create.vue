@@ -161,7 +161,7 @@
                   <el-table :key="refresh" :data="currentProject.address" max-height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
                     <el-table-column align="center" width="55">
                       <template slot-scope="scope">
-                        <el-checkbox v-model="scope.row.isUsed" />
+                        <el-checkbox v-model="scope.row.isUsed" :disabled="fromOss" />
                       </template>
                     </el-table-column>
                     <el-table-column align="center" label="No." width="55">
@@ -669,6 +669,9 @@ export default {
       loading: false,
       isUmk: false,
       isPemerintah: false,
+      kewenanganPWA: 'N',
+      kewenanganOSS: '-',
+      jenisKawasanOSS: '-',
       fromOss: false,
       mapItemId: '',
       full_address: '',
@@ -1620,8 +1623,11 @@ export default {
       }
 
       // this.fromOss = true;
+      this.kewenanganPWA = this.$store.getters.ossByNib.status_penanaman_modal;
+      this.kewenanganOSS = this.$store.getters.ossByNib.kewenangan;
+      this.jenisKawasanOSS = this.$store.getters.ossByNib.jenis_kawasan;
 
-      const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => e.file_izin === '-' || !e.file_izin);
+      const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => (e.file_izin === '-' || !e.file_izin) && e.status_tapis);
       console.log(ossProjects);
 
       ossProjects.forEach(e => {
