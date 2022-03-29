@@ -33,7 +33,6 @@ export default {
         idProject: this.idProject,
         skklOss: 'true',
       });
-      console.log('data = ' + JSON.stringify(data));
       if ('file_url' in data && 'user_key' in data) {
         this.fileUrl = data.file_url;
         this.userKey = data.user_key;
@@ -49,12 +48,8 @@ export default {
             user_key: this.userKey,
           },
         }).then((response) => {
-          console.log('response.data: ' + JSON.stringify(response.data));
-          console.log('response.headers: ' + JSON.stringify(response.headers));
           const cd = response.headers['content-disposition'];
-          console.log('cd = ' + cd);
           const fileName = cd.split('filename=')[1].replaceAll('"', '');
-          console.log('fileName = ' + fileName);
           var fileURL = window.URL.createObjectURL(new Blob([response.data]));
           var fileLink = document.createElement('a');
           fileLink.href = fileURL;

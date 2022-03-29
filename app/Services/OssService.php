@@ -227,7 +227,7 @@ class OssService
                 $data = [
                     'IZINSTATUS' => [
                         'nib' => $ossNib->nib,
-                        'id_produk' => $idProduct,
+                        'id_produk' => $idProduct, // TODO: kosongin aja
                         'id_proyek' => $dataProject['id_proyek'],
                         'oss_id' => $ossNib->oss_id,
                         'id_izin' => $idIzin,
@@ -246,9 +246,10 @@ class OssService
                 ];
                 $response = Http::withHeaders([
                     'user_key' => env('OSS_USER_KEY'),
-                ])->post(env('OSS_ENDPOINT') . '/out/rba/receivelicensestatuslingkungan', $data);
+                ])->post(env('OSS_ENDPOINT') . '/kl/rba/receiveLicenseStatusLingkungan', $data);
                 $respJson = $response->json();
                 // print_r($respJson);
+                Log::error(json_encode($respJson));
                 // if ((int)$respJson['responreceiveLicenseStatus']['kode'] == 200) {
                 //     return true;
                 // }

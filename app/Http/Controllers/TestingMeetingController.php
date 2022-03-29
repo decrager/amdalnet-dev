@@ -609,22 +609,35 @@ class TestingMeetingController extends Controller
         $tuk_address = '';
         $tuk_telp = '';
         $tuk_logo = null;
+        $institution_name = '';
 
         if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
             $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
             $authority = 'Pusat';
             $authority_big = 'PUSAT';
+
+            if($tuk->institution) {
+                $institution_name = strtoupper($tuk->institution);
+            }
         } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
             if($tuk) {
                 $authority = ucwords(strtolower('PROVINSI ' . strtoupper($tuk->provinceAuthority->name)));
                 $authority_big = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
+
+                if($tuk->institution) {
+                    $institution_name = strtoupper($tuk->institution);
+                }
             }
         } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
             if($tuk) {
                 $authority = ucwords(strtolower(strtoupper($tuk->districtAuthority->name)));
                 $authority_big = strtoupper($tuk->districtAuthority->name);
+
+                if($tuk->institution) {
+                    $institution_name = strtoupper($tuk->institution);
+                }
             }
         }
         
@@ -658,6 +671,10 @@ class TestingMeetingController extends Controller
             }
         }
 
+        if($authority_big !== 'PUSAT') {
+            $templateProcessor->setValue('institution_name', $institution_name);
+        }
+        
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
@@ -745,18 +762,27 @@ class TestingMeetingController extends Controller
         $tuk_logo = null;
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
+        $institution_name = '';
 
         if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
             $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
             $authority = 'Pusat';
             $authority_big = 'PUSAT';
             $authority_big_check = 'PUSAT';
+
+            if($tuk->institution) {
+                $institution_name = strtoupper($tuk->institution);
+            }
         } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
             if($tuk) {
                 $authority = ucwords(strtolower('PROVINSI ' . strtoupper($tuk->provinceAuthority->name)));
                 $authority_big = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
                 $authority_big_check = 'PROVINSI ' . strtoupper($tuk->provinceAuthority->name);
+
+                if($tuk->institution) {
+                    $institution_name = strtoupper($tuk->institution);
+                }
             }
         } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
             $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
@@ -764,6 +790,10 @@ class TestingMeetingController extends Controller
                 $authority = ucwords(strtolower(strtoupper($tuk->districtAuthority->name)));
                 $authority_big = strtoupper($tuk->districtAuthority->name);
                 $authority_big_check = strtoupper($tuk->districtAuthority->name);
+
+                if($tuk->institution) {
+                    $institution_name = strtoupper($tuk->institution);
+                }
             }
         }
         
@@ -840,6 +870,7 @@ class TestingMeetingController extends Controller
         $instansi[] = ['name' => count($instansi) + 1 . '. Kementerian/Lembaga/Dinas yang terkait Persetujuan Awal'];
         $instansi[] = ['name' => count($instansi) + 1 . '. Kementerian/Lembaga/Dinas yang penerbit Pertek'];
 
+        $templateProcessor->setValue('institution_name', $institution_name);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('project_address', $project_address);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);

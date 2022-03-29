@@ -34,31 +34,60 @@
             </el-upload>
           </el-col>
           <el-col :sm="24" :md="18">
-            <el-form-item label="Email">
+            <el-form-item label="temp">
+              <span slot="label">
+                Nama Instansi
+                <el-tooltip
+                  class="item custom-tooltip"
+                  effect="dark"
+                  content="Pastikan nama instansi yang dimasukkan sesuai. Karena akan dijadikan kop surat untuk setiap dokumen yang dikeluarkan oleh sistem"
+                  placement="top-start"
+                >
+                  <span><i class="el-icon-warning-outline" /></span>
+                </el-tooltip>
+              </span>
               <el-input
-                v-model="team.email"
+                v-model="team.institution"
                 style="width: 100%"
-                :class="{ 'is-error': errors.email }"
+                :class="{ 'is-error': errors.institution }"
               />
-              <small v-if="errors.email" style="color: #f56c6c">
-                <span v-for="(error, index) in errors.email" :key="index">{{
-                  error
-                }}</span>
+              <small v-if="errors.institution" style="color: #f56c6c">
+                <span v-for="(error, index) in errors.institution" :key="index">
+                  {{ error }}
+                </span>
               </small>
             </el-form-item>
-            <el-form-item label="No. Telepon">
-              <el-input
-                v-model="team.phone"
-                style="width: 100%"
-                :class="{ 'is-error': errors.phone }"
-              />
-              <small v-if="errors.phone" style="color: #f56c6c">
-                <span v-for="(error, index) in errors.phone" :key="index">{{
-                  error
-                }}</span>
-              </small>
-            </el-form-item>
-            <el-form-item label="Alamat">
+            <el-row :gutter="32">
+              <el-col :sm="24" :md="12">
+                <el-form-item label="No. Telepon Instansi">
+                  <el-input
+                    v-model="team.phone"
+                    style="width: 100%"
+                    :class="{ 'is-error': errors.phone }"
+                  />
+                  <small v-if="errors.phone" style="color: #f56c6c">
+                    <span v-for="(error, index) in errors.phone" :key="index">{{
+                      error
+                    }}</span>
+                  </small>
+                </el-form-item>
+              </el-col>
+              <el-col :sm="24" :md="12">
+                <el-form-item label="Email Instansi">
+                  <el-input
+                    v-model="team.email"
+                    style="width: 100%"
+                    :class="{ 'is-error': errors.email }"
+                  />
+                  <small v-if="errors.email" style="color: #f56c6c">
+                    <span v-for="(error, index) in errors.email" :key="index">{{
+                      error
+                    }}</span>
+                  </small>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="Alamat Instansi">
               <el-input
                 v-model="team.address"
                 type="textarea"
@@ -74,13 +103,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <div
-        style="
-          display: flex;
-          align-items: center;
-          margin-bottom: 5px;
-        "
-      >
+      <div style="display: flex; align-items: center; margin-bottom: 5px">
         <h4>Daftar Anggota Tim Uji Kelayakan</h4>
       </div>
       <MemberTable :loading="loadingMember" :list="listMember" />
@@ -93,9 +116,19 @@
         "
       >
         <h4>Daftar Anggota Sekretariat</h4>
-        <el-button type="warning" style="margin-left: 15px;" @click="handleAddSecretaryMember">Tambahkan Anggota</el-button>
+        <el-button
+          type="warning"
+          style="margin-left: 15px"
+          @click="handleAddSecretaryMember"
+        >
+          Tambahkan Anggota
+        </el-button>
       </div>
-      <SecretaryMemberTable :loading="loadingSecretaryMember" :list="listSecretaryMember" @handleDeleteSecretaryMember="handleDeleteSecretaryMember($event)" />
+      <SecretaryMemberTable
+        :loading="loadingSecretaryMember"
+        :list="listSecretaryMember"
+        @handleDeleteSecretaryMember="handleDeleteSecretaryMember($event)"
+      />
       <div v-if="team.id" style="text-align: right; margin-top: 12px">
         <el-button
           :loading="loadingSubmit"
@@ -143,8 +176,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
   },
   created() {
@@ -184,12 +217,16 @@ export default {
       this.loadingSubmit = true;
       const formData = new FormData();
       formData.append('profile', 'true');
+      formData.append('institution', this.team.institution);
       formData.append('email', this.team.email);
       formData.append('phone', this.team.phone);
       formData.append('address', this.team.address);
       formData.append('logo', this.imageRaw);
       formData.append('idTeam', this.team.id);
-      formData.append('deletedSecretaryMember', JSON.stringify(this.deletedSecretaryMembers));
+      formData.append(
+        'deletedSecretaryMember',
+        JSON.stringify(this.deletedSecretaryMembers)
+      );
 
       const data = await tukManagementResource.store(formData);
       if (data.errors === null) {
@@ -210,11 +247,16 @@ export default {
       this.imageRaw = file.raw;
     },
     handleAddSecretaryMember() {
-      this.$router.push({ name: 'createTukSecretaryMember', params: { id: this.team.id }});
+      this.$router.push({
+        name: 'createTukSecretaryMember',
+        params: { id: this.team.id },
+      });
     },
     handleDeleteSecretaryMember({ id }) {
       this.deletedSecretaryMembers.push(id);
-      this.listSecretaryMember = this.listSecretaryMember.filter(x => x.id !== id);
+      this.listSecretaryMember = this.listSecretaryMember.filter(
+        (x) => x.id !== id
+      );
     },
   },
 };

@@ -523,6 +523,7 @@ class MeetingReportController extends Controller
         $ketua_tuk_position = '';
         $tuk_telp = '';
         $tuk_logo = null;
+        $institution_name = '';
 
         if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
             $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
@@ -554,6 +555,10 @@ class MeetingReportController extends Controller
                 }
             }
             $tuk_logo = $tuk->logo;
+
+            if($tuk->institution) {
+                $institution_name = strtoupper($tuk->institution);
+            }
         }
         
         $member = [];
@@ -598,6 +603,8 @@ class MeetingReportController extends Controller
             } else {
                 $templateProcessor->setImageValue('logo_tuk', 'images/logo-klhk-doc.jpg');
             }
+
+            $templateProcessor->setValue('institution_name', $institution_name);
         }
 
         $templateProcessor->setValue('project_title', $project->project_title);

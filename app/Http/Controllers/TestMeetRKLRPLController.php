@@ -625,6 +625,7 @@ class TestMeetRKLRPLController extends Controller
         $tuk_address = '';
         $tuk_telp = '';
         $tuk_logo = null;
+        $institution_name = '';
 
         if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
             $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
@@ -656,6 +657,10 @@ class TestMeetRKLRPLController extends Controller
                 }
             }
             $tuk_logo = $tuk->logo;
+
+            if($tuk->institution) {
+                $institution_name = strtoupper($tuk->institution);
+            }
         }
 
          if($document_type == 'rkl-rpl') {
@@ -691,6 +696,10 @@ class TestMeetRKLRPLController extends Controller
                }
             }
          }
+
+        if($authority_big !== 'PUSAT') {
+            $templateProcessor->setValue('institution_name', $institution_name);
+        } 
 
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
@@ -786,6 +795,7 @@ class TestMeetRKLRPLController extends Controller
         $tuk_logo = null;
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
+        $institution_name = '';
 
         if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
             $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
@@ -820,6 +830,10 @@ class TestMeetRKLRPLController extends Controller
                 }
             }
             $tuk_logo = $tuk->logo;
+
+            if($tuk->institution) {
+                $institution_name = strtoupper($tuk->institution);
+            }
         }
         
         $member = [];
@@ -884,6 +898,7 @@ class TestMeetRKLRPLController extends Controller
         $instansi[] = ['name' => count($instansi) + 1 . '. Kementerian/Lembaga/Dinas yang terkait Persetujuan Awal'];
         $instansi[] = ['name' => count($instansi) + 1 . '. Kementerian/Lembaga/Dinas yang penerbit Pertek'];
 
+        $templateProcessor->setValue('institution_name', $institution_name);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('project_address', $project_address);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
