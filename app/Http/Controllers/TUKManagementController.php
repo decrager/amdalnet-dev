@@ -98,6 +98,7 @@ class TUKManagementController extends Controller
                 return [
                     'id' => $team->id,
                     'name' => $team_name,
+                    'institution' => $team->institution,
                     'email' => $team->email,
                     'phone' => $team->phone,
                     'address' => $team->address,
@@ -107,6 +108,7 @@ class TUKManagementController extends Controller
                 return [
                     'id' => null,
                     'name' => null,
+                    'institution' => null,
                     'email' => null,
                     'phone' => null,
                     'address' => null,
@@ -363,11 +365,13 @@ class TUKManagementController extends Controller
         if($request->profile) {
             $data = $request->all();
             $validator = \Validator::make($data, [
+                'institution' => 'required',
                 'email' => 'required|email',
                 'phone' => 'required',
                 'address' => 'required',
                 'logo' => 'max:1024'
             ],[
+                'institution.required' => 'Nama Instansi Wajib Diisi',
                 'email.required' => 'Email Wajib Diisi',
                 'email.email' => 'Email Tidak Valid',
                 'phone.required' => 'No. Telepon Wajib Diisi',
@@ -380,6 +384,7 @@ class TUKManagementController extends Controller
             }
 
             $tuk = FeasibilityTestTeam::findOrFail($request->idTeam);
+            $tuk->institution = $data['institution'];
             $tuk->email = $data['email'];
             $tuk->phone = $data['phone'];
             $tuk->address = $data['address'];
