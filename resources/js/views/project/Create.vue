@@ -602,6 +602,7 @@ import esriRequest from '@arcgis/core/request';
 import popupTemplate from '../webgis/scripts/popupTemplate';
 import centroid from '@turf/centroid';
 import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
+import Print from '@arcgis/core/widgets/Print';
 
 export default {
   name: 'CreateProject',
@@ -1388,7 +1389,7 @@ export default {
       const penutupanLahan2020 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
         imageTransparency: true,
-        visible: true,
+        visible: false,
         visibilityMode: '',
       });
 
@@ -1402,13 +1403,13 @@ export default {
       const pippib2021Periode2 = new MapImageLayer({
         url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
         imageTransparency: true,
-        visible: false,
+        visible: true,
         visibilityMode: '',
       });
 
       const sigapLayer = new GroupLayer({
         title: 'Peta Tematik Status',
-        visible: false,
+        visible: true,
         layers: [penutupanLahan2020, kawasanHutanB, pippib2021Periode2],
         opacity: 0.90,
       });
@@ -1546,6 +1547,17 @@ export default {
         content: layerList,
       });
 
+      const print = new Print({
+        view: mapView,
+        printServiceUrl:
+                  'https://amdalgis.menlhk.go.id/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task',
+      });
+
+      const printExpand = new Expand({
+        view: mapView,
+        content: print,
+      });
+
       layerList.on('trigger-action', (event) => {
         const id = event.action.id;
         if (id === 'full-extent') {
@@ -1557,6 +1569,7 @@ export default {
 
       mapView.ui.add(layerListExpand, 'top-right');
       mapView.ui.add(legendListExpand, 'top-right');
+      mapView.ui.add(printExpand, 'top-left');
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });
