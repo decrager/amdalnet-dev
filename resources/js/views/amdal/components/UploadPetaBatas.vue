@@ -181,6 +181,7 @@ export default {
       geomSocialStyles: null,
       geomStudyStyles: null,
       mapItemId: null,
+      mapGeojsonArrayProject: [],
       kolom: [
         {
           label: 'Peta Batas Ekologis',
@@ -224,6 +225,14 @@ export default {
         basemap: 'satellite',
       });
 
+      const mapView = new MapView({
+        container: 'mapView',
+        map: map,
+        center: [115.287, -1.588],
+        zoom: 5,
+      });
+      this.$parent.mapView = mapView;
+
       axios.get(`api/map-geojson?id=${this.idProject}`)
         .then((response) => {
           response.data.forEach((item) => {
@@ -243,8 +252,8 @@ export default {
                 popupTemplate: popupTemplate(propFields),
               });
 
-              this.$parent.mapView.on('layerview-create', async(event) => {
-                await this.$parent.mapView.goTo({
+              mapView.on('layerview-create', async(event) => {
+                await mapView.goTo({
                   target: geojsonLayerArray.fullExtent,
                 });
               });
@@ -299,17 +308,9 @@ export default {
               });
             }
 
-            this.mapInit.addMany(this.mapGeojsonArrayProject);
+            map.addMany(this.mapGeojsonArrayProject);
           });
         });
-
-      const mapView = new MapView({
-        container: 'mapView',
-        map: map,
-        center: [115.287, -1.588],
-        zoom: 5,
-      });
-      this.$parent.mapView = mapView;
 
       const layerList = new LayerList({
         view: mapView,

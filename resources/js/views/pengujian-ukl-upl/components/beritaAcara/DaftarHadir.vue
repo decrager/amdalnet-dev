@@ -126,7 +126,17 @@
     </div>
     <div style="margin-top: 13px">
       <h5>Ringkasan Masukan dan Komentar</h5>
-      <Tinymce v-model="reports.notes" v-loading="loadingtuk" :height="200" />
+      <Tinymce
+        v-model="reports.notes"
+        v-loading="loadingtuk"
+        output-format="html"
+        :menubar="''"
+        :image="false"
+        :toolbar="[
+          'bold italic underline bullist numlist  preview undo redo fullscreen',
+        ]"
+        :height="200"
+      />
     </div>
     <el-upload
       :auto-upload="false"

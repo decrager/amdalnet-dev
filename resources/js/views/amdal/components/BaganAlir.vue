@@ -146,9 +146,11 @@
           </div>
         </li>
       </ol>
-      <el-col :span="24" style="text-align:right; margin:2em 0;"><el-button size="small" type="warning" @click="download">Export PDF</el-button></el-col>
-      <div id="pdf" />
     </div>
+    <el-col :span="24" style="text-align:right; margin:2em 0;">
+      <el-button size="small" type="warning" @click="download"><img v-if="loader" width="24px" src="images/loader.gif" alt=""> Export PDF</el-button>
+    </el-col>
+    <div id="pdf" />
   </div>
 </template>
 
@@ -168,17 +170,18 @@ export default {
       rona_mappings: [],
       impacts: [],
       evaluations: [],
+      loader: false,
     };
   },
   created() {
     this.getData();
-    html2canvas(document.querySelector('#bagan'), { imageTimeout: 1000, useCORS: true }).then(canvas => {
-      document.getElementById('pdf').appendChild(canvas);
-      const img = canvas.toDataURL('image/png');
-      const pdf = new JsPDF('landscape', 'mm', 'a3');
-      pdf.addImage(img, 'PNG', 5, 5, 410, 240);
-      document.getElementById('pdf').innerHTML = '';
-    });
+    // html2canvas(document.querySelector('#bagan'), { imageTimeout: 1000, useCORS: true }).then(canvas => {
+    //   document.getElementById('pdf').appendChild(canvas);
+    //   const img = canvas.toDataURL('image/png');
+    //   const pdf = new JsPDF('landscape', 'mm', 'a3');
+    //   pdf.addImage(img, 'PNG', 10, 10, 4961, 3508);
+    //   document.getElementById('pdf').innerHTML = '';
+    // });
   },
   methods: {
     getData() {
@@ -204,11 +207,18 @@ export default {
         });
     },
     download() {
-      html2canvas(document.querySelector('#bagan'), { imageTimeout: 1000, useCORS: true }).then(canvas => {
+      this.loader = true;
+      var w = document.getElementById('bagan').scrollWidth;
+      var h = document.getElementById('bagan').scrollHeight;
+      html2canvas(document.querySelector('.process_diagram'), {
+        imageTimeout: 4000,
+        useCORS: true,
+      }).then(canvas => {
         document.getElementById('pdf').appendChild(canvas);
         const img = canvas.toDataURL('image/png');
-        const pdf = new JsPDF('landscape', 'mm', 'a3');
-        pdf.addImage(img, 'PNG', 5, 5, 410, 240);
+        const pdf = new JsPDF('landscape', 'px', [w, h]);
+        pdf.addImage(img, 'PNG', 0, 0, w, h);
+        this.loader = false;
         pdf.save('Bagan Alir Formulir KA.pdf');
         document.getElementById('pdf').innerHTML = '';
       });
