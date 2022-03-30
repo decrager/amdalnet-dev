@@ -10,7 +10,7 @@
       :close-on-click-modal="false"
       @open="onOpen"
     >
-      <el-form v-if="data !== null" style="padding: 0 2em;">
+      <el-form v-if="(data !== null) && (data.sub_projects != null) && (data.component !== null) " style="padding: 0 2em;">
         <div style="line-height: 140%;">
           <div><strong>Tahap</strong></div>
           <div>{{ data.project_stage.name }}</div>
@@ -35,6 +35,7 @@
 
         <el-form-item label="Rona Lingkungan" style="line-height: 140%; margin-top:1.5em; padding:1em; border:1px solid #cccccc; border-radius: 0.5em;">
           <el-select
+            v-if="master === null"
             v-model="hue.id"
             placeholder="Pilih Rona Lingkungan"
             style="width:100%"
@@ -42,16 +43,20 @@
           >
             <el-option
               v-for="item in masterHues"
-              :key="'scoping_hue_'+ item.id"
+              :key="'scoping_opt_hue_'+ item.id"
               :label="item.name"
               :value="item.id"
             />
           </el-select>
+          <div v-else style="font-size:110%: float:none; clear: both;">{{ master.name || '' }} &nbsp;<i v-if="master.is_master" class="el-icon-success" style="color:#2e6b2e;" /></div>
           <div style="margin-top:1em;">
             <deskripsi v-if="selected !== null" :description="selected.description" :measurement="selected.measurement" />
           </div>
         </el-form-item>
-        <el-form-item v-if="selected !== null " :label="'Deskripsi '+ selected.name +' terkait '+ masterComponent.name ">
+        <div v-if="selected !== null" style="margin: 2em 0 1em; font-weight:bold;">
+          {{ 'Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
+        </div>
+        <el-form-item v-if="selected !== null" style="margin: 1em 0;">
           <hueeditor
             :key="'hue_scoping_editor_3'"
             v-model="hue.description"
@@ -62,13 +67,6 @@
             :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
             style="width:100%"
           />
-          <!--
-          <el-input
-            v-model="hue.description"
-            type="textarea"
-            :autosize="{ minRows: 3, maxRows: 5}"
-          />
-          -->
         </el-form-item>
         <el-form-item v-if="selected !== null " label="Besaran">
 
@@ -106,6 +104,10 @@ export default {
       type: Object,
       default: null,
     },
+    master: {
+      type: Object,
+      default: null,
+    },
     masterHues: {
       type: Array,
       default: function() {
@@ -127,6 +129,8 @@ export default {
       },
       selected: null,
       isSaving: false,
+      title: ['Tambah', 'Edit'],
+      mode: 0,
     };
   },
   methods: {
@@ -149,7 +153,7 @@ export default {
             id: this.hue.id,
             name: this.hue.name,
             value: this.hue.value,
-            id_sub_project_rona_awal: res,
+            id_sub_project_rona_awal: this.hue.id_sub_project_rona_awal,
             id_sub_project_component: this.hue.id_sub_project_component,
             description: this.hue.description,
             measurement: this.hue.measurement,
@@ -169,20 +173,50 @@ export default {
         });
     },
     handleClose(){
+      this.initData();
       this.$emit('onClose', true);
     },
     initData(){
-      this.hue = {
-        id: null,
-        name: '',
-        description: '',
-        measurement: '',
-        id_sub_project_rona_awal: null,
-      };
+      this.hue.id = null;
+      this.hue.name = '';
+      this.hue.description = '';
+      this.hue.measurement = '';
+      this.hue.id_sub_project_rona_awal = null;
+      this.hue.id_project = null;
+      this.hue.id_sub_project_component = null;
+      this.hue.id_component = null;
       this.selected = null;
     },
     onOpen(){
-      this.initData();
+      this.isSaving = false;
+      if (this.master === null) {
+        this.mode = 0;
+        this.selected = null;
+        this.hue = {
+          id: null,
+          name: '',
+          description: '',
+          measurement: '',
+          id_sub_project_component: this.data.rona_awal.id_sub_project_component,
+          id_sub_project_rona_awal: null,
+          id_project: this.data.sub_projects.id_project,
+          id_component: null,
+        };
+        console.log('add...', this.hue);
+      } else {
+        this.mode = 1;
+        this.hue = {
+          id: this.master.id,
+          name: this.master.name,
+          description: this.data.rona_awal.description,
+          measurement: this.data.rona_awal.measurement,
+          id_sub_project_component: this.data.rona_awal.id_sub_project_component,
+          id_sub_project_rona_awal: this.data.rona_awal.id_sub_project_rona_awal,
+          id_project: this.data.sub_projects.id_project,
+          id_component: this.master.id,
+        };
+        this.selected = this.master;
+      }
     },
     onChangeHue(val){
       this.selected = this.masterHues.find(h => h.id === val);

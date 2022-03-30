@@ -93,7 +93,7 @@ export default {
 
   watch: {
     deSelectAll: function(val) {
-      console.log('deselect? ' + this.id, val);
+      // console.log('deselect? ' + this.id, val);
       if (val === true){
         this.doDeselectAll();
       }

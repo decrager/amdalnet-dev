@@ -1,13 +1,13 @@
 <template>
   <el-dialog
-    :title="'Tambah Komponen Lingkungan'"
+    :title=" title[mode] + ' Komponen Lingkungan'"
     :visible.sync="show"
     width="50%"
     :before-close="handleClose"
     @open="onOpen"
   >
     <div v-loading="isSaving">
-      <el-form label-position="top" :model="data">
+      <el-form label-position="top" :model="data" style="padding: 0 2em;">
         <!-- tahap -->
         <div style="line-height: 150% !important;">
           <div><strong>Tahap Kegiatan</strong></div>
@@ -22,12 +22,11 @@
         <el-form-item
           label="Komponen Kegiatan"
           prop="name"
-          style="padding: 0.5em 0.8em; border: 1px solid #e0e0e0; border-radius: 1em; margin-top: 1em;"
+          style="padding: 0.5em 0.8em; border: 1px solid #cccccc; border-radius: 0.5em; margin-top: 1em;"
         >
-          <!-- <div v-if="isEdit" style="font-size:120%;">
-          <div>{{ component.name || component.component.name }}</div>
-        </div> -->
+
           <el-select
+            v-if="master === null"
             v-model="component.id_component"
             style="width:100%"
             clearable
@@ -43,21 +42,27 @@
               <span>{{ item.name }} &nbsp;<i v-if="item.is_master" class="el-icon-success" style="color:#2e6b2e;" /></span>
             </el-option>
           </el-select>
-          <!-- <deskripsi-besaran v-if="component.id !== null "
-          :data="masterComponents.find(e => e.id === component.id)"
-        /> -->
-          <div v-if="data.component !== null" style="line-height: 130%; margin-top:1em; word-break:break-word;">
+          <div v-else>
+            <div style="font-size:110%">{{ master.name || '' }} &nbsp;<i v-if="master.is_master" class="el-icon-success" style="color:#2e6b2e;" /></div>
+          </div>
+          <div style="margin: 1em 0;">
+            <deskripsi v-if="selected !== null" :description="selected.description" :measurement="selected.measurement" />
+          </div>
+          <!--
+            <div v-if="selected !== null" style="line-height: 130%; margin-top:1em; word-break:break-word;">
             <el-row :gutter="20">
               <el-col :span="12">
                 <div><b>Deskripsi</b></div>
-                <div v-html="data.component.description" />
+                <div v-html="selected.description" />
               </el-col>
               <el-col :span="12">
                 <div><b>Besaran</b></div>
-                <div style="margin-top: 1em;">{{ data.component.measurement }}</div>
+                <div style="margin-top: 1em;">{{ selected.measurement}}</div>
               </el-col>
             </el-row>
           </div>
+        </div>
+        -->
         </el-form-item>
 
         <el-form-item label="Deskripsi">
@@ -98,12 +103,12 @@
 
 import Resource from '@/api/resource';
 import SCEditor from '@/components/Tinymce';
-
+import Deskripsi from '../helpers/Deskripsi.vue';
 const subProjectComponentResource = new Resource('sub-project-components');
 
 export default {
   name: 'FormAddComponent',
-  components: { 'scopingceditor': SCEditor },
+  components: { 'scopingceditor': SCEditor, Deskripsi },
   props: {
     data: {
       type: Object,
@@ -112,6 +117,10 @@ export default {
     show: {
       type: Boolean,
       default: false,
+    },
+    master: {
+      type: Object,
+      default: () => null,
     },
     masterComponents: {
       type: Array,
@@ -132,6 +141,8 @@ export default {
         id_sub_project_component: null,
       },
       isSaving: false,
+      title: ['Tambah', 'Edit'],
+      selected: null,
     };
   },
   methods: {
@@ -139,23 +150,37 @@ export default {
       this.$emit('onClose', true);
     },
     onOpen(){
-      this.initComponent();
-    },
-    initComponent(){
-      this.component = {
-        id: null,
-        id_component: null,
-        id_sub_project: null,
-        name: '',
-        description: '',
-        measurement: '',
-        id_sub_project_component: null,
-      };
+      if (this.master === null){ // not yet having component ref
+        this.mode = 0;
+        this.selected = null;
+        this.component = {
+          id: null,
+          id_component: null,
+          id_sub_project: null,
+          name: '',
+          description: '',
+          measurement: '',
+          id_sub_project_component: null,
+        };
+      } else {
+        this.mode = 1;
+        this.selected = this.master;
+        this.component = {
+          id: this.master.id,
+          id_component: this.master.id,
+          id_sub_project: this.data.sub_projects.id,
+          name: this.master.name,
+          description: this.data.component.description,
+          measurement: this.data.component.measurement,
+          id_sub_project_component: this.data.component.id_sub_project_component,
+        };
+      }
+      console.log('edit component', this.component);
       this.isSaving = false;
     },
     handleSelectComponent(val){
-      this.data.component = this.masterComponents.find(e => e.id === val);
-      this.component.name = this.data.component.name;
+      this.selected = this.masterComponents.find(e => e.id === val);
+      // this.component.name = this.selected.name;
     },
     async submitComponent() {
       this.isSaving = true;

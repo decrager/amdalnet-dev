@@ -57,14 +57,14 @@
                   v-if="components && components.length > 0"
                   :id="'scopingComp_'+'stage_'+stage.id+'_'+index"
                   :key="'comp_'+ stage.id +'_'+index"
-                  :components="(activeScoping.sub_projects === null) ? components.filter(c => c.id_project_stage === stage.id) : components.filter(c => (c.id_project_stage === stage.id) && (c.id_sub_project === activeScoping.sub_projects.id))"
+                  :components="(activeScoping.sub_projects === null) ? bevComponent : components.filter(c => (c.id_project_stage === stage.id) && (c.id_sub_project === activeScoping.sub_projects.id))"
                   :selectable="activeScoping.sub_projects !== null"
                   :class-name="'scoping'"
                   :active-component="activeComponent"
                   :show-edit="isFormulator"
                   :show-delete="isFormulator"
                   :de-select-all="activeComponent === null"
-                  @edit="showForm = true "
+                  @edit="editComponent"
                   @onSelect="onSelectComponents"
                   @onDeselect="deselectComponents"
                 />
@@ -76,7 +76,7 @@
                 circle
                 type="primary"
                 plain
-                @click="showForm = true"
+                @click="addComponent"
               />
             </el-card>
           </el-col>
@@ -101,21 +101,21 @@
                     :key="'stage_'+ stage.id +'_body_ct_'+ct.id"
                   >
                     <components-list
-                      :id="'scopingHue_'+stage.id+'_hue_'+ct.id"
+                      :id="'scopingHue_s'+stage.id+'_hue_'+ct.id"
                       :key="'scopingHue_key_'+stage.id+'_hue_'+ct.id"
-                      :components="(activeScoping.sub_projects === null) ? hues.filter(h => h.id_component_type === ct.id) : ((activeComponent === null ) ? [] : hues.filter(h => (h.id_component_type === ct.id) && (h.id_sub_project_component === activeComponent.id_sub_project_component)))"
+                      :components="(activeScoping.sub_projects === null) ? bevHue.filter(h => h.id_component_type === ct.id ) : ((activeComponent === null ) ? [] : hues.filter(h => (h.id_component_type === ct.id) && (h.id_project_stage === id_project_stage) && (h.id_sub_project_component === activeComponent.id_sub_project_component)))"
                       :selectable="(activeScoping.sub_projects !== null) && (activeScoping.component !== null )"
                       :class-name="'scoping'"
                       :show-edit="isFormulator"
                       :show-delete="isFormulator"
                       :active-component="activeHue"
                       :de-select-all="activeHue === null"
-                      @edit="showAddHue = true"
+                      @edit="editHue"
                       @onSave="onSaveHue"
                       @onSelect="onSelectHues"
                     />
                     <el-button
-                      v-if="masterHues && (masterHues.filter(c => c.id_component_type === ct.id ).length > 0) && (activeScoping.sub_projects !== null) && (activeScoping.component !== null )"
+                      v-if="(activeScoping.component !== null) && (((getHueOptions()).filter(h => h.id_component_type === ct.id)).length > 0)"
                       icon="el-icon-plus"
                       size="mini"
                       circle
@@ -131,10 +131,12 @@
         </el-row>
       </el-tab-pane>
     </el-tabs>
+    <!-- "masterComponents.filter(c => c.id_project_stage === id_project_stage)" -->
     <form-add-component
       :show="showForm"
       :data="activeScoping"
-      :master-components="masterComponents.filter(c => c.id_project_stage === id_project_stage)"
+      :master="((activeScoping.component !== null) && (masterComponents.length > 0)) ? masterComponents.find(c => c.id === activeScoping.component.id ) : null"
+      :master-components="getComponentOptions()"
       @onClose="showForm = false"
       @onSave="onSaveComponent"
     />
@@ -142,8 +144,9 @@
       v-if="(activeScoping.component !== null) && (activeScoping.id_component_type !== null)"
       :show="showAddHue"
       :data="activeScoping"
-      :master-component="masterComponents.find(c => c.id === activeScoping.component.id)"
-      :master-hues="masterHues.filter(c => c.id_component_type === activeScoping.id_component_type)"
+      :master-component="(activeScoping.component !== null) ? masterComponents.find(c => c.id === activeScoping.component.id) : null"
+      :master="(activeScoping.rona_awal !== null) ? masterHues.find(h => h.id === activeScoping.rona_awal.id) : null"
+      :master-hues="(getHueOptions()).filter(c => c.id_component_type === activeScoping.id_component_type)"
       @onClose="showAddHue = false"
       @onSave="onSaveHue"
     />
@@ -191,6 +194,7 @@ export default {
     return {
       id_project: 0,
       id_project_stage: null,
+      cOptions: [],
       mapping: [],
       subProjects: [],
       activeName: 'stage4',
@@ -204,8 +208,8 @@ export default {
         sub_projects: null,
         id_component_type: null,
       },
-      savedComponents: [],
-      savedHues: [],
+      bevComponent: [],
+      bevHue: [],
       components: [],
       hues: [],
       showForm: false,
@@ -245,6 +249,24 @@ export default {
       this.activeComponent = null;
       this.activeHue = null;
     },
+    initBEVComponent(){
+      this.bevComponent = [];
+      this.components.filter(c => c.id_project_stage === this.id_project_stage).forEach((c) => {
+        const id = this.bevComponent.findIndex(b => (b.id === c.id));
+        if (id < 0){
+          this.bevComponent.push(c);
+        }
+      });
+    },
+    initBEVHue(){
+      this.bevHue = [];
+      this.hues.filter(h => h.id_project_stage === this.id_project_stage).forEach((h) => {
+        const id = this.bevHue.findIndex(b => (b.id === h.id));
+        if (id < 0){
+          this.bevHue.push(h);
+        }
+      });
+    },
     initMapping() {
       this.getSubProjects();
       this.getSubProjectComponents();
@@ -265,31 +287,8 @@ export default {
       this.components = [];
       await subProjectComponent.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
-          /* const result = [];
-          res.forEach((r)=>{
-            const rec = {
-                id_sub_project_component : r.id_project_component,
-                description: r.description,
-                measurement: r.measurement,
-                id_sub_project : r.id_sub_project
-            };
-            const idx = result.findIndex(s => s.id === r.id);
-            if (idx >= 0 ){
-              result[idx].records.push(rec);
-            }else {
-              result.push({
-                id: r.id,
-                name: r.name,
-                value: r.name,
-                id_project_stage: r.id_project_stage,
-                records: [rec],
-              });
-            }
-          });
-          // this.components = result;*/
-          this.savedComponents = res;
           this.components = res;
-          console.log('realigned: ', res);
+          this.initBEVComponent();
         })
         .finally(() => {});
     },
@@ -297,10 +296,21 @@ export default {
       this.hues = [];
       await subProjectHue.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
-          this.savedHues = res;
           this.hues = res;
+          this.initBEVHue();
         })
-        .finally(() => {});
+        .finally(() => {
+
+        });
+    },
+    processComponents(){
+    /*  const temp = [];
+      this.savedComponents.map((c) => {
+        const idx = this.components.findIndex(co => co.id == c.id);
+      }); */
+    },
+    processHues(){
+      // const temp = [];
     },
     dumpHues(){
       // console.log(hues);
@@ -312,30 +322,30 @@ export default {
       this.activeScoping.rona_awal = null;
       this.activeComponent = null;
       this.activeHue = null;
+      this.deSelectAllComponents = false;
 
       if (sel.length > 0){
-        this.activeScoping.component = this.components.find(c => c.id === sel[0]);
+        this.activeScoping.component = this.components.find(c => (c.id === sel[0]) && (c.id_sub_project === this.activeScoping.sub_projects.id));
         this.activeComponent = this.activeScoping.component;
       }
-      console.log('components:', this.activeScoping);
+      // console.log('components:', this.activeComponent);
     },
     onSelectHues(sel){
       this.activeScoping.rona_awal = null;
       this.activeHue = null;
       if (sel.length > 0){
-        const hue = this.hues.find(h => h.id === sel[0]);
+        const hue = this.hues.find(h => (h.id === sel[0]) && (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component));
         this.activeScoping.rona_awal = hue;
         this.activeHue = hue;
       }
-      console.log('hues', this.activeScoping);
     },
     onSelectSubProjects(sel) {
-      console.log('selectSubProject', sel.length);
+      // console.log('selectSubProject', sel.length);
       this.deSelectAllComponents = true;
       this.initActiveScoping();
       if (sel.length > 0){
         var sp = this.subProjects.find(sub => sub.id === sel[0]);
-        console.log(sp);
+        // console.log('selectedSubProject:', sp);
         if (sp.type === 'pendukung') {
           this.deSelectAllSPUtama = true;
           this.deSelectAllSPPendukung = false;
@@ -350,56 +360,90 @@ export default {
         // clear board? or show all?
 
       }
-      console.log('subproject', this.activeScoping);
+      // console.log('subproject', this.activeScoping);
     },
     onSaveComponent(obj){
-      /* const rec = {
-          id_sub_project_component : obj.id_project_component,
-          description: obj.description,
-          measurement: obj.measurement,
-          id_sub_project : obj.id_sub_project
-        };
-      const idx = this.components.findIndex(c => c.id === obj.id);
-      if(idx >= 0){
-        this.components[idx].records.push(rec);
-        this.activeComponent = this.components[idx];
+      const idx = this.components.findIndex(c => c.id_sub_project_component === obj.id_sub_project_component);
+      if (idx >= 0){
+        this.components[idx].description = obj.description;
+        this.components[idx].measurement = obj.measurement;
       } else {
-        this.components.push({
-          id: obj.id,
-          name: obj.name,
-          value: obj.name,
-          id_project_stage: obj.id_project_stage,
-          records: [rec]
-        });
-      }*/
-      this.components.push(obj);
+        this.components.push(obj);
+      }
       this.activeComponent = obj;
       this.activeScoping.component = obj;
-      console.log(this.activeComponent);
+      // console.log(this.activeComponent);
     },
     onSaveHue(obj){
       this.hues.push(obj);
       this.activeHue = obj;
       this.activeScoping.rona_awal = obj;
       this.getSubProjectsHues();
-      console.log('hues ', obj);
+      // console.log('hues ', obj);
     },
     addComponent(){
-
+      this.activeScoping.component = null;
+      this.showForm = true;
+    },
+    editComponent(val){
+      if (this.activeScoping.component === null){
+        this.activeScoping.component = this.components.find(c => (c.id === val) &&
+          (c.id_project_stage === this.id_project_stage) &&
+          (c.id_sub_project === this.activeScoping.sub_projects.id));
+      }
+      this.showForm = true;
+    },
+    deleteComponent(val){
     },
     addHue(id){
       this.activeScoping.id_component_type = id;
       this.current_component_type = id;
-      console.log(this.masterHues.filter(c => c.id_component_type === this.current_component_type));
+      this.activeScoping.rona_awal = null;
+      this.activeHue = null;
+      this.showAddHue = true;
+    },
+    editHue(val){
+      const hue = this.hues.find(h => (h.id === val) && (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component));
+      this.activeScoping.rona_awal = hue;
+      this.activeHue = hue;
       this.showAddHue = true;
     },
     handleTabClick(tab, event){
       this.initActiveScoping();
+      this.initBEVComponent();
+      this.initBEVHue();
     },
     handleSaveForm(val){
       if (!this.mapping.find(c => c.component.id === val.component.id) && !this.mapping.find(c => c.rona_awal.id === val.rona_awal.id)) {
         this.mapping.push({
         });
+      }
+    },
+    getIds(arr){
+      const ids = [];
+      arr.forEach((a) => {
+        if (!ids.includes(a.id)){
+          ids.push(a.id);
+        }
+      });
+      return ids;
+    },
+    getComponentOptions(){
+      const ids = this.getIds(this.components.filter(c => (c.id_project_stage === this.id_project_stage) &&
+        ((this.activeScoping.sub_projects !== null) ? (c.id_sub_project === this.activeScoping.sub_projects.id) : true)));
+      // console.log('co ids:', ids);
+      return this.masterComponents.filter(c => (!ids.includes(c.id)) && (c.id_project_stage === this.id_project_stage));
+    },
+    getHueOptions(){
+      // console.log(this.activeScoping.component);
+      const ids = this.getIds(this.hues.filter(h => (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component)));
+      return this.masterHues.filter(c => (!ids.includes(c.id)));
+    },
+    deselectComponents(val){
+      if (val.length === 0){
+        this.activeScoping.component = null;
+        this.activeComponent = null;
+        this.deSelectAllComponents = true;
       }
     },
     spToString(arr){
