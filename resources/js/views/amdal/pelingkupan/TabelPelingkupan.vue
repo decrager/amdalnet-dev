@@ -57,7 +57,7 @@
                   v-if="components && components.length > 0"
                   :id="'scopingComp_'+'stage_'+stage.id+'_'+index"
                   :key="'comp_'+ stage.id +'_'+index"
-                  :components="(activeScoping.sub_projects === null) ? components.filter(c => c.id_project_stage === stage.id) : components.filter(c => (c.id_project_stage === stage.id) && (c.id_sub_project === activeScoping.sub_projects.id))"
+                  :components="(activeScoping.sub_projects === null) ? bevComponent : components.filter(c => (c.id_project_stage === stage.id) && (c.id_sub_project === activeScoping.sub_projects.id))"
                   :selectable="activeScoping.sub_projects !== null"
                   :class-name="'scoping'"
                   :active-component="activeComponent"
@@ -103,7 +103,7 @@
                     <components-list
                       :id="'scopingHue_s'+stage.id+'_hue_'+ct.id"
                       :key="'scopingHue_key_'+stage.id+'_hue_'+ct.id"
-                      :components="(activeScoping.sub_projects === null) ? hues.filter(h => (h.id_component_type === ct.id) && (h.id_project_stage === id_project_stage)) : ((activeComponent === null ) ? [] : hues.filter(h => (h.id_component_type === ct.id) && (h.id_project_stage === id_project_stage) && (h.id_sub_project_component === activeComponent.id_sub_project_component)))"
+                      :components="(activeScoping.sub_projects === null) ? bevHue.filter(h => h.id_component_type === ct.id ) : ((activeComponent === null ) ? [] : hues.filter(h => (h.id_component_type === ct.id) && (h.id_project_stage === id_project_stage) && (h.id_sub_project_component === activeComponent.id_sub_project_component)))"
                       :selectable="(activeScoping.sub_projects !== null) && (activeScoping.component !== null )"
                       :class-name="'scoping'"
                       :show-edit="isFormulator"
@@ -208,8 +208,8 @@ export default {
         sub_projects: null,
         id_component_type: null,
       },
-      savedComponents: [],
-      savedHues: [],
+      bevComponent: [],
+      bevHue: [],
       components: [],
       hues: [],
       showForm: false,
@@ -249,6 +249,24 @@ export default {
       this.activeComponent = null;
       this.activeHue = null;
     },
+    initBEVComponent(){
+      this.bevComponent = [];
+      this.components.filter(c => c.id_project_stage === this.id_project_stage).forEach((c) => {
+        const id = this.bevComponent.findIndex(b => (b.id === c.id));
+        if (id < 0){
+          this.bevComponent.push(c);
+        }
+      });
+    },
+    initBEVHue(){
+      this.bevHue = [];
+      this.hues.filter(h => h.id_project_stage === this.id_project_stage).forEach((h) => {
+        const id = this.bevHue.findIndex(b => (b.id === h.id));
+        if (id < 0){
+          this.bevHue.push(h);
+        }
+      });
+    },
     initMapping() {
       this.getSubProjects();
       this.getSubProjectComponents();
@@ -269,8 +287,8 @@ export default {
       this.components = [];
       await subProjectComponent.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
-          this.savedComponents = res;
           this.components = res;
+          this.initBEVComponent();
         })
         .finally(() => {});
     },
@@ -278,9 +296,8 @@ export default {
       this.hues = [];
       await subProjectHue.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
-          this.savedHues = res;
           this.hues = res;
-          this.processHues();
+          this.initBEVHue();
         })
         .finally(() => {
 
@@ -393,6 +410,8 @@ export default {
     },
     handleTabClick(tab, event){
       this.initActiveScoping();
+      this.initBEVComponent();
+      this.initBEVHue();
     },
     handleSaveForm(val){
       if (!this.mapping.find(c => c.component.id === val.component.id) && !this.mapping.find(c => c.rona_awal.id === val.rona_awal.id)) {
