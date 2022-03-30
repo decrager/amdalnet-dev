@@ -46,14 +46,14 @@ class AndalCloneController extends Controller
             'ra.name AS rona_awal_name_master',
             'pra.name AS rona_awal_name',
             'ct.name AS change_type_name')
-            ->leftJoin('sub_project_components AS pc', 'impact_identification_clones.id_sub_project_component', '=', 'pc.id')
-            ->leftJoin('sub_project_rona_awals AS pra', 'impact_identification_clones.id_sub_project_rona_awal', '=', 'pra.id')
+            ->leftJoin('project_components AS pc', 'impact_identification_clones.id_project_component', '=', 'pc.id')
+            ->leftJoin('project_rona_awals AS pra', 'impact_identification_clones.id_project_rona_awal', '=', 'pra.id')
             ->leftJoin('change_types AS ct', 'impact_identification_clones.id_change_type', '=', 'ct.id')
             ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
             ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
             ->where('impact_identification_clones.id_project', $request->id_project)
-            ->whereNotNull('impact_identification_clones.id_sub_project_component')
-            ->whereNotNull('impact_identification_clones.id_sub_project_rona_awal')
+            ->whereNotNull('impact_identification_clones.id_project_component')
+            ->whereNotNull('impact_identification_clones.id_project_rona_awal')
             ->orderBy('impact_identification_clones.id', 'asc')
             ->get();
             return ImpactIdentificationCloneResource::collection($list);
@@ -293,8 +293,8 @@ class AndalCloneController extends Controller
                 $imp->study_location = $oi->study_location;
                 $imp->study_length_month = $oi->study_length_month;
                 $imp->study_length_year = $oi->study_length_year;
-                $imp->id_sub_project_component = $oi->id_sub_project_component;
-                $imp->id_sub_project_rona_awal = $oi->id_sub_project_rona_awal;
+                $imp->id_project_component = $oi->id_project_component;
+                $imp->id_project_rona_awal = $oi->id_project_rona_awal;
                 $imp->is_managed = $oi->is_managed;
                 $imp->save();
 
