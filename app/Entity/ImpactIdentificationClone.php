@@ -85,4 +85,12 @@ class ImpactIdentificationClone extends Model
     {
         return $this->hasOne(EnvPlanInstitution::class, 'id_impact_identification', 'id');
     }
+    public function projectComponent()
+    {
+        return $this->belongsTo(ProjectComponent::class, 'id_project_component', 'id');
+    }
+
+    public function projectRonaAwal(){
+        return $this->belongsTo(ProjectRonaAwal::class, 'id_project_rona_awal', 'id');
+    }
 }

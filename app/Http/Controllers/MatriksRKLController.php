@@ -543,7 +543,7 @@ class MatriksRKLController extends Controller
         $results = [];
 
         // ============== POIN A ============== //
-        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis', function($q) {
             $q->whereHas('detail', function($query) {
                 $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
@@ -593,17 +593,13 @@ class MatriksRKLController extends Controller
             // check stages
             $id_stages = null;
 
-            if($pA->subProjectComponent) {
-                if($pA->subProjectComponent->id_project_stage) {
-                    $id_stages = $pA->subProjectComponent->id_project_stage;
-                } else {
-                    $id_stages = $pA->subProjectComponent->component->id_project_stage;
-                }
+            if($pA->projectComponent) {
+                $id_stages = $pA->projectComponent->component->id_project_stage;
     
                 if($id_stages == $s->id) {
-                    if($pA->subProjectRonaAwal) {
-                        $ronaAwal = $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
-                        $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+                    if($pA->projectRonaAwal) {
+                        $ronaAwal = $pA->projectRonaAwal->rona_awal->name;
+                        $component = $pA->projectComponent->component->name;
                     } else {
                         continue;
                     }
@@ -692,21 +688,21 @@ class MatriksRKLController extends Controller
   private function getLoopDataB($stages, $id_project, $results, $type, $idPoinA) {
     //  =========== POIN B.1 ============= //
     // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-    $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+    $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_managed', true], ['is_hypothetical_significant', '!=', true]])->get();
 
     //  =========== POIN B.2 ============= //
     // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-    $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+    $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null], ['is_hypothetical_significant', '!=', true]])->get();
 
     // ============ POIN B.3 ============= //
     // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
     if(count($idPoinA) > 0) {
-        $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereNotIn('id', $idPoinA)->whereHas('envImpactAnalysis')->get();
     } else {
-        $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis')->get();
     }
 
@@ -733,17 +729,13 @@ class MatriksRKLController extends Controller
             // check stages
             $id_stages = null;
 
-            if($merge->subProjectComponent) {
-                if($merge->subProjectComponent->id_project_stage) {
-                    $id_stages = $merge->subProjectComponent->id_project_stage;
-                } else {
-                    $id_stages = $merge->subProjectComponent->component->id_project_stage;
-                }
+            if($merge->projectComponent) {
+                $id_stages = $merge->projectComponent->component->id_project_stage;
     
                 if($id_stages == $s->id) {
-                    if($merge->subProjectRonaAwal) {
-                        $ronaAwal = $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                        $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                    if($merge->projectRonaAwal) {
+                        $ronaAwal = $merge->projectRonaAwal->rona_awal->name;
+                        $component = $merge->projectComponent->component->name;
                     } else {
                         continue;
                     }
@@ -831,7 +823,7 @@ class MatriksRKLController extends Controller
   private function getPoinA($stages, $id_project, $impact_source, $indicator, $institution) {
     $results = []; 
 
-    $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+    $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
     ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis', function($q) {
         $q->whereHas('detail', function($query) {
             $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
@@ -895,12 +887,12 @@ class MatriksRKLController extends Controller
 
        //  =========== POIN B.1 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-        $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_managed', true],['is_hypothetical_significant', '!=', true]])->get();
 
         //  =========== POIN B.2 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-        $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null],['is_hypothetical_significant', '!=', true]])->get();
 
         // ============ POIN B.3 ============= //
@@ -918,10 +910,10 @@ class MatriksRKLController extends Controller
         }
 
         if(count($idPoinA) > 0) {
-            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereNotIn('id', $idPoinA)->whereHas('envImpactAnalysis')->get();
         } else {
-            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis')->get();
         }
 
@@ -949,8 +941,8 @@ class MatriksRKLController extends Controller
                     continue;
                 }
                 $changeType = $merge->id_change_type ? $merge->changeType->name : '';
-                $ronaAwal =  $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                $ronaAwal =  $merge->projectRonaAwal->rona_awal->name;
+                $component = $merge->projectComponent->component->name;
 
                 $institution_data = $institution->where('id_impact_identification', $merge->id)->first();
 
@@ -983,7 +975,7 @@ class MatriksRKLController extends Controller
     private function getPoinARpl($stages, $id_project, $impact_source, $indicator, $institution) {
         $results = [];
 
-        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis', function($q) {
             $q->whereHas('detail', function($query) {
                 $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
@@ -1046,12 +1038,12 @@ class MatriksRKLController extends Controller
 
         //  =========== POIN B.1 ============= //
        // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-       $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+       $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
        ->where([['id_project', $id_project],['is_managed', true],['is_hypothetical_significant', '!=', true]])->get();
 
        //  =========== POIN B.2 ============= //
        // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-       $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+       $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
            ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null],['is_hypothetical_significant', '!=', true]])->get();
 
        // ============ POIN B.3 ============= //
@@ -1069,10 +1061,10 @@ class MatriksRKLController extends Controller
        }
 
        if(count($idPoinA) > 0) {
-           $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+           $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
            ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereNotIn('id', $idPoinA)->whereHas('envImpactAnalysis')->get();
        } else {
-        $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis')->get();
        }
 
@@ -1136,20 +1128,21 @@ class MatriksRKLController extends Controller
         $ronaAwal = null;
 
         try {
-            if($imp->subProjectComponent) {
-                if($imp->subProjectComponent->id_project_stage == $id_project_stage) {
-                    if($imp->subProjectRonaAwal) {
-                        $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                        $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                    }
-                } else if($imp->subProjectComponent->id_project_stage != null) {
-                    if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
-                        if($imp->subProjectRonaAwal) {
-                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                        }
+            if ($imp->projectComponent) {
+                if ($imp->projectComponent->component->id_project_stage == $id_project_stage) {
+                    if ($imp->projectRonaAwal) {
+                        $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                        $component = $imp->projectComponent->component->name;
                     }
                 }
+                // } else if($imp->subProjectComponent->id_project_stage != null) {
+                //     if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
+                //         if($imp->subProjectRonaAwal) {
+                //             $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                //             $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                //         }
+                //     }
+                // }
             }
         } catch(ErrorException $err) {
             

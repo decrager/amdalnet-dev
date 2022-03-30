@@ -464,7 +464,7 @@ class AndalComposingController extends Controller
     {
         $alphabet_list = 'A';
 
-        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
 
         $important_trait = ImportantTrait::select('id', 'description')->get();
         $traits = [];
@@ -497,17 +497,13 @@ class AndalComposingController extends Controller
                 // check stages
                 $id_stages = null;
 
-                if ($imp->subProjectComponent) {
-                    if ($imp->subProjectComponent->id_project_stage) {
-                        $id_stages = $imp->subProjectComponent->id_project_stage;
-                    } else {
-                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
-                    }
+                if ($imp->projectComponent) {
+                    $id_stages = $imp->projectComponent->component->id_project_stage;
 
                     if ($id_stages == $s->id) {
-                        if ($imp->subProjectRonaAwal) {
-                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        if ($imp->projectRonaAwal) {
+                            $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                            $component = $imp->projectComponent->component->name;
                         } else {
                             continue;
                         }
@@ -563,7 +559,7 @@ class AndalComposingController extends Controller
     {
         $alphabet_list = 'A';
 
-        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
+        $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
         $results = [];
 
         foreach ($stages as $s) {
@@ -582,17 +578,13 @@ class AndalComposingController extends Controller
                 // check stages
                 $id_stages = null;
 
-                if ($imp->subProjectComponent) {
-                    if ($imp->subProjectComponent->id_project_stage) {
-                        $id_stages = $imp->subProjectComponent->id_project_stage;
-                    } else {
-                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
-                    }
+                if ($imp->projectComponent) {
+                    $id_stages = $imp->projectComponent->component->id_project_stage;
 
                     if ($id_stages == $s->id) {
-                        if ($imp->subProjectRonaAwal) {
-                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        if ($imp->projectRonaAwal) {
+                            $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                            $component = $imp->projectComponent->component->name;
                         } else {
                             continue;
                         }
@@ -906,17 +898,13 @@ class AndalComposingController extends Controller
                 // check stages
                 $id_stages = null;
 
-                if ($imp->subProjectComponent) {
-                    if ($imp->subProjectComponent->id_project_stage) {
-                        $id_stages = $imp->subProjectComponent->id_project_stage;
-                    } else {
-                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
-                    }
+                if ($imp->projectComponent) {
+                    $id_stages = $imp->projectComponent->component->id_project_stage;
 
                     if ($id_stages == $s->id) {
-                        if ($imp->subProjectRonaAwal) {
-                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        if ($imp->projectRonaAwal) {
+                            $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                            $component = $imp->projectComponent->component->name;
                         } else {
                             continue;
                         }
@@ -927,47 +915,7 @@ class AndalComposingController extends Controller
                     continue;
                 }
 
-                $component_type = $this->getComponentType($imp);
-
-                // ======= KOMPONEN LINGKUNGAN HIDUP ====== //
-                $komponen_desc = '';
-                if($imp->subProjectRonaAwal->description_common) {
-                    $komponen_desc = $imp->subProjectRonaAwal->description_common . '</w:t><w:p/><w:t>' . $imp->subProjectRonaAwal->description_specific;
-                } else {
-                    $komponen_desc = $imp->subProjectRonaAwal->description_specific;
-                }
-
-                if(strtolower($component_type) == 'geofisik kimia') {
-                    $gfk_no = count($gfk_rona_block) + 1;
-                    $gfk_rona_block[] = [
-                        'gfk_rona_name' => '3.1.1.' . $gfk_no . ' ' . $ronaAwal,
-                        'gfk_rona_desc' => $komponen_desc,
-                    ];
-                } else if(strtolower($component_type) == 'biologi') {
-                    $b_no = count($b_rona_block) + 1;
-                    $b_rona_block[] = [
-                        'b_rona_name' => '3.1.2.' . $b_no . ' ' . $ronaAwal,
-                        'b_rona_desc' => $komponen_desc,
-                    ];
-                } else if(strtolower($component_type) == 'sosial, ekonomi, dan budaya') {
-                    $seb_no = count($seb_rona_block) + 1;
-                    $seb_rona_block[] = [
-                        'seb_rona_name' => '3.1.3.' . $seb_no . ' ' . $ronaAwal,
-                        'seb_rona_desc' => $komponen_desc
-                    ];
-                } else if(strtolower($component_type) == 'kesehatan masyarakat') {
-                    $kk_no = count($kk_rona_block) + 1;
-                    $kk_rona_block[] = [
-                        'kk_rona_name' => '3.1.4.' . $kk_no . ' ' . $ronaAwal,
-                        'kk_rona_desc' => $komponen_desc
-                    ];
-                } else if(strtolower($component_type) == 'kegiatan lain sekitar') {
-                    $kl_no = count($kl_rona_block) + 1;
-                    $kl_rona_block[] = [
-                        'kl_rona_name' => '3.2.' . $kl_no . ' ' . $ronaAwal,
-                        'kl_rona_desc' => $komponen_desc
-                    ];
-                }
+                $component_type = $this->getComponentTypeImp($imp);
 
                 // ======= POTENTIAL IMPACT EVALUATIONS ======= //
                 $ed_besaran_rencana = '';
@@ -1051,16 +999,7 @@ class AndalComposingController extends Controller
                     }
                 }
 
-                // DESKRIPSI KEGIATAN
-                $com_desc = '';
-                if($imp->subProjectComponent->description_common) {
-                    $com_desc = $imp->subProjectComponent->description_common . '</w:t><w:p/><w:t>' . $imp->subProjectComponent->description_specific;
-                } else {
-                    $com_desc = $imp->subProjectComponent->description_specific;
-                }
-
                 if ($s->name == 'Pra Konstruksi') {
-
                     // MATRIKS DP
                     if (!in_array($component, $dp_pk_name)) {
                         $dp_pk_name[] = $component;
@@ -1094,15 +1033,6 @@ class AndalComposingController extends Controller
                         $mdph_pk[] = [
                             'mdph_pk' => 'Tahap ' . $s->name . $stage_merge,
                             'mdph_pk_component' => $component
-                        ];
-                    }
-
-                    // COMPONENT
-                    if (!in_array($component, $com_pk_name)) {
-                        $com_pk_name[] = $component;
-                        $com_pk[] = [
-                            'com_pk_name' => '2.1.' . count($com_pk_name) . ' ' . $component,
-                            'com_pk_desc' => $com_desc 
                         ];
                     }
 
@@ -1177,7 +1107,7 @@ class AndalComposingController extends Controller
                     $dph_pk[] = [
                         'dph_pk' => $total,
                         'dph_pk_component' => $component,
-                        'dph_pk_unit' => $imp->subProjectComponent->unit,
+                        'dph_pk_unit' => $imp->projectComponent->measurement,
                         'dph_pk_plan' => $imp->initial_study_plan,
                         'dph_pk_rona_awal' => $ronaAwal,
                         'dph_pk_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
@@ -1233,15 +1163,6 @@ class AndalComposingController extends Controller
                         $mdph_k[] = [
                             'mdph_k' => 'Tahap ' . $s->name . $stage_merge,
                             'mdph_k_component' => $component
-                        ];
-                    }
-
-                    // COMPONENT
-                    if (!in_array($component, $com_k_name)) {
-                        $com_k_name[] = $component;
-                        $com_k[] = [
-                            'com_k_name' => '2.2.' . count($com_k_name) . ' ' . $component,
-                            'com_k_desc' => $com_desc
                         ];
                     }
 
@@ -1314,7 +1235,7 @@ class AndalComposingController extends Controller
                     $dph_k[] = [
                         'dph_k' => $total,
                         'dph_k_component' => $component,
-                        'dph_k_unit' => $imp->subProjectComponent->unit, 
+                        'dph_k_unit' => $imp->projectComponent->measurement, 
                         'dph_k_plan' => $imp->initial_study_plan,
                         'dph_k_rona_awal' => $ronaAwal,
                         'dph_k_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
@@ -1373,15 +1294,7 @@ class AndalComposingController extends Controller
                         ];
                     }
 
-                    // COMPONENT
-                    if (!in_array($component, $com_o_name)) {
-                        $com_o_name[] = $component;
-                        $com_o[] = [
-                            'com_o_name' => '2.3.' . count($com_o_name) . ' ' . $component,
-                            'com_o_desc' => $com_desc
-                        ];
-                    }
-
+                    
                     // PRAKIRAAN DAMPAK PENTING
                     if($imp->is_hypothetical_significant) {
                         if(!in_array($component, $dpg_o_block_name)) {
@@ -1451,7 +1364,7 @@ class AndalComposingController extends Controller
                     $dph_o[] = [
                         'dph_o' => $total,
                         'dph_o_component' => $component,
-                        'dph_o_unit' => $imp->subProjectComponent->unit,
+                        'dph_o_unit' => $imp->projectComponent->measurement,
                         'dph_o_plan' => $imp->initial_study_plan,
                         'dph_o_rona_awal' => $ronaAwal,
                         'dph_o_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
@@ -1507,15 +1420,6 @@ class AndalComposingController extends Controller
                         $ru_po[] = [
                             'ru_po' => count($ru_po) + 1 . '.',
                             'ru_po_component' => $component
-                        ];
-                    }
-
-                    // COMPONENT
-                    if (!in_array($component, $com_po_name)) {
-                        $com_po_name[] = $component;
-                        $com_po[] = [
-                            'com_po_name' => '2.4.' . count($com_po_name) . ' ' . $component,
-                            'com_po_desc' => $com_desc
                         ];
                     }
 
@@ -1588,7 +1492,7 @@ class AndalComposingController extends Controller
                     $dph_po[] = [
                         'dph_po' => $total,
                         'dph_po_component' => $component,
-                        'dph_po_unit' => $imp->subProjectComponent->unit,
+                        'dph_po_unit' => $imp->projectComponent->measurement,
                         'dph_po_plan' => $imp->initial_study_plan,
                         'dph_po_rona_awal' => $ronaAwal,
                         'dph_po_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
@@ -1613,6 +1517,113 @@ class AndalComposingController extends Controller
                 }
                 $stage_id = $s->id;
                 $total++;
+            }
+
+            // DESKRIPSI KEGIATAN
+            $com_desc = '';
+            $sub_project_component_stages = SubProjectComponent::where(function($q) use($project, $s) {
+                $q->whereHas('subProject', function($query) use($project) {
+                    $query->where('id_project', $project->id);
+                });
+                $q->whereHas('component', function($query) use($s) {
+                    $query->where('id_project_stage', $s->id);
+                });
+            })->first();
+
+            if($sub_project_component_stages) {
+                if($sub_project_component_stages->description_common) {
+                    $com_desc = $sub_project_component_stages->description_common . '</w:t><w:p/><w:t>' . $sub_project_component_stages->description_specific;
+                } else {
+                    $com_desc = $sub_project_component_stages->description_specific;
+                }
+
+                $component_stages = $sub_project_component_stages->id_component  ? $sub_project_component_stages->component->name : $sub_project_component_stages->name;
+
+                 // COMPONENT
+
+                 if($s->name == 'Pra Konstruksi') {
+                     if (!in_array($component_stages, $com_pk_name)) {
+                         $com_pk_name[] = $component_stages;
+                         $com_pk[] = [
+                             'com_pk_name' => '2.1.' . count($com_pk_name) . ' ' . $component_stages,
+                             'com_pk_desc' => $com_desc
+                         ];
+                     }
+                 } else if($s->name == 'Konstruski') {
+                     if (!in_array($component_stages, $com_k_name)) {
+                         $com_k_name[] = $component_stages;
+                         $com_k[] = [
+                             'com_k_name' => '2.2.' . count($com_k_name) . ' ' . $component_stages,
+                             'com_k_desc' => $com_desc
+                         ];
+                     }
+                 } else if($s->name == 'Operasi') {
+                    if (!in_array($component_stages, $com_o_name)) {
+                        $com_o_name[] = $component_stages;
+                        $com_o[] = [
+                            'com_o_name' => '2.3.' . count($com_o_name) . ' ' . $component_stages,
+                            'com_o_desc' => $com_desc
+                        ];
+                    }
+                 } else if($s->name == 'Pasca Operasi') {
+                    if (!in_array($component_stages, $com_po_name)) {
+                        $com_po_name[] = $component_stages;
+                        $com_po[] = [
+                            'com_po_name' => '2.4.' . count($com_po_name) . ' ' . $component_stages,
+                            'com_po_desc' => $com_desc
+                        ];
+                    }
+                 }
+            }
+        }
+
+        // ======= KOMPONEN LINGKUNGAN HIDUP ====== //
+        $sub_project_rona_awal = SubProjectRonaAwal::whereHas('subProjectComponent', function($q) use($project) {
+            $q->whereHas('subProject', function($query) use($project) {
+                $query->where('id_project', $project->id);
+            });
+        })->get();
+
+        foreach($sub_project_rona_awal as $spra) {
+            $component_type_sub_project = $this->getComponentType($spra);
+
+            $komponen_desc = '';
+            if($spra->description_common) {
+                $komponen_desc = $spra->description_common . '</w:t><w:p/><w:t>' . $spra->description_specific;
+            } else {
+                $komponen_desc = $spra->description_specific;
+            }
+
+            if(strtolower($component_type_sub_project) == 'geofisik kimia') {
+                $gfk_no = count($gfk_rona_block) + 1;
+                $gfk_rona_block[] = [
+                    'gfk_rona_name' => '3.1.1.' . $gfk_no . ' ' . $ronaAwal,
+                    'gfk_rona_desc' => $komponen_desc,
+                ];
+            } else if(strtolower($component_type_sub_project) == 'biologi') {
+                $b_no = count($b_rona_block) + 1;
+                $b_rona_block[] = [
+                    'b_rona_name' => '3.1.2.' . $b_no . ' ' . $ronaAwal,
+                    'b_rona_desc' => $komponen_desc,
+                ];
+            } else if(strtolower($component_type_sub_project) == 'sosial, ekonomi, dan budaya') {
+                $seb_no = count($seb_rona_block) + 1;
+                $seb_rona_block[] = [
+                    'seb_rona_name' => '3.1.3.' . $seb_no . ' ' . $ronaAwal,
+                    'seb_rona_desc' => $komponen_desc
+                ];
+            } else if(strtolower($component_type_sub_project) == 'kesehatan masyarakat') {
+                $kk_no = count($kk_rona_block) + 1;
+                $kk_rona_block[] = [
+                    'kk_rona_name' => '3.1.4.' . $kk_no . ' ' . $ronaAwal,
+                    'kk_rona_desc' => $komponen_desc
+                ];
+            } else if(strtolower($component_type_sub_project) == 'kegiatan lain sekitar') {
+                $kl_no = count($kl_rona_block) + 1;
+                $kl_rona_block[] = [
+                    'kl_rona_name' => '3.2.' . $kl_no . ' ' . $ronaAwal,
+                    'kl_rona_desc' => $komponen_desc
+                ];
             }
         }
 
@@ -2009,16 +2020,24 @@ class AndalComposingController extends Controller
         return response()->json(['message' => 'success']);
     }
 
-    private function getComponentType($imp) {
+    private function getComponentTypeImp($imp) {
         $component_type = '';
-        if($imp->subProjectRonaAwal->id_rona_awal) {
-            $com_type = ComponentType::find($imp->subProjectRonaAwal->ronaAwal->id_component_type);
+        $com_type = ComponentType::find($imp->projectRonaAwal->rona_awal->id_component_type);
+        $component_type = $com_type->name;
+
+        return $component_type;
+    }
+
+    private function getComponentType($sub_project_rona_awal) {
+        $component_type = '';
+        if($sub_project_rona_awal->id_rona_awal) {
+            $com_type = ComponentType::find($sub_project_rona_awal->ronaAwal->id_component_type);
             if($com_type) {
                 $component_type = $com_type->name;
             }
         } else {
-            if($imp->subProjectRonaAwal->id_component_type) {
-                $com_type = ComponentType::find($imp->subProjectRonaAwal->id_component_type);
+            if($sub_project_rona_awal->id_component_type) {
+                $com_type = ComponentType::find($sub_project_rona_awal->id_component_type);
                 if($com_type) {
                     $component_type = $com_type->name;
                 }
@@ -2027,6 +2046,7 @@ class AndalComposingController extends Controller
 
         return $component_type;
     }
+
 
     private function formulirKa($id_project, $type)
     {
@@ -2114,10 +2134,10 @@ class AndalComposingController extends Controller
         $im = null;
 
         if($type == 'andal') {
-            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
                 ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
         } else {
-            $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+            $im = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
                 ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
         }
 
@@ -2381,20 +2401,21 @@ class AndalComposingController extends Controller
         $component = null;
         $ronaAwal = null;
 
-        if ($imp->subProjectComponent) {
-            if ($imp->subProjectComponent->id_project_stage == $id_project_stage) {
-                if ($imp->subProjectRonaAwal) {
-                    $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                    $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                }
-            } else if ($imp->subProjectComponent->id_project_stage != null) {
-                if (($imp->subProjectComponent->component) && $imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
-                    if ($imp->subProjectRonaAwal) {
-                        $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                        $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                    }
+        if ($imp->projectComponent) {
+            if ($imp->projectComponent->component->id_project_stage == $id_project_stage) {
+                if ($imp->projectRonaAwal) {
+                    $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                    $component = $imp->projectComponent->component->name;
                 }
             }
+            // } else if ($imp->subProjectComponent->id_project_stage != null) {
+            //     if (($imp->subProjectComponent->component) && $imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
+            //         if ($imp->subProjectRonaAwal) {
+            //             $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+            //             $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+            //         }
+            //     }
+            // }
         }
 
         return [
@@ -2423,10 +2444,10 @@ class AndalComposingController extends Controller
         $im = null;
 
         if($type == 'andal') {
-            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+            $im = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
                 ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
         } else {
-            $im = ImpactIdentification::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
+            $im = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
                 ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
         }
 
