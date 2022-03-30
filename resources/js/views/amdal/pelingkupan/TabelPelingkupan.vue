@@ -268,31 +268,8 @@ export default {
       this.components = [];
       await subProjectComponent.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
-          /* const result = [];
-          res.forEach((r)=>{
-            const rec = {
-                id_sub_project_component : r.id_project_component,
-                description: r.description,
-                measurement: r.measurement,
-                id_sub_project : r.id_sub_project
-            };
-            const idx = result.findIndex(s => s.id === r.id);
-            if (idx >= 0 ){
-              result[idx].records.push(rec);
-            }else {
-              result.push({
-                id: r.id,
-                name: r.name,
-                value: r.name,
-                id_project_stage: r.id_project_stage,
-                records: [rec],
-              });
-            }
-          });
-          // this.components = result;*/
           this.savedComponents = res;
           this.components = res;
-          console.log('realigned: ', res);
         })
         .finally(() => {});
     },
@@ -332,7 +309,7 @@ export default {
         this.activeScoping.component = this.components.find(c => (c.id === sel[0]) && (c.id_sub_project === this.activeScoping.sub_projects.id));
         this.activeComponent = this.activeScoping.component;
       }
-      console.log('components:', this.activeComponent);
+      // console.log('components:', this.activeComponent);
     },
     onSelectHues(sel){
       this.activeScoping.rona_awal = null;
@@ -350,7 +327,7 @@ export default {
       this.initActiveScoping();
       if (sel.length > 0){
         var sp = this.subProjects.find(sub => sub.id === sel[0]);
-        console.log('selectedSubProject:', sp);
+        // console.log('selectedSubProject:', sp);
         if (sp.type === 'pendukung') {
           this.deSelectAllSPUtama = true;
           this.deSelectAllSPPendukung = false;
@@ -365,7 +342,7 @@ export default {
         // clear board? or show all?
 
       }
-      console.log('subproject', this.activeScoping);
+      // console.log('subproject', this.activeScoping);
     },
     onSaveComponent(obj){
       const idx = this.components.findIndex(c => c.id_sub_project_component === obj.id_sub_project_component);
@@ -377,23 +354,25 @@ export default {
       }
       this.activeComponent = obj;
       this.activeScoping.component = obj;
-      console.log(this.activeComponent);
+      // console.log(this.activeComponent);
     },
     onSaveHue(obj){
       this.hues.push(obj);
       this.activeHue = obj;
       this.activeScoping.rona_awal = obj;
       this.getSubProjectsHues();
-      console.log('hues ', obj);
+      // console.log('hues ', obj);
     },
     addComponent(){
       this.activeScoping.component = null;
-      // this.cOptions = this.getComponentOptions();
-      console.log('componentOptions: ', this.cOptions);
       this.showForm = true;
     },
     editComponent(val){
-      console.log('editComponent', val, 'activeComponent: ', this.activeScoping.component);
+      if (this.activeScoping.component === null){
+        this.activeScoping.component = this.components.find(c => (c.id === val) &&
+          (c.id_project_stage === this.id_project_stage) &&
+          (c.id_sub_project === this.activeScoping.sub_projects.id));
+      }
       this.showForm = true;
     },
     deleteComponent(val){
@@ -401,7 +380,7 @@ export default {
     addHue(id){
       this.activeScoping.id_component_type = id;
       this.current_component_type = id;
-      console.log(this.masterHues.filter(c => c.id_component_type === this.current_component_type));
+      // console.log(this.masterHues.filter(c => c.id_component_type === this.current_component_type));
       this.showAddHue = true;
     },
     handleTabClick(tab, event){
@@ -425,11 +404,11 @@ export default {
     getComponentOptions(){
       const ids = this.getIds(this.components.filter(c => (c.id_project_stage === this.id_project_stage) &&
         ((this.activeScoping.sub_projects !== null) ? (c.id_sub_project === this.activeScoping.sub_projects.id) : true)));
-      console.log('co ids:', ids);
+      // console.log('co ids:', ids);
       return this.masterComponents.filter(c => (!ids.includes(c.id)) && (c.id_project_stage === this.id_project_stage));
     },
     getHueOptions(){
-      console.log(this.activeScoping.component);
+      // console.log(this.activeScoping.component);
       const ids = this.getIds(this.hues.filter(h => (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component)));
       return this.masterHues.filter(c => (!ids.includes(c.id)));
     },

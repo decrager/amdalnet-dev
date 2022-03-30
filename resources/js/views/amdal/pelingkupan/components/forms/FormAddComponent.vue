@@ -7,7 +7,7 @@
     @open="onOpen"
   >
     <div v-loading="isSaving">
-      <el-form label-position="top" :model="data">
+      <el-form label-position="top" :model="data" style="padding: 0 2em;">
         <!-- tahap -->
         <div style="line-height: 150% !important;">
           <div><strong>Tahap Kegiatan</strong></div>
