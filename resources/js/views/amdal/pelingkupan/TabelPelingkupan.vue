@@ -64,7 +64,7 @@
                   :show-edit="isFormulator"
                   :show-delete="isFormulator"
                   :de-select-all="activeComponent === null"
-                  @edit="showForm = true "
+                  @edit="editComponent"
                   @onSelect="onSelectComponents"
                   @onDeselect="deselectComponents"
                 />
@@ -76,7 +76,7 @@
                 circle
                 type="primary"
                 plain
-                @click="showForm = true"
+                @click="addComponent"
               />
             </el-card>
           </el-col>
@@ -101,9 +101,9 @@
                     :key="'stage_'+ stage.id +'_body_ct_'+ct.id"
                   >
                     <components-list
-                      :id="'scopingHue_'+stage.id+'_hue_'+ct.id"
+                      :id="'scopingHue_s'+stage.id+'_hue_'+ct.id"
                       :key="'scopingHue_key_'+stage.id+'_hue_'+ct.id"
-                      :components="(activeScoping.sub_projects === null) ? hues.filter(h => h.id_component_type === ct.id) : ((activeComponent === null ) ? [] : hues.filter(h => (h.id_component_type === ct.id) && (h.id_sub_project_component === activeComponent.id_sub_project_component)))"
+                      :components="(activeScoping.sub_projects === null) ? hues.filter(h => (h.id_component_type === ct.id) && (h.id_project_stage === id_project_stage)) : ((activeComponent === null ) ? [] : hues.filter(h => (h.id_component_type === ct.id) && (h.id_project_stage === id_project_stage) && (h.id_sub_project_component === activeComponent.id_sub_project_component)))"
                       :selectable="(activeScoping.sub_projects !== null) && (activeScoping.component !== null )"
                       :class-name="'scoping'"
                       :show-edit="isFormulator"
@@ -115,7 +115,7 @@
                       @onSelect="onSelectHues"
                     />
                     <el-button
-                      v-if="masterHues && (masterHues.filter(c => c.id_component_type === ct.id ).length > 0) && (activeScoping.sub_projects !== null) && (activeScoping.component !== null )"
+                      v-if="(activeScoping.component !== null) && (((getHueOptions()).filter(h => h.id_component_type === ct.id)).length > 0)"
                       icon="el-icon-plus"
                       size="mini"
                       circle
@@ -131,10 +131,11 @@
         </el-row>
       </el-tab-pane>
     </el-tabs>
+    <!-- "masterComponents.filter(c => c.id_project_stage === id_project_stage)" -->
     <form-add-component
       :show="showForm"
       :data="activeScoping"
-      :master-components="masterComponents.filter(c => c.id_project_stage === id_project_stage)"
+      :master-components="getComponentOptions()"
       @onClose="showForm = false"
       @onSave="onSaveComponent"
     />
@@ -143,7 +144,7 @@
       :show="showAddHue"
       :data="activeScoping"
       :master-component="masterComponents.find(c => c.id === activeScoping.component.id)"
-      :master-hues="masterHues.filter(c => c.id_component_type === activeScoping.id_component_type)"
+      :master-hues="(getHueOptions()).filter(c => c.id_component_type === activeScoping.id_component_type)"
       @onClose="showAddHue = false"
       @onSave="onSaveHue"
     />
@@ -191,6 +192,7 @@ export default {
     return {
       id_project: 0,
       id_project_stage: null,
+      cOptions: [],
       mapping: [],
       subProjects: [],
       activeName: 'stage4',
@@ -299,8 +301,20 @@ export default {
         .then((res) => {
           this.savedHues = res;
           this.hues = res;
+          this.processHues();
         })
-        .finally(() => {});
+        .finally(() => {
+
+        });
+    },
+    processComponents(){
+    /*  const temp = [];
+      this.savedComponents.map((c) => {
+        const idx = this.components.findIndex(co => co.id == c.id);
+      }); */
+    },
+    processHues(){
+      // const temp = [];
     },
     dumpHues(){
       // console.log(hues);
@@ -314,10 +328,10 @@ export default {
       this.activeHue = null;
 
       if (sel.length > 0){
-        this.activeScoping.component = this.components.find(c => c.id === sel[0]);
+        this.activeScoping.component = this.components.find(c => (c.id === sel[0]) && (c.id_sub_project === this.activeScoping.sub_projects.id));
         this.activeComponent = this.activeScoping.component;
       }
-      console.log('components:', this.activeScoping);
+      console.log('components:', this.activeComponent);
     },
     onSelectHues(sel){
       this.activeScoping.rona_awal = null;
@@ -330,12 +344,12 @@ export default {
       console.log('hues', this.activeScoping);
     },
     onSelectSubProjects(sel) {
-      console.log('selectSubProject', sel.length);
+      // console.log('selectSubProject', sel.length);
       this.deSelectAllComponents = true;
       this.initActiveScoping();
       if (sel.length > 0){
         var sp = this.subProjects.find(sub => sub.id === sel[0]);
-        console.log(sp);
+        console.log('selectedSubProject:', sp);
         if (sp.type === 'pendukung') {
           this.deSelectAllSPUtama = true;
           this.deSelectAllSPPendukung = false;
@@ -385,7 +399,16 @@ export default {
       console.log('hues ', obj);
     },
     addComponent(){
-
+      this.activeScoping.component = null;
+      this.cOptions = this.getComponentOptions();
+      console.log('componentOptions: ', this.cOptions);
+      this.showForm = true;
+    },
+    editComponent(val){
+      console.log('editComponent', val, 'activeComponent: ', this.activeComponent);
+      this.showForm = true;
+    },
+    deleteComponent(val){
     },
     addHue(id){
       this.activeScoping.id_component_type = id;
@@ -401,6 +424,26 @@ export default {
         this.mapping.push({
         });
       }
+    },
+    getIds(arr){
+      const ids = [];
+      arr.forEach((a) => {
+        if (!ids.includes(a.id)){
+          ids.push(a.id);
+        }
+      });
+      return ids;
+    },
+    getComponentOptions(){
+      const ids = this.getIds(this.components.filter(c => (c.id_project_stage === this.id_project_stage) &&
+        ((this.activeScoping.sub_projects !== null) ? (c.id_sub_project === this.activeScoping.sub_projects.id) : true)));
+      console.log('co ids:', ids);
+      return this.masterComponents.filter(c => (!ids.includes(c.id)) && (c.id_project_stage === this.id_project_stage));
+    },
+    getHueOptions(){
+      console.log(this.activeScoping.component);
+      const ids = this.getIds(this.hues.filter(h => (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component)));
+      return this.masterHues.filter(c => (!ids.includes(c.id)));
     },
     spToString(arr){
       const str = [];

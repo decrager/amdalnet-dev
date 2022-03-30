@@ -35,11 +35,14 @@ class SubProjectRonaAwalController extends Controller
             sub_project_rona_awals.description_specific as description,
             sub_project_rona_awals.unit as measurement,
             sub_project_rona_awals.id as id_sub_project_rona_awal,
-            sub_project_components.id as id_sub_project_component
+            sub_project_components.id as id_sub_project_component,
+            components.id_project_stage as id_project_stage,
+            sub_projects.id as id_sub_project
           from rona_awal
           join sub_project_rona_awals on sub_project_rona_awals.id_rona_awal = rona_awal.id
           join sub_project_components on sub_project_components.id = sub_project_rona_awals.id_sub_project_component
           join sub_projects on sub_projects.id = sub_project_components.id_sub_project
+          left join components on components.id = sub_project_components.id_component
           join projects on projects.id = sub_projects.id_project
           where projects.id = :val"), ['val' =>$request->id_project]);
 
@@ -206,7 +209,7 @@ class SubProjectRonaAwalController extends Controller
                     $ids = [];
                     foreach ($spcs as $s) {
                         $sub .= '<li><p><strong>'.$component->name.' pada '.$s['sub_project_name'].'</strong></p>'.
-                        '<p>'.$s['description'].'</p>'.
+                        $s['description'].
                         '<p><strong>Besaran</strong></p>'.
                         '<p>'.$s['measurement'].'</p></li>';
                         $ids[] = $s['id'];

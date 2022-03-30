@@ -10,7 +10,7 @@
       :close-on-click-modal="false"
       @open="onOpen"
     >
-      <el-form v-if="data !== null" style="padding: 0 2em;">
+      <el-form v-if="(data !== null) && (data.sub_projects != null) && (data.component !== null) " style="padding: 0 2em;">
         <div style="line-height: 140%;">
           <div><strong>Tahap</strong></div>
           <div>{{ data.project_stage.name }}</div>

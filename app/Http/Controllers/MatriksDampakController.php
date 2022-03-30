@@ -155,9 +155,9 @@ class MatriksDampakController extends Controller
                                             ->first();
                                     }
                                     if($dph !== null){
-                                        if ($dph->is_hypothetical_significant) {
+                                        if ($dph->is_hypothetical_significant === true) {
                                             $ctype[$k] = 'DPH';
-                                        } else if (!$dph->is_hypothetical_significant){
+                                        } else if ($dph->is_hypothetical_significant === false){
                                             $ctype[$k] = 'DTPH';
                                         }
                                     }

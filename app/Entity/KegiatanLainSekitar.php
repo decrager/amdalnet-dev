@@ -10,4 +10,5 @@ class KegiatanLainSekitar extends Model
     use SoftDeletes;
 
     // table kegiatan_lain_sekitars
+
 }

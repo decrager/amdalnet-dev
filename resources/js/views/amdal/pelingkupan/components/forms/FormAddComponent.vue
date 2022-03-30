@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="'Tambah Komponen Lingkungan'"
+    :title=" title[mode] + ' Komponen Lingkungan'"
     :visible.sync="show"
     width="50%"
     :before-close="handleClose"
@@ -132,6 +132,7 @@ export default {
         id_sub_project_component: null,
       },
       isSaving: false,
+      title: ['Tambah', 'Edit'],
     };
   },
   methods: {
@@ -139,7 +140,12 @@ export default {
       this.$emit('onClose', true);
     },
     onOpen(){
-      this.initComponent();
+      if (this.data.component === null){
+        this.mode = 0;
+        this.initComponent();
+      } else {
+        this.mode = 1;
+      }
     },
     initComponent(){
       this.component = {
