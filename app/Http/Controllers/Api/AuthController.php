@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -186,12 +187,16 @@ class AuthController extends BaseController
             ]
         );
         if ($validator->fails()) {
+            Log::error('Bad request.');
+            Log::error('Request data = ' . json_encode($request->all()));
             return response()->json([
                 'status' => 400,
                 'message' => 'Request parameter tidak valid.',
             ], 400);
         }
         $validated = $request->only('access-token', 'refresh_token', 'kd_izin', 'id_izin');
+        Log::debug('Validated data from OSS = ' . json_encode($validated));
+
         $resp = $this->getOssUserInfo($validated['access-token'])->json();
         // $user_info =  null;
         // if ($resp['status'] != 200) {
@@ -226,6 +231,7 @@ class AuthController extends BaseController
             'kd_izin' => $validated['kd_izin'],
         ]);
         if ($created) {
+            Log::debug('Token berhasil diterima.');
             DB::commit();
             return response()->json([
                 'status' => 200,
@@ -234,7 +240,7 @@ class AuthController extends BaseController
         } else {
             DB::rollBack();
         }
-        
+        Log::error('Gagal menyimpan token');
         return response()->json([
             'status' => 500,
             'message' => 'Gagal menyimpan token',

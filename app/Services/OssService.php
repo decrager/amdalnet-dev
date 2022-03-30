@@ -273,6 +273,8 @@ class OssService
         ])->post(env('OSS_ENDPOINT') . '/kl/rba/inqueryFileDS', $data);
         $respJson = $response->json();
         // print_r($respJson);
+        Log::debug(json_encode($data));
+        Log::debug(json_encode($respJson));
         return true;
     }
 }

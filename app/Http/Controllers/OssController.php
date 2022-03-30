@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 
@@ -294,7 +295,10 @@ class OssController extends Controller
                 $errorMessage = $e->getMessage();
             }
         }
+        Log::debug('Received data NIB ' . $data['nib'] . '. Updated at: ' . $data['tgl_perubahan_nib']);
+        Log::debug('oss_id = ' . $data['oss_id'] . ', id_izin = ' . $data['id_izin'] . ', kd_izin = ' . $data['kd_izin']);
         if ($saved) {
+            Log::debug('Data NIB berhasil disimpan.');
             return response()->json([
                 'responreceiveNIB' => [
                     'status' => true,
@@ -302,6 +306,8 @@ class OssController extends Controller
                 ]
             ], 200);
         }
+        
+        Log::error('Gagal menyimpan data NIB. Error msg: ' . $errorMessage);
         return response()->json([
             'responreceiveNIB' => [
                 'status' => false,
