@@ -22,7 +22,7 @@
         <el-form-item
           label="Komponen Kegiatan"
           prop="name"
-          style="padding: 0.5em 0.8em; border: 1px solid #e0e0e0; border-radius: 1em; margin-top: 1em;"
+          style="padding: 0.5em 0.8em; border: 1px solid #cccccc; border-radius: 0.5em; margin-top: 1em;"
         >
 
           <el-select

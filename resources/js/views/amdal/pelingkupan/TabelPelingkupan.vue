@@ -110,7 +110,7 @@
                       :show-delete="isFormulator"
                       :active-component="activeHue"
                       :de-select-all="activeHue === null"
-                      @edit="showAddHue = true"
+                      @edit="editHue"
                       @onSave="onSaveHue"
                       @onSelect="onSelectHues"
                     />
@@ -144,7 +144,8 @@
       v-if="(activeScoping.component !== null) && (activeScoping.id_component_type !== null)"
       :show="showAddHue"
       :data="activeScoping"
-      :master-component="masterComponents.find(c => c.id === activeScoping.component.id)"
+      :master-component="(activeScoping.component !== null) ? masterComponents.find(c => c.id === activeScoping.component.id) : null"
+      :master="(activeScoping.rona_awal !== null) ? masterHues.find(h => h.id === activeScoping.rona_awal.id) : null"
       :master-hues="(getHueOptions()).filter(c => c.id_component_type === activeScoping.id_component_type)"
       @onClose="showAddHue = false"
       @onSave="onSaveHue"
@@ -304,6 +305,7 @@ export default {
       this.activeScoping.rona_awal = null;
       this.activeComponent = null;
       this.activeHue = null;
+      this.deSelectAllComponents = false;
 
       if (sel.length > 0){
         this.activeScoping.component = this.components.find(c => (c.id === sel[0]) && (c.id_sub_project === this.activeScoping.sub_projects.id));
@@ -315,11 +317,10 @@ export default {
       this.activeScoping.rona_awal = null;
       this.activeHue = null;
       if (sel.length > 0){
-        const hue = this.hues.find(h => h.id === sel[0]);
+        const hue = this.hues.find(h => (h.id === sel[0]) && (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component));
         this.activeScoping.rona_awal = hue;
         this.activeHue = hue;
       }
-      console.log('hues', this.activeScoping);
     },
     onSelectSubProjects(sel) {
       // console.log('selectSubProject', sel.length);
@@ -380,7 +381,14 @@ export default {
     addHue(id){
       this.activeScoping.id_component_type = id;
       this.current_component_type = id;
-      // console.log(this.masterHues.filter(c => c.id_component_type === this.current_component_type));
+      this.activeScoping.rona_awal = null;
+      this.activeHue = null;
+      this.showAddHue = true;
+    },
+    editHue(val){
+      const hue = this.hues.find(h => (h.id === val) && (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component));
+      this.activeScoping.rona_awal = hue;
+      this.activeHue = hue;
       this.showAddHue = true;
     },
     handleTabClick(tab, event){
@@ -416,6 +424,7 @@ export default {
       if (val.length === 0){
         this.activeScoping.component = null;
         this.activeComponent = null;
+        this.deSelectAllComponents = true;
       }
     },
     spToString(arr){
