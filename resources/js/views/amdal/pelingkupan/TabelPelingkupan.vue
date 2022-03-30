@@ -135,6 +135,7 @@
     <form-add-component
       :show="showForm"
       :data="activeScoping"
+      :master="((activeScoping.component !== null) && (masterComponents.length > 0)) ? masterComponents.find(c => c.id === activeScoping.component.id ) : null"
       :master-components="getComponentOptions()"
       @onClose="showForm = false"
       @onSave="onSaveComponent"
@@ -367,26 +368,13 @@ export default {
       console.log('subproject', this.activeScoping);
     },
     onSaveComponent(obj){
-      /* const rec = {
-          id_sub_project_component : obj.id_project_component,
-          description: obj.description,
-          measurement: obj.measurement,
-          id_sub_project : obj.id_sub_project
-        };
-      const idx = this.components.findIndex(c => c.id === obj.id);
-      if(idx >= 0){
-        this.components[idx].records.push(rec);
-        this.activeComponent = this.components[idx];
+      const idx = this.components.findIndex(c => c.id_sub_project_component === obj.id_sub_project_component);
+      if (idx >= 0){
+        this.components[idx].description = obj.description;
+        this.components[idx].measurement = obj.measurement;
       } else {
-        this.components.push({
-          id: obj.id,
-          name: obj.name,
-          value: obj.name,
-          id_project_stage: obj.id_project_stage,
-          records: [rec]
-        });
-      }*/
-      this.components.push(obj);
+        this.components.push(obj);
+      }
       this.activeComponent = obj;
       this.activeScoping.component = obj;
       console.log(this.activeComponent);
@@ -400,12 +388,12 @@ export default {
     },
     addComponent(){
       this.activeScoping.component = null;
-      this.cOptions = this.getComponentOptions();
+      // this.cOptions = this.getComponentOptions();
       console.log('componentOptions: ', this.cOptions);
       this.showForm = true;
     },
     editComponent(val){
-      console.log('editComponent', val, 'activeComponent: ', this.activeComponent);
+      console.log('editComponent', val, 'activeComponent: ', this.activeScoping.component);
       this.showForm = true;
     },
     deleteComponent(val){
@@ -444,6 +432,12 @@ export default {
       console.log(this.activeScoping.component);
       const ids = this.getIds(this.hues.filter(h => (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component)));
       return this.masterHues.filter(c => (!ids.includes(c.id)));
+    },
+    deselectComponents(val){
+      if (val.length === 0){
+        this.activeScoping.component = null;
+        this.activeComponent = null;
+      }
     },
     spToString(arr){
       const str = [];
