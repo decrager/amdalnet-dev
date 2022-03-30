@@ -242,15 +242,22 @@ class SubProjectRonaAwalController extends Controller
                         'id_impact_identification' => $imp->id,
                         'id_pie_param' => 3,
                     ]);
-                    $pieC->text = null;
-                    $pieC->save();
+                    if (!$pieC->exists)
+                    {
+                        $pieC->text = null;
+                        $pieC->save();
+                    }
 
                     $pieD = PotentialImpactEvaluation::firstOrNew([
                         'id_impact_identification' => $imp->id,
                         'id_pie_param' => 4,
                     ]);
-                    $pieD->text = null;
-                    $pieD->save();
+
+                    if (!$pieD->exists)
+                    {
+                        $pieD->text = null;
+                        $pieD->save();
+                    }
 
                     $spra = SubProjectRonaAwal::from('sub_project_rona_awals')
                       ->select(
@@ -261,7 +268,8 @@ class SubProjectRonaAwalController extends Controller
                       )
                       ->join('sub_project_components', 'sub_project_components.id', '=', 'sub_project_rona_awals.id_sub_project_component')
                       ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
-                      ->whereIn('sub_project_rona_awals.id_sub_project_component', $ids)->get();
+                      ->whereIn('sub_project_rona_awals.id_sub_project_component', $ids)
+                      ->where('sub_project_rona_awals.id_rona_awal', $spr->id_rona_awal)->get();
 
                     $text = '<p><strong>Deskripsi '.$ra->name.' terkait '.$component->name.'</strong></p>';
                     $sub = '';
