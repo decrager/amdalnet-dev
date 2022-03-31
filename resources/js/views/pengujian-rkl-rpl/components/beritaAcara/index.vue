@@ -270,17 +270,28 @@ export default {
         if (val === 'Ketua TUK') {
           const ketua = this.members.find((x) => x.role === 'Ketua');
           if (ketua) {
-            this.reports.invitations[idx] = {
-              id: null,
-              role: 'Ketua TUK',
-              name: ketua.name,
-              email: ketua.email,
-              type: 'Ketua TUK',
-              type_member: 'Ketua TUK',
-              institution: ketua.institution,
-              tuk_options: [],
-              tuk_member_id: ketua.id,
-            };
+            const checkKetua = this.reports.invitations.find(
+              (x) => x.role === 'Ketua TUK' && x.tuk_member_id === ketua.id
+            );
+
+            if (checkKetua) {
+              this.$alert('Ketua TUK hanya bisa ditambahkan satu kali', {
+                confirmButtonText: 'OK',
+              });
+              this.reports.invitations[idx].role = null;
+            } else {
+              this.reports.invitations[idx] = {
+                id: null,
+                role: 'Ketua TUK',
+                name: ketua.name,
+                email: ketua.email,
+                type: 'Ketua TUK',
+                type_member: 'Ketua TUK',
+                institution: ketua.institution,
+                tuk_options: [],
+                tuk_member_id: ketua.id,
+              };
+            }
           }
         } else if (val === 'Anggota TUK' || val === 'Anggota Sekretariat TUK') {
           this.reports.invitations[idx].role = val;
@@ -332,22 +343,37 @@ export default {
       this.loadingTuk = false;
     },
     handleChangeName({ val, type, idx }) {
-      console.log('metia');
       let tuk = null;
 
-      if (type === 'Anggota TUK') {
-        tuk = this.reports.invitations[idx].tuk_options.find(
-          (x) => x.id === val && x.type === 'tuk'
-        );
-      } else {
-        tuk = this.reports.invitations[idx].tuk_options.find(
-          (x) => x.id === val && x.type === 'tuk_secretary'
-        );
-      }
+      const checkTuk = this.reports.invitations.filter(
+        (x) => x.role === type && x.tuk_member_id === val
+      );
 
-      if (tuk) {
-        this.reports.invitations[idx].institution = tuk.institution;
-        this.reports.invitations[idx].email = tuk.email;
+      if (checkTuk.length > 1) {
+        this.$alert(
+          'Anggota/Anggota Sekretariat TUK hanya bisa ditambahkan satu kali',
+          {
+            confirmButtonText: 'OK',
+          }
+        );
+        this.reports.invitations[idx].tuk_member_id = null;
+        this.reports.invitations[idx].institution = null;
+        this.reports.invitations[idx].email = null;
+      } else {
+        if (type === 'Anggota TUK') {
+          tuk = this.reports.invitations[idx].tuk_options.find(
+            (x) => x.id === val && x.type === 'tuk'
+          );
+        } else {
+          tuk = this.reports.invitations[idx].tuk_options.find(
+            (x) => x.id === val && x.type === 'tuk_secretary'
+          );
+        }
+
+        if (tuk) {
+          this.reports.invitations[idx].institution = tuk.institution;
+          this.reports.invitations[idx].email = tuk.email;
+        }
       }
     },
     deleteInvitation({ idx, id }) {

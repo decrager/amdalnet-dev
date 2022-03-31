@@ -517,6 +517,7 @@ class ExportDocument extends Controller
         $impact_identification = ImpactIdentification::where('id_project', $id_project)->get();
 
         $dl_pasca_operasi = [];
+        $com_pra_konstruksi = [];
         $com_konstruksi = [];
         $com_operasi = [];
         $pk = [];
@@ -569,6 +570,7 @@ class ExportDocument extends Controller
                 $component_type = $this->getComponentType($imp);
 
                 $komponen_desc = '';
+
                 if($imp->subProjectRonaAwal->description_common) {
                     $komponen_desc = $imp->subProjectRonaAwal->description_common . '</w:t><w:p/><w:t>' . $imp->subProjectRonaAwal->description_specific;
                 } else {
@@ -576,15 +578,23 @@ class ExportDocument extends Controller
                 }
 
                 if($s->name  == 'Pra Konstruksi') {
+                    if(array_search($component, array_column($com_pra_konstruksi, 'com_pra_konstruksi_name')) === false) {
+                        $com_pra_konstruksi[] = [
+                            'com_pra_konstruksi_name' => $component,
+                            'com_pra_konstruksi_desc' => $komponen_desc,
+                            'com_pra_konstruksi_unit' => $imp->subProjectRonaAwal->unit
+                        ];
+                    }
+
                     $pk[] = $this->getUklUplData($imp, 'pk', $component, $change_type, $ronaAwal);
                 }
-
 
                 if($s->name == 'Konstruksi') {
                     if(array_search($component, array_column($com_konstruksi, 'com_konstruksi_name')) === false) {
                         $com_konstruksi[] = [
                             'com_konstruksi_name' => $component,
-                            'com_konstruksi_desc' => $komponen_desc
+                            'com_konstruksi_desc' => $komponen_desc,
+                            'com_konstruksi_unit' => $imp->subProjectRonaAwal->unit
                         ];
                     }
 
@@ -608,7 +618,8 @@ class ExportDocument extends Controller
                     if(array_search($component, array_column($com_operasi, 'com_operasi_name')) === false) {
                         $com_operasi[] = [
                             'com_operasi_name' => $component,
-                            'com_operasi_desc' => $komponen_desc
+                            'com_operasi_desc' => $komponen_desc,
+                            'com_operasi_unit' => $imp->subProjectRonaAwal->unit
                         ];
                     }
 
@@ -629,7 +640,7 @@ class ExportDocument extends Controller
 
                 if($s->name == 'Pasca Operasi') {
                     $dl_pasca_operasi[] = [
-                        'dl_pasca_operasi_name' => "$change_type $ronaAwal akibat $component"
+                        'dl_pasca_operasi_name' => "$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->subProjectRonaAwal->unit
                     ];
 
                     $po[] = $this->getUklUplData($imp, 'po', $component, $change_type, $ronaAwal);
@@ -708,6 +719,7 @@ class ExportDocument extends Controller
         $templateProcessor->setValue('pertek_list', $pertek_list);
         $templateProcessor->cloneBlock('pertek_block', count($pertek_block), true, false, $pertek_block);
         $templateProcessor->cloneBlock('dl_pasca_operasi_block', count($dl_pasca_operasi), true, false, $dl_pasca_operasi);
+        $templateProcessor->cloneBlock('com_pra_konstruksi_block', count($com_pra_konstruksi), true, false, $com_pra_konstruksi);
         $templateProcessor->cloneBlock('com_konstruksi_block', count($com_konstruksi), true, false, $com_konstruksi);
         $templateProcessor->cloneBlock('com_operasi_block', count($com_operasi), true, false, $com_operasi);
         $templateProcessor->cloneRowAndSetValues('pk', $pk);
