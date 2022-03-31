@@ -48,7 +48,7 @@
             </el-card>
           </el-col>
           <el-col :span="4">
-            <el-card shadow="never">
+            <el-card v-loading="loadingComponents" shadow="never">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Komponen Kegiatan</span>
               </div>
@@ -81,7 +81,7 @@
             </el-card>
           </el-col>
           <el-col :span="16">
-            <table v-if="(componentTypes.length > 0)" id="scoupingTable">
+            <table v-if="(componentTypes.length > 0)" id="scoupingTable" v-loading="loadingHues">
               <thead style=" background: #216221 !important; ">
                 <tr><th colspan="6">Komponen Lingkungan</th></tr>
                 <tr>
@@ -135,7 +135,7 @@
     <form-add-component
       :show="showForm"
       :data="activeScoping"
-      :master="((activeScoping.component !== null) && (masterComponents.length > 0)) ? masterComponents.find(c => c.id === activeScoping.component.id ) : null"
+      :master="(activeScoping.component !== null) ? masterComponents.find(c => c.id === activeScoping.component.id ) : null"
       :master-components="getComponentOptions()"
       @onClose="showForm = false"
       @onSave="onSaveComponent"
@@ -220,6 +220,8 @@ export default {
       deSelectAllComponents: false,
       deSelectAllHues: false,
       current_component_type: null,
+      loadingComponents: false,
+      loadingHues: false,
     };
   },
   computed: {
@@ -284,15 +286,19 @@ export default {
         .finally(() => {});
     },
     async getSubProjectComponents(){
+      this.loadingComponents = true;
       this.components = [];
       await subProjectComponent.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
           this.components = res;
           this.initBEVComponent();
         })
-        .finally(() => {});
+        .finally(() => {
+          this.loadingComponents = false;
+        });
     },
     async getSubProjectsHues(){
+      this.loadingHues = true;
       this.hues = [];
       await subProjectHue.list({ id_project: this.id_project, scoping: true })
         .then((res) => {
@@ -300,7 +306,7 @@ export default {
           this.initBEVHue();
         })
         .finally(() => {
-
+          this.loadingHues = false;
         });
     },
     processComponents(){
@@ -363,15 +369,17 @@ export default {
       // console.log('subproject', this.activeScoping);
     },
     onSaveComponent(obj){
+      /* console.log('save como', obj);
       const idx = this.components.findIndex(c => c.id_sub_project_component === obj.id_sub_project_component);
       if (idx >= 0){
         this.components[idx].description = obj.description;
         this.components[idx].measurement = obj.measurement;
       } else {
         this.components.push(obj);
-      }
+      }*/
       this.activeComponent = obj;
       this.activeScoping.component = obj;
+      this.getSubProjectComponents();
       // console.log(this.activeComponent);
     },
     onSaveHue(obj){

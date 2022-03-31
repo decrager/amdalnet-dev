@@ -10,77 +10,79 @@
       :close-on-click-modal="false"
       @open="onOpen"
     >
-      <el-form v-if="(data !== null) && (data.sub_projects != null) && (data.component !== null) " style="padding: 0 2em;">
-        <div style="line-height: 140%;">
-          <div><strong>Tahap</strong></div>
-          <div>{{ data.project_stage.name }}</div>
-        </div>
-
-        <div style="line-height: 140%; margin-top: 1em; ">
-          <div><strong>Kegiatan Utama/Pendukung</strong></div>
-          <div>{{ data.sub_projects.name }}</div>
-        </div>
-
-        <div v-if="masterComponent" style="line-height: 140%; margin-top: 1.5em; padding: 1em; border:1px solid #cccccc; border-radius: 0.5em;">
-          <div><strong>Komponen Kegiatan</strong></div>
-          <div>{{ masterComponent.name }}</div>
-          <deskripsi :description="masterComponent.description" :measurement="masterComponent.measurement" />
-        </div>
-        <div style="line-height: 140%; margin-top: 1.5em; padding: 1em; border:1px solid #cccccc; border-radius: 0.5em;">
-          <div><strong><u>Komponen {{ masterComponent.name }}</u> pada <u>Kegiatan {{ data.sub_projects.name }}</u></strong></div>
-          <div style="margin-top:1em;">
-            <deskripsi :description="data.component.description" :measurement="data.component.measurement" />
+      <div v-loading="isSaving">
+        <el-form v-if="(data !== null) && (data.sub_projects != null) && (data.component !== null) " style="padding: 0 2em;">
+          <div style="line-height: 140%;">
+            <div><strong>Tahap</strong></div>
+            <div>{{ data.project_stage.name }}</div>
           </div>
-        </div>
 
-        <el-form-item label="Rona Lingkungan" style="line-height: 140%; margin-top:1.5em; padding:1em; border:1px solid #cccccc; border-radius: 0.5em;">
-          <el-select
-            v-if="master === null"
-            v-model="hue.id"
-            placeholder="Pilih Rona Lingkungan"
-            style="width:100%"
-            @change="onChangeHue"
-          >
-            <el-option
-              v-for="item in masterHues"
-              :key="'scoping_opt_hue_'+ item.id"
-              :label="item.name"
-              :value="item.id"
+          <div style="line-height: 140%; margin-top: 1em; ">
+            <div><strong>Kegiatan Utama/Pendukung</strong></div>
+            <div>{{ data.sub_projects.name }}</div>
+          </div>
+
+          <div v-if="masterComponent" style="line-height: 140%; margin-top: 1.5em; padding: 1em; border:1px solid #cccccc; border-radius: 0.5em;">
+            <div><strong>Komponen Kegiatan</strong></div>
+            <div>{{ masterComponent.name }}</div>
+            <deskripsi :description="masterComponent.description" :measurement="masterComponent.measurement" />
+          </div>
+          <div style="line-height: 140%; margin-top: 1.5em; padding: 1em; border:1px solid #cccccc; border-radius: 0.5em;">
+            <div><strong><u>Komponen {{ masterComponent.name }}</u> pada <u>Kegiatan {{ data.sub_projects.name }}</u></strong></div>
+            <div style="margin-top:1em;">
+              <deskripsi :description="data.component.description" :measurement="data.component.measurement" />
+            </div>
+          </div>
+
+          <el-form-item label="Rona Lingkungan" style="line-height: 140%; margin-top:1.5em; padding:1em; border:1px solid #cccccc; border-radius: 0.5em;">
+            <el-select
+              v-if="master === null"
+              v-model="hue.id"
+              placeholder="Pilih Rona Lingkungan"
+              style="width:100%"
+              @change="onChangeHue"
+            >
+              <el-option
+                v-for="item in masterHues"
+                :key="'scoping_opt_hue_'+ item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+            <div v-else style="font-size:110%: float:none; clear: both;">{{ master.name || '' }} &nbsp;<i v-if="master.is_master" class="el-icon-success" style="color:#2e6b2e;" /></div>
+            <div style="margin-top:1em;">
+              <deskripsi v-if="selected !== null" :description="selected.description" :measurement="selected.measurement" />
+            </div>
+          </el-form-item>
+          <div v-if="selected !== null" style="margin: 2em 0 1em; font-weight:bold;">
+            {{ 'Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
+          </div>
+          <el-form-item v-if="selected !== null" style="margin: 1em 0;">
+            <hueeditor
+              :key="'hue_scoping_editor_3'"
+              v-model="hue.description"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :height="100"
+              :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+              style="width:100%"
             />
-          </el-select>
-          <div v-else style="font-size:110%: float:none; clear: both;">{{ master.name || '' }} &nbsp;<i v-if="master.is_master" class="el-icon-success" style="color:#2e6b2e;" /></div>
-          <div style="margin-top:1em;">
-            <deskripsi v-if="selected !== null" :description="selected.description" :measurement="selected.measurement" />
-          </div>
-        </el-form-item>
-        <div v-if="selected !== null" style="margin: 2em 0 1em; font-weight:bold;">
-          {{ 'Deskripsi '+ hue.name +' terkait '+ masterComponent.name + ' pada Kegiatan '+ data.sub_projects.name }}
-        </div>
-        <el-form-item v-if="selected !== null" style="margin: 1em 0;">
-          <hueeditor
-            :key="'hue_scoping_editor_3'"
-            v-model="hue.description"
-            output-format="html"
-            :menubar="''"
-            :image="false"
-            :height="100"
-            :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-            style="width:100%"
-          />
-        </el-form-item>
-        <el-form-item v-if="selected !== null " label="Besaran">
+          </el-form-item>
+          <el-form-item v-if="selected !== null " label="Besaran">
 
-          <el-input
-            v-model="hue.measurement"
-            type="textarea"
-            :autosize="{ minRows: 3, maxRows: 5}"
-          />
+            <el-input
+              v-model="hue.measurement"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5}"
+            />
 
-        </el-form-item>
-      </el-form>
+          </el-form-item>
+        </el-form>
+      </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="danger" @click="handleClose">Batal</el-button>
-        <el-button type="primary" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
+        <el-button type="primary" :disabled="isSaving" @click="handleSaveForm">Simpan</el-button>
       </span>
     </el-dialog>
   </div>

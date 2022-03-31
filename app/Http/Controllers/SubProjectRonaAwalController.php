@@ -196,9 +196,10 @@ class SubProjectRonaAwalController extends Controller
                         ->join('sub_projects', function($join){
                             $join->on('sub_projects.id_project', '=', 'project_components.id_project')
                             ->on('sub_projects.id', '=', 'sub_project_components.id_sub_project');
-
                         })
+                        ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id')
                         ->where('project_components.id_project', $imp->id_project)
+                        ->where('sub_project_rona_awals.id_rona_awal', $spr->id_rona_awal)
                         ->where('sub_project_components.id_component', $pc->id_component)->get();
                     $text = '<p><strong>Deskripsi '.$component->name.'</strong></p>';
                     $text .= $pc->description;

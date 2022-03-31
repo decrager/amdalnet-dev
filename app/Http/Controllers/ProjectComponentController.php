@@ -7,6 +7,7 @@ use App\Entity\Component;
 use App\Http\Resources\ProjectComponentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Entity\ImpactIdentification;
 
 class ProjectComponentController extends Controller
 {
@@ -97,6 +98,10 @@ class ProjectComponentController extends Controller
             $pc->description = $params['component']['description'];
             $pc->measurement = $params['component']['measurement'];
             if ($pc->save()) {
+                // lookup impact!
+                $imps = ImpactIdentification::where('id_project_component', $pc->id)->all();
+
+
                 return response()->json([
                     'code' => 200,
                     'data' =>  $pc
