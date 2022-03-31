@@ -13,7 +13,7 @@ class WebgisController extends Controller
             ->select('project_map_attachments.id_project', 'projects.project_title')
             ->leftJoin('projects', 'projects.id', '=', 'project_map_attachments.id_project')
             ->groupBy('project_map_attachments.id_project', 'projects.project_title')
-            ->get();
+            ->paginate(25);
 
         return response()->json($getData);
     }
