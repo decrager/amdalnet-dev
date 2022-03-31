@@ -303,7 +303,7 @@ class FeasibilityTestController extends Controller
 
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
-        $save_file_name = 'uji-kelayakan-' . strtolower($project->project_title) . '.docx';
+        $save_file_name = 'uji-kelayakan-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
 
         $project_type = $project->project_type;
         $project_title_big = strtoupper($project->project_title);

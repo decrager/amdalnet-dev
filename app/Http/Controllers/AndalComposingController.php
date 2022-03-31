@@ -2065,9 +2065,9 @@ class AndalComposingController extends Controller
         
         $project = Project::findOrFail($id_project);
 
-        $save_file_name = 'ka-andal-' . strtolower($project->project_title) . '.docx';
+        $save_file_name = 'ka-andal-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         if($type != 'andal') {
-            $save_file_name = 'ka-' . $project->id . '-' . strtolower($project->project_title) . '.docx';
+            $save_file_name = 'ka-' . $project->id . '-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         }
 
         // === CHECK IF FORMULIR KA HAS SUBMITTED === //

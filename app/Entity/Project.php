@@ -173,7 +173,7 @@ class Project extends Model implements Auditable
             return false;
         }
 
-        $save_file_name = 'ukl-upl-' . strtolower($this->project_title) . '.docx';
+        $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $this->project_title)) . '.docx';
 
         if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
             return true;

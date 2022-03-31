@@ -364,7 +364,7 @@ class TrackingDocumentController extends Controller
             ]);
         }
         // Surat Keputusan (start: dokumenComplete=true, end: SKKL doc)
-        $save_file_name = $project->project_title .' - ' . $project->initiator->name . '.docx';
+        $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
         $skklFilepath = storage_path('app/public/skkl/' . $save_file_name);
         // $skkl = ProjectSkkl::select('*')
         //     ->where('id_project', $project->id)

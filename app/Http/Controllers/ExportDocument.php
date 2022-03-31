@@ -410,7 +410,7 @@ class ExportDocument extends Controller
         $templateProcessor->setValue('ketua_tuk', $ketua_tuk);
         $templateProcessor->setValue('institution', $institution);
 
-        $save_file_name = 'berita-acara-ka-' . $beritaAcara->project->project_title . '.docx';
+        $save_file_name = 'berita-acara-ka-' . str_replace('/', '-', $beritaAcara->project->project_title) . '.docx';
         if (!File::exists(storage_path('app/public/berita-acara/'))) {
             File::makeDirectory(storage_path('app/public/berita-acara/'));
             $templateProcessor->saveAs(storage_path('app/public/berita-acara/' . $save_file_name));
@@ -463,7 +463,7 @@ class ExportDocument extends Controller
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
 
-        $save_file_name = 'ukl-upl-' . strtolower($project->project_title) . '.docx';
+        $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
 
         if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
             return $save_file_name;
