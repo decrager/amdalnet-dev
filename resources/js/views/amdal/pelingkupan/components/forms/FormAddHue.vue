@@ -1,7 +1,7 @@
 <template>
   <div v-loading="isSaving">
     <el-dialog
-      :title="'Tambah Komponen Lingkungan'"
+      :title="title[mode] + ' Komponen Lingkungan'"
       :visible.sync="show"
       width="50%"
       height="450"
@@ -122,6 +122,7 @@ export default {
       hue: {
         id: null,
         name: '',
+        value: '',
         description: '',
         measurement: '',
         id_sub_project_component: null,

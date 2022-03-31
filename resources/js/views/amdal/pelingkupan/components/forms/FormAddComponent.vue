@@ -136,6 +136,7 @@ export default {
         id_component: null,
         id_sub_project: null,
         name: '',
+        value: '',
         description: '',
         measurement: '',
         id_sub_project_component: null,
@@ -143,6 +144,7 @@ export default {
       isSaving: false,
       title: ['Tambah', 'Edit'],
       selected: null,
+      mode: 0,
     };
   },
   methods: {

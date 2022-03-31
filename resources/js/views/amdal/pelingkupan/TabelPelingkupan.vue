@@ -411,7 +411,10 @@ export default {
       this.showAddHue = true;
     },
     editHue(val){
+      console.log(val);
       const hue = this.hues.find(h => (h.id === val) && (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component));
+      this.activeScoping.id_component_type = hue.id_component_type;
+      this.current_component_type = hue.id_component_type;
       this.activeScoping.rona_awal = hue;
       this.activeHue = hue;
       this.showAddHue = true;
