@@ -136,6 +136,7 @@ export default {
         id_component: null,
         id_sub_project: null,
         name: '',
+        value: '',
         description: '',
         measurement: '',
         id_sub_project_component: null,
@@ -143,26 +144,17 @@ export default {
       isSaving: false,
       title: ['Tambah', 'Edit'],
       selected: null,
+      mode: 0,
     };
   },
   methods: {
     handleClose(){
+      this.initData();
       this.$emit('onClose', true);
     },
     onOpen(){
-      if (this.master === null){ // not yet having component ref
-        this.mode = 0;
-        this.selected = null;
-        this.component = {
-          id: null,
-          id_component: null,
-          id_sub_project: null,
-          name: '',
-          description: '',
-          measurement: '',
-          id_sub_project_component: null,
-        };
-      } else {
+      this.initData();
+      if (this.master !== null){ // not yet having component ref
         this.mode = 1;
         this.selected = this.master;
         this.component = {
@@ -170,6 +162,7 @@ export default {
           id_component: this.master.id,
           id_sub_project: this.data.sub_projects.id,
           name: this.master.name,
+          value: this.master.name,
           description: this.data.component.description,
           measurement: this.data.component.measurement,
           id_sub_project_component: this.data.component.id_sub_project_component,
@@ -218,6 +211,18 @@ export default {
           this.isSaving = false;
           this.handleClose();
         });
+    },
+    initData(){
+      this.mode = 0;
+      this.selected = null;
+      this.component.id = null;
+      this.component.id_component = null;
+      this.component.name = '';
+      this.component.description = '';
+      this.component.measurement = '';
+      this.component.id_sub_project = null;
+      this.component.id_sub_project_component = null;
+      this.component.value = '';
     },
   },
 

@@ -1,5 +1,12 @@
 <template>
-  <div style="border:1px solid #e0e0e0; border-radius:0.5em; padding: 2.5em 1.5em;">
+  <div style="border:1px solid #e0e0e0; border-radius:0.5em; padding: 1em 1.5em 2.5em;">
+    <div style="text-align: right;">
+      <el-button
+        icon="el-icon-refresh"
+        @click="refresh()"
+      > Muat ulang
+      </el-button>
+    </div>
     <el-row :gutter="10">
       <el-col :span="8">
         <komponen-kegiatan
@@ -50,6 +57,11 @@ export default {
       default: function() {
         return [];
       },
+    },
+  },
+  methods: {
+    refresh(){
+      this.$emit('refreshData', true);
     },
   },
 };

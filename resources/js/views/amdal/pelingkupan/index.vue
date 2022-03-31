@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <div v-loading="loadingMasterComponents || loadingMasterHues || loadingProjectStages || loadingComponentTypes">
     <master-komponen
       :components="components"
       :hues="hues"
       :component-types="component_types"
       :project-stages="project_stages"
+      @refreshData="refreshData"
     />
     <tabel-pelingkupan
       :master-components="components"
@@ -60,6 +61,10 @@ export default {
           value: 'Lainnya',
         },
       ],
+      loadingMasterComponents: false,
+      loadingMasterHues: false,
+      loadingProjectStages: false,
+      loadingComponentTypes: false,
     };
   },
   mounted() {
@@ -73,27 +78,59 @@ export default {
 
     },
     async getComponentTypes(){
+      this.loadingComponentTypes = true;
       const ctResource = new Resource('component-types');
       await ctResource.list({}).then((res) => {
         this.component_types = res.data;
-      }).finally({});
+      }).catch((err) => {
+        this.$message({
+          message: 'Gagal memuat Master Data Kategori Komponen Lingkungan',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        console.log(err);
+      }).finally(() => {
+        this.loadingComponentTypes = false;
+      });
     },
     async getProjectStages(){
+      this.loadingProjectStages = true;
       const ctResource = new Resource('project-stages');
       await ctResource.list({}).then((res) => {
         this.project_stages = res.data;
-      }).finally({});
+      }).catch((err) => {
+        this.$message({
+          message: 'Gagal memuat Master Data Tahap Kegiatan',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        console.log(err);
+      }).finally(() => {
+        this.loadingProjectStages = false;
+      });
     },
     async getComponentMasterData(){
+      this.loadingMasterComponents = true;
       const idProject = parseInt(this.$route.params && this.$route.params.id);
       this.components = [];
       await projectComponentResource.list({
         id_project: idProject,
       }).then((res) => {
         this.components = res;
-      });
+      }).catch((err) => {
+        this.$message({
+          message: 'Gagal memuat Master Data Komponen Kegiatan',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        console.log(err);
+      })
+        .finally(() => {
+          this.loadingMasterComponents = false;
+        });
     },
     async getHueMasterData(){
+      this.loadingMasterHues = true;
       const idProject = parseInt(this.$route.params && this.$route.params.id);
       this.hues = [];
       await projectHueResource.list({
@@ -101,7 +138,20 @@ export default {
       }).then((res) => {
         this.hues = res;
         console.log('hues:', this.hues);
+      }).catch((err) => {
+        this.$message({
+          message: 'Gagal memuat Master Data Komponen Lingkungan',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        console.log(err);
+      }).finally(() => {
+        this.loadingMasterHues = false;
       });
+    },
+    refreshData(){
+      this.getComponentMasterData();
+      this.getHueMasterData();
     },
   },
 };
