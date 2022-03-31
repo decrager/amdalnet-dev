@@ -88,3 +88,11 @@
   .esri-feature-content table {
     margin-top: 10px !important;
   }
+
+  div.el-collapse {
+    border: none;
+  }
+
+  div.el-collapse-item__content {
+    padding: 25px !important
+  }

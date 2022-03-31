@@ -1568,7 +1568,6 @@ class ProxyLog
 
     public function write($m)
     {
-
         if (isset($this->proxyConfig['logfile'])) {
 
             try {

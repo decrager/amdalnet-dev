@@ -270,7 +270,8 @@ class ProjectMapAttachmentController extends Controller
             ->select('projects.id', 'projects.project_title')
             ->leftJoin('project_map_attachments', 'projects.id', 'project_map_attachments.id_project')
             ->whereNotNull('project_map_attachments.geom')
-            ->groupBy('projects.id', 'projects.project_title')
+            ->orderBy('projects.created_at', 'desc')
+            ->groupBy('projects.id', 'projects.project_title', 'projects.created_at')
             ->get();
 
         return response()->json($getProjectByGeom);

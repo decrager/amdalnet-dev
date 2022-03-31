@@ -60,7 +60,8 @@
                   <el-form-item v-if="!isUmk" label="" prop="fileMap">
                     <div slot="label">
                       <span>Upload SHP Peta Tapak Proyek (File .zip max 1 MB)</span>
-                      <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+                      <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" title="Download Sample SHP" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+                      <a href="/amdalnet-juknis-penyiapan-peta.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
                     </div>
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
                   </el-form-item>
@@ -1911,6 +1912,20 @@ export default {
 
 .download__sample:hover {
   background-color: #124e14;
+  color: white;
+}
+
+.download__juknis {
+  color: white;
+  padding: 5px;
+  background-color: #dd8705;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.download__juknis:hover {
+  background-color: #af6900;
   color: white;
 }
 

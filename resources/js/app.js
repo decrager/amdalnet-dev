@@ -9,15 +9,7 @@ import router from '@/router';
 import i18n from './lang'; // Internationalization
 import '@/icons'; // icon
 import '@/permission'; // permission control
-import {
-  applyPolyfills,
-  defineCustomElements,
-} from '@esri/calcite-components/dist/loader';
 import VueMask from 'v-mask';
-
-applyPolyfills().then(() => {
-  defineCustomElements(window);
-});
 
 // tell Vue.js to ignore Calcite Components
 // Vue.config.ignoredElements = [/calcite-\w*/];

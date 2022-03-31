@@ -3,6 +3,8 @@
     <el-form label-position="top" label-width="100px">
       <div style="margin-bottom: 10px;">
         <a href="/sample_map/Peta_Batas_Sample.zip" class="download__sample" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
+        <a href="/amdalnet-juknis-penyiapan-peta.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
+
       </div>
 
       <!-- ekologis -->
@@ -860,6 +862,20 @@ export default {
 
 .download__sample:hover {
   background-color: orangered;
+  color: white;
+}
+
+.download__juknis {
+  color: white;
+  padding: 7px;
+  background-color: #39773B;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.download__juknis:hover {
+  background-color: #124e14;
   color: white;
 }
 </style>
