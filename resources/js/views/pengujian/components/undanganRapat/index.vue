@@ -484,17 +484,28 @@ export default {
         if (val === 'Ketua TUK') {
           const ketua = this.members.find((x) => x.role === 'Ketua');
           if (ketua) {
-            this.meetings.invitations[idx] = {
-              id: null,
-              role: 'Ketua TUK',
-              name: ketua.name,
-              email: ketua.email,
-              type: 'Ketua TUK',
-              type_member: 'Ketua TUK',
-              institution: ketua.institution,
-              tuk_options: [],
-              tuk_member_id: ketua.id,
-            };
+            const checkKetua = this.meetings.invitations.find(
+              (x) => x.role === 'Ketua TUK' && x.tuk_member_id === ketua.id
+            );
+
+            if (checkKetua) {
+              this.$alert('Ketua TUK hanya bisa ditambahkan satu kali', {
+                confirmButtonText: 'OK',
+              });
+              this.meetings.invitations[idx].role = null;
+            } else {
+              this.meetings.invitations[idx] = {
+                id: null,
+                role: 'Ketua TUK',
+                name: ketua.name,
+                email: ketua.email,
+                type: 'Ketua TUK',
+                type_member: 'Ketua TUK',
+                institution: ketua.institution,
+                tuk_options: [],
+                tuk_member_id: ketua.id,
+              };
+            }
           }
         } else if (val === 'Anggota TUK' || val === 'Anggota Sekretariat TUK') {
           this.meetings.invitations[idx].role = val;
@@ -518,20 +529,35 @@ export default {
     },
     handleChangeName(val, type, idx) {
       let tuk = null;
+      const checkTuk = this.meetings.invitations.filter(
+        (x) => x.role === type && x.tuk_member_id === val
+      );
 
-      if (type === 'Anggota TUK') {
-        tuk = this.meetings.invitations[idx].tuk_options.find(
-          (x) => x.id === val && x.type === 'tuk'
+      if (checkTuk.length > 1) {
+        this.$alert(
+          'Anggota/Anggota Sekretariat TUK hanya bisa ditambahkan satu kali',
+          {
+            confirmButtonText: 'OK',
+          }
         );
+        this.meetings.invitations[idx].tuk_member_id = null;
+        this.meetings.invitations[idx].institution = null;
+        this.meetings.invitations[idx].email = null;
       } else {
-        tuk = this.meetings.invitations[idx].tuk_options.find(
-          (x) => x.id === val && x.type === 'tuk_secretary'
-        );
-      }
+        if (type === 'Anggota TUK') {
+          tuk = this.meetings.invitations[idx].tuk_options.find(
+            (x) => x.id === val && x.type === 'tuk'
+          );
+        } else {
+          tuk = this.meetings.invitations[idx].tuk_options.find(
+            (x) => x.id === val && x.type === 'tuk_secretary'
+          );
+        }
 
-      if (tuk) {
-        this.meetings.invitations[idx].institution = tuk.institution;
-        this.meetings.invitations[idx].email = tuk.email;
+        if (tuk) {
+          this.meetings.invitations[idx].institution = tuk.institution;
+          this.meetings.invitations[idx].email = tuk.email;
+        }
       }
     },
     capitalize(mySentence) {
