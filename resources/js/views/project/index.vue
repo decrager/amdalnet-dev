@@ -254,7 +254,7 @@
                   Berita Acara
                 </el-button>
                 <el-button
-                  v-if="(isValAdmOrAddByAdmin(scope.row) && isMeetReportAccepted(scope.row)) || (isFormulator && scope.row.feasibility_test)"
+                  v-if="isValAdmOrAddByAdmin(scope.row) && isMeetReportAccepted(scope.row)"
                   href="#"
                   type="text"
                   icon="el-icon-document"
