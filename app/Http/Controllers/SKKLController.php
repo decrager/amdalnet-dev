@@ -299,7 +299,7 @@ class SKKLController extends Controller
             $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
             $templateProcessor->setValue('location', $location);
 
-            $save_file_name = $project->project_title .' - ' . $project->initiator->name . '.docx';
+            $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
             if (!File::exists(storage_path('app/public/skkl/'))) {
                 File::makeDirectory(storage_path('app/public/skkl/'));
             }
@@ -368,7 +368,7 @@ class SKKLController extends Controller
         $templateProcessor->setValue('pemrakarsa_address', $project->initiator->address);
         $templateProcessor->setValue('project_address', $location);
 
-        $save_file_name = $project->project_title .' - ' . $project->initiator->name . '.docx';
+        $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
         if (!File::exists(storage_path('app/public/pkplh/'))) {
             File::makeDirectory(storage_path('app/public/pkplh/'));
         }
