@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Authority;
+use App\Entity\Business;
 use Illuminate\Http\Request;
 
 class AuthorityController extends Controller
@@ -17,6 +18,17 @@ class AuthorityController extends Controller
         // return $request->sectors;
         if($request->sectors){
             return Authority::where('sector', $request->sectors)->get();
+        } else if($request->listSubProject){
+            foreach ($request->listSubProject as $key => $value) {
+                $project = json_decode($value);
+                $sectorStr = strtolower(Business::find($project->sector)->value);
+                $bizStr = strtolower(Business::find($project->biz_type)->value);
+
+                if($sectorStr === 'pupr' && (str_contains($bizStr, 'irigasi') || str_contains($bizStr, 'gedung') || str_contains($bizStr, 'drainase'))){
+                    return '1';
+                }
+            }
+            return '0';
         }
         return Authority::distinct()->get(['sector']);
     }

@@ -587,6 +587,7 @@ import 'vue-simple-accordion/dist/vue-simple-accordion.css';
 const SupportDocResource = new Resource('support-docs');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
+const authorityResource = new Resource('authorities');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Map from '@arcgis/core/Map';
@@ -669,7 +670,7 @@ export default {
       loading: false,
       isUmk: false,
       isPemerintah: false,
-      kewenanganPWA: 'N',
+      kewenanganPMA: null,
       kewenanganOSS: '-',
       jenisKawasanOSS: '-',
       fromOss: false,
@@ -956,7 +957,8 @@ export default {
     this.isUmk = this.$store.getters.ossByNib.flag_umk ? this.$store.getters.ossByNib.flag_umk !== 'N' : false;
 
     // set flag from oss
-    this.fromOss = !!this.$store.getters.ossByNib.data_proyek;
+    this.fromOss = !this.$store.getters.isPemerintah;
+    // this.fromOss = !!this.$store.getters.ossByNib.data_proyek;
 
     generateArcgisToken(this.token);
 
@@ -993,6 +995,48 @@ export default {
     this.loading = false;
   },
   methods: {
+    getKewenangan(val){
+      if (val === '00'){
+        return 'pusat';
+      } else if (val === '01'){
+        return 'provinsi';
+      } else {
+        return 'kabupaten';
+      }
+    },
+    async calculateKewenanganAnomali(){
+      let kewenanganTemp = this.getKewenangan(this.kewenanganOSS);
+
+      // if kwenangan not pusat use authority from address project
+      if (kewenanganTemp !== 'pusat'){
+        kewenanganTemp = this.currentProject.authority;
+      }
+
+      // if kewenangan KEK
+      if (this.jenisKawasanOSS === '02'){
+        kewenanganTemp = 'pusat';
+      }
+
+      if (this.kewenanganPMA && this.kewenanganPMA === '01'){
+        kewenanganTemp = 'pusat';
+      }
+
+      const anomaliPBG = await authorityResource.list({ listSubProject: this.currentProject.listSubProject });
+
+      // console.log(typeof anomaliPBG);
+
+      // if theres is anomali pbg skip kewenagan
+      if (anomaliPBG === 1){
+        kewenanganTemp = this.getKewenangan(this.kewenanganOSS);
+        // console.log(kewenanganTemp);
+      }
+
+      if (this.jenisKawasanOSS === '03'){
+        kewenanganTemp = 'pusat';
+      }
+
+      this.currentProject.authority = kewenanganTemp;
+    },
     handlechecked(val){
       console.log(val);
       this.currentProject.address.map(e => {
@@ -1105,6 +1149,7 @@ export default {
       if (this.currentProject.isPemerintah){
         this.activeName = '7';
       } else {
+        await this.calculateKewenanganAnomali();
         this.activeName = '3';
       }
       // this.$refs.pendekatanStudi.validate(async(valid) => {
@@ -1623,7 +1668,7 @@ export default {
       }
 
       // this.fromOss = true;
-      this.kewenanganPWA = this.$store.getters.ossByNib.status_penanaman_modal;
+      this.kewenanganPMA = this.$store.getters.ossByNib.status_penanaman_modal;
       this.kewenanganOSS = this.$store.getters.ossByNib.kewenangan;
       this.jenisKawasanOSS = this.$store.getters.ossByNib.jenis_kawasan;
 
