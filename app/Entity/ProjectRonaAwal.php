@@ -18,7 +18,8 @@ class ProjectRonaAwal extends Model
         'measurement',
     ];
 
-    public function rona_awal(){
-        return $this->hasOne(RonaAwal::class, 'id', 'id_rona_awal');
+    public function rona_awal()
+    {
+        return $this->belongsTo(RonaAwal ::class, 'id_rona_awal', 'id');
     }
 }
