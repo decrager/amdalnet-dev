@@ -1,8 +1,8 @@
 <template>
   <div class="dashboard-container">
     <!-- <component :is="currentRole" /> -->
-    <admin-dashboard v-if="isAdmin || isExaminerSecretary" />
-    <user-dashboard v-else-if="isFormulator || isInitiator || isExaminer" />
+    <admin-dashboard v-if="isAdmin || isExaminerSecretary || isExaminer" />
+    <user-dashboard v-else-if="isFormulator || isInitiator" />
     <!--
     <examiner-dashboard v-if="isExaminer" />
       -->

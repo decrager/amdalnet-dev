@@ -59,18 +59,29 @@ export default {
   methods: {
     getStats() {
       this.loading = true;
-      const dataType = this.isExaminerSecretary ? 'tuk' : '';
       let search = '';
       if (this.period) {
-        search += `&period=${this.period}`;
+        if (search !== '') {
+          search += '&';
+        }
+
+        search += `period=${this.period}`;
       }
       if (this.date_start) {
-        search += `&start=${this.date_start}`;
+        if (search !== '') {
+          search += '&';
+        }
+
+        search += `start=${this.date_start}`;
       }
       if (this.date_end) {
-        search += `&end=${this.date_end}`;
+        if (search !== '') {
+          search += '&';
+        }
+
+        search += `end=${this.date_end}`;
       }
-      axios.get(`/api/dashboard/status?type=${dataType}&id_user=${this.$store.getters.userId}${search}`)
+      axios.get(`/api/dashboard/status?${search}`)
         .then(data => {
           this.stats = data.data;
           this.loading = false;
