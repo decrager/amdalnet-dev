@@ -142,21 +142,6 @@ class ProjectController extends Controller
             })->orWhereHas('tukSecretaryMember', function ($query) {
                 $query->where('email', Auth::user()->email);
             });
-        }, 'testingMeeting' => function ($q) {
-            $q->select('id', 'document_type', 'id_project', 'is_invitation_sent');
-            $q->whereHas('invitations', function ($que) {
-                $que->where(function ($queryy) {
-                    $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
-                        $quer->whereHas('lukMember', function ($qu) {
-                            $qu->where('email', Auth::user()->email);
-                        })->orWhereHas('expertBank', function ($qu) {
-                            $qu->where('email', Auth::user()->email);
-                        });
-                    })->orWhereHas('tukSecretaryMember', function ($quer) {
-                        $quer->where('email', Auth::user()->email);
-                    });
-                })->orWhere('email', Auth::user()->email);
-            });
         }, 'feasibilityTestRecap' => function ($q) {
             $q->select('id', 'id_project', 'is_feasib', 'updated_at');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
