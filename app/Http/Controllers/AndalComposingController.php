@@ -2155,7 +2155,7 @@ class AndalComposingController extends Controller
                 $ronaAwal = '';
                 $component = '';
 
-                $data = $this->getComponentRonaAwal($pA, $s->id);
+                $data = $this->getComponentRonaAwal($pA, $s->id, $type);
 
                 if ($data['component'] && $data['ronaAwal']) {
                     $ronaAwal = $data['ronaAwal'];
@@ -2396,26 +2396,37 @@ class AndalComposingController extends Controller
         ];
     }
 
-    private function getComponentRonaAwal($imp, $id_project_stage)
+    private function getComponentRonaAwal($imp, $id_project_stage, $type)
     {
         $component = null;
         $ronaAwal = null;
 
-        if ($imp->projectComponent) {
-            if ($imp->projectComponent->component->id_project_stage == $id_project_stage) {
-                if ($imp->projectRonaAwal) {
-                    $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
-                    $component = $imp->projectComponent->component->name;
+        if($type == 'andal') {
+            if ($imp->projectComponent) {
+                if ($imp->projectComponent->component->id_project_stage == $id_project_stage) {
+                    if ($imp->projectRonaAwal) {
+                        $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                        $component = $imp->projectComponent->component->name;
+                    }
+                }
+                // } else if ($imp->subProjectComponent->id_project_stage != null) {
+                //     if (($imp->subProjectComponent->component) && $imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
+                //         if ($imp->subProjectRonaAwal) {
+                //             $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                //             $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                //         }
+                //     }
+                // }
+            }
+        } else {
+            if ($imp->component) {
+                if ($imp->component->component->id_project_stage == $id_project_stage) {
+                    if ($imp->ronaAwal) {
+                        $ronaAwal = $imp->ronaAwal->rona_awal->name;
+                        $component = $imp->component->component->name;
+                    }
                 }
             }
-            // } else if ($imp->subProjectComponent->id_project_stage != null) {
-            //     if (($imp->subProjectComponent->component) && $imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
-            //         if ($imp->subProjectRonaAwal) {
-            //             $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-            //             $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-            //         }
-            //     }
-            // }
         }
 
         return [
@@ -2459,7 +2470,7 @@ class AndalComposingController extends Controller
                 $ronaAwal = '';
                 $component = '';
 
-                $data = $this->getComponentRonaAwal($pA, $s->id);
+                $data = $this->getComponentRonaAwal($pA, $s->id, $type);
 
                 if ($data['component'] && $data['ronaAwal']) {
                     $ronaAwal = $data['ronaAwal'];
