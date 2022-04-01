@@ -430,6 +430,13 @@
             <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district+'/ '+scope.row.address[0].prov : '' }}</span>
           </template>
         </el-table-column>
+        <el-table-column v-if="isExaminer || isAdmin || isSubtance" label="Penugasan" width="200px" align="center">
+          <template slot-scope="scope">
+            <div class="badge-penugasan">
+              {{ tukRole(scope.row) }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="Tahap" class-name="status-col">
           <template slot-scope="scope">
             {{ scope.row.marking | projectStep }}
@@ -761,6 +768,27 @@ export default {
       }
 
       return false;
+    },
+    tukRole(project) {
+      let roleByAdmin = null;
+
+      if (project.tuk_project) {
+        if (project.tuk_project.length > 0) {
+          if (project.tuk_project[0].role === 'pjm') {
+            roleByAdmin = 'PJM';
+          } else if (project.tuk_project[0].role === 'valsub') {
+            roleByAdmin = 'Substansi';
+          } else if (project.tuk_project[0].role === 'valadm') {
+            roleByAdmin = 'Administrasi';
+          }
+        }
+      }
+
+      if (roleByAdmin !== null) {
+        return roleByAdmin;
+      } else {
+        return 'Pengujian';
+      }
     },
     isFeasib(project) {
       if (project.feasibility_test_recap) {
@@ -1334,6 +1362,14 @@ export default {
       color: #999;
     }
   }
+}
+.badge-penugasan {
+    background-color: rgb(33, 98, 33);
+    color: white;
+    border-radius: 23%;
+    width: 56%;
+    text-align: center;
+    margin: auto;
 }
 </style>
 
