@@ -2342,7 +2342,7 @@ class AndalComposingController extends Controller
 
         return [
             'file_name' => $save_file_name,
-            'project_title' => strtolower($project->project_title)
+            'project_title' => strtolower(str_replace('/', '-', $project->project_title))
         ];
     }
 

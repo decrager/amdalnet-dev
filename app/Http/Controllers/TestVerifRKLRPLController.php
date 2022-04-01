@@ -645,8 +645,8 @@ class TestVerifRKLRPLController extends Controller
         Html::addHtml($cell, $verification->notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/adm-no/hasil-adm-' . strtolower($project->project_title) . '.docx'));
+        $templateProcessor->saveAs(storage_path('app/public/adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
-        return strtolower($project->project_title);
+        return strtolower(str_replace('/', '-', $project->project_title));
     }
 }

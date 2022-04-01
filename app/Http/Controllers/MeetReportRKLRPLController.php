@@ -705,11 +705,11 @@ class MeetReportRKLRPLController extends Controller
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(storage_path('app/public/ba-ukl-upl/ba-ukl-upl-' . strtolower($project->project_title) . '.docx'));
+            $templateProcessor->saveAs(storage_path('app/public/ba-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         } else {
-            $templateProcessor->saveAs(storage_path('app/public/ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower($project->project_title) . '.docx'));
+            $templateProcessor->saveAs(storage_path('app/public/ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         }
 
-        return strtolower($project->project_title);
+        return strtolower(str_replace('/', '-', $project->project_title));
     }
 }

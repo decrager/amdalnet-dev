@@ -724,9 +724,9 @@ class TestingMeetingController extends Controller
         Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-' . strtolower($project->project_title) . '.docx'));
+        $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
-        return strtolower($project->project_title);
+        return strtolower(str_replace('/', '-', $project->project_title));
     }
 
     private function meetingInvitation($id_project)
@@ -889,9 +889,9 @@ class TestingMeetingController extends Controller
         $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
         $templateProcessor->cloneBlock('instansi', count($instansi), true, false, $instansi);
 
-        $templateProcessor->saveAs(storage_path('app/public/meet-inv/ka-' . strtolower($project->project_title) . '.docx'));
+        $templateProcessor->saveAs(storage_path('app/public/meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
-        return strtolower($project->project_title);
+        return strtolower(str_replace('/', '-', $project->project_title));
     }
 
     private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)

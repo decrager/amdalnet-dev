@@ -379,7 +379,7 @@ class ExportDocument extends Controller
             }
         }
 
-        $save_file_name = $getData->project_title . ".docx";
+        $save_file_name = str_replace('/', '-', $getData->project_title) . ".docx";
         $templateProcessor->saveAs($save_file_name);
         return response()->download($save_file_name)->deleteFileAfterSend(false);
     }
@@ -750,14 +750,14 @@ class ExportDocument extends Controller
         $project = Project::findOrFail($idProject);
 
         //Load word file
-        $Content = IOFactory::load(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.docx'));
+        $Content = IOFactory::load(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
         //Save it into PDF
         $PDFWriter = IOFactory::createWriter($Content, 'PDF');
 
-        $PDFWriter->save(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf'));
+        $PDFWriter->save(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'));
 
-        return response()->download(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf'))->deleteFileAfterSend(false);
+        return response()->download(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'))->deleteFileAfterSend(false);
     }
 
     private function getComponentType($imp) {

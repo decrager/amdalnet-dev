@@ -628,8 +628,8 @@ class MeetingReportController extends Controller
         Html::addHtml($cell, $meeting->notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/ba-ka/ba-ka-' . strtolower($project->project_title) . '.docx'));
+        $templateProcessor->saveAs(storage_path('app/public/ba-ka/ba-ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
-        return strtolower($project->project_title);
+        return strtolower(str_replace('/', '-', $project->project_title));
     }
 }
