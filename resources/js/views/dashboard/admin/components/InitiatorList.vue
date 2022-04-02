@@ -56,8 +56,7 @@ export default {
   },
   methods: {
     async getInitiators() {
-      this.loadingInitiators = true;
-      const dataType = this.isExaminerSecretary ? 'tuk' : '';
+      this.loading = true;
       let search = '';
       if (this.period) {
         search += `&period=${this.period}`;
@@ -70,7 +69,7 @@ export default {
       }
       axios
         .get(
-          `/api/dashboard/initiator?type=${dataType}&id_user=${this.$store.getters.userId}&page=${this.listQuery.page}&limit=${this.listQuery.limit}${search}`
+          `/api/dashboard/initiator?page=${this.listQuery.page}&limit=${this.listQuery.limit}${search}`
         )
         .then((data) => {
           this.initiators = data.data.data;

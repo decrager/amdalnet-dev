@@ -7,6 +7,7 @@ use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Project;
 use App\Entity\TukProject;
 use App\Entity\TukSecretaryMember;
+use App\Laravue\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,13 +51,13 @@ class TukProjectController extends Controller
             })->first();
 
             if($team) {
-                $secretary_members = TukSecretaryMember::select('id', 'id_feasibility_test_team', 'name', 'institution', 'nik')
+                $secretary_members = TukSecretaryMember::select('id', 'id_feasibility_test_team', 'name', 'institution', 'nik', 'email')
                                         ->where('id_feasibility_test_team', $team->id)
                                         ->get();
                 $tuk_members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $team->id)->with(['lukMember' => function($q) {
-                    $q->select('id', 'name', 'institution', 'nik');
+                    $q->select('id', 'name', 'institution', 'nik', 'email');
                 }, 'expertBank' => function($q) {
-                    $q->select('id', 'name', 'institution');
+                    $q->select('id', 'name', 'institution', 'email');
                 }])->get();
             }
             
@@ -126,6 +127,12 @@ class TukProjectController extends Controller
                     } else if($explode[1] == 'secretary') {
                         $member->id_tuk_secretary_member = $explode[0];
                     }
+
+                     // === ADD ID USER === //
+                     $user = User::where('email', $members[$i]['email'])->first();
+                     if($user) {
+                         $member->id_user = $user->id;
+                     }
                 }
 
                 $member->role = $members[$i]['role'];
