@@ -116,6 +116,7 @@ export default {
             name: x.luk_member.name,
             nik: x.luk_member.nik,
             institution: x.luk_member.institution,
+            email: x.luk_member.email,
           };
         } else {
           return {
@@ -125,6 +126,7 @@ export default {
             name: x.expert_bank.name,
             nik: x.expert_bank.nik,
             institution: x.expert_bank.institution,
+            email: x.expert_bank.email,
           };
         }
       });
@@ -196,6 +198,7 @@ export default {
         institution: null,
         role: null,
         type: null,
+        email: null,
         error: {},
       });
     },
@@ -215,6 +218,7 @@ export default {
         this.members[idx].idType = null;
         this.members[idx].type = null;
         this.members[idx].nik = null;
+        this.members[idx].email = null;
         this.members[idx].institution = null;
         this.members[idx].position = null;
         this.members[idx].role = null;
@@ -226,6 +230,7 @@ export default {
         });
 
         this.members[idx].nik = master.nik;
+        this.members[idx].email = master.email;
         this.members[idx].institution = master.institution;
         this.members[idx].position =
           typeMember === 'tuk'

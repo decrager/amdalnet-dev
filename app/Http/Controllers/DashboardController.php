@@ -68,219 +68,65 @@ class DashboardController extends Controller
 
     public function status(Request $request)
     {
-        $total = 0;
-        $accepted = 0;
-        $on_progress = 0;
         $rejected = 0;
 
         $type = Auth::user()->roles->first()->name == 'admin' ? '' : 'tuk';
         $role = Auth::user()->roles->first()->name;
 
-        $total = Project::where(function($q) use($request) {
-                    if($request->period && $request->start && $request->end) {
-                        $start = $request->start;
-                        $end = $request->end;
+        $project = Project::select('id', 'authority', 'auth_province', 'auth_district', 'created_at', 'updated_at')->where(function($q) use($request) {
+            if($request->period && $request->start && $request->end) {
+                $start = $request->start;
+                $end = $request->end;
 
-                        if($request->period == 2) {
-                            $start = $start . '-01';
-                            $end = Carbon::createFromFormat('Y-m', $end)->endOfMonth()->format('Y-m-d');
-                        } else if($request->period == 3) {
-                            $start = $start . '-01-01';
-                            $end = $end . '-12-31';
-                        }
+                if($request->period == 2) {
+                    $start = $start . '-01';
+                    $end = Carbon::createFromFormat('Y-m', $end)->endOfMonth()->format('Y-m-d');
+                } else if($request->period == 3) {
+                    $start = $start . '-01-01';
+                    $end = $end . '-12-31';
+                }
 
-                        $q->whereBetween('created_at', [date($start), date($end)]);
+                $q->whereBetween('created_at', [date($start), date($end)]);
 
-                    } else {
-                        $q->whereYear('created_at', date('Y'));
-                        $q->whereMonth('created_at', date('m'));
-                    }
-                })
-                ->where(function($q) use($type, $role) {
-                    if($type == 'tuk') {
-                        if($role == 'examiner-secretary') {
-                            $team = $this->checkTuk();
-                            if($team) {
-                                if($team->authority == 'Provinsi') {
-                                    $districts = $this->getDistricts($team->id_province_name);
-                                    $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
-                                    ->orWhere(function($que) use($districts) {
-                                            $que->where('authority', 'district');
-                                            $que->whereIn('auth_district', $districts);
-                                        });
-                                } else if($team->authority == 'Kabupaten') {
-                                    $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
-                                }
-                            }
-                        } else {
-                            $q->whereHas('tukProject', function ($query) {
-                                $query->whereHas('feasibilityTestTeamMember', function ($que) {
-                                    $que->whereHas('lukMember', function ($quer) {
-                                        $quer->where('email', Auth::user()->email);
-                                    })->orWhereHas('expertBank', function ($quer) {
-                                        $quer->where('email', Auth::user()->email);
-                                    });
-                                })->orWhereHas('tukSecretaryMember', function ($que) {
-                                    $que->where('email', Auth::user()->email);
+            } else {
+                $q->whereYear('created_at', date('Y'));
+                $q->whereMonth('created_at', date('m'));
+            }
+        })
+        ->where(function($q) use($type, $role) {
+            if($type == 'tuk') {
+                if($role == 'examiner-secretary') {
+                    $team = $this->checkTuk();
+                    if($team) {
+                        if($team->authority == 'Provinsi') {
+                            $districts = $this->getDistricts($team->id_province_name);
+                            $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
+                            ->orWhere(function($que) use($districts) {
+                                    $que->where('authority', 'district');
+                                    $que->whereIn('auth_district', $districts);
                                 });
-                            })->orWhereHas('testingMeeting', function ($query) {
-                                $query->whereHas('invitations', function ($que) {
-                                    $que->where(function ($queryy) {
-                                        $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
-                                            $quer->whereHas('lukMember', function ($qu) {
-                                                $qu->where('email', Auth::user()->email);
-                                            })->orWhereHas('expertBank', function ($qu) {
-                                                $qu->where('email', Auth::user()->email);
-                                            });
-                                        })->orWhereHas('tukSecretaryMember', function ($quer) {
-                                            $quer->where('email', Auth::user()->email);
-                                        });
-                                    })->orWhere('email', Auth::user()->email);
-                                });
-                            });
+                        } else if($team->authority == 'Kabupaten') {
+                            $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
                         }
                     }
-                })
-                ->count();
-
-        $accepted = Project::where(function($q) use($request) {
-                        if($request->period && $request->start && $request->end) {
-                            $start = $request->start;
-                            $end = $request->end;
-
-                            if($request->period == 2) {
-                                $start = $start . '-01';
-                                $end = Carbon::createFromFormat('Y-m', $end)->endOfMonth()->format('Y-m-d');
-                            } else if($request->period == 3) {
-                                $start = $start . '-01-01';
-                                $end = $end . '-12-31';
-                            }
-
-                            $q->whereBetween('created_at', [date($start), date($end)]);
-                        } else {
-                            $q->whereYear('created_at', date('Y'));
-                            $q->whereMonth('created_at', date('m'));
-                        }
-                    })
-                    ->where(function($q) use($type, $role) {
-                        if($type == 'tuk') {
-                            if($role == 'examiner-secretary') {
-                                $team = $this->checkTuk();
-                                if($team) {
-                                    if($team->authority == 'Provinsi') {
-                                        $districts = $this->getDistricts($team->id_province_name);
-                                        $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
-                                        ->orWhere(function($que) use($districts) {
-                                                $que->where('authority', 'district');
-                                                $que->whereIn('auth_district', $districts);
-                                            });
-                                    } else if($team->authority == 'Kabupaten') {
-                                        $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
-                                    }
-                                }
-                            } else {
-                                $q->whereHas('tukProject', function ($query) {
-                                    $query->whereHas('feasibilityTestTeamMember', function ($que) {
-                                        $que->whereHas('lukMember', function ($quer) {
-                                            $quer->where('email', Auth::user()->email);
-                                        })->orWhereHas('expertBank', function ($quer) {
-                                            $quer->where('email', Auth::user()->email);
-                                        });
-                                    })->orWhereHas('tukSecretaryMember', function ($que) {
-                                        $que->where('email', Auth::user()->email);
-                                    });
-                                })->orWhereHas('testingMeeting', function ($query) {
-                                    $query->whereHas('invitations', function ($que) {
-                                        $que->where(function ($queryy) {
-                                            $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
-                                                $quer->whereHas('lukMember', function ($qu) {
-                                                    $qu->where('email', Auth::user()->email);
-                                                })->orWhereHas('expertBank', function ($qu) {
-                                                    $qu->where('email', Auth::user()->email);
-                                                });
-                                            })->orWhereHas('tukSecretaryMember', function ($quer) {
-                                                $quer->where('email', Auth::user()->email);
-                                            });
-                                        })->orWhere('email', Auth::user()->email);
-                                    });
-                                });
-                            }
-                        }
-                    })
-                    ->whereHas('feasibilityTest')
-                    ->count();
-        
-        $on_progress = Project::where(function($q) use($request) {
-                            if($request->period && $request->start && $request->end) {
-                                $start = $request->start;
-                                $end = $request->end;
-
-                                if($request->period == 2) {
-                                    $start = $start . '-01';
-                                    $end = Carbon::createFromFormat('Y-m', $end)->endOfMonth()->format('Y-m-d');
-                                } else if($request->period == 3) {
-                                    $start = $start . '-01-01';
-                                    $end = $end . '-12-31';
-                                }
-
-                                $q->whereBetween('created_at', [date($start), date($end)]);
-                            } else {
-                                $q->whereYear('created_at', date('Y'));
-                                $q->whereMonth('created_at', date('m'));
-                            }
-                        })
-                        ->where(function($q) use($type, $role) {
-                            if($type == 'tuk') {
-                                if($role == 'examiner-secretary') {
-                                    $team = $this->checkTuk();
-                                    if($team) {
-                                        if($team->authority == 'Provinsi') {
-                                            $districts = $this->getDistricts($team->id_province_name);
-                                            $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
-                                            ->orWhere(function($que) use($districts) {
-                                                    $que->where('authority', 'district');
-                                                    $que->whereIn('auth_district', $districts);
-                                                });
-                                        } else if($team->authority == 'Kabupaten') {
-                                            $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
-                                        }
-                                    }
-                                } else {
-                                    $q->whereHas('tukProject', function ($query) {
-                                        $query->whereHas('feasibilityTestTeamMember', function ($que) {
-                                            $que->whereHas('lukMember', function ($quer) {
-                                                $quer->where('email', Auth::user()->email);
-                                            })->orWhereHas('expertBank', function ($quer) {
-                                                $quer->where('email', Auth::user()->email);
-                                            });
-                                        })->orWhereHas('tukSecretaryMember', function ($que) {
-                                            $que->where('email', Auth::user()->email);
-                                        });
-                                    })->orWhereHas('testingMeeting', function ($query) {
-                                        $query->whereHas('invitations', function ($que) {
-                                            $que->where(function ($queryy) {
-                                                $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
-                                                    $quer->whereHas('lukMember', function ($qu) {
-                                                        $qu->where('email', Auth::user()->email);
-                                                    })->orWhereHas('expertBank', function ($qu) {
-                                                        $qu->where('email', Auth::user()->email);
-                                                    });
-                                                })->orWhereHas('tukSecretaryMember', function ($quer) {
-                                                    $quer->where('email', Auth::user()->email);
-                                                });
-                                            })->orWhere('email', Auth::user()->email);
-                                        });
-                                    });
-                                }
-                            }
-                        })
-                        ->whereDoesntHave('feasibilityTest')
-                        ->count();
+                } else {
+                    $q->whereHas('tukProject', function ($query) {
+                        $query->where('id_user', Auth::user()->id);
+                    })->orWhereHas('testingMeeting', function ($query) {
+                        $query->whereHas('invitations', function ($que) {
+                           $que->where('id_user', Auth::user()->id);
+                        });
+                    });
+                }
+            }
+        })
+        ->with('feasibilityTest')
+        ->get();
 
         return [
-            'total' => $total,
-            'accepted' => $accepted,
-            'on_progress' => $on_progress,
+            'total' => $project->count(),
+            'accepted' => $project->where('feasibility_test', '!=', [])->count(),
+            'on_progress' => $project->where('feasibility_test', [])->count(),
             'rejected' => $rejected
         ];
     }
@@ -305,7 +151,6 @@ class DashboardController extends Controller
             'show' => false
         ];
 
-        $user = null;
         $team = null;
         
         if($role !== 'admin') {
@@ -389,19 +234,26 @@ class DashboardController extends Controller
         $adendum = [];
         $range = null;
         $team = null;
+        $districts = null;
 
         if($role !== 'admin') {
             $team = $this->checkTuk();
+            if($team) {
+                if($team->authority == 'Provinsi') {
+                    $districts = $this->getDistricts($team->id_province_name);
+                }
+            }
         }
 
         if($period == 1) {
             $range = CarbonPeriod::create(date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end)))->toArray();
             foreach($range as $r) {
                 $dates[] = $r->format('d-m-Y');
+                $projects = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), $role, $districts);
     
-                $amdal[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'AMDAL', $role);
-                $sppl[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'SPPL', $role);
-                $ukl_upl[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'UKL-UPL', $role);
+                $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
+                $sppl[] = $projects->where('required_doc', 'SPPL')->count();
+                $ukl_upl[] = $projects->where('required_doc', 'UKL-UPL')->count();
                 $adendum[] = 0;
             }
         } else if($period == 2) {
@@ -411,18 +263,22 @@ class DashboardController extends Controller
                 $year = $r->format('Y');
                 $month = $r->format('m');
 
-                $amdal[] = $this->getChart($type, $period, $team, $year, $month, null, 'AMDAL', $role);
-                $sppl[] = $this->getChart($type, $period, $team, $year, $month, null, 'SPPL', $role);
-                $ukl_upl[] = $this->getChart($type, $period, $team, $year, $month, null, 'UKL-UPL', $role);
+                $projects = $this->getChart($type, $period, $team, $year, $month, null, $role, $districts); 
+
+                $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
+                $sppl[] = $projects->where('required_doc', 'SPPL')->count();
+                $ukl_upl[] = $projects->where('required_doc', 'UKL-UPL')->count();
                 $adendum[] = 0;
             }
         } else if($period == 3) {
             for($year = $start; $year <= $end; $year++) {
                 $dates[] = $year;
 
-                $amdal[] = $this->getChart($type, $period, $team, $year, null, null, 'AMDAL', $role);
-                $sppl[] = $this->getChart($type, $period, $team, $year, null, null, 'SPPL', $role);
-                $ukl_upl[] = $this->getChart($type, $period, $team, $year, null, null, 'UKL-UPL', $role);
+                $projects = $this->getChart($type, $period, $team, $year, null, null, $role, $districts);
+
+                $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
+                $sppl[] = $projects->where('required_doc', 'SPPL')->count();
+                $ukl_upl[] = $projects->where('required_doc', 'UKL-UPL')->count();
                 $adendum[] = 0;
             }
         } else {
@@ -433,10 +289,12 @@ class DashboardController extends Controller
             $range = CarbonPeriod::create(date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end)))->toArray();
             foreach($range as $r) {
                 $dates[] = $r->format('d-m-Y');
+
+                $projects = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), $role, $districts);
     
-                $amdal[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'AMDAL', $role);
-                $sppl[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'SPPL', $role);
-                $ukl_upl[] = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), 'UKL-UPL', $role);
+                $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
+                $sppl[] = $projects->where('required_doc', 'SPPL')->count();
+                $ukl_upl[] = $projects->where('required_doc', 'UKL-UPL')->count();
                 $adendum[] = 0;
             }
         }
@@ -471,7 +329,7 @@ class DashboardController extends Controller
                                     $q->whereMonth('created_at', date('m'));
                                 }
                             })
-                            ->where(function($q) use($type, $authority, $team, $role) {
+                            ->where(function($q) use($type, $authority, $team) {
                                 if($authority == 'Pusat') {
                                     $q->where('authority', 'Pusat')->orWhere('authority', null);
                                 } else if($authority == 'Provinsi') {
@@ -503,31 +361,14 @@ class DashboardController extends Controller
                                         $q->where('authority', 'Kabupaten');
                                     }
                                 }
-
+                            })
+                            ->where(function($q) use($role) {
                                 if(!($role == 'admin' || $role == 'examiner-secretary')) {
                                     $q->whereHas('tukProject', function ($query) {
-                                        $query->whereHas('feasibilityTestTeamMember', function ($que) {
-                                            $que->whereHas('lukMember', function ($quer) {
-                                                $quer->where('email', Auth::user()->email);
-                                            })->orWhereHas('expertBank', function ($quer) {
-                                                $quer->where('email', Auth::user()->email);
-                                            });
-                                        })->orWhereHas('tukSecretaryMember', function ($que) {
-                                            $que->where('email', Auth::user()->email);
-                                        });
+                                        $query->where('id_user', Auth::user()->id);
                                     })->orWhereHas('testingMeeting', function ($query) {
                                         $query->whereHas('invitations', function ($que) {
-                                            $que->where(function ($queryy) {
-                                                $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
-                                                    $quer->whereHas('lukMember', function ($qu) {
-                                                        $qu->where('email', Auth::user()->email);
-                                                    })->orWhereHas('expertBank', function ($qu) {
-                                                        $qu->where('email', Auth::user()->email);
-                                                    });
-                                                })->orWhereHas('tukSecretaryMember', function ($quer) {
-                                                    $quer->where('email', Auth::user()->email);
-                                                });
-                                            })->orWhere('email', Auth::user()->email);
+                                           $que->where('id_user', Auth::user()->id);
                                         });
                                     });
                                 }
@@ -557,7 +398,7 @@ class DashboardController extends Controller
         ->with(['initiator' => function($q) {
             $q->select('id', 'name');
         }, 'feasibilityTest' => function($q) {
-            $q->select('id', 'id_project');
+            $q->select('id');
         }])
         ->where(function($q) use($type, $team) {
             if($type == 'tuk') {
@@ -572,32 +413,15 @@ class DashboardController extends Controller
                     $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
                 }
             }
-
+        })
+        ->where(function($q) {
             $role = Auth::user()->roles->first()->name;
             if(!($role == 'admin' || $role == 'examiner-secretary')) {
                 $q->whereHas('tukProject', function ($query) {
-                    $query->whereHas('feasibilityTestTeamMember', function ($que) {
-                        $que->whereHas('lukMember', function ($quer) {
-                            $quer->where('email', Auth::user()->email);
-                        })->orWhereHas('expertBank', function ($quer) {
-                            $quer->where('email', Auth::user()->email);
-                        });
-                    })->orWhereHas('tukSecretaryMember', function ($que) {
-                        $que->where('email', Auth::user()->email);
-                    });
+                   $query->where('id_user', Auth::user()->id);
                 })->orWhereHas('testingMeeting', function ($query) {
                     $query->whereHas('invitations', function ($que) {
-                        $que->where(function ($queryy) {
-                            $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
-                                $quer->whereHas('lukMember', function ($qu) {
-                                    $qu->where('email', Auth::user()->email);
-                                })->orWhereHas('expertBank', function ($qu) {
-                                    $qu->where('email', Auth::user()->email);
-                                });
-                            })->orWhereHas('tukSecretaryMember', function ($quer) {
-                                $quer->where('email', Auth::user()->email);
-                            });
-                        })->orWhere('email', Auth::user()->email);
+                        $que->where('id_user', Auth::user()->id);
                     });
                 });
             }
@@ -606,14 +430,13 @@ class DashboardController extends Controller
         ->paginate($limit);
     }
 
-    private function getChart($type, $period, $team, $year, $month, $date, $required_doc, $role)
+    private function getChart($type, $period, $team, $year, $month, $date, $role, $districts)
     {
-        return Project::where('required_doc', $required_doc)
-                      ->where(function($q) use($type, $team, $role) {
+        return Project::select('id', 'authority', 'auth_district', 'auth_province', 'required_doc', 'created_at', 'updated_at')
+                        ->where(function($q) use($type, $team, $role, $districts) {
                           if($type == 'tuk') {
                               if($role == 'examiner-secretary') {
                                   if($team->authority == 'Provinsi') {
-                                    $districts = $this->getDistricts($team->id_province_name);
                                     $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
                                     ->orWhere(function($que) use($districts) {
                                           $que->where('authority', 'Kabupaten');
@@ -624,28 +447,10 @@ class DashboardController extends Controller
                                   }
                               } else {
                                 $q->whereHas('tukProject', function ($query) {
-                                    $query->whereHas('feasibilityTestTeamMember', function ($que) {
-                                        $que->whereHas('lukMember', function ($quer) {
-                                            $quer->where('email', Auth::user()->email);
-                                        })->orWhereHas('expertBank', function ($quer) {
-                                            $quer->where('email', Auth::user()->email);
-                                        });
-                                    })->orWhereHas('tukSecretaryMember', function ($que) {
-                                        $que->where('email', Auth::user()->email);
-                                    });
+                                   $query->where('id_user', Auth::user()->id);
                                 })->orWhereHas('testingMeeting', function ($query) {
                                     $query->whereHas('invitations', function ($que) {
-                                        $que->where(function ($queryy) {
-                                            $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
-                                                $quer->whereHas('lukMember', function ($qu) {
-                                                    $qu->where('email', Auth::user()->email);
-                                                })->orWhereHas('expertBank', function ($qu) {
-                                                    $qu->where('email', Auth::user()->email);
-                                                });
-                                            })->orWhereHas('tukSecretaryMember', function ($quer) {
-                                                $quer->where('email', Auth::user()->email);
-                                            });
-                                        })->orWhere('email', Auth::user()->email);
+                                        $que->where('id_user', Auth::user()->id);
                                     });
                                 });
                               }
@@ -660,7 +465,7 @@ class DashboardController extends Controller
                         } else if($period == 3) {
                             $q->whereYear('created_at', (String) $year);
                         } 
-                      })->count();
+                      })->get();
     }
 
     private function checkTuk()

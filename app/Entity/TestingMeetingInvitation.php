@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Laravue\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,5 +35,10 @@ class TestingMeetingInvitation extends Model
     public function tukSecretaryMember()
     {
         return $this->belongsTo(TukSecretaryMember::class, 'id_tuk_secretary_member', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id');
     }
 }

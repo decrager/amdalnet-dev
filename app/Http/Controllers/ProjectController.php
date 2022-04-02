@@ -56,15 +56,7 @@ class ProjectController extends Controller
                     $query->select('id', 'id_impact_identifications', 'time_frequent');
                 });
             }, 'tukProject' => function ($q) {
-                $q->whereHas('feasibilityTestTeamMember', function ($query) {
-                    $query->whereHas('lukMember', function ($quer) {
-                        $quer->where('email', Auth::user()->email);
-                    })->orWhereHas('expertBank', function ($quer) {
-                        $quer->where('email', Auth::user()->email);
-                    });
-                })->orWhereHas('tukSecretaryMember', function ($query) {
-                    $query->where('email', Auth::user()->email);
-                });
+                $q->where('id_user', Auth::user()->id);
             }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
                 ->where(function ($query) use ($request) {
                     return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
@@ -132,17 +124,7 @@ class ProjectController extends Controller
             $q->with('envMonitorPlan', function ($query) {
                 $query->select('id', 'id_impact_identifications', 'time_frequent');
             });
-        }, 'tukProject' => function ($q) {
-            $q->whereHas('feasibilityTestTeamMember', function ($query) {
-                $query->whereHas('lukMember', function ($quer) {
-                    $quer->where('email', Auth::user()->email);
-                })->orWhereHas('expertBank', function ($quer) {
-                    $quer->where('email', Auth::user()->email);
-                });
-            })->orWhereHas('tukSecretaryMember', function ($query) {
-                $query->where('email', Auth::user()->email);
-            });
-        }, 'feasibilityTestRecap' => function ($q) {
+        }, 'tukProject', 'feasibilityTestRecap' => function ($q) {
             $q->select('id', 'id_project', 'is_feasib', 'updated_at');
         }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
@@ -180,28 +162,10 @@ class ProjectController extends Controller
                 function ($query) use ($request) {
                     if ($request->tuk) {
                         $query->whereHas('tukProject', function ($q) {
-                            $q->whereHas('feasibilityTestTeamMember', function ($que) {
-                                $que->whereHas('lukMember', function ($quer) {
-                                    $quer->where('email', Auth::user()->email);
-                                })->orWhereHas('expertBank', function ($quer) {
-                                    $quer->where('email', Auth::user()->email);
-                                });
-                            })->orWhereHas('tukSecretaryMember', function ($que) {
-                                $que->where('email', Auth::user()->email);
-                            });
+                            $q->where('id_user', Auth::user()->id);
                         })->orWhereHas('testingMeeting', function ($q) {
                             $q->whereHas('invitations', function ($que) {
-                                $que->where(function ($queryy) {
-                                    $queryy->whereHas('feasibilityTestTeamMember', function ($quer) {
-                                        $quer->whereHas('lukMember', function ($qu) {
-                                            $qu->where('email', Auth::user()->email);
-                                        })->orWhereHas('expertBank', function ($qu) {
-                                            $qu->where('email', Auth::user()->email);
-                                        });
-                                    })->orWhereHas('tukSecretaryMember', function ($quer) {
-                                        $quer->where('email', Auth::user()->email);
-                                    });
-                                })->orWhere('email', Auth::user()->email);
+                               $que->where('id_user', Auth::user()->id);
                             });
                         });
                     }

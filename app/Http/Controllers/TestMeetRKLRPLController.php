@@ -136,6 +136,12 @@ class TestMeetRKLRPLController extends Controller
                                 'password' => Hash::make('amdalnet')
                             ]);
                             $user->syncRoles($role);
+
+                            $invite = TestingMeetingInvitation::find($i->id);
+                            if($invite) {
+                                $invite->id_user = $user->id;
+                                $invite->save();
+                            }
                         } else {
                             $user = User::where('email', $i->email)->first();
                         }
@@ -270,6 +276,13 @@ class TestMeetRKLRPLController extends Controller
 
                 if($data['invitations'][$i]['type'] == 'institution') {
                     $invitation->id_government_institution = $data['invitations'][$i]['id_government_institution'];
+                }
+            }
+
+            if($data['invitations'][$i]['email']) {
+                $user = User::where('email', $data['invitations'][$i]['email'])->first();
+                if($user) {
+                    $invitation->id_user = $user->id;
                 }
             }
 

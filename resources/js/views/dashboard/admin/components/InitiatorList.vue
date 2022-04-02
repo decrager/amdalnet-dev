@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     async getInitiators() {
-      this.loadingInitiators = true;
+      this.loading = true;
       let search = '';
       if (this.period) {
         search += `&period=${this.period}`;
