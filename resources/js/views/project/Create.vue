@@ -33,6 +33,11 @@
               <el-col :span="12">
                 <el-row>
                   <el-form-item label="Deskripsi Kegiatan" prop="description">
+                    <span slot="label">
+                      <span>Deskripsi Kegiatan <el-tooltip class="item" effect="dark" content="Deskripsi rencana usaha/kegiatan yang akan dilakukan mencakup kegiatan utama yang akan dilakukan dan sarana serta prasarana kegiatan pendukung yang akan dibangun. kegiatan utama yang akan dilakukan bisa saja lebih dari 1 jenis kegiatan dan begitu pula dengan kegiatan pendukungnya. Jelaskan pula keterkaitan lokasi rencana usaha dan/atau kegiatan dan kesesuaiannya dengan rencana tata ruang wilayah" placement="top">
+                        <i class="el-alert__icon el-icon-warning" />
+                      </el-tooltip></span>
+                    </span>
                     <el-input v-model="currentProject.description" size="medium" type="textarea" />
                   </el-form-item>
                 </el-row>
@@ -46,7 +51,9 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="filePdf">
                     <div slot="label">
-                      <span>Upload Peta PDF (Max 1MB)</span>
+                      <span>* Upload Peta PDF (Max 1MB) <el-tooltip class="item" effect="dark" content="Peta yang diunggah adalah peta tapak proyek yang telah dibuat oleh pemrakarsa atau lampiran peta atas rekomendasi kesesuaian tata ruang(format pdf ukuran A3)" placement="top">
+                        <i class="el-alert__icon el-icon-warning" />
+                      </el-tooltip></span>
                     </div>
                     <classic-upload :name="filePdfName" :fid="'filePdf'" @handleFileUpload="handleFileTapakProyekPdfUpload" />
                   </el-form-item>
@@ -59,7 +66,7 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="fileMap">
                     <div slot="label">
-                      <span>Upload SHP Peta Tapak Proyek (File .zip max 1 MB)</span>
+                      <span>* Upload SHP Peta Tapak Proyek (File .zip max 1 MB)</span>
                       <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" title="Download Sample SHP" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
                       <a href="/amdalnet-juknis-penyiapan-peta.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
                     </div>
@@ -112,6 +119,27 @@
           </el-form>
         </el-collapse-item>
         <el-collapse-item title="PENDEKATAN STUDI" name="2" disabled>
+          <div role="alert" class="el-alert el-alert--info is-light">
+            <i class="el-alert__icon el-icon-warning is-big" />
+            <div class="el-alert__content"><span class="el-alert__title is-bold">Pendekatan Study</span>
+              <p class="el-alert__description">
+                <ul>
+                  <li><b>Tunggal : </b> Analisis mengenai dampak lingkungan hidup yang diperuntukan bagi satu usaha atau kegiatan dalam satu kesatuan hamparan ekosistem yang melibatkan satu instansi yang bertanggung jawab</li>
+                  <li><b>Terpadu : </b> Analisis mengenai dampak lingkungan hidup yang direncanakan terhadap lingkungan hidup dalam satu kesatuan hamparan ekosistem dan melibatkan kewenangan lebih dari satu usaha dan/kegiatan dimana juga lebih dari satu instansi yang bertanggung jawab</li>
+                  <li><b>Tunggal : </b> Analisis mengenai dampak lingkungan hidup yang diperuntukan bagi lebih dari satu usaha atau kegiatan dalam satu kesatuan hamparan ekosistem dan menyangkut kewenangan satu instansi yang bertanggung jawab</li>
+                </ul>
+              </p>
+            </div>
+          </div>
+          <div role="alert" class="el-alert el-alert--info is-light" style="margin-top: 10px">
+            <div class="el-alert__content">
+              <p class="el-alert__description">
+                <ul>
+                  <li><b>Daftar Kegiatan : </b>Silahkan pilih kegiatan yang berada dalam satu hamparan(Dalam satu lokasi yang berdekatan, yang terhubung satu dengan lainnya) contoh: Kegiatan Minyak dan Gas, Pipa Penyaluran, Unit Pengelola</li>
+                </ul>
+              </p>
+            </div>
+          </div>
           <el-form
             ref="pendekatanStudi"
             :model="currentProject"
@@ -373,6 +401,13 @@
           style="max-width: 100%"
         >
           <el-collapse-item title="PERSETUJUAN AWAL(Opsional)" name="5" disabled>
+            <div role="alert" class="el-alert el-alert--info is-light">
+              <div class="el-alert__content">
+                <span class="el-alert__title">
+                  <b>Persetujuan Awal :</b> Izin prinsip yang dikeluarkan oelh instansi yang berwenang sesuai dengan jenis rencana kegiatan
+                </span>
+              </div>
+            </div>
             <el-row>
               <el-col :span="12">
                 <el-form-item
