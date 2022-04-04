@@ -8,6 +8,7 @@ use App\Http\Resources\ProjectComponentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Entity\ImpactIdentification;
+use App\Entity\SubProjectComponent;
 
 class ProjectComponentController extends Controller
 {
@@ -36,8 +37,21 @@ class ProjectComponentController extends Controller
          * 20220324
          * id, id_project_stage, name, is_master, description, measurement, id_project_component
          */
-
         $params = $request->all();
+        if(isset($params['inquire']) && ($params['inquire'])){
+            // $pC = ProjectComponent::where('id', $request->id)->first();
+            $res = SubProjectComponent::from('sub_project_components')
+               ->select('sub_project_components.*')
+               ->join('project_components', 'sub_project_components.id_component', '=', 'project_components.id_component')
+               ->join('sub_projects', function($q){
+                   $q->on('sub_projects.id', '=', 'sub_project_components.id_sub_project')
+                     ->on('project_components.id_project', '=', 'sub_projects.id_project');
+               })
+               ->where('project_components.id_project', $request->id_project)
+               ->where('project_components.id_component', $request->id)->get();
+            return response($res, 200);
+        }
+
         return response(Component::from('components')
           ->selectRaw('
             components.*,
@@ -169,6 +183,21 @@ class ProjectComponentController extends Controller
         }*/
     }
 
+    // delete
+    public function removeProjectComponent(Request $request){
+        $params = $request->all();
+
+        if ($request->getChildren) {
+            // id_project, id_project_component
+            $pC = ProjectComponent::where([
+                'id_project' => $request->id_project,
+                'id_component' => $request->id_component,
+            ])->first();
+            return response($pC);
+        }
+    }
+
+
     /**
      * Display the specified resource.
      *
@@ -212,5 +241,9 @@ class ProjectComponentController extends Controller
     public function destroy(ProjectComponent $projectComponent)
     {
         //
+        // return response($projectComponent);
+        // $res = ProjectComponent::where('id', $projectComponent->id)->first();
+        return response($projectComponent->delete(), 200);
+
     }
 }

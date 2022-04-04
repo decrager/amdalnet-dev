@@ -150,6 +150,8 @@ export default {
       });
     },
     refreshData(){
+      this.getProjectStages();
+      this.getComponentTypes();
       this.getComponentMasterData();
       this.getHueMasterData();
     },
