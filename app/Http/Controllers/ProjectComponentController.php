@@ -8,6 +8,10 @@ use App\Http\Resources\ProjectComponentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Entity\ImpactIdentification;
+use App\Entity\SubProjectComponent;
+use App\Entity\PotentialImpactEvaluation;
+use App\Entity\ProjectRonaAwal;
+use App\Entity\SubProjectRonaAwal;
 
 class ProjectComponentController extends Controller
 {
@@ -36,8 +40,17 @@ class ProjectComponentController extends Controller
          * 20220324
          * id, id_project_stage, name, is_master, description, measurement, id_project_component
          */
-
         $params = $request->all();
+        if(isset($params['inquire']) && ($params['inquire'])){
+            // $pC = ProjectComponent::where('id', $request->id)->first();
+            $res = SubProjectComponent::from('sub_project_components')
+               ->select('sub_project_components.*')
+               ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+               ->where('sub_projects.id_project', $request->id_project)
+               ->where('sub_project_components.id_component', $request->id)->get();
+            return response($res, 200);
+        }
+
         return response(Component::from('components')
           ->selectRaw('
             components.*,
@@ -99,7 +112,7 @@ class ProjectComponentController extends Controller
             $pc->measurement = $params['component']['measurement'];
             if ($pc->save()) {
                 // lookup impact!
-                $imps = ImpactIdentification::where('id_project_component', $pc->id)->all();
+                // $imps = ImpactIdentification::where('id_project_component', $pc->id)->all();
 
 
                 return response()->json([
@@ -169,6 +182,21 @@ class ProjectComponentController extends Controller
         }*/
     }
 
+    // delete
+    public function removeProjectComponent(Request $request){
+        $params = $request->all();
+
+        if ($request->getChildren) {
+            // id_project, id_project_component
+            $pC = ProjectComponent::where([
+                'id_project' => $request->id_project,
+                'id_component' => $request->id_component,
+            ])->first();
+            return response($pC);
+        }
+    }
+
+
     /**
      * Display the specified resource.
      *
@@ -211,6 +239,41 @@ class ProjectComponentController extends Controller
      */
     public function destroy(ProjectComponent $projectComponent)
     {
-        //
+        if($projectComponent){
+            $imps = ImpactIdentification::where('id_project_component', $projectComponent->id)->get();
+            $nPie = 0;
+            $nSRA = 0;
+            $nSPC = 0;
+            $spcIds = null;
+            $nImp = count($imps);
+            if($nImp > 0){
+                // delete pies
+                $ids = [];
+                // $hues = [];
+                foreach($imps as $imp){
+                    $ids[] = $imp->id;
+                    // $hues[] = $imp->id_project_rona_awal;
+                    $imp->delete();
+                }
+                $nPie = PotentialImpactEvaluation::whereIn('id_impact_identification', $ids)->delete();
+            }
+            $spcIds = SubProjectComponent::from('sub_project_components')
+                ->select('sub_project_components.id')
+                ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+                ->where('sub_project_components.id_component', $projectComponent->id_component)
+                ->where('sub_projects.id_project', $projectComponent->id_project)
+                ->get();
+
+            $nSRA = SubProjectRonaAwal::whereIn('id_sub_project_component', $spcIds)->delete();
+            $nSPC = SubProjectComponent::whereIn('id', $spcIds)->delete();
+
+
+            $co = Component::where('id', $projectComponent->id_component)->first();
+            if(($co) && (!$co->is_master) && ($co->originator_id === $projectComponent->id_project)){
+                $co->delete();
+            }
+            return response([$projectComponent->delete(), $spcIds], 200);
+        }
+        return response('Komponen Kegiatan tidak ditemukan', 200);
     }
 }

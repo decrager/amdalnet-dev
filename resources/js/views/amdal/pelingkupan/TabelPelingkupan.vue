@@ -1,6 +1,5 @@
 <template>
   <div class="scoupingModule" style="margin-top:2em;">
-
     <el-tabs v-if="projectStages.length > 0" v-model="activeName" @tab-click="handleTabClick">
       <el-tab-pane
         v-for="(stage, index) in projectStages"
@@ -65,6 +64,7 @@
                   :show-delete="isFormulator"
                   :de-select-all="activeComponent === null"
                   @edit="editComponent"
+                  @delete="removeComponent"
                   @onSelect="onSelectComponents"
                   @onDeselect="deselectComponents"
                 />
@@ -111,6 +111,7 @@
                       :active-component="activeHue"
                       :de-select-all="activeHue === null"
                       @edit="editHue"
+                      @delete="removeHue"
                       @onSave="onSaveHue"
                       @onSelect="onSelectHues"
                     />
@@ -150,6 +151,17 @@
       @onClose="showAddHue = false"
       @onSave="onSaveHue"
     />
+
+    <form-delete-component
+      v-if="deleted !== null"
+      :id="'scoping_delete_form'+ 1"
+      :key="'scoping_delete_form'"
+      :component="deleted"
+      :show="showDelete"
+      :resource="delResource"
+      @close="showDelete = false"
+      @delete="afterDeleteComponent"
+    />
   </div>
 </template>
 <script>
@@ -157,13 +169,14 @@ import Resource from '@/api/resource';
 import ComponentsList from './components/tables/ComponentsList.vue';
 import FormAddComponent from './components/forms/FormAddComponent.vue';
 import FormAddHue from './components/forms/FormAddHue.vue';
+import FormDeleteComponent from './components/forms/FormDeleteComponent.vue';
 const projectResource = new Resource('projects');
 const subProjectComponent = new Resource('subproject-components');
 const subProjectHue = new Resource('sub-project-rona-awals');
 
 export default {
   name: 'TabelPelingkupan',
-  components: { ComponentsList, FormAddComponent, FormAddHue /* FormPelingkupan*/ },
+  components: { ComponentsList, FormAddComponent, FormAddHue, FormDeleteComponent },
   props: {
     masterComponents: {
       type: Array,
@@ -214,6 +227,7 @@ export default {
       hues: [],
       showForm: false,
       showAddHue: false,
+      showDelete: false,
       mode: 0,
       deSelectAllSPUtama: false,
       deSelectAllSPPendukung: false,
@@ -222,6 +236,8 @@ export default {
       current_component_type: null,
       loadingComponents: false,
       loadingHues: false,
+      delResource: '',
+      deleted: null,
     };
   },
   computed: {
@@ -463,6 +479,27 @@ export default {
         str.push(e.name);
       });
       return str.join(', ');
+    },
+    // deletes
+    removeComponent(id){
+      this.deleted = this.components.find(c => (c.id === id) && (c.id_sub_project === this.activeScoping.sub_projects.id));
+      this.delResource = 'sub-project-components';
+      this.showDelete = true;
+    },
+    afterDeleteComponent(){
+      this.deleted = null;
+
+      if (this.delResource === 'sub-project-components'){
+        this.getSubProjectComponents();
+      } else {
+        this.getSubProjectsHues();
+      }
+      this.delResource = '';
+    },
+    removeHue(id){
+      this.deleted = this.hues.find(h => (h.id === id) && (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component));
+      this.delResource = 'sub-project-rona-awals';
+      this.showDelete = true;
     },
   },
 };
