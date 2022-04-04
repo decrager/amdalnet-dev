@@ -19,6 +19,7 @@
 <script>
 import TabelPelingkupan from './TabelPelingkupan.vue';
 import MasterKomponen from './MasterKomponen.vue';
+// import Comment from '..'
 
 import Resource from '@/api/resource';
 // const ronaAwalResource = new Resource('rona-awals');

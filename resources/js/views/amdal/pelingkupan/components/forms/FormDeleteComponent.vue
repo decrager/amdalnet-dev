@@ -1,7 +1,7 @@
 <template>
   <div class="delete-component-wrapper">
     <el-dialog
-      :title="'Hapus Master Data Komponen Kegiatan'"
+      :title="'Hapus Komponen'"
       :visible.sync="show"
       width="40%"
       height="350"
@@ -34,7 +34,7 @@
 import Resource from '@/api/resource';
 // import Deskripsi from '../helpers/Deskripsi.vue';
 // const componentResource = new Resource('components');
-const projectComponentResource = new Resource('project-components');
+// const projectComponentResource = new Resource('project-components');
 
 export default {
   name: 'FormDeleteComponent',
@@ -51,6 +51,10 @@ export default {
     show: {
       type: Boolean,
       default: false,
+    },
+    resource: {
+      type: String,
+      default: '',
     },
   },
   data(){
@@ -77,7 +81,8 @@ export default {
       const id_project = parseInt(this.$route.params && this.$route.params.id);
       this.hasChildren = true;
       this.children = [];
-      await projectComponentResource.list({
+      const resource = new Resource(this.resource);
+      await resource.list({
         id_project: id_project,
         id: this.component.id,
         inquire: 1,
@@ -92,7 +97,8 @@ export default {
     },
     async deleteComponent(){
       this.loading = true;
-      await projectComponentResource.destroy(this.component.id_project_component)
+      const resource = new Resource(this.resource);
+      await resource.destroy(this.component.id_project_component)
         .then((res) => {
           console.log(res);
           this.$message({

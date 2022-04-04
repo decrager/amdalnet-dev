@@ -204,12 +204,13 @@ class SubProjectComponentController extends Controller
      */
     public function destroy(SubProjectComponent $subProjectComponent)
     {
+
         try {
             // cascade delete for sub_project_rona_awals
-            SubProjectRonaAwal::select('id')
+            /*SubProjectRonaAwal::select('id')
                 ->where('id_sub_project_component', $subProjectComponent->id)
-                ->delete();
-            $subProjectComponent->delete();
+                ->delete(); */
+            return response($subProjectComponent);
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }

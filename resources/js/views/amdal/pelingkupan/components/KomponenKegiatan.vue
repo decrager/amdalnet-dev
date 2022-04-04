@@ -27,6 +27,7 @@
         v-if="deleted !== null"
         :component="deleted"
         :show="showDelete"
+        :resource="'project-components'"
         @close="showDelete = false"
         @delete="afterDeleteComponent"
       />
