@@ -488,18 +488,18 @@ export default {
     },
     afterDeleteComponent(){
       this.deleted = null;
+
+      if (this.delResource === 'sub-project-components'){
+        this.getSubProjectComponents();
+      } else {
+        this.getSubProjectsHues();
+      }
       this.delResource = '';
-      this.getSubProjectComponents();
     },
     removeHue(id){
       this.deleted = this.hues.find(h => (h.id === id) && (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component));
       this.delResource = 'sub-project-rona-awals';
       this.showDelete = true;
-    },
-    afterDeleteHue(){
-      this.deleted = null;
-      this.delResource = '';
-      this.getSubProjectsHues();
     },
   },
 };

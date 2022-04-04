@@ -1,7 +1,7 @@
 <template>
   <div class="delete-component-wrapper">
     <el-dialog
-      :title="'Hapus Komponen'"
+      :title="'Hapus Komponen '+ label"
       :visible.sync="show"
       width="40%"
       height="350"
@@ -13,14 +13,14 @@
       <div v-loading="loading" style="padding: 1em;">
         <div v-if="hasChildren && (children.length > 0)">
           <div style="word-break:break-word; margin-bottom: 1em;">
-            Komponen Kegiatan <strong>{{ component.name }}</strong> memiliki rekaman dampak potensial.
-            Menghapus Komponen Kegiatan <strong>{{ component.name }}</strong> akan turut menghapus dampak potensial tersebut.
+            Komponen {{ label }} <strong>{{ component.name }}</strong> sudah memiliki rekaman dampak potensial.
+            Menghapus Komponen {{ label }} <strong>{{ component.name }}</strong> akan turut menghapus dampak potensial tersebut.
           </div>
-          <p style="word-break:break-word;">Lanjutkan hapus Komponen Kegiatan <strong>{{ component.name }}</strong> dan semua dampak terkait?</p>
+          <p style="word-break:break-word;">Lanjutkan hapus Komponen {{ label }} <strong>{{ component.name }}</strong> dan semua dampak terkait?</p>
 
         </div>
         <div v-else>
-          <p style="word-break:break-word;">Hapus komponen Kegiatan <strong>{{ component.name }}</strong> ?</p>
+          <p style="word-break:break-word;">Hapus komponen {{ label }} <strong>{{ component.name }}</strong> ?</p>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -59,6 +59,7 @@ export default {
       hasChildren: false,
       children: [],
       loading: false,
+      label: '',
     };
   },
   created(){
@@ -68,9 +69,27 @@ export default {
   methods: {
     onOpen(){
       this.getRelatedData();
+      this.assignLabel();
     },
     handleClose(){
       this.$emit('close', true);
+    },
+    assignLabel(){
+      switch (this.resource){
+        case 'project-components':
+          this.label = 'Kegiatan';
+          break;
+        case 'project-rona-awals':
+          this.label = 'Lingkungan';
+          break;
+        case 'sub-project-components':
+          this.label = 'Kegiatan';
+          break;
+        case 'sub-project-rona-awals':
+          this.label = 'Rona Awal';
+          break;
+        default:
+      }
     },
     getIdComponent(){
       let id = 0;
