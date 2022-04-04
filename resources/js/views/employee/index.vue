@@ -10,6 +10,21 @@
         >
           {{ 'Tambah Anggota TUK' }}
         </el-button>
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian anggota..."
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
       <EmployeeTable
         :list="list"
@@ -47,6 +62,7 @@ export default {
         page: 1,
         limit: 10,
         type: 'list',
+        search: null,
       },
       total: 0,
     };
@@ -98,6 +114,12 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getData();
+      this.listQuery.search = null;
     },
   },
 };

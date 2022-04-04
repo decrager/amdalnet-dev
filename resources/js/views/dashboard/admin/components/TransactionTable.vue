@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column label="Status">
         <template slot-scope="scope">
-          {{ checkStatus(scope.row.feasibility_test) }}
+          {{ checkStatus(scope.row.feasibility_test_recap) }}
         </template>
       </el-table-column>
     </el-table>
@@ -71,16 +71,22 @@ export default {
   methods: {
     checkStatus(data) {
       if (data !== null) {
-        return 'Disetujui';
+        if (data.is_feasib) {
+          return 'Disetujui';
+        } else {
+          return 'Ditolak';
+        }
       }
 
-      return 'Proses Review';
+      return 'Diproses';
     },
   },
 };
 </script>
 <style lang="scss" scoped>
 .initiator-list {
-  .cell { font-weight: bolder;}
+  .cell {
+    font-weight: bolder;
+  }
 }
 </style>
