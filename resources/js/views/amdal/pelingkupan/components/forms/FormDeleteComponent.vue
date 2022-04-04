@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="delete-component-wrapper">
     <el-dialog
       :title="'Hapus Master Data Komponen Kegiatan'"
       :visible.sync="show"
@@ -10,13 +10,17 @@
       :close-on-click-modal="false"
       @open="onOpen"
     >
-      <div v-loading="loading">
+      <div v-loading="loading" style="padding: 1em;">
         <div v-if="hasChildren && (children.length > 0)">
-          <p>Komponen Kegiatan {{ component.name }} sudah digunakan dalam Identifikasi Dampak.</p>
-          <p> Hapus semua dampak terkait Komponen Kegiatan <strong>{{ component.name }}</strong>?</p>
+          <div style="word-break:break-word; margin-bottom: 1em;">
+            Komponen Kegiatan <strong>{{ component.name }}</strong> sudah memiliki rekaman dampak potensial.
+            Menghapus Komponen Kegiatan <strong>{{ component.name }}</strong> akan turut menghapus dampak potensial tersebut.
+          </div>
+          <p style="word-break:break-word;">Lanjutkan hapus Komponen Kegiatan <strong>{{ component.name }}</strong> dan semua dampak terkait?</p>
+
         </div>
         <div v-else>
-          <p>Hapus komponen Kegiatan <strong>{{ component.name }}</strong> ?</p>
+          <p style="word-break:break-word;">Hapus komponen Kegiatan <strong>{{ component.name }}</strong> ?</p>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -71,6 +75,8 @@ export default {
     async getRelatedData(){
       this.loading = true;
       const id_project = parseInt(this.$route.params && this.$route.params.id);
+      this.hasChildren = true;
+      this.children = [];
       await projectComponentResource.list({
         id_project: id_project,
         id: this.component.id,
@@ -86,23 +92,35 @@ export default {
     },
     async deleteComponent(){
       this.loading = true;
-      await projectComponentResource.destroy(this.component.id_project_component
-        /* {
-        id: this.component.id_project_component,
-        id_project: this.id_project,
-        id_component: this.component.id,
-        description: this.component.description,
-        measurement: this.component.measurement,
-      }*/
-      ).then((res) => {
-        console.log(res);
-        this.$emit('delete', this.component.id);
-      }).finally(() => {
-        this.loading = false;
-        this.handleClose();
-      });
+      await projectComponentResource.destroy(this.component.id_project_component)
+        .then((res) => {
+          console.log(res);
+          this.$message({
+            message: 'Komponen berhasil dihapus',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          this.$emit('delete', this.component.id);
+        }).catch((err) => {
+          this.$message({
+            message: 'Komponen gagal dihapus',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          console.log(err);
+        }).finally(() => {
+          this.loading = false;
+          this.handleClose();
+        });
     },
   },
 
 };
 </script>
+<style scoped>
+
+.delete-component-wrapper {
+  word-break: break-word !important;
+}
+
+</style>

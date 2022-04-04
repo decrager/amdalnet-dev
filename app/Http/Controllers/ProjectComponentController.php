@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Entity\ImpactIdentification;
 use App\Entity\SubProjectComponent;
+use App\Entity\PotentialImpactEvaluation;
+use App\Entity\ProjectRonaAwal;
+use App\Entity\SubProjectRonaAwal;
 
 class ProjectComponentController extends Controller
 {
@@ -113,7 +116,7 @@ class ProjectComponentController extends Controller
             $pc->measurement = $params['component']['measurement'];
             if ($pc->save()) {
                 // lookup impact!
-                $imps = ImpactIdentification::where('id_project_component', $pc->id)->all();
+                // $imps = ImpactIdentification::where('id_project_component', $pc->id)->all();
 
 
                 return response()->json([
@@ -240,10 +243,43 @@ class ProjectComponentController extends Controller
      */
     public function destroy(ProjectComponent $projectComponent)
     {
-        //
-        // return response($projectComponent);
-        // $res = ProjectComponent::where('id', $projectComponent->id)->first();
-        return response($projectComponent->delete(), 200);
+        if($projectComponent){
+            $imps = ImpactIdentification::where('id_project_component', $projectComponent->id)->get();
+            $nPie = 0;
+            $nSRA = 0;
+            $nSPC = 0;
+            $nImp = count($imps);
+            if($nImp > 0){
+                // delete pies
+                $ids = [];
+                // $hues = [];
+                foreach($imps as $imp){
+                    $ids[] = $imp->id;
+                    // $hues[] = $imp->id_project_rona_awal;
+                    $imp->delete();
+                }
+                $nPie = PotentialImpactEvaluation::whereIn('id_impact_identification', $ids)->delete();
+                $spcIds = SubProjectComponent::from('sub_project_components')
+                  ->select('sub_project_components.id')
+                  ->join('project_components', 'project_components.id_component', '=', 'sub_project_components.id_component')
+                  ->join('sub_projects', function($q){
+                        $q->on('sub_projects.id', '=', 'sub_project_components.id_sub_project')
+                        ->on('project_components.id_project', '=', 'sub_projects.id_project');
+                    })
+                  ->where('project_components.id_component', $projectComponent->id_component)
+                  ->where('project_components.id_project', $projectComponent->id_project)
+                  ->get();
 
+                  $nSRA = SubProjectRonaAwal::whereIn('id_sub_project_component', $spcIds)->delete();
+                  $nSPC = SubProjectComponent::whereIn('id', $spcIds)->delete();
+
+            }
+            $co = Component::where('id', $projectComponent->id_component)->first();
+            if(($co) && (!$co->is_master) && ($co->originator_id === $projectComponent->id_project)){
+                $co->delete();
+            }
+            return response($projectComponent->delete(), 200);
+        }
+        return response('Komponen Kegiatan tidak ditemukan', 200);
     }
 }

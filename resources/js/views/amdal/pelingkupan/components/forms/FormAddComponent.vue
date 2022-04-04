@@ -147,6 +147,9 @@ export default {
       mode: 0,
     };
   },
+  mounted(){
+    this.onOpen();
+  },
   methods: {
     handleClose(){
       this.initData();
