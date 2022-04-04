@@ -182,7 +182,7 @@
             <el-row>
               <el-form-item prop="listSubProject">
                 <keep-alive>
-                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" @handlechecked="handlechecked($event)" />
+                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" :idizin="idizin" @handlechecked="handlechecked($event)" />
                 </keep-alive>
                 <el-button
                   type="primary"
@@ -712,6 +712,7 @@ export default {
     };
     return {
       loading: false,
+      idizin: '',
       isUmk: false,
       isPemerintah: false,
       kewenanganPMA: null,
@@ -1712,6 +1713,7 @@ export default {
       }
 
       // this.fromOss = true;
+      this.idizin = this.$store.getters.ossByNib.id_izin;
       this.kewenanganPMA = this.$store.getters.ossByNib.status_penanaman_modal;
       this.kewenanganOSS = this.$store.getters.ossByNib.kewenangan;
       this.jenisKawasanOSS = this.$store.getters.ossByNib.jenis_kawasan;
@@ -1720,6 +1722,7 @@ export default {
       console.log(ossProjects);
 
       ossProjects.forEach(e => {
+        console.log(e);
         e.data_lokasi_proyek.forEach(i => {
           this.currentProject.address.push({
             prov: i.province,
@@ -1738,6 +1741,7 @@ export default {
             id_proyek: e.id_proyek,
             kewenangan: this.$store.getters.ossByNib.kewenangan,
             lokasi: e.data_lokasi_proyek,
+            skala_resiko: e.skala_resiko,
           });
         } else {
           this.listSubProject.push({
@@ -1746,6 +1750,7 @@ export default {
             id_proyek: e.id_proyek,
             kewenangan: this.$store.getters.ossByNib.kewenangan,
             lokasi: e.data_lokasi_proyek,
+            skala_resiko: e.skala_resiko,
           });
         }
       });
