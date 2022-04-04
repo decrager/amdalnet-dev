@@ -45,13 +45,9 @@ class ProjectComponentController extends Controller
             // $pC = ProjectComponent::where('id', $request->id)->first();
             $res = SubProjectComponent::from('sub_project_components')
                ->select('sub_project_components.*')
-               ->join('project_components', 'sub_project_components.id_component', '=', 'project_components.id_component')
-               ->join('sub_projects', function($q){
-                   $q->on('sub_projects.id', '=', 'sub_project_components.id_sub_project')
-                     ->on('project_components.id_project', '=', 'sub_projects.id_project');
-               })
-               ->where('project_components.id_project', $request->id_project)
-               ->where('project_components.id_component', $request->id)->get();
+               ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+               ->where('sub_projects.id_project', $request->id_project)
+               ->where('sub_project_components.id_component', $request->id)->get();
             return response($res, 200);
         }
 

@@ -31,11 +31,10 @@
   </div>
 </template>
 <script>
-import Resource from '@/api/resource';
 
+import Resource from '@/api/resource';
 export default {
   name: 'FormDeleteComponent',
-  // components: { Deskripsi },
   props: {
     component: {
       type: Object,
@@ -85,7 +84,7 @@ export default {
         case 'sub-project-components':
           id = this.component.id_sub_project_component;
           break;
-        case 'sub-project-rona_awals':
+        case 'sub-project-rona-awals':
           id = this.component.id_sub_project_rona_awal;
           break;
         default:
@@ -98,18 +97,17 @@ export default {
       this.hasChildren = true;
       this.children = [];
       const resource = new Resource(this.resource);
-      await resource.list({
-        id_project: id_project,
-        id: this.component.id,
-        inquire: 1,
-      }).then((res) => {
-        if (res.length > 0) {
-          this.hasChildren = true;
-          this.children = res;
-        }
-      }).finally(() => {
-        this.loading = false;
-      });
+      this.component.inquire = 1;
+      this.component.id_project = id_project;
+      await resource.list(this.component)
+        .then((res) => {
+          if (res.length > 0) {
+            this.hasChildren = true;
+            this.children = res;
+          }
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     async deleteComponent(){
       this.loading = true;
@@ -139,10 +137,3 @@ export default {
 
 };
 </script>
-<style scoped>
-
-.delete-component-wrapper {
-  word-break: break-word !important;
-}
-
-</style>

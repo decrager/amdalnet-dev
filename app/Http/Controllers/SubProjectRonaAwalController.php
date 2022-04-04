@@ -27,6 +27,15 @@ class SubProjectRonaAwalController extends Controller
     public function index(Request $request)
     {
         $params = $request->all();
+        if(isset($params['inquire']) && ($params['inquire'])){
+            /* $spra = SubProjectRonaAwal::where('id', $request->id_sub_project_rona_awal)->first();
+            $spc = SubProjectComponent::where('id', $request->id_sub_project_component)->first();
+            if($spra && $spc){
+                $pc = ProjectComponent::where(['id_project' => $request->id_project, 'id_component' => $spc->id_component])
+            }
+            return response([], 200);*/
+            return response([1], 200);
+        }
 
         if(isset($params['id_project'] ) && (isset($params['scoping']) && ($params['scoping']))) {
             return DB::select( DB::raw("
@@ -341,12 +350,45 @@ class SubProjectRonaAwalController extends Controller
      */
     public function destroy(SubProjectRonaAwal $subProjectRonaAwal)
     {
-        try {
-            $subProjectRonaAwal->delete();
-        } catch (\Exception $ex) {
-            response()->json(['error' => $ex->getMessage()], 403);
-        }
+        // try {
+            $spc = SubProjectComponent::where('id', $subProjectRonaAwal->id_sub_project_component)->first();
+            $sp = SubProject::where('id', $spc->id_sub_project)->first();
+            $sSP = SubProject::where('id_project', $sp->id_project)
+                    ->where('id', '<>', $sp->id)->get();
 
-        return response()->json(null, 204);
+              $idSubProjects = [];
+              foreach($sSP as $s){
+                  $idSubProjects[] = $s->id;
+              }
+
+            $ospcra = SubProjectComponent::from('sub_project_components')
+            ->select('sub_project_components.id as id_spc', 'sub_project_rona_awals.id as id_spra')
+            ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id' )
+            ->where('sub_project_rona_awals.id_rona_awal', $subProjectRonaAwal->id_rona_awal)
+            ->where('sub_project_components.id_component', $spc->id_component)
+            ->whereIn('sub_project_components.id_sub_project', $idSubProjects)->get();
+
+            if(count($ospcra) === 0){
+                // delete imp
+                $pc = ProjectComponent::where(['id_project' => $sp->id_project, 'id_component' => $spc->id_component])->first();
+                $pra = ProjectRonaAwal::where(['id_project' => $sp->id_project, 'id_rona_awal' => $subProjectRonaAwal->id_rona_awal])->first();
+                $imp = ImpactIdentification::where([
+                    'id_project' => $sp->id_project,
+                    'id_project_component' => $pc->id,
+                    'id_project_rona_awal' => $pra->id
+                ])->first();
+                if($imp){
+                    $pie = PotentialImpactEvaluation::where('id_impact_identification', $imp->id)->delete();
+                    $imp->delete();
+                }
+            }
+
+            return response($subProjectRonaAwal->delete(), 200);
+
+        // } catch (\Exception $ex) {
+        //    response()->json(['error' => $ex->getMessage()], 403);
+        //}
+
+        //return response()->json(null, 204);
     }
 }
