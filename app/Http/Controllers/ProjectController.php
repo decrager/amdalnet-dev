@@ -303,6 +303,7 @@ class ProjectController extends Controller
                 'status' => isset($request['status']) ? $request['status'] : null,
                 'study_approach' => isset($request['study_approach']) ? $request['study_approach'] : null,
                 'auth_province' => isset($request['auth_province']) ? $request['auth_province'] : null,
+                'auth_district' => isset($request['auth_district']) ? $request['auth_district'] : null,
                 'authority' => isset($request['authority']) ? $request['authority'] : null,
                 'ppib' => isset($request['kawasan_lindung']) ? $request['kawasan_lindung'] : null,
                 'ppib_file' => Storage::url($kawLinName),

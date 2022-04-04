@@ -124,9 +124,9 @@
             <div class="el-alert__content"><span class="el-alert__title is-bold">Pendekatan Study</span>
               <p class="el-alert__description">
                 <ul>
-                  <li><b>Tunggal : </b> Analisis mengenai dampak lingkungan hidup yang diperuntukan bagi satu usaha atau kegiatan dalam satu kesatuan hamparan ekosistem yang melibatkan satu instansi yang bertanggung jawab</li>
-                  <li><b>Terpadu : </b> Analisis mengenai dampak lingkungan hidup yang direncanakan terhadap lingkungan hidup dalam satu kesatuan hamparan ekosistem dan melibatkan kewenangan lebih dari satu usaha dan/kegiatan dimana juga lebih dari satu instansi yang bertanggung jawab</li>
-                  <li><b>Tunggal : </b> Analisis mengenai dampak lingkungan hidup yang diperuntukan bagi lebih dari satu usaha atau kegiatan dalam satu kesatuan hamparan ekosistem dan menyangkut kewenangan satu instansi yang bertanggung jawab</li>
+                  <li><b>Tunggal : </b> Apabila penanggung jawab Usaha dan/atau Kegiatan merencanakan untuk melakukan 1 (satu) jenis Usaha dan/atau Kegiatan yang kewenangan pembinaan dan/atau pengawasannya berada di bawah 1 (satu) kementerian, lembaga pemerintah nonkementerian, organisasi perangkat daerah provinsi, atau organisasi perangkat daerah kabupaten/kota.</li>
+                  <li><b>Terpadu : </b> Apabila penanggung jawab Usaha dan/atau Kegiatan merencanakan untuk melakukan lebih dari 1 (satu) jenis Usaha dan/atau Kegiatan yang perencanaan dan pengelolaannya saling terkait dalam satu kesatuan hamparan ekosistem serta pembinaan dan/atau pengawasannya berada di bawah lebih dari 1 (satu) kementerian, lembaga pemerintah nonkementerian, organisasi perangkat daerah provinsi, atau organisasi perangkat daerah kabupaten/kota.</li>
+                  <li><b>Kawasan : </b> pengelola kawasan selaku penanggung jawab. Usaha dan/atau Kegiatan yang merencanakan untuk melakukan lebih dari 1 (satu) Usaha dan/atau Kegiatan yang akan dilaksanakan oleh Pelaku Usaha di dalam kawasan, terletak dalam satu kesatuan zona rencana pengembangan kawasan, yang telah mendapatkan penetapan kawasan dan pengelola kawasan sesuai dengan ketentuan peraturan perundang-undangan.</li>
                 </ul>
               </p>
             </div>
@@ -140,6 +140,14 @@
               </p>
             </div>
           </div>
+          <el-alert
+            v-if="!currentProject.isPemerintah"
+            style="margin-top: 5px"
+            title="Daftar Proyek dibawah ini merupakan data yang dikirim dari OSS-RBA"
+            type="error"
+            effect="dark"
+            :closable="false"
+          />
           <el-form
             ref="pendekatanStudi"
             :model="currentProject"

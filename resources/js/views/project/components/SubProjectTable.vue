@@ -24,8 +24,10 @@
       <el-table-column v-if="fromOss" align="left" header-align="center" label="Project" width="400px">
         <template slot-scope="scope">
           <div><b>ID Proyek :</b> {{ scope.row.id_proyek }}</div>
+          <div><b>ID Izin :</b> {{ idizin }}</div>
           <div><b>Nama Kegiatan :</b> {{ scope.row.name }}</div>
           <div><b>KBLI :</b> {{ scope.row.kbli }}</div>
+          <div><b>Tingkat Resiko :</b> {{ scope.row.skala_resiko }}</div>
           <div><b>Kewenangan :</b> {{ getKewenangan(scope.row.kewenangan) }}</div>
           <div><b>Alamat :</b></div>
           <ul style="margin-block-start: 0px">
@@ -150,6 +152,10 @@ export default {
     fromOss: {
       type: Boolean,
       default: () => false,
+    },
+    idizin: {
+      type: String,
+      default: () => '',
     },
   },
   data() {
