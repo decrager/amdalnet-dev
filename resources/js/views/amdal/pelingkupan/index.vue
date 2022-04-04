@@ -19,7 +19,7 @@
 <script>
 import TabelPelingkupan from './TabelPelingkupan.vue';
 import MasterKomponen from './MasterKomponen.vue';
-// import Comment from '..'
+import Comment from '../components/Comment.vue';
 
 import Resource from '@/api/resource';
 // const ronaAwalResource = new Resource('rona-awals');
@@ -28,7 +28,7 @@ const projectHueResource = new Resource('project-rona-awals');
 
 export default {
   name: 'ModulPelingkupan',
-  components: { TabelPelingkupan, MasterKomponen },
+  components: { TabelPelingkupan, MasterKomponen, Comment },
   data(){
     return {
       // master data
