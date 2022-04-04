@@ -36,7 +36,12 @@ class EmployeeTUKController extends Controller
         }
 
         if($request->type == 'list') {
-            $employees = LukMember::with(['province', 'district', 'feasibilityTestTeamMember.feasibilityTestTeam' => function($q) {
+            $employees = LukMember::where(function($q) use($request) {
+                if($request->search) {
+                    $q->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                }
+            })
+            ->with(['province', 'district', 'feasibilityTestTeamMember.feasibilityTestTeam' => function($q) {
                 $q->with('provinceAuthority');
                 $q->with('districtAuthority');
             }])->orderBy('id', 'desc')->paginate($request->limit);

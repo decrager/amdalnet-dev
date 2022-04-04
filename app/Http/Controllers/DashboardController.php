@@ -68,12 +68,10 @@ class DashboardController extends Controller
 
     public function status(Request $request)
     {
-        $rejected = 0;
-
         $type = Auth::user()->roles->first()->name == 'admin' ? '' : 'tuk';
         $role = Auth::user()->roles->first()->name;
 
-        $project = Project::select('id', 'authority', 'auth_province', 'auth_district', 'created_at', 'updated_at')->where(function($q) use($request) {
+        $projects = Project::select('id', 'authority', 'auth_province', 'auth_district', 'created_at', 'updated_at')->where(function($q) use($request) {
             if($request->period && $request->start && $request->end) {
                 $start = $request->start;
                 $end = $request->end;
@@ -120,13 +118,27 @@ class DashboardController extends Controller
                 }
             }
         })
-        ->with('feasibilityTest')
         ->get();
 
+        // ACCEPTED & REJECTED
+        $accepted = 0;
+        $rejected = 0;
+
+        foreach($projects as $p) {
+            if($p->feasibilityTestRecap) {
+                if($p->feasibilityTestRecap->is_feasib) {
+                    $accepted++;
+                } else {
+                    $rejected++;
+                }
+            }
+        }
+
+
         return [
-            'total' => $project->count(),
-            'accepted' => $project->where('feasibility_test', '!=', [])->count(),
-            'on_progress' => $project->where('feasibility_test', [])->count(),
+            'total' => $projects->count(),
+            'accepted' => $accepted,
+            'on_progress' => $projects->count() - $accepted - $rejected,
             'rejected' => $rejected
         ];
     }
@@ -397,9 +409,7 @@ class DashboardController extends Controller
         })
         ->with(['initiator' => function($q) {
             $q->select('id', 'name');
-        }, 'feasibilityTest' => function($q) {
-            $q->select('id');
-        }])
+        }, 'feasibilityTestRecap'])
         ->where(function($q) use($type, $team) {
             if($type == 'tuk') {
                 if($team->authority == 'Provinsi') {

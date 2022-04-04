@@ -10,6 +10,21 @@
         >
           {{ 'Tambah TUK' }}
         </el-button>
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian tim uji kelayakan..."
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
       <TukTable
         :list="list"
@@ -47,6 +62,7 @@ export default {
         page: 1,
         limit: 10,
         type: 'list',
+        search: null,
       },
       total: 0,
     };
@@ -61,7 +77,22 @@ export default {
     async getData() {
       this.loading = true;
       const { data, total } = await tukManagementResource.list(this.listQuery);
-      this.list = data;
+      this.list = data.map((x) => {
+        let name = `Tim Uji Kelayakan ${this.checkAuthority(
+          x.authority,
+          x.province_authority,
+          x.district_authority
+        )}`;
+
+        name = this.capitalize(name);
+
+        if (x.team_number) {
+          name += ` ${x.team_number}`;
+        }
+
+        x.name = name;
+        return x;
+      });
       this.total = total;
       this.loading = false;
     },
@@ -98,6 +129,44 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getData();
+      this.listQuery.search = null;
+    },
+    checkAuthority(authority, province, district) {
+      if (authority === 'Pusat') {
+        return 'Pusat';
+      } else if (authority === 'Provinsi') {
+        if (province !== null) {
+          return 'Provinsi ' + province.name;
+        }
+      } else if (authority === 'Kabupaten/Kota') {
+        if (district !== null) {
+          return district.name;
+        }
+      }
+
+      return '';
+    },
+    capitalize(mySentence) {
+      if (mySentence) {
+        const words = mySentence.split(' ');
+
+        const newWords = words
+          .map((word) => {
+            return (
+              word.toLowerCase()[0].toUpperCase() +
+              word.toLowerCase().substring(1)
+            );
+          })
+          .join(' ');
+        return newWords;
+      }
+
+      return '';
     },
   },
 };

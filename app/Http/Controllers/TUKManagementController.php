@@ -260,7 +260,35 @@ class TUKManagementController extends Controller
         }
 
         if($request->type == 'list') {
-            $teams = FeasibilityTestTeam::with(['member' => function($q) {
+            $search = $request->search;
+            if($search) {
+                $search = str_replace('tim', '', strtolower($search));
+                $search = str_replace('uji', '', $search);
+                $search = str_replace('kelayakan', '', $search);
+                $search = str_replace('provinsi', '', $search);
+                $search = trim($search);
+            }
+
+            $teams = FeasibilityTestTeam::where(function($q) use($search) {
+                if($search) {
+                    if($search == 'pusat') {
+                        $q->where('authority', 'Pusat');
+                    } else {
+                        $q->where(function($query) use($search) {
+                            $query->where('authority', 'Provinsi');
+                            $query->whereHas('provinceAuthority', function($que) use($search) {
+                                $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                            });
+                        })->orWhere(function($query) use($search) {
+                            $query->where('authority', 'Kabupaten/Kota');
+                            $query->whereHas('districtAuthority', function($que) use($search) {
+                                $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                            });
+                        });
+                    }
+                }
+            })
+            ->with(['member' => function($q) {
                 $q->where('position', 'Ketua')->with(['expertBank', 'lukMember']);
             }, 'provinceAuthority', 'districtAuthority'])->orderBy('id', 'desc')->paginate($request->limit);
             return $teams;
