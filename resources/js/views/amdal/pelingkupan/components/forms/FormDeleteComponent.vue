@@ -13,7 +13,7 @@
       <div v-loading="loading" style="padding: 1em;">
         <div v-if="hasChildren && (children.length > 0)">
           <div style="word-break:break-word; margin-bottom: 1em;">
-            Komponen Kegiatan <strong>{{ component.name }}</strong> sudah memiliki rekaman dampak potensial.
+            Komponen Kegiatan <strong>{{ component.name }}</strong> memiliki rekaman dampak potensial.
             Menghapus Komponen Kegiatan <strong>{{ component.name }}</strong> akan turut menghapus dampak potensial tersebut.
           </div>
           <p style="word-break:break-word;">Lanjutkan hapus Komponen Kegiatan <strong>{{ component.name }}</strong> dan semua dampak terkait?</p>
@@ -32,9 +32,6 @@
 </template>
 <script>
 import Resource from '@/api/resource';
-// import Deskripsi from '../helpers/Deskripsi.vue';
-// const componentResource = new Resource('components');
-// const projectComponentResource = new Resource('project-components');
 
 export default {
   name: 'FormDeleteComponent',
@@ -76,6 +73,25 @@ export default {
     handleClose(){
       this.$emit('close', true);
     },
+    getIdComponent(){
+      let id = 0;
+      switch (this.resource){
+        case 'project-components':
+          id = this.component.id_project_component;
+          break;
+        case 'project-rona-awals':
+          id = this.component.id_project_rona_awal;
+          break;
+        case 'sub-project-components':
+          id = this.component.id_sub_project_component;
+          break;
+        case 'sub-project-rona_awals':
+          id = this.component.id_sub_project_rona_awal;
+          break;
+        default:
+      }
+      return id;
+    },
     async getRelatedData(){
       this.loading = true;
       const id_project = parseInt(this.$route.params && this.$route.params.id);
@@ -98,7 +114,7 @@ export default {
     async deleteComponent(){
       this.loading = true;
       const resource = new Resource(this.resource);
-      await resource.destroy(this.component.id_project_component)
+      await resource.destroy(this.getIdComponent())
         .then((res) => {
           console.log(res);
           this.$message({

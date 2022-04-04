@@ -260,22 +260,18 @@ class ProjectComponentController extends Controller
                     $imp->delete();
                 }
                 $nPie = PotentialImpactEvaluation::whereIn('id_impact_identification', $ids)->delete();
-                $spcIds = SubProjectComponent::from('sub_project_components')
-                  ->select('sub_project_components.id')
-                  // ->join('project_components', 'project_components.id_component', '=', 'sub_project_components.id_component')
-                  //->join('sub_projects', function($q){
-                  //      $q->on('sub_projects.id', '=', 'sub_project_components.id_sub_project')
-                  //      ->on('project_components.id_project', '=', 'sub_projects.id_project');
-                  //  })
-                  ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
-                  ->where('sub_project_components.id_component', $projectComponent->id_component)
-                  ->where('sub_projects.id_project', $projectComponent->id_project)
-                  ->get();
-
-                  $nSRA = SubProjectRonaAwal::whereIn('id_sub_project_component', $spcIds)->delete();
-                  $nSPC = SubProjectComponent::whereIn('id', $spcIds)->delete();
-
             }
+            $spcIds = SubProjectComponent::from('sub_project_components')
+                ->select('sub_project_components.id')
+                ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+                ->where('sub_project_components.id_component', $projectComponent->id_component)
+                ->where('sub_projects.id_project', $projectComponent->id_project)
+                ->get();
+
+            $nSRA = SubProjectRonaAwal::whereIn('id_sub_project_component', $spcIds)->delete();
+            $nSPC = SubProjectComponent::whereIn('id', $spcIds)->delete();
+
+
             $co = Component::where('id', $projectComponent->id_component)->first();
             if(($co) && (!$co->is_master) && ($co->originator_id === $projectComponent->id_project)){
                 $co->delete();

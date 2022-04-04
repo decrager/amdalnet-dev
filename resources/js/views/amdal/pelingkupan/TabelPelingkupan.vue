@@ -64,6 +64,7 @@
                   :show-delete="isFormulator"
                   :de-select-all="activeComponent === null"
                   @edit="editComponent"
+                  @delete="removeComponent"
                   @onSelect="onSelectComponents"
                   @onDeselect="deselectComponents"
                 />
@@ -221,6 +222,7 @@ export default {
       current_component_type: null,
       loadingComponents: false,
       loadingHues: false,
+      delResource: '',
     };
   },
   computed: {
@@ -462,6 +464,9 @@ export default {
         str.push(e.name);
       });
       return str.join(', ');
+    },
+    // deletes
+    removeComponent(id){
     },
   },
 };
