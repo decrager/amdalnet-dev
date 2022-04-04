@@ -491,7 +491,8 @@ export default {
 
       if (this.delResource === 'sub-project-components'){
         this.getSubProjectComponents();
-      } else {
+      }
+      if (this.delResource === 'sub-project-rona-awals'){
         this.getSubProjectsHues();
       }
       this.delResource = '';

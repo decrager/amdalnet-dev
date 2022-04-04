@@ -136,6 +136,9 @@ export default {
       mode: 0,
     };
   },
+  mounted(){
+    this.onOpen();
+  },
   methods: {
     async handleSaveForm(){
       this.isSaving = true;

@@ -85,7 +85,7 @@
                     </template>
                   </td>
                   <td>
-                    <p> {{ impact.is_hypothetical_significant ? 'DPH' : ('DTPH' + (impact.is_managed ? ' dikelola' : ' tidak dikelola' ) ) }} </p>
+                    <p> {{ impact.is_hypothetical_significant ? 'DPH' : ( (impact.is_hypothetical_significant === false) ? ('DTPH' + (impact.is_managed ? ' dikelola' : ' tidak dikelola' ) ): '') }} </p>
 
                   </td>
                   <td>
