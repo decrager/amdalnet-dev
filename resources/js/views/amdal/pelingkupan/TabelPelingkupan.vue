@@ -1,6 +1,5 @@
 <template>
   <div class="scoupingModule" style="margin-top:2em;">
-
     <el-tabs v-if="projectStages.length > 0" v-model="activeName" @tab-click="handleTabClick">
       <el-tab-pane
         v-for="(stage, index) in projectStages"
