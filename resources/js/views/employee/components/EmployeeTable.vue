@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <el-table
     v-loading="loading"
@@ -24,11 +25,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Nama">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column align="center" label="Nama" sortable prop="name" />
 
     <el-table-column align="center" label="Jabatan">
       <template slot-scope="scope">
@@ -53,7 +50,8 @@
         <span v-if="scope.row.feasibility_test_team_member !== null">
           <span
             v-if="
-              scope.row.feasibility_test_team_member.feasibility_test_team !== null
+              scope.row.feasibility_test_team_member.feasibility_test_team !==
+              null
             "
           >
             <span>{{
@@ -146,9 +144,13 @@ export default {
       if (data.authority === 'Pusat') {
         return 'Tim Uji Kelayakan Pusat';
       } else if (data.authority === 'Provinsi') {
-        return `Tim Uji Kelayakan ${this.capitalize(data.province_authority.name)}`;
+        return `Tim Uji Kelayakan ${this.capitalize(
+          data.province_authority.name
+        )}`;
       } else if (data.authority === 'Kabupaten/Kota') {
-        return `Tim Uji Kelayakan ${this.capitalize(data.district_authority.name)}`;
+        return `Tim Uji Kelayakan ${this.capitalize(
+          data.district_authority.name
+        )}`;
       }
 
       return '-';
