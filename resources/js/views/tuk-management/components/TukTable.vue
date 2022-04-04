@@ -29,21 +29,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Nama TUK">
-      <template slot-scope="scope">
-        <span>
-          Tim Uji Kelayakan
-          {{
-            checkAuthority(
-              scope.row.authority,
-              scope.row.province_authority,
-              scope.row.district_authority
-            ) | capitalize
-          }}
-          {{ scope.row.team_number }}
-        </span>
-      </template>
-    </el-table-column>
+    <el-table-column align="center" label="Nama TUK" prop="name" sortable />
 
     <el-table-column align="center" label="Nomor Penetapan">
       <template slot-scope="scope">
