@@ -774,12 +774,18 @@ export default {
 
       if (project.tuk_project) {
         if (project.tuk_project.length > 0) {
-          if (project.tuk_project[0].role === 'pjm') {
-            roleByAdmin = 'PJM';
-          } else if (project.tuk_project[0].role === 'valsub') {
-            roleByAdmin = 'Substansi';
-          } else if (project.tuk_project[0].role === 'valadm') {
-            roleByAdmin = 'Administrasi';
+          const role = project.tuk_project.find(x => {
+            return x.id_user === this.userInfo.id;
+          });
+
+          if (role) {
+            if (role.role === 'pjm') {
+              roleByAdmin = 'PJM';
+            } else if (role.role === 'valsub') {
+              roleByAdmin = 'Substansi';
+            } else if (role.role === 'valadm') {
+              roleByAdmin = 'Administrasi';
+            }
           }
         }
       }
