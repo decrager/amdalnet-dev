@@ -484,6 +484,7 @@ export default {
           renderer: propStyles,
           popupTemplate: popupTemplate(propFields),
           minScale: 500000,
+          legendEnabled: false,
         });
 
         var centroids = centroid(geomFields);
