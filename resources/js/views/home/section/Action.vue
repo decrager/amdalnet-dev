@@ -123,12 +123,14 @@
     <public-question-dialog :show="showPublicQues" @cancel="() => showPublicQues = false" />
     <tracking-document-dialog
       :show="showTrackingDocument"
+      @handleClose="closeAllDialog"
       @showTrackingDocumentDetail="showTrackingDocumentDetailDialog"
     />
     <tracking-document-detail-dialog
       v-if="project.id !== undefined"
       :show="showTrackingDocumentDetail"
       :project="project"
+      @handleClose="closeAllDialog"
       @cancel="closeTrackingDocumentDetail"
     />
   </section>
@@ -214,18 +216,22 @@ export default {
           });
         });
     },
+    closeAllDialog() {
+      this.showPublicQues = false;
+      this.showTrackingDocumentDetail = false;
+      this.showTrackingDocument = false;
+    },
     showPubDialog(){
-      console.log('kepencet');
+      this.closeAllDialog();
       this.showPublicQues = true;
     },
     showTrackingDialog(){
-      this.showTrackingDocumentDetail = false;
+      this.closeAllDialog();
       this.showTrackingDocument = true;
-      return false;
     },
     showTrackingDocumentDetailDialog(project){
       this.project = project;
-      this.showTrackingDocument = false;
+      this.closeAllDialog();
       this.showTrackingDocumentDetail = true;
     },
     closeTrackingDocumentDetail() {

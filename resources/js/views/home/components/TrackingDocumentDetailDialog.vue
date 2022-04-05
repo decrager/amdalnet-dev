@@ -1,5 +1,9 @@
 <template>
-  <el-dialog :title="'Lihat Progres Dokumen Lingkungan'" :visible.sync="show">
+  <el-dialog
+    :title="'Lihat Progres Dokumen Lingkungan'"
+    :visible.sync="show"
+    :before-close="handleClose"
+  >
     <div v-loading="loading" class="form-container">
       <h3>Kegiatan {{ data.project_title }}</h3>
       <el-card>
@@ -88,6 +92,9 @@ export default {
           this.data = response.data.data;
           this.loading = false;
         });
+    },
+    handleClose() {
+      this.$emit('handleClose');
     },
   },
 };

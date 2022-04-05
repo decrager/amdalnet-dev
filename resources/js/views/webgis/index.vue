@@ -192,6 +192,7 @@ import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
 import centroid from '@turf/centroid';
+import Legend from '@arcgis/core/widgets/Legend';
 
 // Script
 import axios from 'axios';
@@ -483,6 +484,7 @@ export default {
           renderer: propStyles,
           popupTemplate: popupTemplate(propFields),
           minScale: 500000,
+          legendEnabled: false,
         });
 
         var centroids = centroid(geomFields);
@@ -529,6 +531,7 @@ export default {
               type: 'oid',
             },
           ],
+          legendEnabled: false,
         });
 
         map.add(tapakPoint);
@@ -548,156 +551,171 @@ export default {
         map.add(geojsonLayerArray);
       }
 
-      const responsePemantauan = await axios.get(`api/map-geojson?type=pemantauan`);
-      for (let i = 0; i < responsePemantauan.data.length; i++) {
-        const item = responsePemantauan.data[i];
-        const getType = JSON.parse(item.feature_layer);
-        const propFields = getType.features[0].properties.field;
-        const propStyles = getType.features[0].properties.styles;
+      if (this.checkedPantau === true) {
+        const responsePemantauan = await axios.get(`api/map-geojson?type=pemantauan`);
+        for (let i = 0; i < responsePemantauan.data.length; i++) {
+          const item = responsePemantauan.data[i];
+          const getType = JSON.parse(item.feature_layer);
+          const propFields = getType.features[0].properties.field;
+          const propStyles = getType.features[0].properties.styles;
 
-        // Pemantauan
-        const geojsonLayerArray = new GeoJSONLayer({
-          url: urlBlob(item.feature_layer),
-          outFields: ['*'],
-          visible: false,
-          title: 'Layer Titik Pemantauan',
-          renderer: propStyles,
-          popupTemplate: popupTemplate(propFields),
-        });
+          // Pemantauan
+          const geojsonLayerArray = new GeoJSONLayer({
+            url: urlBlob(item.feature_layer),
+            outFields: ['*'],
+            visible: false,
+            title: 'Layer Titik Pemantauan',
+            renderer: propStyles,
+            popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
+          });
 
-        this.mapGeojsonArray.push(geojsonLayerArray);
-        const toggle = document.getElementById('layerPantauCheckBox');
+          this.mapGeojsonArray.push(geojsonLayerArray);
+          const toggle = document.getElementById('layerPantauCheckBox');
 
-        toggle.addEventListener('change', () => {
-          if (this.checkedPantau === true) {
-            geojsonLayerArray.visible = true;
-          } else {
-            map.removeMany(this.mapGeojsonArrayProject);
-            geojsonLayerArray.visible = false;
-          }
-        });
-        map.add(geojsonLayerArray);
+          toggle.addEventListener('change', () => {
+            if (this.checkedPantau === true) {
+              geojsonLayerArray.visible = true;
+            } else {
+              map.removeMany(this.mapGeojsonArrayProject);
+              geojsonLayerArray.visible = false;
+            }
+          });
+          map.add(geojsonLayerArray);
+        }
       }
 
-      const responsepengelolaan = await axios.get(`api/map-geojson?type=pengelolaan`);
-      for (let i = 0; i < responsepengelolaan.data.length; i++) {
-        const item = responsepengelolaan.data[i];
-        const getType = JSON.parse(item.feature_layer);
-        const propFields = getType.features[0].properties.field;
-        const propStyles = getType.features[0].properties.styles;
+      if (this.checkedKelola === true) {
+        const responsepengelolaan = await axios.get(`api/map-geojson?type=pengelolaan`);
+        for (let i = 0; i < responsepengelolaan.data.length; i++) {
+          const item = responsepengelolaan.data[i];
+          const getType = JSON.parse(item.feature_layer);
+          const propFields = getType.features[0].properties.field;
+          const propStyles = getType.features[0].properties.styles;
 
-        // Pemantauan
-        const geojsonLayerArray = new GeoJSONLayer({
-          url: urlBlob(item.feature_layer),
-          outFields: ['*'],
-          visible: false,
-          title: 'Layer Titik Pengelolaan',
-          renderer: propStyles,
-          popupTemplate: popupTemplate(propFields),
-        });
+          // Pemantauan
+          const geojsonLayerArray = new GeoJSONLayer({
+            url: urlBlob(item.feature_layer),
+            outFields: ['*'],
+            visible: false,
+            title: 'Layer Titik Pengelolaan',
+            renderer: propStyles,
+            popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
+          });
 
-        const toggle = document.getElementById('layerKelolaCheckBox');
+          const toggle = document.getElementById('layerKelolaCheckBox');
 
-        toggle.addEventListener('change', () => {
-          if (this.checkedKelola === true) {
-            geojsonLayerArray.visible = true;
-          } else {
-            map.remove(geojsonLayerArray);
-            geojsonLayerArray.visible = false;
-          }
-        });
-        map.add(geojsonLayerArray);
+          toggle.addEventListener('change', () => {
+            if (this.checkedKelola === true) {
+              geojsonLayerArray.visible = true;
+            } else {
+              map.remove(geojsonLayerArray);
+              geojsonLayerArray.visible = false;
+            }
+          });
+          map.add(geojsonLayerArray);
+        }
       }
 
-      const responseEcology = await axios.get(`api/map-geojson?type=ecology`);
-      for (let i = 0; i < responseEcology.data.length; i++) {
-        const item = responseEcology.data[i];
-        const getType = JSON.parse(item.feature_layer);
-        const propFields = getType.features[0].properties.field;
-        const propStyles = getType.features[0].properties.styles;
+      if (this.checkedEcology === true) {
+        const responseEcology = await axios.get(`api/map-geojson?type=ecology`);
+        for (let i = 0; i < responseEcology.data.length; i++) {
+          const item = responseEcology.data[i];
+          const getType = JSON.parse(item.feature_layer);
+          const propFields = getType.features[0].properties.field;
+          const propStyles = getType.features[0].properties.styles;
 
-        const geojsonLayerArray = new GeoJSONLayer({
-          url: urlBlob(item.feature_layer),
-          outFields: ['*'],
-          title: 'Layer Batas Ekologis',
-          visible: false,
-          renderer: propStyles,
-          popupTemplate: popupTemplate(propFields),
-        });
+          const geojsonLayerArray = new GeoJSONLayer({
+            url: urlBlob(item.feature_layer),
+            outFields: ['*'],
+            title: 'Layer Batas Ekologis',
+            visible: false,
+            renderer: propStyles,
+            popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
+          });
 
-        this.mapGeojsonArray.push(geojsonLayerArray);
-        const ecologyToggle = document.getElementById('layerEcologyCheckBox');
+          this.mapGeojsonArray.push(geojsonLayerArray);
+          const ecologyToggle = document.getElementById('layerEcologyCheckBox');
 
-        ecologyToggle.addEventListener('change', () => {
-          if (this.checkedEcology === true) {
-            geojsonLayerArray.visible = true;
-          } else {
-            map.removeMany(this.mapGeojsonArrayProject);
-            geojsonLayerArray.visible = false;
-          }
-        });
-        map.add(geojsonLayerArray);
+          ecologyToggle.addEventListener('change', () => {
+            if (this.checkedEcology === true) {
+              geojsonLayerArray.visible = true;
+            } else {
+              map.removeMany(this.mapGeojsonArrayProject);
+              geojsonLayerArray.visible = false;
+            }
+          });
+          map.add(geojsonLayerArray);
+        }
       }
 
-      const responseSocial = await axios.get(`api/map-geojson?type=social`);
-      for (let i = 0; i < responseSocial.data.length; i++) {
-        const item = responseSocial.data[i];
-        const getType = JSON.parse(item.feature_layer);
-        const propFields = getType.features[0].properties.field;
-        const propStyles = getType.features[0].properties.styles;
+      if (this.checkedSosial === true) {
+        const responseSocial = await axios.get(`api/map-geojson?type=social`);
+        for (let i = 0; i < responseSocial.data.length; i++) {
+          const item = responseSocial.data[i];
+          const getType = JSON.parse(item.feature_layer);
+          const propFields = getType.features[0].properties.field;
+          const propStyles = getType.features[0].properties.styles;
 
-        const geojsonLayerArray = new GeoJSONLayer({
-          url: urlBlob(item.feature_layer),
-          outFields: ['*'],
-          visible: false,
-          title: 'Layer Batas Sosial',
-          renderer: propStyles,
-          popupTemplate: popupTemplate(propFields),
-        });
+          const geojsonLayerArray = new GeoJSONLayer({
+            url: urlBlob(item.feature_layer),
+            outFields: ['*'],
+            visible: false,
+            title: 'Layer Batas Sosial',
+            renderer: propStyles,
+            popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
+          });
 
-        this.mapGeojsonArray.push(geojsonLayerArray);
-        const toggle = document.getElementById('layerSosialCheckBox');
+          this.mapGeojsonArray.push(geojsonLayerArray);
+          const toggle = document.getElementById('layerSosialCheckBox');
 
-        toggle.addEventListener('change', () => {
-          if (this.checkedSosial === true) {
-            geojsonLayerArray.visible = true;
-          } else {
-            map.removeMany(this.mapGeojsonArrayProject);
-            geojsonLayerArray.visible = false;
-          }
-        });
-        map.add(geojsonLayerArray);
+          toggle.addEventListener('change', () => {
+            if (this.checkedSosial === true) {
+              geojsonLayerArray.visible = true;
+            } else {
+              map.removeMany(this.mapGeojsonArrayProject);
+              geojsonLayerArray.visible = false;
+            }
+          });
+          map.add(geojsonLayerArray);
+        }
       }
 
-      const responseStudy = await axios.get(`api/map-geojson?type=study`);
-      for (let i = 0; i < responseStudy.data.length; i++) {
-        const item = responseStudy.data[i];
-        const getType = JSON.parse(item.feature_layer);
-        const propFields = getType.features[0].properties.field;
-        const propStyles = getType.features[0].properties.styles;
+      if (this.checkedStudi === true) {
+        const responseStudy = await axios.get(`api/map-geojson?type=study`);
+        for (let i = 0; i < responseStudy.data.length; i++) {
+          const item = responseStudy.data[i];
+          const getType = JSON.parse(item.feature_layer);
+          const propFields = getType.features[0].properties.field;
+          const propStyles = getType.features[0].properties.styles;
 
-        const geojsonLayerArray = new GeoJSONLayer({
-          url: urlBlob(item.feature_layer),
-          outFields: ['*'],
-          visible: false,
-          title: 'Layer Batas Studi',
-          renderer: propStyles,
-          popupTemplate: popupTemplate(propFields),
-        });
+          const geojsonLayerArray = new GeoJSONLayer({
+            url: urlBlob(item.feature_layer),
+            outFields: ['*'],
+            visible: false,
+            title: 'Layer Batas Studi',
+            renderer: propStyles,
+            popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
+          });
 
-        this.mapGeojsonArray.push(geojsonLayerArray);
-        const toggle = document.getElementById('layerStudiCheckBox');
+          this.mapGeojsonArray.push(geojsonLayerArray);
+          const toggle = document.getElementById('layerStudiCheckBox');
 
-        toggle.addEventListener('change', () => {
-          if (this.checkedStudi === true) {
-            geojsonLayerArray.visible = true;
-          } else {
-            map.removeMany(this.mapGeojsonArrayProject);
-            geojsonLayerArray.visible = false;
-          }
-        });
+          toggle.addEventListener('change', () => {
+            if (this.checkedStudi === true) {
+              geojsonLayerArray.visible = true;
+            } else {
+              map.removeMany(this.mapGeojsonArrayProject);
+              geojsonLayerArray.visible = false;
+            }
+          });
 
-        map.add(geojsonLayerArray);
+          map.add(geojsonLayerArray);
+        }
       }
 
       const rbiToggle = document.getElementById('layerRBICheckBox');
@@ -716,7 +734,6 @@ export default {
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
         imageTransparency: true,
         visible: false,
-        visibilityMode: '',
       });
 
       const penutupanLahanToggle = document.getElementById('layerTutupanLahanCheckBox');
@@ -798,6 +815,14 @@ export default {
           this.loadingMap === true;
         }
       });
+
+      const legend = new Legend({
+        view: mapView,
+      });
+
+      console.log(legend);
+
+      mapView.ui.add(legend, 'bottom-left');
 
       mapView.ui.add(document.getElementById('open__drawer'), 'top-right');
       mapView.ui.add(document.getElementById('legend__drawer'), 'top-right');
