@@ -176,8 +176,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
@@ -209,6 +209,7 @@ export default {
         impactIdentification: this.impactidentification,
         idProject: this.$route.params.id,
         commentType: this.commenttype,
+        routeName: this.$route.name,
       });
       this.comments = comments;
       this.loading = false;
@@ -249,6 +250,7 @@ export default {
         id_stage: this.idStage,
         document_type: this.commenttype,
         id_project: this.idProject,
+        routeName: this.$route.name,
       });
 
       this.comments.unshift(newComment);
@@ -283,6 +285,7 @@ export default {
         id_impact_identification: this.impactidentification,
         document_type: this.commenttype,
         id_project: this.idProject,
+        routeName: this.$route.name,
       });
 
       const indexComment = this.comments.findIndex((com) => com.id === id);

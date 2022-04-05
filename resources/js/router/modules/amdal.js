@@ -55,7 +55,7 @@ const amdalRoutes = {
     },
     {
       path: ':id(\\d+)/berita-acara-ka',
-      component: () => import('@/views/pengujian/components/beritaAcara/index'),
+      component: () => import('@/views/pengujian/BeritaAcara'),
       name: 'beritaAcaraKA',
       meta: { title: 'Berita Acara KA', icon: 'zip', noCache: true },
     },
@@ -63,26 +63,29 @@ const amdalRoutes = {
       path: ':id(\\d+)/uji-berkas-administrasi-andal-rkl-rpl',
       component: () => import('@/views/pengujian-rkl-rpl/index'),
       name: 'ujiBerkasAdministrasiANDALRKLRPL',
-      meta: { title: 'Uji Berkas Administrasi Andal RKL RPL', icon: 'zip', noCache: true },
+      meta: {
+        title: 'Uji Berkas Administrasi Andal RKL RPL',
+        icon: 'zip',
+        noCache: true,
+      },
     },
     {
       path: ':id(\\d+)/berita-acara-andal-rkl-rpl',
-      component: () => import('@/views/pengujian-rkl-rpl/components/beritaAcara/index'),
+      component: () => import('@/views/pengujian-rkl-rpl/BeritaAcara'),
       name: 'beritaAcaraANDALRKLRPL',
       meta: { title: 'Berita Acara Andal RKL RPL', icon: 'zip', noCache: true },
     },
     {
       path: ':id(\\d+)/uji-kelayakan',
-      component: () => import('@/views/pengujian-rkl-rpl/components/ujiKelayakan/index'),
+      component: () =>
+        import('@/views/pengujian-rkl-rpl/components/ujiKelayakan/index'),
       name: 'ujiKelayakanAmdal',
       meta: { title: 'Uji Kelayakan', icon: 'zip', noCache: true },
     },
     {
       path: ':id(\\d+)/rekomendasi-uji-kelayakan',
       component: () =>
-        import(
-          '@/views/pengujian-rkl-rpl/components/rekomendasi/index'
-        ),
+        import('@/views/pengujian-rkl-rpl/components/rekomendasi/index'),
       name: 'rekomendasiUjiKelayakan',
       meta: {
         title: 'Surat Rekomendasi Uji Kelayakan',
