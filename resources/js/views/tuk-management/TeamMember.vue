@@ -142,6 +142,7 @@ export default {
         id_member: null,
         idTeam: this.$route.params.id,
         type: null,
+        email: null,
         nik: null,
         role: null,
         position: null,
