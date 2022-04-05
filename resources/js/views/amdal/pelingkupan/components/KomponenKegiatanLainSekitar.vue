@@ -2,7 +2,7 @@
   <div class="master-komponen">
     <el-card shadow="never">
       <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold; text-transform: uppercase;">
-        <span>Komponen Lingkungan ({{ components.length }})</span>
+        <span>Komponen Kegiatan Lain Sekitar ({{ components.length }})</span>
       </div>
       <div>
         <components-list
@@ -15,14 +15,14 @@
       </div>
       <!-- form -->
       <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
-      <form-komponen-lingkungan
+      <!-- <form-komponen-kegiatan-lain-sekitar
         :show="showForm"
         :mode="mode"
         :component-types="componentTypes"
         :input="selectedData"
         @onSave="onSaveData"
         @onClose="showForm = false"
-      />
+      />-->
       <form-delete-component
         v-if="deleted !== null"
         :component="deleted"
@@ -35,13 +35,13 @@
   </div>
 </template>
 <script>
-import FormKomponenLingkungan from './forms/FormKomponenLingkungan.vue';
+// import FormKomponenLingkungan from './forms/FormKomponenLingkungan.vue';
 import ComponentsList from './tables/ComponentsList.vue';
 import FormDeleteComponent from './forms/FormDeleteComponent.vue';
 
 export default {
-  name: 'KomponenKegiatanLainsekitar',
-  components: { FormKomponenLingkungan, ComponentsList, FormDeleteComponent },
+  name: 'KomponenKegiatanLainSekitar',
+  components: { ComponentsList, FormDeleteComponent },
   props: {
     components: {
       type: Array,

@@ -23,7 +23,10 @@
         />
       </el-col>
       <el-col :span="8">
-        &nbsp;
+        <komponen-kegiatan-lain-sekitar
+          :components="activities"
+          @delete="onDeleteActivites"
+        />
       </el-col>
     </el-row>
   </div>
@@ -31,10 +34,11 @@
 <script>
 import KomponenKegiatan from './components/KomponenKegiatan.vue';
 import KomponenLingkungan from './components/KomponenLingkungan.vue';
+import KomponenKegiatanLainSekitar from './components/KomponenKegiatanLainSekitar.vue';
 
 export default {
   name: 'MasterKomponen',
-  components: { KomponenKegiatan, KomponenLingkungan },
+  components: { KomponenKegiatan, KomponenLingkungan, KomponenKegiatanLainSekitar },
   props: {
     components: {
       type: Array,
@@ -47,6 +51,10 @@ export default {
       default: function() {
         return [];
       },
+    },
+    activities: {
+      type: Array,
+      default: () => [],
     },
     projectStages: {
       type: Array,
@@ -70,6 +78,9 @@ export default {
     },
     onDeleteHue(val){
       this.$emit('hueDeleted', val);
+    },
+    onDeleteActivity(val){
+      this.$emit('activityDeleted', val);
     },
   },
 };
