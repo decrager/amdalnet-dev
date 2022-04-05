@@ -98,6 +98,7 @@ export default {
       }
       this.deleted = null;
       this.showDelete = false;
+      this.$emit('delete', true);
     },
   },
 };

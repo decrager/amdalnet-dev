@@ -4,7 +4,7 @@
       <el-button
         icon="el-icon-refresh"
         @click="refresh()"
-      > Muat ulang
+      > Refresh Master Data
       </el-button>
     </div>
     <el-row :gutter="10">
@@ -12,12 +12,14 @@
         <komponen-kegiatan
           :components="components"
           :project-stages="projectStages"
+          @delete="onDeleteComponent"
         />
       </el-col>
       <el-col :span="8">
         <komponen-lingkungan
           :components="hues"
           :component-types="componentTypes"
+          @delete="onDeleteHue"
         />
       </el-col>
       <el-col :span="8">
@@ -62,6 +64,12 @@ export default {
   methods: {
     refresh(){
       this.$emit('refreshData', true);
+    },
+    onDeleteComponent(val){
+      this.$emit('componentDeleted', val);
+    },
+    onDeleteHue(val){
+      this.$emit('hueDeleted', val);
     },
   },
 };

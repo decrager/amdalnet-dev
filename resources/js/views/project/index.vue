@@ -747,8 +747,14 @@ export default {
       if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
         if (project.tuk_project) {
           if (project.tuk_project.length > 0) {
-            if (project.tuk_project[0].role === role || project.tuk_project[0].role === 'pjm') {
-              return true;
+            const role = project.tuk_project.find(x => {
+              return x.id_user === this.userInfo.id;
+            });
+
+            if (role) {
+              if (role.role === role || role.role === 'pjm') {
+                return true;
+              }
             }
           }
         }
@@ -760,8 +766,14 @@ export default {
       if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
         if (project.tuk_project) {
           if (project.tuk_project.length > 0) {
-            if (project.tuk_project[0].role === 'pjm') {
-              return true;
+            const role = project.tuk_project.find(x => {
+              return x.id_user === this.userInfo.id;
+            });
+
+            if (role) {
+              if (role.role === 'pjm') {
+                return true;
+              }
             }
           }
         }
@@ -821,12 +833,18 @@ export default {
       if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
         if (project.tuk_project) {
           if (project.tuk_project.length > 0) {
-            if (
-              project.tuk_project[0].id_feasibility_test_team_member !== null ||
-              project.tuk_project[0].role === 'valadm' ||
-              project.tuk_project[0].role === 'pjm'
-            ) {
-              return true;
+            const role = project.tuk_project.find(x => {
+              return x.id_user === this.userInfo.id;
+            });
+
+            if (role) {
+              if (
+                role.id_feasibility_test_team_member !== null ||
+                role.role === 'valadm' ||
+                role.role === 'pjm'
+              ) {
+                return true;
+              }
             }
           }
         }
