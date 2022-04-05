@@ -60,15 +60,32 @@ class LpjpController extends Controller
         }
 
         return LpjpResource::collection(Lpjp::where(function ($query) use ($request) {
-            if ($request->active) {
+            if ($request->active == '1') {
                 return $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
                     ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
+            }
+        })->where(function($query) use($request) {
+            if($request->search) {
+                $search = trim(str_replace('provinsi', '', strtolower($request->search)));
+                $query->where(function($q) use($search) {
+                    $q->whereRaw("LOWER(reg_no) LIKE '%" . strtolower($search) . "%'");
+                })->orWhere(function($q) use($search) {
+                    $q->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                })->orWhere(function($q) use($search) {
+                    $q->whereRaw("LOWER(address) LIKE '%" . strtolower($search) . "%'");
+                })->orWhere(function($q) use($search) {
+                    $q->whereHas('province', function($que) use($search) {
+                        $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhereHas('district', function($que) use($search) {
+                        $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                    });
+                });
             }
         })->with(['province' => function ($query) {
             return $query->select(['id', 'name']);
         }, 'district' => function ($query) {
             return $query->select(['id', 'name']);
-        }])->get());
+        }])->orderBy('id', 'desc')->paginate($request->limit));
     }
 
     /**

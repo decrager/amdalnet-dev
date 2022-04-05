@@ -12,23 +12,24 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Jenis Instansi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.institution_type }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Nama Instansi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Email Instansi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.email }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column
+      align="center"
+      label="Jenis Instansi"
+      sortable
+      prop="institution_type"
+    />
+    <el-table-column
+      align="center"
+      label="Nama Instansi"
+      sortable
+      prop="name"
+    />
+    <el-table-column
+      align="center"
+      label="Email Instansi"
+      sortable
+      prop="email"
+    />
 
     <el-table-column align="center" label="Aksi">
       <template slot-scope="scope">

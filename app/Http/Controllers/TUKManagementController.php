@@ -284,6 +284,12 @@ class TUKManagementController extends Controller
                             $query->whereHas('districtAuthority', function($que) use($search) {
                                 $que->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
                             });
+                        })
+                        ->orWhere(function($query) use($search) {
+                            $query->whereRaw("LOWER(assignment_number) LIKE '%" . strtolower($search) . "%'");
+                        })
+                        ->orWhere(function($query) use($search) {
+                            $query->whereRaw("LOWER(address) LIKE '%" . strtolower($search) . "%'");
                         });
                     }
                 }

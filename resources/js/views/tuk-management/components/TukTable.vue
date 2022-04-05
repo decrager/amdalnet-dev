@@ -23,27 +23,16 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="No" width="100">
-      <template slot-scope="scope">
-        <span>{{ scope.$index + 1 }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column align="center" label="No" width="100" sortable prop="no" />
 
     <el-table-column align="center" label="Nama TUK" prop="name" sortable />
-
-    <el-table-column align="center" label="Nomor Penetapan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.assignment_number }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Alamat">
-      <template slot-scope="scope">
-        <span>
-          {{ scope.row.address }}
-        </span>
-      </template>
-    </el-table-column>
+    <el-table-column
+      align="center"
+      label="Nomor Penetapan"
+      sortable
+      prop="assignment_number"
+    />
+    <el-table-column align="center" label="Alamat" sortable prop="address" />
 
     <el-table-column align="center" label="Aksi">
       <template slot-scope="scope">
