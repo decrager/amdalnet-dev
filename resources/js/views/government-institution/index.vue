@@ -11,6 +11,22 @@
         >
           {{ 'Tambah' }}
         </el-button>
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian institusi pemerintah..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
       <GovernmentInstitutionTable
         :list="list"
@@ -162,7 +178,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        search: null,
       },
+      timeoutId: null,
       total: 0,
       dialogForm: {
         show: false,
@@ -362,6 +380,22 @@ export default {
     },
     validateEmail(mail) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail);
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getData();
+      this.listQuery.search = null;
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getData();
+      }, 500);
     },
   },
 };

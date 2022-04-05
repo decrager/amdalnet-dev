@@ -23,7 +23,17 @@ class GovernmentInstitutionController extends Controller
             return $institutions;
         }
 
-        $institutions = GovernmentInstitution::orderBy('id', 'desc')->paginate($request->limit);
+        $institutions = GovernmentInstitution::where(function($q) use($request) {
+            if($request->search) {
+                $q->where(function($query) use($request) {
+                    $query->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(institution_type) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(email) LIKE '%" . strtolower($request->search) . "%'");
+                });
+            }
+        })->orderBy('id', 'desc')->paginate($request->limit);
         return $institutions;
     }
 
