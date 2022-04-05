@@ -66,6 +66,7 @@ export default {
   },
   methods: {
     onSaveData(obj){
+      console.log('save component', obj);
       const index = this.components.findIndex(e => e.id === obj.id);
       if (index < 0){
         this.components.push(obj);

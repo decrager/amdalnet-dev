@@ -40,6 +40,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\VideoTutorialController;
 use App\Http\Controllers\ProjectOtherComponentController;
 use App\Http\Controllers\SubProjectComponentController;
+use App\Http\Controllers\ProjectKegiatanLainSekitarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -249,6 +250,7 @@ Route::apiResource('params', 'ParamController');
 Route::apiResource('units', 'UnitController');
 Route::apiResource('project-components', 'ProjectComponentController');
 Route::apiResource('project-rona-awals', 'ProjectRonaAwalController');
+Route::apiResource('project-kegiatan-lain-sekitar', 'ProjectKegiatanLainSekitarController');
 Route::apiResource('change-types', 'ChangeTypeController');
 Route::apiResource('institutions', 'InstitutionController');
 Route::apiResource('andal-composing', 'AndalComposingController');
