@@ -1,53 +1,84 @@
 <template>
   <div class="app-container">
-    <el-card>
-      <WorkFlow />
-      <div class="filter-container" align="right">
-        <el-button
-          :loading="loadingSubmit"
-          type="primary"
-          style="font-size: 0.8rem"
-          @click="handleSubmit"
+    <div class="filter-container" align="right">
+      <el-button
+        :loading="loadingSubmit"
+        type="primary"
+        style="font-size: 0.8rem"
+        @click="handleSubmit"
+      >
+        {{ 'Simpan Perubahan' }}
+      </el-button>
+      <el-button
+        v-if="reports.type === 'update'"
+        :loading="loadingDocs"
+        type="info"
+        style="font-size: 0.8rem"
+        @click="downloadDocx"
+      >
+        {{ 'Download File DOCX' }}
+      </el-button>
+    </div>
+    <el-row :gutter="32">
+      <el-col :sm="24" :md="24">
+        <FormBerita :reports="reports" :loadingtuk="loadingTuk" />
+      </el-col>
+      <el-col :sm="24" :md="24">
+        <DaftarHadir
+          :invitations="reports.invitations"
+          :reports="reports"
+          :loadingtuk="loadingTuk"
+          @deleteinvitation="deleteInvitation($event)"
+          @updateuploadfile="updateUploadFile($event)"
+          @handleChangeRole="handleChangeRole($event)"
+          @handleChangeName="handleChangeName($event)"
+        />
+      </el-col>
+    </el-row>
+    <el-row v-if="reports.type === 'update'" :gutter="32">
+      <el-col :span="16" :offset="4" align="center">
+        <div
+          v-if="reports.is_accepted === null"
+          style="background-color: #e1e1e1; padding: 10px 0; margin-top: 5px"
         >
-          {{ 'Simpan Perubahan' }}
-        </el-button>
-        <el-button
-          v-if="reports.type === 'update'"
-          :loading="loadingDocs"
-          type="info"
-          style="font-size: 0.8rem"
-          @click="downloadDocx"
-        >
-          {{ 'Download File DOCX' }}
-        </el-button>
-      </div>
-      <el-row :gutter="32">
-        <el-col :sm="24" :md="24">
-          <FormBerita :reports="reports" :loadingtuk="loadingTuk" />
-        </el-col>
-        <el-col :sm="24" :md="24">
-          <DaftarHadir
-            :invitations="reports.invitations"
-            :reports="reports"
-            :loadingtuk="loadingTuk"
-            @deleteinvitation="deleteInvitation($event)"
-            @updateuploadfile="updateUploadFile($event)"
-            @handleChangeRole="handleChangeRole($event)"
-            @handleChangeName="handleChangeName($event)"
-          />
-        </el-col>
-      </el-row>
-    </el-card>
+          <h3>Apakah Andal dan RKL-RPL dapat dilanjutkan ke Uji Kelayakan?</h3>
+          <div style="text-align: center">
+            <el-button
+              :loading="loadingAccept"
+              type="primary"
+              @click="acceptOrNot(true)"
+            >
+              Ya
+            </el-button>
+            <el-button
+              :loading="loadingAccept"
+              type="danger"
+              @click="acceptOrNot(false)"
+            >
+              Tidak
+            </el-button>
+          </div>
+        </div>
+        <el-alert
+          v-else
+          :title="acceptedTitle"
+          type="success"
+          description="Terimakasih"
+          show-icon
+          center
+          :closable="false"
+        />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
-import WorkFlow from '@/components/Workflow';
-const meetingReportResource = new Resource('meeting-report');
+const meetingReportResource = new Resource('meet-report-rkl-rpl');
 const institutionResource = new Resource('government-institution');
-import FormBerita from '@/views/pengujian/components/beritaAcara/FormBerita';
-import DaftarHadir from '@/views/pengujian/components/beritaAcara/DaftarHadir';
+import FormBerita from '@/views/pengujian-rkl-rpl/components/beritaAcaraAndalRklRpl/FormBerita';
+import DaftarHadir from '@/views/pengujian-rkl-rpl/components/beritaAcaraAndalRklRpl/DaftarHadir';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
@@ -58,13 +89,13 @@ export default {
   components: {
     FormBerita,
     DaftarHadir,
-    WorkFlow,
   },
   data() {
     return {
       idProject: this.$route.params.id,
       loadingSubmit: false,
       loadingTuk: false,
+      loadingAccept: false,
       reports: {},
       docs: {},
       loadingDocs: false,
@@ -75,8 +106,16 @@ export default {
       members: [],
     };
   },
+  computed: {
+    acceptedTitle() {
+      if (this.reports.is_accepted) {
+        return 'Andal RKL RPL Dilanjutkan ke Uji Kelayakan';
+      } else {
+        return 'Andal RKL RPL Tidak Dilanjutkan ke Uji Kelayakan';
+      }
+    },
+  },
   async created() {
-    this.$store.dispatch('getStep', 3);
     this.loadingTuk = true;
     this.idProject = this.$route.params.id;
     await this.getTukMembers();
@@ -99,14 +138,16 @@ export default {
       });
       this.docs = data;
       const a = document.createElement('a');
-      a.href = window.location.origin + `/storage/ba-ka/ba-ka-${data}.docx`;
-      a.setAttribute('download', `ba-ka-${data}.docx`);
+      a.href =
+        window.location.origin +
+        `/storage/ba-andal-rkl-rpl/ba-andal-rkl-rpl-${data}.docx`;
+      a.setAttribute('download', `ba-andal-rkl-rpl-${data}.docx`);
       a.click();
       this.loadingDocs = false;
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
-        '/template_berita_acara.docx',
+        '/template_berita_acara_arr.docx',
         (error, content) => {
           if (error) {
             throw error;
@@ -144,7 +185,7 @@ export default {
 
           saveAs(
             this.out,
-            `ba-ka-${this.docs.project_title.toLowerCase()}.docx`
+            `ba-andal-rkl-rpl-${this.docs.project_title.toLowerCase()}.docx`
           );
           this.loadingDocs = false;
         }
@@ -336,6 +377,27 @@ export default {
     },
     updateUploadFile({ name }) {
       this.reports.file = name;
+    },
+    acceptOrNot(accept) {
+      this.$confirm('Apakah anda yakin ?', 'Warning', {
+        confirmButtonText: 'Ya',
+        cancelButtonText: 'Tidak',
+        type: 'warning',
+      })
+        .then(() => {
+          this.loadingAccept = true;
+          meetingReportResource.store({
+            accept: 'true',
+            idProject: this.$route.params.id,
+            documentType: 'rkl-rpl',
+            isAccepted: accept,
+          });
+          this.loadingAccept = false;
+          this.reports.is_accepted = accept;
+        })
+        .catch(() => {
+          this.loadingAccept = false;
+        });
     },
   },
 };
