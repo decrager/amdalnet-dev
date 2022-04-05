@@ -106,6 +106,9 @@ export default {
         case 'sub-project-rona-awals':
           id = this.component.id_sub_project_rona_awal;
           break;
+        case 'project-kegiatan-lain-sekitar':
+          id = this.component.id_project_kegiatan_lain_sekitar;
+          break;
         default:
       }
       return id;

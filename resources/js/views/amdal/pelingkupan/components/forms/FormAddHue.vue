@@ -24,7 +24,7 @@
 
           <div v-if="masterComponent" style="line-height: 140%; margin-top: 1.5em; padding: 1em; border:1px solid #cccccc; border-radius: 0.5em;">
             <div><strong>Komponen Kegiatan</strong></div>
-            <div>{{ masterComponent.name }}</div>
+            <div style="margin:1em 0;">{{ masterComponent.name }} &nbsp;<i v-if="masterComponent.is_master" class="el-icon-success" style="color:#2e6b2e;" /></div>
             <deskripsi :description="masterComponent.description" :measurement="masterComponent.measurement" />
           </div>
           <div style="line-height: 140%; margin-top: 1.5em; padding: 1em; border:1px solid #cccccc; border-radius: 0.5em;">
