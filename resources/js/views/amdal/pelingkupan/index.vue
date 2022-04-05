@@ -5,6 +5,8 @@
       :hues="hues"
       :component-types="component_types"
       :project-stages="project_stages"
+      @componentDeleted="onComponentDeleted"
+      @hueDeleted="onComponentDeleted"
       @refreshData="refreshData"
     />
     <tabel-pelingkupan
@@ -12,6 +14,8 @@
       :master-hues="hues"
       :component-types="component_types"
       :project-stages="project_stages"
+      :refresh-components="doRefreshComponents"
+      @refreshed="onRefreshedScoping"
     />
     <Comment :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
   </div>
@@ -66,6 +70,8 @@ export default {
       loadingMasterHues: false,
       loadingProjectStages: false,
       loadingComponentTypes: false,
+      doRefreshComponents: false,
+      doRefreshHues: false,
     };
   },
   mounted() {
@@ -155,6 +161,17 @@ export default {
       this.getComponentTypes();
       this.getComponentMasterData();
       this.getHueMasterData();
+    },
+    onComponentDeleted(val){
+      this.doRefreshComponents = true;
+      console.log('I\'m calling refresh co!');
+    },
+    onHueDeleted(val){
+      this.doRefreshComponents = true;
+      console.log('I\'m calling refresh hue!');
+    },
+    onRefreshedScoping(){
+      this.doRefreshComponents = false;
     },
   },
 };
