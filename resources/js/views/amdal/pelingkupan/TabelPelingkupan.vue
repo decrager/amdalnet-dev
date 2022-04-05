@@ -5,7 +5,7 @@
         :icon="(loadingSubProjects || loadingComponents || loadingHues) ? 'el-icon-loading' : 'el-icon-refresh'"
         :disabled="loadingSubProjects || loadingComponents || loadingHues"
         @click="refresh()"
-      > Refresh Data
+      > Refresh Data Pelingkupan
       </el-button>
     </div>
     <el-tabs v-if="projectStages.length > 0" v-model="activeName" @tab-click="handleTabClick">
