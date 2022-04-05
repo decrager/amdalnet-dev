@@ -95,10 +95,11 @@
                   <el-input-number
                     v-model="data.study_length_year"
                     size="small"
+                    :min="0"
                     :disabled="!isFormulator"
                     @change="hasChanges"
                   /> &nbsp;&nbsp;tahun</span>
-                <span><el-input-number v-model="data.study_length_month" size="small" :disabled="!isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
+                <span><el-input-number v-model="data.study_length_month" size="small" :min="0" :disabled="!isFormulator" @change="hasChanges" /> &nbsp;&nbsp;bulan</span>
               </div>
               <div v-else>
                 <span style="margin-right: 1em;"><strong>{{ data.study_length_year }}</strong> tahun</span> <span><strong>{{ data.study_length_month }}</strong> bulan </span>
