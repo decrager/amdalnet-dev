@@ -4,6 +4,7 @@
       <el-button
         :icon="(loadingSubProjects || loadingComponents || loadingHues) ? 'el-icon-loading' : 'el-icon-refresh'"
         :disabled="loadingSubProjects || loadingComponents || loadingHues"
+        size="small"
         @click="refresh()"
       > Refresh Data Pelingkupan
       </el-button>

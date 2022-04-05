@@ -1,11 +1,11 @@
 <template>
   <div style="border:1px solid #e0e0e0; border-radius:0.5em; padding: 1em 1.5em 2.5em;">
-    <div style="text-align: right;">
+    <div style="text-align: right; margin-bottom:1em;">
       <el-button
         icon="el-icon-refresh"
+        size="small"
         @click="refresh()"
-      > Refresh Master Data
-      </el-button>
+      > Refresh Master Data</el-button>
     </div>
     <el-row :gutter="10">
       <el-col :span="8">

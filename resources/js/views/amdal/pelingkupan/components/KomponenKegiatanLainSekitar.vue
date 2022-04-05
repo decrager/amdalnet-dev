@@ -15,14 +15,13 @@
       </div>
       <!-- form -->
       <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
-      <!-- <form-komponen-kegiatan-lain-sekitar
+      <form-komponen-kegiatan-lain-sekitar
         :show="showForm"
         :mode="mode"
-        :component-types="componentTypes"
         :input="selectedData"
         @onSave="onSaveData"
         @onClose="showForm = false"
-      />-->
+      />
       <form-delete-component
         v-if="deleted !== null"
         :component="deleted"
@@ -35,13 +34,13 @@
   </div>
 </template>
 <script>
-// import FormKomponenLingkungan from './forms/FormKomponenLingkungan.vue';
+import FormKomponenKegiatanLainSekitar from './forms/FormKomponenKegiatanLainSekitar.vue';
 import ComponentsList from './tables/ComponentsList.vue';
 import FormDeleteComponent from './forms/FormDeleteComponent.vue';
 
 export default {
   name: 'KomponenKegiatanLainSekitar',
-  components: { ComponentsList, FormDeleteComponent },
+  components: { FormKomponenKegiatanLainSekitar, ComponentsList, FormDeleteComponent },
   props: {
     components: {
       type: Array,

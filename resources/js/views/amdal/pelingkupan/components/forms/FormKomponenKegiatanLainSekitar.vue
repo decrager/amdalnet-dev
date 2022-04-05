@@ -1,0 +1,258 @@
+<template>
+  <div>
+    <el-dialog
+      :title="'Master Data Komponen Kegiatan Lain Sekitar'"
+      :visible.sync="show"
+      width="40%"
+      height="450"
+      :destroy-on-close="true"
+      :before-close="handleClose"
+      :close-on-click-modal="false"
+      @open="onOpen"
+    >
+      <div v-loading="isSaving">
+        <el-form label-position="top">
+          <el-form-item label="Nama Kegiatan">
+            <el-select
+              v-model="data.id"
+              style="width:100%"
+              clearable
+              filterable
+              :disabled="noMaster"
+              :loading="loadingMaster"
+              loading-text="Memuat data..."
+              @change="onSelectActivity"
+              @clear="onClearActivity"
+            >
+              <el-option
+                v-for="item in master"
+                :key="item.value"
+                :label="item.name"
+                :value="item.id"
+              >
+                <span>{{ item.name }} &nbsp;<i v-if="item.is_master" class="el-icon-success" style="color:#2e6b2e;" /></span>
+              </el-option>
+            </el-select>
+            <el-checkbox v-model="noMaster" @change="onChangeInput"><span style="font-size: 90%;">Menambahkan Komponen Kegiatan Lain Sekitar</span></el-checkbox>
+            <el-input
+              v-if="noMaster"
+              v-model="data.name"
+              placeholder="Nama Komponen Kegiatan..."
+            />
+          </el-form-item>
+          <div style="font-weight:bold;margin:1.5em 0 0.5em;">Lokasi</div>
+          <div style="padding: 1em 1.5em; border:1px solid #e0e0e0; border-radius: 0.3em; margin-bottom:1em;">
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Provinsi">
+                  <el-select
+                    v-model="data.province_id"
+                    style="width:100%"
+                    clearable
+                    filterable
+                    :loading="loadingProvinces"
+                    loading-text="Memuat data..."
+                    placeholder="Pilih Provinsi"
+                    @change="onSelectProvince"
+                  >
+                    <el-option
+                      v-for="item in provinces"
+                      :key="item.value"
+                      :label="item.name"
+                      :value="item.id"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Kabupaten/Kota">
+                  <el-select
+                    v-model="data.district_id"
+                    style="width:100%"
+                    clearable
+                    filterable
+                    :loading="loadingDistricts"
+                    loading-text="Memuat data..."
+                    placeholder="Pilih Kabupaten/Kota"
+                    @change="handleSelect"
+                  >
+                    <el-option
+                      v-for="item in districts"
+                      :key="item.value"
+                      :label="item.name"
+                      :value="item.id"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="Alamat">
+              <el-input
+                v-model="data.address"
+                type="textarea"
+                :autosize="{ minRows: 3, maxRows: 5}"
+                maxlength="256"
+                show-word-limit
+              />
+            </el-form-item>
+          </div>
+          <el-form-item label="Deskripsi">
+            <klseditor
+              :key="'master_kegiatan_lain_scoping_113'"
+              v-model="data.description"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :height="100"
+              :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+              style="width:100%"
+            />
+          </el-form-item>
+          <el-form-item label="Besaran">
+            <el-input
+              v-model="data.measurement"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5}"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="default" @click="handleClose">Batal</el-button>
+        <el-button type="primary" @click="handleSaveForm">Simpan</el-button>
+      </span>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import KLSEditor from '@/components/Tinymce';
+import Resource from '@/api/resource';
+const klsResource = new Resource('kegiatan-lain-sekitar');
+const provinceResource = new Resource('provinces');
+const districtResource = new Resource('districts');
+
+export default {
+  name: 'FormKomponenKegiatanLainSekitar',
+  components: {
+    'klseditor': KLSEditor,
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: true,
+    },
+    mode: {
+      type: Number,
+      default: 0,
+    },
+    input: {
+      type: Object,
+      default: () => null,
+    },
+  },
+  data(){
+    return {
+      isSaving: false,
+      data: null,
+      noMaster: false,
+      loadingMaster: false,
+      loadingProvinces: false,
+      loadingDistricts: false,
+      provinces: [],
+      districts: [],
+      master: [],
+    };
+  },
+  mounted(){
+    this.initData();
+    this.getMaster();
+    this.getProvinces();
+  },
+  methods: {
+    initData(){
+      this.data = {
+        id: null,
+        name: '',
+        value: '',
+        description: '',
+        measurement: '',
+        is_master: false,
+        province_id: null,
+        district_id: null,
+        address: '',
+      };
+    },
+    async getMaster(){
+      this.loadingMaster = false;
+      this.master = [];
+      await klsResource.list({
+        id_project: parseInt(this.$route.params && this.$route.params.id),
+      }).then((res) => {
+        this.master = res.data;
+      }).finally(() => {
+        this.loadingMaster = false;
+      });
+    },
+    async getProvinces(){
+      this.loadingProvinces = true;
+      await provinceResource.list()
+        .then((res) => {
+          this.provinces = res.data;
+        }).finally(() => {
+          this.loadingProvinces = false;
+        });
+    },
+    async getDistricts(){
+      this.loadingDistricts = true;
+      await districtResource.list({
+        idProv: this.data.province_id,
+      })
+        .then((res) => {
+          this.districts = res.data;
+        })
+        .finally(() => {
+          this.loadingDistricts = false;
+        });
+    },
+    handleSaveForm(){
+      console.log(this.data);
+      this.$emit('onSave', this.data);
+      this.handleClose();
+    },
+    onOpen(){
+      switch (this.mode){
+        case 0:
+          this.initData();
+          break;
+        case 1:
+          // edit mode
+          this.data = this.input;
+          break;
+      }
+      console.log(this.data);
+    },
+    handleClose(){
+      this.$emit('onClose', true);
+    },
+    onSelectActivity(val){
+      const activity = this.master.find(a => a.id === val);
+      if (activity){
+        this.data.name = activity.name;
+        this.data.value = activity.name;
+        this.data.is_master = activity.is_master;
+        this.data.originator_id = activity.originator_id;
+      }
+    },
+    onClearActivity(){
+      this.data.name = '';
+      this.data.value = '';
+      this.data.is_master = false;
+      this.data.originator_id = null;
+      this.data.id = null;
+    },
+    onSelectProvince(sel){
+      this.getDistricts();
+    },
+  },
+};
+</script>
