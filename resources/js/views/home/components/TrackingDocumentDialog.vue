@@ -1,8 +1,8 @@
 <template>
   <el-dialog
     :title="'Lihat Progres Dokumen Lingkungan'"
-    :destroy-on-close="true"
     :visible.sync="show"
+    :before-close="handleClose"
   >
     <div class="form-container">
       <el-form
@@ -43,11 +43,6 @@ export default {
     };
   },
   methods: {
-    cancel() {
-      this.form = {};
-      this.$refs['form'].resetFields();
-      this.$emit('cancel');
-    },
     isValidRegistrationNo(registration_no){
       return registration_no !== undefined &&
         registration_no !== null &&
@@ -73,6 +68,10 @@ export default {
           return false;
         }
       });
+    },
+    async handleClose() {
+      this.$emit('handleClose');
+      this.form = {};
     },
   },
 };
