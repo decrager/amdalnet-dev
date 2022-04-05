@@ -6,7 +6,7 @@
           <el-col :sm="24" :md="12">
             <h3>
               <!-- eslint-disable-next-line vue/html-self-closing -->
-              Tim Uji Kelayakan <br />
+              Penanggung Jawab dan Validator <br />
               {{ title }}
             </h3>
           </el-col>
@@ -86,6 +86,7 @@ export default {
           idType,
           num,
           nik: member.nik,
+          email: member.email,
           position: x.id_feasibility_test_team_member
             ? 'Anggota Tim Uji Kelayakan'
             : 'Anggota Sekretariat Uji Kelayakan',
