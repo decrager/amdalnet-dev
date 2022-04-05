@@ -16,6 +16,7 @@
               v-model="listQuery.search"
               suffix-icon="el-icon search"
               placeholder="Pencarian tim uji kelayakan..."
+              @input="inputSearch"
             >
               <el-button
                 slot="append"
@@ -65,6 +66,7 @@ export default {
         search: null,
       },
       total: 0,
+      timeoutId: null,
     };
   },
   created() {
@@ -77,6 +79,7 @@ export default {
     async getData() {
       this.loading = true;
       const { data, total } = await tukManagementResource.list(this.listQuery);
+      let no = 1;
       this.list = data.map((x) => {
         let name = `Tim Uji Kelayakan ${this.checkAuthority(
           x.authority,
@@ -91,6 +94,11 @@ export default {
         }
 
         x.name = name;
+        x.no =
+          no +
+          this.listQuery.page * this.listQuery.limit -
+          this.listQuery.limit;
+        no++;
         return x;
       });
       this.total = total;
@@ -167,6 +175,14 @@ export default {
       }
 
       return '';
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.getData();
+      }, 500);
     },
   },
 };
