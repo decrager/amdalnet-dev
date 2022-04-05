@@ -566,6 +566,7 @@ export default {
             title: 'Layer Titik Pemantauan',
             renderer: propStyles,
             popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
           });
 
           this.mapGeojsonArray.push(geojsonLayerArray);
@@ -599,6 +600,7 @@ export default {
             title: 'Layer Titik Pengelolaan',
             renderer: propStyles,
             popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
           });
 
           const toggle = document.getElementById('layerKelolaCheckBox');
@@ -630,6 +632,7 @@ export default {
             visible: false,
             renderer: propStyles,
             popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
           });
 
           this.mapGeojsonArray.push(geojsonLayerArray);
@@ -662,6 +665,7 @@ export default {
             title: 'Layer Batas Sosial',
             renderer: propStyles,
             popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
           });
 
           this.mapGeojsonArray.push(geojsonLayerArray);
@@ -694,6 +698,7 @@ export default {
             title: 'Layer Batas Studi',
             renderer: propStyles,
             popupTemplate: popupTemplate(propFields),
+            legendEnabled: false,
           });
 
           this.mapGeojsonArray.push(geojsonLayerArray);
@@ -728,7 +733,6 @@ export default {
         url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
         imageTransparency: true,
         visible: false,
-        visibilityMode: '',
       });
 
       const penutupanLahanToggle = document.getElementById('layerTutupanLahanCheckBox');
