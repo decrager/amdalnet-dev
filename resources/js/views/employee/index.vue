@@ -167,6 +167,8 @@ export default {
         clearTimeout(this.timeoutId);
       }
       this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
         this.getData();
       }, 500);
     },
