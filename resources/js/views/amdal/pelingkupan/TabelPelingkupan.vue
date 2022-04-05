@@ -1,5 +1,13 @@
 <template>
   <div class="scoupingModule" style="margin-top:2em;">
+    <div style="text-align: right;">
+      <el-button
+        :icon="(loadingSubProjects || loadingComponents || loadingHues) ? 'el-icon-loading' : 'el-icon-refresh'"
+        :disabled="loadingSubProjects || loadingComponents || loadingHues"
+        @click="refresh()"
+      > Refresh Data
+      </el-button>
+    </div>
     <el-tabs v-if="projectStages.length > 0" v-model="activeName" @tab-click="handleTabClick">
       <el-tab-pane
         v-for="(stage, index) in projectStages"
@@ -12,7 +20,7 @@
           style="margin-top: 1em;"
         >
           <el-col :span="4">
-            <el-card v-if="subProjects.length > 0" shadow="never">
+            <el-card v-if="subProjects.length > 0" v-loading="loadingSubProjects" shadow="never">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Utama</span>
               </div>
@@ -29,7 +37,7 @@
                 @onSelect="onSelectSubProjects"
               />
             </el-card>
-            <el-card v-if="subProjects.length > 0" shadow="never" style="margin-top:1em;">
+            <el-card v-if="subProjects.length > 0" v-loading="loadingSubProjects" shadow="never" style="margin-top:1em;">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Pendukung</span>
               </div>
@@ -202,6 +210,10 @@ export default {
         return [];
       },
     },
+    refreshComponents: {
+      type: Boolean,
+      default: false,
+    },
   },
   data(){
     return {
@@ -236,6 +248,7 @@ export default {
       current_component_type: null,
       loadingComponents: false,
       loadingHues: false,
+      loadingSubProjects: false,
       delResource: '',
       deleted: null,
     };
@@ -248,12 +261,34 @@ export default {
       return this.$store.getters.roles.includes('formulator');
     },
   },
+  watch: {
+    refreshComponents: {
+      deep: true,
+      handler(val, oldVal){
+        if (val === true){
+          this.getSubProjectComponents();
+          this.getSubProjectsHues();
+        }
+      },
+    },
+    /* function(val, old){
+      console.log(val, refreshComponents);
+      if (val === true){
+        this.getSubProjectComponents();
+        this.getSubProjectsHues();
+      }
+    },*/
+  },
   mounted(){
     this.id_project = this.$route.params && this.$route.params.id;
     this.initActiveScoping();
     this.initMapping();
   },
   methods: {
+    refresh(){
+      this.initActiveScoping();
+      this.initMapping();
+    },
     initActiveScoping() {
       const ps = this.projectStages.find(ps => ps.id === parseInt(this.activeName.charAt(this.activeName.length - 1)));
       this.current_component_type = null;
@@ -291,6 +326,7 @@ export default {
       this.getSubProjectsHues();
     },
     async getSubProjects(){
+      this.loadingSubProjects = true;
       const id = this.$route.params && this.$route.params.id;
       await projectResource.list({ id: id })
         .then((res) => {
@@ -299,7 +335,9 @@ export default {
             // console.log('ada sbproject!', this.subProjects);
           }
         })
-        .finally(() => {});
+        .finally(() => {
+          this.loadingSubProjects = false;
+        });
     },
     async getSubProjectComponents(){
       this.loadingComponents = true;
@@ -324,19 +362,6 @@ export default {
         .finally(() => {
           this.loadingHues = false;
         });
-    },
-    processComponents(){
-    /*  const temp = [];
-      this.savedComponents.map((c) => {
-        const idx = this.components.findIndex(co => co.id == c.id);
-      }); */
-    },
-    processHues(){
-      // const temp = [];
-    },
-    dumpHues(){
-      // console.log(hues);
-      console.log('hues...', this.hues);
     },
     // components and hues
     onSelectComponents(sel){

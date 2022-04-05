@@ -5,6 +5,8 @@
       :hues="hues"
       :component-types="component_types"
       :project-stages="project_stages"
+      @componentDeleted="onComponentDeleted"
+      @hueDeleted="onComponentDeleted"
       @refreshData="refreshData"
     />
     <tabel-pelingkupan
@@ -12,6 +14,8 @@
       :master-hues="hues"
       :component-types="component_types"
       :project-stages="project_stages"
+      :refresh-components="doRefreshComponents"
+      @refreshed="onRefreshedScoping"
     />
     <Comment :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
   </div>
@@ -19,7 +23,7 @@
 <script>
 import TabelPelingkupan from './TabelPelingkupan.vue';
 import MasterKomponen from './MasterKomponen.vue';
-// import Comment from '..'
+import Comment from '../components/Comment.vue';
 
 import Resource from '@/api/resource';
 // const ronaAwalResource = new Resource('rona-awals');
@@ -28,7 +32,7 @@ const projectHueResource = new Resource('project-rona-awals');
 
 export default {
   name: 'ModulPelingkupan',
-  components: { TabelPelingkupan, MasterKomponen },
+  components: { TabelPelingkupan, MasterKomponen, Comment },
   data(){
     return {
       // master data
@@ -66,6 +70,8 @@ export default {
       loadingMasterHues: false,
       loadingProjectStages: false,
       loadingComponentTypes: false,
+      doRefreshComponents: false,
+      doRefreshHues: false,
     };
   },
   mounted() {
@@ -155,6 +161,17 @@ export default {
       this.getComponentTypes();
       this.getComponentMasterData();
       this.getHueMasterData();
+    },
+    onComponentDeleted(val){
+      this.doRefreshComponents = true;
+      console.log('I\'m calling refresh co!');
+    },
+    onHueDeleted(val){
+      this.doRefreshComponents = true;
+      console.log('I\'m calling refresh hue!');
+    },
+    onRefreshedScoping(){
+      this.doRefreshComponents = false;
     },
   },
 };
