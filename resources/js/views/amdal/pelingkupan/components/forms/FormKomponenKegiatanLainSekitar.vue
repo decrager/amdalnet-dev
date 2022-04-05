@@ -12,7 +12,7 @@
     >
       <div v-loading="isSaving">
         <el-form label-position="top">
-          <el-form-item label="Nama Kegiatan">
+          <el-form-item v-if="mode === 0" label="Nama Kegiatan">
             <el-select
               v-model="data.id"
               style="width:100%"
@@ -42,6 +42,12 @@
               placeholder="Nama Komponen Kegiatan Lain Sekitar..."
             />
           </el-form-item>
+          <div v-else>
+            <div><strong>Kegiatan Lain Sekitar</strong></div>
+            <div style="font-size:120%; color:#202020;">
+              {{ data.name }} &nbsp;<span><i v-if="data.is_master" class="el-icon-success" style="color:#2e6b2e;" /></span>
+            </div>
+          </div>
           <div style="font-weight:bold;margin:1.5em 0 0.5em;">Lokasi</div>
           <div style="padding: 1em 1.5em; border:1px solid #e0e0e0; border-radius: 0.3em; margin-bottom:1em;">
             <el-row :gutter="20">
@@ -272,6 +278,7 @@ export default {
         case 1:
           // edit mode
           this.data = this.input;
+          this.getDistricts();
           break;
       }
 
