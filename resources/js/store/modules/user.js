@@ -92,7 +92,7 @@ const actions = {
         })
         .catch(error => {
           // console.log(error.code);
-          if (!request.isCancel(error)){
+          if (!request.isCancel(error) ||  (error.response.status === 401)){
             reject(error);
           }
         });
