@@ -105,6 +105,16 @@
                 <span style="margin-right: 1em;"><strong>{{ data.study_length_year }}</strong> tahun</span> <span><strong>{{ data.study_length_month }}</strong> bulan </span>
               </div>
             </el-form-item>
+            <el-form-item v-if="master.length > 0" label="Kegiatan Lain Sekitar yang Terdampak">
+              <div style="padding: 1em; border: 1px solid #e0e0e0; border-radius: 0.3em;">
+                <el-checkbox-group
+                  v-model="checkedActivities"
+                  @change="onChangeActivites"
+                >
+                  <el-checkbox v-for="(activity, idx) in master" :key="activity.id" :label="idx">{{ activity.name }}</el-checkbox>
+                </el-checkbox-group>
+              </div>
+            </el-form-item>
           </el-form>
         </el-col>
         <el-col :span="16">
@@ -184,6 +194,10 @@ export default {
       type: Number,
       default: 0,
     },
+    master: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -209,6 +223,7 @@ export default {
         { label: 'Batas Waktu Studi', value: 'Batas Waktu Studi' },
         { label: 'Evaluasi Dampak Potensial', value: 'Evaluasi Dampak Potensial' },
       ],
+      checkedActivities: [],
     };
   },
   computed: {
@@ -228,12 +243,44 @@ export default {
       // console.log('watch', val);
       this.dataChanged = false;
       this.getPies();
+      this.getActivities();
     },
     changeTypes: function(val){
       // console.log(val);
     },
   },
   methods: {
+    async getActivities(){
+      this.loadingActivities = true;
+      this.checkedActivities = [];
+      if ((typeof this.data.activities !== 'undefined') && (this.data.activities !== null) && (this.data.activities.length > 0)){
+        const idx = [];
+        this.data.activities.forEach((e) => {
+          const i = this.master.findIndex(c => c.id === e.id);
+          if (i){
+            idx.push(i);
+          }
+        });
+        this.checkedActivities = idx;
+        this.loadingActivities = false;
+      } else {
+        const res = new Resource('impact-kegiatan-lain-sekitar');
+        await res.list({
+          id: this.data.id,
+        }).then((res) => {
+          this.data.activities = res;
+          res.forEach((e) => {
+            const i = this.master.findIndex(c => c.id === e.id);
+            if (i){
+              this.checkedActivities.push(i);
+            }
+          });
+          // console.log(this.checkedActivities);
+        }).finally(() => {
+          this.loadingActivities = false;
+        });
+      }
+    },
     async getPies(){
       this.pies = null;
       this.isLoadingPie = true;
@@ -309,6 +356,24 @@ export default {
       // console.log('onPieFormChanges: ', val);
       this.hasChanges(val);
     },
+    onChangeActivites(val){
+      this.data.activities = [];
+      this.data.pie[2].text = '';
+      this.pies[2].text = '';
+      let text = '';
+      val.forEach((e) => {
+        text = text + '<li><p><strong>' + this.master[e].name + '</strong></p>';
+        text = text + '<p><strong>Deskripsi</strong></p>';
+        text = text + '<p>' + this.master[e].description + '</p>';
+        text = text + '<p><strong>Besaran</strong></p>';
+        text = text + '<p>' + this.master[e].measurement + '</p></li>';
+        this.data.activities.push(this.master[e]);
+      });
+      this.data.pie[2].text = '<ol>' + text + '</ol>';
+      this.pies[2].text = '<ol>' + text + '</ol>';
+      this.hasChanges(true);
+      console.log(this.checkedActivities);
+    },
     saveChanges(){
       // console.log('You\'re initiating save!');
       this.isSaving = true;
@@ -360,6 +425,7 @@ export default {
         this.$emit('hasChanges', this.data);
         // if (this.data.is_hypothetical_significant === true) {
         this.getPies();
+        this.getActivities();
         // }
       }).finally(() => {
         this.isSaving = false;
