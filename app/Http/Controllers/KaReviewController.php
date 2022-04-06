@@ -140,16 +140,16 @@ class KaReviewController extends Controller
             } else {
                 $feasibility_test_team = null;
 
-                if($project->authority == 'Pusat') {
+                if(strtolower($project->authority) == 'pusat') {
                     $feasibility_test_team = FeasibilityTestTeam::where('authority', 'Pusat')->with(['member' => function($q) {
                         $q->where('position', 'Kepala Sekretariat');
                         $q->with('lukMember', 'expertBank');
                     }])->first();
-                } else if($project->authority == 'Provinsi') {
+                } else if(strtolower($project->authority) == 'provinsi') {
                     $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Provinsi'], ['id_province_name', $project->auth_province]])->with(['member' => function($q) {
                         $q->where('position', 'Kepala Sekretariat');
                     }])->first();
-                } else if($project->authority == 'Kabupaten') {
+                } else if(strtolower($project->authority) == 'kabupaten') {
                     $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'], ['id_district_name', $project->auth_district]])->with(['member' => function($q) {
                         $q->where('position', 'Kepala Sekretariat');
                     }])->first();
