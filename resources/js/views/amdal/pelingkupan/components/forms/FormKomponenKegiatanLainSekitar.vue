@@ -221,6 +221,7 @@ export default {
         province_id: null,
         district_id: null,
         address: '',
+        originator_id: null,
         id_project: parseInt(this.$route.params && this.$route.params.id),
         id_project_kegiatan_lain_sekitar: null,
       };
