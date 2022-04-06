@@ -10,6 +10,22 @@
         >
           {{ 'Tambah Bank Ahli' }}
         </el-button>
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian anggota..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
       <expert-bank-table
         :loading="loading"
@@ -47,8 +63,10 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        search: null,
       },
       total: 0,
+      timeoutId: null,
     };
   },
   created() {
@@ -61,14 +79,18 @@ export default {
     async getList() {
       this.loading = true;
       const { data, meta } = await expertBankResource.list(this.listQuery);
-      this.list = data;
+      this.list = data.map((x) => {
+        x.status = this.calculateStatus(x.status);
+        return x;
+      });
       this.total = meta.total;
       this.loading = false;
     },
     handleCreate() {
       this.$router.push({
         name: 'createExpertBank',
-        params: { expertBank: {}},
+        // eslint-disable-next-line object-curly-spacing
+        params: { expertBank: {} },
       });
     },
     handleEditForm(id) {
@@ -80,11 +102,15 @@ export default {
       });
     },
     handleDelete({ id, nama }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Batal',
-        type: 'warning',
-      })
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + nama + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
         .then(() => {
           expertBankResource
             .destroy(id)
@@ -105,6 +131,29 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getList();
+      this.listQuery.search = null;
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getList();
+      }, 500);
+    },
+    calculateStatus(status) {
+      if (status) {
+        return 'Aktif';
+      }
+
+      return 'Tidak Aktif';
     },
   },
 };
