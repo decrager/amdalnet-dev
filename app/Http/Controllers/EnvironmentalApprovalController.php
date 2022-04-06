@@ -23,17 +23,29 @@ class EnvironmentalApprovalController extends Controller
             $sort = $request->sort;
         }
 
-        $environmentalApproval = EnvironmentalApproval::When($request->has('keyword'), function ($query) use ($request) {
-            $columnsToSearch = ['description'];
-            $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('template_type', 'ILIKE', '%'.$request->keyword.'%');
-            foreach($columnsToSearch as $column) {
-                $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
-            }
-            return $indents;
-        })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
-
-        return response()->json($environmentalApproval, 200);
+        if($request->search && ($request->search !== 'null')) {
+            $environmentalApproval = EnvironmentalApproval::where(function($q) use($request) {
+                $q->where(function($query) use($request) {
+                    $query->whereRaw("LOWER(template_type) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(description) LIKE '%" . strtolower($request->search) . "%'");
+                });
+            })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($environmentalApproval, 200);
+        } else {
+            $environmentalApproval = EnvironmentalApproval::When($request->has('keyword'), function ($query) use ($request) {
+                $columnsToSearch = ['description'];
+                $searchQuery = '%' . $request->keyword . '%';
+                $indents = $query->where('template_type', 'ILIKE', '%'.$request->keyword.'%');
+                foreach($columnsToSearch as $column) {
+                    $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+                }
+                return $indents;
+            })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($environmentalApproval, 200);
+        }
     }
 
     /**
