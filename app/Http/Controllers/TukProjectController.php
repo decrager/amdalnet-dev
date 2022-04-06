@@ -32,11 +32,11 @@ class TukProjectController extends Controller
             
             // Get Team Id
             $where = [];
-            if($project->authority == 'Pusat') {
+            if(strtolower($project->authority) == 'pusat') {
                 $where = [['authority', 'Pusat']];
-            } else if($project->authority == 'Provinsi') {
+            } else if(strtolower($project->authority) == 'provinsi') {
                 $where = [['authority', 'Provinsi'],['id_province_name', $project->auth_province]];
-            } else if($project->authority == 'Kabupaten') {
+            } else if(strtolower($project->authority) == 'kabupaten') {
                 $where = [['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]];
             }
 
@@ -74,11 +74,13 @@ class TukProjectController extends Controller
         return Project::select('id', 'registration_no', 'project_title', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district')
                     ->where(function($q) use($team) {
                         if($team->authority == 'Pusat') {
-                            $q->where('authority', 'Pusat');
+                            $q->whereIn('authority', ['Pusat', 'pusat']);
                         } else if($team->authority == 'Provinsi') {
-                            $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]]);
+                            $q->where('auth_province', $team->id_province_name);
+                            $q->whereIn('authority', ['Provinsi', 'provinsi']);
                         } else if($team->authority == 'Kabupaten/Kota') {
-                            $q->where([['authority', 'Kabupaten'],['auth_district', $team->id_district_name]]);
+                            $q->where('auth_district', $team->id_district_name);
+                            $q->whereIn('authority', ['Kabupaten', 'kabupaten']);
                         }
                     })
                     ->where(function($q) use($request) {
