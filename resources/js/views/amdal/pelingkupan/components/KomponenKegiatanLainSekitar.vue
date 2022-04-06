@@ -2,7 +2,7 @@
   <div class="master-komponen">
     <el-card shadow="never">
       <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold; text-transform: uppercase;">
-        <span>Komponen Lingkungan ({{ components.length }})</span>
+        <span>Komponen Kegiatan Lain Sekitar ({{ components.length }})</span>
       </div>
       <div>
         <components-list
@@ -15,10 +15,9 @@
       </div>
       <!-- form -->
       <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
-      <form-komponen-lingkungan
+      <form-komponen-kegiatan-lain-sekitar
         :show="showForm"
         :mode="mode"
-        :component-types="componentTypes"
         :input="selectedData"
         @onSave="onSaveData"
         @onClose="showForm = false"
@@ -27,7 +26,7 @@
         v-if="deleted !== null"
         :component="deleted"
         :show="showDelete"
-        :resource="'project-rona-awals'"
+        :resource="'project-kegiatan-lain-sekitar'"
         @close="showDelete = false"
         @delete="afterDeleteComponent"
       />
@@ -35,13 +34,13 @@
   </div>
 </template>
 <script>
-import FormKomponenLingkungan from './forms/FormKomponenLingkungan.vue';
+import FormKomponenKegiatanLainSekitar from './forms/FormKomponenKegiatanLainSekitar.vue';
 import ComponentsList from './tables/ComponentsList.vue';
 import FormDeleteComponent from './forms/FormDeleteComponent.vue';
 
 export default {
-  name: 'KomponenLingkungan',
-  components: { FormKomponenLingkungan, ComponentsList, FormDeleteComponent },
+  name: 'KomponenKegiatanLainSekitar',
+  components: { FormKomponenKegiatanLainSekitar, ComponentsList, FormDeleteComponent },
   props: {
     components: {
       type: Array,
@@ -67,6 +66,7 @@ export default {
   },
   methods: {
     onSaveData(obj){
+      console.log('save component', obj);
       const index = this.components.findIndex(e => e.id === obj.id);
       if (index < 0){
         this.components.push(obj);

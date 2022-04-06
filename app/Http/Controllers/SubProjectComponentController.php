@@ -9,6 +9,12 @@ use App\Entity\SubProjectRonaAwal;
 use App\Http\Resources\SubProjectComponentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Entity\ImpactIdentification;
+use App\Entity\ProjectComponent;
+use App\Entity\SubProject;
+use SebastianBergmann\CodeCoverage\Report\Xml\Project;
+use App\Entity\ProjectRonaAwal;
+use App\Entity\PotentialImpactEvaluation;
 
 class SubProjectComponentController extends Controller
 {
@@ -20,6 +26,11 @@ class SubProjectComponentController extends Controller
     public function index(Request $request)
     {
         $params = $request->all();
+        if(isset($params['inquire']) && ($params['inquire'])){
+           $spra = SubProjectRonaAwal::where('id_sub_project_component', $request->id_sub_project_component)
+                ->get();
+            return response($spra, 200);
+        }
         if (isset($params['id_project'])){
             $components = SubProjectComponent::select('sub_project_components.*',
                 'components.name AS name_master',
@@ -204,12 +215,55 @@ class SubProjectComponentController extends Controller
      */
     public function destroy(SubProjectComponent $subProjectComponent)
     {
+
         try {
-            // cascade delete for sub_project_rona_awals
-            SubProjectRonaAwal::select('id')
-                ->where('id_sub_project_component', $subProjectComponent->id)
-                ->delete();
-            $subProjectComponent->delete();
+            // get sister subprojects
+
+            $spra = SubProjectRonaAwal::where('id_sub_project_component', $subProjectComponent->id)->get();
+
+            if($spra){
+
+                $sp = SubProject::where('id', $subProjectComponent->id_sub_project)->first();
+                $sSP = SubProject::from('sub_projects')
+                    ->select('sub_projects.id')
+                    ->where('sub_projects.id_project', $sp->id_project)
+                    ->where('sub_projects.id', '<>', $sp->id)->get();
+                $idSubProjects = [];
+                foreach($sSP as $s){
+                    $idSubProjects[] = $s->id;
+                }
+
+
+                foreach($spra as $sra){
+
+                    // if if there's other combination of
+                    $id_rona_awal = $sra->id_rona_awal;
+                    $spcra = SubProjectComponent::from('sub_project_components')
+                      ->select('sub_project_components.id as id_spc', 'sub_project_rona_awals.id as id_spra')
+                      ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id' )
+                      ->where('sub_project_rona_awals.id_rona_awal', $id_rona_awal)
+                      ->where('sub_project_components.id_component', $subProjectComponent->id_component)
+                      ->whereIn('sub_project_components.id_sub_project', $idSubProjects)->get();
+
+                    if(count($spcra) === 0){
+                        // delete impacts with id_component and id_rona_awal
+                        $pc = ProjectComponent::where(['id_project' => $sp->id_project, 'id_component' => $subProjectComponent->id_component])->first();
+                        $pra = ProjectRonaAwal::where(['id_project' => $sp->id_project, 'id_rona_awal' => $id_rona_awal])->first();
+                        $imp = ImpactIdentification::where([
+                            'id_project' => $sp->id_project,
+                            'id_project_component' => $pc->id,
+                            'id_project_rona_awal' => $pra->id
+                        ])->first();
+                        if($imp){
+                            $pie = PotentialImpactEvaluation::where('id_impact_identification', $imp->id)->delete();
+                            $imp->delete();
+                        }
+                    }
+
+                    $sra->delete();
+                }
+            }
+            return response($subProjectComponent->delete(), 200);
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }

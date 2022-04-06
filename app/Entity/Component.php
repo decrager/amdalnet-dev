@@ -16,4 +16,9 @@ class Component extends Model
         'is_master',
         'originator_id'
     ];
+
+    public function stage()
+    {
+        return $this->belongsTo(ProjectStage::class, 'id_project_stage', 'id');
+    }
 }

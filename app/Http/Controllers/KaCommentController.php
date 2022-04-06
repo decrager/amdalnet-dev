@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Comment;
-use App\Entity\Project;
 use App\Entity\ProjectStage;
 use Illuminate\Http\Request;
 
@@ -16,13 +15,66 @@ class KaCommentController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->recap) {
+            $comment_list = [];
+            $comments = Comment::where([['document_type', $request->documentType],['reply_to', null],['id_project', $request->idProject]])->get();
+
+            foreach($comments as $c) {
+                // stage
+                $change_type = '';
+                $rona_awal = '';
+                $component = '';
+
+                if($c->impactIdentification) {
+                    $change_type = $c->impactIdentification->id_change_type ? $c->impactIdentification->changeType->name : '';
+
+                    if($c->impactIdentification->component) {
+                        $component = $c->impactIdentification->component->component->name;
+                    }
+
+                    if($c->impactIdentification->ronaAwal) {
+                        $rona_awal = $c->impactIdentification->ronaAwal->rona_awal->name;
+                    }
+                } else if($c->impactIdentificationClone) {
+                    $change_type = $c->impactIdentificationClone->id_change_type ? $c->impactIdentificationClone->changeType->name : '';
+
+                    if($c->impactIdentificationClone->projectComponent) {
+                        $component = $c->impactIdentificationClone->projectComponent->component->name;
+                    }
+
+                    if($c->impactIdentificationClone->projectRonaAwal) {
+                        $rona_awal = $c->impactIdentificationClone->projectRonaAwal->rona_awal->name;
+                    }
+                }
+
+                $comment_list[] = [
+                    'id' => $c->id,
+                    'stage' => $c->stage ? $c->stage->name : '',
+                    'column' => $c->column_type,
+                    'notes' => $c->description,
+                    'tuk' => $c->user->name,
+                    'impact' => "$change_type $rona_awal akibat $component"
+                ];
+
+                return $comment_list;
+            }
+        }
+
         $komen = null;
 
         if($request->commentType == 'pelingkupan' || $request->commentType == 'peta-batas-andal' || $request->commentType == 'peta-batas-ka') {
             $komen = Comment::where([['document_type', $request->commentType], ['id_project', $request->idProject], ['reply_to', null]])
             ->orderBY('id', 'DESC')->get();
         } else {
-            $komen = Comment::where([['document_type', $request->commentType], ['id_impact_identification', $request->impactIdentification], ['reply_to', null]])
+            $im_column = '';
+
+            if($request->routeName == 'FormulirAmdal') {
+                $im_column = 'id_impact_identification';
+            } else {
+                $im_column = 'id_impact_identification_clone';
+            }
+
+            $komen = Comment::where([['document_type', $request->commentType], [$im_column, $request->impactIdentification], ['reply_to', null]])
                 ->orderBY('id', 'DESC')->get();
         }
 
@@ -43,7 +95,10 @@ class KaCommentController extends Controller
 
             $comments[] = [
                 'id' => $c->id,
-                'id_impact_identification' => $c->id_impact_identification,
+                'id_impact_identification' => 
+                        $c->id_impact_identification ? 
+                        $c->id_impact_identification : 
+                        $c->id_impact_identification_clone,
                 'stage' => $c->id_stage ? ProjectStage::findOrFail($c->id_stage)->name : null,
                 'id_project' => $c->id_project,
                 'created_at' => $c->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
@@ -90,7 +145,6 @@ class KaCommentController extends Controller
 
         $comment = new Comment();
         $comment->id_user = $request->id_user;
-        $comment->id_impact_identification = $request->id_impact_identification != 0 ? $request->id_impact_identification: null;
         $comment->description = $request->description;
         $comment->document_type = $request->document_type;
         $comment->is_checked = false;
@@ -98,12 +152,22 @@ class KaCommentController extends Controller
         $comment->column_type = $request->column_type;
         $comment->id_stage = $request->id_stage;
         $comment->id_project = $request->id_project;
+
+        if($request->routeName == 'FormulirAmdal') {
+            $comment->id_impact_identification = $request->id_impact_identification != 0 ? $request->id_impact_identification: null;
+        } else if($request->routeName == 'penyusunanAndal' || $request->routeName == 'penyusunanRKLRPL') {
+            $comment->id_impact_identification_clone = $request->id_impact_identification != 0 ? $request->id_impact_identification: null;
+        }
+
         $comment->save();
 
         if($request->type == 'parent-comment') {
             return [
                 'id' => $comment->id,
-                'id_impact_identification' => $comment->id_impact_identification,
+                'id_impact_identification' => 
+                    $comment->id_impact_identification ? 
+                    $comment->id_impact_identification : 
+                    $comment->id_impact_identification_clone,
                 'created_at' => $comment->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
                 'user' => $comment->user->name,
                 'is_checked' => $comment->is_checked,

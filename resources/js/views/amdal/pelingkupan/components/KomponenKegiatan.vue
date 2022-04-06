@@ -23,17 +23,26 @@
         @onSave="onSaveData"
         @onClose="showForm = false"
       />
+      <form-delete-component
+        v-if="deleted !== null"
+        :component="deleted"
+        :show="showDelete"
+        :resource="'project-components'"
+        @close="showDelete = false"
+        @delete="afterDeleteComponent"
+      />
 
     </el-card>
   </div>
 </template>
 <script>
 import FormKomponenKegiatan from './forms/FormKomponenKegiatan.vue';
+import FormDeleteComponent from './forms/FormDeleteComponent.vue';
 import ComponentsList from './tables/ComponentsList.vue';
 
 export default {
   name: 'KomponenKegiatan',
-  components: { FormKomponenKegiatan, ComponentsList },
+  components: { FormKomponenKegiatan, ComponentsList, FormDeleteComponent },
   props: {
     components: {
       type: Array,
@@ -54,6 +63,8 @@ export default {
       // components: [],
       mode: 0,
       showForm: false,
+      showDelete: false,
+      deleted: null,
     };
   },
   methods: {
@@ -81,10 +92,18 @@ export default {
       if (this.components.length === 0) {
         return;
       }
-      const idx = this.components.findIndex(e => e.id === id);
+      const co = this.components.find(c => c.id === id);
+      this.deleted = co;
+      this.showDelete = true;
+    },
+    afterDeleteComponent(val){
+      const idx = this.components.findIndex(e => e.id === val);
       if (idx >= 0){
         this.components.splice(idx, 1);
       }
+      this.deleted = null;
+      this.showDelete = false;
+      this.$emit('delete', true);
     },
   },
 };

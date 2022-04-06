@@ -3,8 +3,11 @@
     <master-komponen
       :components="components"
       :hues="hues"
+      :activities="activities"
       :component-types="component_types"
       :project-stages="project_stages"
+      @componentDeleted="onComponentDeleted"
+      @hueDeleted="onComponentDeleted"
       @refreshData="refreshData"
     />
     <tabel-pelingkupan
@@ -12,6 +15,8 @@
       :master-hues="hues"
       :component-types="component_types"
       :project-stages="project_stages"
+      :refresh-components="doRefreshComponents"
+      @refreshed="onRefreshedScoping"
     />
     <Comment :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
   </div>
@@ -19,15 +24,17 @@
 <script>
 import TabelPelingkupan from './TabelPelingkupan.vue';
 import MasterKomponen from './MasterKomponen.vue';
+import Comment from '../components/Comment.vue';
 
 import Resource from '@/api/resource';
 // const ronaAwalResource = new Resource('rona-awals');
 const projectComponentResource = new Resource('project-components');
 const projectHueResource = new Resource('project-rona-awals');
+const projectActivityResource = new Resource('project-kegiatan-lain-sekitar');
 
 export default {
   name: 'ModulPelingkupan',
-  components: { TabelPelingkupan, MasterKomponen },
+  components: { TabelPelingkupan, MasterKomponen, Comment },
   data(){
     return {
       // master data
@@ -35,6 +42,7 @@ export default {
       project_stages: [],
       components: [], // master lokal
       hues: [], // master lokal
+      activities: [],
       commentColumn: [
         {
           label: 'Komponen Kegiatan',
@@ -63,8 +71,11 @@ export default {
       ],
       loadingMasterComponents: false,
       loadingMasterHues: false,
+      loadingMasterActivities: false,
       loadingProjectStages: false,
       loadingComponentTypes: false,
+      doRefreshComponents: false,
+      doRefreshHues: false,
     };
   },
   mounted() {
@@ -72,6 +83,7 @@ export default {
     this.getProjectStages();
     this.getComponentMasterData();
     this.getHueMasterData();
+    this.getActivityMasterData();
   },
   methods: {
     async initData(){
@@ -149,9 +161,33 @@ export default {
         this.loadingMasterHues = false;
       });
     },
+    async getActivityMasterData(){
+      this.loadingMasterActivities = true;
+      await projectActivityResource.list({
+        id_project: parseInt(this.$route.params && this.$route.params.id),
+      })
+        .then((res) => {
+          this.activities = res;
+        }).finally(() => {
+          this.loadingMasterActivities = false;
+        });
+    },
     refreshData(){
+      this.getProjectStages();
+      this.getComponentTypes();
       this.getComponentMasterData();
       this.getHueMasterData();
+    },
+    onComponentDeleted(val){
+      this.doRefreshComponents = true;
+      console.log('I\'m calling refresh co!');
+    },
+    onHueDeleted(val){
+      this.doRefreshComponents = true;
+      console.log('I\'m calling refresh hue!');
+    },
+    onRefreshedScoping(){
+      this.doRefreshComponents = false;
     },
   },
 };

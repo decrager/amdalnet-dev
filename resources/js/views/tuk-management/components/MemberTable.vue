@@ -30,6 +30,12 @@
       </template>
     </el-table-column>
 
+    <el-table-column label="Email" align="center">
+      <template slot-scope="scope">
+        <span>{{ scope.row.email }}</span>
+      </template>
+    </el-table-column>
+
     <el-table-column label="NIK" align="center">
       <template slot-scope="scope">
         <span>{{ scope.row.nik }}</span>

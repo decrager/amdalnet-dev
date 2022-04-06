@@ -58,7 +58,9 @@
               :key="item.value"
               :label="item.name"
               :value="item.name"
-            />
+            >
+              <span>{{ item.name }} &nbsp;<i v-if="item.is_master" class="el-icon-success" style="color:#2e6b2e;" /></span>
+            </el-option>
           </el-select>
           <el-checkbox v-model="noMaster"><span style="font-size: 90%;">Menambahkan Rona Lingkungan</span></el-checkbox>
           <el-input

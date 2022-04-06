@@ -25,7 +25,7 @@
 
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="PELINGKUPAN">
-          <modul-pelingkupan />
+          <modul-pelingkupan v-if="activeName === '1'" />
           <!-- <pelingkupan
             v-if="activeName === '1'"
             @handleReloadVsaList="handleReloadVsaList"
@@ -35,7 +35,9 @@
           <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
         </el-collapse-item>
         <el-collapse-item name="3" title="EVALUASI DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
-          <dampak-hipotetik-m-d />
+          <dampak-hipotetik-m-d
+            v-if="activeName === '3'"
+          />
           <!--
           <dampak-hipotetik
             v-if="activeName === '3'"

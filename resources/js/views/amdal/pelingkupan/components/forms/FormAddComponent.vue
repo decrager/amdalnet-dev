@@ -48,21 +48,6 @@
           <div style="margin: 1em 0;">
             <deskripsi v-if="selected !== null" :description="selected.description" :measurement="selected.measurement" />
           </div>
-          <!--
-            <div v-if="selected !== null" style="line-height: 130%; margin-top:1em; word-break:break-word;">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <div><b>Deskripsi</b></div>
-                <div v-html="selected.description" />
-              </el-col>
-              <el-col :span="12">
-                <div><b>Besaran</b></div>
-                <div style="margin-top: 1em;">{{ selected.measurement}}</div>
-              </el-col>
-            </el-row>
-          </div>
-        </div>
-        -->
         </el-form-item>
 
         <el-form-item label="Deskripsi">
@@ -76,12 +61,6 @@
             :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
             style="width:100%"
           />
-        <!--
-          <el-input
-            v-model="component.description"
-            type="textarea"
-            :autosize="{ minRows: 3, maxRows: 5}"
-          /> -->
         </el-form-item>
         <el-form-item label="Besaran">
           <el-input
@@ -146,6 +125,9 @@ export default {
       selected: null,
       mode: 0,
     };
+  },
+  mounted(){
+    this.onOpen();
   },
   methods: {
     handleClose(){

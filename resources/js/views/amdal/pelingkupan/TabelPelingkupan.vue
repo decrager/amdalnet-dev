@@ -1,6 +1,14 @@
 <template>
   <div class="scoupingModule" style="margin-top:2em;">
-
+    <div style="text-align: right;">
+      <el-button
+        :icon="(loadingSubProjects || loadingComponents || loadingHues) ? 'el-icon-loading' : 'el-icon-refresh'"
+        :disabled="loadingSubProjects || loadingComponents || loadingHues"
+        size="small"
+        @click="refresh()"
+      > Refresh Data Pelingkupan
+      </el-button>
+    </div>
     <el-tabs v-if="projectStages.length > 0" v-model="activeName" @tab-click="handleTabClick">
       <el-tab-pane
         v-for="(stage, index) in projectStages"
@@ -13,7 +21,7 @@
           style="margin-top: 1em;"
         >
           <el-col :span="4">
-            <el-card v-if="subProjects.length > 0" shadow="never">
+            <el-card v-if="subProjects.length > 0" v-loading="loadingSubProjects" shadow="never">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Utama</span>
               </div>
@@ -30,7 +38,7 @@
                 @onSelect="onSelectSubProjects"
               />
             </el-card>
-            <el-card v-if="subProjects.length > 0" shadow="never" style="margin-top:1em;">
+            <el-card v-if="subProjects.length > 0" v-loading="loadingSubProjects" shadow="never" style="margin-top:1em;">
               <div slot="header" class="clearfix card-header" style="text-align:center; font-weight:bold;">
                 <span>Kegiatan Pendukung</span>
               </div>
@@ -65,6 +73,7 @@
                   :show-delete="isFormulator"
                   :de-select-all="activeComponent === null"
                   @edit="editComponent"
+                  @delete="removeComponent"
                   @onSelect="onSelectComponents"
                   @onDeselect="deselectComponents"
                 />
@@ -111,6 +120,7 @@
                       :active-component="activeHue"
                       :de-select-all="activeHue === null"
                       @edit="editHue"
+                      @delete="removeHue"
                       @onSave="onSaveHue"
                       @onSelect="onSelectHues"
                     />
@@ -150,6 +160,17 @@
       @onClose="showAddHue = false"
       @onSave="onSaveHue"
     />
+
+    <form-delete-component
+      v-if="deleted !== null"
+      :id="'scoping_delete_form'+ 1"
+      :key="'scoping_delete_form'"
+      :component="deleted"
+      :show="showDelete"
+      :resource="delResource"
+      @close="showDelete = false"
+      @delete="afterDeleteComponent"
+    />
   </div>
 </template>
 <script>
@@ -157,13 +178,14 @@ import Resource from '@/api/resource';
 import ComponentsList from './components/tables/ComponentsList.vue';
 import FormAddComponent from './components/forms/FormAddComponent.vue';
 import FormAddHue from './components/forms/FormAddHue.vue';
+import FormDeleteComponent from './components/forms/FormDeleteComponent.vue';
 const projectResource = new Resource('projects');
 const subProjectComponent = new Resource('subproject-components');
 const subProjectHue = new Resource('sub-project-rona-awals');
 
 export default {
   name: 'TabelPelingkupan',
-  components: { ComponentsList, FormAddComponent, FormAddHue /* FormPelingkupan*/ },
+  components: { ComponentsList, FormAddComponent, FormAddHue, FormDeleteComponent },
   props: {
     masterComponents: {
       type: Array,
@@ -188,6 +210,10 @@ export default {
       default: function() {
         return [];
       },
+    },
+    refreshComponents: {
+      type: Boolean,
+      default: false,
     },
   },
   data(){
@@ -214,6 +240,7 @@ export default {
       hues: [],
       showForm: false,
       showAddHue: false,
+      showDelete: false,
       mode: 0,
       deSelectAllSPUtama: false,
       deSelectAllSPPendukung: false,
@@ -222,6 +249,9 @@ export default {
       current_component_type: null,
       loadingComponents: false,
       loadingHues: false,
+      loadingSubProjects: false,
+      delResource: '',
+      deleted: null,
     };
   },
   computed: {
@@ -232,12 +262,34 @@ export default {
       return this.$store.getters.roles.includes('formulator');
     },
   },
+  watch: {
+    refreshComponents: {
+      deep: true,
+      handler(val, oldVal){
+        if (val === true){
+          this.getSubProjectComponents();
+          this.getSubProjectsHues();
+        }
+      },
+    },
+    /* function(val, old){
+      console.log(val, refreshComponents);
+      if (val === true){
+        this.getSubProjectComponents();
+        this.getSubProjectsHues();
+      }
+    },*/
+  },
   mounted(){
     this.id_project = this.$route.params && this.$route.params.id;
     this.initActiveScoping();
     this.initMapping();
   },
   methods: {
+    refresh(){
+      this.initActiveScoping();
+      this.initMapping();
+    },
     initActiveScoping() {
       const ps = this.projectStages.find(ps => ps.id === parseInt(this.activeName.charAt(this.activeName.length - 1)));
       this.current_component_type = null;
@@ -275,6 +327,7 @@ export default {
       this.getSubProjectsHues();
     },
     async getSubProjects(){
+      this.loadingSubProjects = true;
       const id = this.$route.params && this.$route.params.id;
       await projectResource.list({ id: id })
         .then((res) => {
@@ -283,7 +336,9 @@ export default {
             // console.log('ada sbproject!', this.subProjects);
           }
         })
-        .finally(() => {});
+        .finally(() => {
+          this.loadingSubProjects = false;
+        });
     },
     async getSubProjectComponents(){
       this.loadingComponents = true;
@@ -308,19 +363,6 @@ export default {
         .finally(() => {
           this.loadingHues = false;
         });
-    },
-    processComponents(){
-    /*  const temp = [];
-      this.savedComponents.map((c) => {
-        const idx = this.components.findIndex(co => co.id == c.id);
-      }); */
-    },
-    processHues(){
-      // const temp = [];
-    },
-    dumpHues(){
-      // console.log(hues);
-      console.log('hues...', this.hues);
     },
     // components and hues
     onSelectComponents(sel){
@@ -463,6 +505,28 @@ export default {
         str.push(e.name);
       });
       return str.join(', ');
+    },
+    // deletes
+    removeComponent(id){
+      this.deleted = this.components.find(c => (c.id === id) && (c.id_sub_project === this.activeScoping.sub_projects.id));
+      this.delResource = 'sub-project-components';
+      this.showDelete = true;
+    },
+    afterDeleteComponent(){
+      this.deleted = null;
+
+      if (this.delResource === 'sub-project-components'){
+        this.getSubProjectComponents();
+      }
+      if (this.delResource === 'sub-project-rona-awals'){
+        this.getSubProjectsHues();
+      }
+      this.delResource = '';
+    },
+    removeHue(id){
+      this.deleted = this.hues.find(h => (h.id === id) && (h.id_sub_project_component === this.activeScoping.component.id_sub_project_component));
+      this.delResource = 'sub-project-rona-awals';
+      this.showDelete = true;
     },
   },
 };

@@ -26,45 +26,15 @@
     </el-table-column>
 
     <el-table-column align="center" label="Nama" sortable prop="name" />
-
-    <el-table-column align="center" label="Jabatan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.position }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Instansi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.institution }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="NIK">
-      <template slot-scope="scope">
-        <span>{{ scope.row.nik }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="TUK">
-      <template slot-scope="scope">
-        <span v-if="scope.row.feasibility_test_team_member !== null">
-          <span
-            v-if="
-              scope.row.feasibility_test_team_member.feasibility_test_team !==
-              null
-            "
-          >
-            <span>{{
-              tukName(
-                scope.row.feasibility_test_team_member.feasibility_test_team
-              )
-            }}</span>
-          </span>
-          <span v-else>-</span>
-        </span>
-        <span v-else>-</span>
-      </template>
-    </el-table-column>
+    <el-table-column align="center" label="Jabatan" sortable prop="position" />
+    <el-table-column
+      align="center"
+      label="Instansi"
+      sortable
+      prop="institution"
+    />
+    <el-table-column align="center" label="NIK" sortable prop="nik" />
+    <el-table-column align="center" label="TUK" sortable prop="team" />
 
     <el-table-column align="center" label="File">
       <template slot-scope="scope">

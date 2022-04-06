@@ -43,10 +43,10 @@ mix
     'vue-i18n',
     'element-ui',
     // 'echarts',
-    'highlight.js',
-    'sortablejs',
+    // 'highlight.js',
+    // 'sortablejs',
     'dropzone',
-    'xlsx',
+    // 'xlsx',
     // 'tui-editor',
     // 'codemirror',
   ])

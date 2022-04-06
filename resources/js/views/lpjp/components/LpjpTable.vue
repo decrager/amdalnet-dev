@@ -42,23 +42,19 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="No. Registrasi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.reg_no }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Nama Perusahaan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Alamat">
-      <template slot-scope="scope">
-        <span>{{ scope.row.address }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column
+      align="center"
+      label="No. Registrasi"
+      sortable
+      prop="reg_no"
+    />
+    <el-table-column
+      align="center"
+      label="Nama Perusahaan"
+      sortable
+      prop="name"
+    />
+    <el-table-column align="center" label="Alamat" sortable prop="address" />
 
     <el-table-column align="center" label="Sertifikat">
       <template slot-scope="scope">
