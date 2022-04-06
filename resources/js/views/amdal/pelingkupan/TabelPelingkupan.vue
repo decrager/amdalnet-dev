@@ -90,7 +90,7 @@
             </el-card>
           </el-col>
           <el-col :span="16">
-            <table v-if="(componentTypes.length > 0)" id="scoupingTable" v-loading="loadingHues">
+            <table v-if="(componentTypes.length > 0)" v-loading="loadingHues" class="scoupingTable">
               <thead style=" background: #216221 !important; ">
                 <tr><th colspan="6">Komponen Lingkungan</th></tr>
                 <tr>
@@ -539,9 +539,10 @@ export default {
 <style>
 .scoping  p { font-size: 96%; }
 
-table#scoupingTable{
+table.scoupingTable{
   width:100%;
 }
-table#scoupingTable th.th-hues  {width: 16.67%;}
-table#scoupingTable td { vertical-align: top; font-weight: normal; }
+table.scoupingTable th {color: #ffffff !important; }
+table.scoupingTable th.th-hues  {width: 16.67%;  line-height: 1.25em;}
+table.scoupingTable td { vertical-align: top; font-weight: normal; }
 </style>
