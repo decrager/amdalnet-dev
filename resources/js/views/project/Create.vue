@@ -408,7 +408,7 @@
           label-width="200px"
           style="max-width: 100%"
         >
-          <el-collapse-item title="PERSETUJUAN AWAL(Opsional)" name="5" disabled>
+          <el-collapse-item title="PERSETUJUAN AWAL (Opsional)" name="5" disabled>
             <div role="alert" class="el-alert el-alert--info is-light">
               <div class="el-alert__content">
                 <span class="el-alert__title">
@@ -447,7 +447,7 @@
                 >
                   <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
                   <classic-upload :name="filePreAgreementName" :fid="'filePreAgreement'" @handleFileUpload="handleFilePreAgreementUpload" />
-                  <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi ke Kementrian Investasi</el-tag>
+                  <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi</el-tag>
                 </el-form-item>
               </el-col>
             </el-row>
