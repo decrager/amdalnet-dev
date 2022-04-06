@@ -38,12 +38,26 @@
                         <i class="el-alert__icon el-icon-warning" />
                       </el-tooltip></span>
                     </span>
-                    <el-input v-model="currentProject.description" size="medium" type="textarea" />
+                    <editor
+                      v-model="currentProject.description"
+                      :menubar="''"
+                      :image="false"
+                      :height="150"
+                      :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                    />
+                    <!-- <el-input v-model="currentProject.description" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
                 <el-row>
                   <el-form-item v-if="!isUmk" label="Deskripsi Lokasi" prop="location_desc">
-                    <el-input v-model="currentProject.location_desc" size="medium" type="textarea" />
+                    <editor
+                      v-model="currentProject.location_desc"
+                      :menubar="''"
+                      :image="false"
+                      :height="150"
+                      :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                    />
+                    <!-- <el-input v-model="currentProject.location_desc" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
               </el-col>
@@ -58,7 +72,14 @@
                     <classic-upload :name="filePdfName" :fid="'filePdf'" @handleFileUpload="handleFileTapakProyekPdfUpload" />
                   </el-form-item>
                   <el-form-item v-else label="Deskripsi Lokasi" prop="location_desc">
-                    <el-input v-model="currentProject.location_desc" size="medium" type="textarea" />
+                    <editor
+                      v-model="currentProject.location_desc"
+                      :menubar="''"
+                      :image="false"
+                      :height="150"
+                      :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                    />
+                    <!-- <el-input v-model="currentProject.location_desc" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
               </el-col>
@@ -648,6 +669,7 @@ import popupTemplate from '../webgis/scripts/popupTemplate';
 import centroid from '@turf/centroid';
 import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
 import Print from '@arcgis/core/widgets/Print';
+import editor from '@/components/Tinymce';
 
 export default {
   name: 'CreateProject',
@@ -656,6 +678,7 @@ export default {
     Workflow,
     SubProjectTable,
     KewenanganTable,
+    editor,
   },
   data() {
     var validateAddress = (rule, value, callback) => {
