@@ -22,18 +22,25 @@ class EnvironmentalManagemenSopController extends Controller
             $sort = $request->sort;
         }
 
-        $envManagamentSop = EnvManagamentSop::When($request->has('keyword'), function ($query) use ($request) {
-            $columnsToSearch = ['sop_type'];
-            $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('sop_type', 'ILIKE', '%'.$request->keyword.'%');
-            
-            foreach($columnsToSearch as $column) {
-                $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
-            }
-            return $indents;
-        })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
-
-        return response()->json($envManagamentSop, 200);
+        if($request->search && ($request->search !== 'null')) {
+            $envManagamentSop = EnvManagamentSop::whereRaw("LOWER(sop_type) LIKE '%" . strtolower($request->search) . "%'")
+                            ->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($envManagamentSop, 200);
+        } else {
+            $envManagamentSop = EnvManagamentSop::When($request->has('keyword'), function ($query) use ($request) {
+                $columnsToSearch = ['sop_type'];
+                $searchQuery = '%' . $request->keyword . '%';
+                $indents = $query->where('sop_type', 'ILIKE', '%'.$request->keyword.'%');
+                
+                foreach($columnsToSearch as $column) {
+                    $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+                }
+                return $indents;
+            })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($envManagamentSop, 200);
+        }
     }
 
     /**
