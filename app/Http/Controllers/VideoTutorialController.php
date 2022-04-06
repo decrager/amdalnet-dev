@@ -22,13 +22,20 @@ class VideoTutorialController extends Controller
             $sort = $request->sort;
         }
 
-        $videoTutorial = VideoTutorial::When($request->has('keyword'), function ($query) use ($request) {
-            $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('tutorial_type', 'ILIKE', '%'.$request->keyword.'%');
-            return $indents;
-        })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+        if($request->search && ($request->search !== 'null')) {
+            $videoTutorial = VideoTutorial::whereRaw("LOWER(tutorial_type) LIKE '%" . strtolower($request->search) . "%'")
+                            ->orderby('id', 'desc')->paginate($request->limit);
+            return response()->json($videoTutorial, 200);
+        } else {
+            $videoTutorial = VideoTutorial::When($request->has('keyword'), function ($query) use ($request) {
+                $searchQuery = '%' . $request->keyword . '%';
+                $indents = $query->where('tutorial_type', 'ILIKE', '%'.$request->keyword.'%');
+                return $indents;
+            })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($videoTutorial, 200);
+        }
 
-        return response()->json($videoTutorial, 200);
     }
 
     /**
