@@ -224,6 +224,7 @@ export default {
         id_project: parseInt(this.$route.params && this.$route.params.id),
         id_project_kegiatan_lain_sekitar: null,
       };
+      this.noMaster = false;
     },
     async getMaster(){
       this.loadingMaster = false;
@@ -274,6 +275,7 @@ export default {
       switch (this.mode){
         case 0:
           this.initData();
+          this.getMaster();
           break;
         case 1:
           // edit mode
