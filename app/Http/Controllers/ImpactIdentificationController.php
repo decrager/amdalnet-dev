@@ -21,6 +21,8 @@ use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
 use App\Entity\ProjectComponent;
+use App\Entity\ImpactKegiatanLainSekitar;
+use App\Entity\ImpactAnalysisDetail;
 
 class ImpactIdentificationController extends Controller
 {
@@ -875,6 +877,22 @@ class ImpactIdentificationController extends Controller
                         }
                         $p->text = $pie['text'];
                         $p->save();
+                    }
+                }
+                if(isset($imp['activities'])){
+                    if(Empty($imp['activities'])){
+                        $res = ImpactKegiatanLainSekitar::where('id_impact_identification', $imp['id'])->delete();
+                    } else {
+                        $ids = [];
+                        foreach($imp['activities'] as $act){
+                            $co = ImpactKegiatanLainSekitar::firstOrCreate([
+                                'id_impact_identification' => $imp['id'],
+                                'id_project_kegiatan_lain_sekitar' => $act['id_project_kegiatan_lain_sekitar']
+                            ]);
+                            $ids[] = $co->id;
+                        }
+                        $res = ImpactKegiatanLainSekitar::where('id_impact_identification', $imp['id'])
+                          ->whereNotIn('id', $ids)->delete();
                     }
                 }
 
