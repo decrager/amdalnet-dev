@@ -281,7 +281,7 @@ export default {
         case 1:
           // edit mode
           this.data = this.input;
-          this.data.id_project = this.input.originator_id;
+          this.data.id_project = parseInt(this.$route.params && this.$route.params.id);
           this.getDistricts();
           break;
       }
