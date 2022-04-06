@@ -61,7 +61,7 @@
                 <a href="#" @click="handleSetMenu('IZIN')">Daftar Izin</a>
               </li>
               <li>
-                <a href="">Startistik Izin</a>
+                <a href="">Statistik Izin</a>
               </li>
               <li>
                 <a href="">Daftar LPJP</a>

@@ -1,5 +1,5 @@
 import { login, logout, getInfo } from '@/api/auth';
-import axios from 'axios';
+// import axios from 'axios';
 import { isLogged, setLogged, removeToken } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
