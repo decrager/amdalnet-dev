@@ -257,7 +257,7 @@ export default {
         const idx = [];
         this.data.activities.forEach((e) => {
           const i = this.master.findIndex(c => c.id === e.id);
-          if (i){
+          if (i >= 0){
             idx.push(i);
           }
         });
@@ -271,7 +271,7 @@ export default {
           this.data.activities = res;
           res.forEach((e) => {
             const i = this.master.findIndex(c => c.id === e.id);
-            if (i){
+            if (i >= 0){
               this.checkedActivities.push(i);
             }
           });
