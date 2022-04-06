@@ -1,5 +1,5 @@
 import { login, logout, getInfo } from '@/api/auth';
-import request from '@/utils/request';
+import axios from 'axios';
 import { isLogged, setLogged, removeToken } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
@@ -92,7 +92,8 @@ const actions = {
         })
         .catch(error => {
           // console.log(error.code);
-          if (!request.isCancel(error) || (error.response.status === 401)){
+          // if (!axios.isCancel(error)) {
+          if (error.response && error.response.status === 401) {
             reject(error);
           }
         });
