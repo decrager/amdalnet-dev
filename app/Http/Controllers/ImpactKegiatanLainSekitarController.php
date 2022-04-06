@@ -39,7 +39,9 @@ class ImpactKegiatanLainSekitarController extends Controller
          ->join('impact_kegiatan_lain_sekitars', 'impact_kegiatan_lain_sekitars.id_project_kegiatan_lain_sekitar', '=', 'project_kegiatan_lain_sekitars.id')
          ->leftJoin('provinces', 'provinces.id', '=', 'project_kegiatan_lain_sekitars.province_id')
          ->leftJoin('districts', 'districts.id', '=', 'project_kegiatan_lain_sekitars.district_id')
-         ->where('impact_kegiatan_lain_sekitars.id_impact_identification', $request->id)->get();
+         ->where('impact_kegiatan_lain_sekitars.id_impact_identification', $request->id)
+         ->where('impact_kegiatan_lain_sekitars.is_andal', $request->mode)
+         ->get();
 
          return response($res, 200);
 

@@ -54,7 +54,7 @@
               <template v-for="(impact, idx) in stage.data">
                 <tr :key="'impact_'+ impact.id" class="title" animated>
                   <td style="width:30px;">{{ (idx + 1) }}.</td>
-                  <td>{{ impact.kegiatan }}</td>
+                  <td>{{ impact.sub_projects }}</td>
                   <td><div v-html="impact.initial_study_plan" /></td>
                   <td>{{ impact.rona_awal }}</td>
                   <td>

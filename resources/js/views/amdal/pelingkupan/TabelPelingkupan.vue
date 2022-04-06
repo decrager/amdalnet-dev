@@ -147,6 +147,7 @@
       :data="activeScoping"
       :master="(activeScoping.component !== null) ? masterComponents.find(c => c.id === activeScoping.component.id ) : null"
       :master-components="getComponentOptions()"
+      :mode="mode"
       @onClose="showForm = false"
       @onSave="onSaveComponent"
     />
@@ -157,6 +158,7 @@
       :master-component="(activeScoping.component !== null) ? masterComponents.find(c => c.id === activeScoping.component.id) : null"
       :master="(activeScoping.rona_awal !== null) ? masterHues.find(h => h.id === activeScoping.rona_awal.id) : null"
       :master-hues="(getHueOptions()).filter(c => c.id_component_type === activeScoping.id_component_type)"
+      :mode="mode"
       @onClose="showAddHue = false"
       @onSave="onSaveHue"
     />
@@ -215,6 +217,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
@@ -241,7 +247,6 @@ export default {
       showForm: false,
       showAddHue: false,
       showDelete: false,
-      mode: 0,
       deSelectAllSPUtama: false,
       deSelectAllSPPendukung: false,
       deSelectAllComponents: false,
@@ -343,7 +348,7 @@ export default {
     async getSubProjectComponents(){
       this.loadingComponents = true;
       this.components = [];
-      await subProjectComponent.list({ id_project: this.id_project, scoping: true })
+      await subProjectComponent.list({ id_project: this.id_project, scoping: true, mode: this.isAndal })
         .then((res) => {
           this.components = res;
           this.initBEVComponent();
@@ -355,7 +360,7 @@ export default {
     async getSubProjectsHues(){
       this.loadingHues = true;
       this.hues = [];
-      await subProjectHue.list({ id_project: this.id_project, scoping: true })
+      await subProjectHue.list({ id_project: this.id_project, scoping: true, mode: this.isAndal })
         .then((res) => {
           this.hues = res;
           this.initBEVHue();

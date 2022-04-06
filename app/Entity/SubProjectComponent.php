@@ -17,6 +17,7 @@ class SubProjectComponent extends Model
         'description_specific',
         'definition',
         'unit',
+        'is_andal',
     ];
 
     public function subProject()
