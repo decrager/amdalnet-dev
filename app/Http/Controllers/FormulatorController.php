@@ -36,16 +36,26 @@ class FormulatorController extends Controller
         return FormulatorResource::collection(
             Formulator::where(function ($query) use ($request) {
                 if ($request->active && ($request->active == 'true')) {
-                    return $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+                    $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
                         ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
                 } else if($request->active && ($request->active == 'false')) {
-                    return $query->where('date_end', '<', date('Y-m-d H:i:s'));
+                    $query->where('date_end', '<', date('Y-m-d H:i:s'));
                 } else if($request->active && ($request->active === 'bersertifikat')) {
-                    return $query->whereIn('membership_status', ['KTPA', 'ATPA']);
-                } else if($request->search) {
-                    return $query->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                    $query->whereIn('membership_status', ['KTPA', 'ATPA']);
                 }
-                return '';
+            })
+            ->where(function($query) use($request) {
+                if($request->search) {
+                    $query->where(function($q) use($request) {
+                        $q->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        $q->whereRaw("LOWER(reg_no) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        $q->whereRaw("LOWER(cert_no) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        $q->whereRaw("LOWER(membership_status) LIKE '%" . strtolower($request->search) . "%'");
+                    });
+                }
             })
             ->orderBy('created_at', 'DESC')->paginate($request->limit)
             ->appends(['active' => $request->active])
