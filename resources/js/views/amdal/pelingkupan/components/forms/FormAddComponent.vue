@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title=" title[mode] + ' Komponen Lingkungan'"
+    :title=" title[formMode] + ' Komponen Lingkungan'"
     :visible.sync="show"
     width="50%"
     :before-close="handleClose"
@@ -107,6 +107,10 @@ export default {
         return [];
       },
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
@@ -123,7 +127,7 @@ export default {
       isSaving: false,
       title: ['Tambah', 'Edit'],
       selected: null,
-      mode: 0,
+      formMode: 0,
     };
   },
   mounted(){
@@ -137,7 +141,7 @@ export default {
     onOpen(){
       this.initData();
       if (this.master !== null){ // not yet having component ref
-        this.mode = 1;
+        this.formMode = 1;
         this.selected = this.master;
         this.component = {
           id: this.master.id,
@@ -195,7 +199,7 @@ export default {
         });
     },
     initData(){
-      this.mode = 0;
+      this.formMode = 0;
       this.selected = null;
       this.component.id = null;
       this.component.id_component = null;
@@ -205,6 +209,7 @@ export default {
       this.component.id_sub_project = null;
       this.component.id_sub_project_component = null;
       this.component.value = '';
+      this.component.mode = this.mode;
     },
   },
 

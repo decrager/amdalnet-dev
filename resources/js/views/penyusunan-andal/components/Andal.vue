@@ -11,7 +11,7 @@
           <span class="title">PELINGKUPAN</span>
         </template>
         <!-- <Pelingkupan v-if="activeName === 'pelingkupan'" /> -->
-        <modul-pelingkupan v-if="activeName === 'pelingkupan'" />
+        <modul-pelingkupan v-if="activeName === 'pelingkupan'" :mode="1" />
       </el-collapse-item>
       <el-collapse-item name="matriks-identifikasi">
         <template slot="title" class="head-accordion">

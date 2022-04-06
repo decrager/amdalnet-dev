@@ -17,13 +17,14 @@ class SubProjectRonaAwal extends Model
         'description_specific',
         'definisi',
         'unit',
+        'is_andal'
     ];
 
     public function subProjectComponent()
     {
         return $this->belongsTo(SubProjectComponent::class, 'id_sub_project_component');
     }
-    
+
     public function ronaAwal()
     {
         return $this->belongsTo(RonaAwal::class, 'id_rona_awal');
