@@ -743,7 +743,7 @@ export default {
 
       return envManagePlan && envMonitorPlan;
     },
-    tukAccess(project, role) {
+    tukAccess(project, roleAccount) {
       if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
         if (project.tuk_project) {
           if (project.tuk_project.length > 0) {
@@ -752,7 +752,7 @@ export default {
             });
 
             if (role) {
-              if (role.role === role || role.role === 'pjm') {
+              if (role.role === roleAccount || role.role === 'pjm') {
                 return true;
               }
             }

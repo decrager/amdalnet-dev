@@ -177,6 +177,7 @@ export default {
       this.getComponentTypes();
       this.getComponentMasterData();
       this.getHueMasterData();
+      this.getActivityMasterData();
     },
     onComponentDeleted(val){
       this.doRefreshComponents = true;
