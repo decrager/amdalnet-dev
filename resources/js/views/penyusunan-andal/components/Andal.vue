@@ -11,6 +11,7 @@
           <span class="title">PELINGKUPAN</span>
         </template>
         <Pelingkupan v-if="activeName === 'pelingkupan'" />
+        <!-- <modul-pelingkupan v-if="activeName === 'pelingkupan'" /> -->
       </el-collapse-item>
       <el-collapse-item name="matriks-identifikasi">
         <template slot="title" class="head-accordion">
@@ -94,6 +95,7 @@ import DampakHipotetikMD from '@/views/amdal/components/DPDPH.vue';
 import MetodeStudi from '@/views/amdal/components/MetodeStudi.vue';
 import MatriksDPHTable from '@/views/amdal/components/tables/MatriksDPHTable.vue';
 import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
+// import ModulPelingkupan from '@/views/amdal/pelingkupan/index.vue';
 import BaganAlir from '@/views/penyusunan-andal/clone/BaganAlir.vue';
 import BaganAlirDampak from '../components/BaganAlirDampak.vue';
 import EvaluasiHolistik from '@/views/penyusunan-andal/components/EvaluasiHolistik.vue';
@@ -111,6 +113,7 @@ export default {
     MetodeStudi,
     MatriksDPHTable,
     Pelingkupan,
+    // ModulPelingkupan,
     BaganAlir,
     BaganAlirDampak,
     EvaluasiHolistik,

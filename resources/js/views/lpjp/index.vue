@@ -10,22 +10,54 @@
         >
           {{ 'Tambah LPJP' }}
         </el-button>
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian LPJP..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
         <el-tab-pane label="LPJP" name="lpjp">
           <lpjp-table
+            v-if="activeName === 'lpjp'"
             :loading="loading"
             :list="list"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
           />
         </el-tab-pane>
+        <pagination
+          v-show="total > 0 && activeName === 'lpjp'"
+          :total="total"
+          :page.sync="listQuery.page"
+          :limit.sync="listQuery.limit"
+          @pagination="handleFilter"
+        />
         <el-tab-pane label="LPJP Aktif" name="lpjpAktif">
           <lpjp-table
+            v-if="activeName === 'lpjpAktif'"
             :loading="loading"
-            :list="listActive"
+            :list="list"
             @handleEditForm="handleEditForm($event)"
             @handleDelete="handleDelete($event)"
+          />
+          <pagination
+            v-show="total > 0 && activeName === 'lpjpAktif'"
+            :total="total"
+            :page.sync="listQuery.page"
+            :limit.sync="listQuery.limit"
+            @pagination="handleFilter"
           />
         </el-tab-pane>
       </el-tabs>
@@ -35,6 +67,7 @@
 
 <script>
 import Resource from '@/api/resource';
+import Pagination from '@/components/Pagination';
 import LpjpTable from '@/views/lpjp/components/LpjpTable.vue';
 const lpjpResource = new Resource('lpjp');
 
@@ -42,6 +75,7 @@ export default {
   name: 'LpjpList',
   components: {
     LpjpTable,
+    Pagination,
   },
   data() {
     return {
@@ -49,35 +83,42 @@ export default {
       listActive: [],
       loading: true,
       activeName: 'lpjp',
+      listQuery: {
+        page: 1,
+        limit: 10,
+        type: 'list',
+        search: null,
+      },
+      total: 0,
+      timeoutId: null,
     };
   },
   created() {
     this.getList();
   },
   methods: {
-    handleClickTab(tab, event) {
-      if (tab.name === 'lpjpAktif') {
-        this.getListActive();
-      } else if (tab.name === 'penyusunAktif') {
-        this.getListPenyusunActive();
-      }
+    handleFilter() {
+      this.getList();
+    },
+    handleClickTab() {
+      this.listQuery = {
+        page: 1,
+        limit: 10,
+        type: 'list',
+        search: null,
+      };
+      this.total = 0;
+      this.getList();
     },
     async getList() {
       this.loading = true;
-      const { data } = await lpjpResource.list({});
-      this.list = data;
-      this.loading = false;
-    },
-    getListActive() {
-      this.listActive = this.list.filter((item) => {
-        const tglAwal = new Date(item.date_start);
-        const tglAkhir = new Date(item.date_end);
-
-        return (
-          new Date().getTime() >= tglAwal.getTime() &&
-          new Date().getTime() <= tglAkhir.getTime()
-        );
+      const { data, meta } = await lpjpResource.list({
+        ...this.listQuery,
+        active: this.activeName === 'lpjpAktif' ? '1' : '0',
       });
+      this.list = data;
+      this.total = meta.total;
+      this.loading = false;
     },
     handleCreate() {
       this.$router.push({
@@ -123,6 +164,22 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getList();
+      }, 500);
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getList();
+      this.listQuery.search = null;
     },
   },
 };

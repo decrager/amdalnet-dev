@@ -37,8 +37,43 @@ class EmployeeTUKController extends Controller
 
         if($request->type == 'list') {
             $employees = LukMember::where(function($q) use($request) {
-                if($request->search) {
-                    $q->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                $search = $request->search;
+                if($search) {
+                    $search = str_replace('tim', '', strtolower($search));
+                    $search = str_replace('uji', '', $search);
+                    $search = str_replace('kelayakan', '', $search);
+                    $search = str_replace('provinsi', '', $search);
+                    $search = trim($search);
+
+                    $q->where(function($query) use($search) {
+                        $query->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhere(function($query) use($search) {
+                        $query->whereRaw("LOWER(institution) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhere(function($query) use($search) {
+                        $query->whereRaw("LOWER(position) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhere(function($query) use($search) {
+                        $query->whereRaw("LOWER(nik) LIKE '%" . strtolower($search) . "%'");
+                    })->orWhere(function($query) use($search) {
+                        $query->whereHas('feasibilityTestTeamMember', function($que) use($search) {
+                            $que->whereHas('feasibilityTestTeam', function($qu) use($search) {
+                                if($search == 'pusat') {
+                                    $qu->where('authority', 'Pusat');
+                                } else {
+                                    $qu->where(function($quer) use($search) {
+                                        $quer->where('authority', 'Provinsi');
+                                        $quer->whereHas('provinceAuthority', function($queryy) use($search) {
+                                            $queryy->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                                        });
+                                    })->orWhere(function($quer) use($search) {
+                                        $quer->where('authority', 'Kabupaten/Kota');
+                                        $quer->whereHas('districtAuthority', function($queryy) use($search) {
+                                            $queryy->whereRaw("LOWER(name) LIKE '%" . strtolower($search) . "%'");
+                                        });
+                                    });
+                                }
+                            });
+                        });
+                    });
                 }
             })
             ->with(['province', 'district', 'feasibilityTestTeamMember.feasibilityTestTeam' => function($q) {

@@ -3,6 +3,7 @@
     <master-komponen
       :components="components"
       :hues="hues"
+      :activities="activities"
       :component-types="component_types"
       :project-stages="project_stages"
       @componentDeleted="onComponentDeleted"
@@ -29,6 +30,7 @@ import Resource from '@/api/resource';
 // const ronaAwalResource = new Resource('rona-awals');
 const projectComponentResource = new Resource('project-components');
 const projectHueResource = new Resource('project-rona-awals');
+const projectActivityResource = new Resource('project-kegiatan-lain-sekitar');
 
 export default {
   name: 'ModulPelingkupan',
@@ -40,6 +42,7 @@ export default {
       project_stages: [],
       components: [], // master lokal
       hues: [], // master lokal
+      activities: [],
       commentColumn: [
         {
           label: 'Komponen Kegiatan',
@@ -68,6 +71,7 @@ export default {
       ],
       loadingMasterComponents: false,
       loadingMasterHues: false,
+      loadingMasterActivities: false,
       loadingProjectStages: false,
       loadingComponentTypes: false,
       doRefreshComponents: false,
@@ -79,6 +83,7 @@ export default {
     this.getProjectStages();
     this.getComponentMasterData();
     this.getHueMasterData();
+    this.getActivityMasterData();
   },
   methods: {
     async initData(){
@@ -155,6 +160,17 @@ export default {
       }).finally(() => {
         this.loadingMasterHues = false;
       });
+    },
+    async getActivityMasterData(){
+      this.loadingMasterActivities = true;
+      await projectActivityResource.list({
+        id_project: parseInt(this.$route.params && this.$route.params.id),
+      })
+        .then((res) => {
+          this.activities = res;
+        }).finally(() => {
+          this.loadingMasterActivities = false;
+        });
     },
     refreshData(){
       this.getProjectStages();

@@ -59,7 +59,9 @@
                 :key="item.value"
                 :label="item.name"
                 :value="item.id"
-              />
+              >
+                <span>{{ item.name }} &nbsp;<i v-if="item.is_master" class="el-icon-success" style="color:#2e6b2e;" /></span>
+              </el-option>
             </el-select>
             <el-checkbox v-model="noMaster" @change="onChangeInput"><span style="font-size: 90%;">Menambahkan Komponen Kegiatan</span></el-checkbox>
             <el-input
