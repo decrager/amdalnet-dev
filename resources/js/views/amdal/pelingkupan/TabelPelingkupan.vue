@@ -438,6 +438,7 @@ export default {
     },
     addComponent(){
       this.activeScoping.component = null;
+      this.activeComponent = null;
       this.showForm = true;
     },
     editComponent(val){
@@ -522,6 +523,7 @@ export default {
 
       if (this.delResource === 'sub-project-components'){
         this.getSubProjectComponents();
+        this.getSubProjectsHues();
       }
       if (this.delResource === 'sub-project-rona-awals'){
         this.getSubProjectsHues();
