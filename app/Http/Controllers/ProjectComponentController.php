@@ -47,10 +47,23 @@ class ProjectComponentController extends Controller
                ->select('sub_project_components.*')
                ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
                ->where('sub_projects.id_project', $request->id_project)
+               ->where('sub_project_components.is_andal', $request->mode)
                ->where('sub_project_components.id_component', $request->id)->get();
             return response($res, 200);
         }
 
+        /*return DB::select( DB::raw("
+        select c.*, c.name as value, ps.name as project_stage_name,
+        pc.id as id_project_component, pc.description, pc.measurement
+        from components c
+        join project_components pc on pc.id_component = c.id
+        left join project_stages ps on ps.id = c.id_project_stage
+        where c.deleted_at is null and
+        (c.is_master = true or c.originator_id = :val) and pc.is_andal = :andal and pc.id_project = :val
+        "), ['val' =>$request->id_project, 'andal' => $request->mode  ]);*/
+
+
+        // return response($request);
         return response(Component::from('components')
           ->selectRaw('
             components.*,
@@ -62,6 +75,7 @@ class ProjectComponentController extends Controller
           ')
           ->join('project_components', 'project_components.id_component', '=', 'components.id' )
           ->leftJoin('project_stages', 'project_stages.id', 'components.id_project_stage')
+          ->where('project_components.is_andal', $request->mode)
           ->where(function ($q) use ($request) {
               $q->where('components.is_master', true);
               $q->orWhere('components.originator_id', $request->id_project);
@@ -107,6 +121,7 @@ class ProjectComponentController extends Controller
             $pc = ProjectComponent::firstOrNew([
                 'id_project' => $request->id_project,
                 'id_component' => $master->id,
+                'is_andal' => $request->mode
             ]);
             $pc->description = $params['component']['description'];
             $pc->measurement = $params['component']['measurement'];
@@ -240,7 +255,13 @@ class ProjectComponentController extends Controller
     public function destroy(ProjectComponent $projectComponent)
     {
         if($projectComponent){
-            $imps = ImpactIdentification::where('id_project_component', $projectComponent->id)->get();
+            $mode = $projectComponent->is_andal ? 1 :0;
+            $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone'];
+            $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
+            $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
+
+
+            $imps = $impactClasses[$mode]::where('id_project_component', $projectComponent->id)->get();
             $nPie = 0;
             $nSRA = 0;
             $nSPC = 0;
@@ -255,12 +276,13 @@ class ProjectComponentController extends Controller
                     // $hues[] = $imp->id_project_rona_awal;
                     $imp->delete();
                 }
-                $nPie = PotentialImpactEvaluation::whereIn('id_impact_identification', $ids)->delete();
+                $nPie = $pieClasses[$mode]::whereIn($pieIdNames[$mode], $ids)->delete();
             }
             $spcIds = SubProjectComponent::from('sub_project_components')
                 ->select('sub_project_components.id')
                 ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
                 ->where('sub_project_components.id_component', $projectComponent->id_component)
+                ->where('sub_project_components.is_andal', $projectComponent->is_andal)
                 ->where('sub_projects.id_project', $projectComponent->id_project)
                 ->get();
 

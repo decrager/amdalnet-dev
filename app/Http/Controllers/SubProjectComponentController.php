@@ -100,19 +100,6 @@ class SubProjectComponentController extends Controller
 
     public function subProjectComponents(Request $request){
 
-        /* $params = $request->all();
-        if (!isset($params['id_project']) || !$params['id_project'])
-        {
-            return response('no project id is specified', 500);
-        }
-
-        return SubProjectComponent::from('sub_project_components')
-          ->select(
-              'sub_project_components.id',
-              ''
-          )*/
-
-
         // commented by HH, on 20220326
         $params = $request->all();
         if (!isset($params['id_project']) || !$params['id_project'])
@@ -131,9 +118,9 @@ class SubProjectComponentController extends Controller
               )
               ->join('sub_project_components', 'sub_project_components.id_component','=', 'components.id')
               ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
-              ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
+              // ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
               ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
-              ->where('projects.id', $request->id_project)
+              ->where('sub_projects.id_project', $request->id_project)
               ->where('sub_project_components.is_andal', $request->mode)
               ->get());
 
@@ -169,7 +156,7 @@ class SubProjectComponentController extends Controller
             $spc->description_specific = $request->description;
             $spc->unit = $request->measurement;
             if ($spc->save()){
-                return response($spc->id, 200);
+                return response($spc, 200);
             }
 
         }

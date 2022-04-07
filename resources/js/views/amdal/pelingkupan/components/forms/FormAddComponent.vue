@@ -143,6 +143,7 @@ export default {
     onOpen(){
       this.isSaving = false;
       if (this.master === null){
+        this.formMode = 0;
         this.initData();
       } else {
         this.formMode = 1;
@@ -156,6 +157,7 @@ export default {
           description: this.data.component.description,
           measurement: this.data.component.measurement,
           id_sub_project_component: this.data.component.id_sub_project_component,
+          mode: this.mode,
         };
       }
       console.log(this.component);

@@ -14,7 +14,7 @@
         <el-form label-position="top">
 
           <el-form-item
-            v-if="mode === 0"
+            v-if="formMode === 0"
             label="Tahap"
           >
             <el-select
@@ -40,7 +40,7 @@
           </div>
 
           <el-form-item
-            v-if="mode===0"
+            v-if="formMode===0"
             label="Komponen Kegiatan"
             :loading="loading"
           >
@@ -140,6 +140,10 @@ export default {
         return [];
       },
     },
+    formMode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
@@ -192,7 +196,7 @@ export default {
     },
     onOpen(){
       console.log('opening!');
-      switch (this.mode){
+      switch (this.formMode){
         case 0:
           this.initData();
           break;
@@ -220,6 +224,7 @@ export default {
       }
       await projectComponentResource.store({
         id_project: this.project_id,
+        mode: this.mode,
         component: this.data,
       }).then((res) => {
         this.data.id_project_component = res.data.id;
@@ -233,25 +238,6 @@ export default {
       console.log(this.data);
       this.$emit('onSave', this.data);
       this.handleClose();
-    },
-    async querySearch(queryString, cb) {
-      if (queryString.length < 3) {
-        return cb([]);
-      }
-      var results = await componentResource.list({
-        q: queryString,
-      });
-      // var results = queryString ? options.filter(this.createFilter(queryString)) : options;
-      // call callback function to return suggestions
-      if (results.length === 1) {
-        console.log('result: ', results);
-      }
-      /* if (results.length === 0){
-        this.data.id = 0;
-        this.data.is_master = false;
-        this.data.name = queryString;
-      }*/
-      cb(results);
     },
     async getComponents(){
       console.log('yeah!');
