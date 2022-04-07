@@ -24,16 +24,28 @@ class MaterialController extends Controller
             $sort = $request->sort;
         }
 
-        $materials = Material::When($request->has('keyword'), function ($query) use ($request) {
-
-            $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('name', 'ILIKE', '%'.$request->keyword.'%');
-            $indents = $indents->orWhere('description', 'ILIKE', $searchQuery);
-
-            return $indents;
-        })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
-
-        return response()->json($materials, 200);
+        if($request->search && ($request->search !== 'null')) {
+            $materials = Material::where(function($q) use($request) {
+                $q->where(function($query) use($request) {
+                    $query->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(description) LIKE '%" . strtolower($request->search) . "%'");
+                });
+            })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($materials, 200);
+        } else {
+            $materials = Material::When($request->has('keyword'), function ($query) use ($request) {
+    
+                $searchQuery = '%' . $request->keyword . '%';
+                $indents = $query->where('name', 'ILIKE', '%'.$request->keyword.'%');
+                $indents = $indents->orWhere('description', 'ILIKE', $searchQuery);
+    
+                return $indents;
+            })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($materials, 200);
+        }
     }
 
     /**
