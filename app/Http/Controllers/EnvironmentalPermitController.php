@@ -30,7 +30,7 @@ class EnvironmentalPermitController extends Controller
                 })->orWhere(function($query) use($request) {
                     $query->whereRaw("LOWER(kegiatan_name) LIKE '%" . strtolower($request->search) . "%'");
                 })->orWhere(function($query) use($request) {
-                    $query->whereRaw("LOWER(sk_name) LIKE '%" . strtolower($request->search) . "%'");
+                    $query->whereRaw("LOWER(sk_number) LIKE '%" . strtolower($request->search) . "%'");
                 });
             })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
     

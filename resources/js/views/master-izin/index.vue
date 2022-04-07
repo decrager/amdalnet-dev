@@ -15,7 +15,7 @@
             <el-input
               v-model="listQuery.search"
               suffix-icon="el-icon search"
-              placeholder="Pencarian LPJP..."
+              placeholder="Pencarian..."
               @input="inputSearch"
             >
               <el-button
@@ -81,7 +81,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/environmental-permit?page=${this.listQuery.page}&sort=${this.sort}`
+          `/api/environmental-permit?page=${this.listQuery.page}&sort=${this.sort}&search=${this.listQuery.search}`
         )
         .then((response) => {
           this.allData = response.data.data.map((x) => {
