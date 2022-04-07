@@ -49,8 +49,10 @@
             <deskripsi v-if="selected !== null" :description="selected.description" :measurement="selected.measurement" />
           </div>
         </el-form-item>
-
-        <el-form-item label="Deskripsi">
+        <el-form-item
+          v-if="selected !== null"
+          label="Deskripsi"
+        >
           <scopingceditor
             :key="'comp_editor_scoping_3'"
             v-model="component.description"
@@ -62,7 +64,7 @@
             style="width:100%"
           />
         </el-form-item>
-        <el-form-item label="Besaran">
+        <el-form-item v-if="selected !== null" label="Besaran">
           <el-input
             v-model="component.measurement"
             type="textarea"
@@ -135,27 +137,28 @@ export default {
   },
   methods: {
     handleClose(){
-      this.initData();
+      // this.initData();
       this.$emit('onClose', true);
     },
     onOpen(){
-      this.initData();
-      if (this.master !== null){ // not yet having component ref
+      this.isSaving = false;
+      if (this.master === null){
+        this.initData();
+      } else {
         this.formMode = 1;
         this.selected = this.master;
         this.component = {
           id: this.master.id,
           id_component: this.master.id,
-          id_sub_project: this.data.sub_projects.id,
           name: this.master.name,
           value: this.master.name,
+          id_sub_project: this.data.sub_projects.id,
           description: this.data.component.description,
           measurement: this.data.component.measurement,
           id_sub_project_component: this.data.component.id_sub_project_component,
         };
       }
-      console.log('edit component', this.component);
-      this.isSaving = false;
+      console.log(this.component);
     },
     handleSelectComponent(val){
       this.selected = this.masterComponents.find(e => e.id === val);

@@ -364,7 +364,11 @@ class AndalCloneController extends Controller
                 }
 
                 // IMPACT KEGIATAN LAIN SEKITAR
-                $ikls = ImpactKegiatanLainSekitar::where('id_impact_identification', $oi->id)->get();
+                $ikls = ImpactKegiatanLainSekitar::where([
+                    'id_impact_identification' =>  $oi->id,
+                    'is_andal' => false
+
+                    ])->get();
                 foreach($ikls as $kls){
                     $new_ikls = ImpactKegiatanLainSekitar::firstOrCreate([
                         'id_impact_identification' => $imp->id,
