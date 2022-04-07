@@ -12,17 +12,8 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Jenis Komponen">
-      <template slot-scope="scope">
-        <span>{{ scope.row.component }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column label="Komponen Lingkungan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column label="Jenis Komponen" prop="component" sortable />
+    <el-table-column label="Komponen Lingkungan" prop="name" sortable />
 
     <el-table-column label="Aksi" align="right">
       <template slot-scope="scope">

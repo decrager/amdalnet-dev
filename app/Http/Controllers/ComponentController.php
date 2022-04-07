@@ -67,6 +67,14 @@ class ComponentController extends Controller
 
         return Component::select('components.*', 'project_stages.name as project_stage')->where(function ($query) use ($request) {
             return $request->idProjectStage ? $query->where('id_project_stage', $request->idProjectStage) : '';
+        })->where(function($query) use($request) {
+            if($request->search && ($request->search !== 'null')) {
+                $query->where(function($q) use($request) {
+                    $q->whereRaw("LOWER(project_stages.name) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($q) use($request) {
+                    $q->whereRaw("LOWER(components.name) LIKE '%" . strtolower($request->search) . "%'");
+                });
+            }
         })->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')
         ->orderBy(($request->orderBy ? 'components.'.$request->orderBy : 'components.id'), ($request->orderBy ? $request->order : 'DESC'))
         ->paginate($request->limit ? $request->limit : 10);

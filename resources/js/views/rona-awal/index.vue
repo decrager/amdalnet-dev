@@ -10,6 +10,22 @@
         >
           {{ 'Tambah Master Rona Lingkungan' }}
         </el-button>
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
       <rona-awal-table
         :loading="loading"
@@ -59,7 +75,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        search: null,
       },
+      timeoutId: null,
       total: 0,
       ronaAwal: {},
       show: false,
@@ -164,6 +182,22 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getList();
+      }, 500);
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getList();
+      this.listQuery.search = null;
     },
   },
 };
