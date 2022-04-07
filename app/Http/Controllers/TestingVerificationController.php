@@ -271,10 +271,12 @@ class TestingVerificationController extends Controller
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
-                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' ? 'download' : 'non-download';
+                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' ? 'download' : 'non-download';
                         $link = null;
                         if($f->name == 'tata_ruang') {
                             $link = $project->ktr;
+                        } else if($f->name == 'pippib') {
+                            $link = $project->ppib_file;
                         } else if($f->name == 'persetujuan_awal') {
                             $link = $project->pre_agreement_file;
                         } else if($f->name == 'peta') {
@@ -312,9 +314,10 @@ class TestingVerificationController extends Controller
                 ],
                 [
                   'name' => 'pippib',
+                  'link' => $project->ppib_file,
                   'suitability' => null,
                   'description' => null,
-                  'type' => 'non-download'
+                  'type' => 'download'
                 ],
                 [
                     'name' => 'persetujuan_awal',
