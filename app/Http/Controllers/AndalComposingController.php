@@ -358,11 +358,11 @@ class AndalComposingController extends Controller
             }
 
             // === WORKFLOW === //
-            // $project = Project::findOrFail($request->idProject);
-            // if($project->marking == 'amdal.form-ka-ba-signed') {
-            //     $project->workflow_apply('draft-amdal-andal');
-            //     $project->save();
-            // }
+            $project = Project::findOrFail($request->idProject);
+            if($project->marking == 'amdal.form-ka-ba-signed') {
+                $project->workflow_apply('draft-amdal-andal');
+                $project->save();
+            }
         } else {
             $ids = [];
             for ($i = 0; $i < count($analysis); $i++) {

@@ -280,11 +280,11 @@ class MatriksRPLController extends Controller
         }
 
         // === WORKFLOW === //
-        // $project = Project::findOrFail($request->idProject);
-        // if($project->marking == 'amdal.andal-drafting') {
-        //     $project->workflow_apply('draft-amdal-rklrpl');
-        //     $project->save();
-        // }
+        $project = Project::findOrFail($request->idProject);
+        if($project->marking == 'amdal.andal-drafting') {
+            $project->workflow_apply('draft-amdal-rklrpl');
+            $project->save();
+        }
         
         if($request->type != 'new') {
             $lastTime = EnvMonitorPlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
