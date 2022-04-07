@@ -137,7 +137,7 @@ export default {
   },
   methods: {
     handleClose(){
-      this.initData();
+      // this.initData();
       this.$emit('onClose', true);
     },
     onOpen(){
