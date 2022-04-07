@@ -24,7 +24,27 @@ class ExpertBankController extends Controller
     {
         return ExpertBankResource::collection(
             ExpertBank::where(function ($query) use ($request) {
-                return '';
+                if($request->search) {
+                    $query->where(function($q) use($request) {
+                        $q->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        $q->whereRaw("LOWER(address) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        $q->whereRaw("LOWER(email) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        $q->whereRaw("LOWER(mobile_phone_no) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        $q->whereRaw("LOWER(expertise) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        $q->whereRaw("LOWER(institution) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($q) use($request) {
+                        if(str_contains(strtolower($request->search), 'tidak aktif')) {
+                            $q->whereIn('status', [null, false]);
+                        } else if(str_contains(strtolower($request->search), 'aktif')) {
+                            $q->where('status', true);
+                        }
+                    });
+                }
             })->orderBy('id', 'DESC')->paginate($request->limit)
         );
     }

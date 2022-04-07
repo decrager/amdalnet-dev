@@ -24,21 +24,37 @@ class MediumLowUklUplTemplateController extends Controller
 
         // dd($request->type);
 
-        $mediumLowUklUplTemplate = MediumLowUklUplTemplate::When($request->has('keyword'), function ($query) use ($request) {
-            $columnsToSearch = ['type'];
-            $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('template_type', 'ILIKE', '%'.$request->keyword.'%');
-            // if (!empty($request->type)) {
-            //     $indents = $query->where('type', '=', $request->type);
-            // }
-            
-            foreach($columnsToSearch as $column) {
-                $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
-            }
-            return $indents;
-        })->orderby('id', $sort ?? 'DESC')->where('type', $request->type)->paginate($request->limit ? $request->limit : 10);
+        if($request->search && ($request->search !== 'null')) {
+            $mediumLowUklUplTemplate = MediumLowUklUplTemplate::where(function($q) use($request) {
+                $q->where(function($query) use($request) {
+                    $query->whereRaw("LOWER(template_type) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    if(str_contains(strtolower($request->search), 'menengah') || str_contains(strtolower($request->search), 'rendah')) {
+                        $query->where('type', 'MR');
+                    } else if(str_contains(strtolower($request->search), 'standar') || str_contains(strtolower($request->search), 'spesifik')) {
+                        $query->where('type', 'SS');
+                    }
+                });
+            })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
 
-        return response()->json($mediumLowUklUplTemplate, 200);
+            return response()->json($mediumLowUklUplTemplate, 200);
+        } else {
+            $mediumLowUklUplTemplate = MediumLowUklUplTemplate::When($request->has('keyword'), function ($query) use ($request) {
+                $columnsToSearch = ['type'];
+                $searchQuery = '%' . $request->keyword . '%';
+                $indents = $query->where('template_type', 'ILIKE', '%'.$request->keyword.'%');
+                // if (!empty($request->type)) {
+                //     $indents = $query->where('type', '=', $request->type);
+                // }
+                
+                foreach($columnsToSearch as $column) {
+                    $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+                }
+                return $indents;
+            })->orderby('id', $sort ?? 'DESC')->where('type', $request->type)->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($mediumLowUklUplTemplate, 200);
+        }
     }
 
     /**

@@ -4,7 +4,7 @@
     :data="list"
     fit
     highlight-current-row
-    :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
+    :header-cell-style="{ background: '#3AB06F', color: 'white', border: '0' }"
   >
     <el-table-column label="No." width="70px">
       <template slot-scope="scope">
@@ -12,11 +12,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Nama Peraturan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column label="Nama Peraturan" prop="name" sortable />
 
     <el-table-column label="Aksi" width="250px">
       <template slot-scope="scope">
@@ -67,5 +63,7 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .el-table-column{border: none;}
+.el-table-column {
+  border: none;
+}
 </style>

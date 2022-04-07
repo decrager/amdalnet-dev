@@ -45,26 +45,14 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Kebijakan PPU">
-      <template slot-scope="scope">
-        <span>{{ scope.row.regulation_no }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Jenis PPU">
-      <template slot-scope="scope">
-        <span>{{ scope.row.regulation.name }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Bidang Kegiatan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.field_of_activity }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Tentang">
-      <template slot-scope="scope">
-        <span>{{ scope.row.about }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column label="Kebijakan PPU" prop="regulation_no" sortable />
+    <el-table-column label="Jenis PPU" prop="regulation_name" sortable />
+    <el-table-column
+      label="Bidang Kegiatan"
+      prop="field_of_activity"
+      sortable
+    />
+    <el-table-column label="Tentang" prop="about" sortable />
   </el-table>
 </template>
 
@@ -83,7 +71,9 @@ export default {
       this.$emit('handleView', row);
     },
     handleEditForm(row) {
-      const currentParam = this.list.find((element) => element.parameter_name === row.parameter_name);
+      const currentParam = this.list.find(
+        (element) => element.parameter_name === row.parameter_name
+      );
       this.$router.push({
         name: 'editKebijakan',
         params: { row, appParams: currentParam },

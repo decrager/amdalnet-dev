@@ -11,29 +11,30 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Nomor Registrasi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.registration_no }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Nama Rencana Usaha/Kegiatan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.project_title }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Pemrakarsa">
-      <template slot-scope="scope">
-        <span>{{ scope.row.initiator.name }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Lokasi Kegiatan">
-      <template slot-scope="scope">
-        <span>{{ getAddress(scope.row.address) }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column
+      align="center"
+      label="Nomor Registrasi"
+      prop="registration_no"
+      sortable
+    />
+    <el-table-column
+      align="center"
+      label="Nama Rencana Usaha/Kegiatan"
+      prop="project_title"
+      sortable
+    />
+    <el-table-column
+      align="center"
+      label="Pemrakarsa"
+      prop="initiator_name"
+      sortable
+    />
+    <el-table-column
+      align="center"
+      label="Lokasi Kegiatan"
+      prop="complete_address"
+      sortable
+    />
 
     <el-table-column align="center" label="Anggota Uji Kelayakan">
       <template slot-scope="scope">
@@ -64,33 +65,6 @@ export default {
     },
   },
   methods: {
-    getAddress(address) {
-      if (address) {
-        if (address.length > 0) {
-          return `${address[0].address}, ${this.capitalize(
-            address[0].district
-          )}, Provinsi ${this.capitalize(address[0].prov)}`;
-        }
-      }
-
-      return '';
-    },
-    capitalize(mySentence) {
-      if (mySentence) {
-        const words = mySentence.split(' ');
-        const newWords = words
-          .map((word) => {
-            return (
-              word.toLowerCase()[0].toUpperCase() +
-              word.toLowerCase().substring(1)
-            );
-          })
-          .join(' ');
-        return newWords;
-      } else {
-        return '';
-      }
-    },
     handleTukProjectMember(id) {
       // eslint-disable-next-line object-curly-spacing
       this.$router.push({ name: 'tukProjectMember', params: { id } });

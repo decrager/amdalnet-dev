@@ -10,14 +10,29 @@
         >
           {{ 'Tambah SOP' }}
         </el-button>
-
-        <sop-table
-          :loading="loading"
-          :list="list"
-          @handleEditForm="handleEditForm($event)"
-          @handleDelete="handleDelete($event)"
-        />
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
+      <sop-table
+        :loading="loading"
+        :list="list"
+        @handleEditForm="handleEditForm($event)"
+        @handleDelete="handleDelete($event)"
+      />
     </el-card>
   </div>
 </template>
@@ -38,6 +53,8 @@ export default {
       listActive: [],
       loading: true,
       activeName: 'sop',
+      timeoutId: null,
+      search: null,
     };
   },
   created() {
@@ -46,15 +63,28 @@ export default {
   methods: {
     async getList() {
       this.loading = true;
-      const { data } = await sopResource.list({});
+      const { data } = await sopResource.list({ search: this.search });
       this.list = data;
       this.loading = false;
     },
     handleCreate() {
       this.$router.push({
         name: 'createSop',
-        params: { sop: {}},
+        // eslint-disable-next-line object-curly-spacing
+        params: { sop: {} },
       });
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.getList();
+      }, 500);
+    },
+    async handleSearch() {
+      await this.getList();
+      this.search = null;
     },
   },
 };

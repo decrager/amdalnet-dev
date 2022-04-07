@@ -15,6 +15,7 @@
       :master-hues="hues"
       :component-types="component_types"
       :project-stages="project_stages"
+      :mode="mode"
       :refresh-components="doRefreshComponents"
       @refreshed="onRefreshedScoping"
     />
@@ -35,6 +36,12 @@ const projectActivityResource = new Resource('project-kegiatan-lain-sekitar');
 export default {
   name: 'ModulPelingkupan',
   components: { TabelPelingkupan, MasterKomponen, Comment },
+  props: {
+    mode: {
+      type: Number,
+      default: 0,
+    },
+  },
   data(){
     return {
       // master data
@@ -77,6 +84,11 @@ export default {
       doRefreshComponents: false,
       doRefreshHues: false,
     };
+  },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
   },
   mounted() {
     this.getComponentTypes();
@@ -177,6 +189,7 @@ export default {
       this.getComponentTypes();
       this.getComponentMasterData();
       this.getHueMasterData();
+      this.getActivityMasterData();
     },
     onComponentDeleted(val){
       this.doRefreshComponents = true;

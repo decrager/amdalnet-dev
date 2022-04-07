@@ -4,18 +4,14 @@
     :data="list"
     fit
     highlight-current-row
-    :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
+    :header-cell-style="{ background: '#3AB06F', color: 'white', border: '0' }"
   >
     <el-table-column label="No." width="54px">
       <template slot-scope="scope">
         <span>{{ scope.$index + 1 }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Jenis Tutorial">
-      <template slot-scope="scope">
-        <span>{{ scope.row.tutorial_type }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column label="Jenis Tutorial" prop="tutorial_type" sortable />
     <el-table-column label="Link Video">
       <template slot-scope="scope">
         <span>{{ scope.row.url_video }}</span>
@@ -92,5 +88,7 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .el-table-column{border: none;}
+.el-table-column {
+  border: none;
+}
 </style>

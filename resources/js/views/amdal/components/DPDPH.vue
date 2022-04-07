@@ -42,6 +42,7 @@
       :data="selectedData"
       :change-types="changeTypes"
       :pie-params="pieParams"
+      :master="activities"
       :mode="mode"
       @hasChanges="hasChanges"
       @saveData="onSaveData"
@@ -57,6 +58,7 @@ const impactsResource = new Resource('impacts');
 const projectStagesResource = new Resource('project-stages');
 const changeTypeResource = new Resource('change-types');
 const pieParamsResource = new Resource('pie-params');
+const projectActivityResource = new Resource('project-kegiatan-lain-sekitar');
 
 export default {
   name: 'DampakHipotetikMD',
@@ -81,6 +83,7 @@ export default {
       impact_res_name: 'impacts',
       components: [],
       subProjects: [],
+      activities: [],
       hues: [],
     };
   },
@@ -89,6 +92,7 @@ export default {
     this.impacts = [];
     this.getParams();
     this.getImpacts();
+    this.getActivities();
   },
   methods: {
     async getImpacts(){
@@ -104,6 +108,9 @@ export default {
         this.hues = [];
         // const data = res;
         res.map((e) => {
+          console.log(e.sub_projects);
+
+          // e.kegiatan = sp_names;
           e.hasChanges = false;
           console.log('each impact: ', e);
 
@@ -157,7 +164,16 @@ export default {
           id: 0,
         });
       });
+      await projectActivityResource.list({
+        id_project: parseInt(this.$route.params && this.$route.params.id),
+      }).then((res) => {
+        this.activities = res;
+        this.activities.forEach((e, index) => {
+          this.activities[index].is_selected = false;
+        });
+      }).finally(() => {});
     },
+
     handlePie(obj){
       this.selectedData.hasChanges = true;
     },

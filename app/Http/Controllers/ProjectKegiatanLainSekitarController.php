@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\ProjectKegiatanLainSekitar;
 use Illuminate\Http\Request;
 use App\Entity\KegiatanLainSekitar;
+use App\Entity\ImpactKegiatanLainSekitar;
 
 class ProjectKegiatanLainSekitarController extends Controller
 {
@@ -126,6 +127,12 @@ class ProjectKegiatanLainSekitarController extends Controller
     public function destroy(ProjectKegiatanLainSekitar $projectKegiatanLainSekitar)
     {
         //
+        $ksl = KegiatanLainSekitar::where('id', $projectKegiatanLainSekitar->kegiatan_lain_sekitar_id)->first();
+
+        if(($ksl) && ($ksl->is_master === false) && ($ksl->originator_id === $projectKegiatanLainSekitar->project_id)){
+            $ksl->delete();
+        }
+        $imp = ImpactKegiatanLainSekitar::where('id_project_kegiatan_lain_sekitar', $projectKegiatanLainSekitar->id)->delete();
         return response($projectKegiatanLainSekitar->delete(), 200);
     }
 }

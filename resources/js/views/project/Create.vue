@@ -38,12 +38,26 @@
                         <i class="el-alert__icon el-icon-warning" />
                       </el-tooltip></span>
                     </span>
-                    <el-input v-model="currentProject.description" size="medium" type="textarea" />
+                    <editor
+                      v-model="currentProject.description"
+                      :menubar="''"
+                      :image="false"
+                      :height="150"
+                      :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                    />
+                    <!-- <el-input v-model="currentProject.description" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
                 <el-row>
                   <el-form-item v-if="!isUmk" label="Deskripsi Lokasi" prop="location_desc">
-                    <el-input v-model="currentProject.location_desc" size="medium" type="textarea" />
+                    <editor
+                      v-model="currentProject.location_desc"
+                      :menubar="''"
+                      :image="false"
+                      :height="150"
+                      :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                    />
+                    <!-- <el-input v-model="currentProject.location_desc" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
               </el-col>
@@ -58,7 +72,14 @@
                     <classic-upload :name="filePdfName" :fid="'filePdf'" @handleFileUpload="handleFileTapakProyekPdfUpload" />
                   </el-form-item>
                   <el-form-item v-else label="Deskripsi Lokasi" prop="location_desc">
-                    <el-input v-model="currentProject.location_desc" size="medium" type="textarea" />
+                    <editor
+                      v-model="currentProject.location_desc"
+                      :menubar="''"
+                      :image="false"
+                      :height="150"
+                      :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                    />
+                    <!-- <el-input v-model="currentProject.location_desc" size="medium" type="textarea" /> -->
                   </el-form-item>
                 </el-row>
               </el-col>
@@ -408,7 +429,7 @@
           label-width="200px"
           style="max-width: 100%"
         >
-          <el-collapse-item title="PERSETUJUAN AWAL(Opsional)" name="5" disabled>
+          <el-collapse-item title="PERSETUJUAN AWAL (Opsional)" name="5" disabled>
             <div role="alert" class="el-alert el-alert--info is-light">
               <div class="el-alert__content">
                 <span class="el-alert__title">
@@ -447,7 +468,7 @@
                 >
                   <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
                   <classic-upload :name="filePreAgreementName" :fid="'filePreAgreement'" @handleFileUpload="handleFilePreAgreementUpload" />
-                  <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi ke Kementrian Investasi</el-tag>
+                  <el-tag v-if="currentProject.pre_agreement === 'Lainnya'" type="info" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Silahkan Mengurus Dokumen Persetujuan Investasi</el-tag>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -648,6 +669,7 @@ import popupTemplate from '../webgis/scripts/popupTemplate';
 import centroid from '@turf/centroid';
 import generateArcgisToken from '../webgis/scripts/arcgisGenerateToken';
 import Print from '@arcgis/core/widgets/Print';
+import editor from '@/components/Tinymce';
 
 export default {
   name: 'CreateProject',
@@ -656,6 +678,7 @@ export default {
     Workflow,
     SubProjectTable,
     KewenanganTable,
+    editor,
   },
   data() {
     var validateAddress = (rule, value, callback) => {

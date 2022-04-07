@@ -1,7 +1,7 @@
 <template>
   <div v-loading="isSaving">
     <el-dialog
-      :title="title[mode] + ' Komponen Lingkungan'"
+      :title="title[formMode] + ' Komponen Lingkungan'"
       :visible.sync="show"
       width="50%"
       height="450"
@@ -116,6 +116,10 @@ export default {
         return [];
       },
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
@@ -133,7 +137,7 @@ export default {
       selected: null,
       isSaving: false,
       title: ['Tambah', 'Edit'],
-      mode: 0,
+      formMode: 0,
     };
   },
   mounted(){
@@ -146,6 +150,7 @@ export default {
       this.hue.id_project = this.data.id_project;
       this.hue.id_project_component = this.masterComponent.id_project_component;
       this.hue.id_project_rona_awal = this.selected.id_project_rona_awal;
+      this.hue.mode = this.mode;
       await subProjectHueResource.store(this.hue)
         .then((res) => {
           this.hue.id_sub_project_rona_awal = res.id_sub_project_rona_awal;
@@ -191,12 +196,13 @@ export default {
       this.hue.id_project = null;
       this.hue.id_sub_project_component = null;
       this.hue.id_component = null;
+      this.hue.mode = this.mode;
       this.selected = null;
     },
     onOpen(){
       this.isSaving = false;
       if (this.master === null) {
-        this.mode = 0;
+        this.formMode = 0;
         this.selected = null;
         this.hue = {
           id: null,
@@ -207,10 +213,11 @@ export default {
           id_sub_project_rona_awal: null,
           id_project: this.data.sub_projects.id_project,
           id_component: null,
+          mode: this.mode,
         };
         console.log('add...', this.hue);
       } else {
-        this.mode = 1;
+        this.formMode = 1;
         this.hue = {
           id: this.master.id,
           name: this.master.name,
@@ -220,6 +227,7 @@ export default {
           id_sub_project_rona_awal: this.data.rona_awal.id_sub_project_rona_awal,
           id_project: this.data.sub_projects.id_project,
           id_component: this.master.id,
+          mode: this.mode,
         };
         this.selected = this.master;
       }

@@ -21,6 +21,8 @@ use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
 use App\Entity\ProjectComponent;
+use App\Entity\ImpactKegiatanLainSekitar;
+use App\Entity\ImpactAnalysisDetail;
 
 class ImpactIdentificationController extends Controller
 {
@@ -754,21 +756,22 @@ class ImpactIdentificationController extends Controller
             ii.study_length_month,
             ii.study_length_year,
             ii.study_location,
-            array_agg(row_to_json(sp)) as sub_projects,
+            -- array_agg(row_to_json(sp)) as sub_projects,
+            -- string_agg(sp.name, \', \') as sub_projects,
             count(cm.id) as comment
             -- sp."name" as kegiatan,
             -- sp.type
         ')
 
-        // ->leftJoin('sub_project_rona_awals AS spra', 'ii.id_sub_project_rona_awal', '=', 'spra.id')
-        // ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
-        ->join('project_rona_awals AS spra', 'ii.id_project_rona_awal', '=', 'spra.id')
-        ->join('project_components AS spc', 'ii.id_project_component', '=', 'spc.id')
-        //->join('projects', 'projects.id', '=', 'spc.id_project')
-        ->leftJoin('sub_projects as sp', 'sp.id_project', '=', 'ii.id_project')
+        // ->leftJoin('sub_project_rona_awals AS spra', 'pra.id_rona_awal', '=', 'spra.id_rona_awal')
+        //->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
+        ->join('project_rona_awals AS pra', 'ii.id_project_rona_awal', '=', 'pra.id')
+        ->join('project_components AS pc', 'ii.id_project_component', '=', 'pc.id')
+        // ->join('projects', 'projects.id', '=', 'spc.id_project')
+        //->leftjoin('sub_projects as sp', 'sp.id', '=', 'spc.id_sub_project')
         ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
-        ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
-        ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+        ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
+        ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
         ->leftJoin('comments as cm', function ($join) use ($request, $comments) {
             $join->on('cm.id_impact_identification', '=', 'ii.id')
               ->on('cm.document_type', '=', DB::raw('\''.$comments[$request->mode].'\''));
@@ -784,7 +787,7 @@ class ImpactIdentificationController extends Controller
             ->where('ii.id_project', $request->id_project)
              ->where(function($query) {
                 $query->whereNotNull('ra.id');
-                $query->orWhereNotNull('spra.id');
+                $query->orWhereNotNull('pra.id');
                 return $query;
             })
             /*->where(function($query) {
@@ -795,7 +798,7 @@ class ImpactIdentificationController extends Controller
             ->groupBy('ii.id', 'ct.name', 'c.id_project_stage',
                 /*'spc.id_project_stage',*/ 'ps.name',
                 'c.name', /*'spc.name',*/
-                'ra.name'/*, 'spra.name'*/) /*, 'sp.name', 'sp.type')*/
+                'ra.name') /*, 'spra.name', 'sp.name', 'sp.type')*/
             ->orderBy('ii.id', 'asc')
             ->get());
         //return response($impacts);
@@ -875,6 +878,26 @@ class ImpactIdentificationController extends Controller
                         }
                         $p->text = $pie['text'];
                         $p->save();
+                    }
+                }
+                if(isset($imp['activities'])){
+                    if(Empty($imp['activities'])){
+                        $res = ImpactKegiatanLainSekitar::where([
+                            'id_impact_identification' => $imp['id'],
+                            'is_andal' => $request['mode']
+                        ])->delete();
+                    } else {
+                        $ids = [];
+                        foreach($imp['activities'] as $act){
+                            $co = ImpactKegiatanLainSekitar::firstOrCreate([
+                                'id_impact_identification' => $imp['id'],
+                                'id_project_kegiatan_lain_sekitar' => $act['id_project_kegiatan_lain_sekitar'],
+                                'is_andal' => $request['mode']
+                            ]);
+                            $ids[] = $co->id;
+                        }
+                        $res = ImpactKegiatanLainSekitar::where('id_impact_identification', $imp['id'])
+                          ->whereNotIn('id', $ids)->delete();
                     }
                 }
 
