@@ -14,9 +14,19 @@ class SopController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return SopResource::collection(Sop::all());
+        return SopResource::collection(
+            Sop::where(function($q) use($request) {
+                if($request->search) {
+                    $q->where(function($query) use($request) {
+                        $query->whereRaw("LOWER(mgmt_form) LIKE '%" . strtolower($request->search) . "%'");
+                    })->orWhere(function($query) use($request) {
+                        $query->whereRaw("LOWER(mgmt_period) LIKE '%" . strtolower($request->search) . "%'");
+                    });
+                }
+            })->get()
+        );
     }
 
     /**
