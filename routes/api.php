@@ -312,6 +312,7 @@ Route::apiResource('regions', 'RegionController');
 Route::apiResource('authorities', 'AuthorityController');
 Route::get('timeline', [ProjectController::class, 'timeline']);
 Route::apiResource('tuk-project', 'TukProjectController');
+Route::apiResource('reset-password', 'ResetPasswordController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);

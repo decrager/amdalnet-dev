@@ -87,6 +87,15 @@
 
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
+          <el-button
+            v-permission="['manage user']"
+            type="primary"
+            size="small"
+            icon="el-icon-edit"
+            @click="handleResetPassword(scope.row.id)"
+          >
+            Reset Password
+          </el-button>
           <router-link
             v-if="!scope.row.roles.includes('admin')"
             :to="'/administrator/users/edit/' + scope.row.id"
@@ -257,6 +266,7 @@ const rolesResource = new Resource('roles');
 
 const userResource = new UserResource();
 const permissionResource = new Resource('permissions');
+const resetPasswordResource = new Resource('reset-password');
 
 export default {
   name: 'UserList',
@@ -467,6 +477,17 @@ export default {
             message: 'Delete canceled',
           });
         });
+    },
+    async handleResetPassword(id) {
+      this.currentUserId = id;
+      this.$confirm('Apakah Anda Yakin Untuk Mereset Password?', 'Perhatian', {
+        confirmButtonText: 'Reset',
+        cancelButtonText: 'Batalkan',
+        type: 'warning',
+      }).then(() => {
+        resetPasswordResource.store({ id });
+      }).catch(() => {
+      });
     },
     async handleEditPermissions(id) {
       this.currentUserId = id;
