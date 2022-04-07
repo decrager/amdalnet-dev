@@ -23,18 +23,32 @@ class EnvironmentalPermitController extends Controller
             $sort = $request->sort;
         }
 
-        $environmentalPermit = EnvironmentalPermit::When($request->has('keyword'), function ($query) use ($request) {
-            $columnsToSearch = ['authority', 'kegiatan_name', 'sk_number', 'publisher'];
-            $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('pemarkasa_name', 'ILIKE', '%'.$request->keyword.'%');
-            foreach($columnsToSearch as $column) {
-                $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
-            }
-
-            return $indents;
-        })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
-
-        return response()->json($environmentalPermit, 200);
+        if($request->search && ($request->search !== 'null')) {
+            $environmentalPermit = EnvironmentalPermit::where(function($q) use($request) {
+                $q->where(function($query) use($request) {
+                    $query->whereRaw("LOWER(pemarkasa_name) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(kegiatan_name) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(sk_name) LIKE '%" . strtolower($request->search) . "%'");
+                });
+            })->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($environmentalPermit, 200);
+        } else {
+            $environmentalPermit = EnvironmentalPermit::When($request->has('keyword'), function ($query) use ($request) {
+                $columnsToSearch = ['authority', 'kegiatan_name', 'sk_number', 'publisher'];
+                $searchQuery = '%' . $request->keyword . '%';
+                $indents = $query->where('pemarkasa_name', 'ILIKE', '%'.$request->keyword.'%');
+                foreach($columnsToSearch as $column) {
+                    $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+                }
+    
+                return $indents;
+            })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($environmentalPermit, 200);
+        }
     }
 
     /**
