@@ -6,46 +6,32 @@
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
-    <el-table-column align="center" label="Nama">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column align="center" label="Nama" sortable prop="name" />
+    <el-table-column align="center" label="Alamat" sortable prop="address" />
+    <el-table-column align="center" label="Email" sortable prop="email" />
+    <el-table-column
+      align="center"
+      label="No. HP"
+      sortable
+      prop="mobile_phone_no"
+    />
+    <el-table-column
+      align="center"
+      label="Bidang Keahlian"
+      sortable
+      prop="expertise"
+    />
+    <el-table-column
+      align="center"
+      label="Instansi"
+      sortable
+      prop="institution"
+    />
 
-    <el-table-column align="center" label="Alamat">
+    <el-table-column align="center" label="Status" prop="status" sortable>
       <template slot-scope="scope">
-        <span>{{ scope.row.address }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Email">
-      <template slot-scope="scope">
-        <span>{{ scope.row.email }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="No. HP">
-      <template slot-scope="scope">
-        <span>{{ scope.row.mobile_phone_no }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Bidang Keahlian">
-      <template slot-scope="scope">
-        <span>{{ scope.row.expertise }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Instansi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.institution }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Status">
-      <template slot-scope="scope">
-        <el-tag :type="calculateStatus(scope.row.status) | statusFilter">
-          {{ calculateStatus(scope.row.status) }}
+        <el-tag :type="scope.row.status | statusFilter">
+          {{ scope.row.status }}
         </el-tag>
       </template>
     </el-table-column>
@@ -93,13 +79,6 @@ export default {
     loading: Boolean,
   },
   methods: {
-    calculateStatus(status) {
-      if (status) {
-        return 'Aktif';
-      }
-
-      return 'Tidak Aktif';
-    },
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },

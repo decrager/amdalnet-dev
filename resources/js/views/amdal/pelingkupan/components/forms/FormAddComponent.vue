@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title=" title[mode] + ' Komponen Lingkungan'"
+    :title=" title[formMode] + ' Komponen Lingkungan'"
     :visible.sync="show"
     width="50%"
     :before-close="handleClose"
@@ -49,8 +49,10 @@
             <deskripsi v-if="selected !== null" :description="selected.description" :measurement="selected.measurement" />
           </div>
         </el-form-item>
-
-        <el-form-item label="Deskripsi">
+        <el-form-item
+          v-if="selected !== null"
+          label="Deskripsi"
+        >
           <scopingceditor
             :key="'comp_editor_scoping_3'"
             v-model="component.description"
@@ -62,7 +64,7 @@
             style="width:100%"
           />
         </el-form-item>
-        <el-form-item label="Besaran">
+        <el-form-item v-if="selected !== null" label="Besaran">
           <el-input
             v-model="component.measurement"
             type="textarea"
@@ -107,6 +109,10 @@ export default {
         return [];
       },
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
@@ -123,7 +129,7 @@ export default {
       isSaving: false,
       title: ['Tambah', 'Edit'],
       selected: null,
-      mode: 0,
+      formMode: 0,
     };
   },
   mounted(){
@@ -131,27 +137,28 @@ export default {
   },
   methods: {
     handleClose(){
-      this.initData();
+      // this.initData();
       this.$emit('onClose', true);
     },
     onOpen(){
-      this.initData();
-      if (this.master !== null){ // not yet having component ref
-        this.mode = 1;
+      this.isSaving = false;
+      if (this.master === null){
+        this.initData();
+      } else {
+        this.formMode = 1;
         this.selected = this.master;
         this.component = {
           id: this.master.id,
           id_component: this.master.id,
-          id_sub_project: this.data.sub_projects.id,
           name: this.master.name,
           value: this.master.name,
+          id_sub_project: this.data.sub_projects.id,
           description: this.data.component.description,
           measurement: this.data.component.measurement,
           id_sub_project_component: this.data.component.id_sub_project_component,
         };
       }
-      console.log('edit component', this.component);
-      this.isSaving = false;
+      console.log(this.component);
     },
     handleSelectComponent(val){
       this.selected = this.masterComponents.find(e => e.id === val);
@@ -195,7 +202,7 @@ export default {
         });
     },
     initData(){
-      this.mode = 0;
+      this.formMode = 0;
       this.selected = null;
       this.component.id = null;
       this.component.id_component = null;
@@ -205,6 +212,7 @@ export default {
       this.component.id_sub_project = null;
       this.component.id_sub_project_component = null;
       this.component.value = '';
+      this.component.mode = this.mode;
     },
   },
 

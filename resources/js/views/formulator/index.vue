@@ -20,12 +20,29 @@
         >
           {{ 'Update Sertifikasi' }}
         </el-button>
+        <el-row v-if="!updateCertificate" :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
         <el-row v-if="updateCertificate" :gutter="32">
           <el-col :sm="24" :md="10">
             <el-input
               v-model="listQuery.search"
               suffix-icon="el-icon search"
               placeholder="Pencarian..."
+              @input="inputSearch"
             >
               <el-button
                 slot="append"
@@ -118,6 +135,7 @@ export default {
         search: null,
       },
       total: 0,
+      timeoutId: null,
       updateCertificate: false,
     };
   },
@@ -131,6 +149,7 @@ export default {
     handleClickTab(tab, event) {
       this.listQuery.page = 1;
       this.listQuery.limit = 10;
+      this.listQuery.search = null;
       if (tab.name === 'penyusunAktif') {
         this.listQuery.active = 'true';
       } else if (tab.name === 'penyusunTidakAktif') {
@@ -145,7 +164,12 @@ export default {
     async getList() {
       this.loading = true;
       const { data, meta } = await formulatorResource.list(this.listQuery);
-      this.list = data;
+      this.list = data.map((x) => {
+        x.membership_status = x.membership_status ? x.membership_status : '-';
+        x.status = this.calculateStatus(x.date_start, x.date_end);
+        x.cert_no = this.noCertificate(x.cert_no);
+        return x;
+      });
       this.total = meta.total;
       this.loading = false;
     },
@@ -159,6 +183,9 @@ export default {
     handleUpdateCertificate() {
       this.updateCertificate = true;
       this.listQuery.active = '';
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      this.listQuery.search = null;
       this.getList();
     },
     cancelUpdateCertificate() {
@@ -206,8 +233,44 @@ export default {
         });
     },
     async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
       await this.getList();
       this.listQuery.search = null;
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getList();
+      }, 500);
+    },
+    calculateStatus(awal, akhir) {
+      const tglAwal = new Date(awal);
+      const tglAkhir = new Date(akhir);
+      if (
+        new Date().getTime() >= tglAwal.getTime() &&
+        new Date().getTime() <= tglAkhir.getTime()
+      ) {
+        return 'Aktif';
+      } else {
+        return 'NonAktif';
+      }
+    },
+    noCertificate(no) {
+      if (
+        no === null ||
+        no === undefined ||
+        no === 'null' ||
+        no === 'undefined'
+      ) {
+        return '-';
+      } else {
+        return no;
+      }
     },
   },
 };

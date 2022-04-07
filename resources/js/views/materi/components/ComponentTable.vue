@@ -4,7 +4,7 @@
     :data="list"
     fit
     highlight-current-row
-    :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
+    :header-cell-style="{ background: '#3AB06F', color: 'white', border: '0' }"
   >
     <el-table-column type="expand">
       <template slot-scope="scope">
@@ -39,26 +39,10 @@
         <span>{{ scope.$index + 1 }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Judul Materi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Deskripsi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.description }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Tanggal Terbit">
-      <template slot-scope="scope">
-        <span>{{ scope.row.raise_date }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Link">
-      <template slot-scope="scope">
-        <span>{{ scope.row.link }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column label="Judul Materi" prop="name" sortable />
+    <el-table-column label="Deskripsi" prop="description" sortable />
+    <el-table-column label="Tanggal Terbit" prop="raise_date" sortable />
+    <el-table-column label="Link" prop="link" sortable />
   </el-table>
 </template>
 
@@ -90,5 +74,7 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .el-table-column{border: none;}
+.el-table-column {
+  border: none;
+}
 </style>

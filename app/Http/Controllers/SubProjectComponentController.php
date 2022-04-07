@@ -134,6 +134,7 @@ class SubProjectComponentController extends Controller
               ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
               ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
               ->where('projects.id', $request->id_project)
+              ->where('sub_project_components.is_andal', $request->mode)
               ->get());
 
     }
@@ -162,6 +163,7 @@ class SubProjectComponentController extends Controller
             $spc = SubProjectComponent::firstOrNew([
                 'id_sub_project' => $request->id_sub_project,
                 'id_component' => $request->id_component,
+                'is_andal' => $request->mode
             ]);
 
             $spc->description_specific = $request->description;
@@ -242,20 +244,27 @@ class SubProjectComponentController extends Controller
                       ->select('sub_project_components.id as id_spc', 'sub_project_rona_awals.id as id_spra')
                       ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id' )
                       ->where('sub_project_rona_awals.id_rona_awal', $id_rona_awal)
+                      ->where('sub_project_rona_awals.is_andal', $subProjectComponent->is_andal)
+                      ->where('sub_project_components.is_andal', $subProjectComponent->is_andal)
                       ->where('sub_project_components.id_component', $subProjectComponent->id_component)
                       ->whereIn('sub_project_components.id_sub_project', $idSubProjects)->get();
 
                     if(count($spcra) === 0){
                         // delete impacts with id_component and id_rona_awal
+                        $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone'];
+                        $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
+                        $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
+
+                        $mode = $subProjectComponent->is_andal? 1 : 0;
                         $pc = ProjectComponent::where(['id_project' => $sp->id_project, 'id_component' => $subProjectComponent->id_component])->first();
                         $pra = ProjectRonaAwal::where(['id_project' => $sp->id_project, 'id_rona_awal' => $id_rona_awal])->first();
-                        $imp = ImpactIdentification::where([
+                        $imp = $impactClasses[$mode]::where([
                             'id_project' => $sp->id_project,
                             'id_project_component' => $pc->id,
                             'id_project_rona_awal' => $pra->id
                         ])->first();
                         if($imp){
-                            $pie = PotentialImpactEvaluation::where('id_impact_identification', $imp->id)->delete();
+                            $pie = $pieClasses[$mode]::where($pieIdNames[$mode], $imp->id)->delete();
                             $imp->delete();
                         }
                     }

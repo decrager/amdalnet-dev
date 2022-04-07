@@ -58,7 +58,15 @@ class RonaAwalController extends Controller
             function ($query) use ($request) {
                 return $request->idComponentType ? $query->where('idComponentType', $request->idComponentType) : '';
             }
-        )->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
+        )->where(function($query) use($request) {
+            if($request->search && ($request->search !== 'null')) {
+                $query->where(function($q) use($request) {
+                   $q->whereRaw("LOWER(rona_awal.name) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($q) use($request) {
+                    $q->whereRaw("LOWER(components.name) LIKE '%" . strtolower($request->search) . "%'");
+                 });
+            }
+        })->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
 
     }
 

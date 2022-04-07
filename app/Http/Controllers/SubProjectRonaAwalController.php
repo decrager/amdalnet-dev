@@ -38,6 +38,7 @@ class SubProjectRonaAwalController extends Controller
         }
 
         if(isset($params['id_project'] ) && (isset($params['scoping']) && ($params['scoping']))) {
+            // return response($params);
             return DB::select( DB::raw("
             select rona_awal.*,
             rona_awal.name as value,
@@ -53,7 +54,8 @@ class SubProjectRonaAwalController extends Controller
           join sub_projects on sub_projects.id = sub_project_components.id_sub_project
           left join components on components.id = sub_project_components.id_component
           join projects on projects.id = sub_projects.id_project
-          where projects.id = :val"), ['val' =>$request->id_project]);
+          where sub_project_rona_awals.is_andal = :andal and  sub_project_components.is_andal = :andal and
+           projects.id = :val"), ['val' =>$request->id_project, 'andal' => $request->mode  ]);
 
 
             /*return response(RonaAwal::from('rona_awal')->select(
@@ -177,13 +179,19 @@ class SubProjectRonaAwalController extends Controller
             $spr = SubProjectRonaAwal::firstOrNew([
                 'id_sub_project_component' => $request->id_sub_project_component,
                 'id_rona_awal' => $request->id,
+                'is_andal' => $request->mode
             ]);
 
             $spr->description_specific = $request->description;
             $spr->unit = $request->measurement;
             if ($spr->save()){
                 // save impact
-                $imp = ImpactIdentification::firstOrCreate([
+                $mode = $request->mode ? 1 : 0;
+                $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone'];
+                $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
+                $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
+
+                $imp = $impactClasses[$request->mode]::firstOrCreate([
                     'id_project' => $request->id_project,
                     'id_project_component' => $request->id_project_component,
                     'id_project_rona_awal' => $request->id_project_rona_awal,
@@ -192,7 +200,7 @@ class SubProjectRonaAwalController extends Controller
                 // save pies
                 if ($imp) {
 
-                    $pc = ProjectComponent::where('id', $imp->id_project_component)->first();
+                    $pc = ProjectComponent::where('id', $request->id_project_component)->first();
                     $component = Component::where('id', $pc->id_component)->first();
 
                     $spcs = SubProjectComponent::from('sub_project_components')
@@ -208,7 +216,9 @@ class SubProjectRonaAwalController extends Controller
                         })
                         ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id')
                         ->where('project_components.id_project', $imp->id_project)
+                        ->where('sub_project_rona_awals.is_andal', $request->mode)
                         ->where('sub_project_rona_awals.id_rona_awal', $spr->id_rona_awal)
+                        ->where('sub_project_components.is_andal', $request->mode)
                         ->where('sub_project_components.id_component', $pc->id_component)->get();
                     $text = '<p><strong>Deskripsi '.$component->name.'</strong></p>';
                     $text .= $pc->description;
@@ -226,8 +236,8 @@ class SubProjectRonaAwalController extends Controller
                     }
 
                     $text .= '<ol>'.$sub.'</ol>';
-                    $pieA = PotentialImpactEvaluation::firstOrNew([
-                        'id_impact_identification' => $imp->id,
+                    $pieA = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode] => $imp->id,
                         'id_pie_param' => 1,
                     ]);
                     $pieA->text = $text;
@@ -241,15 +251,15 @@ class SubProjectRonaAwalController extends Controller
                     $text .= '<p><strong>Besaran Dampak</strong></p>';
                     $text .='<p>'.$pra->measurement.'</p>';
 
-                    $pieB = PotentialImpactEvaluation::firstOrNew([
-                        'id_impact_identification' => $imp->id,
+                    $pieB = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode]  => $imp->id,
                         'id_pie_param' => 2,
                     ]);
                     $pieB->text = $text;
                     $pieB->save();
 
-                    $pieC = PotentialImpactEvaluation::firstOrNew([
-                        'id_impact_identification' => $imp->id,
+                    $pieC = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode] => $imp->id,
                         'id_pie_param' => 3,
                     ]);
                     if (!$pieC->exists)
@@ -258,8 +268,8 @@ class SubProjectRonaAwalController extends Controller
                         $pieC->save();
                     }
 
-                    $pieD = PotentialImpactEvaluation::firstOrNew([
-                        'id_impact_identification' => $imp->id,
+                    $pieD = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode] => $imp->id,
                         'id_pie_param' => 4,
                     ]);
 
@@ -279,6 +289,7 @@ class SubProjectRonaAwalController extends Controller
                       ->join('sub_project_components', 'sub_project_components.id', '=', 'sub_project_rona_awals.id_sub_project_component')
                       ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
                       ->whereIn('sub_project_rona_awals.id_sub_project_component', $ids)
+                      ->where('sub_project_rona_awals.is_andal', $request->mode)
                       ->where('sub_project_rona_awals.id_rona_awal', $spr->id_rona_awal)->get();
 
                     $text = '<p><strong>Deskripsi '.$ra->name.' terkait '.$component->name.'</strong></p>';
@@ -290,8 +301,8 @@ class SubProjectRonaAwalController extends Controller
                         '<p>'.$r['measurement'].'</p></li>';
                     }
                     $text .='<ol>'.$sub.'</ol>';
-                    $pieE = PotentialImpactEvaluation::firstOrNew([
-                        'id_impact_identification' => $imp->id,
+                    $pieE = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode] => $imp->id,
                         'id_pie_param' => 5,
                     ]);
                     $pieE->text = $text;
@@ -365,20 +376,27 @@ class SubProjectRonaAwalController extends Controller
             ->select('sub_project_components.id as id_spc', 'sub_project_rona_awals.id as id_spra')
             ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id' )
             ->where('sub_project_rona_awals.id_rona_awal', $subProjectRonaAwal->id_rona_awal)
+            ->where('sub_project_rona_awals.is_andal', $subProjectRonaAwal->is_andal)
             ->where('sub_project_components.id_component', $spc->id_component)
+            ->where('sub_project_components.is_andal', $subProjectRonaAwal->is_andal)
             ->whereIn('sub_project_components.id_sub_project', $idSubProjects)->get();
 
             if(count($ospcra) === 0){
-                // delete imp
+                $mode = $subProjectRonaAwal->is_andal ? 1 : 0;
+                $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone'];
+                $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
+                $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
+
+
                 $pc = ProjectComponent::where(['id_project' => $sp->id_project, 'id_component' => $spc->id_component])->first();
                 $pra = ProjectRonaAwal::where(['id_project' => $sp->id_project, 'id_rona_awal' => $subProjectRonaAwal->id_rona_awal])->first();
-                $imp = ImpactIdentification::where([
+                $imp = $impactClasses[$mode]::where([
                     'id_project' => $sp->id_project,
                     'id_project_component' => $pc->id,
                     'id_project_rona_awal' => $pra->id
                 ])->first();
                 if($imp){
-                    $pie = PotentialImpactEvaluation::where('id_impact_identification', $imp->id)->delete();
+                    $pie = $pieClasses[$mode]::where($pieIdNames[$mode], $imp->id)->delete();
                     $imp->delete();
                 }
             }

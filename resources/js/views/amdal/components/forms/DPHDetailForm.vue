@@ -267,6 +267,7 @@ export default {
         const res = new Resource('impact-kegiatan-lain-sekitar');
         await res.list({
           id: this.data.id,
+          mode: this.mode,
         }).then((res) => {
           this.data.activities = res;
           res.forEach((e) => {

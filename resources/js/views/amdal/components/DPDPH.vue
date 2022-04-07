@@ -108,6 +108,9 @@ export default {
         this.hues = [];
         // const data = res;
         res.map((e) => {
+          console.log(e.sub_projects);
+
+          // e.kegiatan = sp_names;
           e.hasChanges = false;
           console.log('each impact: ', e);
 

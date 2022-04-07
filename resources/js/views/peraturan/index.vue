@@ -1,32 +1,46 @@
 <template>
-  <div class="app-container" style="padding: 24px">
-    <el-card>
-      <div class="filter-container">
-        <!-- <h2>Peraturan</h2> -->
-        <el-button
-          class="filter-item"
-          type="primary"
-          icon="el-icon-plus"
-          @click="handleCreate"
-        >
-          {{ 'Tambah Peraturan' }}
-        </el-button>
-      </div>
-      <component-table
-        :loading="loading"
-        :list="allData"
-        @handleEditForm="handleEditForm($event)"
-        @handleView="handleView($event)"
-        @handleDelete="handleDelete($event)"
-      />
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
-        @pagination="handleFilter"
-      />
-    </el-card>
+  <div class="app-container">
+    <div class="filter-container">
+      <!-- <h2>Peraturan</h2> -->
+      <el-button
+        class="filter-item"
+        type="primary"
+        icon="el-icon-plus"
+        @click="handleCreate"
+      >
+        {{ 'Tambah Peraturan' }}
+      </el-button>
+      <el-row :gutter="32">
+        <el-col :sm="24" :md="10">
+          <el-input
+            v-model="listQuery.search"
+            suffix-icon="el-icon search"
+            placeholder="Pencarian..."
+            @input="inputSearch"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="handleSearch"
+            />
+          </el-input>
+        </el-col>
+      </el-row>
+    </div>
+    <component-table
+      :loading="loading"
+      :list="allData"
+      @handleEditForm="handleEditForm($event)"
+      @handleView="handleView($event)"
+      @handleDelete="handleDelete($event)"
+    />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="handleFilter"
+    />
   </div>
 </template>
 
@@ -49,7 +63,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        search: null,
       },
+      timeoutId: null,
       sort: 'DESC',
     };
   },
@@ -64,7 +80,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/peraturan?page=${this.listQuery.page}&sort=${this.sort}`
+          `/api/peraturan?page=${this.listQuery.page}&sort=${this.sort}&search=${this.listQuery.search}`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -78,13 +94,18 @@ export default {
       });
     },
     handleDelete({ rows }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Batal',
-        type: 'warning',
-      })
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + rows.id + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
         .then(() => {
-          axios.get(`/api/peraturan/delete/${rows.id}`)
+          axios
+            .get(`/api/peraturan/delete/${rows.id}`)
             .then((response) => {
               this.$message({
                 type: 'success',
@@ -102,6 +123,22 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getAll();
+      }, 500);
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getAll();
+      this.listQuery.search = null;
     },
     // handleEditForm(row) {
     //   const currentParam = this.list.find((element) => element.parameter_name === row.parameter_name);

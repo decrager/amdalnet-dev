@@ -25,6 +25,8 @@ class ImpactIdentificationClone extends Model
         'study_length_month',
         'id_sub_project_component',
         'id_sub_project_rona_awal',
+        'id_project_component',
+        'id_project_rona_awal',
     ];
 
     public function project(){

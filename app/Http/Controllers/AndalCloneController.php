@@ -12,6 +12,10 @@ use App\Entity\PotentialImpactEvaluation;
 use App\Http\Resources\ImpactIdentificationCloneResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Entity\SubProjectComponent;
+use App\Entity\SubProject;
+use App\Entity\SubProjectRonaAwal;
+use App\Entity\ImpactKegiatanLainSekitar;
 
 class AndalCloneController extends Controller
 {
@@ -271,6 +275,44 @@ class AndalCloneController extends Controller
     }
 
     private function checkExist($id) {
+        // clones PELINGKUPAN as well!
+        $sp = SubProject::where('id_project', $id)->pluck('id');
+        $spc = SubProjectComponent::where('is_andal', false)->whereIn('id_sub_project', $sp)->get();
+        foreach($spc as $comp){
+            // get sub_project_rona_awal
+            $new_comp = SubProjectComponent::firstOrNew([
+                'id_sub_project' => $comp->id_sub_project,
+                'id_component' => $comp->id_component,
+                'is_andal' => true
+            ]);
+            $new_comp->name = $comp->name;
+            $new_comp->id_project_stage =  $comp->id_project_stage;
+            $new_comp->description_common = $comp->description_common;
+            $new_comp->description_specific = $comp->description_specific;
+            $new_comp->definition = $comp->definition;
+            $new_comp->unit = $comp->unit;
+            $new_comp->save();
+
+            $spra = SubProjectRonaAwal::where('id_sub_project_component', $comp->id)->get();
+            if($spra){
+                foreach($spra as $ra){
+                    $new_ra = SubProjectRonaAwal::firstOrNew([
+                        'id_sub_project_component' => $new_comp->id,
+                        'id_rona_awal' => $ra->id_rona_awal,
+                        'is_andal' => true
+                    ]);
+                    $new_ra->name = $ra->name;
+                    $new_ra->id_component_type = $ra->id_component_type;
+                    $new_ra->description_common = $ra->description_common;
+                    $new_ra->description_specific = $ra->description_specific;
+                    // $new_ra->definition = $ra->definition;
+                    $new_ra->unit = $ra->unit;
+                    $new_ra->save();
+                }
+            }
+        }
+
+
         $old_impact = ImpactIdentification::where('id_project', $id)->get();
         $new_impact = ImpactIdentificationClone::select('id', 'id_project', 'id_impact_identification')->where('id_project', $id)->get();
 
@@ -319,6 +361,20 @@ class AndalCloneController extends Controller
                     $potential->id_pie_param = $p->id_pie_param;
                     $potential->text = $p->text;
                     $potential->save();
+                }
+
+                // IMPACT KEGIATAN LAIN SEKITAR
+                $ikls = ImpactKegiatanLainSekitar::where([
+                    'id_impact_identification' =>  $oi->id,
+                    'is_andal' => false
+
+                    ])->get();
+                foreach($ikls as $kls){
+                    $new_ikls = ImpactKegiatanLainSekitar::firstOrCreate([
+                        'id_impact_identification' => $imp->id,
+                        'id_project_kegiatan_lain_sekitar' => $ikls->id_project_kegiatan_lain_sekitar,
+                        'is_andal' => true
+                    ]);
                 }
             }
         }
