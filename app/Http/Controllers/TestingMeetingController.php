@@ -162,14 +162,12 @@ class TestingMeetingController extends Controller
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 
                 // === WORKFLOW === //
-                // $project = Project::findOrFail($request->idProject);
-                // if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
-                //     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
-                //     $project->workflow_apply('examine-amdal-form-ka');
-                //     $project->workflow_apply('held-amdal-form-ka-meeting');
-                //     $project->workflow_apply('approve-amdal-form-ka');
-                //     $project->save();
-                // }
+                $project = Project::findOrFail($request->idProject);
+                if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
+                    $project->workflow_apply('send-amdal-form-ka-examination-invitation');
+                    $project->workflow_apply('examine-amdal-form-ka');
+                    $project->save();
+                }
             }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
@@ -277,11 +275,11 @@ class TestingMeetingController extends Controller
         }
 
         // === ADD WORKFLOW === //
-        // $project = Project::findOrFail($request->idProject);
-        // if($project->marking == 'amdal.form-ka-adm-approved') {
-        //     $project->workflow_apply('draft-amdal-form-ka-examination-invitation');
-        //     $project->save();
-        // }
+        $project = Project::findOrFail($request->idProject);
+        if($project->marking == 'amdal.form-ka-adm-approved') {
+            $project->workflow_apply('draft-amdal-form-ka-examination-invitation');
+            $project->save();
+        }
 
         return response()->json(['message' => 'success']);
     }

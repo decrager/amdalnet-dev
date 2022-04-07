@@ -380,6 +380,17 @@ class FeasibilityTestController extends Controller
 
         $templateProcessor->saveAs(storage_path('app/public/uji-kelayakan/' . $save_file_name));
 
+        // WORKFLOW
+        if($project->marking == 'amdal.feasibility-ba-signed') {
+            $project->workflow_apply('draft-amdal-recommendation');
+            $project->workflow_apply('sign-amdal-recommendation');
+            $project->save();
+        } else if($project->marking == 'uklupl-mt.ba-signed') {
+            $project->workflow_apply('draft-uklupl-recommendation');
+            $project->workflow_apply('sign-uklupl-recommendation');
+            $project->save();
+        }
+
         return $save_file_name;
     }
 

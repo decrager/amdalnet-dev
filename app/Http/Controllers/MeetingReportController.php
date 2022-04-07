@@ -108,10 +108,10 @@ class MeetingReportController extends Controller
             }
 
             // === WORKFLOW === //
-            // if($project->marking == 'amdal.form-ka-ba-drafting') {
-            //     $project->workflow_apply('sign-amdal-form-ka-ba');
-            //     $project->save();
-            // }
+            if($project->marking == 'amdal.form-ka-ba-drafting') {
+                $project->workflow_apply('sign-amdal-form-ka-ba');
+                $project->save();
+            }
 
             return response()->json(['errors' => null, 'name' => $meeting_report->file]);
         }
@@ -190,11 +190,13 @@ class MeetingReportController extends Controller
         }
 
         // === WORKFLOW === //
-        // $project = Project::findOrFail($request->idProject);
-        // if($project->marking == 'amdal.form-ka-approved') {
-        //     $project->workflow_apply('draft-amdal-form-ka-ba');
-        //     $project->save();
-        // }
+        $project = Project::findOrFail($request->idProject);
+        if($project->marking == 'amdal.form-ka-examination') {
+            $project->workflow_apply('held-amdal-form-ka-meeting');
+            $project->workflow_apply('approve-amdal-form-ka');
+            $project->workflow_apply('draft-amdal-form-ka-ba');
+            $project->save();
+        }
 
         return response()->json(['message' => 'success']);
     }
