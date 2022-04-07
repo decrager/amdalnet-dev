@@ -65,29 +65,30 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="ID Komponen">
-      <template slot-scope="scope">
-        <span>{{ scope.row.id_component }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="ID Rona Awal">
-      <template slot-scope="scope">
-        <span>{{ scope.row.id_rona_awal }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Bentuk Pengelolaan">
-      <template slot-scope="scope">
-        <span v-html="scope.row.mgmt_form" />
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Periode Pengelolaan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.mgmt_period }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column
+      align="center"
+      label="ID Komponen"
+      prop="id_component"
+      sortable
+    />
+    <el-table-column
+      align="center"
+      label="ID Rona Awal"
+      prop="id_rona_awal"
+      sortable
+    />
+    <el-table-column
+      align="center"
+      label="Bentuk Pengelolaan"
+      prop="mgmt_form"
+      sortable
+    />
+    <el-table-column
+      align="center"
+      label="Periode Pengelolaan"
+      prop="mgmt_period"
+      sortable
+    />
 
     <!-- <el-table-column align="center" label="Bentuk Pengawasan">
       <template slot-scope="scope">

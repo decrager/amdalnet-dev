@@ -1,32 +1,46 @@
 <template>
-  <div class="app-container" style="padding: 24px">
-    <el-card>
-      <div class="filter-container">
-        <!-- <h2>Materi</h2> -->
-        <el-button
-          class="filter-item"
-          type="primary"
-          icon="el-icon-plus"
-          @click="handleCreate"
-        >
-          {{ 'Tambah Kebijakan' }}
-        </el-button>
-      </div>
-      <component-table
-        :loading="loading"
-        :list="allData"
-        @handleEditForm="handleEditForm($event)"
-        @handleView="handleView($event)"
-        @handleDelete="handleDelete($event)"
-      />
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
-        @pagination="handleFilter"
-      />
-    </el-card>
+  <div class="app-container">
+    <div class="filter-container">
+      <!-- <h2>Materi</h2> -->
+      <el-button
+        class="filter-item"
+        type="primary"
+        icon="el-icon-plus"
+        @click="handleCreate"
+      >
+        {{ 'Tambah Kebijakan' }}
+      </el-button>
+      <el-row :gutter="32">
+        <el-col :sm="24" :md="10">
+          <el-input
+            v-model="listQuery.search"
+            suffix-icon="el-icon search"
+            placeholder="Pencarian..."
+            @input="inputSearch"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="handleSearch"
+            />
+          </el-input>
+        </el-col>
+      </el-row>
+    </div>
+    <component-table
+      :loading="loading"
+      :list="allData"
+      @handleEditForm="handleEditForm($event)"
+      @handleView="handleView($event)"
+      @handleDelete="handleDelete($event)"
+    />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="handleFilter"
+    />
   </div>
 </template>
 
@@ -48,7 +62,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        search: null,
       },
+      timeoutId: null,
       optionValue: null,
       sort: 'DESC',
     };
@@ -66,10 +82,13 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/policys?page=${this.listQuery.page}&sort=${this.sort}`
+          `/api/policys?page=${this.listQuery.page}&sort=${this.sort}&search=${this.listQuery.search}`
         )
         .then((response) => {
-          this.allData = response.data.data;
+          this.allData = response.data.data.map((x) => {
+            x.regulation_name = x.regulation ? x.regulation.name : '-';
+            return x;
+          });
           this.total = response.data.total;
           this.loading = false;
         });
@@ -85,13 +104,18 @@ export default {
       });
     },
     handleDelete({ rows }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Batal',
-        type: 'warning',
-      })
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + rows.id + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
         .then(() => {
-          axios.get(`/api/policys/delete/${rows.id}`)
+          axios
+            .get(`/api/policys/delete/${rows.id}`)
             .then((response) => {
               this.$message({
                 type: 'success',
@@ -110,7 +134,22 @@ export default {
           });
         });
     },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getAll();
+      }, 500);
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getAll();
+      this.listQuery.search = null;
+    },
   },
 };
 </script>
-

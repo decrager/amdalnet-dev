@@ -4,7 +4,7 @@
     :data="list"
     fit
     highlight-current-row
-    :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
+    :header-cell-style="{ background: '#3AB06F', color: 'white', border: '0' }"
   >
     <el-table-column type="expand">
       <template slot-scope="scope">
@@ -33,26 +33,18 @@
         <span>{{ scope.$index + 1 }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Nama Pemrakarsa Usaha/Kegiatan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.pemarkasa_name }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Nama Usaha/Kegiatan (SKKL/Izin Lingkungan)">
-      <template slot-scope="scope">
-        <span>{{ scope.row.kegiatan_name }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Nomor SK">
-      <template slot-scope="scope">
-        <span>{{ scope.row.sk_number }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column label="Tanggal Berlaku SK">
-      <template slot-scope="scope">
-        <span>{{ formatDateStr(scope.row.date) }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column
+      label="Nama Pemrakarsa Usaha/Kegiatan"
+      prop="pemarkasa_name"
+      sortable
+    />
+    <el-table-column
+      label="Nama Usaha/Kegiatan (SKKL/Izin Lingkungan)"
+      prop="kegiatan_name"
+      sortable
+    />
+    <el-table-column label="Nomor SK" prop="sk_number" sortable />
+    <el-table-column label="Tanggal Berlaku SK" prop="date" sortable />
   </el-table>
 </template>
 
@@ -77,32 +69,11 @@ export default {
     handleDelete(rows) {
       this.$emit('handleDelete', { rows });
     },
-    formatDateStr(date) {
-      const today = new Date(date);
-      var bulan = [
-        'Januari',
-        'Februari',
-        'Maret',
-        'April',
-        'Mei',
-        'Juni',
-        'Juli',
-        'Agustus',
-        'September',
-        'Oktober',
-        'November',
-        'Desember',
-      ];
-      const year = today.getFullYear();
-      const month = today.getMonth();
-      const day = today.getDate();
-      const monthID = bulan[month];
-      const finalDate = `${day} ${monthID} ${year}`;
-      return finalDate;
-    },
   },
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .el-table-column{border: none;}
+.el-table-column {
+  border: none;
+}
 </style>

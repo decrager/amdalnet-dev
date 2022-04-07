@@ -24,14 +24,22 @@ class PeraturanController extends Controller
             $sort = $request->sort;
         }
 
-        $regulations = Regulation::When($request->has('keyword'), function ($query) use ($request) {
-            $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('name', 'ILIKE', '%'.$request->keyword.'%');
-            return $indents;
-        })
-        ->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
-
-        return response()->json($regulations, 200);
+        if($request->search && ($request->search !== 'null')) {
+            $regulations = Regulation::whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'")
+                            ->orderby('id', 'desc')
+                            ->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($regulations, 200);
+        } else {
+            $regulations = Regulation::When($request->has('keyword'), function ($query) use ($request) {
+                $searchQuery = '%' . $request->keyword . '%';
+                $indents = $query->where('name', 'ILIKE', '%'.$request->keyword.'%');
+                return $indents;
+            })
+            ->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($regulations, 200);
+        }
     }
 
     public function store(Request $request)
