@@ -142,7 +142,7 @@
         <el-collapse-item title="PENDEKATAN STUDI" name="2" disabled>
           <div role="alert" class="el-alert el-alert--info is-light">
             <i class="el-alert__icon el-icon-warning is-big" />
-            <div class="el-alert__content"><span class="el-alert__title is-bold">Pendekatan Study</span>
+            <div class="el-alert__content"><span class="el-alert__title is-bold">Pendekatan Studi</span>
               <p class="el-alert__description">
                 <ul>
                   <li><b>Tunggal : </b> Apabila penanggung jawab Usaha dan/atau Kegiatan merencanakan untuk melakukan 1 (satu) jenis Usaha dan/atau Kegiatan yang kewenangan pembinaan dan/atau pengawasannya berada di bawah 1 (satu) kementerian, lembaga pemerintah nonkementerian, organisasi perangkat daerah provinsi, atau organisasi perangkat daerah kabupaten/kota.</li>
