@@ -96,6 +96,15 @@ class SKKLController extends Controller
              // send status 45 to OSS
              OssService::receiveLicenseStatus($project, '45');
 
+              // === WORKFLOW === //
+            if($project->marking == 'amdal.recommendation-signed') {
+                $project->workflow_apply('publish-amdal-skkl');
+                $project->save();
+            } else if($project->marking == 'uklupl-mt.recommendation-signed') {
+                $project->workflow_apply('publish-uklupl-pkplh');
+                $project->save();
+            }
+
              return response()->json(['message' => 'success']);
         }
 
@@ -308,12 +317,6 @@ class SKKLController extends Controller
             $skkl_download_name = Storage::url('skkl/' . $save_file_name);
             $update_date_skkl = $project->updated_at->locale('id')->isoFormat('D MMMM Y');
         }
-
-        // === WORKFLOW === //
-        // if($project->marking == 'amdal.recommendation-signed') {
-        //     $project->workflow_apply('publish-amdal-skkl');
-        //     $project->save();
-        // }
  
 
         return [ 

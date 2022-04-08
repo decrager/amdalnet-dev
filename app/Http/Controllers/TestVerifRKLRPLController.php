@@ -104,39 +104,24 @@ class TestVerifRKLRPLController extends Controller
             $verification->is_complete = $request->decision == 'ya' ? true : false;
 
             // === WORKFKLOW === //
-            // if($document_type == 'ukl-upl') {
-            //     if($project->marking == 'uklupl-mt.submitted') {
-            //         $project->workflow_apply('review-uklupl-adm');
-            //         if($request->decision == 'ya') {
-            //             $project->workflow_apply('draft-uklupl-examination-invitation');
-            //         } else {
-            //             $project->workflow_apply('return-uklupl-adm');
-            //         }
-            //         $project->save();
-            //     }
-            // } else {
-            //     if($project->marking == 'draft-amdal-rklrpl') {
-            //         $project->workflow_apply('submit-amdal');
-            //         $project->workflow_apply('review-amdal-adm');
-            //         if($request->decision == 'ya') {
-            //             $project->workflow_apply('approve-amdal-adm');
-            //             $project->workflow_apply('examine-amdal');
-            //             $project->save();
-            //         } else {
-            //             $project->workflow_apply('return-amdal-adm');
-            //             $project->save();
-            //         }
-            //     } else if($project->marking == 'amdal.adm-review') {
-            //         if($request->decision == 'ya') {
-            //             $project->workflow_apply('approve-amdal-adm');
-            //             $project->workflow_apply('examine-amdal');
-            //             $project->save();
-            //         } else {
-            //             $project->workflow_apply('return-amdal-adm');
-            //             $project->save();
-            //         }
-            //     }
-            // }
+            if($document_type == 'ukl-upl') {
+                if($project->marking == 'uklupl-mt.adm-review') {
+                    if($request->decision != 'ya') {
+                        $project->workflow_apply('return-uklupl-adm');
+                    }
+                    $project->save();
+                }
+            } else {
+                if($project->marking == 'amdal.adm-review') {
+                    if($request->decision == 'ya') {
+                        $project->workflow_apply('approve-amdal-adm');
+                        $project->save();
+                    } else {
+                        $project->workflow_apply('return-amdal-adm');
+                        $project->save();
+                    }
+                }
+            }
         } else {
             $verification->is_complete = $data['is_complete'];
 
@@ -338,10 +323,12 @@ class TestVerifRKLRPLController extends Controller
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
-                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' ? 'download' : 'non-download';
+                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' ? 'download' : 'non-download';
                         $link = null;
                         if($f->name == 'tata_ruang') {
                             $link = $project->ktr;
+                        } else if($f->name == 'pippib') {
+                            $link = $project->ppib_file;
                         } else if($f->name == 'persetujuan_awal') {
                             $link = $project->pre_agreement_file;
                         } else if($f->name == 'peta') {
@@ -384,9 +371,10 @@ class TestVerifRKLRPLController extends Controller
                 ],
                 [
                     'name' => 'pippib',
+                    'link' => $project->ppib_file,
                     'suitability' => null,
                     'description' => null,
-                    'type' => 'non-download'
+                    'type' => 'download'
                 ],
                 [
                     'name' => 'persetujuan_awal',

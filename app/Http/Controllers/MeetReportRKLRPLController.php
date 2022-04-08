@@ -143,25 +143,17 @@ class MeetReportRKLRPLController extends Controller
                 $meeting_report->save();
 
                 // === WORKFLOW === //
-                // if($document_type == 'ukl-upl') {
-                //     if($project->marking == 'uklupl-mt.examination-meeting') {
-                //         $project->workflow_apply('draft-uklupl-ba');
-                //         $project->workflow_apply('sign-uklupl-ba');
-                //         $project->save();
-                //     } else if($project->marking == 'uklupl-mt.ba-drafting') {
-                //         $project->workflow_apply('sign-uklupl-ba');
-                //         $project->save();
-                //     }
-                // } else {
-                //     if($project->marking == 'amdal.feasibility-meeting') {
-                //         $project->workflow_apply('draft-amdal-feasibility-ba');
-                //         $project->workflow_apply('sign-amdal-feasibility-ba');
-                //         $project->save();
-                //     } else if($project->marking == 'amdal.feasibility-ba-drafting') {
-                //         $project->workflow_apply('sign-amdal-feasibility-ba');
-                //         $project->save();
-                //     }
-                // }
+                if($document_type == 'ukl-upl') {
+                    if($project->marking == 'uklupl-mt.ba-drafting') {
+                        $project->workflow_apply('sign-uklupl-ba');
+                        $project->save();
+                    }
+                } else {
+                    if($project->marking == 'amdal.feasibility-ba-drafting') {
+                        $project->workflow_apply('sign-amdal-feasibility-ba');
+                        $project->save();
+                    }
+                }
             } else {
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
             }
@@ -244,18 +236,21 @@ class MeetReportRKLRPLController extends Controller
         }
 
         // === WORKFLOW === //
-        // $project = Project::findOrFail($request->idProject);
-        // if($document_type == 'ukl-upl') {
-        //     if($project->marking == 'uklupl-mt.examination-meeting') {
-        //         $project->workflow_apply('draft-uklupl-ba');
-        //         $project->save();
-        //     }
-        // } else {
-        //     if($project->marking == 'amdal.feasibility-meeting') {
-        //         $project->workflow_apply('draft-amdal-feasibility-ba');
-        //         $project->save();
-        //     }
-        // }
+        $project = Project::findOrFail($request->idProject);
+        if($document_type == 'ukl-upl') {
+            if($project->marking == 'uklupl-mt.examination') {
+                $project->workflow_apply('held-uklupl-examination-meeting');
+                $project->workflow_apply('draft-uklupl-ba');
+                $project->save();
+            }
+        } else {
+            if($project->marking == 'amdal.feasibility-invitation-sent') {
+                $project->workflow_apply('review-amdal-feasibility');
+                $project->workflow_apply('held-amdal-feasibility-meeting');
+                $project->workflow_apply('draft-amdal-feasibility-ba');
+                $project->save();
+            }
+        }
 
         return response()->json(['message' => 'success']);
     }
