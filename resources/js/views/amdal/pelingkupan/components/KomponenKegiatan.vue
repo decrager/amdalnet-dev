@@ -29,6 +29,7 @@
         :component="deleted"
         :show="showDelete"
         :resource="'project-components'"
+        :mode="mode"
         @close="showDelete = false"
         @delete="afterDeleteComponent"
       />

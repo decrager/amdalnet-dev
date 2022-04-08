@@ -12,6 +12,7 @@ use App\Entity\SubProjectComponent;
 use App\Entity\PotentialImpactEvaluation;
 use App\Entity\ProjectRonaAwal;
 use App\Entity\SubProjectRonaAwal;
+use PhpParser\Node\Expr\Empty_;
 
 class ProjectComponentController extends Controller
 {
@@ -289,9 +290,13 @@ class ProjectComponentController extends Controller
             $nSRA = SubProjectRonaAwal::whereIn('id_sub_project_component', $spcIds)->delete();
             $nSPC = SubProjectComponent::whereIn('id', $spcIds)->delete();
 
-
             $co = Component::where('id', $projectComponent->id_component)->first();
-            if(($co) && (!$co->is_master) && ($co->originator_id === $projectComponent->id_project)){
+            $pc_ka = ProjectComponent::where([
+                'id_project' => $projectComponent->id_project,
+                'is_andal' => $projectComponent->is_andal ? false : true,
+                'id_component' => $projectComponent->id_component
+            ])->get();
+            if(($co) && (!$co->is_master) && ($co->originator_id === $projectComponent->id_project) && (empty($pc_ka))){
                 $co->delete();
             }
             return response([$projectComponent->delete(), $spcIds], 200);

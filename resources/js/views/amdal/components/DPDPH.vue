@@ -166,6 +166,7 @@ export default {
       });
       await projectActivityResource.list({
         id_project: parseInt(this.$route.params && this.$route.params.id),
+        mode: this.mode,
       }).then((res) => {
         this.activities = res;
         this.activities.forEach((e, index) => {

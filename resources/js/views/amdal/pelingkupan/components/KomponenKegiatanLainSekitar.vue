@@ -6,7 +6,7 @@
       </div>
       <div>
         <components-list
-          :id="'rona'"
+          :id="'kegiatan_lain_sekitar_119'"
           :components="components"
           :is-master-component="true"
           @edit="editComponent"
@@ -18,6 +18,7 @@
       <form-komponen-kegiatan-lain-sekitar
         :show="showForm"
         :mode="mode"
+        :form-mode="formMode"
         :input="selectedData"
         @onSave="onSaveData"
         @onClose="showForm = false"
@@ -54,12 +55,16 @@ export default {
         return [];
       },
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
       showForm: false,
       selectedData: null,
-      mode: 0,
+      formMode: 0,
       deleted: null,
       showDelete: false,
     };
@@ -74,13 +79,14 @@ export default {
       this.selectedData = null;
     },
     addComponent(){
-      this.mode = 0;
+      this.selectedData = null;
+      this.formMode = 0;
       this.showForm = true;
     },
     editComponent(id){
       this.selectedData = this.components.find(e => e.id === id);
-      this.mode = 1;
-      console.log(this.selectedData);
+      this.formMode = 1;
+      console.log(id);
       this.showForm = true;
     },
     removeComponent(id) {

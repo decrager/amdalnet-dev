@@ -1,5 +1,5 @@
 <template>
-  <div :loading="saving">
+  <div>
     <el-dialog
       :title="'Master Komponen Lingkungan'"
       :visible.sync="show"
@@ -10,10 +10,10 @@
       :close-on-click-modal="false"
       @open="onOpen"
     >
-      <el-form label-position="top">
+      <el-form v-loading="saving" label-position="top">
 
         <el-form-item
-          v-if="mode === 0"
+          v-if="formMode === 0"
           label="Kategori Komponen Lingkungan"
         >
 
@@ -37,9 +37,8 @@
             {{ data.component_type_name }}
           </div>
         </div>
-
         <el-form-item
-          v-if="mode === 0"
+          v-if="formMode === 0"
           label="Rona Lingkungan"
         >
           <el-select
@@ -134,7 +133,10 @@ export default {
       default: function(){
         return [];
       },
-
+    },
+    formMode: {
+      type: Number,
+      default: 0,
     },
   },
   data(){
@@ -187,7 +189,7 @@ export default {
     },
     onOpen(){
       console.log('opening!');
-      switch (this.mode){
+      switch (this.formMode){
         case 0:
           this.initData();
           break;
@@ -204,6 +206,7 @@ export default {
       await projectRonaAwalResource.store({
         id_project: this.project_id,
         component: this.data,
+        mode: this.mode,
       })
         .then((res) => {
           this.data.id_project_rona_awal = res.data.id;

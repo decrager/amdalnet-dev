@@ -10,7 +10,7 @@
       :close-on-click-modal="false"
       @open="onOpen"
     >
-      <div :loading="saving">
+      <div v-loading="saving">
         <el-form label-position="top">
 
           <el-form-item
@@ -40,7 +40,7 @@
           </div>
 
           <el-form-item
-            v-if="formMode===0"
+            v-if="formMode === 0"
             label="Komponen Kegiatan"
             :loading="loading"
           >

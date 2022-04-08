@@ -151,6 +151,7 @@ export default {
       this.hue.id_project_component = this.masterComponent.id_project_component;
       this.hue.id_project_rona_awal = this.selected.id_project_rona_awal;
       this.hue.mode = this.mode;
+      console.log(this.hue);
       await subProjectHueResource.store(this.hue)
         .then((res) => {
           this.hue.id_sub_project_rona_awal = res.id_sub_project_rona_awal;
@@ -231,6 +232,7 @@ export default {
         };
         this.selected = this.master;
       }
+      console.log('opening form hue: ', this.hue);
     },
     onChangeHue(val){
       this.selected = this.masterHues.find(h => h.id === val);
