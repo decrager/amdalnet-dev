@@ -358,11 +358,11 @@ class AndalComposingController extends Controller
             }
 
             // === WORKFLOW === //
-            // $project = Project::findOrFail($request->idProject);
-            // if($project->marking == 'amdal.form-ka-ba-signed') {
-            //     $project->workflow_apply('draft-amdal-andal');
-            //     $project->save();
-            // }
+            $project = Project::findOrFail($request->idProject);
+            if($project->marking == 'amdal.form-ka-ba-signed') {
+                $project->workflow_apply('draft-amdal-andal');
+                $project->save();
+            }
         } else {
             $ids = [];
             for ($i = 0; $i < count($analysis); $i++) {
@@ -1740,12 +1740,18 @@ class AndalComposingController extends Controller
         $cell = $holEvalTable->addCell();
         Html::addHtml($cell, $holistic_evaluations);
 
+        $location_description = $project->location_desc ? $project->location_desc : '';
+        $locDescTable = new Table();
+        $locDescTable->addRow();
+        $cellLocDesc = $locDescTable->addCell();
+        Html::addHtml($cellLocDesc, $location_description);
+
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
         $templateProcessor->setValue('project_title_s', strtolower($project->project_title));
         $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
-        $templateProcessor->setValue('project_location_desc', $project->location_desc);
+        $templateProcessor->setComplexBlock('project_location_desc',  $locDescTable);
         $templateProcessor->setValue('district', ucwords(strtolower($project_district)));
         $templateProcessor->setValue('province', ucwords(strtolower($project_province)));
         $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->pic);
@@ -2286,11 +2292,19 @@ class AndalComposingController extends Controller
             }
         }
 
+        // === PROJECT DESCRIPTION === //
+        $project_description_table = new Table();
+        $project_description_table->addRow();
+        $project_description_cell = $project_description_table->addCell();
+        $project_description_content = $project->description ? $project->description : '';
+        $project_description_content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 11px;">', $project_description_content);
+        Html::addHtml($project_description_cell, $project_description_content);
+
         $templateProcessor = new TemplateProcessor('template_ka_andal.docx');
 
         $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
         $templateProcessor->setValue('pic', $project->initiator->name);
-        $templateProcessor->setValue('description', $project->description);
+        $templateProcessor->setComplexBlock('description', $project_description_table);
         $templateProcessor->setValue('project_address', $project_address);
         $templateProcessor->cloneBlock('penyusun', count($penyusun), true, false, $penyusun);
         $templateProcessor->cloneBlock('positive', count($positive), true, false, $positive);

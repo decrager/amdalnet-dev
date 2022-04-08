@@ -167,18 +167,15 @@ class TestMeetRKLRPLController extends Controller
                 return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 
                 // === WORKFLOW === //
-                // $project = Project::findOrFail($request->idProject);
-                // if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
-                //     $project->workflow_apply('send-uklupl-examination-invitation');
-                //     $project->workflow_apply('examine-uklupl');
-                //     $project->workflow_apply('held-uklupl-examination-meeting');
-                //     $project->save();
-                // } else if($project->marking == 'amdal.feasibility-invitation-drafting') {
-                //     $project->workflow_apply('send-amdal-feasibility-invitation');
-                //     $project->workflow_apply('review-amdal-feasibility');
-                //     $project->workflow_apply('held-amdal-feasibility-meeting');
-                //     $project->save();
-                // }
+                $project = Project::findOrFail($request->idProject);
+                if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
+                    $project->workflow_apply('send-uklupl-examination-invitation');
+                    $project->workflow_apply('examine-uklupl');
+                    $project->save();
+                } else if($project->marking == 'amdal.feasibility-invitation-drafting') {
+                    $project->workflow_apply('send-amdal-feasibility-invitation');
+                    $project->save();
+                }
                 
             }
 
@@ -291,13 +288,20 @@ class TestMeetRKLRPLController extends Controller
         }
 
         // === WORKFLOW === //
-        // if($document_type == 'rkl-rpl') {
-        //     $project = Project::findOrFail($request->idProject);
-        //     if($project->marking == 'amdal.examination') {
-        //         $project->workflow_apply('draft-amdal-feasibility-invitation');
-        //         $project->save();
-        //     }
-        // }
+        if($document_type == 'rkl-rpl') {
+            $project = Project::findOrFail($request->idProject);
+            if($project->marking == 'amdal.adm-approved') {
+                $project->workflow_apply('examine-amdal');
+                $project->workflow_apply('draft-amdal-feasibility-invitation');
+                $project->save();
+            }
+        } else {
+            $project = Project::findOrFail($request->idProject);
+            if($project->marking == 'uklupl-mt.adm-review') {
+                $project->workflow_apply('draft-uklupl-examination-invitation');
+                $project->save();
+            }
+        }
 
         return response()->json(['message' => 'success']);
     }
