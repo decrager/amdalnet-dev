@@ -305,10 +305,10 @@ class ProjectController extends Controller
                 'auth_province' => isset($request['auth_province']) ? $request['auth_province'] : null,
                 'auth_district' => isset($request['auth_district']) ? $request['auth_district'] : null,
                 'authority' => isset($request['authority']) ? $request['authority'] : null,
-                'ppib' => isset($request['kawasan_lindung']) ? $request['kawasan_lindung'] : null,
-                'ppib_file' => Storage::url($kawLinName),
-                'kawasan_lindung' => isset($request['pippib']) ? $request['pippib'] : null,
-                'kawasan_lindung_file' => Storage::url($pippibName),
+                'kawasan_lindung' => isset($request['kawasan_lindung']) ? $request['kawasan_lindung'] : null,
+                'kawasan_lindung_file' => Storage::url($kawLinName),
+                'ppib' => isset($request['pippib']) ? $request['pippib'] : null,
+                'ppib_file' => Storage::url($pippibName),
             ]);
 
             // add workflow

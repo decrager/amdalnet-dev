@@ -86,12 +86,6 @@ class KaReviewController extends Controller
                 $user = User::where('email', $email)->first();
                 Notification::send([$user], new AppKaReview($review, $document_type));
             }
-
-            // === WORKFLOW === //
-            // if($project->marking == 'amdal.form-ka-submitted') {
-            //     $project->workflow_apply('review-amdal-form-ka');
-            //     $project->save();
-            // }
         }
 
         if($request->type == 'pemrakarsa') {
@@ -173,6 +167,33 @@ class KaReviewController extends Controller
                                 Notification::send([$user], new AppKaReview($review, $document_type));
                             }
                         }
+                    }
+                }
+                
+                // === WORKFLOW === //
+                if($document_type == 'KA') {
+                    if($project->marking == 'amdal.form-ka-drafting') {
+                        $project->workflow_apply('submit-amdal-form-ka');
+                        $project->workflow_apply('review-amdal-form-ka');
+                        $project->save();
+                    } else if($project->marking == 'amdal.form-ka-submitted') {
+                        $project->workflow_apply('review-amdal-form-ka');
+                        $project->save();
+                    }
+                } else if($document_type == 'ANDAL RKL RPL') {
+                    if($project->marking == 'amdal.form-rklrpl-drafting') {
+                        $project->workflow_apply('submit-amdal');
+                        $project->workflow_apply('review-amdal-adm');
+                        $project->save();
+                    }
+                } else if($document_type == 'UKL UPL') {
+                    if($project->marking == 'uklupl-mt.matrix-upl') {
+                        $project->workflow_apply('submit-uklupl');
+                        $project->workflow_apply('review-uklupl-adm');
+                        $project->save();
+                    } else if($project->marking == 'uklupl-mt.submitted') {
+                        $project->workflow_apply('review-uklupl-adm');
+                        $project->save();
                     }
                 }
             }

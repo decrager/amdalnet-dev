@@ -231,11 +231,11 @@ class ImpactIdentificationController extends Controller
          if (count($response) == $num_impacts) {
              DB::commit();
              // Workflow Amdal
-              // $project = Project::findOrFail($idProject);
-            // if ($project->marking == 'amdal.form-ka-drafting') {
-            //     $project->workflow_apply('submit-amdal-form-ka');
-            //     $project->save();
-            // }
+            $project = Project::findOrFail($idProject);
+            if ($project->marking == 'amdal.form-ka-drafting') {
+                $project->workflow_apply('submit-amdal-form-ka');
+                $project->save();
+            }
              return response()->json([
                  'status' => 200,
                  'code' => 200,
@@ -303,11 +303,11 @@ class ImpactIdentificationController extends Controller
             DB::commit();
             if ($unitEmpty == $count) {
                 // First time saving unit: trigger workflow
-                // $project = Project::findOrFail($idProject);
-                // if ($project->marking == 'announcement-completed') {
-                //     $project->workflow_apply('fill-uklupl-form');
-                //     $project->save();
-                // }
+                $project = Project::findOrFail($idProject);
+                if ($project->marking == 'announcement-completed') {
+                    $project->workflow_apply('fill-uklupl-form');
+                    $project->save();
+                }
             }
             return response()->json([
                 'status' => 200,
@@ -430,11 +430,11 @@ class ImpactIdentificationController extends Controller
         }
         if ($updated == $count) {
             DB::commit();
-            // $project = Project::findOrFail($idProject);
-            // if ($project->marking == 'uklupl-mt.form') {
-            //     $project->workflow_apply('fill-uklupl-matrix-ukl');
-            //     $project->save();
-            // }
+            $project = Project::findOrFail($idProject);
+            if ($project->marking == 'uklupl-mt.form') {
+                $project->workflow_apply('fill-uklupl-matrix-ukl');
+                $project->save();
+            }
             return response()->json([
                 'status' => 200,
                 'code' => 200,
@@ -492,11 +492,11 @@ class ImpactIdentificationController extends Controller
         }
         if ($updated == $count) {
             DB::commit();
-            // $project = Project::findOrFail($idProject);
-            // if ($project->marking == 'uklupl-mt.matrix-ukl') {
-            //     $project->workflow_apply('fill-uklupl-matrix-upl');
-            //     $project->save();
-            // }
+            $project = Project::findOrFail($idProject);
+            if ($project->marking == 'uklupl-mt.matrix-ukl') {
+                $project->workflow_apply('fill-uklupl-matrix-upl');
+                $project->save();
+            }
             return response()->json([
                 'status' => 200,
                 'code' => 200,
@@ -602,11 +602,11 @@ class ImpactIdentificationController extends Controller
             if ($created){
                 DB::commit();
                 // Workflow Amdal: drafting
-                // $project = Project::findOrFail($params['id_project']);
-                // if ($project->marking == 'announcement-completed') {
-                //     $project->workflow_apply('draft-amdal-form-ka');
-                //     $project->save();
-                // }
+                $project = Project::findOrFail($params['id_project']);
+                if ($project->marking == 'announcement-completed') {
+                    $project->workflow_apply('draft-amdal-form-ka');
+                    $project->save();
+                }
 
                 // init pies //proe
                 // A

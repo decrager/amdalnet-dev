@@ -85,7 +85,26 @@ class TukProjectController extends Controller
                     })
                     ->where(function($q) use($request) {
                         if($request->search) {
-                            $q->whereRaw("LOWER(project_title) LIKE '%" . strtolower($request->search) . "%'");
+                            $q->where(function($query) use($request) {
+                                $query->whereRaw("LOWER(project_title) LIKE '%" . strtolower($request->search) . "%'");
+                            })->orWhere(function($query) use($request) {
+                                $query->whereRaw("LOWER(registration_no) LIKE '%" . strtolower($request->search) . "%'");
+                            })->orWhere(function($query) use($request) {
+                                $query->whereHas('initiator', function($que) use($request) {
+                                    $que->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                                });
+                            })->orWhere(function($query) use($request) {
+                                $query->whereHas('address', function($que) use($request) {
+                                    $search = str_replace('provinsi', '', strtolower($request->search));
+                                    $que->where(function($quer) use($search) {
+                                        $quer->whereRaw("LOWER(prov) LIKE '%" . strtolower($search) . "%'");
+                                    })->orWhere(function($quer) use($search) {
+                                        $quer->whereRaw("LOWER(district) LIKE '%" . strtolower($search) . "%'");
+                                    })->orWhere(function($quer) use($search) {
+                                        $quer->whereRaw("LOWER(address) LIKE '%" . strtolower($search) . "%'");
+                                    });
+                                });
+                            });
                         }
                     })
                     ->with(['address', 'initiator' => function($q) {

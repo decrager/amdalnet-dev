@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Project;
 use App\Entity\ProjectMapAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -90,11 +91,11 @@ class ProjectMapAttachmentController extends Controller
                 if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
                     $map->save();
                     // Add workflow
-                    // $project = Project::findOrFail($id_project);
-                    // if ($project->marking == 'uklupl-mt.matrix-upl') {
-                    //     $project->workflow_apply('submit-uklupl');
-                    //     $project->save();
-                    // }
+                    $project = Project::findOrFail($id_project);
+                    if ($project->marking == 'uklupl-mt.matrix-upl') {
+                        $project->workflow_apply('submit-uklupl');
+                        $project->save();
+                    }
                 }
             }
             return request('success', 200);

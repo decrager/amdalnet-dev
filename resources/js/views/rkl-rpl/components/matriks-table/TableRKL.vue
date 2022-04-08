@@ -184,12 +184,18 @@
               :key="index"
               style="margin-bottom: 5px"
             >
-              <el-input
+              <Tinymce
+                v-if="isFormulator"
                 v-model="scope.row.impact_source[index].description"
-                type="textarea"
-                :rows="2"
-                :readonly="!isFormulator"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
               />
+              <div v-else v-html="scope.row.impact_source[index].description" />
             </div>
           </div>
           <el-button
@@ -218,11 +224,20 @@
               :key="index"
               style="margin-bottom: 5px"
             >
-              <el-input
+              <Tinymce
+                v-if="isFormulator"
                 v-model="scope.row.success_indicator[index].description"
-                type="textarea"
-                :rows="2"
-                :readonly="!isFormulator"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div
+                v-else
+                v-html="scope.row.success_indicator[index].description"
               />
             </div>
           </div>
@@ -250,12 +265,18 @@
               :key="index"
               style="margin-bottom: 5px"
             >
-              <el-input
+              <Tinymce
+                v-if="isFormulator"
                 v-model="scope.row.form[index].description"
-                type="textarea"
-                :rows="2"
-                :readonly="!isFormulator"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
               />
+              <div v-else v-html="scope.row.form[index].description" />
             </div>
           </div>
           <el-button
@@ -282,12 +303,18 @@
               :key="index"
               style="margin-bottom: 5px"
             >
-              <el-input
+              <Tinymce
+                v-if="isFormulator"
                 v-model="scope.row.location[index].description"
-                type="textarea"
-                :rows="2"
-                :readonly="!isFormulator"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
               />
+              <div v-else v-html="scope.row.location[index].description" />
             </div>
           </div>
           <el-button
@@ -466,11 +493,15 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Tinymce from '@/components/Tinymce';
 import Resource from '@/api/resource';
 const rklResource = new Resource('matriks-rkl');
 
 export default {
   name: 'TableRKL',
+  components: {
+    Tinymce,
+  },
   data() {
     return {
       list: [],
@@ -537,8 +568,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');

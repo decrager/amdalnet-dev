@@ -10,6 +10,22 @@
         >
           {{ 'Tambah Komponen' }}
         </el-button>
+        <el-row :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
       <component-table
         :loading="loading"
@@ -62,7 +78,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        search: null,
       },
+      timeoutId: null,
       total: 0,
       show: false,
       componentOptions: [],
@@ -74,11 +92,11 @@ export default {
     this.getProjectStage();
   },
   methods: {
-    handleCancelComponent(){
+    handleCancelComponent() {
       this.component = {};
       this.show = false;
     },
-    handleSubmitComponent(){
+    handleSubmitComponent() {
       if (this.component.id !== undefined) {
         componentResource
           .updateMultipart(this.component.id, this.component)
@@ -100,10 +118,7 @@ export default {
           .store(this.component)
           .then((response) => {
             this.$message({
-              message:
-                'Komponen ' +
-                this.component.name +
-                ' Berhasil Dibuat',
+              message: 'Komponen ' + this.component.name + ' Berhasil Dibuat',
               type: 'success',
               duration: 5 * 1000,
             });
@@ -141,11 +156,15 @@ export default {
       this.show = true;
     },
     handleDelete({ id, nama }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + nama + '. ?', 'Peringatan', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Batal',
-        type: 'warning',
-      })
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + nama + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
         .then(() => {
           componentResource
             .destroy(id)
@@ -167,7 +186,7 @@ export default {
           });
         });
     },
-    onProjectStageFilter(val){
+    onProjectStageFilter(val) {
       // console.log('projectStageFilter: ', val);
       // this.listQuery.filter = val; idProjectStage
       this.listQuery.idProjectStage = val;
@@ -177,6 +196,22 @@ export default {
       this.listQuery.order = sort.order;
       this.listQuery.orderBy = sort.prop;
       this.handleFilter();
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getList();
+      }, 500);
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getList();
+      this.listQuery.search = null;
     },
   },
 };

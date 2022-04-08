@@ -17,6 +17,9 @@ class OssService
 {
     public static function receiveLicense($project = null, $fileUrl = '', $statusCode = '50')
     {
+        /*
+            ! DEPRECATED
+        */
         $dataSubProject = OssService::getSubProjects($project);
         $initiator = $dataSubProject['initiator'];
         $ossNib = $dataSubProject['ossNib'];
@@ -68,7 +71,7 @@ class OssService
                 // print_r($data);
                 $response = Http::withHeaders([
                     'user_key' => env('OSS_USER_KEY'),
-                ])->post(env('OSS_ENDPOINT') . '/kl/rba/receiveLicense', $data);
+                ])->post(env('OSS_ENDPOINT') . '/receiveLicense', $data);
                 $respJson = $response->json();
                 print_r($respJson);
                 // if ((int)$respJson['responreceiveLicense']['kode'] == 200) {
@@ -246,8 +249,9 @@ class OssService
                 ];
                 $response = Http::withHeaders([
                     'user_key' => env('OSS_USER_KEY'),
-                ])->post(env('OSS_ENDPOINT') . '/kl/rba/receiveLicenseStatusLingkungan', $data);
+                ])->post(env('OSS_ENDPOINT') . '/receiveLicenseStatusLingkungan', $data);
                 $respJson = $response->json();
+                // print_r(json_encode($data));
                 // print_r($respJson);
                 Log::debug(json_encode($data));
                 Log::debug(json_encode($respJson));
@@ -270,7 +274,7 @@ class OssService
         $response = Http::withHeaders([
             'user_key' => env('OSS_USER_KEY'),
             'token' => $sha1,
-        ])->post(env('OSS_ENDPOINT') . '/kl/rba/inqueryFileDS', $data);
+        ])->post(env('OSS_ENDPOINT') . '/inqueryFileDS', $data);
         $respJson = $response->json();
         // print_r($respJson);
         Log::debug(json_encode($data));

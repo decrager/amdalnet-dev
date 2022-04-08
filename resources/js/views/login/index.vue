@@ -57,7 +57,7 @@
         </el-row>
         <el-row type="flex" justify="space-between" style="margin-bottom: 20px">
           <el-radio-group v-model="user_type" @change="onChangeRadioUserType">
-            <el-radio style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio>
+            <el-radio disabled style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio>
             <el-radio style="width: 250px" label="Pemerintah" border>Pemrakarsa Pemerintah</el-radio>
             <el-radio style="width: 250px" label="Penyusun" border>Penyusun</el-radio>
           </el-radio-group>
@@ -627,7 +627,7 @@ export default {
       }
     };
     return {
-      user_type: 'Pemrakarsa',
+      user_type: 'Pemerintah',
       loginForm: {},
       loginRules: {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],

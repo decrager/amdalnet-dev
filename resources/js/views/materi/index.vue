@@ -1,18 +1,33 @@
 <template>
-  <div class="app-container" style="padding: 24px">
-    <el-card>
-      <div class="filter-container">
-        <!-- <h2>Materi</h2> -->
-        <el-button
-          class="filter-item"
-          type="primary"
-          icon="el-icon-plus"
-          @click="handleCreate"
-        >
-          {{ 'Tambah Materi' }}
-        </el-button>
-      </div>
-      <!-- <el-table :data="tableData" border style="width: 100%">
+  <div class="app-container">
+    <div class="filter-container">
+      <!-- <h2>Materi</h2> -->
+      <el-button
+        class="filter-item"
+        type="primary"
+        icon="el-icon-plus"
+        @click="handleCreate"
+      >
+        {{ 'Tambah Materi' }}
+      </el-button>
+      <el-row :gutter="32">
+        <el-col :sm="24" :md="10">
+          <el-input
+            v-model="listQuery.search"
+            suffix-icon="el-icon search"
+            placeholder="Pencarian..."
+            @input="inputSearch"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="handleSearch"
+            />
+          </el-input>
+        </el-col>
+      </el-row>
+    </div>
+    <!-- <el-table :data="tableData" border style="width: 100%">
         <el-table-column prop="no" label="No" width="70" />
         <el-table-column prop="judul" label="Judul Materi" />
         <el-table-column prop="deskripsi" label="Deskripsi" />
@@ -28,28 +43,27 @@
           </template>
         </el-table-column>
       </el-table> -->
-      <component-table
-        :loading="loading"
-        :list="allData"
-        @handleEditForm="handleEditForm($event)"
-        @handleView="handleView($event)"
-        @handleDelete="handleDelete($event)"
-      />
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
-        @pagination="handleFilter"
-      />
-      <!-- <component-dialog
+    <component-table
+      :loading="loading"
+      :list="allData"
+      @handleEditForm="handleEditForm($event)"
+      @handleView="handleView($event)"
+      @handleDelete="handleDelete($event)"
+    />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="handleFilter"
+    />
+    <!-- <component-dialog
         :component="component"
         :show="show"
         :list-view="listView"
         :list-view-title="listViewTitle"
         @handleCancelComponent="handleCancelComponent"
       /> -->
-    </el-card>
   </div>
 </template>
 
@@ -73,7 +87,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        search: null,
       },
+      timeoutId: null,
       optionValue: null,
       sort: 'DESC',
     };
@@ -90,7 +106,7 @@ export default {
       this.loading = true;
       axios
         .get(
-          `/api/materials?page=${this.listQuery.page}&sort=${this.sort}`
+          `/api/materials?page=${this.listQuery.page}&sort=${this.sort}&search=${this.listQuery.search}`
         )
         .then((response) => {
           this.allData = response.data.data;
@@ -104,13 +120,18 @@ export default {
       });
     },
     handleDelete({ rows }) {
-      this.$confirm('apakah anda yakin akan menghapus ' + rows.id + '. ?', 'Peringatan', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Batal',
-        type: 'warning',
-      })
+      this.$confirm(
+        'apakah anda yakin akan menghapus ' + rows.id + '. ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+        }
+      )
         .then(() => {
-          axios.get(`/api/materials/delete/${rows.id}`)
+          axios
+            .get(`/api/materials/delete/${rows.id}`)
             .then((response) => {
               this.$message({
                 type: 'success',
@@ -129,7 +150,22 @@ export default {
           });
         });
     },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getAll();
+      }, 500);
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getAll();
+      this.listQuery.search = null;
+    },
   },
 };
 </script>
-

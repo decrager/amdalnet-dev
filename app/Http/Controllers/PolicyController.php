@@ -24,25 +24,45 @@ class PolicyController extends Controller
             $sort = $request->sort;
         }
 
-        $regulations = Policy::with(['regulation'])->when($request->has('keyword'), function ($query) use ($request) {
-            $columnsToSearch = ['about', 'set', 'field_of_activity'];
-            $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('regulation_no', 'ILIKE', '%'.$request->keyword.'%');
-            foreach($columnsToSearch as $column) {
-                $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
-            }
-
-            return $indents;
-        })
-        ->when($request->has('type'), function ($query) use ($request) {
-
-            $indents = $query->where('regulation_type', '=', $request->type);
-
-            return $indents;
-        })
-        ->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
-
-        return response()->json($regulations, 200);
+        if($request->search && ($request->search !== 'null')) {
+            $regulations = Policy::where(function($q) use($request) {
+                $q->where(function($query) use($request) {
+                    $query->whereRaw("LOWER(regulation_no) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(about) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use($request) {
+                    $query->whereRaw("LOWER(field_of_activity) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($query) use ($request) {
+                    $query->whereHas('regulation', function($que) use ($request) {
+                        $que->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+                    });
+                });
+            })
+            ->with('regulation')
+            ->orderby('id', 'desc')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($regulations, 200);
+        } else {
+            $regulations = Policy::with(['regulation'])->when($request->has('keyword'), function ($query) use ($request) {
+                $columnsToSearch = ['about', 'set', 'field_of_activity'];
+                $searchQuery = '%' . $request->keyword . '%';
+                $indents = $query->where('regulation_no', 'ILIKE', '%'.$request->keyword.'%');
+                foreach($columnsToSearch as $column) {
+                    $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+                }
+    
+                return $indents;
+            })
+            ->when($request->has('type'), function ($query) use ($request) {
+    
+                $indents = $query->where('regulation_type', '=', $request->type);
+    
+                return $indents;
+            })
+            ->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
+    
+            return response()->json($regulations, 200);
+        }
     }
 
     public function store(Request $request)
