@@ -1063,30 +1063,47 @@ export default {
     this.loading = false;
   },
   methods: {
-    getKewenangan(val){
+    getKewenanganOss(val){
       if (val === '00'){
-        return 'pusat';
+        return 'Pusat';
       } else if (val === '01'){
-        return 'provinsi';
+        return 'Provinsi';
       } else {
-        return 'kabupaten';
+        return 'Kabupaten';
       }
     },
+    getKewenangan(list){
+      let temp = this.getKewenanganOss(this.kewenanganOSS);
+      list.forEach(element => {
+        console.log(element.kewenangan, temp);
+        if (element.kewenangan === '02'){
+          temp = 'Kabupaten';
+        }
+        if (element.kewenangan === '01'){
+          temp = 'Provinsi';
+        }
+        if (element.kewenangan === '00'){
+          temp = 'Pusat';
+        }
+      });
+
+      return temp;
+    },
     async calculateKewenanganAnomali(){
-      let kewenanganTemp = this.getKewenangan(this.kewenanganOSS);
+      let kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
 
       // if kwenangan not pusat use authority from address project
-      if (kewenanganTemp !== 'pusat'){
+      if (kewenanganTemp !== 'Pusat'){
         kewenanganTemp = this.currentProject.authority;
       }
 
       // if kewenangan KEK
       if (this.jenisKawasanOSS === '02'){
-        kewenanganTemp = 'pusat';
+        kewenanganTemp = 'Pusat';
       }
 
       if (this.kewenanganPMA && this.kewenanganPMA === '01'){
-        kewenanganTemp = 'pusat';
+        kewenanganTemp = 'Pusat';
       }
 
       const anomaliPBG = await authorityResource.list({ listSubProject: this.currentProject.listSubProject });
@@ -1095,12 +1112,12 @@ export default {
 
       // if theres is anomali pbg skip kewenagan
       if (anomaliPBG === 1){
-        kewenanganTemp = this.getKewenangan(this.kewenanganOSS);
+        kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
         // console.log(kewenanganTemp);
       }
 
       if (this.jenisKawasanOSS === '03'){
-        kewenanganTemp = 'pusat';
+        kewenanganTemp = 'Pusat';
       }
 
       this.currentProject.authority = kewenanganTemp;
@@ -1736,7 +1753,7 @@ export default {
       }
 
       // this.fromOss = true;
-      this.idizin = this.$store.getters.ossByNib.id_izin;
+      // this.idizin = this.$store.getters.ossByNib.id_izin;
       this.kewenanganPMA = this.$store.getters.ossByNib.status_penanaman_modal;
       this.kewenanganOSS = this.$store.getters.ossByNib.kewenangan;
       this.jenisKawasanOSS = this.$store.getters.ossByNib.jenis_kawasan;
@@ -1745,7 +1762,7 @@ export default {
       console.log(ossProjects);
 
       ossProjects.forEach(e => {
-        console.log(e);
+        console.log('ini', e);
         e.data_lokasi_proyek.forEach(i => {
           this.currentProject.address.push({
             prov: i.province,
@@ -1762,18 +1779,20 @@ export default {
             kbli: e.kbli,
             name: e.uraian_usaha,
             id_proyek: e.id_proyek,
-            kewenangan: this.$store.getters.ossByNib.kewenangan,
+            kewenangan: e.kewenangan ? e.kewenangan : this.kewenanganOSS,
             lokasi: e.data_lokasi_proyek,
             skala_resiko: e.skala_resiko,
+            idizin: e.id_izin,
           });
         } else {
           this.listSubProject.push({
             kbli: e.kbli,
             name: e.uraian_usaha,
             id_proyek: e.id_proyek,
-            kewenangan: this.$store.getters.ossByNib.kewenangan,
+            kewenangan: e.kewenangan ? e.kewenangan : this.kewenanganOSS,
             lokasi: e.data_lokasi_proyek,
             skala_resiko: e.skala_resiko,
+            idizin: e.id_izin,
           });
         }
       });

@@ -40,6 +40,8 @@ class OssNibController extends Controller
                 foreach ($dataChecklists as $dataChecklist) {
                     if ($dataProyek['id_proyek'] === $dataChecklist['id_proyek']) {
                         $dataProyek['file_izin'] = $dataChecklist['file_izin'];
+                        $dataProyek['id_izin'] = $dataChecklist['id_izin'];
+                        $dataProyek['kewenangan'] = $dataChecklist['kewenangan'];
                     }
                 }
 

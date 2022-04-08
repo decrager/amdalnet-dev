@@ -1,13 +1,18 @@
 <template>
   <div class="user-dashboard">
-    <el-row v-if="isFormulator || isInitiator" :gutter="20">
-      <el-col v-if="isFormulator" :span="12"><formulator-information :user="user" :is-loading="isLoading" :avatar="avatar" /></el-col>
-      <el-col v-else :span="12"><initiator-information :user="user" :is-loading="isLoading" :avatar="avatar" /></el-col>
-      <el-col :span="12">
-        <user-activities :user="user" />
-        <user-summary :user="user" />
-      </el-col>
-    </el-row>
+    <div v-if="isFormulator || isInitiator">
+      <el-row :gutter="20">
+        <el-col v-if="isFormulator" :span="12"><formulator-information :user="user" :is-loading="isLoading" :avatar="avatar" /></el-col>
+        <el-col v-else :span="12"><initiator-information :user="user" :is-loading="isLoading" :avatar="avatar" /></el-col>
+        <el-col :span="12">
+          <user-activities :user="user" />
+          <user-summary :user="user" />
+        </el-col>
+      </el-row>
+      <el-row v-if="!isPemerintah">
+        <project-table />
+      </el-row>
+    </div>
     <div v-if="isExaminer">
       <el-row :gutter="20">
         <el-col :span="12">
@@ -28,6 +33,7 @@ import InitiatorInformation from './components/initiator';
 import FormulatorInformation from './components/formulator';
 import UserInformation from './components/UserInformation';
 import UserSummary from './components/summary';
+import ProjectTable from './components/ProjectTable.vue';
 
 import Resource from '@/api/resource';
 import ExaminerActivities from './components/ExaminerActivities.vue';
@@ -41,12 +47,14 @@ export default {
     UserSummary,
     UserInformation,
     ExaminerActivities,
+    ProjectTable,
   },
   data() {
     return {
       user: null,
       avatar: '',
       isLoading: true,
+      isPemerintah: false,
     };
   },
   computed: {
@@ -90,8 +98,8 @@ export default {
         }
         resource.list({ email: this.userLogged.email }).then((res) => {
           this.user = res;
+          this.isPemerintah = this.user?.user_type === 'Pemerintah';
         });
-
         /* get */
 
         this.isLoading = false;
