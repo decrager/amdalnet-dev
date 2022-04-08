@@ -24,7 +24,9 @@ use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
+use App\Utils\Html;
 use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Element\Table;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -67,7 +69,7 @@ class MatriksRKLController extends Controller
             }
 
             if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-                return response()->json(['message' => 'success']);
+                // return response()->json(['message' => 'success']);
             }
 
             $templateProcessor = new TemplateProcessor('template_rkl_rpl.docx');
@@ -143,23 +145,107 @@ class MatriksRKLController extends Controller
             $templateProcessor->cloneBlock('soc_eco_approach_block', count($soc_eco_approach_data), true, false, $soc_eco_approach_data);
             $templateProcessor->cloneBlock('institution_approach_block', count($institution_approach_data), true, false, $institution_approach_data);
 
-            $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rkl', $poinA['a_pra_konstruksi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('a_konstruksi_rkl', $poinA['a_konstruksi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('a_operasi_rkl', $poinA['a_operasi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rkl', $poinA['a_pasca_operasi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rkl', $poinB['b_pra_konstruksi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('b_konstruksi_rkl', $poinB['b_konstruksi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('b_operasi_rkl', $poinB['b_operasi_rkl']);
-            $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rkl', $poinB['b_pasca_operasi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rkl', $poinA['results']['a_pra_konstruksi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('a_konstruksi_rkl', $poinA['results']['a_konstruksi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('a_operasi_rkl', $poinA['results']['a_operasi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rkl', $poinA['results']['a_pasca_operasi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rkl', $poinB['results']['b_pra_konstruksi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('b_konstruksi_rkl', $poinB['results']['b_konstruksi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('b_operasi_rkl', $poinB['results']['b_operasi_rkl']);
+            $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rkl', $poinB['results']['b_pasca_operasi_rkl']);
 
-            $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rpl', $poinAp['a_pra_konstruksi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('a_konstruksi_rpl', $poinAp['a_konstruksi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('a_operasi_rpl', $poinAp['a_operasi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rpl', $poinAp['a_pasca_operasi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rpl', $poinBp['b_pra_konstruksi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('b_konstruksi_rpl', $poinBp['b_konstruksi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('b_operasi_rpl', $poinBp['b_operasi_rpl']);
-            $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rpl', $poinBp['b_pasca_operasi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('a_pra_konstruksi_rpl', $poinAp['results']['a_pra_konstruksi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('a_konstruksi_rpl', $poinAp['results']['a_konstruksi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('a_operasi_rpl', $poinAp['results']['a_operasi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('a_pasca_operasi_rpl', $poinAp['results']['a_pasca_operasi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('b_pra_konstruksi_rpl', $poinBp['results']['b_pra_konstruksi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('b_konstruksi_rpl', $poinBp['results']['b_konstruksi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('b_operasi_rpl', $poinBp['results']['b_operasi_rpl']);
+            $templateProcessor->cloneRowAndSetValues('b_pasca_operasi_rpl', $poinBp['results']['b_pasca_operasi_rpl']);
+
+            if(count($poinA['impact_source_replace']) > 0) {
+                for($i = 0; $i < count($poinA['impact_source_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinA['impact_source_replace'][$i], $poinA['impact_source_data'][$i]);
+                }
+            }
+            if(count($poinB['impact_source_replace']) > 0) {
+                for($i = 0; $i < count($poinB['impact_source_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinB['impact_source_replace'][$i], $poinB['impact_source_data'][$i]);
+                }
+            }
+            if(count($poinAp['impact_source_replace']) > 0) {
+                for($i = 0; $i < count($poinAp['impact_source_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinAp['impact_source_replace'][$i], $poinAp['impact_source_data'][$i]);
+                }
+            }
+            if(count($poinBp['impact_source_replace']) > 0) {
+                for($i = 0; $i < count($poinBp['impact_source_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinBp['impact_source_replace'][$i], $poinBp['impact_source_data'][$i]);
+                }
+            }
+
+            if(count($poinA['indicator_replace']) > 0) {
+                for($i = 0; $i < count($poinA['indicator_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinA['indicator_replace'][$i], $poinA['indicator_data'][$i]);
+                }
+            }
+            if(count($poinB['indicator_replace']) > 0) {
+                for($i = 0; $i < count($poinB['indicator_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinB['indicator_replace'][$i], $poinB['indicator_data'][$i]);
+                }
+            }
+            if(count($poinAp['indicator_replace']) > 0) {
+                for($i = 0; $i < count($poinAp['indicator_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinAp['indicator_replace'][$i], $poinAp['indicator_data'][$i]);
+                }
+            }
+            if(count($poinBp['indicator_replace']) > 0) {
+                for($i = 0; $i < count($poinBp['indicator_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinBp['indicator_replace'][$i], $poinBp['indicator_data'][$i]);
+                }
+            }
+
+            if(count($poinA['form_replace']) > 0) {
+                for($i = 0; $i < count($poinA['form_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinA['form_replace'][$i], $poinA['form_data'][$i]);
+                }
+            }
+            if(count($poinB['form_replace']) > 0) {
+                for($i = 0; $i < count($poinB['form_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinB['form_replace'][$i], $poinB['form_data'][$i]);
+                }
+            }
+            if(count($poinAp['form_replace']) > 0) {
+                for($i = 0; $i < count($poinAp['form_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinAp['form_replace'][$i], $poinAp['form_data'][$i]);
+                }
+            }
+            if(count($poinBp['form_replace']) > 0) {
+                for($i = 0; $i < count($poinBp['form_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinBp['form_replace'][$i], $poinBp['form_data'][$i]);
+                }
+            }
+
+            if(count($poinA['location_replace']) > 0) {
+                for($i = 0; $i < count($poinA['location_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinA['location_replace'][$i], $poinA['location_data'][$i]);
+                }
+            }
+            if(count($poinB['location_replace']) > 0) {
+                for($i = 0; $i < count($poinB['location_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinB['location_replace'][$i], $poinB['location_data'][$i]);
+                }
+            }
+            if(count($poinAp['location_replace']) > 0) {
+                for($i = 0; $i < count($poinAp['location_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinAp['location_replace'][$i], $poinAp['location_data'][$i]);
+                }
+            }
+            if(count($poinBp['location_replace']) > 0) {
+                for($i = 0; $i < count($poinBp['location_replace']); $i++) {
+                    $templateProcessor->setComplexBlock($poinBp['location_replace'][$i], $poinBp['location_data'][$i]);
+                }
+            }
 
             $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
             
@@ -833,6 +919,15 @@ class MatriksRKLController extends Controller
     $alphabet_list = 'A';
 
     $idx = 0;
+    $impact_source_data = [];
+    $impact_source_replace = [];
+    $indicator_data = [];
+    $indicator_replace = [];
+    $form_data = [];
+    $form_replace = [];
+    $location_data = [];
+    $location_replace = [];
+
     foreach($stages as $s) {
         $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'] = [];
 
@@ -856,20 +951,34 @@ class MatriksRKLController extends Controller
             $institution_data = $institution->where('id_impact_identification', $pA->id)->first();
 
             if($pA->envManagePlan) {
+                $impact_source_list = $this->getImpactSourceList($impact_source, $pA->id, 'rkla');
+                $indicator_list = $this->getIndicatorList($indicator, $pA->id, 'rkla');
+                $form_list = $this->getForm('id_env_manage_plan', $pA->envManagePlan->id, 'rkla');
+                $location_list = $this->getLocation('id_env_manage_plan', $pA->envManagePlan->id, 'rkla');
+
                 $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
                     'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl' => $total + 1,
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'impact_source' => $this->getImpactSourceList($impact_source, $pA->id),
-                    'success_indicator' => $this->getIndicatorList($indicator, $pA->id),
-                    'form' => $this->getForm('id_env_manage_plan', $pA->envManagePlan->id),
-                    'location' => $this->getLocation('id_env_manage_plan', $pA->envManagePlan->id),
+                    'impact_source' => $impact_source_list['replace'],
+                    'success_indicator' => $indicator_list['replace'],
+                    'form' => $form_list['replace'],
+                    'location' => $location_list['replace'],
                     'period' => $pA->envManagePlan->period,
                     'executor' => $institution_data ? $institution_data->executor : '',
                     'supervisor' => $institution_data ? $institution_data->supervisor : '',
                     'report_recipient' => $institution_data ? $institution_data->report_recipient : '',
                 ];
+
+                $impact_source_data[] = $impact_source_list['data'];
+                $impact_source_replace[] = $impact_source_list['replace'];
+                $indicator_data[] = $indicator_list['data'];
+                $indicator_replace[] = $indicator_list['replace'];
+                $form_data[] = $form_list['data'];
+                $form_replace[] = $form_list['replace'];
+                $location_data[] = $location_list['data'];
+                $location_replace[] = $location_list['replace'];
                 $total++;
             } else {
                 continue;
@@ -878,7 +987,17 @@ class MatriksRKLController extends Controller
         $idx++;
     }
 
-    return $results;
+    return [
+        'results' => $results ,
+        'impact_source_data' => $impact_source_data, 
+        'impact_source_replace' => $impact_source_replace, 
+        'indicator_data' => $indicator_data, 
+        'indicator_replace' => $indicator_replace, 
+        'form_data' => $form_data, 
+        'form_replace' => $form_replace, 
+        'location_data' => $location_data, 
+        'location_replace' => $location_replace
+    ];
     
   }
 
@@ -921,6 +1040,14 @@ class MatriksRKLController extends Controller
         $data_merge_final = $data_merge_1->merge($poinB3);
     
         $alphabet_list = 'A';
+        $impact_source_data = [];
+        $impact_source_replace = [];
+        $indicator_data = [];
+        $indicator_replace = [];
+        $form_data = [];
+        $form_replace = [];
+        $location_data = [];
+        $location_replace = [];
     
         $idx = 0;
         foreach($stages as $s) {
@@ -946,21 +1073,34 @@ class MatriksRKLController extends Controller
 
                 $institution_data = $institution->where('id_impact_identification', $merge->id)->first();
 
+                $impact_source_list = $this->getImpactSourceList($impact_source, $merge->id, 'rklb');
+                $indicator_list = $this->getIndicatorList($indicator, $merge->id, 'rklb');
+                $form_list = $this->getForm('id_env_manage_plan', $merge->envManagePlan->id, 'rklb');
+                $location_list = $this->getLocation('id_env_manage_plan', $merge->envManagePlan->id, 'rklb');
+
                 if($merge->envManagePlan) {
                     $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'][] = [
                         'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rkl'  => $total + 1,
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'impact_source' => $this->getImpactSourceList($impact_source, $merge->id),
-                        'success_indicator' => $this->getIndicatorList($indicator, $merge->id),
-                        'form' => $this->getForm('id_env_manage_plan', $merge->envManagePlan->id),
-                        'location' => $this->getLocation('id_env_manage_plan', $merge->envManagePlan->id),
+                        'impact_source' => $impact_source_list['replace'],
+                        'success_indicator' => $indicator_list['replace'],
+                        'form' => $form_list['replace'],
+                        'location' => $location_list['replace'],
                         'period' => $merge->envManagePlan->period,
                         'executor' => $institution_data ? $institution_data->executor : '',
                         'supervisor' => $institution_data ? $institution_data->supervisor : '',
                         'report_recipient' => $institution_data ? $institution_data->report_recipient : '',
                     ];
+                    $impact_source_data[] = $impact_source_list['data'];
+                    $impact_source_replace[] = $impact_source_list['replace'];
+                    $indicator_data[] = $indicator_list['data'];
+                    $indicator_replace[] = $indicator_list['replace'];
+                    $form_data[] = $form_list['data'];
+                    $form_replace[] = $form_list['replace'];
+                    $location_data[] = $location_list['data'];
+                    $location_replace[] = $location_list['replace'];
                 } else {
                     continue;
                 }
@@ -969,7 +1109,17 @@ class MatriksRKLController extends Controller
             $idx++;
         }
     
-        return $results;
+        return [
+            'results' => $results ,
+            'impact_source_data' => $impact_source_data, 
+            'impact_source_replace' => $impact_source_replace, 
+            'indicator_data' => $indicator_data, 
+            'indicator_replace' => $indicator_replace, 
+            'form_data' => $form_data, 
+            'form_replace' => $form_replace,
+            'location_data' => $location_data, 
+            'location_replace' => $location_replace
+        ];
     }
 
     private function getPoinARpl($stages, $id_project, $impact_source, $indicator, $institution) {
@@ -983,6 +1133,14 @@ class MatriksRKLController extends Controller
         })->get();
 
         $alphabet_list = 'A';
+        $impact_source_data = [];
+        $impact_source_replace = [];
+        $indicator_data = [];
+        $indicator_replace = [];
+        $form_data = [];
+        $form_replace = [];
+        $location_data = [];
+        $location_replace = [];
 
         $idx = 0;
         foreach($stages as $s) {
@@ -1006,22 +1164,35 @@ class MatriksRKLController extends Controller
 
                 $institution_data = $institution->where('id_impact_identification', $pA->id)->first();
 
+                $impact_source_list = $this->getImpactSourceList($impact_source, $pA->id, 'rpla');
+                $indicator_list = $this->getIndicatorList($indicator, $pA->id, 'rpla');
+                $form_list = $this->getForm('id_env_monitor_plan', $pA->envMonitorPlan->id, 'rpla');
+                $location_list = $this->getLocation('id_env_monitor_plan', $pA->envMonitorPlan->id, 'rpla');
+
                 if($pA->envMonitorPlan) {
                     $results['a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
                         'a_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
                         'id' => $pA->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'indicator' => $this->getIndicatorList($indicator, $pA->id),
-                        'impact_source' => $this->getImpactSourceList($impact_source, $pA->id),
-                        'collection_method' => $this->getForm('id_env_monitor_plan', $pA->envMonitorPlan->id),
-                        'location' => $this->getLocation('id_env_monitor_plan', $pA->envMonitorPlan->id),
+                        'indicator' => $indicator_list['replace'],
+                        'impact_source' => $impact_source_list['replace'],
+                        'collection_method' => $form_list['replace'],
+                        'location' => $location_list['replace'],
                         'time_frequent' => $pA->envMonitorPlan->time_frequent,
                         'executor' => $institution_data ? $institution_data->executor : '',
                         'supervisor' => $institution_data ? $institution_data->supervisor : '',
                         'report_recipient' => $institution_data ? $institution_data->report_recipient : '',
                         'description' => $pA->envMonitorPlan->description,
                     ];
+                    $impact_source_data[] = $impact_source_list['data'];
+                    $impact_source_replace[] = $impact_source_list['replace'];
+                    $indicator_data[] = $indicator_list['data'];
+                    $indicator_replace[] = $indicator_list['replace'];
+                    $form_data[] = $form_list['data'];
+                    $form_replace[] = $form_list['replace'];
+                    $location_data[] = $location_list['data'];
+                    $location_replace[] = $location_list['replace'];
                 } else {
                     continue;
                 }
@@ -1030,7 +1201,17 @@ class MatriksRKLController extends Controller
             $idx++;
         }
 
-        return $results;
+        return [
+            'results' => $results ,
+            'impact_source_data' => $impact_source_data,
+            'impact_source_replace' => $impact_source_replace,
+            'indicator_data' => $indicator_data,
+            'indicator_replace' => $indicator_replace,
+            'form_data' => $form_data,
+            'form_replace' => $form_replace,
+            'location_data' => $location_data,
+            'location_replace' => $location_replace
+        ];
     }
 
     private function getPoinBRpl($stages, $id_project, $impact_source, $indicator, $institution) {
@@ -1072,6 +1253,14 @@ class MatriksRKLController extends Controller
        $data_merge_final = $data_merge_1->merge($poinB3);
 
        $alphabet_list = 'A';
+       $impact_source_data = [];
+       $impact_source_replace = [];
+       $indicator_data = [];
+       $indicator_replace = [];
+       $form_data = [];
+       $form_replace = [];
+       $location_data = [];
+       $location_replace = [];
 
        $idx = 0;
        foreach($stages as $s) {
@@ -1096,22 +1285,35 @@ class MatriksRKLController extends Controller
 
                 $institution_data = $institution->where('id_impact_identification', $merge->id)->first();
 
+                $impact_source_list = $this->getImpactSourceList($impact_source, $merge->id, 'rplb');
+                $indicator_list = $this->getIndicatorList($indicator, $merge->id, 'rplb');
+                $form_list = $this->getForm('id_env_monitor_plan', $merge->envMonitorPlan->id, 'rplb');
+                $location_list = $this->getLocation('id_env_monitor_plan', $merge->envMonitorPlan->id, 'rplb');
+
                 if($merge->envMonitorPlan) {
                     $results['b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl'][] = [
                         'b_' . str_replace(' ', '_', strtolower($s->name)) . '_rpl' => $total + 1,
                         'id' => $merge->id,
                         'name' => "$changeType $ronaAwal akibat $component",
                         'type' => 'subtitle',
-                        'indicator' => $this->getIndicatorList($indicator, $merge->id),
-                        'impact_source' => $this->getImpactSourceList($impact_source, $merge->id),
-                        'collection_method' => $this->getForm('id_env_monitor_plan', $merge->envMonitorPlan->id),
-                        'location' => $this->getLocation('id_env_monitor_plan', $merge->envMonitorPlan->id),
+                        'indicator' => $indicator_list['replace'],
+                        'impact_source' => $impact_source_list['replace'],
+                        'collection_method' => $form_list['replace'],
+                        'location' => $location_list['replace'],
                         'time_frequent' => $merge->envMonitorPlan->time_frequent,
                         'executor' => $institution_data ? $institution_data->executor : '',
                         'supervisor' => $institution_data ? $institution_data->supervisor : '',
                         'report_recipient' => $institution_data ? $institution_data->report_recipient : '',
                         'description' => $merge->envMonitorPlan->description,
                     ];
+                    $impact_source_data[] = $impact_source_list['data'];
+                    $impact_source_replace[] = $impact_source_list['replace'];
+                    $indicator_data[] = $indicator_list['data'];
+                    $indicator_replace[] = $indicator_list['replace'];
+                    $form_data[] = $form_list['data'];
+                    $form_replace[] = $form_list['replace'];
+                    $location_data[] = $location_list['data'];
+                    $location_replace[] = $location_list['replace'];
                 } else {
                     continue;
                 }
@@ -1120,7 +1322,17 @@ class MatriksRKLController extends Controller
            $idx++;
        }
 
-       return $results;
+       return [
+        'results' => $results ,
+        'impact_source_data' => $impact_source_data, 
+        'impact_source_replace' => $impact_source_replace, 
+        'indicator_data' => $indicator_data, 
+        'indicator_replace' => $indicator_replace, 
+        'form_data' => $form_data, 
+        'form_replace' => $form_replace,
+        'location_data' => $location_data, 
+        'location_replace' => $location_replace
+    ];
     }
 
     private function getComponentRonaAwal($imp, $id_project_stage) {
@@ -1187,59 +1399,95 @@ class MatriksRKLController extends Controller
         return $comments;
     }
 
-    private function getImpactSourceList($impact_source, $id)
+    private function getImpactSourceList($impact_source, $id, $type)
     {
         $imp_source = '';
         $total_source = 1;
+        $replace = '';
         $sources = $impact_source->where('id_impact_identification', $id);
         foreach($sources as $s) {
-            $imp_source .= $total_source . '. ' . $s->description . '</w:t><w:p/><w:t>';
+            $imp_source .= $s->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $s->description) : '';
+            $replace .= '${is' . $type . '_' . $id . '_' . $total_source . '}</w:t><w:p/><w:t>'.
             $total_source++;
         }
 
-        return $imp_source;
+        $table = new Table();
+        $table->addRow();
+        $cell = $table->addCell(1300);
+        Html::addHtml($cell, $imp_source);
+
+        return [
+            'data' => $table,
+            'replace' => $replace
+        ];
     }
 
-    private function getIndicatorList($indicator, $id)
+    private function getIndicatorList($indicator, $id, $type)
     {
         $indicator_data = '';
         $total = 1;
+        $replace = '';
         $indicators = $indicator->where('id_impact_identification', $id);
         foreach($indicators as $i) {
-            $indicator_data .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
+            $indicator_data .= $i->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $i->description) : '';
+            $replace .= '${i' . $type . '_' . $id . '_' . $total . '}</w:t><w:p/><w:t>';
             $total++;
         }
 
-        return $indicator_data;
+        $table = new Table();
+        $table->addRow();
+        $cell = $table->addCell(1300);
+        Html::addHtml($cell, $indicator_data);
+
+        return [
+            'data' => $table,
+            'replace' => $replace
+        ];
     }
 
-    private function getForm($type_id, $id)
+    private function getForm($type_id, $id, $type)
     {
         $form = '';
-
         $imp_form = EnvPlanForm::where($type_id, $id)->get();
-
         $total = 1;
+        $replace = '';
         foreach($imp_form as $i) {
-            $form .= $total . '. ' . $i->description . '</w:t><w:p/><w:t>';
+            $form .= $i->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $i->description) : '';
+            $replace .= '${f' . $type . '_' . $id . '_' . $total . '}</w:t><w:p/><w:t>';
             $total++;
         }
 
-        return $form;
+        $table = new Table();
+        $table->addRow();
+        $cell = $table->addCell(3000);
+        Html::addHtml($cell, $form);
+
+        return [
+            'data' => $table,
+            'replace' => $replace
+        ];
     }
 
-    private function getLocation($type_id, $id)
+    private function getLocation($type_id, $id, $type)
     {
         $location = '';
-
         $locations = EnvPlanLocation::where($type_id, $id)->get();
-
+        $replace = '';
         $total = 1;
         foreach($locations as $l) {
-            $location .= $total . '. ' . $l->description . '</w:t><w:p/><w:t>';
+            $location .= $l->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $l->description) : '';
+            $replace .= '${l' . $type . '_' . $id . '_' . $total . '}</w:t><w:p/><w:t>';
             $total++;
         }
 
-        return $location ;
+        $table = new Table();
+        $table->addRow();
+        $cell = $table->addCell(1600);
+        Html::addHtml($cell, $location);
+
+        return [
+            'data' => $table,
+            'replace' => $replace
+        ];
     }
 }
