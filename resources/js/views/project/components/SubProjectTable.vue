@@ -24,7 +24,7 @@
       <el-table-column v-if="fromOss" align="left" header-align="center" label="Project" width="400px">
         <template slot-scope="scope">
           <div><b>ID Proyek :</b> {{ scope.row.id_proyek }}</div>
-          <div><b>ID Izin :</b> {{ idizin }}</div>
+          <div><b>ID Izin :</b> {{ scope.row.idizin }}</div>
           <div><b>Nama Kegiatan :</b> {{ scope.row.name }}</div>
           <div><b>KBLI :</b> {{ scope.row.kbli }}</div>
           <div><b>Tingkat Resiko :</b> {{ scope.row.skala_resiko }}</div>
@@ -178,11 +178,11 @@ export default {
   methods: {
     getKewenangan(val){
       if (val === '00'){
-        return 'pusat';
+        return 'Pusat';
       } else if (val === '01'){
-        return 'provinsi';
+        return 'Provinsi';
       } else {
-        return 'kabupaten';
+        return 'Kabupaten';
       }
     },
     async onChangeKbli(sproject){
