@@ -30,11 +30,17 @@ class ProjectKegiatanLainSekitarController extends Controller
                  'project_kegiatan_lain_sekitars.description',
                  'project_kegiatan_lain_sekitars.measurement',
                  'project_kegiatan_lain_sekitars.province_id',
+                 'provinces.name as province_name',
                  'project_kegiatan_lain_sekitars.district_id',
+                 'districts.name as district_name',
                  'project_kegiatan_lain_sekitars.address',
-                 'project_kegiatan_lain_sekitars.id as id_project_kegiatan_lain_sekitar'
+                 'project_kegiatan_lain_sekitars.id as id_project_kegiatan_lain_sekitar',
+                 'project_kegiatan_lain_sekitars.is_andal'
              )
              ->join('project_kegiatan_lain_sekitars', 'project_kegiatan_lain_sekitars.kegiatan_lain_sekitar_id', '=', 'kegiatan_lain_sekitars.id')
+             ->leftJoin('provinces', 'provinces.id', '=', 'project_kegiatan_lain_sekitars.province_id')
+             ->leftJoin('districts', 'districts.id', '=', 'project_kegiatan_lain_sekitars.district_id')
+             ->where('project_kegiatan_lain_sekitars.is_andal', $request->mode)
              ->where('project_kegiatan_lain_sekitars.project_id', $request->id_project)->get()
         );
     }
@@ -61,7 +67,7 @@ class ProjectKegiatanLainSekitarController extends Controller
         $params = $request->all();
         $kls = null;
         if($request->id){
-            $kls = KegiatanLainSekitar::firstOrFail('id', $request->id);
+            $kls = KegiatanLainSekitar::first('id', $request->id);
         } else {
             $kls = KegiatanLainSekitar::create([
                 'name' => $request->name,
@@ -69,18 +75,22 @@ class ProjectKegiatanLainSekitarController extends Controller
                 'originator_id' => $request->id_project
             ]);
         }
-        $pKLS = ProjectKegiatanLainSekitar::firstOrNew([
-            'kegiatan_lain_sekitar_id' => $kls->id,
-            'project_id' => $request->id_project,
-        ]);
-        if($pKLS){
-            $pKLS->province_id = $request->province_id;
-            $pKLS->district_id = $request->district_id;
-            $pKLS->description = $request->description;
-            $pKLS->measurement = $request->measurement;
-            $pKLS->address = $request->address;
-            $pKLS->save();
+        if(isset($params['id_project_kegiatan_lain_sekitar']))
+        {
+            $pKLS = ProjectKegiatanLainSekitar::where('id', $request->id_project_kegiatan_lain_sekitar)->first();
+        }else {
+            $pKLS = new ProjectKegiatanLainSekitar();
+            $pKLS->kegiatan_lain_sekitar_id =  $kls->id;
+            $pKLS->project_id = $request->id_project;
+            $pKLS->is_andal = $request->mode;
         }
+        $pKLS->province_id = $request->province_id;
+        $pKLS->district_id = $request->district_id;
+        $pKLS->description = $request->description;
+        $pKLS->measurement = $request->measurement;
+        $pKLS->address = $request->address;
+        $pKLS->save();
+
         return response($pKLS, 200);
     }
 
@@ -127,12 +137,20 @@ class ProjectKegiatanLainSekitarController extends Controller
     public function destroy(ProjectKegiatanLainSekitar $projectKegiatanLainSekitar)
     {
         //
-        $ksl = KegiatanLainSekitar::where('id', $projectKegiatanLainSekitar->kegiatan_lain_sekitar_id)->first();
+        ImpactKegiatanLainSekitar::where('id_project_kegiatan_lain_sekitar', $projectKegiatanLainSekitar->id)->delete();
+        $ids = ProjectKegiatanLainSekitar::where([
+            'kegiatan_lain_sekitar_id' => $projectKegiatanLainSekitar->kegiatan_lain_sekitar_id,
+            'is_andal' => $projectKegiatanLainSekitar->is_andal ? false : true,
+            'project_id' => $projectKegiatanLainSekitar->project_id,
+        ])->pluck('id');
 
-        if(($ksl) && ($ksl->is_master === false) && ($ksl->originator_id === $projectKegiatanLainSekitar->project_id)){
-            $ksl->delete();
+        if(count($ids) === 0){
+            KegiatanLainSekitar::where([
+                'originator_id' => $projectKegiatanLainSekitar->project_id,
+                'is_master' => false,
+                'id' => $projectKegiatanLainSekitar->kegiatan_lain_sekitar_id,
+            ])->delete();
         }
-        $imp = ImpactKegiatanLainSekitar::where('id_project_kegiatan_lain_sekitar', $projectKegiatanLainSekitar->id)->delete();
         return response($projectKegiatanLainSekitar->delete(), 200);
     }
 }

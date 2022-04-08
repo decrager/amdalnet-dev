@@ -17,6 +17,7 @@
       <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
       <form-komponen-lingkungan
         :show="showForm"
+        :form-mode="formMode"
         :mode="mode"
         :component-types="componentTypes"
         :input="selectedData"
@@ -27,6 +28,7 @@
         v-if="deleted !== null"
         :component="deleted"
         :show="showDelete"
+        :mode="mode"
         :resource="'project-rona-awals'"
         @close="showDelete = false"
         @delete="afterDeleteComponent"
@@ -55,12 +57,16 @@ export default {
         return [];
       },
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
       showForm: false,
       selectedData: null,
-      mode: 0,
+      formMode: 0,
       deleted: null,
       showDelete: false,
     };
@@ -74,12 +80,12 @@ export default {
       this.selectedData = null;
     },
     addComponent(){
-      this.mode = 0;
+      this.formMode = 0;
       this.showForm = true;
     },
     editComponent(id){
       this.selectedData = this.components.find(e => e.id === id);
-      this.mode = 1;
+      this.formMode = 1;
       console.log(this.selectedData);
       this.showForm = true;
     },

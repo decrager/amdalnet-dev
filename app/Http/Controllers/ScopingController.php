@@ -13,6 +13,7 @@ use App\Http\Resources\SubProjectResource;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Entity\Project;
 
 class ScopingController extends Controller
 {
@@ -26,6 +27,7 @@ class ScopingController extends Controller
         if ($request->check_formulir_ka && $request->id_project) {
             return $this->checkFormulirKA($request);
         }
+
         return $this->getScopingData($request);
     }
 
@@ -52,10 +54,16 @@ class ScopingController extends Controller
             foreach ($impactStudies as $impactStudy) {
                 array_push($id2, $impactStudy->id);
             }
+            $result = empty($id) && empty($id2) ? false : $id == $id2;
+            if($result){
+                /*$project = Project::where('id', $request->id_project)->first();
+                $project->workflow_apply('draft-amdal-form-ka');
+                $project->save();*/
+            }
             return response()->json([
                 'status' => 200,
                 'code' => 200,
-                'data' => empty($id) && empty($id2) ? false : $id == $id2,
+                'data' => $result,
             ], 200);
         } catch (Exception $e) {
             return response()->json([

@@ -15,7 +15,8 @@ class ProjectComponent extends Model
         'id_project',
         'id_component',
         'description',
-        'measurement'
+        'measurement',
+        'is_andal',
     ];
 
     public function component()

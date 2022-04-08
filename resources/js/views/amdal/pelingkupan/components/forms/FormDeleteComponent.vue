@@ -52,6 +52,10 @@ export default {
       type: String,
       default: '',
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
@@ -121,6 +125,7 @@ export default {
       const resource = new Resource(this.resource);
       this.component.inquire = 1;
       this.component.id_project = id_project;
+      this.component.mode = this.mode;
       await resource.list(this.component)
         .then((res) => {
           if (res.length > 0) {
