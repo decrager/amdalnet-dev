@@ -295,8 +295,8 @@ class ProjectComponentController extends Controller
                 'id_project' => $projectComponent->id_project,
                 'is_andal' => $projectComponent->is_andal ? false : true,
                 'id_component' => $projectComponent->id_component
-            ])->get();
-            if(($co) && (!$co->is_master) && ($co->originator_id === $projectComponent->id_project) && (empty($pc_ka))){
+            ])->pluck('id');
+            if(($co) && (!$co->is_master) && ($co->originator_id === $projectComponent->id_project) && (count($pc_ka) === 0)){
                 $co->delete();
             }
             return response([$projectComponent->delete(), $spcIds], 200);

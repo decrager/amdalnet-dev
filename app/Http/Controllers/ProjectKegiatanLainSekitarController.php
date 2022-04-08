@@ -137,12 +137,20 @@ class ProjectKegiatanLainSekitarController extends Controller
     public function destroy(ProjectKegiatanLainSekitar $projectKegiatanLainSekitar)
     {
         //
-        $ksl = KegiatanLainSekitar::where('id', $projectKegiatanLainSekitar->kegiatan_lain_sekitar_id)->first();
+        ImpactKegiatanLainSekitar::where('id_project_kegiatan_lain_sekitar', $projectKegiatanLainSekitar->id)->delete();
+        $ids = ProjectKegiatanLainSekitar::where([
+            'kegiatan_lain_sekitar_id' => $projectKegiatanLainSekitar->kegiatan_lain_sekitar_id,
+            'is_andal' => $projectKegiatanLainSekitar->is_andal ? false : true,
+            'project_id' => $projectKegiatanLainSekitar->project_id,
+        ])->pluck('id');
 
-        if(($ksl) && ($ksl->is_master === false) && ($ksl->originator_id === $projectKegiatanLainSekitar->project_id)){
-            $ksl->delete();
+        if(count($ids) === 0){
+            KegiatanLainSekitar::where([
+                'originator_id' => $projectKegiatanLainSekitar->project_id,
+                'is_master' => false,
+                'id' => $projectKegiatanLainSekitar->kegiatan_lain_sekitar_id,
+            ])->delete();
         }
-        $imp = ImpactKegiatanLainSekitar::where('id_project_kegiatan_lain_sekitar', $projectKegiatanLainSekitar->id)->delete();
         return response($projectKegiatanLainSekitar->delete(), 200);
     }
 }

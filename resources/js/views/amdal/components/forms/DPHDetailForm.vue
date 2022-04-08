@@ -365,7 +365,7 @@ export default {
       val.forEach((e) => {
         text = text + '<li><p><strong>' + this.master[e].name + '</strong></p>';
         text = text + '<p><strong>Lokasi</strong></p>';
-        text = text + '<p>' + this.master[e].address + ', ' + this.master[e].district_name + ', ' + this.master[e].province_name + '</p>';
+        text = text + '<p>' + this.master[e].district_name + ', ' + this.master[e].province_name + '<br/>' + this.master[e].address + '</p>';
         text = text + '<p><strong>Deskripsi</strong></p>';
         text = text + '<p>' + this.master[e].description + '</p>';
         text = text + '<p><strong>Besaran</strong></p>';
