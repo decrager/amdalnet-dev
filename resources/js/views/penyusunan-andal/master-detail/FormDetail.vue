@@ -22,13 +22,18 @@
         <div class="wrapper-form">
           <div class="form-group">
             <label>1. Kondisi Saat Studi Dilakukan</label>
-            <el-input
+            <Tinymce
+              v-if="isFormulator"
               v-model="andal.studies_condition"
-              type="textarea"
-              :rows="2"
-              :readonly="!isFormulator"
-              :class="{ 'is-error': errors.studies_condition }"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
             />
+            <div v-else v-html="andal.studies_condition" />
             <small v-if="errors.studies_condition" style="color: #f56c6c">
               Kondisi Wajib Diisi
             </small>
@@ -37,13 +42,18 @@
             <label>
               2.A. Perkembangan Kondisi TANPA Adanya Rencana Kegiatan
             </label>
-            <el-input
+            <Tinymce
+              v-if="isFormulator"
               v-model="andal.condition_dev_no_plan"
-              type="textarea"
-              :rows="2"
-              :readonly="!isFormulator"
-              :class="{ 'is-error': errors.condition_dev_no_plan }"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
             />
+            <div v-else v-html="andal.condition_dev_no_plan" />
             <small v-if="errors.condition_dev_no_plan" style="color: #f56c6c">
               Kondisi Wajib Diisi
             </small>
@@ -52,26 +62,36 @@
             <label>
               B. Perkembangan Kondisi DENGAN Adanya Rencana Kegiatan
             </label>
-            <el-input
+            <Tinymce
+              v-if="isFormulator"
               v-model="andal.condition_dev_with_plan"
-              type="textarea"
-              :rows="2"
-              :readonly="!isFormulator"
-              :class="{ 'is-error': errors.condition_dev_with_plan }"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
             />
+            <div v-else v-html="andal.condition_dev_with_plan" />
             <small v-if="errors.condition_dev_with_plan" style="color: #f56c6c">
               Kondisi Wajib Diisi
             </small>
           </div>
           <div class="form-group">
             <label> 3. Selisih Besaran Dampak</label>
-            <el-input
+            <Tinymce
+              v-if="isFormulator"
               v-model="andal.impact_size_difference"
-              type="textarea"
-              :rows="2"
-              :readonly="!isFormulator"
-              :class="{ 'is-error': errors.impact_size_difference }"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="[
+                'bold italic underline bullist numlist  preview undo redo fullscreen',
+              ]"
+              :height="50"
             />
+            <div v-else v-html="andal.impact_size_difference" />
             <small v-if="errors.impact_size_difference" style="color: #f56c6c">
               Selisih Besaran Dampak Wajib Diisi
             </small>
@@ -140,13 +160,18 @@
           </el-row>
           <el-row :gutter="24" style="display: flex; align-items: center">
             <el-col :md="16" :sm="24">
-              <el-input
+              <Tinymce
+                v-if="isFormulator"
                 v-model="andal.important_trait[index].desc"
-                type="textarea"
-                :rows="2"
-                :readonly="!isFormulator"
-                :class="{ 'is-error': importantTraitError(index, 'desc') }"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
               />
+              <div v-else v-html="andal.important_trait[index].desc" />
               <small
                 v-if="importantTraitError(index, 'desc')"
                 style="color: #f56c6c"
@@ -222,11 +247,13 @@
 
 <script>
 import Comment from '@/views/amdal/components/Comment.vue';
+import Tinymce from '@/components/Tinymce';
 
 export default {
   name: 'FormDetail',
   components: {
     Comment,
+    Tinymce,
   },
   props: {
     andal: {
