@@ -492,15 +492,11 @@ export default {
 
         const markerSymbol = {
           type: 'simple',
-          field: '*',
           symbol: {
-            type: 'simple-marker',
-            size: 4,
-            color: '#69dcff',
-            outline: {
-              color: 'rgba(0, 139, 174, 0.5)',
-              width: 5,
-            },
+            type: 'picture-marker',
+            url: 'map-marker/marker_webgis.png',
+            width: '24px',
+            height: '24px',
           },
         };
 
@@ -521,9 +517,10 @@ export default {
           source: features,
           renderer: markerSymbol,
           maxScale: 500000,
+          featureReduction: {
+            type: 'cluster',
+          },
           visible: true,
-          popupTemplate: popupTemplate(propFields),
-          objectIdField: 'ObjectID',
           fields: [
             {
               name: 'ObjectID',
@@ -531,6 +528,7 @@ export default {
               type: 'oid',
             },
           ],
+          objectIdField: 'ObjectID',
           legendEnabled: false,
         });
 

@@ -63,6 +63,7 @@
     "@esri/calcite-ui-icons": "^3.17.9",
     "@mapbox/geojson-merge": "^1.1.1",
     "@turf/centroid": "^6.5.0",
+    "@turf/clusters": "^6.5.0",
     "@turf/turf": "^6.5.0",
     "axios": "^0.19",
     "babel-loader": "^8.1.0",
