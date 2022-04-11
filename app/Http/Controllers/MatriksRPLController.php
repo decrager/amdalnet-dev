@@ -135,6 +135,7 @@ class MatriksRPLController extends Controller
             $comment->column_type = $request->column_type;
             $comment->document_type = 'rpl';
             $comment->is_checked = false;
+            $comment->id_project = $request->id_project;
             $comment->save();
 
             return [
@@ -156,6 +157,7 @@ class MatriksRPLController extends Controller
             $comment->description = $request->description;
             $comment->document_type = 'rpl';
             $comment->reply_to = $request->id_comment;
+            $comment->id_project = $request->id_project;
             $comment->save();
 
             return [

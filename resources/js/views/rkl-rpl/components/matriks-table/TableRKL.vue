@@ -737,6 +737,7 @@ export default {
         id_impact_identification: this.selectedImpactCommentId,
         id_user: this.userInfo.id,
         column_type: this.impactColumnType,
+        id_project: this.$route.params.id,
       });
 
       const indexImpact = this.list.findIndex((ide) => {
@@ -758,6 +759,7 @@ export default {
         id_comment: id,
         id_user: this.userInfo.id,
         id_impact_identification: this.selectedImpactCommentId,
+        id_project: this.$route.params.id,
       });
 
       const indexImpact = this.list.findIndex((ide) => {

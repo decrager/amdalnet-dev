@@ -2341,6 +2341,7 @@ class AndalComposingController extends Controller
         $pasca_operasi = [];
         $metode_studi = [];
         $html_content = [];
+        $metode_replace = [];
         foreach ($stages as $s) {
             $total = 0;
             $results[str_replace(' ', '_', strtolower($s->name))] = [];
@@ -2450,11 +2451,31 @@ class AndalComposingController extends Controller
                     $metode_studi[] = [
                         'metode_studi' => $total_ms + 1,
                         'potential_impact_evaluation' => "$changeType $ronaAwal akibat $component",
-                        'required_information' => $pA->impactStudy->required_information ?? '',
-                        'data_gathering_method' => $pA->impactStudy->data_gathering_method ?? '',
-                        'analysis_method' =>  $pA->impactStudy->analysis_method ?? '',
-                        'forecast_method' => $pA->impactStudy->forecast_method ?? '',
-                        'evaluation_method' => $pA->impactStudy->evaluation_method ?? ''
+                        'required_information' => '${rims_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data_gathering_method' => '${dgmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'analysis_method' =>  '${amms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'forecast_method' => '${fmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'evaluation_method' => '${emms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${rims_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->required_information, 1200),
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${dgmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->data_gathering_method, 1200),
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${amms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->analysis_method, 1200),
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${fmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->forecast_method, 1200),
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${emms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->evaluation_method, 1200),
                     ];
                     $total_ms++;
                 }
@@ -2533,6 +2554,13 @@ class AndalComposingController extends Controller
         // === HTML CONTENT OVERWRITE === //
         for($i = 0; $i < count($html_content); $i++) {
             $templateProcessor->setComplexBlock($html_content[$i]['name'], $html_content[$i]['content']);
+        }
+
+        // === METODE STUDI === //
+        if(count($metode_replace) > 0) {
+            for($mri = 0; $mri < count($metode_replace); $mri++) {
+                $templateProcessor->setComplexBlock($metode_replace[$mri]['replace'], $metode_replace[$mri]['data']);
+            }
         }
 
         if($type == 'andal') {
