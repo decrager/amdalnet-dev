@@ -18,6 +18,7 @@ use App\Entity\ImportantTrait;
 use App\Entity\KaReview;
 use App\Entity\Lpjp;
 use App\Entity\Project;
+use App\Entity\ProjectKegiatanLainSekitar;
 use App\Entity\ProjectStage;
 use App\Entity\PublicConsultation;
 use App\Entity\RonaAwal;
@@ -653,7 +654,7 @@ class AndalComposingController extends Controller
         $save_file_name = $id_project . '-andal' . '.docx';
 
         if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-            // return response()->json(['message' => 'success']);
+            return response()->json(['message' => 'success']);
         }
 
         Carbon::setLocale('id');
@@ -871,7 +872,6 @@ class AndalComposingController extends Controller
         $b_rona_block = [];
         $seb_rona_block = [];
         $kk_rona_block = [];
-        $kl_rona_block = [];
         $ru_pk = [];
         $ru_pk_name = [];
         $ru_k = [];
@@ -880,6 +880,7 @@ class AndalComposingController extends Controller
         $ru_o_name = [];
         $ru_po = [];
         $ru_po_name = [];
+        $kls_block = [];
 
         foreach ($stages as $s) {
             $total = 1;
@@ -1733,12 +1734,6 @@ class AndalComposingController extends Controller
                     'kk_rona_name' => '3.1.4.' . $kk_no . ' ' . $ronaAwal,
                     'kk_rona_desc' => $komponen_desc
                 ];
-            } else if(strtolower($component_type_sub_project) == 'kegiatan lain sekitar') {
-                $kl_no = count($kl_rona_block) + 1;
-                $kl_rona_block[] = [
-                    'kl_rona_name' => '3.2.' . $kl_no . ' ' . $ronaAwal,
-                    'kl_rona_desc' => $komponen_desc
-                ];
             }
         }
 
@@ -1945,10 +1940,43 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneBlock('b_rona_block', count($b_rona_block), true, false, $b_rona_block);
         $templateProcessor->cloneBlock('seb_rona_block', count($seb_rona_block), true, false, $seb_rona_block);
         $templateProcessor->cloneBlock('kk_rona_block', count($kk_rona_block), true, false, $kk_rona_block);
-        $templateProcessor->cloneBlock('kl_rona_block', count($kl_rona_block), true, false, $kl_rona_block);
         $templateProcessor->setComplexBlock('positive_feedback_summary',  $posFeedTable);
         $templateProcessor->setComplexBlock('negative_feedback_summary',  $negFeedTable);
         $templateProcessor->setComplexBlock('holistic_evaluation',  $holEvalTable);
+
+        // KEGIATAN LAIN DI SEKITAR
+        $kegiatan_lain_sekitar = ProjectKegiatanLainSekitar::where([['project_id', $project->id],['is_andal', true]])->get();
+        $kls_replace = [];
+        $kls_total = 1;
+        foreach($kegiatan_lain_sekitar as $kls) {
+            $kls_table = new Table();
+            $kls_table->addRow();
+            $kls_cell = $kls_table->addCell();
+            $kls_content = '';
+            if($kls->description) {
+                $kls_content = str_replace('<p>', '<p style="font-family: Calibri; font-size: 15px;">', $kls->description);
+            }
+            Html::addHtml($kls_cell, $kls_content);
+
+            $kls_block[] = [
+                'kls_name' => '3.2.' . $kls_total . ' ' . $kls->kegiatanLainSekitar->name,
+                'kls_desc' => '${kls_desc_' . $kls->id . '}',
+                'kls_unit' => $kls->measurement,
+            ];
+            $kls_replace[] = [
+                'replace' => '${kls_desc_' . $kls->id . '}',
+                'desc' => $kls_table,
+            ];
+            $kls_total++;
+        }
+
+        $templateProcessor->cloneBlock('kls_block', count($kls_block), true, false, $kls_block);
+
+        if(count($kls_replace) > 0) {
+            for($klsi = 0; $klsi < count($kls_replace); $klsi++) {
+                $templateProcessor->setComplexBlock($kls_replace[$klsi]['replace'], $kls_replace[$klsi]['desc']);
+            }
+        }
 
         // PRAKIRAAN DAMPAK PENTING
         $pdp = [];
