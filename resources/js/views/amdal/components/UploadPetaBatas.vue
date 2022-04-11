@@ -540,7 +540,6 @@ export default {
             'TAHUN',
             'PROVINSI',
             'KETERANGAN',
-            'AREA',
             'LAYER',
             'TIPE_DOKUM',
           ];
@@ -620,7 +619,6 @@ export default {
             'TAHUN',
             'PROVINSI',
             'KETERANGAN',
-            'AREA',
             'LAYER',
             'TIPE_DOKUM',
           ];
@@ -701,7 +699,6 @@ export default {
             'TAHUN',
             'PROVINSI',
             'KETERANGAN',
-            'AREA',
             'LAYER',
             'TIPE_DOKUM',
           ];
