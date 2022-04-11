@@ -922,10 +922,18 @@ class TestingMeetingController extends Controller
                 }
             }
         } else if($type == 'pippib') {
-            if($is_exist == 'exist') {
-                return 'V';
+            if(!($project->ppib_file == null || $project->ppib_file == '/storage/')) {
+                if($is_exist == 'exist') {
+                    return 'V';
+                } else {
+                    return '';
+                }
             } else {
-                return '';
+                if($is_exist == 'exist') {
+                    return '';
+                } else {
+                    return 'V';
+                }
             }
         } else if($type == 'persetujuan_awal') {
             if($project->pre_agreement_file) {
