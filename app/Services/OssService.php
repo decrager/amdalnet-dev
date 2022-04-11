@@ -192,12 +192,12 @@ class OssService
                 $idProduct = $dataProduct['id_produk'];
             }
             if (in_array($dataProject['id_proyek'], $subProjectsAmdalnetIdProyeks)) {
-                foreach ($dataChecklist as $c) {
-                    if ($c['id_proyek'] == $dataProject['id_proyek']) {
-                        $idIzin = $c['id_izin'];
-                        break;
-                    }
-                }
+                // foreach ($dataChecklist as $c) {
+                //     if ($c['id_proyek'] == $dataProject['id_proyek']) {
+                //         $idIzin = $c['id_izin'];
+                //         break;
+                //     }
+                // }
                 $subProjectAmdalnet = SubProject::where('id_proyek', $dataProject['id_proyek'])
                     ->orderBy('created_at', 'desc')
                     ->first();
