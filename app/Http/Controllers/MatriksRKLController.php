@@ -69,7 +69,7 @@ class MatriksRKLController extends Controller
             }
 
             if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-                // return response()->json(['message' => 'success']);
+                return response()->json(['message' => 'success']);
             }
 
             $templateProcessor = new TemplateProcessor('template_rkl_rpl.docx');
