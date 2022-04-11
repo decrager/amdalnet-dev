@@ -1559,7 +1559,6 @@ export default {
             'TAHUN',
             'PROVINSI',
             'KETERANGAN',
-            'AREA',
             'LAYER',
           ];
 
