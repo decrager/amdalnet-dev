@@ -303,11 +303,11 @@ class ImpactIdentificationController extends Controller
             DB::commit();
             if ($unitEmpty == $count) {
                 // First time saving unit: trigger workflow
-                $project = Project::findOrFail($idProject);
+                /*$project = Project::findOrFail($idProject);
                 if ($project->marking == 'announcement-completed') {
                     $project->workflow_apply('fill-uklupl-form');
                     $project->save();
-                }
+                }*/
             }
             return response()->json([
                 'status' => 200,
