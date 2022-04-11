@@ -231,11 +231,11 @@ class ImpactIdentificationController extends Controller
          if (count($response) == $num_impacts) {
              DB::commit();
              // Workflow Amdal
-            $project = Project::findOrFail($idProject);
+            /*$project = Project::findOrFail($idProject);
             if ($project->marking == 'amdal.form-ka-drafting') {
                 $project->workflow_apply('submit-amdal-form-ka');
                 $project->save();
-            }
+            }*/
              return response()->json([
                  'status' => 200,
                  'code' => 200,
