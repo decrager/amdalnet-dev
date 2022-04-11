@@ -3698,7 +3698,7 @@
             >
               <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $m_studi[$i]['required_information'] }}</span
+                >{!! $m_studi[$i]['required_information'] !!}</span
               >
             </p>
           </td>
@@ -3725,7 +3725,7 @@
             >
               <span
                 style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{{ $m_studi[$i]['data_gathering_method'] }}</span
+                >{!! $m_studi[$i]['data_gathering_method'] !!}</span
               >
             </p>
           </td>
@@ -3752,7 +3752,7 @@
             >
               <span
                 style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{{ $m_studi[$i]['analysis_method'] }}</span
+                >{!! $m_studi[$i]['analysis_method'] !!}</span
               >
             </p>
           </td>
@@ -3779,7 +3779,7 @@
             >
               <span
                 style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{{ $m_studi[$i]['forecast_method'] }}</span
+                >{!! $m_studi[$i]['forecast_method'] !!}</span
               >
             </p>
           </td>
@@ -3806,7 +3806,7 @@
             >
               <span
                 style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{{ $m_studi[$i]['evaluation_method'] }}</span
+                >{!! $m_studi[$i]['evaluation_method'] !!}</span
               >
             </p>
           </td>
