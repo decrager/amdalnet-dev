@@ -47,8 +47,10 @@ class OssNibController extends Controller
 
                 foreach($dataProyek['data_lokasi_proyek'] as $key => &$dataLokasiProyek){
                     $region = Region::where('region_id', $dataLokasiProyek['proyek_daerah_id'])->first();
-                    $dataLokasiProyek['province'] = $region['province'];
-                    $dataLokasiProyek['regency'] = $region['regency'];
+                    if($region){
+                        $dataLokasiProyek['province'] = $region['province'];
+                        $dataLokasiProyek['regency'] = $region['regency'];
+                    }
                 }
 
                 $isExistSubProject = SubProject::where('id_proyek', $dataProyek['id_proyek'])->first();

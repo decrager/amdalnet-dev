@@ -1095,7 +1095,7 @@ export default {
       console.log(1, kewenanganTemp);
 
       // if kwenangan not pusat use authority from address project
-      if (kewenanganTemp !== 'Pusat'){
+      if (kewenanganTemp !== 'Pusat' && this.currentProject.address.filter(e => e.isUsed).length > 1){
         kewenanganTemp = this.currentProject.authority;
       }
       console.log(2, kewenanganTemp);
