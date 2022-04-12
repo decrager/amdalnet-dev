@@ -1408,7 +1408,7 @@ class MatriksRKLController extends Controller
         $replace = '';
         $sources = $impact_source->where('id_impact_identification', $id);
         foreach($sources as $s) {
-            $imp_source .= $s->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $s->description) : '';
+            $imp_source .= $s->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $this->replaceHtmlList($s->description)) : '';
             $replace .= '${is' . $type . '_' . $id . '_' . $total_source . '}</w:t><w:p/><w:t>'.
             $total_source++;
         }
@@ -1431,7 +1431,7 @@ class MatriksRKLController extends Controller
         $replace = '';
         $indicators = $indicator->where('id_impact_identification', $id);
         foreach($indicators as $i) {
-            $indicator_data .= $i->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $i->description) : '';
+            $indicator_data .= $i->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $this->replaceHtmlList($i->description)) : '';
             $replace .= '${i' . $type . '_' . $id . '_' . $total . '}</w:t><w:p/><w:t>';
             $total++;
         }
@@ -1454,7 +1454,7 @@ class MatriksRKLController extends Controller
         $total = 1;
         $replace = '';
         foreach($imp_form as $i) {
-            $form .= $i->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $i->description) : '';
+            $form .= $i->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $this->replaceHtmlList($i->description)) : '';
             $replace .= '${f' . $type . '_' . $id . '_' . $total . '}</w:t><w:p/><w:t>';
             $total++;
         }
@@ -1477,7 +1477,7 @@ class MatriksRKLController extends Controller
         $replace = '';
         $total = 1;
         foreach($locations as $l) {
-            $location .= $l->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $l->description) : '';
+            $location .= $l->description ? str_replace('<p>', '<p style="font-family: Arial Narrow; font-size: 15px;">', $this->replaceHtmlList($l->description)) : '';
             $replace .= '${l' . $type . '_' . $id . '_' . $total . '}</w:t><w:p/><w:t>';
             $total++;
         }
@@ -1491,5 +1491,31 @@ class MatriksRKLController extends Controller
             'data' => $table,
             'replace' => $replace
         ];
+    }
+
+    private function removeNestedParagraph($data)
+    {
+        $old_data = $data;
+        $new_data = null;
+
+        while(true) {
+            $new_data = preg_replace('/(.*<p>)(((?!<\/p>).)*?)(<p>)(.*?)(<\/p>)(.*)/', '\1\2\5\7', $old_data);
+            if($new_data == $old_data) {
+                break;
+            } else {
+                $old_data = $new_data;
+            }
+        }
+
+        return $new_data;
+    }
+
+    private function replaceHtmlList($data)
+    {
+        if($data) {
+            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+        } else {
+            return '';
+        }
     }
 }

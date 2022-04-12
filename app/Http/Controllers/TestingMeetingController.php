@@ -730,7 +730,7 @@ class TestingMeetingController extends Controller
         $cell = $notesTable->addCell(6000);
         $final_notes = $verification->notes;
         if($final_notes) {
-            $final_notes = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $final_notes);
+            $final_notes = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $this->replaceHtmlList($final_notes));
         }
         Html::addHtml($cell, $final_notes);
 
@@ -1096,6 +1096,32 @@ class TestingMeetingController extends Controller
 
             $tuk_project->role = 'valsub';
             $tuk_project->save();
+        }
+    }
+
+    private function removeNestedParagraph($data)
+    {
+        $old_data = $data;
+        $new_data = null;
+
+        while(true) {
+            $new_data = preg_replace('/(.*<p>)(((?!<\/p>).)*?)(<p>)(.*?)(<\/p>)(.*)/', '\1\2\5\7', $old_data);
+            if($new_data == $old_data) {
+                break;
+            } else {
+                $old_data = $new_data;
+            }
+        }
+
+        return $new_data;
+    }
+
+    private function replaceHtmlList($data)
+    {
+        if($data) {
+            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+        } else {
+            return '';
         }
     }
 }
