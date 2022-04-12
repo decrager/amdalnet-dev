@@ -59,7 +59,7 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      <div v-show="showDetails">
+      <div v-if="showDetails">
         <Details
           :selected-announcement="selectedAnnouncement"
           :selected-project="selectedProject"
