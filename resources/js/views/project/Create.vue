@@ -688,9 +688,12 @@ export default {
       callback();
     };
     var validateListSubProject = (rule, value, callback) => {
-      if (this.listSubProject.filter(e => e.isUsed).length < 1) {
-        callback(new Error('Mohon Pilih Minimal 1 Kegiatan'));
+      if (this.listSubProject.filter(e => {
+        return e.isUsed && e.type && e.type === 'utama';
+      }).length < 1) {
+        callback(new Error('Mohon Pilih Minimal 1 Kegiatan Utama'));
       }
+
       callback();
     };
     var validateListKewenangan = (rule, value, callback) => {
