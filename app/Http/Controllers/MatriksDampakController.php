@@ -109,8 +109,6 @@ class MatriksDampakController extends Controller
         $components_by_stage = $this->getComponentsGroupByStage($id);
         $component_ronas = $this->getComponentRonas($request, $id);
 
-        // return response($components_by_stage);
-
         foreach ($components_by_stage as $cstage) {
             $index = 1;
             $item = [];
@@ -150,20 +148,11 @@ class MatriksDampakController extends Controller
                                     $impClass = ($request->isAndal === 'true') ? 'App\Entity\ImpactIdentificationClone' : 'App\Entity\ImpactIdentification';
                                     $impTable = ($request->isAndal === 'true') ? 'impact_identification_clones' : 'impact_identifications';
 
-                                    $dph = $impClass::from($impTable)->select($impTable.'.is_hypothetical_significant')
-                                        ->join('project_components', 'project_components.id', '=', $impTable.'.id_project_component')
+                                    $dph = $impClass::from($impTable)->select("$impTable.is_hypothetical_significant")
+                                        ->join('project_components', 'project_components.id', '=', "$impTable.id_project_component")
                                         ->where('project_components.id_component', $component->id_component)
-                                        ->where($impTable.'.id_project_rona_awal', $cr->id)->first();
+                                        ->where("$impTable.id_project_rona_awal", $cr->id)->first();
 
-                                    /*if($request->isAndal === 'true') {
-                                        $dph = ImpactIdentificationClone::select('is_hypothetical_significant')
-                                            ->where('id_project_rona_awal', $cr->id)
-                                            ->first();
-                                    } else {
-                                        $dph = ImpactIdentification::select('is_hypothetical_significant')
-                                            ->where('id_project_rona_awal', $cr->id)
-                                            ->first();
-                                    }*/
                                     if($dph !== null){
                                         if ($dph->is_hypothetical_significant === true) {
                                             $ctype[$k] = 'DPH';
