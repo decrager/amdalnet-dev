@@ -696,7 +696,7 @@ class MeetReportRKLRPLController extends Controller
         $notesTable = new Table();
         $notesTable->addRow();
         $cell = $notesTable->addCell();
-        Html::addHtml($cell, $meeting->notes);
+        Html::addHtml($cell, $this->replaceHtmlList($meeting->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         if($document_type == 'ukl-upl') {
@@ -706,5 +706,31 @@ class MeetReportRKLRPLController extends Controller
         }
 
         return strtolower(str_replace('/', '-', $project->project_title));
+    }
+
+    private function removeNestedParagraph($data)
+    {
+        $old_data = $data;
+        $new_data = null;
+
+        while(true) {
+            $new_data = preg_replace('/(.*<p>)(((?!<\/p>).)*?)(<p>)(.*?)(<\/p>)(.*)/', '\1\2\5\7', $old_data);
+            if($new_data == $old_data) {
+                break;
+            } else {
+                $old_data = $new_data;
+            }
+        }
+
+        return $new_data;
+    }
+
+    private function replaceHtmlList($data)
+    {
+        if($data) {
+            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+        } else {
+            return '';
+        }
     }
 }

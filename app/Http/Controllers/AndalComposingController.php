@@ -1833,11 +1833,11 @@ class AndalComposingController extends Controller
         $posFeedTable = new Table();
         $posFeedTable->addRow();
         $posFeedcell = $posFeedTable->addCell();
-        Html::addHtml($posFeedcell, $positive_feedback_summary);
+        Html::addHtml($posFeedcell, $this->replaceHtmlList($positive_feedback_summary));
         $negFeedTable = new Table();
         $negFeedTable->addRow();
         $negFeedcell = $negFeedTable->addCell();
-        Html::addHtml($negFeedcell, $negative_feedback_summary);
+        Html::addHtml($negFeedcell, $this->replaceHtmlList($negative_feedback_summary));
 
         // ======= EVALUASI HOLISTIK ====== //
         $holistic_evaluations = '';
@@ -1848,13 +1848,13 @@ class AndalComposingController extends Controller
         $holEvalTable = new Table();
         $holEvalTable->addRow();
         $cell = $holEvalTable->addCell();
-        Html::addHtml($cell, $holistic_evaluations);
+        Html::addHtml($cell, $this->replaceHtmlList($holistic_evaluations));
 
         $location_description = $project->location_desc ? $project->location_desc : '';
         $locDescTable = new Table();
         $locDescTable->addRow();
         $cellLocDesc = $locDescTable->addCell();
-        Html::addHtml($cellLocDesc, $location_description);
+        Html::addHtml($cellLocDesc, $this->replaceHtmlList($location_description));
 
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
@@ -1956,7 +1956,7 @@ class AndalComposingController extends Controller
             if($kls->description) {
                 $kls_content = str_replace('<p>', '<p style="font-family: Calibri; font-size: 15px;">', $kls->description);
             }
-            Html::addHtml($kls_cell, $kls_content);
+            Html::addHtml($kls_cell, $this->replaceHtmlList($kls_content));
 
             $kls_block[] = [
                 'kls_name' => '3.2.' . $kls_total . ' ' . $kls->kegiatanLainSekitar->name,
@@ -2506,7 +2506,7 @@ class AndalComposingController extends Controller
         $project_description_cell = $project_description_table->addCell();
         $project_description_content = $project->description ? $project->description : '';
         $project_description_content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 11px;">', $project_description_content);
-        Html::addHtml($project_description_cell, $project_description_content);
+        Html::addHtml($project_description_cell, $this->replaceHtmlList($project_description_content));
 
         $templateProcessor = new TemplateProcessor('template_ka_andal.docx');
 
@@ -2527,7 +2527,7 @@ class AndalComposingController extends Controller
                 $positiveTable = new Table();
                 $positiveTable->addRow();
                 $cell = $positiveTable->addCell();
-                Html::addHtml($cell, $positive_feedback);
+                Html::addHtml($cell, $this->replaceHtmlList($positive_feedback));
 
                 $templateProcessor->setComplexBlock('positive-' . $positive_no_html, $positiveTable);
                 $positive_no_html++;
@@ -2538,7 +2538,7 @@ class AndalComposingController extends Controller
                 $negativeTable = new Table();
                 $negativeTable->addRow();
                 $cell = $negativeTable->addCell();
-                Html::addHtml($cell, $negative_feedback);
+                Html::addHtml($cell, $this->replaceHtmlList($negative_feedback));
 
                 $templateProcessor->setComplexBlock('negative-' . $negative_no_html, $negativeTable);
                 $negative_no_html;
@@ -2616,7 +2616,7 @@ class AndalComposingController extends Controller
         $cell = $table->addCell($width);
         $content = '';
         if($data) {
-            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $data);
+            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data));
         }
         Html::addHtml($cell, $content);
         return [
@@ -2632,10 +2632,36 @@ class AndalComposingController extends Controller
         $cell = $table->addCell($width);
         $content = '';
         if($data) {
-            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $data);
+            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data));
         }
         Html::addHtml($cell, $content);
         return $table;
+    }
+
+    private function removeNestedParagraph($data)
+    {
+        $old_data = $data;
+        $new_data = null;
+
+        while(true) {
+            $new_data = preg_replace('/(.*<p>)(((?!<\/p>).)*?)(<p>)(.*?)(<\/p>)(.*)/', '\1\2\5\7', $old_data);
+            if($new_data == $old_data) {
+                break;
+            } else {
+                $old_data = $new_data;
+            }
+        }
+
+        return $new_data;
+    }
+
+    private function replaceHtmlList($data)
+    {
+        if($data) {
+            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+        } else {
+            return '';
+        }
     }
 
     private function getComponentRonaAwal($imp, $id_project_stage, $type)
