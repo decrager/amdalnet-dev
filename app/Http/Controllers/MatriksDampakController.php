@@ -109,6 +109,8 @@ class MatriksDampakController extends Controller
         $components_by_stage = $this->getComponentsGroupByStage($id);
         $component_ronas = $this->getComponentRonas($request, $id);
 
+        // return response($components_by_stage);
+
         foreach ($components_by_stage as $cstage) {
             $index = 1;
             $item = [];
@@ -145,7 +147,15 @@ class MatriksDampakController extends Controller
                                 if ($is_dph) {
                                     // check if DPH
                                     $dph = null;
-                                    if($request->isAndal === 'true') {
+                                    $impClass = ($request->isAndal === 'true') ? 'App\Entity\ImpactIdentificationClone' : 'App\Entity\ImpactIdentification';
+                                    $impTable = ($request->isAndal === 'true') ? 'impact_identification_clones' : 'impact_identifications';
+
+                                    $dph = $impClass::from($impTable)->select($impTable.'.is_hypothetical_significant')
+                                        ->join('project_components', 'project_components.id', '=', $impTable.'.id_project_component')
+                                        ->where('project_components.id_component', $component->id_component)
+                                        ->where($impTable.'.id_project_rona_awal', $cr->id)->first();
+
+                                    /*if($request->isAndal === 'true') {
                                         $dph = ImpactIdentificationClone::select('is_hypothetical_significant')
                                             ->where('id_project_rona_awal', $cr->id)
                                             ->first();
@@ -153,7 +163,7 @@ class MatriksDampakController extends Controller
                                         $dph = ImpactIdentification::select('is_hypothetical_significant')
                                             ->where('id_project_rona_awal', $cr->id)
                                             ->first();
-                                    }
+                                    }*/
                                     if($dph !== null){
                                         if ($dph->is_hypothetical_significant === true) {
                                             $ctype[$k] = 'DPH';
@@ -236,7 +246,7 @@ class MatriksDampakController extends Controller
 
     private function getComponents($id) {
         return SubProjectComponent::from('sub_project_components AS spc')
-            ->selectRaw('lower(spc.name) as name, lower(c.name) as name_master, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
+            ->selectRaw('lower(spc.name) as name, lower(c.name) as name_master, c.id as id_component, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
             ->where('sp.id_project', $id)
