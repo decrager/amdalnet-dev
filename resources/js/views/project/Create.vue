@@ -433,7 +433,7 @@
             <div role="alert" class="el-alert el-alert--info is-light">
               <div class="el-alert__content">
                 <span class="el-alert__title">
-                  <b>Persetujuan Awal :</b> Izin prinsip yang dikeluarkan oelh instansi yang berwenang sesuai dengan jenis rencana kegiatan
+                  <b>Persetujuan Awal :</b> Izin prinsip yang dikeluarkan oleh instansi yang berwenang sesuai dengan jenis rencana kegiatan
                 </span>
               </div>
             </div>
@@ -1092,18 +1092,23 @@ export default {
     async calculateKewenanganAnomali(){
       let kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
 
+      console.log(1, kewenanganTemp);
+
       // if kwenangan not pusat use authority from address project
       if (kewenanganTemp !== 'Pusat'){
         kewenanganTemp = this.currentProject.authority;
       }
+      console.log(2, kewenanganTemp);
 
       // if kewenangan KEK
       if (this.jenisKawasanOSS === '02'){
         kewenanganTemp = 'Pusat';
       }
+      console.log(3, kewenanganTemp);
 
       if (this.kewenanganPMA && this.kewenanganPMA === '01'){
         kewenanganTemp = 'Pusat';
+        console.log(4, kewenanganTemp);
       }
 
       const anomaliPBG = await authorityResource.list({ listSubProject: this.currentProject.listSubProject });
@@ -1113,11 +1118,12 @@ export default {
       // if theres is anomali pbg skip kewenagan
       if (anomaliPBG === 1){
         kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
-        // console.log(kewenanganTemp);
+        console.log(5, kewenanganTemp);
       }
 
       if (this.jenisKawasanOSS === '03'){
         kewenanganTemp = 'Pusat';
+        console.log(6, kewenanganTemp);
       }
 
       this.currentProject.authority = kewenanganTemp;
@@ -1145,6 +1151,7 @@ export default {
           this.currentProject.authority = 'Pusat';
           delete this.currentProject.auth_province;
           delete this.currentProject.auth_district;
+          console.log('add1', this.currentProject.authority);
           return;
         }
 
@@ -1152,6 +1159,7 @@ export default {
           this.currentProject.authority = 'Provinsi';
           const authProv = await provinceResource.list({ provName: tempFile });
           this.currentProject.auth_province = authProv.id;
+          console.log('add2', this.currentProject.authority);
           delete this.currentProject.auth_district;
         }
 
@@ -1160,6 +1168,7 @@ export default {
       }
 
       if (this.currentProject.authority === 'Provinsi'){
+        console.log('add3', this.currentProject.authority);
         return;
       }
 
@@ -1391,7 +1400,7 @@ export default {
     handleStudyAccord(){
       this.$refs.pendekatanStudi.validate(async(valid) => {
         if (valid) {
-          await this.addAuthoritiesBasedOnAddress(this.currentProject.address);
+          await this.addAuthoritiesBasedOnAddress(this.currentProject.address.filter(e => e.isUsed));
           this.calculateListSubProjectResult();
           this.calculateChoosenProject();
           this.goToStatusKegiatan();
