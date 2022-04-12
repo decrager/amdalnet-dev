@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/html-indent -->
 <template>
   <div>
-    <h5>Daftar Undangan</h5>
+    <h5>Daftar Hadir</h5>
     <el-table
       v-loading="loadingtuk"
       :data="invitations"
