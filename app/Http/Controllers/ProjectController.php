@@ -275,7 +275,7 @@ class ProjectController extends Controller
             $project = Project::create([
                 // 'biz_type' => $data['biz_type'],
                 'project_title' => $data['project_title'],
-                'scale' => $data['scale'],
+                'scale' => floatval($data['scale']),
                 'scale_unit' => $data['scale_unit'],
                 'project_type' => $data['project_type'],
                 'sector' => $data['sector'],
@@ -440,7 +440,7 @@ class ProjectController extends Controller
                     'biz_type' => $subPro->biz_type,
                     'id_project' => $project->id,
                     'sector' => $subPro->sector,
-                    'scale' => $subPro->scale,
+                    'scale' => floatval($subPro->scale),
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
                     'biz_name' => isset($business) ? $business->value : null,
                     'sector_name' => isset($sector) ? $sector->value : null,
@@ -450,7 +450,7 @@ class ProjectController extends Controller
                 foreach ($subPro->listSubProjectParams as $subProParam) {
                     SubProjectParam::create([
                         'param' => $subProParam->param,
-                        'scale' => $subProParam->scale,
+                        'scale' => floatval($subProParam->scale),
                         'scale_unit' => isset($subProParam->scale_unit) ? $subProParam->scale_unit : '',
                         'result' => $subProParam->result,
                         'id_sub_project' => $createdSubPro->id,
