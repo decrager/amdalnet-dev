@@ -169,6 +169,7 @@
       :key="'scoping_delete_form'"
       :component="deleted"
       :show="showDelete"
+      :mode="mode"
       :resource="delResource"
       @close="showDelete = false"
       @delete="afterDeleteComponent"
@@ -274,6 +275,7 @@ export default {
         if (val === true){
           this.getSubProjectComponents();
           this.getSubProjectsHues();
+          this.$emit('refreshed', true);
         }
       },
     },

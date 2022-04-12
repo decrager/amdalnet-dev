@@ -17,6 +17,7 @@
       <el-button icon="el-icon-plus" size="mini" circle type="primary" plain @click="addComponent" />
       <form-komponen-kegiatan
         :show="showForm"
+        :form-mode="formMode"
         :mode="mode"
         :stages="projectStages"
         :input="selectedData"
@@ -28,6 +29,7 @@
         :component="deleted"
         :show="showDelete"
         :resource="'project-components'"
+        :mode="mode"
         @close="showDelete = false"
         @delete="afterDeleteComponent"
       />
@@ -56,12 +58,16 @@ export default {
         return [];
       },
     },
+    mode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
     return {
       selectedData: null,
       // components: [],
-      mode: 0,
+      formMode: 0,
       showForm: false,
       showDelete: false,
       deleted: null,
@@ -80,12 +86,12 @@ export default {
     },
     addComponent() {
       this.showForm = true;
-      this.mode = 0;
+      this.formMode = 0;
     },
 
     editComponent(id) {
       this.selectedData = this.components.find(e => e.id === id);
-      this.mode = 1;
+      this.formMode = 1;
       this.showForm = true;
     },
     removeComponent(id) {

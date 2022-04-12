@@ -185,11 +185,20 @@
                 :key="index"
                 style="margin-bottom: 5px"
               >
-                <el-input
+                <Tinymce
+                  v-if="isFormulator"
                   v-model="scope.row.impact_source[index].description"
-                  type="textarea"
-                  :rows="2"
-                  :readonly="!isFormulator"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :toolbar="[
+                    'bold italic underline bullist numlist  preview undo redo fullscreen',
+                  ]"
+                  :height="50"
+                />
+                <div
+                  v-else
+                  v-html="scope.row.impact_source[index].description"
                 />
               </div>
             </div>
@@ -218,12 +227,18 @@
               :key="index"
               style="margin-bottom: 5px"
             >
-              <el-input
+              <Tinymce
+                v-if="isFormulator"
                 v-model="scope.row.indicator[index].description"
-                type="textarea"
-                :rows="2"
-                :readonly="!isFormulator"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
               />
+              <div v-else v-html="scope.row.indicator[index].description" />
             </div>
           </div>
           <el-button
@@ -252,11 +267,20 @@
                 :key="index"
                 style="margin-bottom: 5px"
               >
-                <el-input
+                <Tinymce
+                  v-if="isFormulator"
                   v-model="scope.row.collection_method[index].description"
-                  type="textarea"
-                  :rows="2"
-                  :readonly="!isFormulator"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :toolbar="[
+                    'bold italic underline bullist numlist  preview undo redo fullscreen',
+                  ]"
+                  :height="50"
+                />
+                <div
+                  v-else
+                  v-html="scope.row.collection_method[index].description"
                 />
               </div>
             </div>
@@ -286,12 +310,18 @@
                 :key="index"
                 style="margin-bottom: 5px"
               >
-                <el-input
+                <Tinymce
+                  v-if="isFormulator"
                   v-model="scope.row.location[index].description"
-                  type="textarea"
-                  :rows="2"
-                  :readonly="!isFormulator"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :toolbar="[
+                    'bold italic underline bullist numlist  preview undo redo fullscreen',
+                  ]"
+                  :height="50"
                 />
+                <div v-else v-html="scope.row.location[index].description" />
               </div>
             </div>
             <el-button
@@ -468,11 +498,15 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Tinymce from '@/components/Tinymce';
 import Resource from '@/api/resource';
 const rplResource = new Resource('matriks-rpl');
 
 export default {
   name: 'TableRPL',
+  components: {
+    Tinymce,
+  },
   data() {
     return {
       list: [],
@@ -547,8 +581,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
@@ -718,6 +752,7 @@ export default {
         id_impact_identification: this.selectedImpactCommentId,
         id_user: this.userInfo.id,
         column_type: this.impactColumnType,
+        id_project: this.$route.params.id,
       });
 
       const indexImpact = this.list.findIndex((ide) => {
@@ -739,6 +774,7 @@ export default {
         id_comment: id,
         id_user: this.userInfo.id,
         id_impact_identification: this.selectedImpactCommentId,
+        id_project: this.$route.params.id,
       });
 
       const indexImpact = this.list.findIndex((ide) => {

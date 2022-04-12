@@ -142,7 +142,8 @@ export default {
     },
     onOpen(){
       this.isSaving = false;
-      if (this.master === null){
+      if ((this.master === null)){
+        this.formMode = 0;
         this.initData();
       } else {
         this.formMode = 1;
@@ -156,6 +157,7 @@ export default {
           description: this.data.component.description,
           measurement: this.data.component.measurement,
           id_sub_project_component: this.data.component.id_sub_project_component,
+          mode: this.mode,
         };
       }
       console.log(this.component);
@@ -171,7 +173,7 @@ export default {
       await subProjectComponentResource.store(
         this.component
       ).then((res) => {
-        this.component.id_sub_project_component = res;
+        this.component.id_sub_project_component = res.id;
         this.$message({
           message: 'Komponen kegiatan berhasil disimpan',
           type: 'success',
@@ -182,7 +184,7 @@ export default {
           name: this.component.name,
           value: this.component.value,
           id_sub_project: this.component.id_sub_project,
-          id_sub_project_component: res,
+          id_sub_project_component: res.id,
           description: this.component.description,
           measurement: this.component.measurement,
           id_project_stage: this.data.project_stage.id,

@@ -12,7 +12,7 @@
     >
       <div v-loading="isSaving">
         <el-form label-position="top">
-          <el-form-item v-if="mode === 0" label="Nama Kegiatan">
+          <el-form-item v-if="formMode === 0" label="Nama Kegiatan">
             <el-select
               v-model="data.id"
               style="width:100%"
@@ -157,22 +157,12 @@ export default {
       type: Object,
       default: () => null,
     },
+    formMode: {
+      type: Number,
+      default: 0,
+    },
   },
   data(){
-    /* var validateComponentName = (rule, value, callback) => {
-      if (((this.noMaster === true) && (value === ''))) {
-        callback(new Error('Nama Kegiatan Lain Sekitar wajib diisi'));
-      } else {
-        callback();
-      }
-    };
-    var validateComponent = (rule, value, callback) => {
-      if ((this.noMaster === false) && ((this.data.id === null) || (this.data.id <= 0))) {
-        callback(new Error('Nama Kegiatan Lain Sekitar wajib dipilih'));
-      } else {
-        callback();
-      }
-    };*/
     return {
       isSaving: false,
       data: null,
@@ -183,25 +173,6 @@ export default {
       provinces: [],
       districts: [],
       master: [],
-      /* rules: {
-        id: [{validator: validateComponent, trigger: 'change'}],
-        name: [{ validator: validateComponentName, trigger: 'blur'}],
-        address:  [
-            { required: true, message: 'Alamat wajib diisi', trigger: 'blur' }
-          ],
-        province_id: [
-          { required: true, message: 'Provinsi wajib diisi', trigger: 'change' }
-        ],
-        district_id: [
-          { required: true, message: 'Kabupaten/Kota wajib diisi', trigger: 'change' }
-        ],
-        description: [
-          { required: true, message: 'Deskripsi wajib diisi', trigger: 'blur' }
-        ],
-        measurement: [
-          { required: true, message: 'Besaran wajib diisi', trigger: 'blur' }
-        ]
-      },*/
     };
   },
   mounted(){
@@ -261,6 +232,7 @@ export default {
     },
     async handleSaveForm(){
       this.isSaving = true;
+      this.data.mode = this.mode;
       await projectKSLResource.store(this.data)
         .then((res) => {
           this.data.id_project_kegiatan_lain_sekitar = res.id;
@@ -273,7 +245,7 @@ export default {
         });
     },
     onOpen(){
-      switch (this.mode){
+      switch (this.formMode){
         case 0:
           this.initData();
           this.getMaster();

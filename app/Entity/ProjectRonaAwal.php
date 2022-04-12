@@ -16,6 +16,7 @@ class ProjectRonaAwal extends Model
         'id_rona_awal',
         'description',
         'measurement',
+        'is_andal'
     ];
 
     public function rona_awal()

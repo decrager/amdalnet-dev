@@ -160,7 +160,9 @@ export default {
         this.selectedColumn === 'dpdph-andal' ||
         this.selectedColumn === 'metode-studi-ka' ||
         this.selectedColumn === 'metode-studi-andal' ||
-        this.selectedColumn === 'andal'
+        this.selectedColumn === 'andal' ||
+        this.selectedColumn === 'rkl' ||
+        this.selectedColumn === 'rpl'
       ) {
         return true;
       }

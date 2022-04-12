@@ -12,6 +12,7 @@
         <komponen-kegiatan
           :components="components"
           :project-stages="projectStages"
+          :mode="mode"
           @delete="onDeleteComponent"
         />
       </el-col>
@@ -19,12 +20,14 @@
         <komponen-lingkungan
           :components="hues"
           :component-types="componentTypes"
+          :mode="mode"
           @delete="onDeleteHue"
         />
       </el-col>
       <el-col :span="8">
         <komponen-kegiatan-lain-sekitar
           :components="activities"
+          :mode="mode"
           @delete="onDeleteActivites"
         />
       </el-col>
@@ -67,6 +70,10 @@ export default {
       default: function() {
         return [];
       },
+    },
+    mode: {
+      type: Number,
+      default: 0,
     },
   },
   methods: {

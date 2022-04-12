@@ -18,6 +18,7 @@ use App\Entity\ImportantTrait;
 use App\Entity\KaReview;
 use App\Entity\Lpjp;
 use App\Entity\Project;
+use App\Entity\ProjectKegiatanLainSekitar;
 use App\Entity\ProjectStage;
 use App\Entity\PublicConsultation;
 use App\Entity\RonaAwal;
@@ -871,7 +872,6 @@ class AndalComposingController extends Controller
         $b_rona_block = [];
         $seb_rona_block = [];
         $kk_rona_block = [];
-        $kl_rona_block = [];
         $ru_pk = [];
         $ru_pk_name = [];
         $ru_k = [];
@@ -880,6 +880,7 @@ class AndalComposingController extends Controller
         $ru_o_name = [];
         $ru_po = [];
         $ru_po_name = [];
+        $kls_block = [];
 
         foreach ($stages as $s) {
             $total = 1;
@@ -950,6 +951,12 @@ class AndalComposingController extends Controller
                     'with_plan' => '',
                     'size_differ' => ''
                 ];
+                $table_with_no_plan_data = [
+                    'studies' => '',
+                    'no_plan' => '',
+                    'with_plan' => '',
+                    'size_differ' => ''
+                ];
                 $important_trait_1 = ['nilai' => '', 'keterangan' => ''];
                 $important_trait_2 = ['nilai' => '', 'keterangan' => ''];
                 $important_trait_3 = ['nilai' => '', 'keterangan' => ''];
@@ -958,40 +965,61 @@ class AndalComposingController extends Controller
                 $important_trait_6 = ['nilai' => '', 'keterangan' => ''];
                 $important_trait_7 = ['nilai' => '', 'keterangan' => ''];
 
+                $important_trait_1_data = ['keterangan' => ''];
+                $important_trait_2_data = ['keterangan' => ''];
+                $important_trait_3_data = ['keterangan' => ''];
+                $important_trait_4_data = ['keterangan' => ''];
+                $important_trait_5_data = ['keterangan' => ''];
+                $important_trait_6_data = ['keterangan' => ''];
+                $important_trait_7_data = ['keterangan' => ''];
+
                 $impact_result = '';
                 if($imp->is_hypothetical_significant) {
                     if($imp->envImpactAnalysis) {
                         $impact_result = $imp->envImpactAnalysis->impact_eval_result ?? '';
                         $table_with_no_plan = [
-                            'studies' => $imp->envImpactAnalysis->studies_condition,
-                            'no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
-                            'with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
-                            'size_differ' => $imp->envImpactAnalysis->impact_size_difference
+                            'studies' => '${st_' . $s->id . '_' . $imp->id . '}',
+                            'no_plan' => '${no_' . $s->id . '_' . $imp->id . '}',
+                            'with_plan' => '${wi_' . $s->id . '_' . $imp->id . '}',
+                            'size_differ' => '${si_' . $s->id . '_' . $imp->id . '}',
+                        ];
+                        $table_with_no_plan_data = [
+                            'studies' => $this->renderHtmlTable($imp->envImpactAnalysis->studies_condition, 4900),
+                            'no_plan' => $this->renderHtmlTable($imp->envImpactAnalysis->condition_dev_no_plan, 4900),
+                            'with_plan' => $this->renderHtmlTable($imp->envImpactAnalysis->condition_dev_with_plan, 4900),
+                            'size_differ' => $this->renderHtmlTable($imp->envImpactAnalysis->impact_size_difference, 4900)
                         ];
                         if($imp->envImpactAnalysis->detail) {
                             if($imp->envImpactAnalysis->detail->first()) {
                                 foreach($imp->envImpactAnalysis->detail as $det) {
                                     if($det->id_important_trait == 1) {
                                         $important_trait_1['nilai'] = $det->important_trait;
-                                        $important_trait_1['keterangan'] = $det->description;
+                                        $important_trait_1['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
+                                        $important_trait_1_data['keterangan'] = $this->renderHtmlTable($det->description, 3500);
                                     } else if($det->id_important_trait == 2) {
                                         $important_trait_2['nilai'] = $det->important_trait;
-                                        $important_trait_2['keterangan'] = $det->description;
+                                        $important_trait_2['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
+                                        $important_trait_2_data['keterangan'] = $this->renderHtmlTable($det->description, 3500);
                                     } else if($det->id_important_trait == 3) {
                                         $important_trait_3['nilai'] = $det->important_trait;
-                                        $important_trait_3['keterangan'] = $det->description;
+                                        $important_trait_3['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
+                                        $important_trait_3_data['keterangan'] = $this->renderHtmlTable($det->description, 3500);
                                     } else if($det->id_important_trait == 4) {
                                         $important_trait_4['nilai'] = $det->important_trait;
-                                        $important_trait_4['keterangan'] = $det->description;
+                                        $important_trait_4['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
+                                        $important_trait_4_data['keterangan'] = $this->renderHtmlTable($det->description, 3500);
                                     } else if($det->id_important_trait == 5) {
                                         $important_trait_5['nilai'] = $det->important_trait;
-                                        $important_trait_5['keterangan'] = $det->description;
+                                        $important_trait_5['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
+                                        $important_trait_5_data['keterangan'] = $this->renderHtmlTable($det->description, 3500);
                                     } else if($det->id_important_trait == 6) {
                                         $important_trait_6['nilai'] = $det->important_trait;
-                                        $important_trait_6['keterangan'] = $det->description;
+                                        $important_trait_6['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
+                                        $important_trait_6_data['keterangan'] = $this->renderHtmlTable($det->description, 3500);
                                     } else if($det->id_important_trait == 7) {
                                         $important_trait_7['nilai'] = $det->important_trait;
-                                        $important_trait_7['keterangan'] = $det->description;
+                                        $important_trait_7['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
+                                        $important_trait_7_data['keterangan'] = $this->renderHtmlTable($det->description, 3500);
                                     }
                                 }
                             }
@@ -1047,6 +1075,7 @@ class AndalComposingController extends Controller
                                 '/dpg_pk_imp_block' => '${/dpg_pk_imp_block_'.count($dpg_pk_block_name).'}',
                                 'dampak' => [$change_type . ' ' . $ronaAwal],
                                 'table_with_no_plan' => [$table_with_no_plan],
+                                'table_with_no_plan_data' => [$table_with_no_plan_data],
                                 'impact_result' => [strtolower($impact_result)],
                                 'important_trait' => [
                                     [
@@ -1058,12 +1087,24 @@ class AndalComposingController extends Controller
                                         $important_trait_6,
                                         $important_trait_7
                                     ]
-                                ]
+                                ],
+                                'important_trait_data' => [
+                                    [
+                                        $important_trait_1_data,
+                                        $important_trait_2_data,
+                                        $important_trait_3_data,
+                                        $important_trait_4_data,
+                                        $important_trait_5_data,
+                                        $important_trait_6_data,
+                                        $important_trait_7_data
+                                    ]
+                                ],
                             ];
                         } else {
                             $index = array_search($component, $dpg_pk_block_name);
                             $dpg_pk_block[$index]['dampak'][] = $change_type . ' ' . $ronaAwal;
                             $dpg_pk_block[$index]['table_with_no_plan'][] = $table_with_no_plan;
+                            $dpg_pk_block[$index]['table_with_no_plan_data'][] = $table_with_no_plan_data;
                             $dpg_pk_block[$index]['impact_result'][] = strtolower($impact_result);
                             $dpg_pk_block[$index]['important_trait'][] = [
                                 $important_trait_1,
@@ -1073,6 +1114,15 @@ class AndalComposingController extends Controller
                                 $important_trait_5,
                                 $important_trait_6,
                                 $important_trait_7
+                            ];
+                            $dpg_pk_block[$index]['important_trait_data'][] = [
+                                $important_trait_1_data,
+                                $important_trait_2_data,
+                                $important_trait_3_data,
+                                $important_trait_4_data,
+                                $important_trait_5_data,
+                                $important_trait_6_data,
+                                $important_trait_7_data
                             ];
                         }
                         
@@ -1176,6 +1226,7 @@ class AndalComposingController extends Controller
                                 '/dpg_k_imp_block' => '${/dpg_k_imp_block_'.count($dpg_k_block_name).'}',
                                 'dampak' => [$change_type . ' ' . $ronaAwal],
                                 'table_with_no_plan' => [$table_with_no_plan],
+                                'table_with_no_plan_data' => [$table_with_no_plan_data],
                                 'impact_result' => [strtolower($impact_result)],
                                 'important_trait' => [
                                     [
@@ -1187,12 +1238,24 @@ class AndalComposingController extends Controller
                                         $important_trait_6,
                                         $important_trait_7
                                     ]
+                                ],
+                                'important_trait_data' => [
+                                    [
+                                        $important_trait_1_data,
+                                        $important_trait_2_data,
+                                        $important_trait_3_data,
+                                        $important_trait_4_data,
+                                        $important_trait_5_data,
+                                        $important_trait_6_data,
+                                        $important_trait_7_data
+                                    ]
                                 ]
                             ];
                         } else {
                             $index = array_search($component, $dpg_k_block_name);
                             $dpg_k_block[$index]['dampak'][] = $change_type . ' ' . $ronaAwal;
                             $dpg_k_block[$index]['table_with_no_plan'][] = $table_with_no_plan;
+                            $dpg_k_block[$index]['table_with_no_plan_data'][] = $table_with_no_plan_data;
                             $dpg_k_block[$index]['impact_result'][] = strtolower($impact_result);
                             $dpg_k_block[$index]['important_trait'][] = [
                                 $important_trait_1,
@@ -1202,6 +1265,15 @@ class AndalComposingController extends Controller
                                 $important_trait_5,
                                 $important_trait_6,
                                 $important_trait_7
+                            ];
+                            $dpg_k_block[$index]['important_trait_data'][] = [
+                                $important_trait_1_data,
+                                $important_trait_2_data,
+                                $important_trait_3_data,
+                                $important_trait_4_data,
+                                $important_trait_5_data,
+                                $important_trait_6_data,
+                                $important_trait_7_data
                             ];
                         }
                     }
@@ -1305,6 +1377,7 @@ class AndalComposingController extends Controller
                                 '/dpg_o_imp_block' => '${/dpg_o_imp_block_'.count($dpg_o_block_name).'}',
                                 'dampak' => [$change_type . ' ' . $ronaAwal],
                                 'table_with_no_plan' => [$table_with_no_plan],
+                                'table_with_no_plan_data' => [$table_with_no_plan_data],
                                 'impact_result' => [strtolower($impact_result)],
                                 'important_trait' => [
                                     [
@@ -1316,12 +1389,24 @@ class AndalComposingController extends Controller
                                         $important_trait_6,
                                         $important_trait_7
                                     ]
+                                ],
+                                'important_trait_data' => [
+                                    [
+                                        $important_trait_1_data,
+                                        $important_trait_2_data,
+                                        $important_trait_3_data,
+                                        $important_trait_4_data,
+                                        $important_trait_5_data,
+                                        $important_trait_6_data,
+                                        $important_trait_7_data
+                                    ]
                                 ]
                             ];
                         } else {
                             $index = array_search($component, $dpg_o_block_name);
                             $dpg_o_block[$index]['dampak'][] = $change_type . ' ' . $ronaAwal;
                             $dpg_o_block[$index]['table_with_no_plan'][] = $table_with_no_plan;
+                            $dpg_o_block[$index]['table_with_no_plan_data'][] = $table_with_no_plan_data;
                             $dpg_o_block[$index]['impact_result'][] = strtolower($impact_result);
                             $dpg_o_block[$index]['important_trait'][] = [
                                 $important_trait_1,
@@ -1331,6 +1416,15 @@ class AndalComposingController extends Controller
                                 $important_trait_5,
                                 $important_trait_6,
                                 $important_trait_7
+                            ];
+                            $dpg_o_block[$index]['important_trait_data'][] = [
+                                $important_trait_1_data,
+                                $important_trait_2_data,
+                                $important_trait_3_data,
+                                $important_trait_4_data,
+                                $important_trait_5_data,
+                                $important_trait_6_data,
+                                $important_trait_7_data
                             ];
                         }
                     }
@@ -1433,6 +1527,7 @@ class AndalComposingController extends Controller
                                 '/dpg_po_imp_block' => '${/dpg_po_imp_block_'.count($dpg_po_block_name).'}',
                                 'dampak' => [$change_type . ' ' . $ronaAwal],
                                 'table_with_no_plan' => [$table_with_no_plan],
+                                'table_with_no_plan_data' => [$table_with_no_plan_data],
                                 'impact_result' => [strtolower($impact_result)],
                                 'important_trait' => [
                                     [
@@ -1444,12 +1539,24 @@ class AndalComposingController extends Controller
                                         $important_trait_6,
                                         $important_trait_7
                                     ]
+                                ],
+                                'important_trait_data' => [
+                                    [
+                                        $important_trait_1_data,
+                                        $important_trait_2_data,
+                                        $important_trait_3_data,
+                                        $important_trait_4_data,
+                                        $important_trait_5_data,
+                                        $important_trait_6_data,
+                                        $important_trait_7_data
+                                    ]
                                 ]
                             ];
                         } else {
                             $index = array_search($component, $dpg_po_block_name);
                             $dpg_po_block[$index]['dampak'][] = $change_type . ' ' . $ronaAwal;
                             $dpg_po_block[$index]['table_with_no_plan'][] = $table_with_no_plan;
+                            $dpg_po_block[$index]['table_with_no_plan_data'][] = $table_with_no_plan_data;
                             $dpg_po_block[$index]['impact_result'][] = strtolower($impact_result);
                             $dpg_po_block[$index]['important_trait'][] = [
                                 $important_trait_1,
@@ -1459,6 +1566,15 @@ class AndalComposingController extends Controller
                                 $important_trait_5,
                                 $important_trait_6,
                                 $important_trait_7
+                            ];
+                            $dpg_po_block[$index]['important_trait_data'][] = [
+                                $important_trait_1_data,
+                                $important_trait_2_data,
+                                $important_trait_3_data,
+                                $important_trait_4_data,
+                                $important_trait_5_data,
+                                $important_trait_6_data,
+                                $important_trait_7_data
                             ];
                         }
                     }
@@ -1617,12 +1733,6 @@ class AndalComposingController extends Controller
                 $kk_rona_block[] = [
                     'kk_rona_name' => '3.1.4.' . $kk_no . ' ' . $ronaAwal,
                     'kk_rona_desc' => $komponen_desc
-                ];
-            } else if(strtolower($component_type_sub_project) == 'kegiatan lain sekitar') {
-                $kl_no = count($kl_rona_block) + 1;
-                $kl_rona_block[] = [
-                    'kl_rona_name' => '3.2.' . $kl_no . ' ' . $ronaAwal,
-                    'kl_rona_desc' => $komponen_desc
                 ];
             }
         }
@@ -1830,10 +1940,43 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneBlock('b_rona_block', count($b_rona_block), true, false, $b_rona_block);
         $templateProcessor->cloneBlock('seb_rona_block', count($seb_rona_block), true, false, $seb_rona_block);
         $templateProcessor->cloneBlock('kk_rona_block', count($kk_rona_block), true, false, $kk_rona_block);
-        $templateProcessor->cloneBlock('kl_rona_block', count($kl_rona_block), true, false, $kl_rona_block);
         $templateProcessor->setComplexBlock('positive_feedback_summary',  $posFeedTable);
         $templateProcessor->setComplexBlock('negative_feedback_summary',  $negFeedTable);
         $templateProcessor->setComplexBlock('holistic_evaluation',  $holEvalTable);
+
+        // KEGIATAN LAIN DI SEKITAR
+        $kegiatan_lain_sekitar = ProjectKegiatanLainSekitar::where([['project_id', $project->id],['is_andal', true]])->get();
+        $kls_replace = [];
+        $kls_total = 1;
+        foreach($kegiatan_lain_sekitar as $kls) {
+            $kls_table = new Table();
+            $kls_table->addRow();
+            $kls_cell = $kls_table->addCell();
+            $kls_content = '';
+            if($kls->description) {
+                $kls_content = str_replace('<p>', '<p style="font-family: Calibri; font-size: 15px;">', $kls->description);
+            }
+            Html::addHtml($kls_cell, $kls_content);
+
+            $kls_block[] = [
+                'kls_name' => '3.2.' . $kls_total . ' ' . $kls->kegiatanLainSekitar->name,
+                'kls_desc' => '${kls_desc_' . $kls->id . '}',
+                'kls_unit' => $kls->measurement,
+            ];
+            $kls_replace[] = [
+                'replace' => '${kls_desc_' . $kls->id . '}',
+                'desc' => $kls_table,
+            ];
+            $kls_total++;
+        }
+
+        $templateProcessor->cloneBlock('kls_block', count($kls_block), true, false, $kls_block);
+
+        if(count($kls_replace) > 0) {
+            for($klsi = 0; $klsi < count($kls_replace); $klsi++) {
+                $templateProcessor->setComplexBlock($kls_replace[$klsi]['replace'], $kls_replace[$klsi]['desc']);
+            }
+        }
 
         // PRAKIRAAN DAMPAK PENTING
         $pdp = [];
@@ -1913,6 +2056,17 @@ class AndalComposingController extends Controller
                 }
                 $no = $i + 1;
                 $templateProcessor->cloneBlock('dpg_pk_imp_block_' . $no, count($dampak), true, false, $dampak);
+
+                for($a = 0; $a < count($dpg_pk_block[$i]['dampak']); $a++) {
+                    $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['studies']);
+                    $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
+                    $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
+                    $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
+
+                    for($o = 1; $o < count($dpg_pk_block[$i]['important_trait'][$a]) + 1; $o++) {
+                        $templateProcessor->setComplexBlock($dpg_pk_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_pk_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
+                    }
+                }
             }
         }
 
@@ -1948,6 +2102,17 @@ class AndalComposingController extends Controller
                 }
                 $no = $i + 1;
                 $templateProcessor->cloneBlock('dpg_k_imp_block_' . $no, count($dampak), true, false, $dampak);
+
+                for($a = 0; $a < count($dpg_k_block[$i]['dampak']); $a++) {
+                    $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['studies']);
+                    $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
+                    $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
+                    $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
+
+                    for($o = 1; $o < count($dpg_k_block[$i]['important_trait'][$a]) + 1; $o++) {
+                        $templateProcessor->setComplexBlock($dpg_k_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_k_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
+                    }
+                }
             }
         }
 
@@ -1983,6 +2148,17 @@ class AndalComposingController extends Controller
                 }
                 $no = $i + 1;
                 $templateProcessor->cloneBlock('dpg_o_imp_block_' . $no, count($dampak), true, false, $dampak);
+
+                for($a = 0; $a < count($dpg_o_block[$i]['dampak']); $a++) {
+                    $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['studies']);
+                    $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
+                    $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
+                    $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
+
+                    for($o = 1; $o < count($dpg_o_block[$i]['important_trait'][$a]) + 1; $o++) {
+                        $templateProcessor->setComplexBlock($dpg_o_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_o_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
+                    }
+                }
             }
         }
 
@@ -2018,6 +2194,17 @@ class AndalComposingController extends Controller
                 }
                 $no = $i + 1;
                 $templateProcessor->cloneBlock('dpg_po_imp_block_' . $no, count($dampak), true, false, $dampak);
+
+                for($a = 0; $a < count($dpg_po_block[$i]['dampak']); $a++) {
+                    $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['studies']);
+                    $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
+                    $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
+                    $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
+
+                    for($o = 1; $o < count($dpg_po_block[$i]['important_trait'][$a]) + 1; $o++) {
+                        $templateProcessor->setComplexBlock($dpg_po_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_po_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
+                    }
+                }
             }
         }
 
@@ -2029,7 +2216,7 @@ class AndalComposingController extends Controller
     private function getComponentTypeImp($imp) {
         $component_type = '';
         $com_type = ComponentType::find($imp->projectRonaAwal->rona_awal->id_component_type);
-        $component_type = $com_type->name;
+        $component_type = $com_type ? $com_type->name : '';
 
         return $component_type;
     }
@@ -2154,6 +2341,7 @@ class AndalComposingController extends Controller
         $pasca_operasi = [];
         $metode_studi = [];
         $html_content = [];
+        $metode_replace = [];
         foreach ($stages as $s) {
             $total = 0;
             $results[str_replace(' ', '_', strtolower($s->name))] = [];
@@ -2263,11 +2451,31 @@ class AndalComposingController extends Controller
                     $metode_studi[] = [
                         'metode_studi' => $total_ms + 1,
                         'potential_impact_evaluation' => "$changeType $ronaAwal akibat $component",
-                        'required_information' => $pA->impactStudy->required_information ?? '',
-                        'data_gathering_method' => $pA->impactStudy->data_gathering_method ?? '',
-                        'analysis_method' =>  $pA->impactStudy->analysis_method ?? '',
-                        'forecast_method' => $pA->impactStudy->forecast_method ?? '',
-                        'evaluation_method' => $pA->impactStudy->evaluation_method ?? ''
+                        'required_information' => '${rims_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data_gathering_method' => '${dgmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'analysis_method' =>  '${amms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'forecast_method' => '${fmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'evaluation_method' => '${emms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${rims_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->required_information, 1200),
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${dgmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->data_gathering_method, 1200),
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${amms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->analysis_method, 1200),
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${fmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->forecast_method, 1200),
+                    ];
+                    $metode_replace[] = [
+                        'replace' => '${emms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
+                        'data' => $this->renderHtmlTable($pA->impactStudy->evaluation_method, 1200),
                     ];
                     $total_ms++;
                 }
@@ -2348,6 +2556,13 @@ class AndalComposingController extends Controller
             $templateProcessor->setComplexBlock($html_content[$i]['name'], $html_content[$i]['content']);
         }
 
+        // === METODE STUDI === //
+        if(count($metode_replace) > 0) {
+            for($mri = 0; $mri < count($metode_replace); $mri++) {
+                $templateProcessor->setComplexBlock($metode_replace[$mri]['replace'], $metode_replace[$mri]['data']);
+            }
+        }
+
         if($type == 'andal') {
             $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
         } else {
@@ -2408,6 +2623,19 @@ class AndalComposingController extends Controller
             'name' => '${' . $name . '_' . $stage_id . '_' . $impact_id . '}',
             'content' => $table
         ];
+    }
+
+    private function renderHtmlTable($data, $width)
+    {
+        $table = new Table();
+        $table->addRow();
+        $cell = $table->addCell($width);
+        $content = '';
+        if($data) {
+            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $data);
+        }
+        Html::addHtml($cell, $content);
+        return $table;
     }
 
     private function getComponentRonaAwal($imp, $id_project_stage, $type)

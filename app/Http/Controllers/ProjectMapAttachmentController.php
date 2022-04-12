@@ -66,23 +66,23 @@ class ProjectMapAttachmentController extends Controller
 
                 $map->original_filename = $file->getClientOriginalName();
                 $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
-                if ($map->attachment_type === 'ecology') {
+                if ($map->attachment_type === 'ecology' && $map->file_type === 'SHP') {
                     $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomEcologyGeojson'), 4326)");
                     $map->properties = $request->geomEcologyProperties;
                     $map->id_styles = $request->geomEcologyStyles;
-                } else if ($map->attachment_type === 'social') {
+                } else if ($map->attachment_type === 'social' && $map->file_type === 'SHP') {
                     $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomSocialGeojson'), 4326)");
                     $map->properties = $request->geomSocialProperties;
                     $map->id_styles = $request->geomSocialStyles;
-                } else if ($map->attachment_type === 'study') {
+                } else if ($map->attachment_type === 'study' && $map->file_type === 'SHP') {
                     $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomStudyGeojson'), 4326)");
                     $map->properties = $request->geomStudyProperties;
                     $map->id_styles = $request->geomStudyStyles;
-                } else if ($map->attachment_type === 'pemantauan') {
+                } else if ($map->attachment_type === 'pemantauan' && $map->file_type === 'SHP') {
                     $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomPantauGeojson'), 4326)");
                     $map->properties = $request->geomPantauProperties;
                     $map->id_styles = $request->geomPantauStyles;
-                } else if ($map->attachment_type === 'pengelolaan') {
+                } else if ($map->attachment_type === 'pengelolaan' && $map->file_type === 'SHP') {
                     $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomKelolaGeojson'), 4326)");
                     $map->properties = $request->geomKelolaProperties;
                     $map->id_styles = $request->geomKelolaStyles;
@@ -227,6 +227,7 @@ class ProjectMapAttachmentController extends Controller
             ->when($request->has('id'), function ($query) use ($request) {
                 return $query->where('project_map_attachments.id_project', '=', $request->id);
             })
+            ->where('project_map_attachments.file_type', '=', 'SHP')
             ->whereNotNull('project_map_attachments.geom')
             ->groupBy('project_map_attachments.id')
             ->get();
@@ -259,6 +260,7 @@ class ProjectMapAttachmentController extends Controller
                 )
             ) as feature_layer"))
             ->whereNotNull('geom')
+            ->where('file_type', '=', 'SHP')
             ->groupBy('attachment_type')
             ->get();
 

@@ -26,7 +26,7 @@ class KaReviewController extends Controller
         $id_project = $request->idProject;
 
         $review = KaReview::where([['id_project', $id_project],['document_type', $document_type]])->with('project')->orderBy('id', 'desc')->first();
-        
+
         if($review) {
             $review_penyusun = KaReview::where([['id_project', $id_project],['document_type', $document_type],['status', 'submit-to-pemrakarsa']])
                 ->orderBy('id', 'desc')
@@ -34,7 +34,11 @@ class KaReviewController extends Controller
 
             $review->setAttribute('formulator_notes', $review_penyusun->notes);
         }
-        
+
+        /*$project = Project::where('id', $id_project)->first();
+        $project->workflow_apply('submit-amdal-form-ka');
+        $project->save();*/
+
         return $review;
     }
 
@@ -91,7 +95,7 @@ class KaReviewController extends Controller
             $review->id_project = $request->idProject;
             $review->status = $request->status;
             $review->document_type = $request->documentType;
-            
+
             if($request->status == 'revisi') {
                 $review->notes = $request->notes;
             } else if($request->status == 'submit') {

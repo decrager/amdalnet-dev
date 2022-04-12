@@ -63,15 +63,6 @@
               @current-change="handleCurrentChange"
             />
           </div>
-          <!-- <el-radio
-            v-for="item in filterByKegiatan"
-            :id="item.id"
-            :key="item.id"
-            v-model="radioProject"
-            :label="item.id"
-            style="margin-top: 10px;"
-            @change="getIdProject($event)"
-          >{{ item.project_title }}</el-radio> -->
         </div>
       </div>
     </el-drawer>
@@ -249,6 +240,7 @@ export default {
       total: 0,
       pageSize: 10,
       page: 1,
+      loadStatus: false,
     };
   },
   computed: {
@@ -492,15 +484,11 @@ export default {
 
         const markerSymbol = {
           type: 'simple',
-          field: '*',
           symbol: {
-            type: 'simple-marker',
-            size: 4,
-            color: '#69dcff',
-            outline: {
-              color: 'rgba(0, 139, 174, 0.5)',
-              width: 5,
-            },
+            type: 'picture-marker',
+            url: 'map-marker/marker_webgis.png',
+            width: '24px',
+            height: '24px',
           },
         };
 
@@ -521,9 +509,10 @@ export default {
           source: features,
           renderer: markerSymbol,
           maxScale: 500000,
+          featureReduction: {
+            type: 'cluster',
+          },
           visible: true,
-          popupTemplate: popupTemplate(propFields),
-          objectIdField: 'ObjectID',
           fields: [
             {
               name: 'ObjectID',
@@ -531,7 +520,9 @@ export default {
               type: 'oid',
             },
           ],
+          objectIdField: 'ObjectID',
           legendEnabled: false,
+          popupTemplate: popupTemplate(propFields),
         });
 
         map.add(tapakPoint);
@@ -731,7 +722,7 @@ export default {
       map.add(rupabumis);
 
       const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/A_Sumber_Daya_Hutan/Penutupan_Lahan_2020/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
         imageTransparency: true,
         visible: false,
       });
@@ -749,7 +740,7 @@ export default {
       map.add(penutupanLahan2020);
 
       const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/B_Kawasan_Hutan/KawasanHutan/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
@@ -768,7 +759,7 @@ export default {
       map.add(kawasanHutanB);
 
       const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/K_Rencana_Kehutanan/PIPPIB_2021_Periode_2/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
@@ -810,17 +801,9 @@ export default {
 
       this.tempLayer = layerIn;
 
-      mapView.watch('updating', function(e) {
-        if (e === true) {
-          this.loadingMap === true;
-        }
-      });
-
       const legend = new Legend({
         view: mapView,
       });
-
-      console.log(legend);
 
       mapView.ui.add(legend, 'bottom-left');
 

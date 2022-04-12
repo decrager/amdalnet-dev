@@ -18,5 +18,11 @@ class ProjectKegiatanLainSekitar extends Model
         'address',
         'province_id',
         'district_id',
+        'is_andal',
     ];
+
+    public function kegiatanLainSekitar()
+    {
+        return $this->belongsTo(KegiatanLainSekitar::class, 'kegiatan_lain_sekitar_id', 'id');
+    }
 }

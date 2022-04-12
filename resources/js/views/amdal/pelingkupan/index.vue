@@ -6,6 +6,7 @@
       :activities="activities"
       :component-types="component_types"
       :project-stages="project_stages"
+      :mode="mode"
       @componentDeleted="onComponentDeleted"
       @hueDeleted="onComponentDeleted"
       @refreshData="refreshData"
@@ -139,6 +140,7 @@ export default {
       this.components = [];
       await projectComponentResource.list({
         id_project: idProject,
+        mode: this.mode,
       }).then((res) => {
         this.components = res;
       }).catch((err) => {
@@ -159,6 +161,7 @@ export default {
       this.hues = [];
       await projectHueResource.list({
         id_project: idProject,
+        mode: this.mode,
       }).then((res) => {
         this.hues = res;
         console.log('hues:', this.hues);
@@ -177,6 +180,7 @@ export default {
       this.loadingMasterActivities = true;
       await projectActivityResource.list({
         id_project: parseInt(this.$route.params && this.$route.params.id),
+        mode: this.mode,
       })
         .then((res) => {
           this.activities = res;
