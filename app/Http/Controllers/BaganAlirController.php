@@ -167,7 +167,8 @@ class BaganAlirController extends Controller
         }
     }
 
-    private function getNotifications($id, $stages) {
+    // to do
+    private function getImpactNotifications($id, $stages) {
         return [];
     }
 }
