@@ -77,7 +77,6 @@ export default {
       this.$nextTick(() => this.initTinymce());
     },
     hasChange: function(val){
-      console.log('yup, there are changes!', val);
       if (val){
         this.$emit('hasChanges', val);
       }
