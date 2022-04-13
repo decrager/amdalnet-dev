@@ -68,16 +68,18 @@
                 :readonly="!isFormulator"
                 @input="hasChanges"
               /> -->
-              <editor
-                v-if="isFormulator"
-                v-model="data.initial_study_plan"
-                output-format="html"
-                :menubar="''"
-                :image="false"
-                :height="150"
-                :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
-                @hasChanges="hasChanges"
-              />
+              <div v-if="isFormulator">
+                <editor
+                  id="eval_dph_editor"
+                  :key="data.id"
+                  v-model="data.initial_study_plan"
+                  output-format="html"
+                  :menubar="''"
+                  :image="false"
+                  :height="150"
+                  :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+                  @hasChanges="hasChanges"
+                /></div>
               <div v-else class="div-readonly" v-html="data.initial_study_plan || '&nbsp;<br/>&nbsp;'" />
             </el-form-item>
             <el-form-item v-if="!(data.is_hypothetical_significant === false)" label="Wilayah Studi">
@@ -240,7 +242,11 @@ export default {
         }
       }
 
-      // console.log('watch', val);
+      const ed = window.tinymce.get('eval_dph_editor');
+      if (ed) {
+        ed.setContent((val.initial_study_plan === null) ? '' : val.initial_study_plan);
+        console.log('watch', ed.getContent());
+      }
       this.dataChanged = false;
       this.getPies();
       this.getActivities();
@@ -311,7 +317,7 @@ export default {
 
             this.pies = pies;
             this.data.pie = pies;
-            console.log('getPies', this.pies[0].text);
+            // console.log('getPies', this.pies[0].text);
           } else {
             const pies = [];
             this.pieParams.forEach((e) => {
@@ -324,7 +330,7 @@ export default {
             });
             this.pies = pies;
             this.data.pie = pies;
-            console.log('empty pies', this.pies);
+            // console.log('empty pies', this.pies);
           }
 
           this.$emit('pieData', this.pies);
@@ -434,6 +440,9 @@ export default {
       }).finally(() => {
         this.isSaving = false;
       });
+    },
+    studySetContent(){
+      return '';
     },
     onAddComment(val){
       this.data.comment++;
