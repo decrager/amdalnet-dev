@@ -1103,6 +1103,16 @@ export default {
       }
       console.log(2, kewenanganTemp);
 
+      const tempFile = this.currentProject.address[0].prov;
+      const tempKabFile = this.currentProject.address[0].district;
+      if (kewenanganTemp === 'Provinsi'){
+        const authProv = await provinceResource.list({ provName: tempFile });
+        this.currentProject.auth_province = authProv.id;
+      } else if (kewenanganTemp === 'Kabupaten'){
+        const authDistrict = await districtResource.list({ districtName: tempKabFile });
+        this.currentProject.auth_district = authDistrict.id;
+      }
+
       // if kewenangan KEK
       if (this.jenisKawasanOSS === '02'){
         kewenanganTemp = 'Pusat';
