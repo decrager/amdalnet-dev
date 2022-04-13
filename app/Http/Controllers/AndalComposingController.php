@@ -2106,6 +2106,8 @@ class AndalComposingController extends Controller
                 $no = $i + 1;
                 $templateProcessor->cloneBlock('dpg_pk_imp_block_' . $no, count($dampak), true, false, $dampak);
 
+                dd($dpg_pk_block);
+
                 for($a = 0; $a < count($dpg_pk_block[$i]['dampak']); $a++) {
                     $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['studies']);
                     $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
