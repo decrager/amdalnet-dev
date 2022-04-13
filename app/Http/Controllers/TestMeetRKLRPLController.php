@@ -721,7 +721,6 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
-        $templateProcessor->setValue('project_description', $project->description);
         $templateProcessor->setValue('project_location', $project_address);
         $templateProcessor->setValue('meeting_time', $meeting_time . ' ' . $meeting_date);
         $templateProcessor->setValue('docs_date', $docs_date);
@@ -730,6 +729,18 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->setValue('tim_penyusun', $tim_penyusun);
         $templateProcessor->cloneBlock('anggota_penyusun', count($anggota_penyusun), true, false, $anggota_penyusun);
         $templateProcessor->cloneBlock('meeting_invitations', count($meeting_invitations), true, false, $meeting_invitations);
+
+        // PROJECT DESCRIPTION
+        $proDescTable = new Table();
+        $proDescTable->addRow();
+        $proDescCell = $proDescTable->addCell(6000);
+        $final_pro_desc = $project->description;
+        if($final_pro_desc) {
+            $final_pro_desc = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $this->replaceHtmlList($final_pro_desc));
+        }
+        Html::addHtml($proDescCell, $final_pro_desc);
+
+        $templateProcessor->setComplexBlock('project_description', $proDescTable);
 
         if($verification->forms) {
             if($verification->forms->first()) {
