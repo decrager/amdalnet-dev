@@ -1807,7 +1807,7 @@ class AndalComposingController extends Controller
 
         // ========= DESKRIPSI RENCANA USAHA DAN/ATAU KEGIATAN ======== //
         $deskripsi_rencana = [];
-        $deskripsi_rencana_replace = [];
+        // $deskripsi_rencana_replace = [];
         $desk_ren_no = 'A';
         $sub_projects = SubProject::where([['id_project', $id_project],['type', 'utama']])->get();
         foreach($sub_projects as $sp) {
@@ -1834,12 +1834,12 @@ class AndalComposingController extends Controller
                     'deskripsi_rencana_ru' => $ren_ru,
                     'deskripsi_rencana_pendukung' => $desk_ren_pen,
                     'deskripsi_rencana_besaran' => $spc->unit,
-                    'deskripsi_rencana_lokasi' => '${drk_' . $sp->id . '_' . $spc->id . '}'
+                    'deskripsi_rencana_lokasi' => ''
                 ];
-                $deskripsi_rencana_replace[] = [
-                    'data' => $this->renderHtmlTable($spc->description_common, 1200),
-                    'replace' => '${drk_' . $sp->id . '_' . $spc->id . '}'
-                ];
+                // $deskripsi_rencana_replace[] = [
+                //     'data' => $this->renderHtmlTable($spc->description_common, 1200),
+                //     'replace' => '${drk_' . $sp->id . '_' . $spc->id . '}'
+                // ];
                 $last_ren_no = $desk_ren_no;
             }
             $desk_ren_no++;
@@ -2020,11 +2020,11 @@ class AndalComposingController extends Controller
         }
 
         // DESKRIPSI RENCANA USAHA DAN/ATAU KEGIATAN
-        if(count($deskripsi_rencana_replace) > 0) {
-            for($dski = 0; $dski < count($deskripsi_rencana_replace); $dski++) {
-                $templateProcessor->setComplexBlock($deskripsi_rencana_replace[$dski]['replace'],  $deskripsi_rencana_replace [$dski]['data']);
-            }
-        }
+        // if(count($deskripsi_rencana_replace) > 0) {
+        //     for($dski = 0; $dski < count($deskripsi_rencana_replace); $dski++) {
+        //         $templateProcessor->setComplexBlock($deskripsi_rencana_replace[$dski]['replace'],  $deskripsi_rencana_replace [$dski]['data']);
+        //     }
+        // }
 
         // KEGIATAN LAIN DI SEKITAR
         $kegiatan_lain_sekitar = ProjectKegiatanLainSekitar::where([['project_id', $project->id],['is_andal', true]])->get();
