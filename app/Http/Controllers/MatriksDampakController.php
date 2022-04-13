@@ -31,7 +31,11 @@ class MatriksDampakController extends Controller
         return $this->getTableData($request, $id, true);
     }
 
-    public function getRonaMapping($id)
+    public function requestRonaMapping(Request $request, $id){
+        return $this->getRonaMapping($id, $request->isAndal === 'true');
+    }
+
+    public function getRonaMapping($id, $isAndal = false)
     {
         try {
             $all_component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();

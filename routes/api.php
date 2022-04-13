@@ -299,7 +299,7 @@ Route::get('lpjp-teams', [LpjpController::class, 'getFormulator']);
 Route::get('form-teams', [FormulatorTeamController::class, 'getAll']);
 Route::get('matriks-dampak/table/{id}', [MatriksDampakController::class, 'getTable']);
 Route::get('matriks-dampak/table-dph/{id}', [MatriksDampakController::class, 'getTableDph']);
-Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 'getRonaMapping']);
+Route::get('matriks-dampak/rona-mapping/{id}', [MatriksDampakController::class, 'requestRonaMapping']);
 Route::get('formulators-all', [FormulatorController::class, 'getFormulatorName']);
 Route::get('project-maps', [WebgisController::class, 'index']);
 Route::get('eval-dampak', [BaganAlirController::class, 'evalDampak']);
