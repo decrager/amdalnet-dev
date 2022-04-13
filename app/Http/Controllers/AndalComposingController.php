@@ -1786,6 +1786,7 @@ class AndalComposingController extends Controller
 
         // ========= DESKRIPSI RENCANA USAHA DAN/ATAU KEGIATAN ======== //
         $deskripsi_rencana = [];
+        $deskripsi_rencana_replace = [];
         $desk_ren_no = 'A';
         $sub_projects = SubProject::where([['id_project', $id_project],['type', 'utama']])->get();
         foreach($sub_projects as $sp) {
@@ -1812,7 +1813,11 @@ class AndalComposingController extends Controller
                     'deskripsi_rencana_ru' => $ren_ru,
                     'deskripsi_rencana_pendukung' => $desk_ren_pen,
                     'deskripsi_rencana_besaran' => $spc->unit,
-                    'deskripsi_rencana_lokasi' => $spc->description_common
+                    'deskripsi_rencana_lokasi' => '${drk_' . $sp->id . '_' . $spc->id . '}'
+                ];
+                $deskripsi_rencana_replace[] = [
+                    'data' => $this->renderHtmlTable($spc->description_common, 1200),
+                    'replace' => '${drk_' . $sp->id . '_' . $spc->id . '}'
                 ];
                 $last_ren_no = $desk_ren_no;
             }
@@ -1990,6 +1995,13 @@ class AndalComposingController extends Controller
         if(count($spra_desc_replace) > 0) {
             for($spri = 0; $spri < count($spra_desc_replace); $spri++) {
                 $templateProcessor->setComplexBlock($spra_desc_replace[$spri]['replace'],  $spra_desc_replace[$spri]['data']);
+            }
+        }
+
+        // DESKRIPSI RENCANA USAHA DAN/ATAU KEGIATAN
+        if(count($deskripsi_rencana_replace) > 0) {
+            for($dski = 0; $dski < count($deskripsi_rencana_replace); $dski++) {
+                $templateProcessor->setComplexBlock($deskripsi_rencana_replace[$dski]['replace'],  $deskripsi_rencana_replace [$dski]['data']);
             }
         }
 
