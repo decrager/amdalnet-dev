@@ -654,7 +654,7 @@ class AndalComposingController extends Controller
         $save_file_name = $id_project . '-andal' . '.docx';
 
         if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-            return response()->json(['message' => 'success']);
+            // return response()->json(['message' => 'success']);
         }
 
         Carbon::setLocale('id');
@@ -856,6 +856,7 @@ class AndalComposingController extends Controller
         $com_o_name = [];
         $com_po = [];
         $com_po_name = [];
+        $com_replace = [];
         $pk_bwk = [];
         $k_bwk = [];
         $o_bwk = [];
@@ -1648,7 +1649,7 @@ class AndalComposingController extends Controller
 
             if($sub_project_component_stages) {
                 if($sub_project_component_stages->description_common) {
-                    $com_desc = $sub_project_component_stages->description_common . '</w:t><w:p/><w:t>' . $sub_project_component_stages->description_specific;
+                    $com_desc = $sub_project_component_stages->description_common . '<br/>' . $sub_project_component_stages->description_specific;
                 } else {
                     $com_desc = $sub_project_component_stages->description_specific;
                 }
@@ -1662,7 +1663,11 @@ class AndalComposingController extends Controller
                          $com_pk_name[] = $component_stages;
                          $com_pk[] = [
                              'com_pk_name' => '2.1.' . count($com_pk_name) . ' ' . $component_stages,
-                             'com_pk_desc' => $com_desc
+                             'com_pk_desc' => '${com_pk_desc_' . $s->id . '}',
+                         ];
+                         $com_replace[] = [
+                             'data' => $this->renderHtmlTable($com_desc),
+                             'replace' => '${com_pk_desc_' . $s->id . '}',
                          ];
                      }
                  } else if($s->name == 'Konstruski') {
@@ -1670,15 +1675,23 @@ class AndalComposingController extends Controller
                          $com_k_name[] = $component_stages;
                          $com_k[] = [
                              'com_k_name' => '2.2.' . count($com_k_name) . ' ' . $component_stages,
-                             'com_k_desc' => $com_desc
+                             'com_k_desc' => '${com_k_desc_' . $s->id . '}',
                          ];
+                        $com_replace[] = [
+                            'data' => $this->renderHtmlTable($com_desc),
+                            'replace' => '${com_k_desc_' . $s->id . '}',
+                        ];
                      }
                  } else if($s->name == 'Operasi') {
                     if (!in_array($component_stages, $com_o_name)) {
                         $com_o_name[] = $component_stages;
                         $com_o[] = [
                             'com_o_name' => '2.3.' . count($com_o_name) . ' ' . $component_stages,
-                            'com_o_desc' => $com_desc
+                            'com_o_desc' => '${com_o_desc_' . $s->id . '}',
+                        ];
+                        $com_replace[] = [
+                            'data' => $this->renderHtmlTable($com_desc),
+                            'replace' => '${com_o_desc_' . $s->id . '}',
                         ];
                     }
                  } else if($s->name == 'Pasca Operasi') {
@@ -1686,7 +1699,11 @@ class AndalComposingController extends Controller
                         $com_po_name[] = $component_stages;
                         $com_po[] = [
                             'com_po_name' => '2.4.' . count($com_po_name) . ' ' . $component_stages,
-                            'com_po_desc' => $com_desc
+                            'com_po_desc' => '${com_po_desc_' . $s->id . '}',
+                        ];
+                        $com_replace[] = [
+                            'data' => $this->renderHtmlTable($com_desc),
+                            'replace' => '${com_po_desc_' . $s->id . '}',
                         ];
                     }
                  }
@@ -1700,12 +1717,14 @@ class AndalComposingController extends Controller
             });
         })->get();
 
+        $spra_desc_replace = [];
+
         foreach($sub_project_rona_awal as $spra) {
             $component_type_sub_project = $this->getComponentType($spra);
 
             $komponen_desc = '';
             if($spra->description_common) {
-                $komponen_desc = $spra->description_common . '</w:t><w:p/><w:t>' . $spra->description_specific;
+                $komponen_desc = $spra->description_common . '<br/>' . $spra->description_specific;
             } else {
                 $komponen_desc = $spra->description_specific;
             }
@@ -1714,25 +1733,41 @@ class AndalComposingController extends Controller
                 $gfk_no = count($gfk_rona_block) + 1;
                 $gfk_rona_block[] = [
                     'gfk_rona_name' => '3.1.1.' . $gfk_no . ' ' . $ronaAwal,
-                    'gfk_rona_desc' => $komponen_desc,
+                    'gfk_rona_desc' => '${gfk_rona_des_' . $spra->id . '}',
+                ];
+                $spra_desc_replace[] = [
+                    'data' => $this->renderHtmlTable($komponen_desc),
+                    'replace' => '${gfk_rona_des_' . $spra->id . '}',
                 ];
             } else if(strtolower($component_type_sub_project) == 'biologi') {
                 $b_no = count($b_rona_block) + 1;
                 $b_rona_block[] = [
                     'b_rona_name' => '3.1.2.' . $b_no . ' ' . $ronaAwal,
-                    'b_rona_desc' => $komponen_desc,
+                    'b_rona_desc' => '${b_rona_des_' . $spra->id . '}',
+                ];
+                $spra_desc_replace[] = [
+                    'data' => $this->renderHtmlTable($komponen_desc),
+                    'replace' => '${b_rona_des_' . $spra->id . '}',
                 ];
             } else if(strtolower($component_type_sub_project) == 'sosial, ekonomi, dan budaya') {
                 $seb_no = count($seb_rona_block) + 1;
                 $seb_rona_block[] = [
                     'seb_rona_name' => '3.1.3.' . $seb_no . ' ' . $ronaAwal,
-                    'seb_rona_desc' => $komponen_desc
+                    'seb_rona_desc' => '${seb_rona_des_' . $spra->id . '}',
+                ];
+                $spra_desc_replace[] = [
+                    'data' => $this->renderHtmlTable($komponen_desc),
+                    'replace' => '${seb_rona_des_' . $spra->id . '}',
                 ];
             } else if(strtolower($component_type_sub_project) == 'kesehatan masyarakat') {
                 $kk_no = count($kk_rona_block) + 1;
                 $kk_rona_block[] = [
                     'kk_rona_name' => '3.1.4.' . $kk_no . ' ' . $ronaAwal,
-                    'kk_rona_desc' => $komponen_desc
+                    'kk_rona_desc' => '${kk_rona_des_' . $spra->id . '}',
+                ];
+                $spra_desc_replace[] = [
+                    'data' => $this->renderHtmlTable($komponen_desc),
+                    'replace' => '${kk_rona_des_' . $spra->id . '}',
                 ];
             }
         }
@@ -1943,6 +1978,20 @@ class AndalComposingController extends Controller
         $templateProcessor->setComplexBlock('positive_feedback_summary',  $posFeedTable);
         $templateProcessor->setComplexBlock('negative_feedback_summary',  $negFeedTable);
         $templateProcessor->setComplexBlock('holistic_evaluation',  $holEvalTable);
+
+        // DESKRIPSI KEGIATAN
+        if(count($com_replace) > 0) {
+            for($cri = 0; $cri < count($com_replace); $cri++) {
+                $templateProcessor->setComplexBlock($com_replace[$cri]['replace'],  $com_replace[$cri]['data']);
+            }
+        }
+
+        // KOMPONEN LINGKUNGAN HIDUP
+        if(count($spra_desc_replace) > 0) {
+            for($spri = 0; $spri < count($spra_desc_replace); $spri++) {
+                $templateProcessor->setComplexBlock($spra_desc_replace[$spri]['replace'],  $spra_desc_replace[$spri]['data']);
+            }
+        }
 
         // KEGIATAN LAIN DI SEKITAR
         $kegiatan_lain_sekitar = ProjectKegiatanLainSekitar::where([['project_id', $project->id],['is_andal', true]])->get();
@@ -2625,11 +2674,16 @@ class AndalComposingController extends Controller
         ];
     }
 
-    private function renderHtmlTable($data, $width)
+    private function renderHtmlTable($data, $width = null)
     {
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell($width);
+        $cell = null;
+        if($width) {
+            $cell = $table->addCell($width);
+        } else {
+            $cell = $table->addCell();
+        }
         $content = '';
         if($data) {
             $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data));
