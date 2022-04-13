@@ -56,8 +56,9 @@ class KaCommentController extends Controller
                     'impact' => "$change_type $rona_awal akibat $component"
                 ];
 
-                return $comment_list;
             }
+            
+            return $comment_list;
         }
 
         $komen = null;
