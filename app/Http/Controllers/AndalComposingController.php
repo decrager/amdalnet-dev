@@ -882,6 +882,7 @@ class AndalComposingController extends Controller
         $ru_po = [];
         $ru_po_name = [];
         $kls_block = [];
+        $ed_replace = [];
 
         foreach ($stages as $s) {
             $total = 1;
@@ -929,15 +930,35 @@ class AndalComposingController extends Controller
                 if ($imp->potentialImpactEvaluation) {
                     foreach ($imp->potentialImpactEvaluation as $pI) {
                         if ($pI->id_pie_param == 1) {
-                            $ed_besaran_rencana = $pI->text;
+                            $ed_besaran_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
+                            $ed_replace[] = [
+                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
+                            ];
                         } else if ($pI->id_pie_param == 2) {
-                            $ed_kondisi_rona = $pI->text;
+                            $ed_kondisi_rona = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
+                            $ed_replace[] = [
+                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
+                            ];
                         } else if ($pI->id_pie_param == 3) {
-                            $ed_pengaruh_rencana = $pI->text;
+                            $ed_pengaruh_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
+                            $ed_replace[] = [
+                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
+                            ];
                         } else if ($pI->id_pie_param == 4) {
-                            $ed_intensitas_perhatian = $pI->text;
+                            $ed_intensitas_perhatian = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
+                            $ed_replace[] = [
+                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
+                            ];
                         } else if ($pI->id_pie_param == 5) {
-                            $ed_kesimpulan = $pI->text;
+                            $ed_kesimpulan = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
+                            $ed_replace[] = [
+                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
+                            ];
                         }
                     }
                 }
@@ -2277,6 +2298,13 @@ class AndalComposingController extends Controller
             }
         }
 
+        // EVALUASI DAMPAK
+        if(count($ed_replace) > 0) {
+            for($edi = 0; $edi < count($ed_replace); $edi++) {
+                $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
+            }
+        }
+
         $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
 
         return response()->json(['message' => 'success']);
@@ -2694,7 +2722,7 @@ class AndalComposingController extends Controller
         ];
     }
 
-    private function renderHtmlTable($data, $width = null)
+    private function renderHtmlTable($data, $width = null, $font = null, $font_size = null)
     {
         $table = new Table();
         $table->addRow();
@@ -2704,9 +2732,11 @@ class AndalComposingController extends Controller
         } else {
             $cell = $table->addCell();
         }
+        $selected_font = $font ? $font : 'Bookman Old Style';
+        $selected_font_size = $font_size ? $font_size : '9.5';
         $content = '';
         if($data) {
-            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data));
+            $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
         }
         Html::addHtml($cell, $content);
         return $table;
