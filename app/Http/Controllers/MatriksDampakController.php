@@ -39,7 +39,7 @@ class MatriksDampakController extends Controller
     {
         try {
             $all_component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();
-            $rona_awals = $this->getRonaAwals($id);
+            $rona_awals = $this->getRonaAwals($id, $isAndal);
             $data = [];
             foreach ($all_component_types as $ctype){
                 $key = $ctype->name;
@@ -74,7 +74,7 @@ class MatriksDampakController extends Controller
 
     private function getComponentRonas(Request $request, $id)
     {
-        $impact_table = ($request->isAndal === true) ? 'impact_identification_clones' : 'impact_identifications';
+        $impact_table = ($request->isAndal === 'true') ? 'impact_identification_clones' : 'impact_identifications';
         return ProjectRonaAwal::from('project_rona_awals as pra')
             ->select('pra.id', 'c.name as component_name', 'ra.name as rona_awal_name',
             'c.name AS component_name_master', 'ra.name AS rona_awal_name_master',
@@ -108,9 +108,10 @@ class MatriksDampakController extends Controller
     private function getTableData(Request $request, $id, $is_dph = false)
     {
         $data = [];
-        $rona_mapping = $this->getRonaMapping($id);
+        $isAndal = (isset($request->isAndal) && ($request->isAndal === 'true'));
+        $rona_mapping = $this->getRonaMapping($id, $isAndal);
 
-        $components_by_stage = $this->getComponentsGroupByStage($id);
+        $components_by_stage = $this->getComponentsGroupByStage($id, $isAndal);
         $component_ronas = $this->getComponentRonas($request, $id);
 
         foreach ($components_by_stage as $cstage) {
@@ -181,7 +182,7 @@ class MatriksDampakController extends Controller
         return $data;
     }
 
-    private function getRonaAwals($id) {
+    private function getRonaAwals($id, $isAndal = false) {
       /*  return ProjectRonaAwal::from('project_rona_awals AS spra')
             ->selectRaw('spra.id, lower(ra.name) as name,spra.id_component_type,
                 lower(ra.name) AS name_master, ra.id_component_type AS id_component_type_master')
@@ -202,6 +203,7 @@ class MatriksDampakController extends Controller
             ->leftJoin('sub_project_components AS spc', 'spra.id_sub_project_component', '=', 'spc.id')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+            ->where('spra.is_andal', $isAndal)
             ->where('sp.id_project', $id)
             ->whereNotNull('spc.id')
             ->whereNotNull('spra.id')
@@ -210,13 +212,13 @@ class MatriksDampakController extends Controller
 
     }
 
-    private function getComponentsGroupByStage($id) {
+    private function getComponentsGroupByStage($id, $isAndal= false) {
         $ids = [4,1,2,3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function($model) use($ids) {
             return array_search($model->getKey(),$ids);
         });
         $components = [];
-        $components_flat = $this->getComponents($id);
+        $components_flat = $this->getComponents($id, $isAndal);
         foreach($stages as $stage) {
             $list = [];
             foreach($components_flat as $c) {
@@ -237,11 +239,12 @@ class MatriksDampakController extends Controller
         return $components;
     }
 
-    private function getComponents($id) {
+    private function getComponents($id, $isAndal = false) {
         return SubProjectComponent::from('sub_project_components AS spc')
             ->selectRaw('lower(spc.name) as name, lower(c.name) as name_master, c.id as id_component, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
+            ->where('spc.is_andal', $isAndal)
             ->where('sp.id_project', $id)
             ->whereNotNull('spc.id')
             ->distinct()

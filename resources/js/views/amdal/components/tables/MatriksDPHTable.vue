@@ -82,7 +82,7 @@ export default {
       this.isLoading = true;
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       const isAndal = this.$route.name === 'penyusunanAndal' ? 'true' : 'false';
-      await axios.get('api/matriks-dampak/rona-mapping/' + this.idProject)
+      await axios.get('api/matriks-dampak/rona-mapping/' + this.idProject + '?isAndal=' + isAndal)
         .then(response => {
           this.ronaMapping = response.data;
         });
