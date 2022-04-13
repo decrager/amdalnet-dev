@@ -32,9 +32,10 @@
             <template slot-scope="scope">
               <a
                 v-if="scope.row.type === 'download'"
-                :href="scope.row.link"
+                href="#"
                 target="_blank"
                 class="click"
+                @click.prevent="downloadFile(scope.row.link)"
               >
                 {{ formLabel[scope.row.name] }}
               </a>
@@ -500,11 +501,37 @@ export default {
       return true;
     },
     download(url, urlPdf) {
-      if (urlPdf) {
-        window.open(urlPdf);
+      if (url || urlPdf) {
+        if (url) {
+          if (url === '/storage/') {
+            this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
+              confirmButtonText: 'OK',
+            });
+          } else {
+            window.open(url);
+          }
+        } else {
+          if (urlPdf === '/storage/') {
+            this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
+              confirmButtonText: 'OK',
+            });
+          } else {
+            window.open(urlPdf);
+          }
+        }
+      } else {
+        this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
+          confirmButtonText: 'OK',
+        });
       }
-      if (url) {
-        window.open(url);
+    },
+    downloadFile(data) {
+      if (data === null || data === '/storage/') {
+        this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
+          confirmButtonText: 'OK',
+        });
+      } else {
+        window.open(data);
       }
     },
   },
