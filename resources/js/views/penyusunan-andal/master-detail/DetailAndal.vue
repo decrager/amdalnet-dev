@@ -17,12 +17,15 @@
           @click="handlePaginate('right', 'pra konstruksi')"
         />
       </div>
-      <FormDetail
-        ref="formdetail"
-        :andal="list[indexPraKonstruksi[currentPagePraKonstruksi - 1]]"
-        :loadingsubmit="loadingsubmit"
-        @handleSubmit="handleSubmit"
-      />
+      <div v-loading="loadingDestroy">
+        <FormDetail
+          v-if="showDetail"
+          ref="formdetail"
+          :andal="list[indexPraKonstruksi[currentPagePraKonstruksi - 1]]"
+          :loadingsubmit="loadingsubmit"
+          @handleSubmit="handleSubmit"
+        />
+      </div>
     </div>
     <div v-if="activeName === 'konstruksi'" v-loading="loading">
       <div class="pagination-andal">
@@ -41,12 +44,15 @@
           @click="handlePaginate('right', 'konstruksi')"
         />
       </div>
-      <FormDetail
-        ref="formdetail"
-        :andal="list[indexKonstruksi[currentPageKonstruksi - 1]]"
-        :loadingsubmit="loadingsubmit"
-        @handleSubmit="handleSubmit"
-      />
+      <div v-loading="loadingDestroy">
+        <FormDetail
+          v-if="showDetail"
+          ref="formdetail"
+          :andal="list[indexKonstruksi[currentPageKonstruksi - 1]]"
+          :loadingsubmit="loadingsubmit"
+          @handleSubmit="handleSubmit"
+        />
+      </div>
     </div>
     <div v-if="activeName === 'operasi'" v-loading="loading">
       <div class="pagination-andal">
@@ -65,12 +71,15 @@
           @click="handlePaginate('right', 'operasi')"
         />
       </div>
-      <FormDetail
-        ref="formdetail"
-        :andal="list[indexOperasi[currentPageOperasi - 1]]"
-        :loadingsubmit="loadingsubmit"
-        @handleSubmit="handleSubmit"
-      />
+      <div v-loading="loadingDestroy">
+        <FormDetail
+          v-if="showDetail"
+          ref="formdetail"
+          :andal="list[indexOperasi[currentPageOperasi - 1]]"
+          :loadingsubmit="loadingsubmit"
+          @handleSubmit="handleSubmit"
+        />
+      </div>
     </div>
     <div v-if="activeName === 'pasca-operasi'" v-loading="loading">
       <div class="pagination-andal">
@@ -89,12 +98,15 @@
           @click="handlePaginate('right', 'pasca operasi')"
         />
       </div>
-      <FormDetail
-        ref="formdetail"
-        :andal="list[indexPascaOperasi[currentPagePascaOperasi - 1]]"
-        :loadingsubmit="loadingsubmit"
-        @handleSubmit="handleSubmit"
-      />
+      <div v-loading="loadingDestroy">
+        <FormDetail
+          v-if="showDetail"
+          ref="formdetail"
+          :andal="list[indexPascaOperasi[currentPagePascaOperasi - 1]]"
+          :loadingsubmit="loadingsubmit"
+          @handleSubmit="handleSubmit"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -127,6 +139,9 @@ export default {
       currentPageOperasi: 1,
       currentPagePascaOperasi: 1,
       totalPage: 10,
+      showDetail: true,
+      timeoutId: null,
+      loadingDestroy: false,
     };
   },
   computed: {
@@ -260,6 +275,20 @@ export default {
         }
       }
       this.$emit('backuplist');
+      this.destroyForAWhile();
+    },
+    destroyForAWhile() {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+
+      this.showDetail = false;
+      this.loadingDestroy = true;
+
+      this.timeoutId = setTimeout((e) => {
+        this.showDetail = true;
+        this.loadingDestroy = false;
+      }, 1000);
     },
     setActiveAndal(stage, id) {
       const activeName = stage.toLowerCase().replace(' ', '-');
