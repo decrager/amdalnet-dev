@@ -611,6 +611,8 @@ class AndalComposingController extends Controller
                             'important_trait' => $det->important_trait
                         ];
                     }
+                } else {
+                    continue;
                 }
 
                 $results[] = [
