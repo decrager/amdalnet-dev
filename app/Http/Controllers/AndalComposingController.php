@@ -602,13 +602,15 @@ class AndalComposingController extends Controller
 
                 $important_trait = [];
 
-                foreach ($imp->envImpactAnalysis->detail as $det) {
-                    $important_trait[] = [
-                        'id' => $det->id_important_trait,
-                        'description' => $det->importantTrait->description,
-                        'desc' => $det->description,
-                        'important_trait' => $det->important_trait
-                    ];
+                if($imp->envImpactAnalysis) {
+                    foreach ($imp->envImpactAnalysis->detail as $det) {
+                        $important_trait[] = [
+                            'id' => $det->id_important_trait,
+                            'description' => $det->importantTrait->description,
+                            'desc' => $det->description,
+                            'important_trait' => $det->important_trait
+                        ];
+                    }
                 }
 
                 $results[] = [
