@@ -489,7 +489,7 @@ class AndalComposingController extends Controller
         $count_2 = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($id_project) {
             $q->where('id_project', $id_project);
         })
-        ->where('condition_dev_no_plan', '!=', null)
+        // ->where('condition_dev_no_plan', '!=', null)
         ->count();
 
         return $count_1 === $count_2;
@@ -656,44 +656,47 @@ class AndalComposingController extends Controller
                             'important_trait' => $det->important_trait
                         ];
                     }
+                } else {
+                    continue;
                 }
 
+                $results[] = [
+                    'id' => $imp->id,
+                    'stage' => ucwords(strtolower($s->name)),
+                    'name' => "$changeType $ronaAwal akibat $component",
+                    'type' => 'subtitle',
+                    'component' => $component,
+                    'ronaAwal' => $ronaAwal,
+                    'important_trait' => $important_trait,
+                    'impact_type' => $imp->envImpactAnalysis->impact_type,
+                    'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
+                    'studies_condition' => $imp->envImpactAnalysis->studies_condition,
+                    'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
+                    'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
+                    'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference,
+                    'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
+                    'comments' => $comments
+                ];
                 if($imp->envImpactAnalysis) {
-                    $results[] = [
-                        'id' => $imp->id,
-                        'stage' => ucwords(strtolower($s->name)),
-                        'name' => "$changeType $ronaAwal akibat $component",
-                        'type' => 'subtitle',
-                        'component' => $component,
-                        'ronaAwal' => $ronaAwal,
-                        'important_trait' => $important_trait,
-                        'impact_type' => $imp->envImpactAnalysis->impact_type,
-                        'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
-                        'studies_condition' => $imp->envImpactAnalysis->studies_condition,
-                        'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
-                        'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
-                        'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference,
-                        'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
-                        'comments' => $comments
-                    ];
                 } else {
-                    $results[] = [
-                        'id' => $imp->id,
-                        'stage' => ucwords(strtolower($s->name)),
-                        'name' => "$changeType $ronaAwal akibat $component",
-                        'type' => 'subtitle',
-                        'component' => $component,
-                        'ronaAwal' => $ronaAwal,
-                        'important_trait' => $traits,
-                        'impact_type' => '',
-                        'impact_eval_result' => '',
-                        'studies_condition' => '',
-                        'condition_dev_no_plan' => '',
-                        'condition_dev_with_plan' => '',
-                        'impact_size_difference' => '',
-                        'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
-                        'comments' => $comments
-                    ];
+                    continue;
+                    // $results[] = [
+                    //     'id' => $imp->id,
+                    //     'stage' => ucwords(strtolower($s->name)),
+                    //     'name' => "$changeType $ronaAwal akibat $component",
+                    //     'type' => 'subtitle',
+                    //     'component' => $component,
+                    //     'ronaAwal' => $ronaAwal,
+                    //     'important_trait' => $traits,
+                    //     'impact_type' => '',
+                    //     'impact_eval_result' => '',
+                    //     'studies_condition' => '',
+                    //     'condition_dev_no_plan' => '',
+                    //     'condition_dev_with_plan' => '',
+                    //     'impact_size_difference' => '',
+                    //     'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
+                    //     'comments' => $comments
+                    // ];
                 }
 
                 $results[] = [
