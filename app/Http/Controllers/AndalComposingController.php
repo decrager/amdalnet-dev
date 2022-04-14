@@ -368,24 +368,49 @@ class AndalComposingController extends Controller
             $ids = [];
             for ($i = 0; $i < count($analysis); $i++) {
                 $envAnalysis = EnvImpactAnalysis::where('id_impact_identifications', $analysis[$i]['id'])->first();
-                $envAnalysis->impact_eval_result = $analysis[$i]['impact_eval_result'];
-                $envAnalysis->impact_type = $analysis[$i]['impact_type'];
-                $envAnalysis->studies_condition = $analysis[$i]['studies_condition'];
-                $envAnalysis->condition_dev_no_plan = $analysis[$i]['condition_dev_no_plan'];
-                $envAnalysis->condition_dev_with_plan = $analysis[$i]['condition_dev_with_plan'];
-                $envAnalysis->impact_size_difference = $analysis[$i]['impact_size_difference'];
-                $envAnalysis->save();
-
-                $important_trait = $analysis[$i]['important_trait'];
-
-                for ($a = 0; $a < count($important_trait); $a++) {
-                    $detail = ImpactAnalysisDetail::where([['id_env_impact_analysis', $envAnalysis->id], ['id_important_trait', $important_trait[$a]['id']]])->first();
-                    $detail->important_trait = $important_trait[$a]['important_trait'];
-                    $detail->description = $important_trait[$a]['desc'];
-                    $detail->save();
+                if($envAnalysis) {
+                    $envAnalysis->impact_eval_result = $analysis[$i]['impact_eval_result'];
+                    $envAnalysis->impact_type = $analysis[$i]['impact_type'];
+                    $envAnalysis->studies_condition = $analysis[$i]['studies_condition'];
+                    $envAnalysis->condition_dev_no_plan = $analysis[$i]['condition_dev_no_plan'];
+                    $envAnalysis->condition_dev_with_plan = $analysis[$i]['condition_dev_with_plan'];
+                    $envAnalysis->impact_size_difference = $analysis[$i]['impact_size_difference'];
+                    $envAnalysis->save();
+    
+                    $important_trait = $analysis[$i]['important_trait'];
+    
+                    for ($a = 0; $a < count($important_trait); $a++) {
+                        $detail = ImpactAnalysisDetail::where([['id_env_impact_analysis', $envAnalysis->id], ['id_important_trait', $important_trait[$a]['id']]])->first();
+                        $detail->important_trait = $important_trait[$a]['important_trait'];
+                        $detail->description = $important_trait[$a]['desc'];
+                        $detail->save();
+                    }
+    
+                    $ids[] = $analysis[$i]['id'];
+                } else {
+                    for ($i = 0; $i < count($analysis); $i++) {
+                        $envAnalysis = new EnvImpactAnalysis();
+                        $envAnalysis->id_impact_identifications = $analysis[$i]['id'];
+                        $envAnalysis->impact_eval_result = $analysis[$i]['impact_eval_result'];
+                        $envAnalysis->impact_type = $analysis[$i]['impact_type'];
+                        $envAnalysis->studies_condition = $analysis[$i]['studies_condition'];
+                        $envAnalysis->condition_dev_no_plan = $analysis[$i]['condition_dev_no_plan'];
+                        $envAnalysis->condition_dev_with_plan = $analysis[$i]['condition_dev_with_plan'];
+                        $envAnalysis->impact_size_difference = $analysis[$i]['impact_size_difference'];
+                        $envAnalysis->save();
+        
+                        $important_trait = $analysis[$i]['important_trait'];
+        
+                        for ($a = 0; $a < count($important_trait); $a++) {
+                            $detail = new ImpactAnalysisDetail();
+                            $detail->id_env_impact_analysis = $envAnalysis->id;
+                            $detail->id_important_trait = $important_trait[$a]['id'];
+                            $detail->important_trait = $important_trait[$a]['important_trait'];
+                            $detail->description = $important_trait[$a]['desc'];
+                            $detail->save();
+                        }
+                    }
                 }
-
-                $ids[] = $analysis[$i]['id'];
             }
 
             $lastTime = EnvImpactAnalysis::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
@@ -613,23 +638,44 @@ class AndalComposingController extends Controller
                     }
                 }
 
-                $results[] = [
-                    'id' => $imp->id,
-                    'stage' => ucwords(strtolower($s->name)),
-                    'name' => "$changeType $ronaAwal akibat $component",
-                    'type' => 'subtitle',
-                    'component' => $component,
-                    'ronaAwal' => $ronaAwal,
-                    'important_trait' => $important_trait,
-                    'impact_type' => $imp->envImpactAnalysis->impact_type,
-                    'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
-                    'studies_condition' => $imp->envImpactAnalysis->studies_condition,
-                    'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
-                    'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
-                    'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference,
-                    'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
-                    'comments' => $comments
-                ];
+                if($imp->envImpactAnalysis) {
+                    $results[] = [
+                        'id' => $imp->id,
+                        'stage' => ucwords(strtolower($s->name)),
+                        'name' => "$changeType $ronaAwal akibat $component",
+                        'type' => 'subtitle',
+                        'component' => $component,
+                        'ronaAwal' => $ronaAwal,
+                        'important_trait' => $important_trait,
+                        'impact_type' => $imp->envImpactAnalysis->impact_type,
+                        'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
+                        'studies_condition' => $imp->envImpactAnalysis->studies_condition,
+                        'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
+                        'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
+                        'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference,
+                        'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
+                        'comments' => $comments
+                    ];
+                } else {
+                    $results[] = [
+                        'id' => $imp->id,
+                        'stage' => ucwords(strtolower($s->name)),
+                        'name' => "$changeType $ronaAwal akibat $component",
+                        'type' => 'subtitle',
+                        'component' => $component,
+                        'ronaAwal' => $ronaAwal,
+                        'important_trait' => [],
+                        'impact_type' => '',
+                        'impact_eval_result' => '',
+                        'studies_condition' => '',
+                        'condition_dev_no_plan' => '',
+                        'condition_dev_with_plan' => '',
+                        'impact_size_difference' => '',
+                        'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
+                        'comments' => $comments
+                    ];
+                }
+
                 $results[] = [
                     'id' => $imp->id,
                     'type' => 'comments'
