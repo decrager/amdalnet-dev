@@ -381,9 +381,18 @@ class AndalComposingController extends Controller
     
                     for ($a = 0; $a < count($important_trait); $a++) {
                         $detail = ImpactAnalysisDetail::where([['id_env_impact_analysis', $envAnalysis->id], ['id_important_trait', $important_trait[$a]['id']]])->first();
-                        $detail->important_trait = $important_trait[$a]['important_trait'];
-                        $detail->description = $important_trait[$a]['desc'];
-                        $detail->save();
+                        if($detail) {
+                            $detail->important_trait = $important_trait[$a]['important_trait'];
+                            $detail->description = $important_trait[$a]['desc'];
+                            $detail->save();
+                        } else {
+                            $detail = new ImpactAnalysisDetail();
+                            $detail->id_env_impact_analysis = $envAnalysis->id;
+                            $detail->id_important_trait = $important_trait[$a]['id'];
+                            $detail->important_trait = $important_trait[$a]['important_trait'];
+                            $detail->description = $important_trait[$a]['desc'];
+                            $detail->save();
+                        }
                     }
     
                     $ids[] = $analysis[$i]['id'];
@@ -587,6 +596,17 @@ class AndalComposingController extends Controller
 
         $impactIdentifications = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant')->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->get();
         $results = [];
+        $important_trait = ImportantTrait::select('id', 'description')->get();
+        $traits = [];
+
+        foreach ($important_trait as $it) {
+            $traits[] = [
+                'id' => $it->id,
+                'description' => $it->description,
+                'desc' => null,
+                'important_trait' => null
+            ];
+        }
 
         foreach ($stages as $s) {
             $results[] = [
@@ -664,7 +684,7 @@ class AndalComposingController extends Controller
                         'type' => 'subtitle',
                         'component' => $component,
                         'ronaAwal' => $ronaAwal,
-                        'important_trait' => [],
+                        'important_trait' => $traits,
                         'impact_type' => '',
                         'impact_eval_result' => '',
                         'studies_condition' => '',
