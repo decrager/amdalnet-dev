@@ -70,7 +70,7 @@ class MatriksUklUplController extends Controller
         ], 200);
     }
 
-    public function getProjectMarking(Request $request, $id) 
+    public function getProjectMarking(Request $request, $id)
     {
         $project = Project::find($id);
         if ($project) {
@@ -122,7 +122,9 @@ class MatriksUklUplController extends Controller
         } else if ($type == 'upl'){
             $with = 'envMonitorPlan';
         }
-        $impacts = ImpactIdentification::from('impact_identifications AS ii')
+        /*
+            // commented by HH to comply with pelingkupan ver 20220322
+            $impacts = ImpactIdentification::from('impact_identifications AS ii')
             ->with($with)
             ->selectRaw('ii.id, ii.id_change_type, ii.change_type_name,
                 ct."name" as change_type_name_master,
@@ -143,7 +145,31 @@ class MatriksUklUplController extends Controller
             ->leftJoin('units AS u', 'ii.id_unit', '=', 'u.id')
             ->where('ii.id_project', $id)
             ->orderBy('ii.id', 'asc')
+            ->get();*/
+
+            $impacts = ImpactIdentification::from('impact_identifications AS ii')
+            ->with($with)
+            ->selectRaw('ii.id, ii.id_change_type, ii.change_type_name,
+                ct."name" as change_type_name_master,
+                c.id_project_stage,
+                c.id_project_stage as id_project_stage_master,
+                c."name" as component_name,
+                c."name" as component_name_master,
+                ra."name" as rona_awal_name,
+                ra."name" as rona_awal_name_master,
+                ii."unit",
+                u."name" as unit_master,
+                ii.nominal')
+            ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
+            ->leftJoin('project_rona_awals AS spra', 'ii.id_project_rona_awal', '=', 'spra.id')
+            ->leftJoin('project_components AS spc', 'ii.id_project_component', '=', 'spc.id')
+            ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
+            ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+            ->leftJoin('units AS u', 'ii.id_unit', '=', 'u.id')
+            ->where('ii.id_project', $id)
+            ->orderBy('ii.id', 'asc')
             ->get();
+
         $ids = [4,1,2,3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function($model) use($ids) {
             return array_search($model->getKey(),$ids);
