@@ -45,8 +45,10 @@ class BesaranDampakController extends Controller
 
     private function getImpactIdentifications($id)
     {
+        /*
+        // commented by HH to comply with Pelingkupan ver 20220322
         $impacts = ImpactIdentification::from('impact_identifications AS ii')
-            ->selectRaw('ii.id, ii.id_change_type, 
+            ->selectRaw('ii.id, ii.id_change_type,
                 ii.change_type_name,
                 ct."name" as change_type_name_master,
                 spc.id_project_stage,
@@ -61,6 +63,28 @@ class BesaranDampakController extends Controller
             ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
             ->leftJoin('sub_project_rona_awals AS spra', 'ii.id_sub_project_rona_awal', '=', 'spra.id')
             ->leftJoin('sub_project_components AS spc', 'ii.id_sub_project_component', '=', 'spc.id')
+            ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
+            ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+            ->leftJoin('units AS u', 'ii.id_unit', '=', 'u.id')
+            ->where('ii.id_project', $id)
+            ->orderBy('ii.id', 'asc')
+            ->get();*/
+            $impacts = ImpactIdentification::from('impact_identifications AS ii')
+            ->selectRaw('ii.id, ii.id_change_type,
+                ii.change_type_name,
+                ct."name" as change_type_name_master,
+                c.id_project_stage,
+                c.id_project_stage as id_project_stage_master,
+                c."name" as component_name,
+                c."name" as component_name_master,
+                ra."name" as rona_awal_name,
+                ra."name" as rona_awal_name_master,
+                ii."unit",
+                u."name" as unit_master,
+                ii.nominal')
+            ->leftJoin('change_types AS ct', 'ii.id_change_type', '=', 'ct.id')
+            ->leftJoin('project_rona_awals AS spra', 'ii.id_project_rona_awal', '=', 'spra.id')
+            ->leftJoin('project_components AS spc', 'ii.id_project_component', '=', 'spc.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
             ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
             ->leftJoin('units AS u', 'ii.id_unit', '=', 'u.id')
