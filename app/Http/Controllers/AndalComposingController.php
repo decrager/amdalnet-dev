@@ -489,7 +489,7 @@ class AndalComposingController extends Controller
         $count_2 = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($id_project) {
             $q->where('id_project', $id_project);
         })
-        ->where('condition_dev_no_plan', '!=', null)
+        // ->where('condition_dev_no_plan', '!=', null)
         ->count();
 
         return $count_1 === $count_2;
