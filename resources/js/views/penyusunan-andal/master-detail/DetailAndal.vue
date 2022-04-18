@@ -17,7 +17,10 @@
           @click="handlePaginate('right', 'pra konstruksi')"
         />
       </div>
-      <div v-loading="loadingDestroy">
+      <div
+        v-loading="loadingDestroy"
+        :class="{ 'loading-div': loadingDestroy }"
+      >
         <FormDetail
           v-if="showDetail"
           ref="formdetail"
@@ -44,7 +47,10 @@
           @click="handlePaginate('right', 'konstruksi')"
         />
       </div>
-      <div v-loading="loadingDestroy">
+      <div
+        v-loading="loadingDestroy"
+        :class="{ 'loading-div': loadingDestroy }"
+      >
         <FormDetail
           v-if="showDetail"
           ref="formdetail"
@@ -71,7 +77,10 @@
           @click="handlePaginate('right', 'operasi')"
         />
       </div>
-      <div v-loading="loadingDestroy">
+      <div
+        v-loading="loadingDestroy"
+        :class="{ 'loading-div': loadingDestroy }"
+      >
         <FormDetail
           v-if="showDetail"
           ref="formdetail"
@@ -98,7 +107,10 @@
           @click="handlePaginate('right', 'pasca operasi')"
         />
       </div>
-      <div v-loading="loadingDestroy">
+      <div
+        v-loading="loadingDestroy"
+        :class="{ 'loading-div': loadingDestroy }"
+      >
         <FormDetail
           v-if="showDetail"
           ref="formdetail"
@@ -341,5 +353,11 @@ export default {
 }
 .input-page {
   width: 60px;
+}
+</style>
+
+<style scoped>
+.loading-div {
+  padding: 15px 0;
 }
 </style>
