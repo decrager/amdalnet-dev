@@ -265,6 +265,7 @@ Route::apiResource('test-meet-rkl-rpl', 'TestMeetRKLRPLController');
 Route::apiResource('meet-report-rkl-rpl', 'MeetReportRKLRPLController');
 Route::apiResource('feasibility-test', 'FeasibilityTestController');
 Route::apiResource('skkl', 'SKKLController');
+Route::apiResource('skkl-final', 'SKKLFinalController');
 Route::apiResource('impact-studies', 'ImpactStudyController');
 Route::get('ukl-upl-comment/{id}', [UklUplCommentController::class, 'index']);
 Route::post('ukl-upl-comment', [UklUplCommentController::class, 'store']);
