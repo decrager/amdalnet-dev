@@ -2451,10 +2451,10 @@ class AndalComposingController extends Controller
 
         if($type == 'andal') {
             $im = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-                ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+                ->where('id_project', $id_project)->with('potentialImpactEvaluation.pieParam')->get();
         } else {
             $im = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-                ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+                ->where('id_project', $id_project)->with('potentialImpactEvaluation.pieParam')->get();
         }
 
         $total_ms = 0;
@@ -2570,7 +2570,7 @@ class AndalComposingController extends Controller
                         $ed_kesimpulan_title);
                 }
 
-                if ($pA->impactStudy) {
+                if ($pA->is_hypothetical_significant && $pA->impactStudy) {
                     $metode_studi[] = [
                         'metode_studi' => $total_ms + 1,
                         'potential_impact_evaluation' => "$changeType $ronaAwal akibat $component",
@@ -2854,10 +2854,10 @@ class AndalComposingController extends Controller
 
         if($type == 'andal') {
             $im = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-                ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+                ->where('id_project', $project->id)->with('potentialImpactEvaluation.pieParam')->get();
         } else {
             $im = ImpactIdentification::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'initial_study_plan', 'is_hypothetical_significant', 'study_location', 'study_length_year', 'study_length_month')
-                ->where([['id_project', $project->id], ['is_hypothetical_significant', true]])->with('potentialImpactEvaluation.pieParam')->get();
+                ->where('id_project', $project->id)->with('potentialImpactEvaluation.pieParam')->get();
         }
 
         $total_ms = 0;
@@ -2933,7 +2933,7 @@ class AndalComposingController extends Controller
                     'batas_waktu' => $pA->study_length_year . ' tahun ' . $pA->study_length_month . ' bulan'
                 ];
 
-                if ($pA->impactStudy) {
+                if ($pA->is_hypothetical_significant && $pA->impactStudy) {
                     $pelingkupan['metode_studi'][] = [
                         'no' => $total_ms + 1,
                         'potential_impact_evaluation' => "$changeType $ronaAwal akibat $component",
