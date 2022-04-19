@@ -25,16 +25,16 @@
           <div class="grid-content bg-purple" />
           <!-- <iframe
             v-if="showDocument"
-            :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projectId}-form-ka-andal&embedded=true`"
-            width="100%"
-            height="723px"
-            frameborder="1"
-          /> -->
-          <iframe
-            v-if="showDocument"
             :src="
               'https://docs.google.com/gview?url=' + projects + '&embedded=true'
             "
+            width="100%"
+            height="723px"
+            frameborder="0"
+          /> -->
+          <iframe
+            v-if="showDocument"
+            :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projects}`"
             width="100%"
             height="723px"
             frameborder="0"
