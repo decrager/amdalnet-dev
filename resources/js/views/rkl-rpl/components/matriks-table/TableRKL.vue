@@ -182,10 +182,29 @@
             <div
               v-for="(source, index) in scope.row.impact_source"
               :key="index"
-              style="margin-bottom: 5px"
+              style="margin-bottom: 7px"
             >
+              <div
+                v-if="isFormulator && source.show"
+                style="text-align: right; margin-bottom: 3px"
+              >
+                <el-button
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-close"
+                  @click.prevent="
+                    deleteEditor(
+                      source.num,
+                      index,
+                      scope.$index,
+                      'impact source'
+                    )
+                  "
+                />
+              </div>
               <Tinymce
-                v-if="isFormulator"
+                v-if="isFormulator && source.show"
+                :id="`source-${source.num}-${scope.$index}`"
                 v-model="scope.row.impact_source[index].description"
                 output-format="html"
                 :menubar="''"
@@ -195,7 +214,10 @@
                 ]"
                 :height="50"
               />
-              <div v-else v-html="scope.row.impact_source[index].description" />
+              <div
+                v-if="!isFormulator"
+                v-html="scope.row.impact_source[index].description"
+              />
             </div>
           </div>
           <el-button
@@ -222,10 +244,29 @@
             <div
               v-for="(indicator, index) in scope.row.success_indicator"
               :key="index"
-              style="margin-bottom: 5px"
+              style="margin-bottom: 7px"
             >
+              <div
+                v-if="isFormulator && indicator.show"
+                style="text-align: right; margin-bottom: 3px"
+              >
+                <el-button
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-close"
+                  @click.prevent="
+                    deleteEditor(
+                      indicator.num,
+                      index,
+                      scope.$index,
+                      'success indicator'
+                    )
+                  "
+                />
+              </div>
               <Tinymce
-                v-if="isFormulator"
+                v-if="isFormulator && indicator.show"
+                :id="`indicator-${indicator.num}-${scope.$index}`"
                 v-model="scope.row.success_indicator[index].description"
                 output-format="html"
                 :menubar="''"
@@ -236,7 +277,7 @@
                 :height="50"
               />
               <div
-                v-else
+                v-if="!isFormulator"
                 v-html="scope.row.success_indicator[index].description"
               />
             </div>
@@ -263,10 +304,24 @@
             <div
               v-for="(form, index) in scope.row.form"
               :key="index"
-              style="margin-bottom: 5px"
+              style="margin-bottom: 7px"
             >
+              <div
+                v-if="isFormulator && form.show"
+                style="text-align: right; margin-bottom: 3px"
+              >
+                <el-button
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-close"
+                  @click.prevent="
+                    deleteEditor(form.num, index, scope.$index, 'form')
+                  "
+                />
+              </div>
               <Tinymce
-                v-if="isFormulator"
+                v-if="isFormulator && form.show"
+                :id="`form-${form.num}-${scope.$index}`"
                 v-model="scope.row.form[index].description"
                 output-format="html"
                 :menubar="''"
@@ -276,7 +331,10 @@
                 ]"
                 :height="50"
               />
-              <div v-else v-html="scope.row.form[index].description" />
+              <div
+                v-if="!isFormulator"
+                v-html="scope.row.form[index].description"
+              />
             </div>
           </div>
           <el-button
@@ -303,8 +361,22 @@
               :key="index"
               style="margin-bottom: 5px"
             >
+              <div
+                v-if="isFormulator && location.show"
+                style="text-align: right; margin-bottom: 3px"
+              >
+                <el-button
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-close"
+                  @click.prevent="
+                    deleteEditor(location.num, index, scope.$index, 'location')
+                  "
+                />
+              </div>
               <Tinymce
-                v-if="isFormulator"
+                v-if="isFormulator && location.show"
+                :id="`location-${location.num}-${scope.$index}`"
                 v-model="scope.row.location[index].description"
                 output-format="html"
                 :menubar="''"
@@ -314,7 +386,10 @@
                 ]"
                 :height="50"
               />
-              <div v-else v-html="scope.row.location[index].description" />
+              <div
+                v-if="!isFormulator"
+                v-html="scope.row.location[index].description"
+              />
             </div>
           </div>
           <el-button
@@ -514,6 +589,10 @@ export default {
       selectedImpactCommentId: null,
       impactComment: null,
       impactColumnType: null,
+      deletedImpactSource: [],
+      deletedSuccessIndicator: [],
+      deletedForm: [],
+      deletedLocation: [],
       // userInfo: {},
       errors: [],
       periode: [
@@ -583,8 +662,41 @@ export default {
   methods: {
     async getRKL() {
       this.loading = true;
-      this.list = await rklResource.list({
+      const list = await rklResource.list({
         idProject: this.idProject,
+      });
+      this.list = list.map((x) => {
+        if (x.type === 'subtitle') {
+          const impactSource = x.impact_source.map((y, indx) => {
+            y.num = indx + 1;
+            y.show = true;
+            return y;
+          });
+          x.impact_source = impactSource;
+
+          const successIndicator = x.success_indicator.map((y, indx) => {
+            y.num = indx + 1;
+            y.show = true;
+            return y;
+          });
+          x.success_indicator = successIndicator;
+
+          const form = x.form.map((y, indx) => {
+            y.num = indx + 1;
+            y.show = true;
+            return y;
+          });
+          x.form = form;
+
+          const location = x.location.map((y, indx) => {
+            y.num = indx + 1;
+            y.show = true;
+            return y;
+          });
+          x.location = location;
+        }
+
+        return x;
       });
       this.loading = false;
     },
@@ -714,8 +826,34 @@ export default {
     async handleSubmit() {
       this.loadingSubmit = true;
       const sendForm = this.list.filter((com) => com.type === 'subtitle');
+      const finalForm = sendForm.map((x) => {
+        const impactSource = x.impact_source.filter((y) => {
+          return y.show === true;
+        });
+        x.impact_source = impactSource;
+
+        const successIndicator = x.success_indicator.filter((y) => {
+          return y.show === true;
+        });
+        x.success_indicator = successIndicator;
+
+        const form = x.form.filter((y) => {
+          return y.show === true;
+        });
+        x.form = form;
+
+        const location = x.location.filter((y) => {
+          return y.show === true;
+        });
+        x.location = location;
+        return x;
+      });
       const time = await rklResource.store({
-        manage: sendForm,
+        manage: finalForm,
+        deletedImpactSource: this.deletedImpactSource,
+        deletedSuccessIndicator: this.deletedSuccessIndicator,
+        deletedForm: this.deletedForm,
+        deletedLocation: this.deletedLocation,
         type: this.lastTime ? 'update' : 'new',
         idProject: this.$route.params.id,
       });
@@ -727,6 +865,10 @@ export default {
         type: 'success',
         duration: 5 * 1000,
       });
+      this.deletedImpactSource = [];
+      this.deletedSuccessIndicator = [];
+      this.deletedForm = [];
+      this.deletedLocation = [];
     },
     async handleSubmitComment() {
       this.loadingSubmitComment = true;
@@ -786,28 +928,67 @@ export default {
     // async getUserInfo() {
     //   this.userInfo = await this.$store.dispatch('user/getInfo');
     // },
+    deleteEditor(num, idx, idxList, documentType) {
+      if (documentType === 'impact source') {
+        const impactSource = this.list[idxList].impact_source[idx];
+        if (impactSource.id) {
+          this.deletedImpactSource.push(impactSource.id);
+        }
+        this.list[idxList].impact_source[idx].show = false;
+      } else if (documentType === 'success indicator') {
+        const successIndicator = this.list[idxList].success_indicator[idx];
+        if (successIndicator.id) {
+          this.deletedSuccessIndicator.push(successIndicator.id);
+        }
+        this.list[idxList].success_indicator[idx].show = false;
+      } else if (documentType === 'form') {
+        const form = this.list[idxList].form[idx];
+        if (form.id) {
+          this.deletedForm.push(form.id);
+        }
+        this.list[idxList].form[idx].show = false;
+      } else if (documentType === 'location') {
+        const location = this.list[idxList].location[idx];
+        if (location.id) {
+          this.deletedLocation.push(location.id);
+        }
+        this.list[idxList].location[idx].show = false;
+      }
+    },
     handleAddImpactSource(idx) {
+      const data = this.list[idx].impact_source;
       this.list[idx].impact_source.push({
+        num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
         id: null,
         description: null,
+        show: true,
       });
     },
     handleAddSuccessIndicator(idx) {
+      const data = this.list[idx].success_indicator;
       this.list[idx].success_indicator.push({
+        num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
         id: null,
         description: null,
+        show: true,
       });
     },
     handleAddForm(idx) {
+      const data = this.list[idx].form;
       this.list[idx].form.push({
+        num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
         id: null,
         description: null,
+        show: true,
       });
     },
     handleAddLocation(idx) {
+      const data = this.list[idx].location;
       this.list[idx].location.push({
+        num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
         id: null,
         description: null,
+        show: true,
       });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
