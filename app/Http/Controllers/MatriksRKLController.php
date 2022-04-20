@@ -523,6 +523,30 @@ class MatriksRKLController extends Controller
             }
         }
 
+        // DELETE IMPACT SOURCE
+        $delete_ip = $request->deletedImpactSource;
+        if(count($delete_ip) > 0) {
+            EnvPlanSource::whereIn('id', $delete_ip)->delete();
+        }
+
+        // DELETE SUCCESS INDICATOR
+        $delete_si = $request->deletedSuccessIndicator;
+        if(count($delete_si) > 0) {
+            EnvPlanIndicator::whereIn('id', $delete_si)->delete();
+        }
+
+        // DELETE FORM
+        $delete_form = $request->deletedForm;
+        if(count($delete_form) > 0) {
+            EnvPlanForm::whereIn('id', $delete_form)->delete();
+        }
+
+        // DELETE LOCATION
+        $delete_loc = $request->deletedLocation;
+        if(count($delete_loc) > 0) {
+            EnvPlanLocation::whereIn('id', $delete_loc)->delete();
+        }
+
         // === WORKFLOW === //
         $project = Project::findOrFail($request->idProject);
         if($project->marking == 'amdal.andal-drafting') {

@@ -281,6 +281,30 @@ class MatriksRPLController extends Controller
             }
         }
 
+         // DELETE IMPACT SOURCE
+         $delete_ip = $request->deletedImpactSource;
+         if(count($delete_ip) > 0) {
+             EnvPlanSource::whereIn('id', $delete_ip)->delete();
+         }
+ 
+         // DELETE INDICATOR
+         $delete_i = $request->deletedIndicator;
+         if(count($delete_i) > 0) {
+             EnvPlanIndicator::whereIn('id', $delete_i)->delete();
+         }
+ 
+         // DELETE COLLECTION METHOD
+         $delete_cm = $request->deletedCollectionMethod;
+         if(count($delete_cm) > 0) {
+             EnvPlanForm::whereIn('id', $delete_cm)->delete();
+         }
+ 
+         // DELETE LOCATION
+         $delete_loc = $request->deletedLocation;
+         if(count($delete_loc) > 0) {
+             EnvPlanLocation::whereIn('id', $delete_loc)->delete();
+         }
+
         // === WORKFLOW === //
         $project = Project::findOrFail($request->idProject);
         if($project->marking == 'amdal.andal-drafting') {
@@ -703,7 +727,7 @@ class MatriksRPLController extends Controller
         // ============ POIN B.3 ============= //
         // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
         $idPoinA = [];
-        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'is_hypothetical_significant')
+        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'is_hypothetical_significant', 'id_project_component', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis', function($q) {
             $q->whereHas('detail', function($query) {
                 $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
@@ -714,10 +738,10 @@ class MatriksRPLController extends Controller
             $idPoinA[] = $pA->id;
         }
         if(count($idPoinA) > 0) {
-            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereNotIn('id', $idPoinA)->whereHas('envImpactAnalysis')->get();
         } else {
-            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis')->get();
         }
 
