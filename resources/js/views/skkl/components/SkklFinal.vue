@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="loading">
     <el-form
       ref="postForm"
       :model="postForm"
@@ -41,6 +41,7 @@
               :auto-upload="false"
               :on-change="handleUploadChange"
               :show-file-list="true"
+              :file-list="fileList"
               style="display: inline;"
               :disabled="loadingUpload"
             >
@@ -51,12 +52,13 @@
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="handleSubmit()"> Submit </el-button>
+      <el-button :loading="loadingSubmit" type="primary" @click="handleSubmit()"> Submit </el-button>
     </div>
     <el-row style="margin-top: 20px;">
       <el-col :span="24">
         <span style="margin-right: 10px;"><h4>Unduh SKKL Final Dari OSS</h4></span>
         <el-button
+          :loading="loadingDownload"
           type="warning"
           size="small"
           icon="el-icon-download"
@@ -81,7 +83,10 @@ export default {
     return {
       loading: false,
       loadingUpload: false,
+      loadingDownload: false,
+      loadingSubmit: false,
       fileUrl: null,
+      fileList: [],
       fileSkklFinal: null,
       userKey: null,
       idProject: this.$route.params.id,
@@ -105,8 +110,29 @@ export default {
         this.fileUrl = data.file_url;
         this.userKey = data.user_key;
       }
+      // get skkl final by id_project
+      this.loading = true;
+      const skklFinals = await skklFinalResource.list({
+        id_project: this.idProject,
+      });
+      this.loading = false;
+      if (skklFinals.length > 0) {
+        const skklFinal = skklFinals[0];
+        this.postForm = skklFinal;
+        // get file list
+        if (skklFinal !== null && skklFinal.file !== null && skklFinal.file !== '') {
+          const spl = skklFinal.file.split('/');
+          const idx = spl.length - 1;
+          this.fileList.push({
+            name: spl[idx],
+            url: skklFinal.file,
+            id: skklFinal.id,
+          });
+        }
+      }
     },
     async handleDownload() {
+      this.loadingDownload = true;
       if (this.fileUrl !== null && this.userKey !== null) {
         axios({
           url: this.fileUrl,
@@ -116,6 +142,7 @@ export default {
             user_key: this.userKey,
           },
         }).then((response) => {
+          this.loadingDownload = false;
           const cd = response.headers['content-disposition'];
           const fileName = cd.split('filename=')[1].replaceAll('"', '');
           var fileURL = window.URL.createObjectURL(new Blob([response.data]));
@@ -127,9 +154,9 @@ export default {
           );
           document.body.appendChild(fileLink);
           fileLink.click();
-          this.loading = false;
         });
       } else {
+        this.loadingDownload = false;
         this.$message({
           message: 'URL file tidak ada.',
           type: 'error',
@@ -152,16 +179,17 @@ export default {
       });
     },
     async handleSubmit() {
+      this.loadingSubmit = true;
       const formData = new FormData();
       formData.append('id_project', this.idProject);
       formData.append('number', this.postForm.number);
       formData.append('title', this.postForm.title);
       formData.append('date_published', this.postForm.date_published);
       formData.append('skkl_final', this.fileSkklFinal.raw);
-      this.loading = true;
       skklFinalResource
         .store(formData)
         .then((response) => {
+          this.loadingSubmit = false;
           if (response.code === 200) {
             this.$message({
               message: 'SKKL Final Berhasil Disimpan',
@@ -177,6 +205,7 @@ export default {
           }
         })
         .catch((error) => {
+          this.loadingSubmit = false;
           this.$message({
             message: 'Gagal menyimpan SKKL Final',
             type: 'error',

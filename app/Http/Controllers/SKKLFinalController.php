@@ -14,9 +14,15 @@ class SKKLFinalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->id_project) {
+            $skklFinal = ProjectSkklFinal::where('id_project', $request->id_project)->first();
+            if ($skklFinal) {
+                return [$skklFinal];
+            }
+            return [];
+        }
     }
 
     /**
