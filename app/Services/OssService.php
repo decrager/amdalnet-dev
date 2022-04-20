@@ -279,7 +279,7 @@ class OssService
         // print_r($respJson);
         Log::debug(json_encode($data));
         Log::debug(json_encode($respJson));
-        return true;
+        return $respJson;
     }
 }
 ?>
