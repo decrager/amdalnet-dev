@@ -153,21 +153,43 @@ class TestMeetRKLRPLController extends Controller
 
             if((count($receiver) > 0) || (count($receiver_non_user) > 0)) {
                 if(count($receiver) > 0) {
-                    Notification::send($receiver, new MeetingInvitation($meeting));
+                    Notification::send($receiver, new MeetingInvitation($meeting, 'tuk'));
                 }
 
                 if(count($receiver_non_user) > 0) {
-                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
+                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting, 'tuk'));
                 }
 
                 // === UPDATE INVITATION STATUS === //
                 $meeting->is_invitation_sent = true;
                 $meeting->save();
 
-                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
+                $project = Project::findOrFail($request->idProject);
+                // NOTIFICATION FOR FORMULATOR & INITIATOR
+                $extra_receiver = [];
+                $initiator = User::where('email', $project->initiator->email)->first();
+                $formulator_chief = FormulatorTeamMember::where('position', 'Ketua')->whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->first();
+
+                if($initiator) {
+                    $extra_receiver[] = $initiator;
+                }
+
+                if($formulator_chief) {
+                    if($formulator_chief->formulator) {
+                        $formulator_chief = User::where('email', $formulator_chief->formulator->email)->first();
+                        if($formulator_chief) {
+                            $extra_receiver[] = $formulator_chief;
+                        }
+                    }
+                }
+
+                if(count($extra_receiver) > 0) {
+                    Notification::send($extra_receiver, new MeetingInvitation($meeting, 'extra'));
+                }
 
                 // === WORKFLOW === //
-                $project = Project::findOrFail($request->idProject);
                 if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
                     $project->workflow_apply('send-uklupl-examination-invitation');
                     $project->workflow_apply('examine-uklupl');
@@ -176,7 +198,8 @@ class TestMeetRKLRPLController extends Controller
                     $project->workflow_apply('send-amdal-feasibility-invitation');
                     $project->save();
                 }
-                
+
+                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
             }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
@@ -721,7 +744,6 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
-        $templateProcessor->setValue('project_description', $project->description);
         $templateProcessor->setValue('project_location', $project_address);
         $templateProcessor->setValue('meeting_time', $meeting_time . ' ' . $meeting_date);
         $templateProcessor->setValue('docs_date', $docs_date);
@@ -730,6 +752,18 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->setValue('tim_penyusun', $tim_penyusun);
         $templateProcessor->cloneBlock('anggota_penyusun', count($anggota_penyusun), true, false, $anggota_penyusun);
         $templateProcessor->cloneBlock('meeting_invitations', count($meeting_invitations), true, false, $meeting_invitations);
+
+        // PROJECT DESCRIPTION
+        $proDescTable = new Table();
+        $proDescTable->addRow();
+        $proDescCell = $proDescTable->addCell(6000);
+        $final_pro_desc = $project->description;
+        if($final_pro_desc) {
+            $final_pro_desc = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $this->replaceHtmlList($final_pro_desc));
+        }
+        Html::addHtml($proDescCell, $final_pro_desc);
+
+        $templateProcessor->setComplexBlock('project_description', $proDescTable);
 
         if($verification->forms) {
             if($verification->forms->first()) {

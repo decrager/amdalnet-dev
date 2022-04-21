@@ -76,6 +76,7 @@ export default {
     },
     showDetail({ stage, id }) {
       this.$refs.detail.setActiveAndal(stage, id);
+      this.destroyDetail();
     },
     async handleSubmit() {
       this.loadingSubmit = true;
@@ -111,6 +112,9 @@ export default {
 
         return newObj;
       });
+    },
+    destroyDetail() {
+      this.$refs.detail.destroyForAWhile();
     },
   },
 };

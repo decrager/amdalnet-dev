@@ -18,10 +18,11 @@
       </span>
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="IDENTIFIKASI KOMPONEN KEGIATAN DAN KOMPONEN LINGKUNGAN">
-          <pelingkupan
+          <!-- <pelingkupan
             v-if="activeName === '1'"
             @handleReloadVsaList="handleReloadVsaList"
-          />
+          /> -->
+          <modul-pelingkupan v-if="activeName === '1'" />
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
           <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
@@ -38,7 +39,8 @@
 </template>
 
 <script>
-import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
+// import Pelingkupan from '@/views/amdal/components/Pelingkupan.vue';
+import ModulPelingkupan from '@/views/amdal/pelingkupan/index.vue';
 import MatriksIdentifikasiDampakTable from '@/views/amdal/components/tables/MatriksIdentifikasiDampakTable.vue';
 import JenisBesaranDampakTable from './components/tables/JenisBesaranDampakTable.vue';
 import WorkflowUkl from '@/components/WorkflowUkl';
@@ -48,7 +50,8 @@ const projectResource = new Resource('projects');
 export default {
   name: 'FormulirUklUpl',
   components: {
-    Pelingkupan,
+    // Pelingkupan,
+    ModulPelingkupan,
     MatriksIdentifikasiDampakTable,
     JenisBesaranDampakTable,
     WorkflowUkl,

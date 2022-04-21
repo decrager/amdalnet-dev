@@ -283,22 +283,31 @@ export default {
       this.$emit('deleteinvitation', { idx, id });
     },
     async handleUploadChange(file, fileList) {
-      this.loadingUpload = true;
-      const formData = new FormData();
-      formData.append('idProject', this.$route.params.id);
-      formData.append('dokumen_file', file.raw);
-      formData.append('file', 'true');
-      formData.append('uklUpl', 'true');
-      const data = await meetingReportResource.store(formData);
-      this.errors = data.errors === null ? {} : data.errors;
-      this.loadingUpload = false;
-      if (data.errors === null) {
-        this.$emit('updateuploadfile', { name: data.name });
-        this.$message({
-          message: 'BA Final sukses diupload',
-          type: 'success',
-          duration: 5 * 1000,
-        });
+      if (this.reports.type === 'update') {
+        this.loadingUpload = true;
+        const formData = new FormData();
+        formData.append('idProject', this.$route.params.id);
+        formData.append('dokumen_file', file.raw);
+        formData.append('file', 'true');
+        formData.append('uklUpl', 'true');
+        const data = await meetingReportResource.store(formData);
+        this.errors = data.errors === null ? {} : data.errors;
+        this.loadingUpload = false;
+        if (data.errors === null) {
+          this.$emit('updateuploadfile', { name: data.name });
+          this.$message({
+            message: 'BA Final sukses diupload',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+        }
+      } else {
+        this.$alert(
+          'Mohon Simpan dan Unduh Draft Berita Acara terlebih dahulu',
+          {
+            confirmButtonText: 'OK',
+          }
+        );
       }
     },
     download(url) {
