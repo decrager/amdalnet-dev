@@ -58,7 +58,6 @@
       <el-col :span="24">
         <span style="margin-right: 10px;"><h4>Unduh SKKL Final Dari OSS</h4></span>
         <el-button
-          :loading="loadingDownload"
           type="warning"
           size="small"
           icon="el-icon-download"
@@ -73,7 +72,7 @@
 
 <script>
 import Resource from '@/api/resource';
-import axios from 'axios';
+// import axios from 'axios';
 const skklFinalResource = new Resource('skkl-final');
 const skklResource = new Resource('skkl');
 
@@ -83,7 +82,6 @@ export default {
     return {
       loading: false,
       loadingUpload: false,
-      loadingDownload: false,
       loadingSubmit: false,
       fileUrl: null,
       fileList: [],
@@ -132,31 +130,9 @@ export default {
       }
     },
     async handleDownload() {
-      this.loadingDownload = true;
-      if (this.fileUrl !== null && this.userKey !== null) {
-        axios({
-          url: this.fileUrl,
-          method: 'GET',
-          responseType: 'blob',
-          headers: {
-            user_key: this.userKey,
-          },
-        }).then((response) => {
-          this.loadingDownload = false;
-          const cd = response.headers['content-disposition'];
-          const fileName = cd.split('filename=')[1].replaceAll('"', '');
-          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-          var fileLink = document.createElement('a');
-          fileLink.href = fileURL;
-          fileLink.setAttribute(
-            'download',
-            `${fileName}`
-          );
-          document.body.appendChild(fileLink);
-          fileLink.click();
-        });
+      if (this.fileUrl !== null) {
+        window.open(this.fileUrl, '_blank').focus();
       } else {
-        this.loadingDownload = false;
         this.$message({
           message: 'URL file tidak ada.',
           type: 'error',
