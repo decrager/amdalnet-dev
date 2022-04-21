@@ -148,26 +148,50 @@ class TestingMeetingController extends Controller
 
             if((count($receiver) > 0) || (count($receiver_non_user) > 0)) {
                 if(count($receiver) > 0) {
-                    Notification::send($receiver, new MeetingInvitation($meeting));
+                    Notification::send($receiver, new MeetingInvitation($meeting, 'tuk'));
                 }
 
                 if(count($receiver_non_user) > 0) {
-                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
+                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting, 'tuk'));
                 }
 
                 // === UPDATE STATUS INVITATION === //
                 $meeting->is_invitation_sent = true;
                 $meeting->save();
 
-                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
+                $project = Project::findOrFail($request->idProject);
+                // NOTIFICATION FOR FORMULATOR & INITIATOR
+                $extra_receiver = [];
+                $initiator = User::where('email', $project->initiator->email)->first();
+                $formulator_chief = FormulatorTeamMember::where('position', 'Ketua')->whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->first();
+
+                if($initiator) {
+                    $extra_receiver[] = $initiator;
+                }
+
+                if($formulator_chief) {
+                    if($formulator_chief->formulator) {
+                        $formulator_chief = User::where('email', $formulator_chief->formulator->email)->first();
+                        if($formulator_chief) {
+                            $extra_receiver[] = $formulator_chief;
+                        }
+                    }
+                }
+
+                if(count($extra_receiver) > 0) {
+                    Notification::send($extra_receiver, new MeetingInvitation($meeting, 'extra'));
+                }
 
                 // === WORKFLOW === //
-                $project = Project::findOrFail($request->idProject);
                 if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
                     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
                     $project->workflow_apply('examine-amdal-form-ka');
                     $project->save();
                 }
+
+                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
             }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
