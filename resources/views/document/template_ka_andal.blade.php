@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
@@ -10,7 +9,7 @@
         panose-1: 5 0 0 0 0 0 0 0 0 0;
       }
       @font-face {
-        font-family: 'Cambria Math';
+        font-family: "Cambria Math";
         panose-1: 2 4 5 3 5 4 6 3 2 4;
       }
       @font-face {
@@ -18,14 +17,14 @@
         panose-1: 2 15 5 2 2 2 4 3 2 4;
       }
       @font-face {
-        font-family: 'Arial Narrow';
+        font-family: "Arial Narrow";
       }
       @font-face {
         font-family: Cambria;
         panose-1: 2 4 5 3 5 4 6 3 2 4;
       }
       @font-face {
-        font-family: 'Bookman Old Style';
+        font-family: "Bookman Old Style";
       }
       /* Style Definitions */
       p.MsoNormal,
@@ -37,73 +36,73 @@
         margin-left: 0cm;
         line-height: 107%;
         font-size: 11pt;
-        font-family: 'Calibri', sans-serif;
+        font-family: "Calibri", sans-serif;
       }
       p.MsoListParagraph,
       li.MsoListParagraph,
       div.MsoListParagraph {
-        mso-style-name: 'List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No t';
-        mso-style-link: 'List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char';
+        mso-style-name: "List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No t";
+        mso-style-link: "List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char";
         margin-top: 0cm;
         margin-right: 0cm;
         margin-bottom: 8pt;
         margin-left: 36pt;
         line-height: 107%;
         font-size: 11pt;
-        font-family: 'Calibri', sans-serif;
+        font-family: "Calibri", sans-serif;
       }
       p.MsoListParagraphCxSpFirst,
       li.MsoListParagraphCxSpFirst,
       div.MsoListParagraphCxSpFirst {
-        mso-style-name: 'List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No tCx';
-        mso-style-link: 'List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char';
+        mso-style-name: "List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No tCx";
+        mso-style-link: "List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char";
         margin-top: 0cm;
         margin-right: 0cm;
         margin-bottom: 0cm;
         margin-left: 36pt;
         line-height: 107%;
         font-size: 11pt;
-        font-family: 'Calibri', sans-serif;
+        font-family: "Calibri", sans-serif;
       }
       p.MsoListParagraphCxSpMiddle,
       li.MsoListParagraphCxSpMiddle,
       div.MsoListParagraphCxSpMiddle {
-        mso-style-name: 'List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No tCx';
-        mso-style-link: 'List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char';
+        mso-style-name: "List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No tCx";
+        mso-style-link: "List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char";
         margin-top: 0cm;
         margin-right: 0cm;
         margin-bottom: 0cm;
         margin-left: 36pt;
         line-height: 107%;
         font-size: 11pt;
-        font-family: 'Calibri', sans-serif;
+        font-family: "Calibri", sans-serif;
       }
       p.MsoListParagraphCxSpLast,
       li.MsoListParagraphCxSpLast,
       div.MsoListParagraphCxSpLast {
-        mso-style-name: 'List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No tCx';
-        mso-style-link: 'List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char';
+        mso-style-name: "List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No tCx";
+        mso-style-link: "List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char";
         margin-top: 0cm;
         margin-right: 0cm;
         margin-bottom: 8pt;
         margin-left: 36pt;
         line-height: 107%;
         font-size: 11pt;
-        font-family: 'Calibri', sans-serif;
+        font-family: "Calibri", sans-serif;
       }
       span.ListParagraphChar {
-        mso-style-name: 'List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char';
-        mso-style-link: 'List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No t';
+        mso-style-name: "List Paragraph Char\,Bullet Char\,List 1 Char\,List Paragraph1 Char\,List Paragraph11 Char\,kepala Char\,Teks tabel Char\,Paragraph_utama Char\,_List Paragraph Char\,List Paragraph pskayu Char\,6\.1 Char\,Isi Bab 1 Char\,ANNEX Char\,Char Char21 Char\,Char Char2 Char";
+        mso-style-link: "List Paragraph\,Bullet\,List 1\,List Paragraph1\,List Paragraph11\,kepala\,Teks tabel\,Paragraph_utama\,_List Paragraph\,List Paragraph pskayu\,6\.1\,Isi Bab 1\,ANNEX\,Char Char21\,Char Char2\,List Paragraph2\,kepala 3\,TABEL\,tabel\,DWA List 1\,List \(Letter\)\,no subbab\,No t";
       }
       .MsoChpDefault {
-        font-family: 'Calibri', sans-serif;
+        font-family: "Calibri", sans-serif;
       }
       .MsoPapDefault {
         margin-bottom: 8pt;
         line-height: 107%;
       }
       @page WordSection1 {
-        size: 595.3pt 841.9pt;
+        size: 841.9pt 595.3pt;
         margin: 36pt 36pt 36pt 36pt;
       }
       div.WordSection1 {
@@ -121,10 +120,14 @@
 
   <body lang="EN-ID" style="word-wrap: break-word">
     <div class="WordSection1">
-      <p class="MsoNormal" align="center" style="text-align: center">
+      <p
+        class="MsoNormal"
+        align="center"
+        style="text-align: center; text-indent: 36pt"
+      >
         <b
           ><span style="font-family: 'Bookman Old Style', serif"
-            >Format Isian Formulir Kerangka Acuan</span
+            >Formulir Kerangka Acuan - {{ $project->project_title }}</span
           ></b
         >
       </p>
@@ -138,17 +141,16 @@
         border="1"
         cellspacing="0"
         cellpadding="0"
-        width="699"
-        style="border-collapse: collapse; border: none; width: 100%;
-        table-layout: fixed;"
+        width="1325px"
+        style="width: 1325px; border-collapse: collapse; border: none"
       >
         <tr style="height: 1cm">
           <td
-            width="699"
+            width="1325px"
             colspan="3"
             valign="top"
             style="
-              width: 524.25pt;
+              width: 1325px;
               border: solid windowtext 1pt;
               padding: 0cm 5.4pt 0cm 5.4pt;
               height: 1cm;
@@ -179,11 +181,11 @@
         </tr>
         <tr style="height: 1cm">
           <td
-            width="699"
+            width="100%"
             colspan="3"
             valign="top"
             style="
-              width: 524.25pt;
+              width: 100%;
               border: solid windowtext 1pt;
               border-top: none;
               padding: 0cm 5.4pt 0cm 5.4pt;
@@ -260,10 +262,10 @@
             </p>
           </td>
           <td
-            width="435"
+            width="100%"
             valign="top"
             style="
-              width: 326.05pt;
+              width: 100%;
               border-top: none;
               border-left: none;
               border-bottom: solid windowtext 1pt;
@@ -285,10 +287,10 @@
         </tr>
         <tr style="height: 1cm">
           <td
-            width="245"
+            width="100%"
             valign="top"
             style="
-              width: 183.7pt;
+              width: 100%;
               border: solid windowtext 1pt;
               border-top: none;
               padding: 0cm 5.4pt 0cm 5.4pt;
@@ -329,10 +331,10 @@
             </p>
           </td>
           <td
-            width="435"
+            width="100%"
             valign="top"
             style="
-              width: 326.05pt;
+              width: 100%;
               border-top: none;
               border-left: none;
               border-bottom: solid windowtext 1pt;
@@ -398,10 +400,10 @@
             </p>
           </td>
           <td
-            width="435"
+            width="100%"
             valign="top"
             style="
-              width: 326.05pt;
+              width: 100%;
               border-top: none;
               border-left: none;
               border-bottom: solid windowtext 1pt;
@@ -411,31 +413,31 @@
             "
           >
           @if($team_member)
-            @php
-                $total = 1;
-            @endphp
-            @foreach($team_member as $t)
-              <p
-                class="MsoNormal"
-                style="margin-bottom: 0cm; line-height: normal"
-              >
-                <span
-                  style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                  >
-                  @if($t->formulator)
-                  {{ $total . '.' }} {{ $t->formulator->name }} ({{ $t->position }})
-                  @elseif($t->expert)
-                  {{ $total . '.' }} {{ $t->expert->name }} ({{ $t->position }})
-                  @endif
-                  </span
+          @php
+              $total = 1;
+          @endphp
+          @foreach($team_member as $t)
+            <p
+              class="MsoNormal"
+              style="margin-bottom: 0cm; line-height: normal"
+            >
+              <span
+                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
                 >
-              </p>
-            @php
-                $total++;
-            @endphp
-            @endforeach
-          @endif
-          </td>
+                @if($t->formulator)
+                {{ $total . '.' }} {{ $t->formulator->name }} ({{ $t->position }})
+                @elseif($t->expert)
+                {{ $total . '.' }} {{ $t->expert->name }} ({{ $t->position }})
+                @endif
+                </span
+              >
+            </p>
+          @php
+              $total++;
+          @endphp
+          @endforeach
+        @endif
+        </td>
         </tr>
         <tr style="height: 1cm">
           <td
@@ -483,10 +485,10 @@
             </p>
           </td>
           <td
-            width="435"
+            width="100%"
             valign="top"
             style="
-              width: 326.05pt;
+              width: 100%;
               border-top: none;
               border-left: none;
               border-bottom: solid windowtext 1pt;
@@ -552,10 +554,10 @@
             </p>
           </td>
           <td
-            width="435"
+            width="100%"
             valign="top"
             style="
-              width: 326.05pt;
+              width: 100%;
               border-top: none;
               border-left: none;
               border-bottom: solid windowtext 1pt;
@@ -621,10 +623,10 @@
             </p>
           </td>
           <td
-            width="435"
+            width="100%"
             valign="top"
             style="
-              width: 326.05pt;
+              width: 100%;
               border-top: none;
               border-left: none;
               border-bottom: solid windowtext 1pt;
@@ -713,7 +715,7 @@
         cellspacing="0"
         cellpadding="0"
         width="100%"
-        style="width: 100%; border-collapse: collapse; border: none; table-layout: fixed;"
+        style="width: 100%; border-collapse: collapse; border: none"
       >
         <tr style="height: 28.1pt">
           <td
@@ -1062,1141 +1064,1141 @@
             </p>
           </td>
         </tr>
-        @php
+            @php
             $pra_konstruksi = $pelingkupan['pra_konstruksi'];
-        @endphp
-        @for($i = 0; $i < count($pra_konstruksi); $i++)
-        <tr style="height: 19.85pt">
-          <td
-            width="5%"
-            valign="top"
-            style="
-              width: 5.48%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['no'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="20%"
-            valign="top"
-            style="
-              width: 20.34%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['component_name'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="14%"
-            valign="top"
-            style="
-              width: 14.9%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $pra_konstruksi[$i]['rencana'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="10%"
-            valign="top"
-            style="
-              width: 10.84%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['rona_lingkungan'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.5%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['dampak_potensial'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.48%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $pra_konstruksi[$i]['ed_besaran_rencana_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $pra_konstruksi[$i]['ed_besaran_rencana'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $pra_konstruksi[$i]['ed_kondisi_rona_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $pra_konstruksi[$i]['ed_kondisi_rona'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $pra_konstruksi[$i]['ed_pengaruh_rencana_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $pra_konstruksi[$i]['ed_pengaruh_rencana'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $pra_konstruksi[$i]['ed_intensitas_perhatian_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $pra_konstruksi[$i]['ed_intensitas_perhatian'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $pra_konstruksi[$i]['ed_kesimpulan_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $pra_konstruksi[$i]['ed_kesimpulan'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.5%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['dph'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="8%"
-            valign="top"
-            style="
-              width: 8.14%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['batas_wilayah'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="11%"
-            valign="top"
-            style="
-              width: 11.82%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $pra_konstruksi[$i]['batas_waktu'] }}</span
-              >
-            </p>
-          </td>
-        </tr>
-        @endfor
+            @endphp
+            @for($i = 0; $i < count($pra_konstruksi); $i++)
+            <tr style="height: 19.85pt">
+                <td
+                    width="5%"
+                    valign="top"
+                    style="
+                    width: 5.48%;
+                    border: solid windowtext 1pt;
+                    border-top: none;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $pra_konstruksi[$i]['no'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="20%"
+                    valign="top"
+                    style="
+                    width: 20.34%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $pra_konstruksi[$i]['component_name'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="14%"
+                    valign="top"
+                    style="
+                    width: 14.9%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $pra_konstruksi[$i]['rencana'] !!}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="10%"
+                    valign="top"
+                    style="
+                    width: 10.84%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $pra_konstruksi[$i]['rona_lingkungan'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="9%"
+                    valign="top"
+                    style="
+                    width: 9.5%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $pra_konstruksi[$i]['dampak_potensial'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="9%"
+                    valign="top"
+                    style="
+                    width: 9.48%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $pra_konstruksi[$i]['ed_besaran_rencana_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $pra_konstruksi[$i]['ed_besaran_rencana'] !!}</span
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $pra_konstruksi[$i]['ed_kondisi_rona_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $pra_konstruksi[$i]['ed_kondisi_rona'] !!}</span
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $pra_konstruksi[$i]['ed_pengaruh_rencana_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $pra_konstruksi[$i]['ed_pengaruh_rencana'] !!}</span
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $pra_konstruksi[$i]['ed_intensitas_perhatian_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $pra_konstruksi[$i]['ed_intensitas_perhatian'] !!}</span
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $pra_konstruksi[$i]['ed_kesimpulan_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $pra_konstruksi[$i]['ed_kesimpulan'] !!}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="9%"
+                    valign="top"
+                    style="
+                    width: 9.5%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $pra_konstruksi[$i]['dph'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="8%"
+                    valign="top"
+                    style="
+                    width: 8.14%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $pra_konstruksi[$i]['batas_wilayah'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="11%"
+                    valign="top"
+                    style="
+                    width: 11.82%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $pra_konstruksi[$i]['batas_waktu'] }}</span
+                    >
+                    </p>
+                </td>
+            </tr>
+            @endfor
         @endif
         @endif
 
         @if(array_key_exists('konstruksi', $pelingkupan))
         @if(count($pelingkupan['konstruksi']) > 0)
         <tr style="height: 19.85pt">
-          <td
-            width="100%"
-            colspan="9"
-            valign="top"
-            style="
-              width: 100%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
+            <td
+                width="100%"
+                colspan="9"
+                valign="top"
+                style="
+                width: 100%;
+                border: solid windowtext 1pt;
+                border-top: none;
+                padding: 0cm 5.4pt 0cm 5.4pt;
+                height: 19.85pt;
+                "
             >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >Tahap Konstruksi</span
-              >
-            </p>
-          </td>
+                <p
+                class="MsoNormal"
+                style="
+                    margin-bottom: 0cm;
+                    text-align: justify;
+                    line-height: normal;
+                "
+                >
+                <span
+                    style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                    >Tahap Konstruksi</span
+                >
+                </p>
+            </td>
         </tr>
         @php
             $konstruksi = $pelingkupan['konstruksi'];
         @endphp
         @for($i = 0; $i < count($konstruksi); $i++)
         <tr style="height: 19.85pt">
-          <td
+        <td
             width="5%"
             valign="top"
             style="
-              width: 5.48%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 5.48%;
+            border: solid windowtext 1pt;
+            border-top: none;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{{ $konstruksi[$i]['no'] }}</span
-              >
+            >
             </p>
-          </td>
-          <td
+        </td>
+        <td
             width="20%"
             valign="top"
             style="
-              width: 20.34%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 20.34%;
+            border-top: none;
+            border-left: none;
+            border-bottom: solid windowtext 1pt;
+            border-right: solid windowtext 1pt;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{{ $konstruksi[$i]['component_name'] }}</span
-              >
+            >
             </p>
-          </td>
-          <td
+        </td>
+        <td
             width="14%"
             valign="top"
             style="
-              width: 14.9%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 14.9%;
+            border-top: none;
+            border-left: none;
+            border-bottom: solid windowtext 1pt;
+            border-right: solid windowtext 1pt;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{!! $konstruksi[$i]['rencana'] !!}</span
-              >
+            >
             </p>
-          </td>
-          <td
+        </td>
+        <td
             width="10%"
             valign="top"
             style="
-              width: 10.84%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 10.84%;
+            border-top: none;
+            border-left: none;
+            border-bottom: solid windowtext 1pt;
+            border-right: solid windowtext 1pt;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{{ $konstruksi[$i]['rona_lingkungan'] }}</span
-              >
+            >
             </p>
-          </td>
-          <td
+        </td>
+        <td
             width="9%"
             valign="top"
             style="
-              width: 9.5%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 9.5%;
+            border-top: none;
+            border-left: none;
+            border-bottom: solid windowtext 1pt;
+            border-right: solid windowtext 1pt;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{{ $konstruksi[$i]['dampak_potensial'] }}</span
-              >
+            >
             </p>
-          </td>
-          <td
+        </td>
+        <td
             width="9%"
             valign="top"
             style="
-              width: 9.48%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 9.48%;
+            border-top: none;
+            border-left: none;
+            border-bottom: solid windowtext 1pt;
+            border-right: solid windowtext 1pt;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $konstruksi[$i]['ed_besaran_rencana_title'] }}</span
+                "
+                >{{ $konstruksi[$i]['ed_besaran_rencana_title'] }}</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{!! $konstruksi[$i]['ed_besaran_rencana'] !!}</span
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $konstruksi[$i]['ed_kondisi_rona_title'] }}</span
+                "
+                >{{ $konstruksi[$i]['ed_kondisi_rona_title'] }}</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{!! $konstruksi[$i]['ed_kondisi_rona'] !!}</span
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $konstruksi[$i]['ed_pengaruh_rencana_title'] }}</span
+                "
+                >{{ $konstruksi[$i]['ed_pengaruh_rencana_title'] }}</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{!! $konstruksi[$i]['ed_pengaruh_rencana'] !!}</span
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $konstruksi[$i]['ed_intensitas_perhatian_title'] }}</span
+                "
+                >{{ $konstruksi[$i]['ed_intensitas_perhatian_title'] }}</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{!! $konstruksi[$i]['ed_intensitas_perhatian'] !!}</span
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $konstruksi[$i]['ed_kesimpulan_title'] }}</span
+                "
+                >{{ $konstruksi[$i]['ed_kesimpulan_title'] }}</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <b
+            <b
                 ><span
-                  style="
+                style="
                     font-size: 7pt;
                     font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
+                "
+                >&nbsp;</span
                 ></b
-              >
+            >
             </p>
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{!! $konstruksi[$i]['ed_kesimpulan'] !!}</span
-              >
+            >
             </p>
-          </td>
-          <td
+        </td>
+        <td
             width="9%"
             valign="top"
             style="
-              width: 9.5%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 9.5%;
+            border-top: none;
+            border-left: none;
+            border-bottom: solid windowtext 1pt;
+            border-right: solid windowtext 1pt;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{{ $konstruksi[$i]['dph'] }}</span
-              >
+            >
             </p>
-          </td>
-          <td
+        </td>
+        <td
             width="8%"
             valign="top"
             style="
-              width: 8.14%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 8.14%;
+            border-top: none;
+            border-left: none;
+            border-bottom: solid windowtext 1pt;
+            border-right: solid windowtext 1pt;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{{ $konstruksi[$i]['batas_wilayah'] }}</span
-              >
+            >
             </p>
-          </td>
-          <td
+        </td>
+        <td
             width="11%"
             valign="top"
             style="
-              width: 11.82%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 11.82%;
+            border-top: none;
+            border-left: none;
+            border-bottom: solid windowtext 1pt;
+            border-right: solid windowtext 1pt;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >{{ $konstruksi[$i]['batas_waktu'] }}</span
-              >
+            >
             </p>
-          </td>
+        </td>
         </tr>
         @endfor
         @endif
@@ -2205,1174 +2207,1172 @@
         @if(array_key_exists('operasi', $pelingkupan))
         @if(count($pelingkupan['operasi']) > 0)
         <tr style="height: 19.85pt">
-          <td
+        <td
             width="100%"
             colspan="9"
             valign="top"
             style="
-              width: 100%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
+            width: 100%;
+            border: solid windowtext 1pt;
+            border-top: none;
+            padding: 0cm 5.4pt 0cm 5.4pt;
+            height: 19.85pt;
             "
-          >
+        >
             <p
-              class="MsoNormal"
-              style="
+            class="MsoNormal"
+            style="
                 margin-bottom: 0cm;
                 text-align: justify;
                 line-height: normal;
-              "
+            "
             >
-              <span
+            <span
                 style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
                 >Tahap Operasi</span
-              >
+            >
             </p>
-          </td>
+        </td>
         </tr>
-        @php
-            $operasi = $pelingkupan['operasi'];
-        @endphp
-        @for($i = 0; $i < count($operasi); $i++)
-        <tr style="height: 19.85pt">
-          <td
-            width="5%"
-            valign="top"
-            style="
-              width: 5.48%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['no'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="20%"
-            valign="top"
-            style="
-              width: 20.34%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['component_name'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="14%"
-            valign="top"
-            style="
-              width: 14.9%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['rencana'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="10%"
-            valign="top"
-            style="
-              width: 10.84%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['rona_lingkungan'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.5%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['dampak_potensial'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.48%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_besaran_rencana_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_besaran_rencana'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_kondisi_rona_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_kondisi_rona'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_pengaruh_rencana_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_pengaruh_rencana'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_intensitas_perhatian_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_intensitas_perhatian'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_kesimpulan_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_kesimpulan'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.5%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['dph'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="8%"
-            valign="top"
-            style="
-              width: 8.14%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['batas_wilayah'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="11%"
-            valign="top"
-            style="
-              width: 11.82%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['batas_waktu'] }}</span
-              >
-            </p>
-          </td>
-        </tr>
-        @endfor
+            @php
+                $operasi = $pelingkupan['operasi'];
+            @endphp
+            @for($i = 0; $i < count($operasi); $i++)
+            <tr style="height: 19.85pt">
+                <td
+                    width="5%"
+                    valign="top"
+                    style="
+                    width: 5.48%;
+                    border: solid windowtext 1pt;
+                    border-top: none;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $operasi[$i]['no'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="20%"
+                    valign="top"
+                    style="
+                    width: 20.34%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $operasi[$i]['component_name'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="14%"
+                    valign="top"
+                    style="
+                    width: 14.9%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $operasi[$i]['rencana'] !!}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="10%"
+                    valign="top"
+                    style="
+                    width: 10.84%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $operasi[$i]['rona_lingkungan'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="9%"
+                    valign="top"
+                    style="
+                    width: 9.5%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $operasi[$i]['dampak_potensial'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="9%"
+                    valign="top"
+                    style="
+                    width: 9.48%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $operasi[$i]['ed_besaran_rencana_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $operasi[$i]['ed_besaran_rencana'] !!}</span
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $operasi[$i]['ed_kondisi_rona_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $operasi[$i]['ed_kondisi_rona'] !!}</span
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $operasi[$i]['ed_pengaruh_rencana_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $operasi[$i]['ed_pengaruh_rencana'] !!}</span
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $operasi[$i]['ed_intensitas_perhatian_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $operasi[$i]['ed_intensitas_perhatian'] !!}</span
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >{{ $operasi[$i]['ed_kesimpulan_title'] }}</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <b
+                        ><span
+                        style="
+                            font-size: 7pt;
+                            font-family: 'Bookman Old Style', serif;
+                        "
+                        >&nbsp;</span
+                        ></b
+                    >
+                    </p>
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{!! $operasi[$i]['ed_kesimpulan'] !!}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="9%"
+                    valign="top"
+                    style="
+                    width: 9.5%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $operasi[$i]['dph'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="8%"
+                    valign="top"
+                    style="
+                    width: 8.14%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $operasi[$i]['batas_wilayah'] }}</span
+                    >
+                    </p>
+                </td>
+                <td
+                    width="11%"
+                    valign="top"
+                    style="
+                    width: 11.82%;
+                    border-top: none;
+                    border-left: none;
+                    border-bottom: solid windowtext 1pt;
+                    border-right: solid windowtext 1pt;
+                    padding: 0cm 5.4pt 0cm 5.4pt;
+                    height: 19.85pt;
+                    "
+                >
+                    <p
+                    class="MsoNormal"
+                    style="
+                        margin-bottom: 0cm;
+                        text-align: justify;
+                        line-height: normal;
+                    "
+                    >
+                    <span
+                        style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                        >{{ $operasi[$i]['batas_waktu'] }}</span
+                    >
+                    </p>
+                </td>
+            </tr>
+            @endfor
         @endif
         @endif
 
         @if(array_key_exists('pasca_operasi', $pelingkupan))
-        @if(count($pelingkupan['pasca_operasi']) > 0)
-        <tr style="height: 19.85pt">
-          <td
-            width="100%"
-            colspan="9"
-            valign="top"
-            style="
-              width: 100%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >Tahap Pasca Operasi</span
-              >
-            </p>
-          </td>
-        </tr>
-        @php
-            $p_operasi = $pelingkupan['pasca_operasi'];
-        @endphp
-        @for($i = 0; $i < count($p_operasi); $i++)
-        <tr style="height: 19.85pt">
-          <td
-            width="5%"
-            valign="top"
-            style="
-              width: 5.48%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $p_operasi[$i]['no'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="20%"
-            valign="top"
-            style="
-              width: 20.34%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $p_operasi[$i]['component_name'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="14%"
-            valign="top"
-            style="
-              width: 14.9%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $p_operasi[$i]['rencana'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="10%"
-            valign="top"
-            style="
-              width: 10.84%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $p_operasi[$i]['rona_lingkungan'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.5%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $p_operasi[$i]['dampak_potensial'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.48%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $p_operasi[$i]['ed_besaran_rencana_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $p_operasi[$i]['ed_besaran_rencana'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_kondisi_rona_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_kondisi_rona'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_pengaruh_rencana_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_pengaruh_rencana'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_intensitas_perhatian_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_intensitas_perhatian'] !!}</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >{{ $operasi[$i]['ed_kesimpulan_title'] }}</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <b
-                ><span
-                  style="
-                    font-size: 7pt;
-                    font-family: 'Bookman Old Style', serif;
-                  "
-                  >&nbsp;</span
-                ></b
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $operasi[$i]['ed_kesimpulan'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="9%"
-            valign="top"
-            style="
-              width: 9.5%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['dph'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="8%"
-            valign="top"
-            style="
-              width: 8.14%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['batas_wilayah'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="11%"
-            valign="top"
-            style="
-              width: 11.82%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 19.85pt;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $operasi[$i]['batas_waktu'] }}</span
-              >
-            </p>
-          </td>
-        </tr>
-        @endfor
+            @if(count($pelingkupan['pasca_operasi']) > 0)
+                <tr style="height: 19.85pt">
+                    <td
+                        width="100%"
+                        colspan="9"
+                        valign="top"
+                        style="
+                        width: 100%;
+                        border: solid windowtext 1pt;
+                        border-top: none;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >Tahap Pasca Operasi</span
+                        >
+                        </p>
+                    </td>
+                </tr>
+                @php
+                    $p_operasi = $pelingkupan['pasca_operasi'];
+                @endphp
+                @for($i = 0; $i < count($p_operasi); $i++)
+                <tr style="height: 19.85pt">
+                    <td
+                        width="5%"
+                        valign="top"
+                        style="
+                        width: 5.48%;
+                        border: solid windowtext 1pt;
+                        border-top: none;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $p_operasi[$i]['no'] }}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="20%"
+                        valign="top"
+                        style="
+                        width: 20.34%;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $p_operasi[$i]['component_name'] }}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="14%"
+                        valign="top"
+                        style="
+                        width: 14.9%;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $p_operasi[$i]['rencana'] !!}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="10%"
+                        valign="top"
+                        style="
+                        width: 10.84%;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $p_operasi[$i]['rona_lingkungan'] }}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="9%"
+                        valign="top"
+                        style="
+                        width: 9.5%;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $p_operasi[$i]['dampak_potensial'] }}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="9%"
+                        valign="top"
+                        style="
+                        width: 9.48%;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >{{ $p_operasi[$i]['ed_besaran_rencana_title'] }}</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $p_operasi[$i]['ed_besaran_rencana'] !!}</span
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >{{ $operasi[$i]['ed_kondisi_rona_title'] }}</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $operasi[$i]['ed_kondisi_rona'] !!}</span
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >{{ $operasi[$i]['ed_pengaruh_rencana_title'] }}</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $operasi[$i]['ed_pengaruh_rencana'] !!}</span
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >{{ $operasi[$i]['ed_intensitas_perhatian_title'] }}</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $operasi[$i]['ed_intensitas_perhatian'] !!}</span
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >{{ $operasi[$i]['ed_kesimpulan_title'] }}</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <b
+                            ><span
+                            style="
+                                font-size: 7pt;
+                                font-family: 'Bookman Old Style', serif;
+                            "
+                            >&nbsp;</span
+                            ></b
+                        >
+                        </p>
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $operasi[$i]['ed_kesimpulan'] !!}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="9%"
+                        valign="top"
+                        style="
+                        width: 9.5%;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $operasi[$i]['dph'] }}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="8%"
+                        valign="top"
+                        style="
+                        width: 8.14%;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $operasi[$i]['batas_wilayah'] }}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="11%"
+                        valign="top"
+                        style="
+                        width: 11.82%;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 19.85pt;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $operasi[$i]['batas_waktu'] }}</span
+                        >
+                        </p>
+                    </td>
+                </tr>
+                @endfor
+            @endif
         @endif
-        @endif
-
-
       </table>
 
       <p class="MsoNormal" style="text-align: justify">
@@ -3397,18 +3397,14 @@
         border="1"
         cellspacing="0"
         cellpadding="0"
-        style="
-          border-collapse: collapse;
-          border: none;
-          width: 100%;
-          table-layout: fixed;
-        "
+        width="100%"
+        style="width: 100%; border-collapse: collapse; border: none"
       >
         <tr style="height: 47.3pt">
           <td
-            width="19"
+            width="25px"
             style="
-              width: 13.95pt;
+              width: 25px;
               border: solid windowtext 1pt;
               padding: 0cm 5.4pt 0cm 5.4pt;
               height: 47.3pt;
@@ -3435,9 +3431,9 @@
             </p>
           </td>
           <td
-            width="153"
+            width="100px"
             style="
-              width: 114.8pt;
+              width: 100px;
               border: solid windowtext 1pt;
               border-left: none;
               padding: 0cm 5.4pt 0cm 5.4pt;
@@ -3465,9 +3461,9 @@
             </p>
           </td>
           <td
-            width="153"
+            width="100px"
             style="
-              width: 114.8pt;
+              width: 100px;
               border: solid windowtext 1pt;
               border-left: none;
               padding: 0cm 5.4pt 0cm 5.4pt;
@@ -3495,9 +3491,9 @@
             </p>
           </td>
           <td
-            width="153"
+            width="100px"
             style="
-              width: 114.8pt;
+              width: 100px;
               border: solid windowtext 1pt;
               border-left: none;
               padding: 0cm 5.4pt 0cm 5.4pt;
@@ -3525,9 +3521,9 @@
             </p>
           </td>
           <td
-            width="153"
+            width="100px"
             style="
-              width: 114.8pt;
+              width: 100px;
               border: solid windowtext 1pt;
               border-left: none;
               padding: 0cm 5.4pt 0cm 5.4pt;
@@ -3555,9 +3551,9 @@
             </p>
           </td>
           <td
-            width="153"
+            width="100px"
             style="
-              width: 114.8pt;
+              width: 100px;
               border: solid windowtext 1pt;
               border-left: none;
               padding: 0cm 5.4pt 0cm 5.4pt;
@@ -3585,9 +3581,9 @@
             </p>
           </td>
           <td
-            width="153"
+            width="100px"
             style="
-              width: 114.8pt;
+              width: 100px;
               border: solid windowtext 1pt;
               border-left: none;
               padding: 0cm 5.4pt 0cm 5.4pt;
@@ -3615,206 +3611,204 @@
             </p>
           </td>
         </tr>
-
         @if(array_key_exists('metode_studi', $pelingkupan))
-        @if(count($pelingkupan['metode_studi']) > 0)
-        @for($i = 0; $i < count($pelingkupan['metode_studi']); $i++)
-        @php
-            $m_studi = $pelingkupan['metode_studi'];
-        @endphp
-        <tr style="height: 1cm">
-          <td
-            width="19"
-            valign="top"
-            style="
-              width: 13.95pt;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $m_studi[$i]['no'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="153"
-            valign="top"
-            style="
-              width: 114.85pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{{ $m_studi[$i]['potential_impact_evaluation'] }}</span
-              >
-            </p>
-          </td>
-          <td
-            width="86"
-            valign="top"
-            style="
-              width: 64.4pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
-                >{!! $m_studi[$i]['required_information'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="86"
-            valign="top"
-            style="
-              width: 64.4pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{!! $m_studi[$i]['data_gathering_method'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="86"
-            valign="top"
-            style="
-              width: 64.4pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{!! $m_studi[$i]['analysis_method'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="86"
-            valign="top"
-            style="
-              width: 64.4pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{!! $m_studi[$i]['forecast_method'] !!}</span
-              >
-            </p>
-          </td>
-          <td
-            width="86"
-            valign="top"
-            style="
-              width: 64.4pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="
-                margin-bottom: 0cm;
-                text-align: justify;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{!! $m_studi[$i]['evaluation_method'] !!}</span
-              >
-            </p>
-          </td>
-        </tr>
-        @endfor
+            @if(count($pelingkupan['metode_studi']) > 0)
+                @for($i = 0; $i < count($pelingkupan['metode_studi']); $i++)
+                @php
+                    $m_studi = $pelingkupan['metode_studi'];
+                @endphp
+                <tr style="height: 1cm">
+                    <td
+                        width="25px"
+                        valign="top"
+                        style="
+                        width: 25px;
+                        border: solid windowtext 1pt;
+                        border-top: none;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 1cm;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $m_studi[$i]['no'] }}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="100px"
+                        valign="top"
+                        style="
+                        width: 100px;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 1cm;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{{ $m_studi[$i]['potential_impact_evaluation'] }}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="100px"
+                        valign="top"
+                        style="
+                        width: 100px;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 1cm;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 7pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $m_studi[$i]['required_information'] !!}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width=100px"
+                        valign="top"
+                        style="
+                        width: 100px;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 1cm;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $m_studi[$i]['data_gathering_method'] !!}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="100px"
+                        valign="top"
+                        style="
+                        width: 100px;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 1cm;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $m_studi[$i]['analysis_method'] !!}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="100px"
+                        valign="top"
+                        style="
+                        width: 100px;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 1cm;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $m_studi[$i]['forecast_method'] !!}</span
+                        >
+                        </p>
+                    </td>
+                    <td
+                        width="100px"
+                        valign="top"
+                        style="
+                        width: 100px;
+                        border-top: none;
+                        border-left: none;
+                        border-bottom: solid windowtext 1pt;
+                        border-right: solid windowtext 1pt;
+                        padding: 0cm 5.4pt 0cm 5.4pt;
+                        height: 1cm;
+                        "
+                    >
+                        <p
+                        class="MsoNormal"
+                        style="
+                            margin-bottom: 0cm;
+                            text-align: justify;
+                            line-height: normal;
+                        "
+                        >
+                        <span
+                            style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
+                            >{!! $m_studi[$i]['evaluation_method'] !!}</span
+                        >
+                        </p>
+                    </td>
+                </tr>
+                @endfor
+            @endif
         @endif
-        @endif
-
       </table>
 
       <p class="MsoNormal" style="text-align: justify">

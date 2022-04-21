@@ -486,21 +486,27 @@ export default {
     },
     download(url, urlPdf) {
       if (url || urlPdf) {
-        if (url) {
-          if (url === '/storage/') {
-            this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
-              confirmButtonText: 'OK',
-            });
-          } else {
-            window.open(url);
-          }
+        if (
+          (url === '/storage/' || url === null) &&
+          (urlPdf === '/storage/' || urlPdf === null)
+        ) {
+          this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
+            confirmButtonText: 'OK',
+          });
         } else {
-          if (urlPdf === '/storage/') {
-            this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
-              confirmButtonText: 'OK',
-            });
-          } else {
-            window.open(urlPdf);
+          if (url) {
+            if (url !== '/storage/') {
+              var a = document.createElement('a');
+              a.href = url;
+              a.setAttribute('download', url);
+              a.click();
+            }
+          }
+
+          if (urlPdf) {
+            if (urlPdf !== '/storage/') {
+              window.open(urlPdf);
+            }
           }
         }
       } else {

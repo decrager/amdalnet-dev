@@ -2495,7 +2495,7 @@ class AndalComposingController extends Controller
                 $ed_kesimpulan_title = '';
                 $ed_kesimpulan = '';
 
-                if ($pA->is_hypothetical_significant && $pA->potentialImpactEvaluation) {
+                if ($pA->potentialImpactEvaluation) {
                     foreach ($pA->potentialImpactEvaluation as $po) {
                         if ($po->id_pie_param == 1) {
                             $ed_besaran_rencana_title = $po->pieParam->name;
@@ -2582,35 +2582,35 @@ class AndalComposingController extends Controller
                     ];
                     $metode_replace[] = [
                         'replace' => '${rims_' . $pA->id . '_' . $pA->impactStudy->id . '}',
-                        'data' => $this->renderHtmlTable($pA->impactStudy->required_information, 1200),
+                        'data' => $this->renderHtmlTable($pA->impactStudy->required_information, 2000),
                     ];
                     $metode_replace[] = [
                         'replace' => '${dgmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
-                        'data' => $this->renderHtmlTable($pA->impactStudy->data_gathering_method, 1200),
+                        'data' => $this->renderHtmlTable($pA->impactStudy->data_gathering_method, 3500),
                     ];
                     $metode_replace[] = [
                         'replace' => '${amms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
-                        'data' => $this->renderHtmlTable($pA->impactStudy->analysis_method, 1200),
+                        'data' => $this->renderHtmlTable($pA->impactStudy->analysis_method, 3500),
                     ];
                     $metode_replace[] = [
                         'replace' => '${fmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
-                        'data' => $this->renderHtmlTable($pA->impactStudy->forecast_method, 1200),
+                        'data' => $this->renderHtmlTable($pA->impactStudy->forecast_method, 3500),
                     ];
                     $metode_replace[] = [
                         'replace' => '${emms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
-                        'data' => $this->renderHtmlTable($pA->impactStudy->evaluation_method, 1200),
+                        'data' => $this->renderHtmlTable($pA->impactStudy->evaluation_method, 3500),
                     ];
                     $total_ms++;
                 }
 
 
                 // === HTML CONTENT === //
-                $html_content[] = $this->renderHtml('rencana', $s->id, $pA->id, 1300, $pA->initial_study_plan);
-                $html_content[] = $this->renderHtml('ed_besaran_rencana', $s->id, $pA->id, 800, $ed_besaran_rencana);
-                $html_content[] = $this->renderHtml('ed_kondisi_rona', $s->id, $pA->id, 800, $ed_kondisi_rona);
-                $html_content[] = $this->renderHtml('ed_pengaruh_rencana', $s->id, $pA->id, 800, $ed_pengaruh_rencana);
-                $html_content[] = $this->renderHtml('ed_intensitas_perhatian', $s->id, $pA->id, 800, $ed_intensitas_perhatian);
-                $html_content[] = $this->renderHtml('ed_kesimpulan', $s->id, $pA->id, 800, $ed_kesimpulan);
+                $html_content[] = $this->renderHtml('rencana', $s->id, $pA->id, 2000, $pA->initial_study_plan);
+                $html_content[] = $this->renderHtml('ed_besaran_rencana', $s->id, $pA->id, 1200, $ed_besaran_rencana);
+                $html_content[] = $this->renderHtml('ed_kondisi_rona', $s->id, $pA->id, 1200, $ed_kondisi_rona);
+                $html_content[] = $this->renderHtml('ed_pengaruh_rencana', $s->id, $pA->id, 1200, $ed_pengaruh_rencana);
+                $html_content[] = $this->renderHtml('ed_intensitas_perhatian', $s->id, $pA->id, 1200, $ed_intensitas_perhatian);
+                $html_content[] = $this->renderHtml('ed_kesimpulan', $s->id, $pA->id, 1200, $ed_kesimpulan);
 
                 $total++;
             }
@@ -2807,14 +2807,6 @@ class AndalComposingController extends Controller
                         $component = $imp->projectComponent->component->name;
                     }
                 }
-                // } else if ($imp->subProjectComponent->id_project_stage != null) {
-                //     if (($imp->subProjectComponent->component) && $imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
-                //         if ($imp->subProjectRonaAwal) {
-                //             $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                //             $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                //         }
-                //     }
-                // }
             }
         } else {
             if ($imp->component) {
@@ -2891,7 +2883,7 @@ class AndalComposingController extends Controller
                 $ed_kesimpulan_title = '';
                 $ed_kesimpulan = '';
 
-                if ($pA->is_hypothetical_significant && $pA->potentialImpactEvaluation) {
+                if ($pA->potentialImpactEvaluation) {
                     foreach ($pA->potentialImpactEvaluation as $po) {
                         if ($po->id_pie_param == 1) {
                             $ed_besaran_rencana_title = $po->pieParam->name;
@@ -2955,7 +2947,7 @@ class AndalComposingController extends Controller
                 'team_member',
                 'public_consultation',
                 'pelingkupan'
-            ));
+            ))->setPaper('a4', 'landscape');
 
         return $pdf->download('hehey.pdf');
     }
