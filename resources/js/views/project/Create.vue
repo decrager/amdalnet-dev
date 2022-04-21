@@ -521,7 +521,7 @@
                       </td>
                     </tr>
                   </table>
-                  <el-tag v-if="currentProject.high_pollution" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Standar </b> Air Limbah</el-tag>
+                  <el-tag v-if="currentProject.high_pollution || currentProject.disposal_wastewater || currentProject.utilization_wastewater" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Standar </b> Air Limbah</el-tag>
                 </el-card>
               </el-col>
             </el-row>
@@ -549,7 +549,7 @@
                       </td>
                     </tr>
                   </table>
-                  <el-tag v-if="currentProject.high_emission" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Standar </b> Gas Buang</el-tag>
+                  <el-tag v-if="currentProject.high_emission || currentProject.genset || currentProject.chimney" type="danger" style="width: 100%; height: 36px; margin-top: 5px; padding-top: 5px">Anda Membutuhkan <b> Persetujuan Teknis Standar </b> Gas Buang</el-tag>
                 </el-card>
               </el-col>
             </el-row>
@@ -561,7 +561,6 @@
                       <th>Jenis Kegiatan</th>
                       <th />
                       <th />
-                      <th />
                     </tr>
                     <tr>
                       <td>
@@ -571,13 +570,8 @@
                         <div>
                           <el-checkbox v-model="currentProject.process_b3" style="margin-top: 5px" label="Pengolahan Limbah B3" border />
                         </div>
-                      </td>
-                      <td>
                         <div>
-                          <el-checkbox v-model="currentProject.utilization_b3" label="Pemanfaatan Limbah B3" border />
-                        </div>
-                        <div>
-                          <el-checkbox v-model="currentProject.hoard_b3" style="margin-top: 5px" label="Penimbunan Limbah B3" border />
+                          <el-checkbox v-model="currentProject.utilization_b3" style="margin-top: 5px" label="Pemanfaatan Limbah B3" border />
                         </div>
                       </td>
                       <td>
@@ -585,12 +579,15 @@
                           <el-checkbox v-model="currentProject.dumping_b3" label="Dumping Limbah B3" border />
                         </div>
                         <div>
-                          <el-checkbox v-model="currentProject.tps" style="margin-top: 5px" label="Penyimpanan Limbah B3" border />
+                          <el-checkbox v-model="currentProject.hoard_b3" style="margin-top: 5px" label="Penimbunan Limbah B3" border />
+                        </div>
+                        <div>
+                          <el-checkbox v-model="currentProject.transport_b3" style="margin-top: 5px" label="Pengangkutan Limbah B3" border />
                         </div>
                       </td>
                       <td>
                         <div>
-                          <el-checkbox v-model="currentProject.transport_b3" label="Pengangkutan Limbah B3" border />
+                          <el-checkbox v-model="currentProject.tps" style="margin-top: 5px" label="Penyimpanan Limbah B3" border />
                         </div>
                       </td>
                     </tr>
