@@ -2495,7 +2495,7 @@ class AndalComposingController extends Controller
                 $ed_kesimpulan_title = '';
                 $ed_kesimpulan = '';
 
-                if ($pA->is_hypothetical_significant && $pA->potentialImpactEvaluation) {
+                if ($pA->potentialImpactEvaluation) {
                     foreach ($pA->potentialImpactEvaluation as $po) {
                         if ($po->id_pie_param == 1) {
                             $ed_besaran_rencana_title = $po->pieParam->name;
