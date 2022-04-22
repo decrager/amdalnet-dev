@@ -12,9 +12,33 @@
       v-loading="loading"
       max-height="800"
       :header-cell-style="{ background: '#099C4B', color: 'white' }"
-      :data="list"
+      :data="
+        list.filter(
+          (data) =>
+            !search ||
+            (data.id_proyek ? data.id_proyek : '')
+              .toLowerCase()
+              .includes(search.toLowerCase()) ||
+            (data.idizin ? data.idizin : '')
+              .toLowerCase()
+              .includes(search.toLowerCase()) ||
+            (data.name ? data.name : '')
+              .toLowerCase()
+              .includes(search.toLowerCase()) ||
+            (data.kbli ? data.kbli : '')
+              .toLowerCase()
+              .includes(search.toLowerCase()) ||
+            (data.skala_resiko ? data.skala_resiko : '')
+              .toLowerCase()
+              .includes(search.toLowerCase()) ||
+            JSON.stringify(data.lokasi ? data.lokasi : [])
+              .toLowerCase()
+              .includes(search.toLowerCase())
+        )
+      "
       fit
       highlight-current-row
+      :default-sort="{ prop: 'name', order: 'descending' }"
     >
       <el-table-column align="center" label="No." width="50px">
         <template slot-scope="scope">
@@ -26,6 +50,8 @@
         header-align="center"
         label="Project"
         width="400px"
+        prop="name"
+        sortable
       >
         <template slot-scope="scope">
           <div><b>ID Proyek :</b> {{ scope.row.id_proyek }}</div>
@@ -38,7 +64,13 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column align="left" header-align="center" label="Alamat">
+      <el-table-column
+        align="left"
+        header-align="center"
+        label="Alamat"
+        sortable
+        prop="province"
+      >
         <template slot-scope="scope">
           <ul style="margin-block-start: 0px">
             <li v-for="(lokasi, index) in scope.row.lokasi" :key="index">
@@ -50,6 +82,13 @@
         </template>
       </el-table-column>
       <el-table-column align="center">
+        <template slot="header">
+          <el-input
+            v-model="search"
+            size="mini"
+            placeholder="Cari berdasarkan Project atau Alamat"
+          />
+        </template>
         <router-link to="/project/create">
           <el-button type="primary">Proses Penapisan</el-button>
         </router-link>
@@ -65,6 +104,7 @@ export default {
     return {
       loading: false,
       list: [],
+      search: '',
     };
   },
   computed: {
@@ -86,9 +126,9 @@ export default {
     );
     console.log(ossProjects);
     console.log(this.$store.getters.ossByNib);
-    if (ossProjects){
+    if (ossProjects) {
       ossProjects.forEach((e) => {
-      // check kbli or not
+        // check kbli or not
         if (e.nonKbli === 'Y') {
           this.list.push({
             nonKbli: true,
