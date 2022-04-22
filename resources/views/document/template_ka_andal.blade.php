@@ -136,561 +136,187 @@
         <span style="font-family: 'Bookman Old Style', serif">&nbsp;</span>
       </p>
 
-      <table
-        class="MsoTableGrid"
-        border="1"
-        cellspacing="0"
-        cellpadding="0"
-        width="1325px"
-        style="width: 1325px; border-collapse: collapse; border: none"
-      >
-        <tr style="height: 1cm">
-          <td
-            width="1325px"
-            colspan="3"
-            valign="top"
-            style="
-              width: 1325px;
-              border: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              align="center"
-              style="
-                margin-bottom: 0cm;
-                text-align: center;
-                line-height: normal;
-              "
-            >
-              <b
-                ><i
-                  ><span
-                    style="
-                      font-size: 10pt;
-                      font-family: 'Bookman Old Style', serif;
-                    "
-                    >Form Kerangka Acuan (Form KA)</span
-                  ></i
-                ></b
-              >
-            </p>
-          </td>
-        </tr>
-        <tr style="height: 1cm">
-          <td
-            width="100%"
-            colspan="3"
-            valign="top"
-            style="
-              width: 100%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoListParagraph"
-              style="
-                margin-top: 0cm;
-                margin-right: 0cm;
-                margin-bottom: 0cm;
-                margin-left: 29.85pt;
-                text-align: justify;
-                text-indent: -15.7pt;
-                line-height: normal;
-              "
-            >
-              <span
-                style="font-size: 10pt; font-family: 'Bookman Old Style', serif"
-                >A.<span style="font: 7pt 'Times New Roman'"
-                  >&nbsp;&nbsp;
-                </span></span
-              ><span
-                style="font-size: 10pt; font-family: 'Bookman Old Style', serif"
-                >Umum</span
-              >
-            </p>
-          </td>
-        </tr>
-        <tr style="height: 1cm">
-          <td
-            width="245"
-            valign="top"
-            style="
-              width: 183.7pt;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >Nama Usaha dan/atau Kegiatan</span
-              >
-            </p>
-          </td>
-          <td
-            width="19"
-            valign="top"
-            style="
-              width: 14.5pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 10pt; font-family: 'Bookman Old Style', serif"
-                >:</span
-              >
-            </p>
-          </td>
-          <td
-            width="100%"
-            valign="top"
-            style="
-              width: 100%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{{ $project->project_title }}</span
-              >
-            </p>
-          </td>
-        </tr>
-        <tr style="height: 1cm">
-          <td
-            width="100%"
-            valign="top"
-            style="
-              width: 100%;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >Penanggung jawab Usaha dan/atau Kegiatan</span
-              >
-            </p>
-          </td>
-          <td
-            width="19"
-            valign="top"
-            style="
-              width: 14.5pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 10pt; font-family: 'Bookman Old Style', serif"
-                >:</span
-              >
-            </p>
-          </td>
-          <td
-            width="100%"
-            valign="top"
-            style="
-              width: 100%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{{ $project->initiator->pic }}</span
-              >
-            </p>
-          </td>
-        </tr>
-        <tr style="height: 1cm">
-          <td
-            width="245"
-            valign="top"
-            style="
-              width: 183.7pt;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >Penyusun Amdal</span
-              >
-            </p>
-          </td>
-          <td
-            width="19"
-            valign="top"
-            style="
-              width: 14.5pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 10pt; font-family: 'Bookman Old Style', serif"
-                >:</span
-              >
-            </p>
-          </td>
-          <td
-            width="100%"
-            valign="top"
-            style="
-              width: 100%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-          @if($team_member)
-          @php
-              $total = 1;
-          @endphp
-          @foreach($team_member as $t)
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >
-                @if($t->formulator)
-                {{ $total . '.' }} {{ $t->formulator->name }} ({{ $t->position }})
-                @elseif($t->expert)
-                {{ $total . '.' }} {{ $t->expert->name }} ({{ $t->position }})
-                @endif
-                </span
-              >
-            </p>
-          @php
-              $total++;
-          @endphp
-          @endforeach
-        @endif
-        </td>
-        </tr>
-        <tr style="height: 1cm">
-          <td
-            width="245"
-            valign="top"
-            style="
-              width: 183.7pt;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >Deskripsi Rencana Usaha dan/atau Kegiatan</span
-              >
-            </p>
-          </td>
-          <td
-            width="19"
-            valign="top"
-            style="
-              width: 14.5pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 10pt; font-family: 'Bookman Old Style', serif"
-                >:</span
-              >
-            </p>
-          </td>
-          <td
-            width="100%"
-            valign="top"
-            style="
-              width: 100%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{!! $project->description !!}</span
-              >
-            </p>
-          </td>
-        </tr>
-        <tr style="height: 1cm">
-          <td
-            width="245"
-            valign="top"
-            style="
-              width: 183.7pt;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >Lokasi Rencana Usaha dan/atau Kegiatan</span
-              >
-            </p>
-          </td>
-          <td
-            width="19"
-            valign="top"
-            style="
-              width: 14.5pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 10pt; font-family: 'Bookman Old Style', serif"
-                >:</span
-              >
-            </p>
-          </td>
-          <td
-            width="100%"
-            valign="top"
-            style="
-              width: 100%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >{!! $project->location_desc !!}</span
-              >
-            </p>
-          </td>
-        </tr>
-        <tr style="height: 1cm">
-          <td
-            width="245"
-            valign="top"
-            style="
-              width: 183.7pt;
-              border: solid windowtext 1pt;
-              border-top: none;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >Hasil Pelibatan Masyarakat</span
-              >
-            </p>
-          </td>
-          <td
-            width="19"
-            valign="top"
-            style="
-              width: 14.5pt;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 10pt; font-family: 'Bookman Old Style', serif"
-                >:</span
-              >
-            </p>
-          </td>
-          <td
-            width="100%"
-            valign="top"
-            style="
-              width: 100%;
-              border-top: none;
-              border-left: none;
-              border-bottom: solid windowtext 1pt;
-              border-right: solid windowtext 1pt;
-              padding: 0cm 5.4pt 0cm 5.4pt;
-              height: 1cm;
-            "
-          >
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >Mendukung:</span
-              >
-            </p>
-            @if($public_consultation)
-            @foreach($public_consultation as $p)
-              <p
-                class="MsoNormal"
-                style="margin-bottom: 0cm; line-height: normal"
-              >
-                <span
-                  style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                  >{!! $p->positive_feedback_summary !!}</span
-                >
-              </p>
-            @endforeach
-            @endif
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >&nbsp;</span
-              >
-            </p>
-            <p
-              class="MsoNormal"
-              style="margin-bottom: 0cm; line-height: normal"
-            >
-              <span
-                style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                >Menolak:</span
-              >
-            </p>
-            @if($public_consultation)
-            @foreach($public_consultation as $p)
-              <p
-                class="MsoNormal"
-                style="margin-bottom: 0cm; line-height: normal"
-              >
-                <span
-                  style="font-size: 8pt; font-family: 'Bookman Old Style', serif"
-                  >{!! $p->negative_feedback_summary !!}</span
-                >
-              </p>
-            @endforeach
-            @endif
-          </td>
-        </tr>
-      </table>
+      <table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 width="100%"
+            style='width:100.0%;border-collapse:collapse;border:none'>
+            <tr style='height:1.0cm'>
+                <td width="100%" colspan=3 valign=top style='width:100.0%;border:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
+  line-height:normal'><b><i><span style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>Form
+                                    Kerangka Acuan (Form KA)</span></i></b></p>
+                </td>
+            </tr>
+            <tr style='height:1.0cm'>
+                <td width="100%" colspan=3 valign=top style='width:100.0%;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+  0cm;margin-left:29.85pt;text-align:justify;text-indent:-15.7pt;line-height:
+  normal'><span style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>A.<span
+                                style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span></span><span
+                            style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>Umum</span></p>
+                </td>
+            </tr>
+            <tr style='height:1.0cm'>
+                <td width="16%" valign=top style='width:16.84%;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>Nama Usaha
+                            dan/atau Kegiatan</span></p>
+                </td>
+                <td width="1%" valign=top style='width:1.32%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>:</span></p>
+                </td>
+                <td width="81%" valign=top style='width:81.84%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>{{ $project->project_title }}</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style='height:1.0cm'>
+                <td width="16%" valign=top style='width:16.84%;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>Penanggung
+                            jawab Usaha dan/atau Kegiatan</span></p>
+                </td>
+                <td width="1%" valign=top style='width:1.32%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>:</span></p>
+                </td>
+                <td width="81%" valign=top style='width:81.84%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>{{ $project->initiator->pic }}</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style='height:1.0cm'>
+                <td width="16%" valign=top style='width:16.84%;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>Penyusun Amdal</span></p>
+                </td>
+                <td width="1%" valign=top style='width:1.32%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>:</span></p>
+                </td>
+                <td width="81%" valign=top style='width:81.84%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    @if ($team_member)
+                        @php
+                            $total = 1;
+                        @endphp
+                        @foreach ($team_member as $t)
+                            <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                                    style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>
+                                    @if ($t->formulator)
+                                        {{ $total . '.' }} {{ $t->formulator->name }} ({{ $t->position }})
+                                    @elseif($t->expert)
+                                        {{ $total . '.' }} {{ $t->expert->name }} ({{ $t->position }})
+                                    @endif
+                                </span>
+                            </p>
+                            @php
+                                $total++;
+                            @endphp
+                        @endforeach
+                    @endif
+                </td>
+            </tr>
+            <tr style='height:1.0cm'>
+                <td width="16%" valign=top style='width:16.84%;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>Deskripsi
+                            Rencana Usaha dan/atau Kegiatan</span></p>
+                </td>
+                <td width="1%" valign=top style='width:1.32%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>:</span></p>
+                </td>
+                <td width="81%" valign=top style='width:81.84%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>{!! $project->description !!}</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style='height:1.0cm'>
+                <td width="16%" valign=top style='width:16.84%;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>Lokasi Rencana
+                            Usaha dan/atau Kegiatan</span></p>
+                </td>
+                <td width="1%" valign=top style='width:1.32%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>:</span></p>
+                </td>
+                <td width="81%" valign=top style='width:81.84%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>{!! $project->location_desc !!}</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style='height:1.0cm'>
+                <td width="16%" valign=top style='width:16.84%;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>Hasil Pelibatan
+                            Masyarakat</span></p>
+                </td>
+                <td width="1%" valign=top style='width:1.32%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:10.0pt;font-family:"Bookman Old Style",serif'>:</span></p>
+                </td>
+                <td width="81%" valign=top style='width:81.84%;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:1.0cm'>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>Mendukung:</span></p>
+                    @if ($public_consultation)
+                        @foreach ($public_consultation as $p)
+                            <p class="MsoNormal" style="margin-bottom: 0cm; line-height: normal">
+                                <span
+                                    style="font-size: 8.0pt; font-family: 'Bookman Old Style', serif">{!! $p->positive_feedback_summary !!}</span>
+                            </p>
+                        @endforeach
+                    @endif
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>&nbsp;</span></p>
+                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
+                            style='font-size:8.0pt;font-family:"Bookman Old Style",serif'>Menolak:</span></p>
+                    @if ($public_consultation)
+                        @foreach ($public_consultation as $p)
+                            <p class="MsoNormal" style="margin-bottom: 0cm; line-height: normal">
+                                <span
+                                    style="font-size: 8.0pt; font-family: 'Bookman Old Style', serif">{!! $p->negative_feedback_summary !!}</span>
+                            </p>
+                        @endforeach
+                    @endif
+                </td>
+            </tr>
+        </table>
 
       <p class="MsoNormal" style="text-align: justify">
         <span style="font-family: 'Bookman Old Style', serif">&nbsp;</span>
