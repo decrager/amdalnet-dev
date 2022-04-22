@@ -588,18 +588,25 @@ export default {
       this.loadingDocx = false;
     },
     async handleDownloadInvitation() {
-      this.loadingInvitationDocx = true;
-      const data = await undanganRapatResource.list({
-        meetingInvitation: 'true',
-        idProject: this.idProject,
-      });
-      this.invitationDocxData = data;
-      const a = document.createElement('a');
-      a.href =
-        window.location.origin + `/storage/meet-inv/andal-rkl-rpl-${data}.docx`;
-      a.setAttribute('download', `andal-rkl-rpl-${data}.docx`);
-      a.click();
-      this.loadingInvitationDocx = false;
+      if (this.meetings.type === 'update') {
+        this.loadingInvitationDocx = true;
+        const data = await undanganRapatResource.list({
+          meetingInvitation: 'true',
+          idProject: this.idProject,
+        });
+        this.invitationDocxData = data;
+        const a = document.createElement('a');
+        a.href =
+          window.location.origin +
+          `/storage/meet-inv/andal-rkl-rpl-${data}.docx`;
+        a.setAttribute('download', `andal-rkl-rpl-${data}.docx`);
+        a.click();
+        this.loadingInvitationDocx = false;
+      } else {
+        this.$alert('Mohon Isi dan Simpan Data terlebih dahulu', {
+          confirmButtonText: 'OK',
+        });
+      }
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
