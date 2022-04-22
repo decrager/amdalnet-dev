@@ -196,6 +196,9 @@ class AndalCloneController extends Controller
                                  $impact_study_saved = true;
                              } else {
                                  // create new
+                                 if(!array_key_exists('id_impact_identification_clone', $study['impact_study']) && array_key_exists('id_impact_identification', $study['impact_study'])) {
+                                     $study['impact_study']['id_impact_identification_clone'] = $study['impact_study']['id_impact_identification'];
+                                 }
                                  if (ImpactStudyClone::create($study['impact_study'])){
                                      $impact_study_saved = true;
                                  }

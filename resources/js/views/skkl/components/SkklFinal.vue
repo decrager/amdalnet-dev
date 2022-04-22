@@ -9,14 +9,14 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="Nomor Persetujuan Lingkungan" prop="number">
-            <el-input v-model="postForm.number" />
+            <el-input v-model="postForm.number" :disabled="disableEdit" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item label="Judul/Perihal Persetujuan Lingkungan" prop="title">
-            <el-input v-model="postForm.title" />
+            <el-input v-model="postForm.title" :disabled="disableEdit" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -29,6 +29,7 @@
               format="dd/MM/yyyy"
               value-format="yyyy-MM-dd"
               placeholder="dd/mm/yyyy"
+              :disabled="disableEdit"
             />
           </el-form-item>
         </el-col>
@@ -43,15 +44,15 @@
               :show-file-list="true"
               :file-list="fileList"
               style="display: inline;"
-              :disabled="loadingUpload"
+              :disabled="disableEdit"
             >
-              <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
+              <el-button v-if="!disableEdit" :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
             </el-upload>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <div slot="footer" class="dialog-footer">
+    <div v-if="!disableEdit" slot="footer" class="dialog-footer">
       <el-button :loading="loadingSubmit" type="primary" @click="handleSubmit()"> Submit </el-button>
     </div>
     <el-row style="margin-top: 20px;">
@@ -83,6 +84,7 @@ export default {
       loading: false,
       loadingUpload: false,
       loadingSubmit: false,
+      disableEdit: true,
       fileUrl: null,
       fileList: [],
       fileSkklFinal: null,
@@ -94,6 +96,14 @@ export default {
         date_published: null,
       },
     };
+  },
+  computed: {
+    isExaminer() {
+      return (this.$store.getters.roles[0].split('-')[0] === 'examiner');
+    },
+    isAdmin() {
+      return (this.$store.getters.roles[0].split('-')[0] === 'admin');
+    },
   },
   created() {
     this.getData();
@@ -114,6 +124,11 @@ export default {
         id_project: this.idProject,
       });
       this.loading = false;
+      this.disableEdit = true;
+      if (this.isExaminer || this.isAdmin) {
+        this.disableEdit = false;
+      }
+
       if (skklFinals.length > 0) {
         const skklFinal = skklFinals[0];
         this.postForm = skklFinal;
