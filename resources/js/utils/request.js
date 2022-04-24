@@ -35,15 +35,16 @@ service.interceptors.response.use(
     return response.data;
   },
   error => {
-    let message = error.message;
-    if (error.response.data && error.response.data.errors) {
-      message = error.response.data.errors;
-    } else if (error.response.data && error.response.data.error) {
-      message = error.response.data.error;
-    }
+    // let message = error.message;
+    // if (error.response.data && error.response.data.errors) {
+    //   message = error.response.data.errors;
+    // } else if (error.response.data && error.response.data.error) {
+    //   message = error.response.data.error;
+    // }
 
     Message({
-      message: message,
+      // message: message,
+      message: 'Terjadi Kesalahan Dalam System, Silahkan Hubungi Administrator',
       type: 'error',
       duration: 5 * 1000,
     });
