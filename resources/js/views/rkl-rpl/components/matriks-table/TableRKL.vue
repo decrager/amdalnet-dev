@@ -741,11 +741,11 @@ export default {
             errors++;
           }
 
-          let impactSourceError = x.impact_source.length === 0;
+          let impactSourceError = x.impact_source.filter(z => z.show === true).length === 0;
 
           if (!impactSourceError) {
             const filter = x.impact_source.filter((y) => {
-              return Boolean(!y.description);
+              return Boolean(!y.description) && y.show === true;
             });
 
             if (filter.length > 0) {
@@ -754,11 +754,11 @@ export default {
             }
           }
 
-          let successIndicatorError = x.success_indicator.length === 0;
+          let successIndicatorError = x.success_indicator.filter(z => z.show === true).length === 0;
 
           if (!successIndicatorError) {
             const filter = x.success_indicator.filter((y) => {
-              return Boolean(!y.description);
+              return Boolean(!y.description) && y.show === true;
             });
 
             if (filter.length > 0) {
@@ -767,11 +767,11 @@ export default {
             }
           }
 
-          let formError = x.form.length === 0;
+          let formError = x.form.filter(z => z.show === true).length === 0;
 
           if (!formError) {
             const filter = x.form.filter((y) => {
-              return Boolean(!y.description);
+              return Boolean(!y.description) && y.show === true;
             });
 
             if (filter.length > 0) {
@@ -780,11 +780,11 @@ export default {
             }
           }
 
-          let locationError = x.location.length === 0;
+          let locationError = x.location.filter(z => z.show === true).length === 0;
 
           if (!locationError) {
             const filter = x.location.filter((y) => {
-              return Boolean(!y.description);
+              return Boolean(!y.description) && y.show === true;
             });
 
             if (filter.length > 0) {
