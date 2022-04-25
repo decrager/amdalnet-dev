@@ -94,6 +94,12 @@
                   type="textarea"
                   :rows="2"
                 />
+                <small
+                  v-if="checkError(plan.errors, 'location') && plan.is_selected"
+                  style="color: #f56c6c; display: block"
+                >
+                  Silahkan Isi Kolom Lokasi
+                </small>
               </div>
             </div>
           </template>
@@ -111,6 +117,12 @@
                     :disabled="!isFormulator"
                     size="mini"
                   />
+                  <small
+                    v-if="checkError(plan.errors, 'period_number') && plan.is_selected"
+                    style="color: #f56c6c; display: block"
+                  >
+                    Silahkan Isi Kolom Nomor Periode
+                  </small>
                   x
                   <el-select
                     v-if="plan.is_selected"
@@ -125,6 +137,12 @@
                       :value="item.value"
                     />
                   </el-select>
+                  <small
+                    v-if="checkError(plan.errors, 'period_description') && plan.is_selected"
+                    style="color: #f56c6c; display: block"
+                  >
+                    Silahkan Isi Kolom Deskripsi Periode
+                  </small>
                 </div>
               </div>
             </div>
@@ -136,8 +154,26 @@
           <div v-if="!scope.row.is_stage">
             <div v-for="plan in scope.row.env_monitor_plan" :key="plan.id">
               <div v-if="plan.is_selected">Pelaksana: <el-input v-model="plan.executor" /></div>
+              <small
+                v-if="checkError(plan.errors, 'executor') && plan.is_selected"
+                style="color: #f56c6c; display: block"
+              >
+                Silahkan Isi Kolom Pelaksana
+              </small>
               <div v-if="plan.is_selected">Pengawas: <el-input v-model="plan.supervisor" /></div>
+              <small
+                v-if="checkError(plan.errors, 'supervisor') && plan.is_selected"
+                style="color: #f56c6c; display: block"
+              >
+                Silahkan Isi Kolom Pengawas
+              </small>
               <div v-if="plan.is_selected">Penerima Laporan: <el-input v-model="plan.report_recipient" /></div>
+              <small
+                v-if="checkError(plan.errors, 'report_recipient') && plan.is_selected"
+                style="color: #f56c6c; display: block"
+              >
+                Silahkan Isi Kolom Penerima Laporan
+              </small>
             </div>
           </div>
         </template>
@@ -152,6 +188,12 @@
                 type="textarea"
                 :rows="4"
               />
+              <small
+                v-if="checkError(plan.errors, 'description') && plan.is_selected"
+                style="color: #f56c6c; display: block"
+              >
+                Silahkan Isi Kolom Keterangan
+              </small>
             </div>
           </div>
         </template>
@@ -245,27 +287,60 @@ export default {
       return [1, 1];
     },
     handleSaveForm() {
-      impactIdtResource
-        .store({
-          env_monitor_plan_data: this.data,
-        })
-        .then((response) => {
-          if (response.code === 200) {
+      let errors = 0;
+      const data = [...this.data];
+      this.data = data.map(x => {
+        if (x.env_monitor_plan) {
+          const newEnvMonitorPlan = x.env_monitor_plan.map(y => {
+            y.errors = {};
+            if (!y.description || !y.executor || !y.form || !y.location || !y.period_number || !y.period_description || !y.report_recipient || !y.supervisor) {
+              errors++;
+            }
+            y.errors.description = Boolean(!y.description);
+            y.errors.executor = Boolean(!y.executor);
+            y.errors.form = Boolean(!y.form);
+            y.errors.location = Boolean(!y.location);
+            y.errors.period_number = Boolean(!y.period_number);
+            y.errors.period_description = Boolean(!y.period_description);
+            y.errors.report_recipient = Boolean(!y.report_recipient);
+            y.errors.supervisor = Boolean(!y.supervisor);
+            return y;
+          });
+          x.env_monitor_plan = newEnvMonitorPlan;
+          return x;
+        }
+        return x;
+      });
+      if (errors > 0) {
+        this.$alert(
+          'Silahkan lengkapi data matriks UPL',
+          {
+            confirmButtonText: 'OK',
+          }
+        );
+      } else {
+        impactIdtResource
+          .store({
+            env_monitor_plan_data: this.data,
+          })
+          .then((response) => {
+            if (response.code === 200) {
+              this.$message({
+                message: 'Matriks UPL berhasil disimpan',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+            // this.$emit('handleCheckProjectMarking');
+            }
+          })
+          .catch((err) => {
             this.$message({
-              message: 'Matriks UPL berhasil disimpan',
-              type: 'success',
+              message: err.response.data.message,
+              type: 'error',
               duration: 5 * 1000,
             });
-            // this.$emit('handleCheckProjectMarking');
-          }
-        })
-        .catch((err) => {
-          this.$message({
-            message: err.response.data.message,
-            type: 'error',
-            duration: 5 * 1000,
           });
-        });
+      }
     },
     addPlanToImpact(idImp, plan) {
       const idx = this.data.findIndex(imp => imp.id === idImp);
@@ -339,6 +414,13 @@ export default {
             duration: 5 * 1000,
           });
         });
+    },
+    checkError(errors, key) {
+      if (errors) {
+        return errors[key];
+      }
+
+      return false;
     },
   },
 };
