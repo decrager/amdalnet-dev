@@ -455,7 +455,8 @@ class SKKLController extends Controller
             return false;
         }
         $jsonContent = $ossNib->json_content;
-        $idIzin = isset($jsonContent['id_izin']) ? $jsonContent['id_izin'] : null;
+        $idIzinSkkl = isset($ossNib->id_izin) ? $ossNib->id_izin : null;
+        $idIzinList = [];
         if ($type == 'sppl') {
             $subProject = SubProject::where('id_project', $idProject)
                 ->orderBy('created_at', 'desc')
@@ -463,15 +464,15 @@ class SKKLController extends Controller
             if ($subProject) {
                 foreach ($jsonContent['data_checklist'] as $c) {
                     if ($c['id_proyek'] == $subProject->id_proyek) {
-                        $idIzin = $c['id_izin'];
-                        break;
+                        array_push($idIzinList, $c['id_izin']);
                     }
                 }
             }
         }
         return [
             'nib' => isset($jsonContent['nib']) ? $jsonContent['nib'] : null,
-            'id_izin' => $idIzin,
+            'id_izin' => $idIzinSkkl,
+            'id_izin_list' => $idIzinList,
         ];
     }
 
@@ -479,11 +480,22 @@ class SKKLController extends Controller
     {
         $dataNib = $this->getDataNib($idProject, $type);
         $fileUrl = null;
-        try {
-            $resp = OssService::inqueryFileDS($dataNib['nib'], $dataNib['id_izin']);
-            $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
+        if ($type == 'sppl') {
+            foreach ($dataNib['id_izin_list'] as $id_izin) {
+                $resp = OssService::inqueryFileDS($dataNib['nib'], $id_izin);
+                if (isset($resp['responInqueryFileDS']['url_file_ds'])) {
+                    $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
+                    break;
+                }
+            }
+        } else {
+            // SKKL
+            try {
+                $resp = OssService::inqueryFileDS($dataNib['nib'], $dataNib['id_izin']);
+                $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
         }
         return [
             'file_url' => $fileUrl,
