@@ -15,6 +15,7 @@ use App\Services\OssService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -55,6 +56,10 @@ class SKKLController extends Controller
                 $type = $request->type;
             }
             return $this->getSkklOssFile($request->idProject, $type);
+        }
+
+        if ($request->spplOss) {
+            return $this->getSpplOssFile($request->url);
         }
     }
 
@@ -501,5 +506,16 @@ class SKKLController extends Controller
             'file_url' => $fileUrl,
             'user_key' => env('OSS_USER_KEY'),
         ];
+    }
+
+    private function getSpplOssFile($url)
+    {
+        $response = Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+        ])->get($url);
+        header('Content-Type: application/pdf');
+        $headers = $response->getHeaders();
+        header('Content-Disposition: ' . $headers['Content-Disposition'][0]);
+        return $response->getBody();           
     }
 }

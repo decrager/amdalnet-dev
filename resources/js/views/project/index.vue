@@ -1129,9 +1129,13 @@ export default {
           return;
         }
         axios({
-          url: data.file_url,
+          url: `api/skkl`,
           method: 'GET',
           responseType: 'blob',
+          params: {
+            url: data.file_url,
+            spplOss: 'true',
+          },
           headers: {
             user_key: data.user_key,
           },
@@ -1147,7 +1151,6 @@ export default {
           );
           document.body.appendChild(fileLink);
           fileLink.click();
-          this.loading = false;
         });
       } else {
         this.$message({
