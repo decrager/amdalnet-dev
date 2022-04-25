@@ -111,6 +111,10 @@ export default {
           value: 'peta-batas-andal',
         },
         {
+          label: 'Pelingkupan',
+          value: 'pelingkupan-andal',
+        },
+        {
           label: 'Evaluasi Dampak Potensial & Dampak Penting Hipotetik',
           value: 'dpdph-andal',
         },
