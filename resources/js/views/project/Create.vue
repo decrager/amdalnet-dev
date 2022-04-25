@@ -1154,9 +1154,25 @@ export default {
       this.checkedSubProject = val;
     },
     async addAuthoritiesBasedOnAddress(address){
+      if (!address[0].prov || !address[0].district){
+        this.$message({
+          message: `Mohon Lengkapi Data Alamat`,
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        throw new Error(`Mohon Lengkapi Data Alamat`);
+      }
       let tempFile = address[0].prov;
       let tempKabFile = address[0].district;
       for (let i = 1; i < address.length; i++) {
+        if (!address[i].prov || !address[i].district){
+          this.$message({
+            message: `Mohon Lengkapi Data Alamat`,
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          throw new Error(`Mohon Lengkapi Data Alamat`);
+        }
         if (address[i].prov !== tempFile) {
           this.currentProject.authority = 'Pusat';
           delete this.currentProject.auth_province;
@@ -1337,13 +1353,22 @@ export default {
       this.currentProject.listSubProjectNonChecked = this.listSubProject;
 
       this.currentProject.listSubProject = this.listSubProject.filter(e => e.isUsed).map(e => {
-        if (!e.listSubProjectParams){
+        if (!e.listSubProjectParams || e.listSubProjectParams.filter(e => e.used) < 1){
           this.$message({
             message: `Parameter untuk project dengan kbli ${e.kbli} belum diisi`,
             type: 'error',
             duration: 5 * 1000,
           });
           throw new Error(`Parameter untuk project dengan kbli ${e.kbli} belum diisi`);
+        }
+
+        if (!e.name){
+          this.$message({
+            message: `Nama untuk project dengan kbli ${e.kbli} belum diisi`,
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          throw new Error(`Nama untuk project dengan kbli ${e.kbli} belum diisi`);
         }
         e.listSubProjectParams = e.listSubProjectParams.filter(e => e.used);
 
