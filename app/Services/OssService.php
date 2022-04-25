@@ -291,5 +291,23 @@ class OssService
         Log::debug(json_encode($respJson));
         return $respJson;
     }
+
+    public static function inqueryNIB($nib)
+    {
+        $data = [
+            "INQUERYNIB" => [
+                "nib" => $nib,
+            ]
+        ];
+        $sha1 = sha1(env('OSS_REQUEST_USERNAME') . env('OSS_REQUEST_PASSWORD') . $nib . date('Ymd'));
+        $response = Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+            'token' => $sha1,
+        ])->post(env('OSS_ENDPOINT') . '/inqueryNIB', $data);
+        $respJson = $response->json();
+        // Log::debug(json_encode($data));
+        // Log::debug(json_encode($respJson));
+        return $respJson;
+    }
 }
 ?>
