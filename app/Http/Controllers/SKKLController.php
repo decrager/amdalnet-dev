@@ -10,6 +10,7 @@ use App\Entity\MeetingReport;
 use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectSkkl;
+use App\Entity\SubProject;
 use App\Services\OssService;
 use Exception;
 use Illuminate\Http\Request;
@@ -49,7 +50,11 @@ class SKKLController extends Controller
         }
 
         if ($request->skklOss) {
-            return $this->getSkklOssFile($request->idProject);
+            $type = 'skkl';
+            if (isset($request->type) && !empty($request->type)) {
+                $type = $request->type;
+            }
+            return $this->getSkklOssFile($request->idProject, $type);
         }
     }
 
@@ -436,7 +441,7 @@ class SKKLController extends Controller
         return $skkl;
     }
 
-    private function getDataNib($idProject)
+    private function getDataNib($idProject, $type)
     {
         $project = Project::findOrFail($idProject);
         $initiator = Initiator::find($project->id_applicant);
@@ -450,15 +455,29 @@ class SKKLController extends Controller
             return false;
         }
         $jsonContent = $ossNib->json_content;
+        $idIzin = isset($jsonContent['id_izin']) ? $jsonContent['id_izin'] : null;
+        if ($type == 'sppl') {
+            $subProject = SubProject::where('id_project', $idProject)
+                ->orderBy('created_at', 'desc')
+                ->first();
+            if ($subProject) {
+                foreach ($jsonContent['data_checklist'] as $c) {
+                    if ($c['id_proyek'] == $subProject->id_proyek) {
+                        $idIzin = $c['id_izin'];
+                        break;
+                    }
+                }
+            }
+        }
         return [
             'nib' => isset($jsonContent['nib']) ? $jsonContent['nib'] : null,
-            'id_izin' => isset($jsonContent['id_izin']) ? $jsonContent['id_izin'] : null,
+            'id_izin' => $idIzin,
         ];
     }
 
-    private function getSkklOssFile($idProject)
+    private function getSkklOssFile($idProject, $type = 'skkl')
     {
-        $dataNib = $this->getDataNib($idProject);
+        $dataNib = $this->getDataNib($idProject, $type);
         $fileUrl = null;
         try {
             $resp = OssService::inqueryFileDS($dataNib['nib'], $dataNib['id_izin']);

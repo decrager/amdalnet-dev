@@ -1117,8 +1117,17 @@ export default {
       const data = await skklResource.list({
         idProject: project.id,
         skklOss: 'true',
+        type: 'sppl',
       });
       if ('file_url' in data && 'user_key' in data) {
+        if (data.file_url === null) {
+          this.$message({
+            message: 'URL file SPPL tidak ada.',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          return;
+        }
         axios({
           url: data.file_url,
           method: 'GET',
