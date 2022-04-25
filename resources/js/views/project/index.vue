@@ -1140,8 +1140,9 @@ export default {
             user_key: data.user_key,
           },
         }).then((response) => {
+          response.headers['content-type'] = 'application/pdf';
           const cd = response.headers['content-disposition'];
-          const fileName = cd.split('filename=')[1].replaceAll('"', '');
+          const fileName = cd.split('filename*=UTF-8\'\'')[1].replaceAll('"', '');
           var fileURL = window.URL.createObjectURL(new Blob([response.data]));
           var fileLink = document.createElement('a');
           fileLink.href = fileURL;
