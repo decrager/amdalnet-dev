@@ -4,7 +4,6 @@
     <header-home @handleSetMenu="handleSetMenu" />
     <hero-home v-if="toggleMenu" />
     <steps-home v-if="toggleMenu" />
-
     <materi v-if="toggleMenuMateri" />
     <kebijakan v-if="toggleMenuKebijakan" />
     <izin v-if="toggleIzin" />
@@ -12,9 +11,10 @@
     <ukl-menengah v-if="toggleUklMenengah" />
     <ukl-spesifik v-if="toggleUklSpesifik" />
     <Sop v-if="toggleSop" />
-    <action-home v-if="toggleMenu" />
+    <action-home v-if="toggleMenu" @showAmdalDigital="handleSetMenu('AMDALDigital')" />
     <counter-home v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
+    <amdal-digital v-if="toggleAD" />
     <footer-home />
     <div class="footer__rights">
       <p class="footer__copy">
@@ -39,6 +39,7 @@ import Persetujuan from './section/Persetujuan.vue';
 import ActionHome from './section/Action.vue';
 import CounterHome from './section/Counter.vue';
 import AnnouncementHome from './section/Announce.vue';
+import AmdalDigital from './amdal-digital/index.vue';
 import FooterHome from './section/Footer.vue';
 import Disclaimer from './components/Disclaimer.vue';
 import Cookies from 'js-cookie';
@@ -60,6 +61,7 @@ export default {
     'counter-home': CounterHome,
     'announcement-home': AnnouncementHome,
     'footer-home': FooterHome,
+    AmdalDigital,
     Disclaimer,
   },
   data() {
@@ -72,6 +74,7 @@ export default {
       toggleUklMenengah: false,
       toggleUklSpesifik: false,
       toggleSop: false,
+      toggleAD: false,
     };
   },
   created() {
@@ -81,8 +84,12 @@ export default {
   methods: {
     handleSetMenu(e) {
       // going back to home
+      console.log(e);
       if (e === 'LOGO') {
         this.toggleMenu = true;
+        this.toggleAD = false;
+        this.toggleMenuMateri = false;
+        this.toggleMenuKebijakan = false;
       } else {
         this.setAllState(e);
       }
@@ -95,6 +102,7 @@ export default {
       const men = (e === 'UKL_UPL_M') ? 'true' : 'false';
       const spec = (e === 'UKL_UPL_S') ? 'true' : 'false';
       const sop = (e === 'SOP') ? 'true' : 'false';
+      const ad = (e === 'AMDALDigital') ? 'true' : 'false';
       this.toggleMenuMateri = JSON.parse(materi);
       this.toggleMenuKebijakan = JSON.parse(kebijakan);
       this.toggleIzin = JSON.parse(izin);
@@ -103,6 +111,7 @@ export default {
       this.toggleUklMenengah = JSON.parse(men);
       this.toggleUklSpesifik = JSON.parse(spec);
       this.toggleSop = JSON.parse(sop);
+      this.toggleAD = JSON.parse(ad);
     },
     isFirstVisit() {
       const recurring = Cookies.get('recurring');
@@ -113,7 +122,7 @@ export default {
     },
     onCloseDisclaimer(val) {
       Cookies.set('recurring', true, { expires: 30 * 6, path: '' });
-      console.log('closing disclaimer....');
+      // console.log('closing disclaimer....');
     },
   },
 };
