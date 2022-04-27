@@ -1117,18 +1117,32 @@ export default {
       const data = await skklResource.list({
         idProject: project.id,
         skklOss: 'true',
+        type: 'sppl',
       });
       if ('file_url' in data && 'user_key' in data) {
+        if (data.file_url === null) {
+          this.$message({
+            message: 'URL file SPPL tidak ada.',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          return;
+        }
         axios({
-          url: data.file_url,
+          url: `api/skkl`,
           method: 'GET',
           responseType: 'blob',
+          params: {
+            url: data.file_url,
+            spplOss: 'true',
+          },
           headers: {
             user_key: data.user_key,
           },
         }).then((response) => {
+          response.headers['content-type'] = 'application/pdf';
           const cd = response.headers['content-disposition'];
-          const fileName = cd.split('filename=')[1].replaceAll('"', '');
+          const fileName = cd.split('filename*=UTF-8\'\'')[1].replaceAll('"', '');
           var fileURL = window.URL.createObjectURL(new Blob([response.data]));
           var fileLink = document.createElement('a');
           fileLink.href = fileURL;
@@ -1138,7 +1152,6 @@ export default {
           );
           document.body.appendChild(fileLink);
           fileLink.click();
-          this.loading = false;
         });
       } else {
         this.$message({

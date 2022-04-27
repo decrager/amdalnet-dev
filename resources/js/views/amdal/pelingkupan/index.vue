@@ -20,7 +20,7 @@
       :refresh-components="doRefreshComponents"
       @refreshed="onRefreshedScoping"
     />
-    <Comment :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
+    <Comment :withstage="true" commenttype="pelingkupan-andal" :kolom="commentColumn" />
   </div>
 </template>
 <script>
