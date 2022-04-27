@@ -1550,6 +1550,11 @@ export default {
         return;
       }
 
+      if (e.target.files[0].type !== 'application/x-zip-compressed'){
+        this.$alert('File yang diterima hanya .zip', 'Format Salah');
+        return;
+      }
+
       if (e !== 'a'){
         this.fileMap = e.target.files[0];
         this.fileMapName = e.target.files[0].name;
