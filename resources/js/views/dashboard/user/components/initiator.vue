@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix">
         <span>Tentang Pemrakarsa</span>
       </div>
-      <el-skeleton v-if="isLoading" rows="10" animated />
+      <el-skeleton v-if="isLoading" :rows="10" animated />
       <template v-else-if="user !== null">
         <div class="user-image">
           <el-row>
