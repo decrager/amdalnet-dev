@@ -697,6 +697,22 @@ export default {
           value: 'Kementrian',
           label: 'Kementrian',
         },
+        {
+          value: 'Lembaga',
+          label: 'Lembaga',
+        },
+        {
+          value: 'Pemerintah Provinsi',
+          label: 'Pemerintah Provinsi',
+        },
+        {
+          value: 'Pemerintah Kabupaten/Kota',
+          label: 'Pemerintah Kabupaten/Kota',
+        },
+        {
+          value: 'Lainnya',
+          label: 'Lainnya',
+        },
       ],
       companyTypeoptions: [
         {
