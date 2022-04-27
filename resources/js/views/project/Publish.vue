@@ -36,10 +36,11 @@
       <el-row :gutter="10">
         <el-col :span="12">
           <div>
-            <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
+            <el-table :data="tableData" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }" :row-class-name="tableRowClassName">
               <el-table-column
                 prop="no"
                 label="No."
+                width="50px"
               />
               <!-- <el-table-column
               prop="kbli"
@@ -69,6 +70,7 @@
             <el-table :data="project.address" :span-method="arraySpanMethod" style="margin-top: 20px" :header-cell-style="{ background: '#099C4B', color: 'white' }">
               <el-table-column
                 label="No."
+                width="50px"
               >
                 <template slot-scope="scope">
                   {{ scope.$index + 1 }}
@@ -104,21 +106,6 @@
         </el-col>
         <el-col :span="12" />
       </el-row>
-      <el-row>
-        <div v-if="project.type_formulator_team === 'mandiri'">
-          <el-row style="padding-bottom: 16px">
-            <h2>Tambah Penyusun</h2>
-            <formulator-table
-              :list="listFormulatorTeam"
-              :loading="false"
-            />
-            <el-button
-              type="primary"
-              @click="handleAddFormulatorTable"
-            >+</el-button>
-          </el-row>
-        </div>
-      </el-row>
       <div class="dialog-footer">
         <el-button :disabled="readonly" @click="handleCancel()"> Kembali </el-button>
         <el-button v-loading="" type="primary" :disabled="readonly" @click="handleSubmit()"> Simpan </el-button>
@@ -130,11 +117,9 @@
 <script>
 import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
-import FormulatorTable from './components/formulatorTable.vue';
 const kbliEnvParamResource = new Resource('kbli-env-params');
 const districtResource = new Resource('districts');
 const provinceResource = new Resource('provinces');
-// const formulatorTeamResource = new Resource('formulator-teams');
 const projectResource = new Resource('projects');
 const initiatorByEmailResource = new Resource('initiatorsByEmail');
 const initiatorResource = new Resource('initiators');
@@ -154,7 +139,7 @@ import popupTemplate from '../webgis/scripts/popupTemplate';
 
 export default {
   name: 'Publish',
-  components: { FormulatorTable, Workflow },
+  components: { Workflow },
   props: {
     project: {
       type: Object,
@@ -244,6 +229,13 @@ export default {
     this.getMapPdf();
   },
   methods: {
+    tableRowClassName({ row, rowIndex }) {
+      if (row.no === 'A' || row.no === 'B') {
+        return 'bold-row';
+      }
+
+      return '';
+    },
     setAddressDataTables(){
       this.addressTableData.push({
         no: '1',
@@ -708,5 +700,10 @@ export default {
   padding: 0;
   margin: 0 10px;
   position: absolute;
+}
+</style>
+<style>
+.bold-row {
+  font-weight: bold;
 }
 </style>

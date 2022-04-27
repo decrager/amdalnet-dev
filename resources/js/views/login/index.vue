@@ -57,12 +57,12 @@
         </el-row>
         <el-row type="flex" justify="space-between" style="margin-bottom: 20px">
           <el-radio-group v-model="user_type" @change="onChangeRadioUserType">
-            <el-radio disabled style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio>
-            <el-radio style="width: 250px" label="Pemerintah" border>Pemrakarsa Pemerintah</el-radio>
-            <el-radio style="width: 250px" label="Penyusun" border>Penyusun</el-radio>
+            <!-- <el-radio disabled style="width: 250px" label="Pemrakarsa" border>Pemrakarsa Badan Usaha</el-radio> -->
+            <el-radio style="width: 350px" label="Pemerintah" border>Pemrakarsa Pemerintah</el-radio>
+            <el-radio style="width: 350px" label="Penyusun" border>Penyusun</el-radio>
           </el-radio-group>
         </el-row>
-        <el-row v-if="user_type === 'Pemrakarsa'">
+        <!-- <el-row v-if="user_type === 'Pemrakarsa'">
           <el-form ref="regPemrakarsa" :model="registrationForm" :rules="regPemrakarsaRules">
             <el-row>
               <el-col>
@@ -216,8 +216,8 @@
               </el-col>
             </el-row>
           </el-form>
-        </el-row>
-        <el-row v-else-if="user_type === 'Pemerintah'">
+        </el-row> -->
+        <el-row v-if="user_type === 'Pemerintah'">
           <el-form ref="regPemerintah" :model="registrationForm" :rules="regPemerintahRules">
             <el-row :gutter="24">
               <el-col :span="12">
@@ -694,8 +694,8 @@ export default {
       districtOptions: [],
       agencyTypeoptions: [
         {
-          value: 'Kementrian',
-          label: 'Kementrian',
+          value: 'Kementerian',
+          label: 'Kementerian',
         },
         {
           value: 'Lembaga',
