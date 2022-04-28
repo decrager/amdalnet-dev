@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\Project;
 use App\Entity\ProjectSkklFinal;
+use App\Services\OssService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -54,8 +55,10 @@ class SKKLFinalController extends Controller
 
             //create environmental expert  
             $skkl = ProjectSkklFinal::where('id_project', $data['id_project'])->first();
+            $sendLicenseStatus = false;
 
             if(!$skkl) {
+                $sendLicenseStatus = true;
                 $skkl = new ProjectSkklFinal();
                 $skkl->id_project = $data['id_project'];
                 $skkl->number = $data['number'];
@@ -67,6 +70,9 @@ class SKKLFinalController extends Controller
             $saved = $skkl->save();
 
             if ($saved) {
+                if ($sendLicenseStatus) {
+                    OssService::receiveLicenseStatus($project, '50');
+                }
                 return response()->json(['code' => 200, 'data' => $skkl]);
             }
             return response()->json(['code' => 500]);
