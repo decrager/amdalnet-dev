@@ -685,7 +685,7 @@ class AndalComposingController extends Controller
         $save_file_name = $id_project . '-andal' . '.docx';
 
         if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-            // return response()->json(['message' => 'success']);
+            return response()->json(['message' => 'success']);
         }
 
         Carbon::setLocale('id');
@@ -1956,20 +1956,20 @@ class AndalComposingController extends Controller
 
         $templateProcessor = new TemplateProcessor('template_andal.docx');
 
-        // $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
-        // $templateProcessor->setValue('project_title_s', strtolower($project->project_title));
-        // $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
-        // $templateProcessor->setComplexBlock('project_location_desc',  $locDescTable);
-        // $templateProcessor->setValue('district', ucwords(strtolower($project_district)));
-        // $templateProcessor->setValue('province', ucwords(strtolower($project_province)));
-        // $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->pic);
-        // $templateProcessor->setValue('pemrakarsa_position', $project->initiator->pic_role);
-        // $templateProcessor->setValue('address', ucwords(strtolower($project_address)));
-        // $templateProcessor->setValue('pemrakarsa_address', ucwords(strtolower($project->initiator->address)));
-        // $templateProcessor->setValue('pemrakarsa_phone', ucwords(strtolower($project->initiator->phone)));
-        // $templateProcessor->setValue('date_small', Carbon::now()->isoFormat('MMMM Y'));
-        // $templateProcessor->setValue('year', '' . date('Y') . '');
-        // $templateProcessor->cloneBlock('sub_project_scale_block', count($sub_project_scale_block), true, false, $sub_project_scale_block);
+        $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
+        $templateProcessor->setValue('project_title_s', strtolower($project->project_title));
+        $templateProcessor->setValue('project_title', ucwords(strtolower($project->project_title)));
+        $templateProcessor->setComplexBlock('project_location_desc',  $locDescTable);
+        $templateProcessor->setValue('district', ucwords(strtolower($project_district)));
+        $templateProcessor->setValue('province', ucwords(strtolower($project_province)));
+        $templateProcessor->setValue('pemrakarsa_pic', $project->initiator->pic);
+        $templateProcessor->setValue('pemrakarsa_position', $project->initiator->pic_role);
+        $templateProcessor->setValue('address', ucwords(strtolower($project_address)));
+        $templateProcessor->setValue('pemrakarsa_address', ucwords(strtolower($project->initiator->address)));
+        $templateProcessor->setValue('pemrakarsa_phone', ucwords(strtolower($project->initiator->phone)));
+        $templateProcessor->setValue('date_small', Carbon::now()->isoFormat('MMMM Y'));
+        $templateProcessor->setValue('year', '' . date('Y') . '');
+        $templateProcessor->cloneBlock('sub_project_scale_block', count($sub_project_scale_block), true, false, $sub_project_scale_block);
         // $templateProcessor->setValue('lpjp_name', $lpjp['name']);
         // $templateProcessor->setValue('lpjp_address', $lpjp['address']);
         // $templateProcessor->setValue('lpjp_reg_no', $lpjp['reg_no']);
@@ -1977,89 +1977,89 @@ class AndalComposingController extends Controller
         // $templateProcessor->setValue('lpjp_date_end', $lpjp['date_end']);
         // $templateProcessor->setValue('lpjp_period', $lpjp['period']);
         // $templateProcessor->setValue('lpjp_telephone', $lpjp['telephone']);
-        // $templateProcessor->setValue('lpjp_faksimili', $lpjp['faksimili']);
+        $templateProcessor->setValue('lpjp_faksimili', $lpjp['faksimili']);
         // $templateProcessor->setValue('lpjp_pic', $lpjp['pic']);
-        // $templateProcessor->setValue('lpjp_position', $lpjp['position']);
-        // $templateProcessor->setValue('penyusun', $penyusun);
-        // $templateProcessor->setValue('penyusun_name', $penyusun_name);
-        // $templateProcessor->setValue('penyusun_type', $penyusun_type);
-        // $templateProcessor->setValue('penyusun_no_reg', $penyusun_no_reg);
-        // $templateProcessor->setValue('penyusun_date_start', $penyusun_date_start);
-        // $templateProcessor->setValue('penyusun_date_end', $penyusun_date_end);
-        // $templateProcessor->setValue('penyusun_period', $penyusun_period);
-        // $templateProcessor->setValue('penyusun_address', $penyusun_address);
-        // $templateProcessor->setValue('penyusun_phone', $penyusun_phone);
-        // $templateProcessor->cloneBlock('lpjp_pj_block', count($lpjp_pj_block), true, false, $lpjp_pj_block);
-        // $templateProcessor->setValue('konsul_publik_date', $konsul_publik_date);
-        // $templateProcessor->setValue('konsul_publik_lokasi', $konsul_publik_lokasi);
-        // $templateProcessor->setValue('konsul_publik_peserta', $konsul_publik_peserta);
-        // $templateProcessor->setValue('konsul_publik_total', $konsul_publik_total);
-        // $templateProcessor->cloneRowAndSetValues('tim_penyusun', $formulator);
-        // $templateProcessor->cloneRowAndSetValues('tim_ahli', $experts);
-        // $templateProcessor->cloneRowAndSetValues('ka_pk', $pk);
-        // $templateProcessor->cloneRowAndSetValues('ka_k', $k);
-        // $templateProcessor->cloneRowAndSetValues('ka_o', $o);
-        // $templateProcessor->cloneRowAndSetValues('ka_po', $po);
-        // $templateProcessor->cloneRowAndSetValues('dp_pk', $dp_pk);
-        // $templateProcessor->cloneRowAndSetValues('dp_k', $dp_k);
-        // $templateProcessor->cloneRowAndSetValues('dp_o', $dp_o);
-        // $templateProcessor->cloneRowAndSetValues('dp_po', $dp_po);
-        // $templateProcessor->cloneRowAndSetValues('mdp_pk', $mdp_pk);
-        // $templateProcessor->cloneRowAndSetValues('mdp_k', $mdp_k);
-        // $templateProcessor->cloneRowAndSetValues('mdp_o', $mdp_o);
-        // $templateProcessor->cloneRowAndSetValues('mdp_po', $mdp_po);
-        // $templateProcessor->cloneRowAndSetValues('dph_pk', $dph_pk);
-        // $templateProcessor->cloneRowAndSetValues('dph_k', $dph_k);
-        // $templateProcessor->cloneRowAndSetValues('dph_o', $dph_o);
-        // $templateProcessor->cloneRowAndSetValues('dph_po', $dph_po);
-        // $templateProcessor->cloneRowAndSetValues('mdph_pk', $mdph_pk);
-        // $templateProcessor->cloneRowAndSetValues('mdph_k', $mdph_k);
-        // $templateProcessor->cloneRowAndSetValues('mdph_o', $mdph_o);
-        // $templateProcessor->cloneRowAndSetValues('mdph_po', $mdph_po);
-        // $templateProcessor->cloneRowAndSetValues('bwk_pk', $bwk_pk);
-        // $templateProcessor->cloneRowAndSetValues('bwk_k', $bwk_k);
-        // $templateProcessor->cloneRowAndSetValues('bwk_o', $bwk_o);
-        // $templateProcessor->cloneRowAndSetValues('bwk_po', $bwk_po);
-        // $templateProcessor->cloneRowAndSetValues('ru_pk', $ru_pk);
-        // $templateProcessor->cloneRowAndSetValues('ru_k', $ru_k);
-        // $templateProcessor->cloneRowAndSetValues('ru_o', $ru_o);
-        // $templateProcessor->cloneRowAndSetValues('ru_po', $ru_po);
-        // $templateProcessor->cloneRowAndSetValues('deskripsi_rencana', $deskripsi_rencana);
-        // $templateProcessor->cloneRowAndSetValues('pk_bwk', $pk_bwk);
-        // $templateProcessor->cloneRowAndSetValues('k_bwk', $k_bwk);
-        // $templateProcessor->cloneRowAndSetValues('o_bwk', $o_bwk);
-        // $templateProcessor->cloneRowAndSetValues('po_bwk', $po_bwk);
-        // $templateProcessor->cloneBlock('rona_biologi', count($biologi), true, false, $biologi);
-        // $templateProcessor->cloneBlock('com_pk_block', count($com_pk), true, false, $com_pk);
-        // $templateProcessor->cloneBlock('com_k_block', count($com_k), true, false, $com_k);
-        // $templateProcessor->cloneBlock('com_o_block', count($com_o), true, false, $com_o);
-        // $templateProcessor->cloneBlock('com_po_block', count($com_po), true, false, $com_po);
-        // $templateProcessor->cloneBlock('gfk_rona_block', count($gfk_rona_block), true, false, $gfk_rona_block);
-        // $templateProcessor->cloneBlock('b_rona_block', count($b_rona_block), true, false, $b_rona_block);
-        // $templateProcessor->cloneBlock('seb_rona_block', count($seb_rona_block), true, false, $seb_rona_block);
-        // $templateProcessor->cloneBlock('kk_rona_block', count($kk_rona_block), true, false, $kk_rona_block);
-        // $templateProcessor->setComplexBlock('positive_feedback_summary',  $posFeedTable);
-        // $templateProcessor->setComplexBlock('negative_feedback_summary',  $negFeedTable);
-        // $templateProcessor->setComplexBlock('holistic_evaluation',  $holEvalTable);
+        $templateProcessor->setValue('lpjp_position', $lpjp['position']);
+        $templateProcessor->setValue('penyusun', $penyusun);
+        $templateProcessor->setValue('penyusun_name', $penyusun_name);
+        $templateProcessor->setValue('penyusun_type', $penyusun_type);
+        $templateProcessor->setValue('penyusun_no_reg', $penyusun_no_reg);
+        $templateProcessor->setValue('penyusun_date_start', $penyusun_date_start);
+        $templateProcessor->setValue('penyusun_date_end', $penyusun_date_end);
+        $templateProcessor->setValue('penyusun_period', $penyusun_period);
+        $templateProcessor->setValue('penyusun_address', $penyusun_address);
+        $templateProcessor->setValue('penyusun_phone', $penyusun_phone);
+        $templateProcessor->cloneBlock('lpjp_pj_block', count($lpjp_pj_block), true, false, $lpjp_pj_block);
+        $templateProcessor->setValue('konsul_publik_date', $konsul_publik_date);
+        $templateProcessor->setValue('konsul_publik_lokasi', $konsul_publik_lokasi);
+        $templateProcessor->setValue('konsul_publik_peserta', $konsul_publik_peserta);
+        $templateProcessor->setValue('konsul_publik_total', $konsul_publik_total);
+        $templateProcessor->cloneRowAndSetValues('tim_penyusun', $formulator);
+        $templateProcessor->cloneRowAndSetValues('tim_ahli', $experts);
+        $templateProcessor->cloneRowAndSetValues('ka_pk', $pk);
+        $templateProcessor->cloneRowAndSetValues('ka_k', $k);
+        $templateProcessor->cloneRowAndSetValues('ka_o', $o);
+        $templateProcessor->cloneRowAndSetValues('ka_po', $po);
+        $templateProcessor->cloneRowAndSetValues('dp_pk', $dp_pk);
+        $templateProcessor->cloneRowAndSetValues('dp_k', $dp_k);
+        $templateProcessor->cloneRowAndSetValues('dp_o', $dp_o);
+        $templateProcessor->cloneRowAndSetValues('dp_po', $dp_po);
+        $templateProcessor->cloneRowAndSetValues('mdp_pk', $mdp_pk);
+        $templateProcessor->cloneRowAndSetValues('mdp_k', $mdp_k);
+        $templateProcessor->cloneRowAndSetValues('mdp_o', $mdp_o);
+        $templateProcessor->cloneRowAndSetValues('mdp_po', $mdp_po);
+        $templateProcessor->cloneRowAndSetValues('dph_pk', $dph_pk);
+        $templateProcessor->cloneRowAndSetValues('dph_k', $dph_k);
+        $templateProcessor->cloneRowAndSetValues('dph_o', $dph_o);
+        $templateProcessor->cloneRowAndSetValues('dph_po', $dph_po);
+        $templateProcessor->cloneRowAndSetValues('mdph_pk', $mdph_pk);
+        $templateProcessor->cloneRowAndSetValues('mdph_k', $mdph_k);
+        $templateProcessor->cloneRowAndSetValues('mdph_o', $mdph_o);
+        $templateProcessor->cloneRowAndSetValues('mdph_po', $mdph_po);
+        $templateProcessor->cloneRowAndSetValues('bwk_pk', $bwk_pk);
+        $templateProcessor->cloneRowAndSetValues('bwk_k', $bwk_k);
+        $templateProcessor->cloneRowAndSetValues('bwk_o', $bwk_o);
+        $templateProcessor->cloneRowAndSetValues('bwk_po', $bwk_po);
+        $templateProcessor->cloneRowAndSetValues('ru_pk', $ru_pk);
+        $templateProcessor->cloneRowAndSetValues('ru_k', $ru_k);
+        $templateProcessor->cloneRowAndSetValues('ru_o', $ru_o);
+        $templateProcessor->cloneRowAndSetValues('ru_po', $ru_po);
+        $templateProcessor->cloneRowAndSetValues('deskripsi_rencana', $deskripsi_rencana);
+        $templateProcessor->cloneRowAndSetValues('pk_bwk', $pk_bwk);
+        $templateProcessor->cloneRowAndSetValues('k_bwk', $k_bwk);
+        $templateProcessor->cloneRowAndSetValues('o_bwk', $o_bwk);
+        $templateProcessor->cloneRowAndSetValues('po_bwk', $po_bwk);
+        $templateProcessor->cloneBlock('rona_biologi', count($biologi), true, false, $biologi);
+        $templateProcessor->cloneBlock('com_pk_block', count($com_pk), true, false, $com_pk);
+        $templateProcessor->cloneBlock('com_k_block', count($com_k), true, false, $com_k);
+        $templateProcessor->cloneBlock('com_o_block', count($com_o), true, false, $com_o);
+        $templateProcessor->cloneBlock('com_po_block', count($com_po), true, false, $com_po);
+        $templateProcessor->cloneBlock('gfk_rona_block', count($gfk_rona_block), true, false, $gfk_rona_block);
+        $templateProcessor->cloneBlock('b_rona_block', count($b_rona_block), true, false, $b_rona_block);
+        $templateProcessor->cloneBlock('seb_rona_block', count($seb_rona_block), true, false, $seb_rona_block);
+        $templateProcessor->cloneBlock('kk_rona_block', count($kk_rona_block), true, false, $kk_rona_block);
+        $templateProcessor->setComplexBlock('positive_feedback_summary',  $posFeedTable);
+        $templateProcessor->setComplexBlock('negative_feedback_summary',  $negFeedTable);
+        $templateProcessor->setComplexBlock('holistic_evaluation',  $holEvalTable);
 
         // DESKRIPSI KEGIATAN
         if(count($com_replace) > 0) {
             for($cri = 0; $cri < count($com_replace); $cri++) {
-                // $templateProcessor->setComplexBlock($com_replace[$cri]['replace'],  $com_replace[$cri]['data']);
+                $templateProcessor->setComplexBlock($com_replace[$cri]['replace'],  $com_replace[$cri]['data']);
             }
         }
 
         // KOMPONEN LINGKUNGAN HIDUP
         if(count($spra_desc_replace) > 0) {
             for($spri = 0; $spri < count($spra_desc_replace); $spri++) {
-                // $templateProcessor->setComplexBlock($spra_desc_replace[$spri]['replace'],  $spra_desc_replace[$spri]['data']);
+                $templateProcessor->setComplexBlock($spra_desc_replace[$spri]['replace'],  $spra_desc_replace[$spri]['data']);
             }
         }
 
         // DESKRIPSI RENCANA USAHA DAN/ATAU KEGIATAN
         if(count($deskripsi_rencana_replace) > 0) {
             for($dski = 0; $dski < count($deskripsi_rencana_replace); $dski++) {
-                // $templateProcessor->setComplexBlock($deskripsi_rencana_replace[$dski]['replace'],  $deskripsi_rencana_replace [$dski]['data']);
+                $templateProcessor->setComplexBlock($deskripsi_rencana_replace[$dski]['replace'],  $deskripsi_rencana_replace [$dski]['data']);
             }
         }
 
@@ -2089,11 +2089,11 @@ class AndalComposingController extends Controller
             $kls_total++;
         }
 
-        // $templateProcessor->cloneBlock('kls_block', count($kls_block), true, false, $kls_block);
+        $templateProcessor->cloneBlock('kls_block', count($kls_block), true, false, $kls_block);
 
         if(count($kls_replace) > 0) {
             for($klsi = 0; $klsi < count($kls_replace); $klsi++) {
-                // $templateProcessor->setComplexBlock($kls_replace[$klsi]['replace'], $kls_replace[$klsi]['desc']);
+                $templateProcessor->setComplexBlock($kls_replace[$klsi]['replace'], $kls_replace[$klsi]['desc']);
             }
         }
 
@@ -2107,7 +2107,7 @@ class AndalComposingController extends Controller
                 '/dpg_pk_imp_block' => $dpg_pk_block[$i]['/dpg_pk_imp_block'],
             ];
         }
-        // $templateProcessor->cloneBlock('dpg_pk_block', count($pdp), true, false, $pdp);
+        $templateProcessor->cloneBlock('dpg_pk_block', count($pdp), true, false, $pdp);
 
         $pdp = [];
         for($i = 0; $i < count($dpg_k_block); $i++) {
@@ -2118,7 +2118,7 @@ class AndalComposingController extends Controller
                 '/dpg_k_imp_block' => $dpg_k_block[$i]['/dpg_k_imp_block'],
             ];
         }
-        // $templateProcessor->cloneBlock('dpg_k_block', count($pdp), true, false, $pdp);
+        $templateProcessor->cloneBlock('dpg_k_block', count($pdp), true, false, $pdp);
 
         $pdp = [];
         for($i = 0; $i < count($dpg_o_block); $i++) {
@@ -2129,7 +2129,7 @@ class AndalComposingController extends Controller
                 '/dpg_o_imp_block' => $dpg_o_block[$i]['/dpg_o_imp_block'],
             ];
         }
-        // $templateProcessor->cloneBlock('dpg_o_block', count($pdp), true, false, $pdp);
+        $templateProcessor->cloneBlock('dpg_o_block', count($pdp), true, false, $pdp);
 
         $pdp = [];
         for($i = 0; $i < count($dpg_po_block); $i++) {
@@ -2140,7 +2140,7 @@ class AndalComposingController extends Controller
                 '/dpg_po_imp_block' => $dpg_po_block[$i]['/dpg_po_imp_block'],
             ];
         }
-        // $templateProcessor->cloneBlock('dpg_po_block', count($pdp), true, false, $pdp);
+        $templateProcessor->cloneBlock('dpg_po_block', count($pdp), true, false, $pdp);
         
         // DAMPAK PADA PRAKIRAAN DAMPAK PENTING
         // dd($dpg_pk_block, $dpg_k_block, $dpg_o_block, $dpg_pk_block);
@@ -2175,20 +2175,20 @@ class AndalComposingController extends Controller
                     $dampak[$a]['dpg_pk_imp_status'] = $status;
                 }
                 $no = $i + 1;
-                // $templateProcessor->cloneBlock('dpg_pk_imp_block_' . $no, count($dampak), true, false, $dampak);
+                $templateProcessor->cloneBlock('dpg_pk_imp_block_' . $no, count($dampak), true, false, $dampak);
 
-                // for($a = 0; $a < count($dpg_pk_block[$i]['dampak']); $a++) {
-                //     if($dpg_pk_block[$i]['table_with_no_plan'][$a]['studies'] !== '') {
-                //         $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['studies']);
-                //         $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
-                //         $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
-                //         $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
+                for($a = 0; $a < count($dpg_pk_block[$i]['dampak']); $a++) {
+                    if($dpg_pk_block[$i]['table_with_no_plan'][$a]['studies'] !== '') {
+                        $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['studies']);
+                        $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
+                        $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
+                        $templateProcessor->setComplexBlock($dpg_pk_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_pk_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
     
-                //         for($o = 1; $o < count($dpg_pk_block[$i]['important_trait'][$a]) + 1; $o++) {
-                //             $templateProcessor->setComplexBlock($dpg_pk_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_pk_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
-                //         }
-                //     }
-                // }
+                        for($o = 1; $o < count($dpg_pk_block[$i]['important_trait'][$a]) + 1; $o++) {
+                            $templateProcessor->setComplexBlock($dpg_pk_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_pk_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
+                        }
+                    }
+                }
             }
         }
 
@@ -2223,20 +2223,20 @@ class AndalComposingController extends Controller
                     $dampak[$a]['dpg_k_imp_status'] = $status;
                 }
                 $no = $i + 1;
-                // $templateProcessor->cloneBlock('dpg_k_imp_block_' . $no, count($dampak), true, false, $dampak);
+                $templateProcessor->cloneBlock('dpg_k_imp_block_' . $no, count($dampak), true, false, $dampak);
 
-                // for($a = 0; $a < count($dpg_k_block[$i]['dampak']); $a++) {
-                //     if($dpg_k_block[$i]['table_with_no_plan'][$a]['studies'] !== '') {
-                //         $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['studies']);
-                //         $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
-                //         $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
-                //         $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
+                for($a = 0; $a < count($dpg_k_block[$i]['dampak']); $a++) {
+                    if($dpg_k_block[$i]['table_with_no_plan'][$a]['studies'] !== '') {
+                        $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['studies']);
+                        $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
+                        $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
+                        $templateProcessor->setComplexBlock($dpg_k_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_k_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
     
-                //         for($o = 1; $o < count($dpg_k_block[$i]['important_trait'][$a]) + 1; $o++) {
-                //             $templateProcessor->setComplexBlock($dpg_k_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_k_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
-                //         }
-                //     }
-                // }
+                        for($o = 1; $o < count($dpg_k_block[$i]['important_trait'][$a]) + 1; $o++) {
+                            $templateProcessor->setComplexBlock($dpg_k_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_k_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
+                        }
+                    }
+                }
             }
         }
 
@@ -2271,20 +2271,20 @@ class AndalComposingController extends Controller
                     $dampak[$a]['dpg_o_imp_status'] = $status;
                 }
                 $no = $i + 1;
-                // $templateProcessor->cloneBlock('dpg_o_imp_block_' . $no, count($dampak), true, false, $dampak);
+                $templateProcessor->cloneBlock('dpg_o_imp_block_' . $no, count($dampak), true, false, $dampak);
 
-                // for($a = 0; $a < count($dpg_o_block[$i]['dampak']); $a++) {
-                //     if($dpg_o_block[$i]['table_with_no_plan'][$a]['studies'] !== '') {
-                //         $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['studies']);
-                //         $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
-                //         $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
-                //         $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
+                for($a = 0; $a < count($dpg_o_block[$i]['dampak']); $a++) {
+                    if($dpg_o_block[$i]['table_with_no_plan'][$a]['studies'] !== '') {
+                        $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['studies']);
+                        $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
+                        $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
+                        $templateProcessor->setComplexBlock($dpg_o_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_o_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
     
-                //         for($o = 1; $o < count($dpg_o_block[$i]['important_trait'][$a]) + 1; $o++) {
-                //             $templateProcessor->setComplexBlock($dpg_o_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_o_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
-                //         }
-                //     }
-                // }
+                        for($o = 1; $o < count($dpg_o_block[$i]['important_trait'][$a]) + 1; $o++) {
+                            $templateProcessor->setComplexBlock($dpg_o_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_o_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
+                        }
+                    }
+                }
             }
         }
 
@@ -2319,27 +2319,27 @@ class AndalComposingController extends Controller
                     $dampak[$a]['dpg_po_imp_status'] = $status;
                 }
                 $no = $i + 1;
-                // $templateProcessor->cloneBlock('dpg_po_imp_block_' . $no, count($dampak), true, false, $dampak);
+                $templateProcessor->cloneBlock('dpg_po_imp_block_' . $no, count($dampak), true, false, $dampak);
 
-                // for($a = 0; $a < count($dpg_po_block[$i]['dampak']); $a++) {
-                //     if($dpg_po_block[$i]['table_with_no_plan'][$a]['studies'] !== '') {
-                //         $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['studies']);
-                //         $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
-                //         $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
-                //         $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
+                for($a = 0; $a < count($dpg_po_block[$i]['dampak']); $a++) {
+                    if($dpg_po_block[$i]['table_with_no_plan'][$a]['studies'] !== '') {
+                        $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['studies'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['studies']);
+                        $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['no_plan'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['no_plan']);
+                        $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['with_plan'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['with_plan']);
+                        $templateProcessor->setComplexBlock($dpg_po_block[$i]['table_with_no_plan'][$a]['size_differ'], $dpg_po_block[$i]['table_with_no_plan_data'][$a]['size_differ']);
     
-                //         for($o = 1; $o < count($dpg_po_block[$i]['important_trait'][$a]) + 1; $o++) {
-                //             $templateProcessor->setComplexBlock($dpg_po_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_po_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
-                //         }
-                //     }
-                // }
+                        for($o = 1; $o < count($dpg_po_block[$i]['important_trait'][$a]) + 1; $o++) {
+                            $templateProcessor->setComplexBlock($dpg_po_block[$i]['important_trait'][$a][$o - 1]['keterangan'], $dpg_po_block[$i]['important_trait_data'][$a][$o - 1]['keterangan']);
+                        }
+                    }
+                }
             }
         }
 
         // EVALUASI DAMPAK
         if(count($ed_replace) > 0) {
             for($edi = 0; $edi < count($ed_replace); $edi++) {
-                // $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
+                $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
             }
         }
 
