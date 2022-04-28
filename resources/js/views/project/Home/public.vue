@@ -24,7 +24,7 @@
               <public-project-location :data="data" />
             </el-tab-pane>
             <el-tab-pane label="Tim Penyusun">
-              <project-formulator-team v-if="projectId > 0" :id="projectId" />
+              <public-project-formulator-team :id="projectId" />
             </el-tab-pane>
             <el-tab-pane label="SPT">
               <project-public-feedback v-if="announcement_id > 0" :id="announcement_id" />
@@ -40,6 +40,7 @@ import PublicProjectDetail from './components/PublicProjectDetail.vue';
 import PublicProjectInitiator from './components/PublicInitiator.vue';
 import PublicProjectTimeline from './components/PublicTimeline.vue';
 import PublicProjectLocation from './components/PublicLocation.vue';
+import PublicProjectFormulatorTeam from './components/PublicFormulatorTeam.vue';
 
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
@@ -51,6 +52,7 @@ export default {
     PublicProjectInitiator,
     PublicProjectTimeline,
     PublicProjectLocation,
+    PublicProjectFormulatorTeam,
   },
   props: {
     projectId: {

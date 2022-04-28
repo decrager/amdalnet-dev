@@ -34,7 +34,7 @@
         <div v-else>
           <div><strong>Kategori Komponen Lingkungan</strong></div>
           <div style="font-size:120%; color:#202020;">
-            {{ data.component_type_name }}
+            {{ getComponentTypeName(data.id_component_type) }}
           </div>
         </div>
         <el-form-item
@@ -68,12 +68,18 @@
             placeholder="Nama Rona Lingkungan..."
           />
         </el-form-item>
-        <div v-else style="margin: 2em 0;">
+        <div v-else-if="data.is_master === true" style="margin: 2em 0;">
           <div><strong>Rona Lingkungan</strong></div>
           <div style="font-size:120%; color:#202020;">
-            {{ data.name }} <i v-if="data.is_master" class="el-icon-success" style="color:#2e6b2e;" />
+            {{ data.name }} <i class="el-icon-success" style="color:#2e6b2e;" />
           </div>
         </div>
+        <el-form-item v-else label="Rona Lingkungan">
+          <el-input
+            v-model="data.name"
+            placeholder="Nama Rona Lingkungan..."
+          />
+        </el-form-item>
         <el-form-item label="Deskripsi">
           <huedesceditor
             v-model="data.description"
@@ -99,7 +105,7 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" @click="handleClose">Batal</el-button>
-        <el-button type="primary" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -221,29 +227,6 @@ export default {
       this.$emit('onSave', this.data);
       this.handleClose();
     },
-    async querySearch(queryString, cb) {
-      if (queryString.length < 3) {
-        return cb([]);
-      }
-      var response = await ronaAwalResource.list({
-        q: queryString,
-      });
-
-      var results = response.data;
-
-      // var results = queryString ? options.filter(this.createFilter(queryString)) : options;
-      // call callback function to return suggestions
-      if (results.length === 1) {
-        console.log('result: ', results);
-      }
-      if (results.length === 0){
-        this.data.id = 0;
-        this.data.is_master = false;
-        this.data.name = queryString;
-        this.data.value = queryString;
-      }
-      cb(results);
-    },
     async getHues(){
       this.master = [];
       this.loading = true;
@@ -286,13 +269,24 @@ export default {
       this.data.component_type_name = ctype.name;
       this.getHues();
     },
-  },
-  getComponentTypeName(id){
-    const ctype = this.componentTypes.find(c => c.id === id);
-    if (ctype){
-      return ctype.name;
-    }
-    return '';
+    getComponentTypeName(id){
+      const ctype = this.componentTypes.find(c => c.id === id);
+      if (ctype){
+        return ctype.name;
+      }
+      return '';
+    },
+    disableSave(){
+      const emptyTexts = (this.data.description === null) ||
+        ((this.data.description).trim() === '') ||
+        (this.data.measurement === null) ||
+        ((this.data.measurement).trim() === '');
+
+      if (this.noMaster){
+        return ((this.data.name).trim() === '') || emptyTexts;
+      }
+      return (this.data.id === null) || (this.data.id <= 0) || emptyTexts;
+    },
   },
 };
 </script>

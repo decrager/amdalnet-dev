@@ -44,10 +44,10 @@
         <p class="data"> {{ [ (data.project_type || '-'), ('Kewenangan ' + (data.authority || '-')), (data.status || '-'), (data.study_approach || '-')].join(', ') }} </p>
 
         <p class="ph-header">Kegiatan Utama</p>
-        <public-project-activities :data="(this.data.list_sub_project).filter((e) => e.type === 'utama')" />
+        <public-project-activities :data="(data.list_sub_project).filter((e) => e.type === 'utama')" />
 
         <p class="ph-header">Kegiatan Pendukung</p>
-        <public-project-activities :data="(this.data.list_sub_project).filter((e) => e.type === 'pendukung')" />
+        <public-project-activities :data="(data.list_sub_project).filter((e) => e.type === 'pendukung')" />
 
       </el-col>
       <el-col :span="4">

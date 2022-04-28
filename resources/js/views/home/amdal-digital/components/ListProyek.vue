@@ -39,7 +39,7 @@
       >
         <template slot-scope="scope">
           <el-button type="primary" style="color: white !important" @click="showProject(scope.row.id)">AMDAL Digital</el-button>
-          <el-button type="warning" style="color: white !important" @click="showDocument(scope.row.id)">Dokumen</el-button>
+          <!-- <el-button type="warning" style="color: white !important" @click="showDocument(scope.row.id)">Dokumen</el-button> -->
         </template>
       </el-table-column>
     </el-table>
