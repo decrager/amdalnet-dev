@@ -54,6 +54,7 @@
           label="Deskripsi"
         >
           <scopingceditor
+            :id="'comp_scoping-editor_334'"
             :key="'comp_editor_scoping_3'"
             v-model="component.description"
             output-format="html"
@@ -75,8 +76,8 @@
       </el-form>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="danger" @click="handleClose">Batal</el-button>
-      <el-button type="primary" @click="submitComponent">Simpan</el-button>
+      <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
+      <el-button type="primary" :disabled="isSaving || disableSave()" @click="submitComponent">Simpan</el-button>
     </span>
   </el-dialog>
 </template>
@@ -160,6 +161,11 @@ export default {
           mode: this.mode,
         };
       }
+
+      const ed = window.tinymce.get('comp_scoping-editor_334');
+      if (ed) {
+        ed.setContent((this.component.description === null) ? '' : this.component.description);
+      }
       console.log(this.component);
     },
     handleSelectComponent(val){
@@ -215,6 +221,15 @@ export default {
       this.component.id_sub_project_component = null;
       this.component.value = '';
       this.component.mode = this.mode;
+    },
+
+    disableSave(){
+      const emptyTexts = (this.component.description === null) ||
+        ((this.component.description).trim() === '') ||
+        (this.component.measurement === null) ||
+        ((this.component.measurement).trim() === '');
+
+      return (this.component.id_component === null) || (this.component.id_component <= 0) || emptyTexts;
     },
   },
 

@@ -72,12 +72,19 @@
 
           </el-form-item>
 
-          <div v-else style="margin: 2em 0;">
+          <div v-else-if="data.is_master" style="margin: 2em 0;">
             <div><strong>Komponen Kegiatan</strong></div>
             <div style="font-size:120%; color:#202020;">
-              {{ data.name }} <i v-if="data.is_master" class="el-icon-success" style="color:#2e6b2e;" />
+              {{ data.name }} <i class="el-icon-success" style="color:#2e6b2e;" />
             </div>
           </div>
+
+          <el-form-item v-else label="Komponen Kegiatan">
+            <el-input
+              v-model="data.name"
+              placeholder="Nama Komponen Kegiatan..."
+            />
+          </el-form-item>
 
           <!-- -->
 
@@ -104,7 +111,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" @click="handleClose">Batal</el-button>
-        <el-button type="primary" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -203,9 +210,10 @@ export default {
         case 1:
           // edit mode
           this.data = this.input;
+          this.noMaster = this.data.is_master === false;
           break;
       }
-      console.log(this.data);
+      // console.log(this.data);
     },
     onChangeStage(val){
       // console.log(val);
@@ -219,7 +227,7 @@ export default {
     async handleSaveForm(){
       // save data in this form!
       this.saving = true;
-      if (this.noMaster === true) {
+      if ((this.noMaster === true) && (this.formMode === 0)) {
         this.data.id = null;
       }
       await projectComponentResource.store({
@@ -228,6 +236,7 @@ export default {
         component: this.data,
       }).then((res) => {
         this.data.id_project_component = res.data.id;
+        this.data.id = res.data.id_component;
       }).catch((err) => {
         console.log(err);
       })
@@ -255,12 +264,20 @@ export default {
       });
     },
     handleSelect(val){
-      const item = this.master.find(i => i.id === parseInt(val));
-      console.log(val, item);
-      this.data.id = item.id;
-      this.data.name = item.name;
-      this.data.is_master = item.is_master;
-      this.data.value = item.name;
+      if (val === ''){
+        console.log("it's empty!");
+        this.data.id = null;
+        this.data.name = '';
+        this.data.is_master = false;
+        this.data.value = '';
+      } else {
+        const item = this.master.find(i => i.id === parseInt(val));
+        console.log(val, item);
+        this.data.id = item.id;
+        this.data.name = item.name;
+        this.data.is_master = item.is_master;
+        this.data.value = item.name;
+      }
     },
     handleClose(){
       this.initData();
@@ -276,6 +293,17 @@ export default {
     },
     clear(){
       this.initData();
+    },
+    disableSave(){
+      const emptyTexts = (this.data.description === null) ||
+        ((this.data.description).trim() === '') ||
+        (this.data.measurement === null) ||
+        ((this.data.measurement).trim() === '');
+
+      if (this.noMaster){
+        return ((this.data.name).trim() === '') || emptyTexts;
+      }
+      return (this.data.id === null) || (this.data.id <= 0) || emptyTexts;
     },
   },
 };

@@ -44,7 +44,7 @@
 import Resource from '@/api/resource';
 const timelineResource = new Resource('timeline');
 export default {
-  name: 'ProjectTimeline',
+  name: 'PublicProjectTimeline',
   props: {
     id: {
       type: Number,
@@ -59,9 +59,10 @@ export default {
       loading: false,
     };
   },
-  mounted(){
-    // this.id = this.project_id = this.$route.params && this.$route.params.id;
-    this.getData();
+  watch: {
+    id: function(val){
+      this.getData();
+    },
   },
   methods: {
     async getData() {

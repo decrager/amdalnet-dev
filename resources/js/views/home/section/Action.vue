@@ -103,7 +103,7 @@
             </div>
           </div>
           <div class="content" :hidden="!showDigi" style="padding-top: 20px;">
-            <h3 class="sub-title button"><img src="/images/digworkspace2.svg" style="width: 16px; height:16px" alt=""> AMDAL Digital</h3>
+            <h3 class="sub-title button" @click="showAMDALDigital"><img src="/images/digworkspace2.svg" style="width: 16px; height:16px" alt=""> AMDAL Digital</h3>
             <router-link to="/webgis">
               <h3 class="sub-title button"><img src="/images/map3.svg" style="width: 16px; height:16px" alt=""> WebGIS AMDAL</h3>
             </router-link>
@@ -341,6 +341,10 @@ export default {
     },
     handleSetMenu(){
       this.$router.push('/login');
+    },
+    showAMDALDigital(){
+      console.log('Calling Amdal Digital!');
+      this.$emit('showAmdalDigital', true);
     },
   },
 };
