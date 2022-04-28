@@ -18,13 +18,20 @@
               Export Dokumen ANDAL to .DOCX
             </a>
           </div>
-          <iframe
+          <!-- <iframe
             v-if="showDocumentAndal"
             :src="
               'https://docs.google.com/gview?url=' +
               projectsAndal +
               '&embedded=true'
             "
+            width="100%"
+            height="723px"
+            frameborder="0"
+          /> -->
+          <iframe
+            v-if="showDocumentAndal"
+            :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projectsAndal}`"
             width="100%"
             height="723px"
             frameborder="0"
