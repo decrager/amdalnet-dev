@@ -607,6 +607,15 @@ input {
     transform: var(--img-scale);
 }
 
+/*=============== AMDAL Digital ===============*/
+.amdal-digital {
+    background-color: #062307;
+    padding: 5em 2em;
+}
+.amdal-digital__title {
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
 
 /*=============== announce ===============*/
 
