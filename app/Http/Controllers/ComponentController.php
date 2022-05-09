@@ -75,7 +75,14 @@ class ComponentController extends Controller
                     $q->whereRaw("LOWER(components.name) LIKE '%" . strtolower($request->search) . "%'");
                 });
             }
-        })->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')
+        })
+        ->where( function ($query) use ($request) {
+            if (isset($request->is_master) && ($request->is_master !== null)){
+                return $query->where('components.is_master', $request->is_master);
+            }
+            return $query->where('components.is_master', true);
+        })
+        ->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')
         ->orderBy(($request->orderBy ? 'components.'.$request->orderBy : 'components.id'), ($request->orderBy ? $request->order : 'DESC'))
         ->paginate($request->limit ? $request->limit : 10);
 

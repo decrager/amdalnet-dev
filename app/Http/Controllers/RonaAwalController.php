@@ -66,7 +66,14 @@ class RonaAwalController extends Controller
                     $q->whereRaw("LOWER(components.name) LIKE '%" . strtolower($request->search) . "%'");
                  });
             }
-        })->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
+        })
+        ->where( function ($query) use ($request) {
+            if (isset($request->is_master) && ($request->is_master !== null)){
+                return $query->where('rona_awal.is_master', $request->is_master);
+            }
+            return $query->where('rona_awal.is_master', true);
+        })
+        ->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
 
     }
 
