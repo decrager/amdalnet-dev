@@ -244,7 +244,7 @@ export default {
         (this.hue.measurement === null) ||
         ((this.hue.measurement).trim() === '');
 
-      return (this.hue.id_component === null) || (this.hue.id_component <= 0) || emptyTexts;
+      return (this.hue.id === null) || (this.hue.id <= 0) || emptyTexts;
     },
   },
 };
