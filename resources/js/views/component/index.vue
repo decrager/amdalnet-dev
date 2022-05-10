@@ -1,217 +1,69 @@
 <template>
-  <div class="app-container" style="padding: 24px">
+  <div v-loading="loading" class="app-container" style="padding: 24px">
     <el-card>
-      <div class="filter-container">
-        <el-button
-          class="filter-item"
-          type="primary"
-          icon="el-icon-plus"
-          @click="handleCreate"
-        >
-          {{ 'Tambah Komponen' }}
-        </el-button>
-        <el-row :gutter="32">
-          <el-col :sm="24" :md="10">
-            <el-input
-              v-model="listQuery.search"
-              suffix-icon="el-icon search"
-              placeholder="Pencarian..."
-              @input="inputSearch"
-            >
-              <el-button
-                slot="append"
-                icon="el-icon-search"
-                @click="handleSearch"
-              />
-            </el-input>
-          </el-col>
-        </el-row>
-      </div>
-      <component-table
-        :loading="loading"
-        :list="list"
-        :page="listQuery.page"
-        :limit="listQuery.limit"
-        :options="componentOptions"
-        @sort="onTableSort"
-        @projectStageFilter="onProjectStageFilter"
-        @handleEditForm="handleEditForm($event)"
-        @handleDelete="handleDelete($event)"
-      />
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
-        @pagination="handleFilter"
-      />
-      <component-dialog
-        :component="component"
-        :show="show"
-        :options="componentOptions"
-        @handleSubmitComponent="handleSubmitComponent"
-        @handleCancelComponent="handleCancelComponent"
-      />
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="Komponen Baku" name="standardised" style="padding: 1em;">
+          <standardised-component v-if="(activeName === 'standardised') && (componentOptions.length > 0)" :component-options="componentOptions" />
+        </el-tab-pane>
+        <el-tab-pane label="Komponen Tidak Baku" name="nonstandardised" style="padding: 1em;">
+          <non-standardised-component v-if="(activeName === 'nonstandardised') && (componentOptions.length > 0)" :component-options="componentOptions" />
+        </el-tab-pane>
+      </el-tabs>
+
     </el-card>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
-import Pagination from '@/components/Pagination';
+/*  import Pagination from '@/components/Pagination';
 import ComponentTable from './components/ComponentTable.vue';
 import ComponentDialog from './components/ComponentDialog.vue';
-const componentResource = new Resource('components');
+const componentResource = new Resource('components'); */
 const projectStageResource = new Resource('project-stages');
+
+import StandardisedComponent from './Baku.vue';
+import NonStandardisedComponent from './BelumBaku.vue';
 
 export default {
   name: 'ComponentList',
   components: {
-    Pagination,
-    ComponentTable,
-    ComponentDialog,
+    StandardisedComponent,
+    NonStandardisedComponent,
   },
-  data() {
+  data(){
     return {
-      list: [],
-      loading: true,
-      listQuery: {
-        page: 1,
-        limit: 10,
-        search: null,
-      },
-      timeoutId: null,
-      total: 0,
-      show: false,
+      activeName: 'standardised',
+      projectStages: [],
       componentOptions: [],
-      component: {},
+      loading: false,
     };
   },
   created() {
-    this.getList();
-    this.getProjectStage();
+    this.getProjectStages();
   },
   methods: {
-    handleCancelComponent() {
-      this.component = {};
-      this.show = false;
-    },
-    handleSubmitComponent() {
-      if (this.component.id !== undefined) {
-        componentResource
-          .updateMultipart(this.component.id, this.component)
-          .then((response) => {
-            this.$message({
-              type: 'success',
-              message: 'Komponen Berhasil Diupdate',
-              duration: 5 * 1000,
-            });
-            this.show = false;
-            this.component = {};
-            this.getList();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        componentResource
-          .store(this.component)
-          .then((response) => {
-            this.$message({
-              message: 'Komponen ' + this.component.name + ' Berhasil Dibuat',
-              type: 'success',
-              duration: 5 * 1000,
-            });
-            this.show = false;
-            this.component = {};
-            this.getList();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    },
-    async getProjectStage() {
+    /* async getProjectStages(){
+      this.loading = true;
       const { data } = await projectStageResource.list({ limit: 1000 });
       this.componentOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
-    },
-    handleFilter() {
-      this.getList();
-    },
-    async getList() {
+    }, */
+    async getProjectStages(){
       this.loading = true;
-      const { data, total } = await componentResource.list(this.listQuery);
-      this.list = data;
-      this.total = total;
-      this.loading = false;
-    },
-    handleCreate() {
-      this.component = {};
-      this.show = true;
-    },
-    handleEditForm(id) {
-      this.component = this.list.find((element) => element.id === id);
-      this.show = true;
-    },
-    handleDelete({ id, nama }) {
-      this.$confirm(
-        'apakah anda yakin akan menghapus ' + nama + '. ?',
-        'Peringatan',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Batal',
-          type: 'warning',
-        }
-      )
-        .then(() => {
-          componentResource
-            .destroy(id)
-            .then((response) => {
-              this.$message({
-                type: 'success',
-                message: 'Hapus Selesai',
-              });
-              this.getList();
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: 'Hapus Digagalkan',
+      await projectStageResource.list({ limit: 1000 })
+        .then(res => {
+          const data = res.data;
+          this.componentOptions = data.map((i) => {
+            return { value: i.id, label: i.name };
           });
+        }).finally(() => {
+          this.loading = false;
         });
     },
-    onProjectStageFilter(val) {
-      // console.log('projectStageFilter: ', val);
-      // this.listQuery.filter = val; idProjectStage
-      this.listQuery.idProjectStage = val;
-      this.handleFilter();
-    },
-    onTableSort(sort) {
-      this.listQuery.order = sort.order;
-      this.listQuery.orderBy = sort.prop;
-      this.handleFilter();
-    },
-    inputSearch(val) {
-      if (this.timeoutId) {
-        clearTimeout(this.timeoutId);
-      }
-      this.timeoutId = setTimeout(() => {
-        this.listQuery.page = 1;
-        this.listQuery.limit = 10;
-        this.getList();
-      }, 500);
-    },
-    async handleSearch() {
-      this.listQuery.page = 1;
-      this.listQuery.limit = 10;
-      await this.getList();
-      this.listQuery.search = null;
+    handleClick(e){
+
     },
   },
 };

@@ -65,7 +65,9 @@ class ComponentController extends Controller
         }
 
 
-        return Component::select('components.*', 'project_stages.name as project_stage')->where(function ($query) use ($request) {
+
+
+        return Component::select('components.*', 'project_stages.name as project_stage', 'projects.project_title')->where(function ($query) use ($request) {
             return $request->idProjectStage ? $query->where('id_project_stage', $request->idProjectStage) : '';
         })->where(function($query) use($request) {
             if($request->search && ($request->search !== 'null')) {
@@ -73,6 +75,8 @@ class ComponentController extends Controller
                     $q->whereRaw("LOWER(project_stages.name) LIKE '%" . strtolower($request->search) . "%'");
                 })->orWhere(function($q) use($request) {
                     $q->whereRaw("LOWER(components.name) LIKE '%" . strtolower($request->search) . "%'");
+                })->orWhere(function($q) use($request) {
+                    $q->whereRaw("LOWER(projects.project_title) LIKE '%" . strtolower($request->search) . "%'");
                 });
             }
         })
@@ -83,6 +87,7 @@ class ComponentController extends Controller
             return $query->where('components.is_master', true);
         })
         ->leftJoin('project_stages', 'components.id_project_stage', '=', 'project_stages.id')
+        ->leftJoin('projects', 'components.originator_id', '=', 'projects.id')
         ->orderBy(($request->orderBy ? 'components.'.$request->orderBy : 'components.id'), ($request->orderBy ? $request->order : 'DESC'))
         ->paginate($request->limit ? $request->limit : 10);
 
@@ -201,5 +206,29 @@ class ComponentController extends Controller
         }
 
         return response()->json(null, 204);
+    }
+
+    public function setMaster(Request $request){
+        try{
+            if($request->id);
+            $component = Component::where('id', $request->id)->first();
+            if(!$component->is_master){
+                $component->is_master = true;
+                $component->save();
+            }
+        } catch (\Exception $ex) {
+            response()->json(['error' => $ex->getMessage()], 403);
+        }
+
+        return response()->json(null, 204);
+    }
+
+    public function getMasterComponent(Request $request){
+        if(!isset($request->stage) || (!isset($request->name))){
+            return response()->json(['error' => 'Parameter pencarian tidak lengkap'], 416);
+        }
+        $res = Component::master()->where('id_project_stage', $request->stage)
+          ->whereRaw('lower(name) = ?', array($request->name))->first();
+        return response()->json(['data' => $res], 200);
     }
 }
