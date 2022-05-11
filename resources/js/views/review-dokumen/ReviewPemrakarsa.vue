@@ -222,12 +222,15 @@ export default {
     },
     async handleSubmit() {
       this.loadingSubmit = true;
+      const reader = new FileReader();
       const formData = new FormData();
       formData.append('type', 'pemrakarsa');
       formData.append('idProject', this.$route.params.id);
       formData.append('status', 'submit');
-      formData.append('file', this.file);
+      formData.append('file', reader.readAsText(this.file));
       formData.append('documentType', this.getDocumentType);
+      const file = await this.convertBase64(this.file);
+      formData.append('file', file);
       await kaReviewsResource.store(formData);
       this.getData();
       this.file = null;
@@ -237,6 +240,20 @@ export default {
     showFileAlert() {
       this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
         center: true,
+      });
+    },
+    convertBase64(file) {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
       });
     },
   },
