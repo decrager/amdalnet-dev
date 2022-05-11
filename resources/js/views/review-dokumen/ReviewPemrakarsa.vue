@@ -202,11 +202,24 @@ export default {
         }
       }
 
-      if (this.status === 'revisi') {
-        this.handleRevision();
-      } else if (this.status === 'submit') {
-        this.handleSubmit();
-      }
+      this.$confirm('Apakah anda yakin ?', 'Warning', {
+        confirmButtonText: 'Ya',
+        cancelButtonText: 'Tidak',
+        type: 'warning',
+      })
+        .then(() => {
+          if (this.status === 'revisi') {
+            this.handleRevision();
+          } else if (this.status === 'submit') {
+            this.handleSubmit();
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Kirim data dibatalkan',
+          });
+        });
     },
     async handleRevision() {
       this.loadingSubmit = true;
