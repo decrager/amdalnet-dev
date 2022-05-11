@@ -54,7 +54,7 @@
 
           <el-table-column label="Catatan" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.notes }}</span>
+              <span v-html="scope.row.notes" />
             </template>
           </el-table-column>
 

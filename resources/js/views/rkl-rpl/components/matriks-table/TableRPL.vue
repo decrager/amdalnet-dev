@@ -72,11 +72,21 @@
                         :value="item.value"
                       />
                     </el-select>
-                    <el-input
+                    <!-- <el-input
                       v-model="impactComment"
                       type="textarea"
                       :rows="2"
                       placeholder="Tulis Masukan..."
+                    /> -->
+                    <Tinymce
+                      v-model="impactComment"
+                      output-format="html"
+                      :menubar="''"
+                      :image="false"
+                      :toolbar="[
+                        'bold italic underline bullist numlist fullscreen',
+                      ]"
+                      :height="50"
                     />
                     <div class="send-btn-container">
                       <el-button
@@ -115,7 +125,7 @@
                       "
                     />
                   </div>
-                  <div class="comment-body">{{ com.description }}</div>
+                  <div class="comment-body" v-html="com.description" />
                   <div
                     v-for="rep in list[scope.$index - 1].comments[index]
                       .replies"
@@ -129,18 +139,28 @@
                         </p>
                       </div>
                     </div>
-                    <div class="comment-body reply">
-                      {{ rep.description }}
-                    </div>
+                    <div class="comment-body reply" v-html="rep.description" />
                   </div>
                   <div v-if="isFormulator" class="comment-reply">
-                    <el-input
+                    <!-- <el-input
                       v-model="
                         list[scope.$index - 1].comments[index].reply_desc
                       "
                       type="textarea"
                       :rows="2"
                       placeholder="Tulis Catatan Balasan..."
+                    /> -->
+                    <Tinymce
+                      v-model="
+                        list[scope.$index - 1].comments[index].reply_desc
+                      "
+                      output-format="html"
+                      :menubar="''"
+                      :image="false"
+                      :toolbar="[
+                        'bold italic underline bullist numlist fullscreen',
+                      ]"
+                      :height="50"
                     />
                     <div class="send-btn-container">
                       <el-button
@@ -757,7 +777,8 @@ export default {
             errors++;
           }
 
-          let impactSourceError = x.impact_source.filter(z => z.show === true).length === 0;
+          let impactSourceError =
+            x.impact_source.filter((z) => z.show === true).length === 0;
 
           if (!impactSourceError) {
             const filter = x.impact_source.filter((y) => {
@@ -770,7 +791,8 @@ export default {
             }
           }
 
-          let indicatorError = x.indicator.filter(z => z.show === true).length === 0;
+          let indicatorError =
+            x.indicator.filter((z) => z.show === true).length === 0;
 
           if (!indicatorError) {
             const filter = x.indicator.filter((y) => {
@@ -783,7 +805,8 @@ export default {
             }
           }
 
-          let collectionMethodError = x.collection_method.filter(z => z.show === true).length === 0;
+          let collectionMethodError =
+            x.collection_method.filter((z) => z.show === true).length === 0;
 
           if (!collectionMethodError) {
             const filter = x.collection_method.filter((y) => {
@@ -796,7 +819,8 @@ export default {
             }
           }
 
-          let locationError = x.location.filter(z => z.show === true).length === 0;
+          let locationError =
+            x.location.filter((z) => z.show === true).length === 0;
 
           if (!locationError) {
             const filter = x.location.filter((y) => {
