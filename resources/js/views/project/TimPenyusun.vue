@@ -81,7 +81,7 @@
                     v-if="!isTeamExist"
                     :loading="loadingLpjp"
                     type="primary"
-                    @click.prevent="handleSaveLPJP"
+                    @click.prevent="checkSaveLPJP"
                   >
                     Simpan
                   </el-button>
@@ -274,6 +274,22 @@ export default {
       this.loadingSelectLpjp = true;
       this.lpjp = await formulatorTeamsResource.list({ type: 'lpjp' });
       this.loadingSelectLpjp = false;
+    },
+    checkSaveLPJP() {
+      this.$confirm('Apakah anda yakin ?', 'Warning', {
+        confirmButtonText: 'Ya',
+        cancelButtonText: 'Tidak',
+        type: 'warning',
+      })
+        .then(() => {
+          this.handleSaveLPJP();
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Simpan data dibatalkan',
+          });
+        });
     },
     async handleSaveLPJP() {
       this.loadingLpjp = true;
