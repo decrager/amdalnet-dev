@@ -46,11 +46,11 @@
                 <span class="header__text">Rona Lingkungan Hidup</span>
                 <hr />
                 <div
-                  v-for="rencana in data.rona_awal"
-                  :key="rencana.id"
+                  v-for="(rona, idx) in rona_mappings"
+                  :key="idx"
                   class="text item"
                 >
-                  <p>- {{ rencana.rona_name }}</p>
+                  <p>- {{ rona }}</p>
                 </div>
               </div>
             </li>
@@ -302,9 +302,22 @@ export default {
       //     this.identifikasiDampaks = response.data;
       //   });
       axios
-        .get('api/matriks-dampak/rona-mapping/' + this.projectId)
+        .get(
+          'api/matriks-dampak/rona-mapping/' + this.projectId + '?isAndal=true'
+        )
         .then((response) => {
-          this.ronaMappings = response.data;
+          const rona = response.data;
+          if (rona) {
+            for (const property in rona) {
+              const ronaArray = rona[property];
+              if (ronaArray) {
+                this.rona_mappings = [
+                  ...this.rona_mappings,
+                  ...ronaArray.map((x) => x.name),
+                ];
+              }
+            }
+          }
           this.loadingRona = false;
         });
       axios
