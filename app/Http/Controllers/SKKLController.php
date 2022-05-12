@@ -58,8 +58,8 @@ class SKKLController extends Controller
             return $this->getSkklOssFile($request->idProject, $type);
         }
 
-        if ($request->spplOss) {
-            return $this->getSpplOssFile($request->url);
+        if ($request->spplOss || $request->pkplhOss) {
+            return $this->getFileFromOSS($request->url);
         }
     }
 
@@ -508,7 +508,7 @@ class SKKLController extends Controller
         ];
     }
 
-    private function getSpplOssFile($url)
+    private function getFileFromOSS($url)
     {
         $response = Http::withHeaders([
             'user_key' => env('OSS_USER_KEY'),

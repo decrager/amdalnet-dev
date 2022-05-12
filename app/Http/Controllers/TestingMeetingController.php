@@ -199,21 +199,12 @@ class TestingMeetingController extends Controller
 
         if($request->file) {
             $data = $request->all();
-            $validator = \Validator::make($data, [
-                'dokumen_file' => 'max:1024'
-            ],[
-                'dokumen_file.max' => 'Ukuran file tidak boleh melebihi 1 mb'
-            ]);
 
-            if($validator->fails()) {
-                return response()->json(['errors' => $validator->messages()]);
-            }
-
-            if($request->hasFile('dokumen_file')) {
+            if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
-                $file = $request->file('dokumen_file');
-                $name = '/verifikasi-ka/' . strtolower($project->project_title) . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
+                $file = $this->base64ToFile($request->dokumen_file);
+                $name = '/verifikasi-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+                Storage::disk('public')->put($name, $file['file']);
     
                 $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
                 $testing_meeting->file = Storage::url($name);
@@ -244,12 +235,11 @@ class TestingMeetingController extends Controller
         $meeting->location = $data['location'];
 
         // Invitation File
-        if($request->hasFile('invitation_file')) {
+        if($request->invitation_file) {
             $project = Project::findOrFail($request->idProject);
-            $file = $request->file('invitation_file');
-            $name = '/meeting-ka/' . strtolower($project->project_title) . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
-
+            $file = $this->base64ToFile($request->invitation_file);
+            $name = '/meeting-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+            Storage::disk('public')->put($name, $file['file']);
             $meeting->invitation_file = Storage::url($name);
 
         }
@@ -1158,5 +1148,23 @@ class TestingMeetingController extends Controller
         } else {
             return '';
         }
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

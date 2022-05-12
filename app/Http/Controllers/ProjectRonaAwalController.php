@@ -153,6 +153,13 @@ class ProjectRonaAwalController extends Controller
                 if(!$master){
                     return response( 'Komponen Kegiatan gagal disimpan', 500);
                 }
+            } else {
+                if (!$master->is_master){
+                    if(!empty($params['component']['name']) && (strcmp($master->name, $params['component']['name']) !== 0)) {
+                        $master->name = $params['component']['name'];
+                        $master->save();
+                    }
+                }
             }
 
             $pc = ProjectRonaAwal::firstOrNew([

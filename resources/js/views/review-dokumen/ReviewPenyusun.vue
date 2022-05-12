@@ -8,11 +8,7 @@
       <p>Pesan:</p>
       <Tinymce v-model="notes" />
       <div style="text-align: right; margin-top: 8px">
-        <el-button
-          :loading="loadingSubmit"
-          type="primary"
-          @click="handleSubmit"
-        >
+        <el-button :loading="loadingSubmit" type="primary" @click="checkSubmit">
           Kirim
         </el-button>
       </div>
@@ -109,6 +105,22 @@ export default {
         this.formulatorNotes = data.formulator_notes;
       }
       this.loading = false;
+    },
+    checkSubmit() {
+      this.$confirm('Apakah anda yakin ?', 'Warning', {
+        confirmButtonText: 'Ya',
+        cancelButtonText: 'Tidak',
+        type: 'warning',
+      })
+        .then(() => {
+          this.handleSubmit();
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Kirim data dibatalkan',
+          });
+        });
     },
     async handleSubmit() {
       this.loadingSubmit = true;

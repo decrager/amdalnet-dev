@@ -13,7 +13,7 @@
       <div slot="header" class="clearfix">
         <span style="font-weight: 500;">{{ data.initiator.name + ': ' + data.project_title }}</span>
       </div>
-      <project-detail :data="data" :is-home="true" />
+      <project-detail :data="data" :is-home="true" :is-public="isPublic" />
     </el-card>
 
     <el-row :gutter="20">
@@ -27,7 +27,7 @@
         <el-card type="box">
           <el-tabs type="card">
             <el-tab-pane label="Linimasa">
-              <project-timeline />
+              <project-timeline :id="project_id" />
             </el-tab-pane>
             <el-tab-pane label="Lokasi">
               <project-location :data="data" />
@@ -65,10 +65,16 @@ export default {
     ProjectFormulatorTeam,
     ProjectPublicFeedback,
   },
+  props: {
+    id: {
+      type: Number,
+      default: 0,
+    },
+  },
   data() {
     return {
       initiator_id: 0,
-      project_id: 0,
+      // project_id: 0,
       formulator_team_id: 0,
       announcement_id: 0,
       data: null,
@@ -76,15 +82,32 @@ export default {
       mphDetail: ['1'],
     };
   },
+  computed: {
+    isPublic: function(){
+      if (this.$route.params && this.$route.params.id){
+        return false;
+      }
+      return true;
+    },
+    project_id: function(){
+      return this.isPublic ? this.id : (this.$route.params && this.$route.params.id);
+    },
+  },
   mounted(){
-    this.project_id = this.$route.params && this.$route.params.id;
+    // this.project_id = this.isPublic? this.id : this.$route.params && this.$route.params.id;
     this.getData();
   },
   methods: {
     async getData(){
-      // const project_id = this.$route.params && this.$route.params.id;
+      /* let project_id = 0;
+      if (this.isPublic){
+        project_id = this.id;
+      } else {
+        project_id = this.project_id;
+      }*/
+
       this.data = null;
-      await projectResource.list({ id: this.project_id })
+      await projectResource.list({ id: this.project_id, mode: this.isPublic ? 0 : 1 })
         .then((res) => {
           // console.log('Data Rumah Kegiatan:', res);
           this.data = res;

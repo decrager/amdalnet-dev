@@ -89,6 +89,7 @@ class KaReviewController extends Controller
         }
 
         if($request->type == 'pemrakarsa') {
+            // dd($request->all());
             $project = Project::findOrFail($request->idProject);
 
             $review = new KaReview();
@@ -99,13 +100,19 @@ class KaReviewController extends Controller
             if($request->status == 'revisi') {
                 $review->notes = $request->notes;
             } else if($request->status == 'submit') {
-                if($request->hasFile('file')) {
-                    if ($request->file('file')) {
-                        $file = $request->file('file');
-                        $fileName = 'ka-reviews/' . uniqid() . '.' . $file->extension();
-                        $file->storePubliclyAs('public', $fileName);
-                        $review->application_letter = Storage::url($fileName);
-                    }
+                // if($request->hasFile('file')) {
+                //     if ($request->file('file')) {
+                //         $file = $request->file('file');
+                //         $fileName = 'ka-reviews/' . uniqid() . '.' . $file->extension();
+                //         $file->storePubliclyAs('public', $fileName);
+                //         $review->application_letter = Storage::url($fileName);
+                //     }
+                // }
+                if($request->file) {
+                    $file = $this->base64ToFile($request->file);
+                    $fileName = 'ka-reviews/' . uniqid() . '.' . $file['extension'];
+                    Storage::disk('public')->put($fileName, $file['file']);
+                    $review->application_letter = Storage::url($fileName);
                 }
             }
 
@@ -245,5 +252,23 @@ class KaReviewController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

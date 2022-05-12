@@ -1,5 +1,5 @@
 <template>
-  <div v-if="data !== null" class="project-detail">
+  <div v-if="data !== null" class="project-detail ph">
     <el-row :gutter="20">
       <el-col :span="4">
         <div class="block" style="text-align: center;">
@@ -36,18 +36,18 @@
     <div class="context-bar-item" v-html="data.description" />
     <el-row :gutter="30">
       <el-col :span="20">
-        <p class="header">Dampak Potensial</p>
+        <p class="ph-header">Dampak Potensial</p>
         <p class="data">{{ data.potential_impact }}</p>
 
-        <p class="header">Sifat Kegiatan</p>
+        <p class="ph-header">Sifat Kegiatan</p>
         <!-- <p class="data"> {{ data.project_type || '-' }} </p> -->
         <p class="data"> {{ [ (data.project_type || '-'), ('Kewenangan ' + (data.authority || '-')), (data.status || '-'), (data.study_approach || '-')].join(', ') }} </p>
 
-        <p class="header">Kegiatan Utama</p>
-        <project-activities :data="utama" />
+        <p class="ph-header">Kegiatan Utama</p>
+        <public-project-activities :data="(data.list_sub_project).filter((e) => e.type === 'utama')" />
 
-        <p class="header">Kegiatan Pendukung</p>
-        <project-activities :data="pendukung" />
+        <p class="ph-header">Kegiatan Pendukung</p>
+        <public-project-activities :data="(data.list_sub_project).filter((e) => e.type === 'pendukung')" />
 
       </el-col>
       <el-col :span="4">
@@ -63,22 +63,22 @@
             </el-button>
           </p>
         </template>
-        -->
+
         <p v-if="isHome !== true"><el-button
           round
           plain
           style="display: block !important; width: 100% !important; padding: 1em !important; font-weight: bold !important"
           @click="$router.push('/project/home/' + data.id)"
-        >Rumah Kegiatan</el-button></p>
+        >Rumah Kegiatan</el-button></p> -->
       </el-col>
     </el-row>
   </div>
 </template>
 <script>
-import ProjectActivities from './sections/Activities.vue';
+import PublicProjectActivities from './sections/PublicActivities.vue';
 export default {
-  name: 'ProjectDetail',
-  components: { ProjectActivities },
+  name: 'PublicProjectDetail',
+  components: { PublicProjectActivities },
   props: {
     data: {
       type: Object,
@@ -123,42 +123,3 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
-.project-detail{
-  padding: 2em;
-  .context-bar-item {
-    margin: 0.5em 0 1em;
-
-    p {
-    margin: 0 0 0 0 !important;
-    }
-
-    &.project {font-weight: 500;}
-    &.project-initiator { font-weight: bold; margin-top: 2em !important;}
-
-    &.project, &.project-initiator {
-       p{line-height: 1.25em !important;}
-       p:first-child { margin-bottom: 0.5em !important;}
-    }
-    &.highlight{
-      p{
-        font-weight: bold;
-        text-align: right;
-        margin-bottom: 2em;
-      }
-      .doc-type {
-        display: inline-block; padding: 0.5em 1.5em; border-radius: 1em;
-        color: white !important;
-      }
-    }
-
-    .el-button.cb-ph-links {
-
-      span {
-        color: white !important;
-        font-weight: bold !important;
-      }
-    }
-  }
-}
-</style>

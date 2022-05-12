@@ -81,7 +81,7 @@
                     v-if="!isTeamExist"
                     :loading="loadingLpjp"
                     type="primary"
-                    @click.prevent="handleSaveLPJP"
+                    @click.prevent="checkSaveLPJP"
                   >
                     Simpan
                   </el-button>
@@ -275,6 +275,22 @@ export default {
       this.lpjp = await formulatorTeamsResource.list({ type: 'lpjp' });
       this.loadingSelectLpjp = false;
     },
+    checkSaveLPJP() {
+      this.$confirm('Apakah anda yakin ?', 'Warning', {
+        confirmButtonText: 'Ya',
+        cancelButtonText: 'Tidak',
+        type: 'warning',
+      })
+        .then(() => {
+          this.handleSaveLPJP();
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Simpan data dibatalkan',
+          });
+        });
+    },
     async handleSaveLPJP() {
       this.loadingLpjp = true;
       await formulatorTeamsResource.store({
@@ -341,7 +357,20 @@ export default {
       const anggota = this.members.filter((mem) => mem.position === 'Anggota');
 
       if (ketua.length === 1 && anggota.length >= 2) {
-        this.handleSubmit();
+        this.$confirm('Apakah anda yakin ?', 'Warning', {
+          confirmButtonText: 'Ya',
+          cancelButtonText: 'Tidak',
+          type: 'warning',
+        })
+          .then(() => {
+            this.handleSubmit();
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: 'Simpan data dibatalkan',
+            });
+          });
       } else {
         this.$alert(
           'Tim Penyusun harus terdiri dari 1 Ketua dan minimal 2 Anggota',
