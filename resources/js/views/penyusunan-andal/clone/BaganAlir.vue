@@ -1,3 +1,5 @@
+<!-- eslint-disable vue/html-indent -->
+<!-- eslint-disable vue/html-self-closing -->
 <template>
   <div>
     <div id="bagan" class="main__wrapper" style="overflow: auto">
@@ -5,69 +7,76 @@
         <li>
           <ul>
             <li>
-              <div>
+              <div v-loading="loading">
                 <span class="header__text">Rencana Kegiatan</span>
-                <!-- eslint-disable-next-line vue/html-self-closing -->
                 <hr />
+                <p class="sub_text">Kegiatan Utama :</p>
                 <div
-                  v-for="rencana in data.rencana_kegiatan"
-                  :key="rencana.id"
+                  v-for="utama in kegiatanUtama"
+                  :key="utama.id"
                   class="text item"
                 >
-                  <p>- {{ rencana.name }}</p>
+                  <p>- {{ utama.name }}</p>
+                </div>
+                <p class="sub_text">Kegiatan Pendukung :</p>
+                <div
+                  v-for="pendukung in kegiatanPendukung"
+                  :key="pendukung.id"
+                  class="text item"
+                >
+                  <p>- {{ pendukung.name }}</p>
                 </div>
               </div>
             </li>
             <li>
-              <div>
+              <div v-loading="loading">
                 <span class="header__text">Kegiatan Lain</span>
-                <!-- eslint-disable-next-line vue/html-self-closing -->
                 <hr />
                 <div
-                  v-for="rencana in data.kegiatan_lain"
-                  :key="rencana.id"
+                  v-for="kegiatan in data.kegiatan_lain_sekitar"
+                  :key="kegiatan.id"
                   class="text item"
                 >
-                  <p>- {{ rencana.name }}</p>
+                  <p>- {{ kegiatan.name }}</p>
                 </div>
               </div>
             </li>
             <li>
-              <div>
+              <div v-loading="loadingRona">
                 <span class="header__text">Rona Lingkungan Hidup</span>
-                <!-- eslint-disable-next-line vue/html-self-closing -->
                 <hr />
                 <div
                   v-for="rencana in data.rona_awal"
                   :key="rencana.id"
                   class="text item"
                 >
-                  <p>- {{ rencana.name }}</p>
+                  <p>- {{ rencana.rona_name }}</p>
                 </div>
               </div>
             </li>
             <li>
-              <div>
+              <div v-loading="loading">
                 <span class="header__text">
                   Saran Tanggapan dan Pendapat Masyarakat
                 </span>
-                <!-- eslint-disable-next-line vue/html-self-closing -->
                 <hr />
                 <p class="sub_text">Kekhawatiran :</p>
                 <div
-                  v-for="rencana in data.feedback_concern"
+                  v-for="rencana in data.feedback"
                   :key="rencana.id"
                   class="text item"
                 >
-                  <p>- {{ rencana.concern }}</p>
+                  <p v-if="rencana.concern != null">- {{ rencana.concern }}</p>
                 </div>
                 <p class="sub_text">Harapan :</p>
                 <div
-                  v-for="rencana in data.feedback_expectation"
+                  v-for="rencana in data.feedback"
                   :key="rencana.id"
                   class="text item"
                 >
-                  <p>- {{ rencana.expectation }}</p>
+                  <p v-if="rencana.expectation != null">
+                    - {{ rencana.expectation }}
+                  </p>
                 </div>
               </div>
             </li>
@@ -78,36 +87,58 @@
             <li class="bottom">
               <div class="bottom_content">
                 <span class="header__text">Identifikasi Dampak Potensial</span>
-                <!-- eslint-disable-next-line vue/html-self-closing -->
-                <hr />
-                <p class="sub_text">Pra-konstruksi :</p>
-                <div>
-                  <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
-                  <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
-                </div>
-                <p class="sub_text">Konstruksi :</p>
-                <div>
-                  <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
-                  <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
-                </div>
+                <!-- <hr />
+                <div v-for="item in identifikasiDampaks" :key="item.id">
+                  <div v-if="item.type === 'stage'">
+                    <p class="sub_text">{{ item.component_name }} :</p>
+                  </div>
+                  <div v-if="item.type === 'component'">
+                    <p class="component__content">{{ item.component_name }}</p>
+                  </div>
+                </div> -->
               </div>
             </li>
           </ul>
         </li>
         <li>
-          <div>
+          <div v-loading="loadingImpacts">
             <span class="header__text">Dampak Potensial</span>
-            <!-- eslint-disable-next-line vue/html-self-closing -->
             <hr />
-            <p class="sub_text">Pra-konstruksi :</p>
             <div>
-              <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
-              <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
+              <p class="sub_text">Pra-konstruksi :</p>
+              <div v-for="item in impacts" :key="item.id">
+                <p v-if="item.id_project_stage === 4">
+                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
+                  {{ item.component_name }}.
+                </p>
+              </div>
             </div>
-            <p class="sub_text">Konstruksi :</p>
             <div>
-              <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
-              <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
+              <p class="sub_text">Konstruksi :</p>
+              <div v-for="item in impacts" :key="item.id">
+                <p v-if="item.id_project_stage === 1">
+                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
+                  {{ item.component_name }}.
+                </p>
+              </div>
+            </div>
+            <div>
+              <p class="sub_text">Operasi :</p>
+              <div v-for="item in impacts" :key="item.id">
+                <p v-if="item.id_project_stage === 2">
+                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
+                  {{ item.component_name }}.
+                </p>
+              </div>
+            </div>
+            <div>
+              <p class="sub_text">Pasca Operasi :</p>
+              <div v-for="item in impacts" :key="item.id">
+                <p v-if="item.id_project_stage === 3">
+                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
+                  {{ item.component_name }}.
+                </p>
+              </div>
             </div>
           </div>
         </li>
@@ -116,55 +147,107 @@
             <li class="bottom">
               <div class="bottom_content">
                 <span class="header__text">Evaluasi Dampak Penting</span>
-                <!-- eslint-disable-next-line vue/html-self-closing -->
-                <hr />
-                <p>
-                  - Besaran rencana Usaha dan/atau Kegiatan yang menyebabkan
-                  dampak tersebut dan rencana pengelolaan lingkungan awal yang
-                  menjadi bagian rencana Usaha dan/atau kegiatan untuk
-                  menanggulangi dampak
-                </p>
-                <p>
-                  - Kondisi rona lingkungan yang ada termasuk kemampuan
-                  mendukung Usaha dan/atau kegiatan tersebut atau tidak
-                </p>
+                <!-- <hr />
+                <div>
+                  <div v-for="stages in evaluations" :key="stages.id">
+                    <span v-if="stages.type === 'title'" class="sub_text">{{
+                      stages.name
+                    }}</span>
+                    <span
+                      v-if="stages.type === 'subtitle'"
+                      class="sub_sub_text"
+                    >
+                      {{ stages.impact_size }}
+                    </span>
+                    <div
+                      v-for="trait in stages.important_trait"
+                      :key="trait.id"
+                    >
+                      <p class="description__text">
+                        {{ trait.id }}. {{ trait.description }}
+                      </p>
+                      <p>{{ trait.desc }}</p>
+                    </div>
+                  </div>
+                </div> -->
               </div>
             </li>
           </ul>
         </li>
         <li>
-          <div>
+          <div v-loading="loadingImpacts">
             <span class="header__text">Dampak Penting Hipotetik</span>
-            <!-- eslint-disable-next-line vue/html-self-closing -->
             <hr />
-            <p class="sub_text">Pra-konstruksi :</p>
             <div>
-              <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
-              <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
+              <p class="sub_text">Pra-konstruksi :</p>
+              <div v-for="item in impacts" :key="item.id">
+                <p
+                  v-if="
+                    item.id_project_stage === 4 &&
+                    item.is_hypothetical_significant === true
+                  "
+                >
+                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
+                  {{ item.component_name }}.
+                </p>
+              </div>
             </div>
-            <p class="sub_text">Konstruksi :</p>
             <div>
-              <p>- Peningkatan kebisingan akibat mobilisasi alat berat</p>
-              <p>- Penurunan mata pencaharian akibat mobilitas pekerja</p>
+              <p class="sub_text">Konstruksi :</p>
+              <div v-for="item in impacts" :key="item.id">
+                <p
+                  v-if="
+                    item.id_project_stage === 1 &&
+                    item.is_hypothetical_significant === true
+                  "
+                >
+                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
+                  {{ item.component_name }}.
+                </p>
+              </div>
+            </div>
+            <div>
+              <p class="sub_text">Operasi :</p>
+              <div v-for="item in impacts" :key="item.id">
+                <p
+                  v-if="
+                    item.id_project_stage === 2 &&
+                    item.is_hypothetical_significant === true
+                  "
+                >
+                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
+                  {{ item.component_name }}.
+                </p>
+              </div>
+            </div>
+            <div>
+              <p class="sub_text">Pasca Operasi :</p>
+              <div v-for="item in impacts" :key="item.id">
+                <p
+                  v-if="item.id_project_stage === 3 && item.is_managed === true"
+                >
+                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
+                  {{ item.component_name }}.
+                </p>
+              </div>
             </div>
           </div>
         </li>
       </ol>
-      <el-col :span="24" style="text-align: right; margin: 2em 0">
-        <el-button size="small" type="warning" @click="download">
-          Export PDF
-        </el-button>
-      </el-col>
-      <div id="pdf" />
     </div>
+    <el-col :span="24" style="text-align: right; margin: 2em 0">
+      <el-button size="small" type="warning" @click="download">
+        <img v-if="loader" width="24px" src="images/loader.gif" alt="" />
+        Export PDF
+      </el-button>
+    </el-col>
+    <div id="pdf" />
   </div>
 </template>
 
 <script>
 // import go from 'gogogojsvue';
-import Resource from '@/api/resource';
-const andalCloneResource = new Resource('andal-clone');
-// import axios from 'axios';
+import axios from 'axios';
 import * as html2canvas from 'html2canvas';
 import JsPDF from 'jspdf';
 
@@ -174,38 +257,81 @@ export default {
       flowChart: null,
       projectId: this.$route.params && this.$route.params.id,
       data: [],
+      identifikasiDampaks: [],
+      rona_mappings: [],
+      impacts: [],
+      evaluations: [],
+      loader: false,
+      kegiatanUtama: [],
+      kegiatanPendukung: [],
+      loading: false,
+      loadingRona: false,
+      loadingImpacts: false,
     };
   },
   created() {
     this.getData();
-
-    html2canvas(document.querySelector('#bagan'), {
-      imageTimeout: 1000,
-      useCORS: true,
-    }).then((canvas) => {
-      document.getElementById('pdf').appendChild(canvas);
-      const img = canvas.toDataURL('image/png');
-      const pdf = new JsPDF('landscape', 'mm', 'a3');
-      pdf.addImage(img, 'PNG', 5, 5, 410, 240);
-      document.getElementById('pdf').innerHTML = '';
-    });
+    // html2canvas(document.querySelector('#bagan'), { imageTimeout: 1000, useCORS: true }).then(canvas => {
+    //   document.getElementById('pdf').appendChild(canvas);
+    //   const img = canvas.toDataURL('image/png');
+    //   const pdf = new JsPDF('landscape', 'mm', 'a3');
+    //   pdf.addImage(img, 'PNG', 10, 10, 4961, 3508);
+    //   document.getElementById('pdf').innerHTML = '';
+    // });
   },
   methods: {
-    async getData() {
-      this.data = await andalCloneResource.list({
-        baganAlirDPDH: 'true',
-        idProject: this.$route.params.id,
-      });
+    getData() {
+      this.loading = true;
+      this.loadingRona = true;
+      this.loadingImpacts = true;
+      axios
+        .get('api/bagan-alir/' + this.projectId + '?is_andal=true')
+        .then((response) => {
+          this.data = response.data;
+          this.kegiatanUtama = this.data.rencana_kegiatan.filter(
+            (x) => x.type === 'utama'
+          );
+          this.kegiatanPendukung = this.data.rencana_kegiatan.filter(
+            (x) => x.type === 'pendukung'
+          );
+          this.loading = false;
+        });
+      // axios
+      //   .get('api/matriks-dampak/table/' + this.projectId)
+      //   .then((response) => {
+      //     this.identifikasiDampaks = response.data;
+      //   });
+      axios
+        .get('api/matriks-dampak/rona-mapping/' + this.projectId)
+        .then((response) => {
+          this.ronaMappings = response.data;
+          this.loadingRona = false;
+        });
+      axios
+        .get(`api/andal-clone?id_project=${this.projectId}&join_tables=true`)
+        .then((response) => {
+          this.impacts = response.data.data;
+          this.loadingImpacts = false;
+        });
+      //   axios
+      //     .get(`api/eval-dampak?idProject=${this.projectId}`)
+      //     .then((response) => {
+      //       this.evaluations = response.data;
+      //     });
     },
     download() {
-      html2canvas(document.querySelector('#bagan'), {
-        imageTimeout: 1000,
+      this.loader = true;
+      var w = document.getElementById('bagan').scrollWidth;
+      var h = document.getElementById('bagan').scrollHeight;
+      html2canvas(document.querySelector('.process_diagram'), {
+        imageTimeout: 4000,
         useCORS: true,
       }).then((canvas) => {
         document.getElementById('pdf').appendChild(canvas);
         const img = canvas.toDataURL('image/png');
-        const pdf = new JsPDF('landscape', 'mm', 'a3');
-        pdf.addImage(img, 'PNG', 5, 5, 410, 240);
+        const pdf = new JsPDF('landscape', 'px', [w, h]);
+        pdf.addImage(img, 'PNG', 0, 0, w, h);
+        this.loader = false;
         pdf.save('Bagan Alir Formulir KA.pdf');
         document.getElementById('pdf').innerHTML = '';
       });
@@ -226,13 +352,32 @@ export default {
 
 .header__text {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
+  color: #464646;
 }
 
 .sub_text {
   font-size: 15px;
+  font-weight: 600;
+  color: #464646;
+}
+
+.sub_sub_text {
+  font-size: 15px;
   font-weight: 500;
+  color: #5a5959;
+}
+
+.description__text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #099c4b;
+}
+
+.component__content {
+  margin-left: 15px;
+  font-style: italic;
 }
 
 hr {
@@ -247,6 +392,7 @@ hr {
   border-color: #55bf73;
   border-radius: 5px;
   text-align: left;
+  width: 350px;
 }
 
 /* connecting lines between nodes */
@@ -269,7 +415,7 @@ hr {
   display: block;
   list-style: none;
   text-align: center;
-  /* vertical-align: middle; */
+  vertical-align: middle;
 }
 
 .bottom__process {
@@ -278,7 +424,7 @@ hr {
   display: block;
   list-style: none;
   text-align: center;
-  /* vertical-align: bottom; */
+  vertical-align: bottom;
 }
 
 .process_diagram li {
@@ -369,7 +515,7 @@ hr {
 }
 
 .bottom_content {
-  margin-top: 80% !important;
+  margin-top: 150% !important;
   width: 400px !important;
 }
 
