@@ -81,23 +81,12 @@ class MeetingReportController extends Controller
     public function store(Request $request)
     {
         if($request->file) {
-            $data = $request->all();
-            $validator = \Validator::make($data, [
-                'dokumen_file' => 'max:1024'
-            ],[
-                'dokumen_file.max' => 'Ukuran file tidak boleh melebihi 1 mb'
-            ]);
-
-            if($validator->fails()) {
-                return response()->json(['errors' => $validator->messages()]);
-            }
-            
             $project = Project::findOrFail($request->idProject);
 
-            if($request->hasFile('dokumen_file')) {
-                $file = $request->file('dokumen_file');
-                $name = '/berita-acara-ka/' . strtolower($project->project_title) . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
+            if($request->dokumen_file) {
+                $file = $this->base64ToFile($request->dokumen_file);
+                $name = '/berita-acara-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+                Storage::disk('public')->put($name, $file['file']);
     
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
                 $meeting_report->file = Storage::url($name);
@@ -659,5 +648,23 @@ class MeetingReportController extends Controller
         } else {
             return '';
         }
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

@@ -1074,13 +1074,19 @@ export default {
     },
     getKewenangan(list){
       let temp = this.getKewenanganOss(this.kewenanganOSS);
-      list.forEach(element => {
+      const tempFile = this.currentProject.address[0].prov;
+      const tempKabFile = this.currentProject.address[0].district;
+      list.forEach(async element => {
         console.log(element.kewenangan, temp);
         if (element.kewenangan === '02'){
           temp = 'Kabupaten';
+          const authDistrict = await districtResource.list({ districtName: tempKabFile });
+          this.currentProject.auth_district = authDistrict.id;
         }
         if (element.kewenangan === '01'){
           temp = 'Provinsi';
+          const authProv = await provinceResource.list({ provName: tempFile });
+          this.currentProject.auth_province = authProv.id;
         }
         if (element.kewenangan === '00'){
           temp = 'Pusat';
@@ -1242,7 +1248,7 @@ export default {
         return;
       }
 
-      this.currentProject.listKewenangan.forEach(element => {
+      this.currentProject.listKewenangan.forEach(async element => {
         if (element.authority === 'Pusat'){
           this.currentProject.authority = 'Pusat';
           delete this.currentProject.auth_province;
@@ -1250,9 +1256,15 @@ export default {
           return;
         } else if (element.authority === 'Provinsi' && finalAuth !== 'Pusat'){
           finalAuth = 'Provinsi';
+          const provStr = this.currentProject.address[0].prov;
+          const provId = await provinceResource.list({ provName: provStr });
+          this.currentProject.auth_province = provId.id;
           delete this.currentProject.auth_district;
         } else if (finalAuth !== 'Provinsi'){
           finalAuth = 'Kabupaten';
+          const tempKabFile = this.currentProject.address[0].district;
+          const authDistrict = await districtResource.list({ districtName: tempKabFile });
+          this.currentProject.auth_district = authDistrict.id;
         }
       });
 

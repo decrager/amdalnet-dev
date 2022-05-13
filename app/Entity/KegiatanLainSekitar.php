@@ -17,4 +17,9 @@ class KegiatanLainSekitar extends Model
         'originator_id',
     ];
 
+    public function project()
+    {
+        return $this->hasMany(ProjectKegiatanLainSekitar::class, 'kegiatan_lain_sekitar_id', 'id');
+    }
+
 }

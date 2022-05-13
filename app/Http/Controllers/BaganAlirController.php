@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
+use App\Entity\KegiatanLainSekitar;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\SubProject;
@@ -15,11 +16,13 @@ class BaganAlirController extends Controller
 {
     public function baganAlirUklUpl(Request $request, $id)
     {
-        $getRencanaKegiatan = DB::table('sub_projects')
-            ->select('sub_projects.name', 'sub_projects.type')
-            ->leftJoin('projects', 'projects.id', '=', 'sub_projects.id_project')
-            ->where('sub_projects.id_project', '=', $id)
-            ->get();
+        $getRencanaKegiatan = SubProject::select('id', 'id_project', 'name', 'type')->where('id_project', $id)->get();
+        $is_andal = $request->is_andal ? true : false;
+
+        $getKegiatanLainSekitar = KegiatanLainSekitar::whereHas('project', function($q) use($id, $is_andal) {
+            $q->where('project_id', $id);
+            $q->where('is_andal', $is_andal);
+        })->get();
 
         $getFeedback = DB::table('announcements')
             ->select('feedbacks.concern', 'feedbacks.expectation')
@@ -55,6 +58,7 @@ class BaganAlirController extends Controller
 
         return response()->json([
             'rencana_kegiatan' => $getRencanaKegiatan,
+            'kegiatan_lain_sekitar' => $getKegiatanLainSekitar,
             'rona_awal' => $getRonaAwal,
             'feedback' => $getFeedback,
             'dampak_penting_potensi' => $dampakPentingPotensi,
