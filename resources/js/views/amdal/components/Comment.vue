@@ -46,12 +46,20 @@
               Kolom Wajib Dipilih
             </small>
             <div style="margin-bottom: 10px">{{ '' }}</div>
-            <el-input
+            <!-- <el-input
               v-model="comment"
               type="textarea"
               :rows="2"
               placeholder="Tulis Masukan..."
               :class="{ 'is-error': isCommentError }"
+            /> -->
+            <TextEditor
+              v-model="comment"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="['bold italic underline bullist numlist fullscreen']"
+              :height="50"
             />
             <small v-if="isCommentError" style="color: #f56c6c">
               Masukan Wajib Diisi
@@ -84,7 +92,7 @@
               @change="handleCheckedComment(comments[index].id)"
             />
           </div>
-          <div class="comment-body">{{ com.description }}</div>
+          <div class="comment-body" v-html="com.description" />
           <div v-for="rep in comments[index].replies" :key="rep.id">
             <div class="comment-header reply">
               <div>
@@ -94,17 +102,23 @@
                 </p>
               </div>
             </div>
-            <div class="comment-body reply">
-              {{ rep.description }}
-            </div>
+            <div class="comment-body reply" v-html="rep.description" />
           </div>
           <div v-if="isFormulator" class="comment-reply">
-            <el-input
+            <!-- <el-input
               v-model="comments[index].temp_reply"
               type="textarea"
               :rows="2"
               placeholder="Tulis Catatan Balasan..."
               :class="{ 'is-error': errorReply[`reply-${index}`] }"
+            /> -->
+            <TextEditor
+              v-model="comments[index].temp_reply"
+              output-format="html"
+              :menubar="''"
+              :image="false"
+              :toolbar="['bold italic underline bullist numlist fullscreen']"
+              :height="50"
             />
             <small v-if="errorReply[`reply-${index}`]" style="color: #f56c6c">
               Catatan Balasan Wajib Dipilih
@@ -130,12 +144,16 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import TextEditor from '@/components/Tinymce';
 import Resource from '@/api/resource';
 const projectStageResource = new Resource('project-stages');
 const kaCommentResource = new Resource('ka-comment');
 
 export default {
   name: 'Comment',
+  components: {
+    TextEditor,
+  },
   props: {
     withstage: {
       type: Boolean,
@@ -364,5 +382,8 @@ export default {
 .comment-header.reply,
 .comment-body.reply {
   background: #ceeccb;
+}
+.comment-body.reply {
+  margin-top: -15px;
 }
 </style>
