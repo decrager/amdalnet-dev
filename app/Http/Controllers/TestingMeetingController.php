@@ -933,7 +933,7 @@ class TestingMeetingController extends Controller
     private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)
     {
         if($type == 'tata_ruang') {
-            if($project->ktr) {
+            if(!($project->ktr == null || $project->ktr == '/storage/')) {
                 if($is_exist == 'exist') {
                     return 'V';
                 } else {
@@ -961,7 +961,7 @@ class TestingMeetingController extends Controller
                 }
             }
         } else if($type == 'persetujuan_awal') {
-            if($project->pre_agreement_file) {
+            if(!($project->pre_agreement_file == null || $project->pre_agreement_file == '/storage/')) {
                 if($is_exist == 'exist') {
                     return 'V';
                 } else {
