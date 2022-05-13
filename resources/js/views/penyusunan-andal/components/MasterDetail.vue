@@ -4,6 +4,7 @@
       :list="list"
       :loading="loading"
       @showDetail="showDetail($event)"
+      @backuplist="backupList"
     />
     <DetailAndal
       ref="detail"
@@ -11,6 +12,7 @@
       :loading="loading"
       :loadingsubmit="loadingSubmit"
       @handleSubmit="handleSubmit"
+      @backuplist="backupList"
     />
   </div>
 </template>
@@ -30,6 +32,7 @@ export default {
   data() {
     return {
       list: [],
+      listBackup: [],
       idProject: this.$route.params.id,
       loading: false,
       loadingSubmit: false,
@@ -43,8 +46,25 @@ export default {
   methods: {
     async getCompose() {
       this.loading = true;
-      this.list = await andalComposingResource.list({
+      const data = await andalComposingResource.list({
         idProject: this.idProject,
+      });
+      this.list = [...data];
+      this.listBackup = data.map((x) => {
+        const newObj = {};
+        // eslint-disable-next-line no-undef
+        _.each(x, (value, key) => {
+          if (key === 'important_trait') {
+            const newIt = value.map((y) => {
+              return { ...y };
+            });
+            newObj[key] = newIt;
+          } else {
+            newObj[key] = value;
+          }
+        });
+
+        return newObj;
       });
       this.loading = false;
     },
@@ -56,6 +76,7 @@ export default {
     },
     showDetail({ stage, id }) {
       this.$refs.detail.setActiveAndal(stage, id);
+      this.destroyDetail();
     },
     async handleSubmit() {
       this.loadingSubmit = true;
@@ -63,6 +84,7 @@ export default {
       const time = await andalComposingResource.store({
         analysis: sendForm,
         type: this.lastTime ? 'update' : 'new',
+        idProject: this.$route.params.id,
       });
       this.loadingSubmit = false;
       this.lastTime = time;
@@ -72,6 +94,27 @@ export default {
         type: 'success',
         duration: 5 * 1000,
       });
+    },
+    backupList() {
+      this.list = this.listBackup.map((x) => {
+        const newObj = {};
+        // eslint-disable-next-line no-undef
+        _.each(x, (value, key) => {
+          if (key === 'important_trait') {
+            const newIt = value.map((y) => {
+              return { ...y };
+            });
+            newObj[key] = newIt;
+          } else {
+            newObj[key] = value;
+          }
+        });
+
+        return newObj;
+      });
+    },
+    destroyDetail() {
+      this.$refs.detail.destroyForAWhile();
     },
   },
 };

@@ -25,6 +25,8 @@ class ImpactIdentificationClone extends Model
         'study_length_month',
         'id_sub_project_component',
         'id_sub_project_rona_awal',
+        'id_project_component',
+        'id_project_rona_awal',
     ];
 
     public function project(){
@@ -79,5 +81,18 @@ class ImpactIdentificationClone extends Model
     public function real()
     {
         return $this->belongsTo(ImpactIdentification::class, 'id_impact_identification', 'id');
+    }
+
+    public function institution()
+    {
+        return $this->hasOne(EnvPlanInstitution::class, 'id_impact_identification', 'id');
+    }
+    public function projectComponent()
+    {
+        return $this->belongsTo(ProjectComponent::class, 'id_project_component', 'id');
+    }
+
+    public function projectRonaAwal(){
+        return $this->belongsTo(ProjectRonaAwal::class, 'id_project_rona_awal', 'id');
     }
 }

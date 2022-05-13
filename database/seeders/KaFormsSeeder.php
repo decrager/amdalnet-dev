@@ -7,6 +7,7 @@ use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManageApproach;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\ImpactAnalysisDetail;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\KaForm;
@@ -86,14 +87,15 @@ class KaFormsSeeder extends Seeder
         //     }
         // }
 
-        $imp = ImpactIdentificationClone::where('id_project', 165)->get();
-        foreach($imp as $i) {
-            $ia = EnvImpactAnalysis::where('id_impact_identifications', $i->id)->get();
-            foreach($ia as $im) {
-                ImpactAnalysisDetail::where('id_env_impact_analysis',$im->id)->delete();
-            }
-            EnvImpactAnalysis::where('id_impact_identifications', $i->id)->delete();
-        }
-        ImpactIdentificationClone::where('id_project', 165)->delete();
+        // $imp = ImpactIdentificationClone::where('id_project', 165)->get();
+        // foreach($imp as $i) {
+        //     $ia = EnvImpactAnalysis::where('id_impact_identifications', $i->id)->get();
+        //     foreach($ia as $im) {
+        //         ImpactAnalysisDetail::where('id_env_impact_analysis',$im->id)->delete();
+        //     }
+        //     EnvImpactAnalysis::where('id_impact_identifications', $i->id)->delete();
+        // }
+        // ImpactIdentificationClone::where('id_project', 165)->delete();
+        FeasibilityTestTeamMember::truncate();
     }
 }

@@ -8,8 +8,11 @@ use App\Entity\ImpactIdentificationClone;
 use App\Entity\ProjectStage;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
+use App\Entity\ProjectRonaAwal;
+use App\Entity\ProjectComponent;
 use Illuminate\Http\Request;
 use Exception;
+use App\Entity\SubProject;
 
 class MatriksDampakController extends Controller
 {
@@ -28,11 +31,15 @@ class MatriksDampakController extends Controller
         return $this->getTableData($request, $id, true);
     }
 
-    public function getRonaMapping($id)
+    public function requestRonaMapping(Request $request, $id){
+        return $this->getRonaMapping($id, $request->isAndal === 'true');
+    }
+
+    public function getRonaMapping($id, $isAndal = false)
     {
         try {
             $all_component_types = ComponentType::select('*')->orderBy('id', 'asc')->get();
-            $rona_awals = $this->getRonaAwals($id);
+            $rona_awals = $this->getRonaAwals($id, $isAndal);
             $data = [];
             foreach ($all_component_types as $ctype){
                 $key = $ctype->name;
@@ -62,13 +69,28 @@ class MatriksDampakController extends Controller
             return $data;
         } catch (Exception $e) {
             return $e->getMessage();
-        }        
+        }
     }
 
-    private function getComponentRonas($id)
+    private function getComponentRonas(Request $request, $id)
     {
+        $impact_table = ($request->isAndal === 'true') ? 'impact_identification_clones' : 'impact_identifications';
+        return ProjectRonaAwal::from('project_rona_awals as pra')
+            ->select('pra.id', 'c.name as component_name', 'ra.name as rona_awal_name',
+            'c.name AS component_name_master', 'ra.name AS rona_awal_name_master',
+            'c.id_project_stage', 'c.id_project_stage AS id_project_stage_master'
+
+            )
+            ->join( $impact_table.' as ii', 'ii.id_project_rona_awal', '=', 'pra.id')
+            ->join('project_components as pc', 'pc.id', '=', 'ii.id_project_component')
+            ->leftJoin('components as c', 'c.id', '=', 'pc.id_component')
+            ->leftJoin('rona_awal as ra', 'ra.id', '=', 'pra.id_rona_awal')
+            ->where('ii.id_project', $id)->get();
+
+            /*
+        // commented by HH, 20220329
         return SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
-            ->select('spra.id', 'spc.name AS component_name', 'spra.name AS rona_awal_name',
+            ->select('spra.id', 'c.name AS component_name', 'ra.name AS rona_awal_name',
                 'c.name AS component_name_master', 'ra.name AS rona_awal_name_master',
                 'spc.id_project_stage',
                 'c.id_project_stage AS id_project_stage_master')
@@ -80,15 +102,17 @@ class MatriksDampakController extends Controller
             ->whereNotNull('spc.id')
             ->whereNotNull('spra.id')
             ->get();
+        */
     }
 
     private function getTableData(Request $request, $id, $is_dph = false)
     {
         $data = [];
-        $rona_mapping = $this->getRonaMapping($id);
+        $isAndal = (isset($request->isAndal) && ($request->isAndal === 'true'));
+        $rona_mapping = $this->getRonaMapping($id, $isAndal);
 
-        $components_by_stage = $this->getComponentsGroupByStage($id);
-        $component_ronas = $this->getComponentRonas($id);
+        $components_by_stage = $this->getComponentsGroupByStage($id, $isAndal);
+        $component_ronas = $this->getComponentRonas($request, $id);
 
         foreach ($components_by_stage as $cstage) {
             $index = 1;
@@ -126,19 +150,20 @@ class MatriksDampakController extends Controller
                                 if ($is_dph) {
                                     // check if DPH
                                     $dph = null;
-                                    if($request->isAndal === 'true') {
-                                        $dph = ImpactIdentificationClone::select('is_hypothetical_significant')
-                                            ->where('id_sub_project_rona_awal', $cr->id)
-                                            ->first();
-                                    } else {
-                                        $dph = ImpactIdentification::select('is_hypothetical_significant')
-                                            ->where('id_sub_project_rona_awal', $cr->id)
-                                            ->first();
-                                    }
-                                    if ($dph->is_hypothetical_significant) {
-                                        $ctype[$k] = 'DPH';
-                                    } else if (!$dph->is_hypothetical_significant){
-                                        $ctype[$k] = 'DTPH';
+                                    $impClass = ($request->isAndal === 'true') ? 'App\Entity\ImpactIdentificationClone' : 'App\Entity\ImpactIdentification';
+                                    $impTable = ($request->isAndal === 'true') ? 'impact_identification_clones' : 'impact_identifications';
+
+                                    $dph = $impClass::from($impTable)->select("$impTable.is_hypothetical_significant")
+                                        ->join('project_components', 'project_components.id', '=', "$impTable.id_project_component")
+                                        ->where('project_components.id_component', $component->id_component)
+                                        ->where("$impTable.id_project_rona_awal", $cr->id)->first();
+
+                                    if($dph !== null){
+                                        if ($dph->is_hypothetical_significant === true) {
+                                            $ctype[$k] = 'DPH';
+                                        } else if ($dph->is_hypothetical_significant === false){
+                                            $ctype[$k] = 'DTPH';
+                                        }
                                     }
                                 } else {
                                     $ctype[$k] = 'v';
@@ -157,29 +182,45 @@ class MatriksDampakController extends Controller
         return $data;
     }
 
-    private function getRonaAwals($id) {
+    private function getRonaAwals($id, $isAndal = false) {
+      /*  return ProjectRonaAwal::from('project_rona_awals AS spra')
+            ->selectRaw('spra.id, lower(ra.name) as name,spra.id_component_type,
+                lower(ra.name) AS name_master, ra.id_component_type AS id_component_type_master')
+            ->leftJoin('project_components AS spc', 'spra.id_project_component', '=', 'spc.id')
+            ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
+            ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+            ->where('sp.id_project', $id)
+            // ->whereNotNull('spc.id')
+            // ->whereNotNull('spra.id')
+            ->orderBy('spra.id', 'asc')
+            ->get();
+*/
+        // commented by HH, 20220328
+
         return SubProjectRonaAwal::from('sub_project_rona_awals AS spra')
             ->selectRaw('spra.id, lower(spra.name) as name,spra.id_component_type,
                 lower(ra.name) AS name_master, ra.id_component_type AS id_component_type_master')
             ->leftJoin('sub_project_components AS spc', 'spra.id_sub_project_component', '=', 'spc.id')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('rona_awal AS ra', 'spra.id_rona_awal', '=', 'ra.id')
+            ->where('spra.is_andal', $isAndal)
             ->where('sp.id_project', $id)
             ->whereNotNull('spc.id')
             ->whereNotNull('spra.id')
             ->orderBy('spra.id', 'asc')
             ->get();
+
     }
 
-    private function getComponentsGroupByStage($id) {
+    private function getComponentsGroupByStage($id, $isAndal= false) {
         $ids = [4,1,2,3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function($model) use($ids) {
             return array_search($model->getKey(),$ids);
         });
         $components = [];
-        $components_flat = $this->getComponents($id);
+        $components_flat = $this->getComponents($id, $isAndal);
         foreach($stages as $stage) {
-            $list = [];   
+            $list = [];
             foreach($components_flat as $c) {
                 if ($c->id_project_stage == $stage->id
                 || $c->id_project_stage_master == $stage->id) {
@@ -198,11 +239,12 @@ class MatriksDampakController extends Controller
         return $components;
     }
 
-    private function getComponents($id) {
+    private function getComponents($id, $isAndal = false) {
         return SubProjectComponent::from('sub_project_components AS spc')
-            ->selectRaw('lower(spc.name) as name, lower(c.name) as name_master, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
+            ->selectRaw('lower(spc.name) as name, lower(c.name) as name_master, c.id as id_component, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
+            ->where('spc.is_andal', $isAndal)
             ->where('sp.id_project', $id)
             ->whereNotNull('spc.id')
             ->distinct()

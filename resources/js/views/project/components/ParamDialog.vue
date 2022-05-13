@@ -13,7 +13,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column>
+      <el-table-column width="60px">
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.used" @change="handleUsedChange(scope.row)" />
         </template>
@@ -29,9 +29,11 @@
         <template slot-scope="scope">
           <el-input
             v-model="scope.row.scale"
+            v-mask="currencyMask"
+            masked="true"
             class="edit-input"
             size="mini"
-            type="number"
+            type="text"
             step=".01"
             min="0"
             :disabled="!scope.row.used"
@@ -66,6 +68,8 @@
 
 <script>
 import Resource from '@/api/resource';
+import createNumberMask from 'text-mask-addons/dist/createNumberMask';
+
 const kbliEnvParamResource = new Resource('kbli-env-params');
 
 export default {
@@ -88,9 +92,24 @@ export default {
   data(){
     return {
       loading: false,
+      currencyMask: createNumberMask({
+        prefix: '',
+        includeThousandsSeparator: true,
+        allowNegative: false,
+        thousandsSeparatorSymbol: '.',
+        allowDecimal: true,
+        decimalSymbol: ',',
+      }),
     };
   },
   methods: {
+    // scaleFilter(row) {
+    //   const { scale } = row;
+    //   console.log('lama', scale);
+    //   scale.replace(',', '.');
+    //   row.scale = new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(row.scale);
+    //   console.log('baru', row);
+    // },
     handleUsedChange(value) {
       delete value.scale;
       delete value.result;
@@ -101,10 +120,19 @@ export default {
       this.$emit('handleCancelParam');
     },
     async handleBlur(value){
-      console.log(value.scale);
-      if (value.scale && value.scale > 0) {
-        console.log(value);
-        console.log(this.kbli);
+      // const a = value.scale;
+      // console.log(a);
+      // remove . change , to .
+      value.scale = value.scale.replace('.', '');
+      value.scale = value.scale.replace(',', '.');
+
+      // const b = value.scale;
+      // console.log(b);
+      value.scaleNumber = parseFloat(value.scale);
+      // console.log(value.scaleNumber);
+      if (value.scaleNumber && value.scaleNumber > 0) {
+        // console.log(value);
+        // console.log(this.kbli);
 
         // calculate result
         const { data } = await kbliEnvParamResource.list({
@@ -112,14 +140,14 @@ export default {
           businessType: value.id_param,
           unit: value.id_unit,
         });
-        console.log('1', data);
+        // console.log('1', data);
         const kbliEnvParams = data.map((item) => {
           const items = item.condition.replace(/[\[\"\]]/g, '').split(',');
-          item.conditions = items.map((e) => value.scale + ' ' + e);
+          item.conditions = items.map((e) => value.scaleNumber + ' ' + e);
           return item;
         });
 
-        console.log(kbliEnvParams);
+        // console.log(kbliEnvParams);
 
         // this.calculatedProjectDoc();
         kbliEnvParams.forEach((item) => {
@@ -148,7 +176,15 @@ export default {
       }
     },
     checkIfTrue(item) {
+      // console.log('masuk pak eko');
       const [data1, operator, data2] = item.split(/\s+/);
+
+      // replace . to ''
+      // const data1 = ar1.replace('.', '');
+      // const data2 = ar2.replace('.', '');
+
+      // console.log('awal', [ar1, ar2]);
+      // console.log('test', [data1, data2]);
 
       switch (operator) {
         case '<=':

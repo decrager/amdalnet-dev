@@ -13,6 +13,9 @@ class ProjectMapAttachment extends Model
         'attachment_type',
         'file_type',
         'original_filename',
-        'stored_filename'
+        'stored_filename',
+        'geom',
+        'properties',
+        'id_styles'
     ];
 }

@@ -6,6 +6,11 @@ use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\Comment;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\EnvPlanForm;
+use App\Entity\EnvPlanIndicator;
+use App\Entity\EnvPlanInstitution;
+use App\Entity\EnvPlanLocation;
+use App\Entity\EnvPlanSource;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Institution;
@@ -76,7 +81,7 @@ class MatriksRPLController extends Controller
             $stages = ProjectStage::select('id', 'name')->get()->sortBy(function($model) use($ids) {
                 return array_search($model->getKey(),$ids);
             });
-            
+
             $project = Project::where('id', $request->idProject)->whereHas('impactIdentificationsClone', function($query) {
                 $query->whereHas('envMonitorPlan');
             })->first();
@@ -111,14 +116,14 @@ class MatriksRPLController extends Controller
                 $file = $request->file('map_file');
                 $name = '/map/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-      
+
                 $project = Project::findOrFail($request->idProject);
                 $project->map_rpl = Storage::url($name);
                 $project->save();
-   
+
                 return response()->json(['message' => 'success']);
            }
-   
+
            return response()->json(['message' => 'failed'], 404);
         }
 
@@ -130,6 +135,7 @@ class MatriksRPLController extends Controller
             $comment->column_type = $request->column_type;
             $comment->document_type = 'rpl';
             $comment->is_checked = false;
+            $comment->id_project = $request->id_project;
             $comment->save();
 
             return [
@@ -151,6 +157,7 @@ class MatriksRPLController extends Controller
             $comment->description = $request->description;
             $comment->document_type = 'rpl';
             $comment->reply_to = $request->id_comment;
+            $comment->id_project = $request->id_project;
             $comment->save();
 
             return [
@@ -182,25 +189,110 @@ class MatriksRPLController extends Controller
                 $envMonitor->id_impact_identifications = $monitor[$i]['id'];
             } else {
                 $envMonitor = EnvMonitorPlan::where('id_impact_identifications', $monitor[$i]['id'])->first();
+                if(!$envMonitor) {
+                    $envMonitor = new EnvMonitorPlan();
+                    $envMonitor->id_impact_identifications = $monitor[$i]['id'];
+                }
+
                 $ids[] = $monitor[$i]['id'];
             }
 
-            $envMonitor->indicator = $monitor[$i]['indicator'];
-            $envMonitor->impact_source = $monitor[$i]['impact_source'];
-            $envMonitor->collection_method = $monitor[$i]['collection_method'];
-            $envMonitor->location = $monitor[$i]['location'];
-            $envMonitor->time_frequent = $monitor[$i]['time_frequent'];
-            $envMonitor->executor = $monitor[$i]['executor'];
-            $envMonitor->supervisor = $monitor[$i]['supervisor'];
-            $envMonitor->report_recipient = $monitor[$i]['report_recipient'];
+            $envMonitor->time_frequent = $monitor[$i]['period_number'] . '-' . $monitor[$i]['period_description'];
             $envMonitor->save();
+
+            // === INSTITUTION === //
+            $institution = EnvPlanInstitution::where('id_impact_identification', $monitor[$i]['id'])->first();
+            if(!$institution) {
+                $institution = new EnvPlanInstitution();
+                $institution->id_impact_identification = $monitor[$i]['id'];
+            }
+
+            $institution->executor = $monitor[$i]['executor'];
+            $institution->supervisor = $monitor[$i]['supervisor'];
+            $institution->report_recipient = $monitor[$i]['report_recipient'];
+            $institution->save();
+
+            // === IMPACT SOURCE === //
+            $impact_source = $monitor[$i]['impact_source'];
+            if(count($impact_source) > 0) {
+                for($a = 0; $a < count($impact_source); $a++) {
+                    $imp_source = null;
+                    if($impact_source[$a]['id'] !== null) {
+                        $imp_source = EnvPlanSource::findOrFail($impact_source[$a]['id']);
+                    } else {
+                       $imp_source = new EnvPlanSource();
+                       $imp_source->id_impact_identification = $monitor[$i]['id'];
+                    }
+
+                    $imp_source->description = $impact_source[$a]['description'];
+                    $imp_source->save();
+                }
+            }
+
+            // === SUCCESS INDICATOR === //
+            $indicator = $monitor[$i]['indicator'];
+            if(count($indicator) > 0) {
+                for($a = 0; $a < count($indicator); $a++) {
+                    $imp_indicator = null;
+                    if($indicator[$a]['id'] !== null) {
+                        $imp_indicator = EnvPlanIndicator::findOrFail($indicator[$a]['id']);
+                    } else {
+                       $imp_indicator = new EnvPlanIndicator();
+                       $imp_indicator->id_impact_identification = $monitor[$i]['id'];
+                    }
+
+                    $imp_indicator->description = $indicator[$a]['description'];
+                    $imp_indicator->save();
+                }
+            }
+
+            // === COLLECTION METHOD === //
+            $collection_method = $monitor[$i]['collection_method'];
+            if(count($collection_method) > 0) {
+                for($a = 0; $a < count($collection_method); $a++) {
+                    $collection_method_data = null;
+                    if($collection_method[$a]['id'] !== null) {
+                        $collection_method_data = EnvPlanForm::findOrFail($collection_method[$a]['id']);
+                    } else {
+                       $collection_method_data = new EnvPlanForm();
+                       $collection_method_data->id_env_monitor_plan = $envMonitor->id;
+                    }
+
+                    $collection_method_data->description = $collection_method[$a]['description'];
+                    $collection_method_data->save();
+                }
+            }
+
+            // === LOCATION === //
+            $location = $monitor[$i]['location'];
+            if(count($location) > 0) {
+                for($a = 0; $a < count($location); $a++) {
+                    $location_data = null;
+                    if($location[$a]['id'] !== null) {
+                        $location_data = EnvPlanLocation::findOrFail($location[$a]['id']);
+                    } else {
+                       $location_data = new EnvPlanLocation();
+                       $location_data->id_env_monitor_plan = $envMonitor->id;
+                    }
+
+                    $location_data->description = $location[$a]['description'];
+                    $location_data->save();
+                }
+            }
+        }
+
+        // === WORKFLOW === //
+        $project = Project::findOrFail($request->idProject);
+        if($project->marking == 'amdal.andal-drafting') {
+            $project->workflow_apply('draft-amdal-rklrpl');
+            $project->save();
         }
         
         if($request->type != 'new') {
             $lastTime = EnvMonitorPlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
                             ->updated_at->locale('id')->diffForHumans();
             return 'Diperbarui ' . $lastTime;
-        }       
+        }
 
         return 'Diperbarui ' . EnvMonitorPlan::orderBy('id', 'DESC')->first()->updated_at->locale('id')->diffForHumans();
     }
@@ -254,7 +346,7 @@ class MatriksRPLController extends Controller
         $results = [];
 
         // ================== POIN A ================= //
-        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinA = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis', function($q) {
             $q->whereHas('detail', function($query) {
                 $query->where('important_trait', '+P')->orWhere('important_trait', '-P');
@@ -278,9 +370,9 @@ class MatriksRPLController extends Controller
          foreach($poinA as $pA) {
              $idPoinA[] = $pA->id;
          }
-        
+
         $results = $this->getLoopDataB($stages, $id_project, $results, $type, $idPoinA);
- 
+
         return $results;
     }
 
@@ -299,21 +391,20 @@ class MatriksRPLController extends Controller
             foreach($data as $pA) {
                 $ronaAwal = '';
                 $component = '';
+                $periodeNumber = '0';
+                $periodeDesc = '';
+
 
                 // check stages
                 $id_stages = null;
 
-                if($pA->subProjectComponent) {
-                    if($pA->subProjectComponent->id_project_stage) {
-                        $id_stages = $pA->subProjectComponent->id_project_stage;
-                    } else {
-                        $id_stages = $pA->subProjectComponent->component->id_project_stage;
-                    }
-    
+                if($pA->projectComponent) {
+                    $id_stages = $pA->projectComponent->component->id_project_stage;
+
                     if($id_stages == $s->id) {
-                        if($pA->subProjectRonaAwal) {
-                            $ronaAwal = $pA->subProjectRonaAwal->id_rona_awal ? $pA->subProjectRonaAwal->ronaAwal->name : $pA->subProjectRonaAwal->name;
-                            $component = $pA->subProjectComponent->id_component ? $pA->subProjectComponent->component->name : $pA->subProjectComponent->name;
+                        if($pA->projectRonaAwal) {
+                            $ronaAwal = $pA->projectRonaAwal->rona_awal->name;
+                            $component = $pA->projectComponent->component->name;
                         } else {
                             continue;
                         }
@@ -332,20 +423,54 @@ class MatriksRPLController extends Controller
                     $type = 'new';
                 }
 
+                // PERIODE NUMBER & DESCRIPTION
+                if($type != 'new') {
+                    if($pA->envMonitorPlan->time_frequent) {
+                        $split_period = explode('-', $pA->envMonitorPlan->time_frequent);
+                        if(is_numeric($split_period[0])) {
+                            $periodeNumber = $split_period[0];
+                        }
+                        if(count($split_period) > 1) {
+                            $periodeDesc = $split_period[1];
+                        }
+                    }
+                }
+
+                // === INSTITUTION === //
+                $institution = EnvPlanInstitution::where('id_impact_identification', $pA->id)->first();
+
+                // === IMPACT SOURCE === //
+                $impact_source = EnvPlanSource::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
+
+                // === INDICATOR == //
+                $indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $pA->id)->get();
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $pA->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'indicator' => $type == 'new' ? null : $pA->envMonitorPlan->indicator,
-                    'impact_source' => $type == 'new' ? null : $pA->envMonitorPlan->impact_source,
-                    'collection_method' => $type == 'new' ? null : $pA->envMonitorPlan->collection_method,
-                    'location' => $type == 'new' ? null : $pA->envMonitorPlan->location,
+                    'impact_source' => $impact_source,
+                    'indicator' => $indicator,
+                    'collection_method' =>
+                        $type == 'new' ?
+                        [] :
+                        EnvPlanForm::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
+                                        ->get(),
+                    'location' =>
+                        $type == 'new' ?
+                        [] :
+                        EnvPlanLocation::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $pA->envMonitorPlan->id)
+                                        ->get(),
                     'time_frequent' => $type == 'new' ? null : $pA->envMonitorPlan->time_frequent,
-                    'executor' => $type == 'new' ? null : $pA->envMonitorPlan->executor,
-                    'supervisor' => $type == 'new' ? null : $pA->envMonitorPlan->supervisor,
-                    'report_recipient' => $type == 'new' ? null : $pA->envMonitorPlan->report_recipient,
+                    'executor' => $institution ? $institution->executor : null,
+                    'supervisor' => $institution ? $institution->supervisor : null,
+                    'report_recipient' => $institution ? $institution->report_recipient : null,
                     'description' => $type == 'new' ? null : $pA->envMonitorPlan->description,
+                    'period_number' => $periodeNumber,
+                    'period_description' => $periodeDesc,
                     'comments' => $comments
                 ];
                 $results[] = [
@@ -368,21 +493,21 @@ class MatriksRPLController extends Controller
     private function getLoopDataB($stages, $id_project, $results, $type, $idPoinA) {
          //  =========== POIN B.1 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-        $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB1 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
         ->where([['id_project', $id_project],['is_managed', true],['is_hypothetical_significant', '!=', true]])->get();
 
         //  =========== POIN B.2 ============= //
         // DAMPAK TIDAK PENTING HIPOTETIK YANG DIKELOLA (DTPHK)
-        $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+        $poinB2 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project],['is_managed', false],['initial_study_plan', '!=', null],['is_hypothetical_significant', '!=', true]])->get();
 
         // ============ POIN B.3 ============= //
         // DAMPAK TIDAK PENTING (HASIL MATRIK ANDAL (TP))
         if(count($idPoinA) > 0) {
-            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereNotIn('id', $idPoinA)->whereHas('envImpactAnalysis')->get();
         } else {
-            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_sub_project_component', 'id_change_type', 'id_sub_project_rona_awal')
+            $poinB3 = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal')
             ->where([['id_project', $id_project], ['is_hypothetical_significant', true]])->whereHas('envImpactAnalysis')->get();
         }
 
@@ -403,21 +528,19 @@ class MatriksRPLController extends Controller
             foreach($data_merge_final as $merge) {
                 $ronaAwal = '';
                 $component = '';
+                $periodeNumber = '0';
+                $periodeDesc = '';
 
                 // check stages
                 $id_stages = null;
 
-                if($merge->subProjectComponent) {
-                    if($merge->subProjectComponent->id_project_stage) {
-                        $id_stages = $merge->subProjectComponent->id_project_stage;
-                    } else {
-                        $id_stages = $merge->subProjectComponent->component->id_project_stage;
-                    }
-    
+                if($merge->projectComponent) {
+                    $id_stages = $merge->projectComponent->component->id_project_stage;
+
                     if($id_stages == $s->id) {
-                        if($merge->subProjectRonaAwal) {
-                            $ronaAwal = $merge->subProjectRonaAwal->id_rona_awal ? $merge->subProjectRonaAwal->ronaAwal->name : $merge->subProjectRonaAwal->name;
-                            $component = $merge->subProjectComponent->id_component ? $merge->subProjectComponent->component->name : $merge->subProjectComponent->name;
+                        if($merge->projectRonaAwal) {
+                            $ronaAwal = $merge->projectRonaAwal->rona_awal->name;
+                            $component = $merge->projectComponent->component->name;
                         } else {
                             continue;
                         }
@@ -436,20 +559,54 @@ class MatriksRPLController extends Controller
                     $type = 'new';
                 }
 
+                // PERIODE NUMBER & DESCRIPTION
+                if($type != 'new') {
+                    if($merge->envMonitorPlan->time_frequent) {
+                        $split_period = explode('-', $merge->envMonitorPlan->time_frequent);
+                        if(is_numeric($split_period[0])) {
+                            $periodeNumber = $split_period[0];
+                        }
+                        if(count($split_period) > 1) {
+                            $periodeDesc = $split_period[1];
+                        }
+                    }
+                }
+
+                // === INSTITUTION === //
+                $institution = EnvPlanInstitution::where('id_impact_identification', $merge->id)->first();
+
+                 // === IMPACT SOURCE === //
+                 $impact_source = EnvPlanSource::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $merge->id)->get();
+
+                 // === INDICATOR === //
+                 $indicator = EnvPlanIndicator::select('id', 'description', 'id_impact_identification')->where('id_impact_identification', $merge->id)->get();
+
                 $results[] = [
                     'no' => $total + 1,
                     'id' => $merge->id,
                     'name' => "$changeType $ronaAwal akibat $component",
                     'type' => 'subtitle',
-                    'indicator' => $type == 'new' ? null : $merge->envMonitorPlan->indicator,
-                    'impact_source' => $type == 'new' ? null : $merge->envMonitorPlan->impact_source,
-                    'collection_method' => $type == 'new' ? null : $merge->envMonitorPlan->collection_method,
-                    'location' => $type == 'new' ? null : $merge->envMonitorPlan->location,
+                    'impact_source' => $impact_source,
+                    'indicator' => $indicator,
+                    'collection_method' =>
+                        $type == 'new' ?
+                        [] :
+                        EnvPlanForm::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
+                                        ->get(),
+                    'location' =>
+                        $type == 'new' ?
+                        [] :
+                        EnvPlanLocation::select('id', 'description', 'id_env_monitor_plan')
+                                        ->where('id_env_monitor_plan', $merge->envMonitorPlan->id)
+                                        ->get(),
                     'time_frequent' => $type == 'new' ? null : $merge->envMonitorPlan->time_frequent,
-                    'executor' => $type == 'new' ? null : $merge->envMonitorPlan->executor,
-                    'supervisor' => $type == 'new' ? null : $merge->envMonitorPlan->supervisor,
-                    'report_recipient' => $type == 'new' ? null : $merge->envMonitorPlan->report_recipient,
+                    'executor' => $institution ? $institution->executor : null,
+                    'supervisor' => $institution ? $institution->supervisor : null,
+                    'report_recipient' => $institution ? $institution->report_recipient : null,
                     'description' => $type == 'new' ? null : $merge->envMonitorPlan->description,
+                    'period_number' => $periodeNumber,
+                    'period_description' => $periodeDesc,
                     'comments' => $comments
                 ];
                 $results[] = [
@@ -485,9 +642,9 @@ class MatriksRPLController extends Controller
          foreach($stages as $s) {
              $results[$idx]['stages'] =  $alphabet_list . '. ' . $s->name;
              $results[$idx]['data'] = [];
- 
+
              $total = 0;
- 
+
              foreach($poinA as $pA) {
                 $ronaAwal = '';
                 $component = '';
@@ -495,15 +652,15 @@ class MatriksRPLController extends Controller
                 $data = $this->getComponentRonaAwal($pA, $s->id);
 
                 if($data['component'] && $data['ronaAwal']) {
-                    $ronaAwal = $data['ronaAwal'];   
-                    $component = $data['component'];   
+                    $ronaAwal = $data['ronaAwal'];
+                    $component = $data['component'];
                 } else {
                     continue;
                 }
 
                 $changeType = $pA->id_change_type ? $pA->changeType->name : '';
 
-                if(!pA->envMonitorPlan) {
+                if(!$pA->envMonitorPlan) {
                     continue;
                 }
 
@@ -526,7 +683,7 @@ class MatriksRPLController extends Controller
              }
              $idx++;
          }
- 
+
          return $results;
     }
 
@@ -583,8 +740,8 @@ class MatriksRPLController extends Controller
                 $data = $this->getComponentRonaAwal($merge, $s->id);
 
                 if($data['component'] && $data['ronaAwal']) {
-                    $ronaAwal = $data['ronaAwal'];   
-                    $component = $data['component'];   
+                    $ronaAwal = $data['ronaAwal'];
+                    $component = $data['component'];
                 } else {
                     continue;
                 }
@@ -623,25 +780,24 @@ class MatriksRPLController extends Controller
         $ronaAwal = null;
 
         try {
-            if($imp->id_sub_project_component != null) {
-                if($imp->subProjectComponent) {
-                    if($imp->subProjectComponent->id_project_stage == $id_project_stage) {
-                        if($imp->subProjectRonaAwal) {
-                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                        }
-                    } else if($imp->subProjectComponent->id_project_stage != null) {
-                        if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
-                            if($imp->subProjectRonaAwal) {
-                                $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                                $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
-                            }
-                        }
+            if ($imp->projectComponent) {
+                if ($imp->projectComponent->component->id_project_stage == $id_project_stage) {
+                    if ($imp->projectRonaAwal) {
+                        $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                        $component = $imp->projectComponent->component->name;
                     }
                 }
+                // } else if($imp->subProjectComponent->id_project_stage != null) {
+                //     if(($imp->subProjectComponent->component) && imp->subProjectComponent->component->id_project_stage == $id_project_stage) {
+                //         if($imp->subProjectRonaAwal) {
+                //             $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                //             $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                //         }
+                //     }
+                // }
             }
         } catch(ErrorException $err) {
-            
+
         }
 
         return [
@@ -653,7 +809,7 @@ class MatriksRPLController extends Controller
     private function getComments($id) {
         $komen = Comment::where([['id_impact_identification', $id], ['document_type', 'rpl'],['reply_to', null]])
                         ->orderBY('id', 'DESC')->get();
-            
+
         $comments = [];
         foreach($komen as $c) {
             $replies = [];

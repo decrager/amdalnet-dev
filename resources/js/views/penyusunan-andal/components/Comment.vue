@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-input
-      v-if="isExaminer"
+      v-if="!isFormulator"
       v-model="comment"
       type="textarea"
       :rows="3"
       placeholder="Silahkan isi komentar"
     />
-    <div v-if="isExaminer" class="send-btn-container">
+    <div v-if="!isFormulator" class="send-btn-container">
       <el-button
         :loading="loadingSubmit"
         type="primary"
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 
@@ -47,13 +48,17 @@ export default {
       comment: null,
       loadingSubmit: false,
       loadingComments: false,
-      userInfo: {},
+      // userInfo: {},
       comments: [],
     };
   },
   computed: {
-    isExaminer() {
-      return this.$store.getters.roles.includes('examiner');
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+    isFormulator() {
+      return this.$store.getters.roles.includes('formulator');
     },
   },
   created() {
@@ -61,12 +66,12 @@ export default {
   },
   methods: {
     async getComments() {
-      await this.getUserInfo();
+      // await this.getUserInfo();
       const data = await andalComposingResource.list({
         idProject: this.idProject,
         idUser: this.userInfo.id,
         comment: 'true',
-        role: this.$store.getters.roles.includes('examiner') ? 'true' : 'false',
+        role: this.$store.getters.roles.includes('formulator') ? 'false' : 'true',
       });
       this.comments = data;
     },
@@ -87,9 +92,9 @@ export default {
       });
       this.loadingSubmit = false;
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
   },
 };
 </script>

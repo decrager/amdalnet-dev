@@ -25,6 +25,8 @@ class DistrictController extends Controller
                 return DistrictResource::collection(District::where('id_prov', $province->id)->get());
             }
             return DistrictResource::collection(new District());
+        } else if($request->districtName) {
+          return District::where('name', $request->districtName)->first();
         } else {
           return DistrictResource::collection(District::all());
         }

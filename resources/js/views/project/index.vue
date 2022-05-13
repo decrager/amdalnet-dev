@@ -1,11 +1,13 @@
 <template>
   <div class="app-container" style="padding: 24px">
+
     <el-card>
       <div class="filter-container">
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col>
             <el-button
-              v-if="isInitiator"
+              v-if="couldCreateProject && !isScoping && !isDigiWork"
+              :disabled="addLoading"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
@@ -14,10 +16,11 @@
               {{ ' Kegiatan' }}
             </el-button>
           </el-col>
-          <el-col :span="6">
-            <el-input v-model="listQuery.search" placeholder="Please input" @change="handleFilter">
-              <el-button slot="append" icon="el-icon-search" @click="handleFilter" />
+          <el-col :span="10">
+            <el-input v-model="listQuery.search" prefix-icon="el-icon-search" placeholder="Pencarian" :readonly="loading" @keyup.enter.native="handleFilter">
+              <el-button slot="append" icon="el-icon-close" :disabled="loading" @click="resetSearch" />
             </el-input>
+
             <!-- <el-button
               class="filter-item"
               type="primary"
@@ -33,9 +36,11 @@
         v-loading="loading"
         :data="filtered"
         fit
+        :clear-filter="onClearFilter"
         highlight-current-row
-        :header-cell-style="{ background: '#3AB06F', color: 'white' }"
+        :header-cell-style="{ background: '#216221', color: 'white' }"
         style="width: 100%"
+        @sort-change="onTableSort"
       >
         <el-table-column type="expand" class="row-detail">
           <template slot-scope="scope">
@@ -55,12 +60,12 @@
                     <i class="fa fa-times" />
                   </a>
                 </span>
-                <span class="description">{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }} - {{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}
+                <span class="description">{{ scope.row.address.length > 0 ? scope.row.address[0].district : scope.row.district }}
                 </span>
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="isInitiator"
+                  v-if="isInitiator && !isScoping && !isDigiWork"
                   type="text"
                   href="#"
                   icon="el-icon-user"
@@ -96,7 +101,7 @@
                   Delete
                 </el-button> -->
                 <el-button
-                  v-if="!isLpjp"
+                  v-if="couldViewProject && !isScoping && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -105,7 +110,7 @@
                   Lihat Detil Penapisan
                 </el-button>
                 <el-button
-                  v-if="(scope.row.published && (isInitiator || isExaminer))"
+                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork)"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -114,16 +119,16 @@
                   Lihat SPT
                 </el-button>
                 <el-button
-                  v-if="isLpjp && !scope.row.team_id"
+                  v-if="isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-user"
                   @click="handleLpjpTeam(scope.row)"
                 >
-                  Tambah Tim LPJP
+                  Tim LPJP
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isAmdal(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ka')) || testInvited(scope.row, 'ka')) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -132,7 +137,7 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -141,7 +146,25 @@
                   Formulir UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isSubtance || isExaminer || isAdmin)"
+                  v-if="isAmdal(scope.row) && (isDocumentSubmitted(scope.row, 'ka') && (isInitiator || isFormulator)) && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDokumenKA(scope.row)"
+                >
+                  Dokumen Kerangka Acuan
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (isDocumentSubmitted(scope.row, 'ukl-upl') && isInitiator)) && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDokumenUklUpl(scope.row)"
+                >
+                  Dokumen UKL UPL
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -150,7 +173,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || isExaminer || isAdmin || isSubtance)"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -159,7 +182,16 @@
                   RKL/RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && isFormulator"
+                  v-if="isAmdal(scope.row) && ((isDocumentSubmitted(scope.row, 'andal-rkl-rpl') && isInitiator) || (scope.row.rkl_rpl_document && isFormulator)) && !isScreening && !isDigiWork"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDokumenAndalRklRpl(scope.row)"
+                >
+                  Dokumen ANDAL RKL RPL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -168,20 +200,65 @@
                   Matriks UKL/UPL
                 </el-button>
                 <el-button
-                  v-if="isSubtance || isAdmin"
+                  v-if="isAmdal(scope.row) && (tukAccess(scope.row, 'valadm') && isDocumentReviewed(scope.row, 'ka'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleUjiKa(scope.row)"
+                  @click="handleUjiAdmKa(scope.row)"
                 >
-                  Uji KA
+                  Uji Berkas Administrasi KA
                 </el-button>
                 <el-button
-                  v-if="isAdmin || isSubtance || isExaminer"
+                  v-if="isAmdal(scope.row) && (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ka'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleUjiRklRpl(scope.row)"
+                  @click="handleBeritaAcaraKa(scope.row)"
+                >
+                  Berita Acara KA
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && (tukAccess(scope.row, 'valadm') && isDocumentReviewed(scope.row, 'andal-rkl-rpl'))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiAdmAndalRklRpl(scope.row)"
+                >
+                  Uji Berkas Administrasi Andal RKL RPL
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl'))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleBeritaAcaraAndalRklRpl(scope.row)"
+                >
+                  Berita Acara Andal RKL RPL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && (tukAccess(scope.row, 'valadm') && isDocumentReviewed(scope.row, 'ukl-upl'))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiAdmUKLUPL(scope.row)"
+                >
+                  Uji Berkas Administrasi
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl'))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleBeritaAcaraUKLUPL(scope.row)"
+                >
+                  Berita Acara
+                </el-button>
+                <el-button
+                  v-if="isValAdmOrAddByAdmin(scope.row) && isMeetReportAccepted(scope.row)"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleUjiKelayakan(scope.row)"
                 >
                   Uji Kelayakan
                 </el-button>
@@ -195,7 +272,16 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
+                  v-if="isAmdal(scope.row) && isDocumentReviewed(scope.row, 'ka') && (tukAccess(scope.row, 'valsub') || testInvited(scope.row, 'ka')) && !isScreening && !isScoping"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceKa(scope.row)"
+                >
+                  Workspace KA
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && ((isFormulator && isAndalFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -204,7 +290,7 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isFormulator || isExaminer || isAdmin || isSubtance"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isRklRplFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -213,7 +299,16 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isInitiator"
+                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleWorkspaceUKLUPL(scope.row.id)"
+                >
+                  Workspace UKL UPL
+                </el-button>
+                <el-button
+                  v-if="isInitiator && !isScoping && !isDigiWork && isPemerintah"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -222,13 +317,40 @@
                   Unduh SPPL
                 </el-button>
                 <el-button
-                  v-if="scope.row.feasibility_test"
+                  v-if="isInitiator && !isScoping && !isDigiWork && !isPemerintah"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDownloadSPPLFromOSS(scope.row)"
+                >
+                  Unduh SPPL
+                </el-button>
+                <el-button
+                  v-if="isPJM(scope.row) && isMeetReportAccepted(scope.row)"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleRekomendasiUjiKelayakan(scope.row)"
+                >
+                  Surat Rekomendasi Uji Kelayakan
+                </el-button>
+                <el-button
+                  v-if="isAmdal(scope.row) && isFeasib(scope.row) && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
                   href="#"
                   type="text"
                   icon="el-icon-document"
                   @click="handleFeasibilityTest(scope.row.id)"
                 >
                   SKKL
+                </el-button>
+                <el-button
+                  v-if="isUklUpl(scope.row) && isFeasib(scope.row) && (isInitiator || tukAccess(scope.row, 'valadm') || tukAccess(scope.row, 'valsub'))"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handlePKPLH(scope.row)"
+                >
+                  PKPLH
                 </el-button>
               </span>
               <p class="title"><b>{{ scope.row.project_title }} ({{ scope.row.required_doc }})</b></p>
@@ -238,23 +360,67 @@
         </el-table-column>
         <el-table-column label="No." width="54px">
           <template slot-scope="scope">
-            <span>{{ scope.$index + 1 }}</span>
+            <span>{{ ((listQuery.page-1) * listQuery.limit) + (scope.$index + 1) }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="No. Registrasi" width="200">
+        <el-table-column prop="registration_no" align="left" label="No. Registrasi" width="150" sortable="custom">
           <template slot-scope="scope">
-            <span>{{ scope.row.registration_no }}</span>
+            <span>{{ scope.row.registration_no ? scope.row.registration_no.toUpperCase() : '' }}</span>
           <!-- <span>{{
               scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
             }}</span> -->
           </template>
         </el-table-column>
-        <el-table-column align="left" label="Nama Kegiatan" min-width="200">
+        <el-table-column
+          prop="created_at"
+          align="center"
+          label="Tanggal"
+          sortable="custom"
+          width="150px"
+        >
+          <template slot-scope="scope">
+            <div style="line-height: 1.1em;">
+              <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d}') }}</span>
+              <!-- <br>
+              <span style="font-size:86%">{{ scope.row.created_at | parseTime('{h}:{i}') }}</span> -->
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="project_title"
+          align="left"
+          label="Nama Kegiatan"
+          sortable="custom"
+          min-width="200"
+        >
           <template slot-scope="scope">
             <span>{{ scope.row.project_title }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Dokumen" width="100">
+        <el-table-column
+          width="150px"
+
+          column-key="doc_type"
+          align="center"
+          label="Dokumen"
+        >
+
+          <template slot="header">
+            <el-select
+              v-model="listQuery.filters"
+              class="filter-header"
+              clearable
+              placeholder="Dokumen"
+              @change="onDocTypeFilter"
+            >
+              <el-option
+                v-for="item in [{text: 'AMDAL', value: 'AMDAL'}, {text: 'UKL-UPL', value: 'UKL-UPL'}, {text: 'SPPL', value: 'SPPL'}]"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value"
+              />
+            </el-select>
+          </template>
           <template slot-scope="scope">
             <span>{{ scope.row.required_doc }}</span>
           </template>
@@ -264,12 +430,16 @@
             <span>{{ scope.row.address.length > 0 ? scope.row.address[0].district+'/ '+scope.row.address[0].prov : '' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Tahap" class-name="status-col" width="100">
+        <el-table-column v-if="isExaminer || isAdmin || isSubtance" label="Penugasan" width="200px" align="center">
           <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.tag === 'Home' ? 'primary' : 'success'"
-              disable-transitions
-            >{{ scope.row.tag }}</el-tag>
+            <div class="badge-penugasan">
+              {{ tukRole(scope.row) }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="Tahap" class-name="status-col">
+          <template slot-scope="scope">
+            {{ scope.row.marking | projectStep }}
           </template>
         </el-table-column>
       </el-table>
@@ -291,6 +461,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import AnnouncementDialog from './components/AnnouncementDialog.vue';
@@ -298,6 +469,7 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
+import axios from 'axios';
 const initiatorResource = new Resource('initiatorsByEmail');
 const provinceResource = new Resource('provinces');
 const districtResource = new Resource('districts');
@@ -307,17 +479,34 @@ const lpjpResource = new Resource('lpjpsByEmail');
 const formulatorResource = new Resource('formulatorsByEmail');
 const andalComposingResource = new Resource('andal-composing');
 const rklResource = new Resource('matriks-rkl');
+const skklResource = new Resource('skkl');
 // const kbliResource = new Resource('business');
 
 export default {
   name: 'Project',
   components: { Pagination, AnnouncementDialog },
+  filters: {
+    projectStep: function(value) {
+      if (value === 'screening-completed'){
+        return 'Selesai Penapisan';
+      } else if (value === 'formulator-assignment'){
+        return 'Penetapan Penyusun';
+      } else if (value === 'announcement-completed'){
+        return 'Sudah Diumumkan';
+      } else {
+        return value;
+      }
+    },
+  },
   data() {
     return {
-      loading: false,
-      userInfo: {
-        roles: [],
-      },
+      loading: true,
+      addLoading: false,
+      searchString: '',
+      sectionHeader: 'list-penapisan',
+      // userInfo: {
+      //   roles: [],
+      // },
       filtered: [],
       initiator: {},
       announcement: {},
@@ -326,6 +515,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        orderBy: 'id',
+        order: 'DESC',
+        filters: '',
       },
       provinceOptions: [],
       cityOptions: [],
@@ -335,9 +527,20 @@ export default {
         { value: 'Menengah Rendah', label: 'UKL-UPL MR' },
         { value: 'Rendah', label: 'SPPL' },
       ],
+      isPemerintah: false,
     };
   },
   computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+    couldCreateProject(){
+      return this.$store.getters.permissions.includes('create project');
+    },
+    couldViewProject(){
+      return this.$store.getters.permissions.includes('read project');
+    },
     isLpjp() {
       return this.userInfo.roles.includes('lpjp');
     },
@@ -353,13 +556,30 @@ export default {
     isAdmin() {
       return this.userInfo.roles.includes('examiner-administration');
     },
+    isSecretary() {
+      return this.userInfo.roles.includes('examiner-secretary');
+    },
+    isChief() {
+      return this.userInfo.roles.includes('examiner-chief');
+    },
     isExaminer() {
       return this.userInfo.roles.includes('examiner');
     },
+    isScoping(){
+      return this.$route.name === 'scopingProject';
+    },
+    isDigiWork(){
+      return this.$route.name === 'digWorkProject';
+    },
+    isScreening(){
+      return this.$route.name === 'screeningProject';
+    },
   },
   async created() {
+    // console.log('aaa', this.userInfo);
+    // this.addLoading = true;
     this.getProvinces();
-    this.userInfo = await this.$store.dispatch('user/getInfo');
+    // this.userInfo = await this.$store.dispatch('user/getInfo');
     if (this.userInfo.roles.includes('lpjp')){
       const lpjp = await lpjpResource.list({ email: this.userInfo.email });
       this.listQuery.lpjpId = lpjp.id;
@@ -367,9 +587,21 @@ export default {
       const initiator = await initiatorResource.list({ email: this.userInfo.email });
       this.listQuery.initiatorId = initiator.id;
       this.initiator = initiator;
+      await this.$store.dispatch('getInitiator', this.userInfo.email);
+      if (this.$store.getters.isPemerintah){
+        this.isPemerintah = true;
+      }
     } else if (this.userInfo.roles.includes('formulator')) {
       const formulator = await formulatorResource.list({ email: this.userInfo.email });
       this.listQuery.formulatorId = formulator.id;
+    } else if (
+      this.userInfo.roles.includes('examiner-substance') ||
+      this.userInfo.roles.includes('examiner-administration') ||
+      this.userInfo.roles.includes('examiner-community') ||
+      this.userInfo.roles.includes('examiner') ||
+      this.userInfo.roles.includes('examiner-institution')
+    ) {
+      this.listQuery.tuk = 'true';
     }
     // else if (this.userInfo.roles.includes('examiner-substance')) {
     //   const formulator = await formulatorResource.list({ email: this.userInfo.email });
@@ -377,15 +609,248 @@ export default {
     // }
 
     this.getFiltered(this.listQuery);
-    console.log(this.userInfo);
+
+    // load info project from oss
+    await this.loadInfoFromOss();
   },
   methods: {
+    async loadInfoFromOss(){
+      // await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
+      // this.addLoading = false;
+    },
     isUklUpl(project){
-      console.log(project.required_doc);
       return project.required_doc === 'UKL-UPL';
     },
     isAmdal(project){
       return project.required_doc === 'AMDAL';
+    },
+    isDocumentSubmitted(project, document) {
+      if (project.ka_reviews) {
+        if (project.ka_reviews.length > 0) {
+          const reviews = project.ka_reviews.filter(x => {
+            if (document === 'ka' || document === 'ukl-upl') {
+              return x.document_type === document || x.document_type === null;
+            } else {
+              return x.document_type === document;
+            }
+          });
+          if (reviews.length > 0) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
+    isDocumentReviewed(project, document) {
+      if (this.isDocumentSubmitted(project, document)) {
+        const reviews = project.ka_reviews.filter(x => {
+          if (document === 'ka' || document === 'ukl-upl') {
+            return x.document_type === document || x.document_type === null;
+          } else {
+            return x.document_type === document;
+          }
+        });
+        const status = reviews[reviews.length - 1].status;
+        if (status === 'submit') {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    isInvitationSent(project, document) {
+      if (project.testing_meeting) {
+        if (project.testing_meeting.length > 0) {
+          const invitation = project.testing_meeting.find(x => {
+            return x.document_type === document && Boolean(x.is_invitation_sent);
+          });
+          if (invitation) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+    isMeetReportKaCreated(project) {
+      if (project.meeting_reports) {
+        if (project.meeting_reports.length > 0) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    isMeetReportAccepted(project) {
+      if (project.meeting_reports) {
+        if (project.meeting_reports.length > 0) {
+          const document = this.isAmdal(project) ? 'rkl-rpl' : 'ukl-upl';
+          const is_accepted = project.meeting_reports.find(x => {
+            return x.document_type === document && Boolean(x.is_accepted);
+          });
+          if (is_accepted) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
+    isAndalFormComplete(project) {
+      if (project.impact_identifications_clone) {
+        if (project.impact_identifications_clone.length > 0) {
+          const withEnvImpactAnalysis = project.impact_identifications_clone.filter(x => {
+            return x.env_impact_analysis !== null;
+          });
+          if (withEnvImpactAnalysis.length > 0) {
+            const completes = withEnvImpactAnalysis.filter(y => {
+              return y.env_impact_analysis.condition_dev_no_plan !== null;
+            });
+            return withEnvImpactAnalysis.length === completes.length;
+          }
+        }
+      }
+
+      return false;
+    },
+    isRklRplFormComplete(project) {
+      let envManagePlan = false;
+      let envMonitorPlan = false;
+
+      if (project.impact_identifications_clone) {
+        if (project.impact_identifications_clone.length > 0) {
+          const withEnvManagePlan = project.impact_identifications_clone.filter(x => {
+            return x.env_manage_plan !== null;
+          });
+          if (withEnvManagePlan.length > 0) {
+            const completes = withEnvManagePlan.filter(y => {
+              return y.env_manage_plan.period !== null;
+            });
+            envManagePlan = Boolean(withEnvManagePlan.length === completes.length);
+          }
+
+          const withEnvMonitorPlan = project.impact_identifications_clone.filter(x => {
+            return x.env_monitor_plan !== null;
+          });
+          if (withEnvMonitorPlan.length > 0) {
+            const completes = withEnvMonitorPlan.filter(y => {
+              return y.env_monitor_plan.time_frequent !== null;
+            });
+            envMonitorPlan = Boolean(withEnvMonitorPlan.length === completes.length);
+          }
+        }
+      }
+
+      return envManagePlan && envMonitorPlan;
+    },
+    tukAccess(project, roleAccount) {
+      if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
+        if (project.tuk_project) {
+          if (project.tuk_project.length > 0) {
+            const role = project.tuk_project.find(x => {
+              return x.id_user === this.userInfo.id;
+            });
+
+            if (role) {
+              if (role.role === roleAccount || role.role === 'pjm') {
+                return true;
+              }
+            }
+          }
+        }
+      }
+
+      return false;
+    },
+    isPJM(project) {
+      if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
+        if (project.tuk_project) {
+          if (project.tuk_project.length > 0) {
+            const role = project.tuk_project.find(x => {
+              return x.id_user === this.userInfo.id;
+            });
+
+            if (role) {
+              if (role.role === 'pjm') {
+                return true;
+              }
+            }
+          }
+        }
+      }
+
+      return false;
+    },
+    tukRole(project) {
+      let roleByAdmin = null;
+
+      if (project.tuk_project) {
+        if (project.tuk_project.length > 0) {
+          const role = project.tuk_project.find(x => {
+            return x.id_user === this.userInfo.id;
+          });
+
+          if (role) {
+            if (role.role === 'pjm') {
+              roleByAdmin = 'PJM';
+            } else if (role.role === 'valsub') {
+              roleByAdmin = 'Substansi';
+            } else if (role.role === 'valadm') {
+              roleByAdmin = 'Administrasi';
+            }
+          }
+        }
+      }
+
+      if (roleByAdmin !== null) {
+        return roleByAdmin;
+      } else {
+        return 'Pengujian';
+      }
+    },
+    isFeasib(project) {
+      if (project.feasibility_test_recap) {
+        if (project.feasibility_test_recap.is_feasib) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    testInvited(project, documentType) {
+      if (project.testing_meeting) {
+        if (project.testing_meeting.length > 0) {
+          const meeting = project.testing_meeting.find(x => x.document_type === documentType);
+          if (meeting) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
+    isValAdmOrAddByAdmin(project) {
+      if (this.isSubtance || this.isAdmin || this.isSecretary || this.isExaminer) {
+        if (project.tuk_project) {
+          if (project.tuk_project.length > 0) {
+            const role = project.tuk_project.find(x => {
+              return x.id_user === this.userInfo.id;
+            });
+
+            if (role) {
+              if (
+                role.id_feasibility_test_team_member !== null ||
+                role.role === 'valadm' ||
+                role.role === 'pjm'
+              ) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+
+      return false;
     },
     toTitleCase(str) {
       return str.replace(
@@ -396,9 +861,6 @@ export default {
       );
     },
     handleSubmitAnnouncement(fileProof){
-      // this.announcement.fileProof = fileProof;
-      console.log(this.announcement);
-
       // make form data because we got file
       const formData = new FormData();
 
@@ -441,14 +903,22 @@ export default {
     },
     async getFiltered(query) {
       this.loading = true;
-      const { data, total } = await projectResource.list(query);
-      this.filtered = data.map(e => {
-        e.listSubProject = e.list_sub_project;
-        return e;
-      });
-      this.total = total;
-      console.log(this.filtered);
-      this.loading = false;
+      this.filtered = [];
+      console.log('getFiltered', query);
+      await projectResource.list(query)
+        .then((res) => {
+          const { data, total } = res;
+          const mapped = data.map(e => {
+            e.listSubProject = e.list_sub_project;
+            return e;
+          });
+          this.filtered = mapped;
+          this.total = total;
+          this.loading = false;
+          console.log(data, this.filtered);
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     handleCreate() {
       this.$router.push({
@@ -474,7 +944,6 @@ export default {
       // change field to number and formulator team
       currentProject.field = Number(currentProject.field);
       currentProject.id_formulator_team = Number(currentProject.id_formulator_team);
-      console.log(currentProject);
       this.$router.push({
         name: 'createProject',
         params: { project: currentProject },
@@ -500,7 +969,6 @@ export default {
     },
     handleTimPenyusunForm(id) {
       const currentProject = this.filtered.find((item) => item.id === id);
-      console.log(currentProject);
       this.$router.push({
         name: 'timPenyusun',
         params: { project: currentProject, readonly: true, id: currentProject.id },
@@ -515,7 +983,6 @@ export default {
           scale: curr.scale + ' ' + curr.scale_unit,
         };
       });
-      console.log(currentProject);
       this.announcement.sub_project = subProject;
       this.announcement.pic_name = this.initiator.pic;
       this.announcement.pic_address = this.initiator.address;
@@ -569,31 +1036,124 @@ export default {
         // path: `/ukluplstatic/form`,
       });
     },
-    handleUjiKa(project) {
+    handleDokumenKA(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/pengujian-ka`,
+        path: `/amdal/${project.id}/dokumen`,
       });
     },
-    handleUjiRklRpl(project) {
+    handleDokumenAndalRklRpl(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/pengujian-rkl-rpl`,
+        path: `/amdal/${project.id}/dokumen-andal-rkl-rpl`,
       });
+    },
+    handleDokumenUklUpl(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/dokumen`,
+      });
+    },
+    handleUjiAdmKa(project) {
+      this.$router.push({
+        path: `/amdal/${project.id}/uji-berkas-administrasi-ka`,
+      });
+    },
+    handleUjiAdmUKLUPL(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/uji-berkas-administrasi`,
+      });
+    },
+    handleUjiAdmAndalRklRpl(project) {
+      this.$router.push({
+        path: `/amdal/${project.id}/uji-berkas-administrasi-andal-rkl-rpl`,
+      });
+    },
+    handleBeritaAcaraKa(project) {
+      this.$router.push({
+        path: `/amdal/${project.id}/berita-acara-ka`,
+      });
+    },
+    handleBeritaAcaraAndalRklRpl(project) {
+      this.$router.push({
+        path: `/amdal/${project.id}/berita-acara-andal-rkl-rpl`,
+      });
+    },
+    handleBeritaAcaraUKLUPL(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/berita-acara`,
+      });
+    },
+    handleUjiKelayakan(project) {
+      if (this.isAmdal(project)) {
+        this.$router.push({
+          path: `/amdal/${project.id}/uji-kelayakan`,
+        });
+      } else {
+        this.$router.push({
+          path: `/uklupl/${project.id}/uji-kelayakan`,
+        });
+      }
+    },
+    handleRekomendasiUjiKelayakan(project) {
+      if (this.isAmdal(project)) {
+        this.$router.push({
+          path: `/amdal/${project.id}/rekomendasi-uji-kelayakan`,
+        });
+      } else {
+        this.$router.push({
+          path: `/uklupl/${project.id}/rekomendasi-uji-kelayakan`,
+        });
+      }
     },
     handleFeasibilityTest(id) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${id}/skkl`,
+        path: `/amdal/${id}/skkl`,
       });
     },
+    handlePKPLH(project) {
+      this.$router.push({
+        path: `/uklupl/${project.id}/pkplh`,
+      });
+    },
+    async handleDownloadSPPLFromOSS(project) {
+      const data = await skklResource.list({
+        idProject: project.id,
+        skklOss: 'true',
+      });
+      if ('file_url' in data && 'user_key' in data) {
+        axios({
+          url: data.file_url,
+          method: 'GET',
+          responseType: 'blob',
+          headers: {
+            user_key: data.user_key,
+          },
+        }).then((response) => {
+          const cd = response.headers['content-disposition'];
+          const fileName = cd.split('filename=')[1].replaceAll('"', '');
+          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+          var fileLink = document.createElement('a');
+          fileLink.href = fileURL;
+          fileLink.setAttribute(
+            'download',
+            `${fileName}`
+          );
+          document.body.appendChild(fileLink);
+          fileLink.click();
+          this.loading = false;
+        });
+      } else {
+        this.$message({
+          message: 'URL file tidak ada.',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      }
+    },
     async handleGenerateSPPL(project) {
-      console.log(project);
-
       project.listSubProject = project.listSubProject.map((e, i) => {
         e.address = project.address[i] ? this.toTitleCase(project.address[i].address + ' ' + project.address[i].district + ' ' + project.address[i].prov) : '';
         e.number = i + 1;
         return e;
       });
-
-      console.log(project.address[0].district);
 
       PizZipUtils.getBinaryContent(
         '/template_sppl.docx',
@@ -629,17 +1189,17 @@ export default {
     },
     handleAndal(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/penyusunan-andal`,
+        path: `/amdal/${project.id}/penyusunan-andal`,
       });
     },
     handleMatUklUpl(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl-dummy`,
+        path: `/uklupl/${project.id}/matriks`,
       });
     },
     handleRklRpl(project) {
       this.$router.push({
-        path: `/dokumen-kegiatan/${project.id}/penyusunan-rkl-rpl`,
+        path: `/amdal/${project.id}/penyusunan-rkl-rpl`,
       });
     },
     handleLpjpTeam(project) {
@@ -659,7 +1219,6 @@ export default {
       });
     },
     handleWorkspace(project) {
-      console.log(project);
       this.$router.push({
         name: 'editWorkspace',
         params: { id: project.id, project: project },
@@ -673,6 +1232,15 @@ export default {
       const { data } = await districtResource.list({ idProv });
       this.cityOptions = data.map((i) => {
         return { value: i.id, label: i.name };
+      });
+    },
+    handleWorkspaceKa(project) {
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: project.id,
+          filename: `ka-${project.id}-${project.project_title.toLowerCase()}.docx`,
+        },
       });
     },
     async handleWorkspaceAndal(idProject) {
@@ -702,6 +1270,53 @@ export default {
           filename: `${idProject}-rkl-rpl.docx`,
         },
       });
+    },
+    async handleWorkspaceUKLUPL(idProject) {
+      const projectName = await axios.get(
+        `/api/dokumen-ukl-upl/${idProject}`
+      );
+      this.$router.push({
+        name: 'projectWorkspace',
+        params: {
+          id: idProject,
+          filename: projectName.data,
+        },
+      });
+    },
+    // sorting, filtering
+    onTableSort(sort) {
+      /* switch (sort.prop) {
+        case 'date':
+          this.listQuery.orderBy = 'created_at';
+          console.log(this.listQuery);
+          break;
+        case 'title':
+          this.listQuery.orderBy = 'project_title';
+        default:
+      }*/
+      this.listQuery.orderBy = sort.prop;
+      this.listQuery.order = (sort.order === 'ascending') ? 'ASC' : 'DESC';
+      this.handleFilter();
+    },
+    onDocTypeFilter(val, col, row){
+      console.log('filtering doctype!', val);
+
+      this.listQuery.filters = val;
+      this.listQuery.page = 1;
+
+      this.handleFilter();
+    },
+    onClearFilter(key){
+      console.log('clearing filter!', key);
+    },
+    doSearch(){
+      this.listQuery.page = 1;
+      this.getFiltered(this.listQuery);
+    },
+    resetSearch(){
+      this.listQuery.search = '';
+      this.listQuery.page = 1;
+      this.handleFilter();
     },
   },
 };
@@ -771,6 +1386,14 @@ export default {
       color: #999;
     }
   }
+}
+.badge-penugasan {
+    background-color: rgb(33, 98, 33);
+    color: white;
+    border-radius: 23%;
+    width: 56%;
+    text-align: center;
+    margin: auto;
 }
 </style>
 

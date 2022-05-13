@@ -1,4 +1,5 @@
 import { login, logout, getInfo } from '@/api/auth';
+// import axios from 'axios';
 import { isLogged, setLogged, removeToken } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
@@ -12,6 +13,7 @@ const state = {
   introduction: '',
   roles: [],
   permissions: [],
+  notifications: [],
 };
 
 const mutations = {
@@ -35,6 +37,12 @@ const mutations = {
   },
   SET_PERMISSIONS: (state, permissions) => {
     state.permissions = permissions;
+  },
+  SET_NOTIFICATIONS: (state, notifications) => {
+    state.notifications = notifications;
+  },
+  SET_USER: (state, user) => {
+    state.user = user;
   },
 };
 
@@ -66,7 +74,7 @@ const actions = {
             reject('Verification failed, please Login again.');
           }
 
-          const { roles, name, avatar, introduction, permissions, id } = data;
+          const { roles, name, avatar, introduction, permissions, id, notifications } = data;
           // roles must be a non-empty array
           if (!roles || roles.length <= 0) {
             reject('getInfo: roles must be a non-null array!');
@@ -74,14 +82,20 @@ const actions = {
 
           commit('SET_ROLES', roles);
           commit('SET_PERMISSIONS', permissions);
+          commit('SET_NOTIFICATIONS', notifications);
           commit('SET_NAME', name);
           commit('SET_AVATAR', avatar);
           commit('SET_INTRODUCTION', introduction);
           commit('SET_ID', id);
+          commit('SET_USER', data);
           resolve(data);
         })
         .catch(error => {
-          reject(error);
+          // console.log(error.code);
+          // if (!axios.isCancel(error)) {
+          if (error.response && error.response.status === 401) {
+            reject(error);
+          }
         });
     });
   },

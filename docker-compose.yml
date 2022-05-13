@@ -17,6 +17,8 @@ services:
 
   redis:
     image: redis:alpine
+    ports:
+      - "6379:6379"
 
   nginx:
     image: nginx:1.21-alpine
@@ -30,7 +32,8 @@ services:
       - laravel
       
   database:
-    image: postgres:13
+    # image: postgres:13
+    image: postgis/postgis
     ports:
       - "6666:5432"
     environment:

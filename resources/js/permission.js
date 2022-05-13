@@ -17,6 +17,7 @@ const whiteList = [
   '/webgis',
   '/announce',
   '/doc-uklupl',
+  '/activate/:id',
 ]; // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
@@ -27,7 +28,6 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   const isUserLogged = isLogged();
-
   if (isUserLogged) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -59,7 +59,7 @@ router.beforeEach(async(to, from, next) => {
   } else {
     /* has no token*/
 
-    if (whiteList.indexOf(to.matched[0] ? to.matched[0].path : '') !== -1) {
+    if (whiteList.indexOf(to.matched[0] ? to.matched[0].path : '') !== -1 || to.path.includes('/oss')) {
       // in the free login whitelist, go directly
       next();
     } else {

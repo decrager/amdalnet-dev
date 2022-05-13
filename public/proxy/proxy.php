@@ -803,7 +803,7 @@ class Proxy
 
     public function hasTokeninRequest()
     {
-        if (strpos($this->proxyUrlWithData, "?token=") || strpos($this->proxyUrlWithData, "&token=") || strpos($this->proxyData, "?token=") || strpos($this->proxyData, "&token=")) {
+        if (str_contains($this->proxyUrlWithData, "?token=") || str_contains($this->proxyUrlWithData, "&token=")) {
             return true;
         }
         return false;
@@ -1568,7 +1568,6 @@ class ProxyLog
 
     public function write($m)
     {
-
         if (isset($this->proxyConfig['logfile'])) {
 
             try {

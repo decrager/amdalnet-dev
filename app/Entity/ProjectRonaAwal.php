@@ -14,11 +14,13 @@ class ProjectRonaAwal extends Model
     protected $fillable = [
         'id_project',
         'id_rona_awal',
-        'name',
-        'id_component_type'
+        'description',
+        'measurement',
+        'is_andal'
     ];
 
-    public function rona_awal(){
-        return $this->hasOne(RonaAwal::class, 'id', 'id_rona_awal');
+    public function rona_awal()
+    {
+        return $this->belongsTo(RonaAwal ::class, 'id_rona_awal', 'id');
     }
 }

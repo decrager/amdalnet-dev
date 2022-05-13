@@ -4,25 +4,20 @@
       <WorkFlow />
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane
-          v-if="isAdmin"
-          label="Verifikasi & Rapat"
+          label="Pemeriksaan Berkas Administrasi Formulir Andal RKL RPL"
           name="verifikasi"
         >
-          <VerifikasiRapat v-if="activeName === 'verifikasi'" />
+          <Verifikasi
+            v-if="activeName === 'verifikasi'"
+            @changeIsComplete="changeIsComplete($event)"
+          />
         </el-tab-pane>
         <el-tab-pane
-          v-else-if="isSubtance"
-          label="Berita Acara"
-          name="beritaacara"
+          v-if="isComplete"
+          label="Undangan Rapat"
+          name="undanganrapat"
         >
-          <BeritaAcara v-if="activeName === 'beritaacara'" />
-        </el-tab-pane>
-        <el-tab-pane
-          v-else-if="isExaminer || isFormulator"
-          label="Uji Kelayakan"
-          name="ujikelayakan"
-        >
-          <UjiKelayakan v-if="activeName === 'ujikelayakan'" />
+          <UndanganRapat v-if="activeName === 'undanganrapat'" />
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -30,53 +25,47 @@
 </template>
 
 <script>
-import VerifikasiRapat from '@/views/pengujian-rkl-rpl/components/verifikasiRapat/index';
-import BeritaAcara from '@/views/pengujian-rkl-rpl/components/beritaAcara/index';
-import UjiKelayakan from '@/views/pengujian-rkl-rpl/components/ujiKelayakan/index';
+import { mapGetters } from 'vuex';
+import Verifikasi from '@/views/pengujian-rkl-rpl/components/verifikasi/index';
+import UndanganRapat from '@/views/pengujian-rkl-rpl/components/undanganRapat/index';
 import WorkFlow from '@/components/Workflow';
+import Resource from '@/api/resource';
+const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
 
 export default {
   name: 'PengujianRKLRPL',
   components: {
-    VerifikasiRapat,
-    BeritaAcara,
-    UjiKelayakan,
+    Verifikasi,
+    UndanganRapat,
     WorkFlow,
   },
   data() {
     return {
       activeName: 'verifikasi',
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
+      isComplete: false,
     };
   },
   computed: {
-    isSubtance() {
-      return this.userInfo.roles.includes('examiner-substance');
-    },
-    isAdmin() {
-      return this.userInfo.roles.includes('examiner-administration');
-    },
-    isExaminer() {
-      return this.userInfo.roles.includes('examiner');
-    },
-    isFormulator() {
-      return this.userInfo.roles.includes('formulator');
-    },
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
   },
   async created() {
-    this.userInfo = await this.$store.dispatch('user/getInfo');
+    // this.userInfo = await this.$store.dispatch('user/getInfo');
+    this.isComplete = await verifikasiRapatResource.list({
+      checkComplete: 'true',
+      idProject: this.$route.params.id,
+    });
     this.$store.dispatch('getStep', 6);
-    if (this.userInfo.roles.includes('examiner-substance')) {
-      this.activeName = 'beritaacara';
-    } else if (this.userInfo.roles.includes('examiner-administration')) {
-      this.activeName = 'verifikasi';
-    } else if (this.userInfo.roles.includes('examiner')) {
-      this.activeName = 'ujikelayakan';
-    } else if (this.userInfo.roles.includes('formulator')) {
-      this.activeName = 'ujikelayakan';
-    }
+  },
+  methods: {
+    changeIsComplete({ isComplete }) {
+      this.isComplete = isComplete;
+    },
   },
 };
 </script>

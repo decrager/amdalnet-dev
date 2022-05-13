@@ -6,7 +6,7 @@
   >
     <span slot="title" style="font-size: 14pt; font-weight: bold;">{{ title }}</span>
     <el-form label-position="top" :model="component">
-      <el-form-item label="Tahap Kegiatan">
+      <!-- <el-form-item label="Tahap Kegiatan">
         <el-select
           v-model="idProjectStage"
           v-loading="loadingProjectStages"
@@ -20,8 +20,20 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="Kegiatan Utama/Pendukung">
+
+      </el-form-item>-->
+
+      <div style="line-height: 180% !important;">
+        <div><strong>Tahap Kegiatan</strong></div>
+        <div style="font-size:120%">{{ projectStage.name || '' }}</div>
+      </div>
+
+      <div style="line-height: 180% !important; margin: 2em 0;">
+        <div><strong>Kegiatan Utama/Pendukung</strong></div>
+        <div style="font-size:120%">{{ currentSubProjectName || '' }}</div>
+      </div>
+
+      <!-- <el-form-item v-else label="Kegiatan Utama/Pendukung">
         <el-select
           v-model="currentIdSubProject"
           v-loading="loadingSubProjects"
@@ -35,7 +47,8 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item>-->
+      <!--
       <el-form-item label="Komponen Kegiatan" prop="name">
         <el-autocomplete
           v-model="component.name"
@@ -45,13 +58,61 @@
           :trigger-on-focus="false"
           @select="handleSelectComponent"
         />
+      </el-form-item> -->
+
+      <el-form-item
+        label="Komponen Kegiatan"
+        prop="name"
+        style="padding: 1em; border: 1px solid #e0e0e0; border-radius: 1em;"
+      >
+        <div v-if="isEdit" style="font-size:120%;">
+          <div>{{ component.name || component.component.name }}</div>
+        </div>
+        <el-select
+          v-else
+          v-model="component.name"
+          style="width:100%"
+          clearable
+          filterable
+          @change="handleSelectComponent"
+        >
+          <el-option
+            v-for="item in masterComponents"
+            :key="item.value"
+            :label="item.name"
+            :value="item.name"
+          />
+        </el-select>
+        <deskripsi-besaran
+          :data="masterComponents.find(e => e.name === component.name)"
+        />
       </el-form-item>
-      <el-form-item :label="deskripsiKhusus()">
+
+      <!-- <el-form-item :label="deskripsiKhusus()">
         <el-input v-model="component.description_specific" type="textarea" :rows="2" />
-      </el-form-item>
+      </el-form-item> -->
+      <div style="font-weight:bold; ">{{ component.name }} pada {{ currentSubProjectName }}</div>
+      <!--  <el-form-item label="Deskripsi">
+        <componenteditor
+          v-model="component.description_specific"
+          output-format="html"
+          :menubar="''"
+          :image="false"
+          :height="100"
+          :toolbar="['bold italic underline bullist numlist  preview undo redo fullscreen']"
+          style="width:100%"
+        />
+      </el-form-item> -->
       <el-form-item label="Besaran">
-        <el-input v-model="component.unit" type="textarea" :rows="2" />
+        <el-input
+          v-model="component.unit"
+          type="textarea"
+          :autosize="{ minRows: 3, maxRows: 5}"
+        />
       </el-form-item>
+      <!-- <el-form-item label="Besaran">
+        <el-input v-model="component.unit" type="textarea" :rows="2" />
+      </el-form-item> -->
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button type="info" @click="handleClose">Batal</el-button>
@@ -62,13 +123,19 @@
 
 <script>
 import Resource from '@/api/resource';
-const componentResource = new Resource('components');
-const projectStageResource = new Resource('project-stages');
+// const componentResource = new Resource('components');
+// import CDescEditor from '@/components/Tinymce';
+import DeskripsiBesaran from './DeskripsiBesaran.vue';
+// const projectStageResource = new Resource('project-stages');
 const scopingResource = new Resource('scoping');
 // const subProjectComponentResource = new Resource('sub-project-components');
 
 export default {
   name: 'AddComponentDialog',
+  components: {
+    // 'componenteditor': CDescEditor,
+    DeskripsiBesaran,
+  },
   props: {
     show: Boolean,
     idProjectStage: {
@@ -84,9 +151,25 @@ export default {
       type: Number,
       default: () => 0,
     },
+    selectedIdSubProjectComponent: {
+      type: Number,
+      default: () => 0,
+    },
     subProjects: {
       type: Object,
       default: () => {},
+    },
+    masterComponents: {
+      type: Array,
+      default: () => {},
+    },
+    projectStages: {
+      type: Array,
+      default: () => {},
+    },
+    projectStage: {
+      type: Object,
+      default: null,
     },
   },
   data() {
@@ -96,7 +179,7 @@ export default {
       componentList: [],
       subProjectsArray: [],
       currentSubProjectName: '',
-      projectStages: [],
+      // projectStages: [],
       disableDescCommon: false,
       loadingProjectStages: true,
       loadingSubProjects: true,
@@ -124,9 +207,10 @@ export default {
       };
     },
     handleSelectComponent(component) {
-      const selected = this.componentList.filter(cmp => cmp.value === component.value);
-      if (selected.length > 0) {
-        this.component['id_component'] = selected[0].id;
+      const selected = this.masterComponents.find(cmp => cmp.name === component);
+      console.log('handleSelectComponent: ', component, selected);
+      if (selected) {
+        this.component['id_component'] = selected.id;
       }
     },
     submitComponent() {
@@ -143,19 +227,26 @@ export default {
             duration: 5 * 1000,
           });
           // reload PelingkupanTable
-          this.$emit('handleCloseAddComponent', true);
+          this.$emit('handleCloseAddComponent', response.data.id);
           this.$emit('handleSetCurrentIdSubProjectComponent', response.data.id);
+          // this.$emit('currentSubProject', {id: id_sub_project, name: this.currentSubProjectName});
         })
         .catch((error) => {
+          this.$message({
+            message: 'Gagal menyimpan komponen kegiatan',
+            type: 'error',
+            duration: 5 * 1000,
+          });
           console.log(error);
         });
     },
     handleClose() {
-      this.$emit('handleCloseAddComponent', false);
+      this.$emit('handleCloseAddComponent', this.selectedIdSubProjectComponent);
     },
     async getData() {
       // if edit
       if (this.isEdit) {
+        console.log('edit mode: ', this.component);
         this.title = 'Edit Komponen Kegiatan';
         this.component = this.subProjectComponent;
         this.currentIdSubProject = this.component.id_sub_project;
@@ -168,12 +259,12 @@ export default {
           this.idProjectStage = this.component.component.id_project_stage;
         }
       }
-      const ps = await projectStageResource.list({
+      /* const ps = await projectStageResource.list({
         ordered: true,
       });
       this.projectStages = ps.data;
-      this.loadingProjectStages = false;
-      const compMaster = await componentResource.list({
+      this.loadingProjectStages = false;*/
+      /* const compMaster = await componentResource.list({
         all: true,
       });
       const cmpList = [];
@@ -184,8 +275,8 @@ export default {
             value: cmp.name,
           });
         }
-      });
-      this.componentList = cmpList;
+      });*/
+      this.componentList = this.masterComponents;
       this.subProjects.utama.map((u) => {
         this.subProjectsArray.push(u);
       });

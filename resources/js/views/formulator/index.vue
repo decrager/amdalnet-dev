@@ -1,8 +1,10 @@
 <template>
   <div class="app-container">
     <el-card>
+      <h2 v-if="updateCertificate">Perbarui Penyusun</h2>
       <div class="filter-container">
         <el-button
+          v-if="!updateCertificate"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -10,16 +12,53 @@
         >
           {{ 'Tambah Penyusun' }}
         </el-button>
+        <el-button
+          v-if="!updateCertificate"
+          class="filter-item"
+          type="primary"
+          @click="handleUpdateCertificate"
+        >
+          {{ 'Update Sertifikasi' }}
+        </el-button>
+        <el-row v-if="!updateCertificate" :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
+        <el-row v-if="updateCertificate" :gutter="32">
+          <el-col :sm="24" :md="10">
+            <el-input
+              v-model="listQuery.search"
+              suffix-icon="el-icon search"
+              placeholder="Pencarian..."
+              @input="inputSearch"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleSearch"
+              />
+            </el-input>
+          </el-col>
+        </el-row>
       </div>
-      <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
-        <el-tab-pane label="Penyusun" name="penyusun">
-          <formulator-table
-            :loading="loading"
-            :list="list"
-            @handleEditForm="handleEditForm($event)"
-            @handleDelete="handleDelete($event)"
-          />
-        </el-tab-pane>
+      <el-tabs
+        v-if="!updateCertificate"
+        v-model="activeName"
+        type="card"
+        @tab-click="handleClickTab"
+      >
         <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
           <formulator-table
             :loading="loading"
@@ -28,7 +67,34 @@
             @handleDelete="handleDelete($event)"
           />
         </el-tab-pane>
+        <el-tab-pane label="Penyusun Tidak Aktif" name="penyusunTidakAktif">
+          <formulator-table
+            :loading="loading"
+            :list="list"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
+        <el-tab-pane
+          label="Penyusun Bersertifikat"
+          name="penyusunBersertifikat"
+        >
+          <formulator-table
+            :loading="loading"
+            :list="list"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
       </el-tabs>
+      <formulator-table
+        v-else
+        :loading="loading"
+        :list="list"
+        :certificate="true"
+        @handleEditForm="handleEditForm($event)"
+        @handleDelete="handleDelete($event)"
+      />
       <pagination
         v-show="total > 0"
         :total="total"
@@ -36,6 +102,11 @@
         :limit.sync="listQuery.limit"
         @pagination="handleFilter"
       />
+      <div v-if="updateCertificate" style="text-align: right">
+        <el-button type="danger" @click="cancelUpdateCertificate">
+          Batal
+        </el-button>
+      </div>
     </el-card>
   </div>
 </template>
@@ -56,13 +127,16 @@ export default {
     return {
       list: [],
       loading: true,
-      activeName: 'penyusun',
+      activeName: 'penyusunAktif',
       listQuery: {
         page: 1,
         limit: 10,
-        active: '',
+        active: 'true',
+        search: null,
       },
       total: 0,
+      timeoutId: null,
+      updateCertificate: false,
     };
   },
   created() {
@@ -75,13 +149,27 @@ export default {
     handleClickTab(tab, event) {
       this.listQuery.page = 1;
       this.listQuery.limit = 10;
-      this.listQuery.active = tab.name === 'penyusunAktif' ? 'true' : '';
+      this.listQuery.search = null;
+      if (tab.name === 'penyusunAktif') {
+        this.listQuery.active = 'true';
+      } else if (tab.name === 'penyusunTidakAktif') {
+        this.listQuery.active = 'false';
+      } else if (tab.name === 'penyusunBersertifikat') {
+        this.listQuery.active = 'bersertifikat';
+      } else {
+        this.listQuery.active = '';
+      }
       this.getList();
     },
     async getList() {
       this.loading = true;
       const { data, meta } = await formulatorResource.list(this.listQuery);
-      this.list = data;
+      this.list = data.map((x) => {
+        x.membership_status = x.membership_status ? x.membership_status : '-';
+        x.status = this.calculateStatus(x.date_start, x.date_end);
+        x.cert_no = this.noCertificate(x.cert_no);
+        return x;
+      });
       this.total = meta.total;
       this.loading = false;
     },
@@ -92,11 +180,25 @@ export default {
         params: { formulator: {} },
       });
     },
+    handleUpdateCertificate() {
+      this.updateCertificate = true;
+      this.listQuery.active = '';
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      this.listQuery.search = null;
+      this.getList();
+    },
+    cancelUpdateCertificate() {
+      this.updateCertificate = false;
+      this.activeName = 'penyusunAktif';
+      this.listQuery.active = 'true';
+      this.listQuery.search = null;
+      this.getList();
+    },
     handleEditForm(id) {
-      const currentFormulator = this.list.find((element) => element.id === id);
       this.$router.push({
         name: 'editFormulator',
-        params: { id, formulator: currentFormulator },
+        params: { id },
       });
     },
     handleDelete({ id, nama }) {
@@ -129,6 +231,46 @@ export default {
             message: 'Hapus Digagalkan',
           });
         });
+    },
+    async handleSearch() {
+      this.listQuery.page = 1;
+      this.listQuery.limit = 10;
+      await this.getList();
+      this.listQuery.search = null;
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.listQuery.page = 1;
+        this.listQuery.limit = 10;
+        this.getList();
+      }, 500);
+    },
+    calculateStatus(awal, akhir) {
+      const tglAwal = new Date(awal);
+      const tglAkhir = new Date(akhir);
+      if (
+        new Date().getTime() >= tglAwal.getTime() &&
+        new Date().getTime() <= tglAkhir.getTime()
+      ) {
+        return 'Aktif';
+      } else {
+        return 'NonAktif';
+      }
+    },
+    noCertificate(no) {
+      if (
+        no === null ||
+        no === undefined ||
+        no === 'null' ||
+        no === 'undefined'
+      ) {
+        return '-';
+      } else {
+        return no;
+      }
     },
   },
 };

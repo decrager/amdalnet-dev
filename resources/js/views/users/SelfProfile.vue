@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 // import UserBio from './components/UserBio';
 // import UserCard from './components/UserCard';
@@ -34,6 +35,12 @@ export default {
       user: {},
     };
   },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+  },
   watch: {
     '$route': 'getUser',
   },
@@ -42,7 +49,8 @@ export default {
   },
   methods: {
     async getUser() {
-      const data = await this.$store.dispatch('user/getInfo');
+      // const data = await this.$store.dispatch('user/getInfo');
+      const data = this.userInfo;
       data.initiatorData = await initiatorResource.list({ email: data.email });
       data.formulatorData = await formulatorResource.list({ email: data.email });
       data.lpjpData = await lpjpResource.list({ email: data.email });

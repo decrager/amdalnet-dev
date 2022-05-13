@@ -22,15 +22,20 @@ import projectRoutes from './modules/project';
 // import paramRoutes from './modules/params';
 import amdalRoutes from './modules/amdal';
 import ukluplRoutes from './modules/uklupl';
-import initiatorRoutes from './modules/initiator';
+// import initiatorRoutes from './modules/initiator';
 // import formulatorRoutes from './modules/formulator';
-import lukRoutes from './modules/luk';
+// import lukRoutes from './modules/luk';
 import tukRoutes from './modules/tuk';
-import expertBankRoutes from './modules/expert-bank';
+import tukProfileRoutes from './modules/tukProfile';
+import tukProjectRoutes from './modules/tukProject';
+// import expertBankRoutes from './modules/expert-bank';
 import configurationRoutes from './modules/configuration';
 import independentFormulatorTeamRoutes from './modules/independent-formulator-team';
-import dokumenRoutes from './modules/DokumenKegiatan';
 import flowchartRoutes from './modules/flowchart';
+import scopingRoutes from './modules/scoping';
+import screeningRoutes from './modules/screening';
+import digWorkRoutes from './modules/digwork';
+import businessRoutes from './modules/business';
 // import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
@@ -88,9 +93,27 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/activate/:id',
+    component: () => import('@/views/activate/index'),
+    hidden: true,
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,
+  },
+  {
+    path: '/oss/receive-token',
+    component: () => import('@/views/oss-auth/index'),
+    hidden: true,
+    name: 'OssReceiveToken',
+  },
+  {
+    path: '/oss/register',
+    component: () => import('@/views/oss-auth/Register'),
+    props: true,
+    hidden: true,
+    name: 'OssRegister',
   },
   {
     path: '/auth-redirect',
@@ -117,7 +140,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', noCache: false },
+        meta: { title: 'dashboard', icon: 'chart-pie-alt', noCache: false },
       },
     ],
   },
@@ -169,19 +192,20 @@ export const asyncRoutes = [
   // chartsRoutes,
   // nestedRoutes,
   // tableRoutes,
-  // {
-  //   path: '/theme',
-  //   component: Layout,
-  //   redirect: 'noredirect',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/theme/index'),
-  //       name: 'Theme',
-  //       meta: { title: 'theme', icon: 'theme' },
-  //     },
-  //   ],
-  // },
+  {
+    path: '/theme',
+    component: Layout,
+    redirect: 'noredirect',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/theme/index'),
+        name: 'Theme',
+        meta: { title: 'theme', icon: 'theme' },
+      },
+    ],
+  },
   // {
   //   path: '/clipboard',
   //   component: Layout,
@@ -200,13 +224,13 @@ export const asyncRoutes = [
     path: '/profile',
     component: Layout,
     redirect: '/profile/edit',
-    meta: { title: 'userProfile', icon: 'user', permissions: ['view menu profile'] },
+    meta: { title: 'userProfile', icon: 'el-icon-user', permissions: ['view menu profile'] },
     children: [
       {
         path: 'edit',
         component: () => import('@/views/users/SelfProfile'),
         name: 'SelfProfile',
-        meta: { title: 'userProfile', icon: 'user', noCache: true, permissions: ['view menu profile'] },
+        meta: { title: 'userProfile', icon: 'user-outline', noCache: true, permissions: ['view menu profile'] },
       },
     ],
   },
@@ -224,18 +248,24 @@ export const asyncRoutes = [
   //   ],
   // },
   // ukluplStaticRoutes,
+  tukProfileRoutes,
+  tukProjectRoutes,
   adminRoutes,
   projectRoutes,
-  initiatorRoutes,
+  screeningRoutes,
+  scopingRoutes,
+  digWorkRoutes,
+  // initiatorRoutes,
   // formulatorRoutes,
   lpjpRoutes,
-  lukRoutes,
-  tukRoutes,
-  expertBankRoutes,
+  // lukRoutes,
+  // tukRoutes,
+  // expertBankRoutes,
   configurationRoutes,
   masterRoutes,
   // paramRoutes,
   independentFormulatorTeamRoutes,
+  tukRoutes,
   announcementRoutes,
   feedbackRoutes,
   // workspaceRoutes,
@@ -255,9 +285,9 @@ export const asyncRoutes = [
       },
     ],
   },
-  dokumenRoutes,
   errorRoutes,
   flowchartRoutes,
+  businessRoutes,
   { path: '*', redirect: '/404', hidden: true },
 ];
 

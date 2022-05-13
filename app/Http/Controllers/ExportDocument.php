@@ -3,20 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Component;
+use App\Entity\ComponentType;
 use App\Entity\DocumentAttachment;
+use App\Entity\EnvManagePlan;
+use App\Entity\EnvMonitorPlan;
 use App\Entity\ExpertBankTeamMember;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactStudy;
 use App\Entity\MeetingReport;
 use App\Entity\Project;
+use App\Entity\ProjectFilter;
+use App\Entity\ProjectStage;
+use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class ExportDocument extends Controller
 {
@@ -373,7 +379,7 @@ class ExportDocument extends Controller
             }
         }
 
-        $save_file_name = $getData->project_title . ".docx";
+        $save_file_name = str_replace('/', '-', $getData->project_title) . ".docx";
         $templateProcessor->saveAs($save_file_name);
         return response()->download($save_file_name)->deleteFileAfterSend(false);
     }
@@ -404,7 +410,7 @@ class ExportDocument extends Controller
         $templateProcessor->setValue('ketua_tuk', $ketua_tuk);
         $templateProcessor->setValue('institution', $institution);
 
-        $save_file_name = 'berita-acara-ka-' . $beritaAcara->project->project_title . '.docx';
+        $save_file_name = 'berita-acara-ka-' . str_replace('/', '-', $beritaAcara->project->project_title) . '.docx';
         if (!File::exists(storage_path('app/public/berita-acara/'))) {
             File::makeDirectory(storage_path('app/public/berita-acara/'));
             $templateProcessor->saveAs(storage_path('app/public/berita-acara/' . $save_file_name));
@@ -446,5 +452,437 @@ class ExportDocument extends Controller
     public function getDocKA(Request $request)
     {
         return DocumentAttachment::where('id_project', '=', $request->id)->where('type', '=', 'Formulir KA')->first();
+    }
+
+    public function uklUpl($id_project)
+    {
+        if (!File::exists(storage_path('app/public/workspace/'))) {
+            File::makeDirectory(storage_path('app/public/workspace/'));
+        }
+
+        Carbon::setLocale('id');
+        $project = Project::findOrFail($id_project);
+
+        $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+
+        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            return $save_file_name;
+        }
+
+        $project_title_big = strtoupper($project->project_title);
+        $pemrakarsa = $project->initiator->name;
+        $pemrakarsa_address = $project->initiator->address;
+        $pemrakarsa_phone = $project->initiator->phone;
+        $pemrakarsa_nib = $project->initiator->nib;
+        $pic = $project->initiator->pic;
+        $pic_position = $project->initiator->pic_role;
+        $district = '';
+        $project_sector = $project->sector;
+        $project_title = $project->project_title;
+        $project_kbli = '';
+        $project_scale = $project->scale .  ' ' . $project->scale_unit;
+        $project_address = '';
+        $project_address_single = '';
+        $project_district = '';
+        $project_province = '';
+        $project_year = $project->project_year;
+
+        if($project->kbli) {
+            if($project->kbli == 'undefined') {
+                $project_kbli = 'Non KBLI';
+            } else {
+                $project_kbli = $project->kbli;
+            }
+        } else {
+            $project_kbli = 'Non KBLI';
+        }
+
+
+        if($project->address) {
+            if($project->address->first()) {
+                $district = ucwords(strtolower($project->address->first()->district));
+                $project_district = ucwords(strtolower($project->address->first()->district));
+                $project_province = 'Provinsi ' . ucwords(strtolower($project->address->first()->prov));
+                $project_address_single = $project->address->first()->address;
+                $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . 
+                                    ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
+            }
+        }
+
+        // ======= IMPACT IDENTIFICATION ===== //
+        $ids = [4, 1, 2, 3];
+        $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
+            return array_search($model->getKey(), $ids);
+        });
+        $impact_identification = ImpactIdentification::where('id_project', $id_project)->get();
+
+        $dl_pasca_operasi = [];
+        $com_pra_konstruksi = [];
+        $com_konstruksi = [];
+        $com_operasi = [];
+        $pk = [];
+        $kgk = [];
+        $kb = [];
+        $kse = [];
+        $kkm = [];
+        $kls = [];
+        $kll = [];
+        $ogk = [];
+        $ob = [];
+        $ose = [];
+        $okm = [];
+        $ols = [];
+        $oll = [];
+        $po = [];
+        $pertek_block = [];
+
+        foreach($stages as $s) {
+            foreach($impact_identification as $imp) {
+                $ronaAwal = '';
+                $component = '';
+
+                $id_stages = null;
+
+                if ($imp->subProjectComponent) {
+                    if ($imp->subProjectComponent->id_project_stage) {
+                        $id_stages = $imp->subProjectComponent->id_project_stage;
+                    } else {
+                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
+                    }
+
+                    if ($id_stages == $s->id) {
+                        if ($imp->subProjectRonaAwal) {
+                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
+                $change_type = $imp->id_change_type ? $imp->changeType->name : '';
+
+                // component type
+                $component_type = $this->getComponentType($imp);
+
+                $komponen_desc = '';
+
+                if($imp->subProjectRonaAwal->description_common) {
+                    $komponen_desc = $imp->subProjectRonaAwal->description_common . '</w:t><w:p/><w:t>' . $imp->subProjectRonaAwal->description_specific;
+                } else {
+                    $komponen_desc = $imp->subProjectRonaAwal->description_specific;
+                }
+
+                if($s->name  == 'Pra Konstruksi') {
+                    if(array_search($component, array_column($com_pra_konstruksi, 'com_pra_konstruksi_name')) === false) {
+                        $com_pra_konstruksi[] = [
+                            'com_pra_konstruksi_name' => $component,
+                            'com_pra_konstruksi_desc' => $komponen_desc,
+                            'com_pra_konstruksi_unit' => $imp->subProjectRonaAwal->unit
+                        ];
+                    }
+
+                    $pk[] = $this->getUklUplData($imp, 'pk', $component, $change_type, $ronaAwal);
+                }
+
+                if($s->name == 'Konstruksi') {
+                    if(array_search($component, array_column($com_konstruksi, 'com_konstruksi_name')) === false) {
+                        $com_konstruksi[] = [
+                            'com_konstruksi_name' => $component,
+                            'com_konstruksi_desc' => $komponen_desc,
+                            'com_konstruksi_unit' => $imp->subProjectRonaAwal->unit
+                        ];
+                    }
+
+                    if(strtolower($component_type) == 'geofisik kimia') {
+                        $kgk[] = $this->getUklUplData($imp, 'kgk', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'biologi') {
+                        $kb[] = $this->getUklUplData($imp, 'kb', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'sosial, ekonomi, dan budaya') {
+                        $kse[] = $this->getUklUplData($imp, 'kse', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'kesehatan masyarakat') {
+                        $kkm[] = $this->getUklUplData($imp, 'kkm', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'kegiatan lain sekitar') {
+                        $kls[] = $this->getUklUplData($imp, 'kls', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'lain lain') {
+                        $kll[] = $this->getUklUplData($imp, 'kls', $component, $change_type, $ronaAwal);
+                    }
+
+                }
+
+                if($s->name == 'Operasi') {
+                    if(array_search($component, array_column($com_operasi, 'com_operasi_name')) === false) {
+                        $com_operasi[] = [
+                            'com_operasi_name' => $component,
+                            'com_operasi_desc' => $komponen_desc,
+                            'com_operasi_unit' => $imp->subProjectRonaAwal->unit
+                        ];
+                    }
+
+                    if(strtolower($component_type) == 'geofisik kimia') {
+                        $ogk[] = $this->getUklUplData($imp, 'ogk', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'biologi') {
+                        $ob[] = $this->getUklUplData($imp, 'ob', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'sosial, ekonomi, dan budaya') {
+                        $ose[] = $this->getUklUplData($imp, 'ose', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'kesehatan masyarakat') {
+                        $okm[] = $this->getUklUplData($imp, 'okm', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'kegiatan lain sekitar') {
+                        $ols[] = $this->getUklUplData($imp, 'ols', $component, $change_type, $ronaAwal);
+                    } else if(strtolower($component_type) == 'lain lain') {
+                        $oll[] = $this->getUklUplData($imp, 'ols', $component, $change_type, $ronaAwal);
+                    }
+                }
+
+                if($s->name == 'Pasca Operasi') {
+                    $dl_pasca_operasi[] = [
+                        'dl_pasca_operasi_name' => "$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->subProjectRonaAwal->unit
+                    ];
+
+                    $po[] = $this->getUklUplData($imp, 'po', $component, $change_type, $ronaAwal);
+                }
+            }
+        }
+
+        // ========= PERTEK ======= //
+        $pertek_columns = Schema::getColumnListing('project_filters');
+        $pertek_columns = array_filter($pertek_columns, function($x) {
+            return !(
+                        $x == 'id' || 
+                        $x == 'id_project' || 
+                        $x == 'nothing' || 
+                        $x == 'created_at' || 
+                        $x == 'updated_at' || 
+                        $x == 'high_pollution' || 
+                        $x == 'high_emission' || 
+                        $x == 'low_traffic' || 
+                        $x == 'mid_traffic' || 
+                        $x == 'high_traffic'
+                    );
+        });
+
+        $pertek_list = '';
+        $pertek = ProjectFilter::where('id_project', $project->id)->first();
+        if($pertek) {
+            $pertek = $pertek->toArray();
+            $pertek_no = 'a';
+            foreach($pertek_columns as $key => $value) {
+                if($pertek[$value]) {
+                    $pertek_block[] = [
+                        'pertek_name' => $pertek_no . '. ' . $this->pertekColumnIndoName($value)
+                    ];
+                    $pertek_list .= $this->pertekColumnIndoName($value) . ', ';
+                    $pertek_no++;
+                }
+            }
+        }
+
+        if(strlen($pertek_list) > 0) {
+            $pertek_list = strtolower(substr($pertek_list, 0, -2));
+        }
+
+        $exp_pertek_list = explode(', ', $pertek_list);
+        if(count($exp_pertek_list) > 1) {
+            if(count($exp_pertek_list) == 2) {
+                $pertek_list = $exp_pertek_list[0] . ' dan ' . $exp_pertek_list[1];
+            } else {
+                $exp_pertek_list[count($exp_pertek_list) - 1] = 'dan ' . $exp_pertek_list[count($exp_pertek_list) - 1];
+                $pertek_list = join(', ', $exp_pertek_list);
+            }
+        }
+
+        $doc_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
+
+        $templateProcessor = new TemplateProcessor('template_ukl_upl.docx');
+        $templateProcessor->setValue('project_title_big', $project_title_big);
+        $templateProcessor->setValue('pemrakarsa', $pemrakarsa);
+        $templateProcessor->setValue('pemrakarsa_address', $pemrakarsa_address);
+        $templateProcessor->setValue('pemrakarsa_phone', $pemrakarsa_phone);
+        $templateProcessor->setValue('pemrakarsa_nib', $pemrakarsa_nib);
+        $templateProcessor->setValue('pic', $pic);
+        $templateProcessor->setValue('pic_position', $pic_position);
+        $templateProcessor->setValue('district', $district);
+        $templateProcessor->setValue('project_sector', $project_sector);
+        $templateProcessor->setValue('project_title', $project_title);
+        $templateProcessor->setValue('project_kbli', $project_kbli);
+        $templateProcessor->setValue('project_scale', $project_scale);
+        $templateProcessor->setValue('project_address', $project_address);
+        $templateProcessor->setValue('project_address_single', $project_address_single);
+        $templateProcessor->setValue('project_district', $project_district);
+        $templateProcessor->setValue('project_province', $project_province);
+        $templateProcessor->setValue('project_year', $project_year);
+        $templateProcessor->setValue('doc_date', $doc_date);
+        $templateProcessor->setValue('pertek_list', $pertek_list);
+        $templateProcessor->cloneBlock('pertek_block', count($pertek_block), true, false, $pertek_block);
+        $templateProcessor->cloneBlock('dl_pasca_operasi_block', count($dl_pasca_operasi), true, false, $dl_pasca_operasi);
+        $templateProcessor->cloneBlock('com_pra_konstruksi_block', count($com_pra_konstruksi), true, false, $com_pra_konstruksi);
+        $templateProcessor->cloneBlock('com_konstruksi_block', count($com_konstruksi), true, false, $com_konstruksi);
+        $templateProcessor->cloneBlock('com_operasi_block', count($com_operasi), true, false, $com_operasi);
+        $templateProcessor->cloneRowAndSetValues('pk', $pk);
+        $templateProcessor->cloneRowAndSetValues('kgk', $kgk);
+        $templateProcessor->cloneRowAndSetValues('kb', $kb);
+        $templateProcessor->cloneRowAndSetValues('kse', $kse);
+        $templateProcessor->cloneRowAndSetValues('kkm', $kkm);
+        $templateProcessor->cloneRowAndSetValues('kls', $kls);
+        $templateProcessor->cloneRowAndSetValues('kll', $kll);
+        $templateProcessor->cloneRowAndSetValues('ogk', $ogk);
+        $templateProcessor->cloneRowAndSetValues('ob', $ob);
+        $templateProcessor->cloneRowAndSetValues('ose', $ose);
+        $templateProcessor->cloneRowAndSetValues('okm', $okm);
+        $templateProcessor->cloneRowAndSetValues('ols', $ols);
+        $templateProcessor->cloneRowAndSetValues('oll', $oll);
+        $templateProcessor->cloneRowAndSetValues('po', $po);
+
+        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+
+        return $save_file_name;
+    }
+
+    public function exportUklUplPdf($idProject)
+    {
+        $domPdfPath = base_path('vendor/dompdf/dompdf');
+        Settings::setPdfRendererPath($domPdfPath);
+        Settings::setPdfRendererName('DomPDF');
+        $project = Project::findOrFail($idProject);
+
+        //Load word file
+        $Content = IOFactory::load(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+
+        //Save it into PDF
+        $PDFWriter = IOFactory::createWriter($Content, 'PDF');
+
+        $PDFWriter->save(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'));
+
+        return response()->download(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'))->deleteFileAfterSend(false);
+    }
+
+    private function getComponentType($imp) {
+        $component_type = '';
+        if($imp->subProjectRonaAwal->id_rona_awal) {
+            $com_type = ComponentType::find($imp->subProjectRonaAwal->ronaAwal->id_component_type);
+            if($com_type) {
+                $component_type = $com_type->name;
+            }
+        } else {
+            if($imp->subProjectRonaAwal->id_component_type) {
+                $com_type = ComponentType::find($imp->subProjectRonaAwal->id_component_type);
+                if($com_type) {
+                    $component_type = $com_type->name;
+                }
+            }
+        }
+
+        return $component_type;
+    }
+
+    private function getUklUplData($imp, $st, $component, $change_type, $ronaAwal) {
+        $ukl_bentuk = '';
+        $ukl_lokasi = '';
+        $ukl_periode = '';
+        $upl_bentuk = '';
+        $upl_lokasi = '';
+        $upl_periode = '';
+        $upl_pelaksana = '';
+        $upl_pengawas = '';
+        $upl_pelaporan = '';
+
+        if($imp->envManagePlan) {
+            if($imp->envManagePlan->first()) {
+                $ukl = EnvManagePlan::where('id_impact_identifications', $imp->id)->get();
+                foreach($ukl as $uk) {
+                    $ukl_bentuk .= "- {$uk->form} </w:t><w:p/><w:t>";
+                    $ukl_lokasi .= "- {$uk->location} </w:t><w:p/><w:t>";
+                    $ukl_periode .= "- {$uk->period} </w:t><w:p/><w:t>";
+                }
+            }
+        }
+
+        if($imp->envMonitorPlan) {
+            if($imp->envMonitorPlan->first()) {
+                $upl = EnvMonitorPlan::where('id_impact_identifications', $imp->id)->get();
+                foreach($upl as $up) {
+                    $upl_bentuk .= "- {$up->form} </w:t><w:p/><w:t>";
+                    $upl_lokasi .= "- {$up->location} </w:t><w:p/><w:t>";
+                    $upl_periode .= "- {$up->period} </w:t><w:p/><w:t>";
+                    $upl_pelaksana .= "{$up->executor} </w:t><w:p/><w:t>";
+                    $upl_pengawas .= "{$up->supervisor} </w:t><w:p/><w:t>";
+                    $upl_pelaporan .= "{$up->report_recipient} </w:t><w:p/><w:t>";
+                }
+            }
+        }
+
+
+        return [
+            $st => '',
+            $st . '_sumber_dampak' => $component,
+            $st . '_jenis_dampak' => $change_type . ' ' . $ronaAwal,
+            $st .'_besaran_dampak' => $imp->unit,
+            $st . '_ukl_bentuk' => $ukl_bentuk,
+            $st . '_ukl_lokasi' => $ukl_lokasi,
+            $st . '_ukl_periode' => $ukl_periode,
+            $st . '_upl_bentuk' => $upl_bentuk,
+            $st . '_upl_lokasi' => $upl_lokasi,
+            $st . '_upl_periode' => $upl_periode,
+            $st . '_pelaksana' => $upl_pelaksana,
+            $st . '_pengawas' => $upl_pengawas,
+            $st . '_pelaporan' => $upl_pelaporan
+        ];
+    }
+
+    private function pertekColumnIndoName($column) {
+        $name = '';
+
+        switch ($column) {
+            case 'wastewater':
+                $name = 'Air Limbah';
+                break;
+            case 'disposal_wastewater':
+                $name = 'Pembuangan Air Limbah';
+                break;
+            case 'utilization_wastewater':
+                $name = 'Pemanfaatan Air Limbah';
+                break;
+            case 'emission':
+                $name = 'Emisi Gas Buang';
+                break;
+            case 'chimney':
+                $name = 'Melalui Cerobong Asap';
+                break;
+            case 'genset':
+                $name = 'Pembuangan Emisi Gas Buang Dari Genset';
+                break;
+            case 'b3':
+                $name = 'Limbah B3';
+                break;
+            case 'collect_b3':
+                $name = 'Pengumpulan Limbah B3';
+                break;
+            case 'hoard_b3':
+                $name = 'Penimbunan Limbah B3';
+                break;
+            case 'process_b3':
+                $name = 'Pengolahan Limbah B3';
+                break;
+            case 'utilization_b3':
+                $name = 'Pemanfaatan Limbah B3';
+                break;
+            case 'dumping_b3':
+                $name = 'Dumping Limbah B3';
+                break;
+            case 'tps':
+                $name = 'TPS';
+                break;
+            case 'traffic':
+                $name = 'Gangguan Lalu Lintas';
+                break;
+            default:
+                break;
+        }
+
+        return $name;
     }
 }

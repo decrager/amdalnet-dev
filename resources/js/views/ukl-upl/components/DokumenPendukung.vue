@@ -115,14 +115,14 @@ export default {
     handleUpdateSppl(file, fileList) {
       this.resetFormData();
       this.formData.sppl = file.raw;
-      this.handleUpload('sppl');
+      this.handleUpload('sppl', fileList);
     },
     handleUpdateDpt(file, fileList) {
       this.resetFormData();
       this.formData.dpt = file.raw;
-      this.handleUpload('dpt');
+      this.handleUpload('dpt', fileList);
     },
-    async handleUpload(type) {
+    async handleUpload(type, fileList) {
       const formData = new FormData();
       if (type === 'sppl'){
         if (this.formData.sppl === null) {
@@ -170,7 +170,17 @@ export default {
             duration: 5 * 1000,
           });
           if (type === 'dpt') {
-            this.$emit('handleEnableSimpanLanjutkan');
+            this.$emit('handleDokPendukungUploaded');
+          }
+          // rename
+          if (fileList.length > 0) {
+            fileList[0].name = response.data.data.filename;
+          }
+          // handle multiple uploads
+          if (fileList.length > 1) {
+            for (let i = 1; i < fileList.length; i++) {
+              fileList.pop();
+            }
           }
         })
         .catch(error => {
@@ -180,6 +190,7 @@ export default {
             type: 'error',
             duration: 5 * 1000,
           });
+          fileList.pop();
         });
     },
   },

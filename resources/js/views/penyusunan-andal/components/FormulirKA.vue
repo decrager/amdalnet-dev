@@ -3,12 +3,22 @@
     <el-card v-loading="loading">
       <h2>Formulir Kerangka Acuan</h2>
       <div>
-        <el-button v-if="showDocument" type="danger" @click="exportPdf">
+        <el-button
+          v-if="showDocument"
+          :loading="loadingPDF"
+          type="danger"
+          @click="exportPdf"
+        >
           Export to .PDF
         </el-button>
-        <el-button v-if="showDocument" type="primary" @click="downloadDocx">
+        <a
+          v-if="showDocument"
+          class="btn-docx"
+          :href="'/storage/formulir/' + downloadDocxPath"
+          download
+        >
           Export to .DOCX
-        </el-button>
+        </a>
       </div>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16">
@@ -58,6 +68,7 @@ export default {
       idProject: 0,
       projects: '',
       loading: false,
+      loadingPDF: false,
       projectId: this.$route.params && this.$route.params.id,
       metode_studi: [],
       pra_konstruksi: [],
@@ -73,6 +84,7 @@ export default {
       penyusun: [],
       out: '',
       showDocument: false,
+      downloadDocxPath: '',
     };
   },
   created() {
@@ -85,21 +97,14 @@ export default {
       const data = await andalComposingResource.list({
         idProject: this.$route.params.id,
         formulir: 'true',
+        type: 'andal',
       });
-      console.log(data);
-      this.metode_studi = data.metode_studi;
-      this.konstruksi = data.konstruksi;
-      this.pra_konstruksi = data.pra_konstruksi;
-      this.operasi = data.operasi;
-      this.pasca_operasi = data.pasca_operasi;
+      this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
-      this.pic = data.pic;
-      this.description = data.description;
-      this.location_desc = data.location_desc;
-      this.negative = data.negative;
-      this.positive = data.positive;
-      this.penyusun = data.penyusun;
-      this.exportDocx();
+      this.projects =
+        window.location.origin + `/storage/formulir/${this.downloadDocxPath}`;
+      this.showDocument = true;
+      this.loading = false;
     },
     async exportDocxPhpWord() {
       await andalComposingResource.list({
@@ -108,7 +113,7 @@ export default {
       });
     },
     downloadDocx() {
-      saveAs(this.out, this.$route.params.id + '-form-ka-andal.docx');
+      saveAs(this.out, `ka-andal-${this.project_title.toLowerCase()}.docx`);
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
@@ -154,9 +159,7 @@ export default {
               this.showDocument = true;
               this.projects =
                 window.location.origin +
-                '/storage/formulir/' +
-                this.$route.params.id +
-                '-form-ka-andal.docx';
+                `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
               this.loading = false;
             })
             .catch((error) => {
@@ -172,9 +175,10 @@ export default {
         window.location.origin +
         '/storage/formulir/' +
         this.$route.params.id +
-        '-form-ka-andal.docx';
+        `/storage/formulir/ka-andal-${this.project_title.toLowerCase()}.docx`;
     },
     async exportPdf() {
+      this.loadingPDF = true;
       axios({
         url: `api/andal-composing`,
         method: 'GET',
@@ -182,17 +186,22 @@ export default {
         params: {
           pdf: 'true',
           idProject: this.$route.params.id,
+          type: 'andal',
         },
       }).then((response) => {
-        const getHeaders = response.headers['content-disposition'].split('; ');
-        const getFileName = getHeaders[1].split('=');
-        const getName = getFileName[1].split('=');
+        // const getHeaders = response.headers['content-disposition'].split('; ');
+        // const getFileName = getHeaders[1].split('=');
+        // const getName = getFileName[1].split('=');
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', `${getName}`);
+        fileLink.setAttribute(
+          'download',
+          `ka-andal-${this.project_title.toLowerCase()}.pdf`
+        );
         document.body.appendChild(fileLink);
         fileLink.click();
+        this.loadingPDF = false;
       });
     },
   },
@@ -226,5 +235,24 @@ export default {
   width: 32px;
   border-radius: 50%;
   border: 2px solid #099c4b;
+}
+.btn-docx {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: #ffffff;
+  background-color: #216221;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid #216221;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: 0.1s;
+  font-weight: 400;
 }
 </style>

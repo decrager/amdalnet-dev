@@ -14,6 +14,9 @@ class ArcgisServiceController extends Controller
             ->when($request->has('is_proxy'), function ($query) use ($request) {
                 return $query->where('is_proxy', '=', $request->is_proxy);
             })
+            ->when($request->has('id_province'), function ($query) use ($request) {
+                return $query->where('id_province', '=', $request->id_province);
+            })
             ->paginate(10);
 
         return response()->json($getArcgisService);
@@ -66,7 +69,7 @@ class ArcgisServiceController extends Controller
             ]);
         }
 
-        ArcgisService::create($request->all());
+        ArcgisServiceCategory::create($request->all());
 
         return response()->json([
             'message' => 'success'
@@ -80,6 +83,7 @@ class ArcgisServiceController extends Controller
             'url_service' => 'required',
             'source' => 'required',
             'organization' => 'required',
+            'name' => 'required',
         ]);
 
         $checkUrl = ArcgisService::where('url_service', '=', $request->url_service)->first();
@@ -104,6 +108,7 @@ class ArcgisServiceController extends Controller
             'url_service' => 'required',
             'source' => 'required',
             'organization' => 'required',
+            'name' => 'required',
         ]);
 
         try {
@@ -144,7 +149,7 @@ class ArcgisServiceController extends Controller
     public function deleteAcrgisServiceCategory($id)
     {
         try {
-            $data = ArcgisService::find($id);
+            $data = ArcgisServiceCategory::find($id);
             $data->delete();
             return response()->json([
                 'message' => 'Sukses'

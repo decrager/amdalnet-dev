@@ -4,14 +4,14 @@ const projectRoutes = {
   path: '/project',
   component: Layout,
   redirect: '/project/',
-  meta: { title: 'project', icon: 'zip', permissions: ['view menu project'] },
+  meta: { title: 'project', icon: 'layout-fluid', permissions: ['view menu project'] },
   alwaysShow: true,
   children: [
     {
       path: '',
       component: () => import('@/views/project'),
       name: 'listProject',
-      meta: { title: 'listProject', icon: 'documentation', permissions: ['view menu project'] },
+      meta: { title: 'listProject', icon: 'apps-sort', permissions: ['view menu project'] },
     },
     // {
     //   path: 'post',
@@ -36,7 +36,7 @@ const projectRoutes = {
       component: () => import('@/views/project/Create'),
       name: 'createProject',
       hidden: true,
-      meta: { title: 'addProject', icon: 'documentation' },
+      meta: { title: 'addProject', icon: 'apps-sort' },
     },
     {
       path: 'publish',
@@ -45,7 +45,7 @@ const projectRoutes = {
       hidden: true,
       meta: {
         title: 'publishProject',
-        icon: 'documentation',
+        icon: 'megaphone',
         noCache: true,
         breadcrumb: false,
       },
@@ -62,6 +62,14 @@ const projectRoutes = {
         noCache: true,
         breadcrumb: false,
       },
+      props: true,
+    },
+    {
+      path: 'home/:id(\\d+)',
+      component: () => import('@/views/project/Home/index'),
+      name: 'projectHome',
+      hidden: true,
+      meta: { title: 'Rumah Kegiatan', icon: 'edit', noCache: true, breadcrumb: true },
       props: true,
     },
     {

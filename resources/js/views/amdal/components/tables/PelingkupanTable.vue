@@ -22,7 +22,7 @@
               size="mini"
               class="pull-right"
               icon="el-icon-caret-right"
-              @click="handleViewComponents(scope.row.id)"
+              @click="handleViewComponents(scope.row)"
             />
           </template>
         </el-table-column>
@@ -48,90 +48,100 @@
               size="mini"
               class="pull-right"
               icon="el-icon-caret-right"
-              @click="handleViewComponents(scope.row.id)"
+              @click="handleViewComponents(scope.row)"
             />
           </template>
         </el-table-column>
       </el-table>
     </el-col>
-    <el-col :span="18" :xs="24">
-      <table :key="tableKey" class="title" style="border-collapse: collapse; width:100%;">
-        <thead>
-          <tr>
-            <th rowspan="2">Komponen Kegiatan</th>
-            <th colspan="6">Komponen Lingkungan</th>
-          </tr>
-          <tr>
-            <th>Geofisika Kimia</th>
-            <th>Biologi</th>
-            <th>Sosial Ekonomi Budaya</th>
-            <th>Kesehatan Masyarakat</th>
-            <th>Kegiatan Lain Sekitar</th>
-            <th>Lainnya</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <div v-for="comp in subProjectComponents" :key="comp.id" v-loading="loadingComponents" style="margin:.5em 0;">
-                <el-row>
-                  <el-tooltip class="item" effect="dark" placement="top-start">
-                    <div slot="content">
-                      {{ comp.description_specific }}
-                    </div>
-                    <el-button
-                      type="default"
-                      size="medium"
-                      :style="componentButtonStyle(comp.id)"
-                      @click="handleViewRonaAwals(comp.id)"
-                    >
-                      <el-button
-                        v-if="!isAndal && isFormulator"
-                        type="danger"
-                        size="mini"
-                        icon="el-icon-close"
-                        style="margin-left: 0px; margin-right: 10px;"
-                        class="button-action-mini"
-                        @click="handleDeleteComponent(comp.id)"
-                      />
-                      <span>{{ comp.name }}</span>
+    <el-col v-loading="loadingKomponen" :span="18" :xs="24">
+      <div style="overflow: auto">
+        <table :key="tableKey" class="title" style="border-collapse: collapse; width:100%;">
+          <thead>
+            <tr>
+              <th rowspan="2">Komponen Kegiatan</th>
+              <th colspan="6">Komponen Lingkungan</th>
+            </tr>
+            <tr>
+              <th>Geofisika Kimia</th>
+              <th>Biologi</th>
+              <th>Sosial Ekonomi Budaya</th>
+              <th>Kesehatan Masyarakat</th>
+              <th>Kegiatan Lain Sekitar</th>
+              <th>Lainnya</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div v-for="comp in subProjectComponents" :key="comp.id" style="margin:.5em 0;">
+                  <el-row>
+                    <el-tooltip class="item" effect="dark" placement="top-start">
+                      <div slot="content">
+                        {{ comp.description_specific }}
+                      </div>
                       <el-button
                         type="default"
-                        size="mini"
-                        class="pull-right button-action-mini"
-                        icon="el-icon-edit"
-                        @click="handleEditComponent(comp.id)"
-                      />
-                    </el-button>
+                        size="medium"
+                        :style="componentButtonStyle(comp.id)"
+                        @click="handleViewRonaAwals(comp)"
+                      >
+                        <el-button
+                          v-if="!isAndal && isFormulator"
+                          type="danger"
+                          size="mini"
+                          icon="el-icon-close"
+                          style="margin-left: 0px; margin-right: 10px;"
+                          class="button-action-mini"
+                          @click="handleDeleteComponent(comp.id)"
+                        />
+                        <span>{{ comp.name }}</span>
+                        <el-button
+                          type="default"
+                          size="mini"
+                          class="pull-right button-action-mini"
+                          icon="el-icon-edit"
+                          @click="handleEditComponent(comp.id)"
+                        />
+                      </el-button>
+                    </el-tooltip>
+                  </el-row>
+                </div>
+
+                <el-button
+                  v-if="!isAndal && isFormulator"
+                  icon="el-icon-plus"
+                  circle
+                  style="margin-top:3em;display:block;"
+                  round
+                  :disabled="!(currentIdSubProject > 0)"
+                  @click="handleAddComponent()"
+                />
+              </td>
+              <td v-for="i in 6" :key="i">
+                <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" style="margin:.5em 0;">
+                  <el-tooltip class="item" effect="dark" placement="top-start">
+                    <div slot="content">
+                      {{ ra.description_specific }}
+                    </div>
+                    <el-tag key="ra.id" type="info" :closable="closable && !isAndal && isFormulator" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
                   </el-tooltip>
-                </el-row>
-              </div>
+                </div>
 
-              <el-button v-if="!isAndal && isFormulator" icon="el-icon-plus" circle style="margin-top:3em;display:block;" round @click="handleAddComponent()" />
-            </td>
-            <td v-for="i in 6" :key="i">
-              <div v-for="ra in subProjectRonaAwals[i-1].rona_awals" :key="ra.id" v-loading="loadingRonaAwals" style="margin:.5em 0;">
-                <el-tooltip class="item" effect="dark" placement="top-start">
-                  <div slot="content">
-                    {{ ra.description_specific }}
-                  </div>
-                  <el-tag key="ra.id" type="info" :closable="closable && !isAndal && isFormulator" @close="handleDeleteRonaAwal(ra.id)">{{ ra.name }}</el-tag>
-                </el-tooltip>
-              </div>
-
-              <el-button
-                v-if="!isAndal && isFormulator"
-                icon="el-icon-plus"
-                circle
-                style="margin-top:3em;display:block;"
-                round
-                :disabled="currentIdSubProjectComponent === 0"
-                @click="handleAddRonaAwal(i)"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <el-button
+                  v-if="!isAndal && isFormulator"
+                  icon="el-icon-plus"
+                  circle
+                  style="margin-top:3em;display:block;"
+                  round
+                  :disabled="!(currentIdSubProjectComponent > 0)"
+                  @click="handleAddRonaAwal(i)"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </el-col>
     <add-component-dialog
       v-if="!isAndal && isFormulator"
@@ -139,23 +149,33 @@
       :show="kKDialogueVisible"
       :sub-projects="subProjects"
       :id-project-stage="idProjectStage"
+      :project-stages="projectStages"
+      :project-stage="projectStages.find(p => p.id === idProjectStage)"
       :sub-project-component="editSubProjectComponent"
       :is-edit="isEditComponent"
       :current-id-sub-project="currentIdSubProject"
+      :selected-id-sub-project-component="currentIdSubProjectComponent"
+      :master-components="masterComponents.filter(c => c.id_project_stage === idProjectStage)"
       @handleCloseAddComponent="handleCloseAddComponent"
       @handleSetCurrentIdSubProjectComponent="handleSetCurrentIdSubProjectComponent"
+      @currentSubProject="onCurrentSubProject"
     />
     <add-rona-awal-dialog
       v-if="!isAndal && isFormulator"
       :key="ronaAwalDialogKey"
       :show="kLDialogueVisible"
+      :component-types="componentTypes"
       :sub-projects="subProjects"
       :id-project="idProject"
       :id-project-stage="idProjectStage"
-      :current-id-sub-project="currentIdSubProject"
+      :project-stage="projectStages.find(p => p.id === idProjectStage)"
+      :current-id-sub-project="currentSubProject.id"
       :current-id-sub-project-component="currentIdSubProjectComponent"
       :current-id-component-type="currentIdComponentType"
       :sub-project-components="subProjectComponents"
+      :current-sub-project-name="currentSubProject.name"
+      :current-component="currentComponent"
+      :master-hues="masterHues.filter(h => h.id_component_type === currentIdComponentType)"
       @handleCloseAddRonaAwal="handleCloseAddRonaAwal"
     />
   </el-row>
@@ -185,6 +205,22 @@ export default {
       type: Number,
       default: () => 0,
     },
+    masterComponents: {
+      type: Array,
+      default: () => [],
+    },
+    masterHues: {
+      type: Array,
+      default: () => [],
+    },
+    projectStages: {
+      type: Array,
+      default: () => [],
+    },
+    componentTypes: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -212,8 +248,10 @@ export default {
       editSubProjectComponent: {},
       isEditComponent: false,
       loadingSubProjects: true,
-      loadingRonaAwals: true,
-      loadingComponents: true,
+      loadingKomponen: true,
+      currentSubProject: { id: 0, name: '' },
+      currentComponentName: '',
+      currentComponent: null,
     };
   },
   computed: {
@@ -245,24 +283,22 @@ export default {
     },
     handleAddRonaAwal(idComponentType) {
       this.currentIdComponentType = idComponentType;
+      console.log(this.currentComponent);
       this.kLDialogueVisible = true;
     },
-    handleCloseAddComponent(reload) {
+    handleCloseAddComponent(idSubProjectComponent) {
       this.kKDialogueVisible = false;
-      // reload table
-      if (reload) {
-        this.reloadData();
-      }
+      this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.reloadData();
     },
     handleSetCurrentIdSubProjectComponent(idSubProjectComponent) {
       this.currentIdSubProjectComponent = idSubProjectComponent;
       this.ronaAwalDialogKey = this.ronaAwalDialogKey + 1;
     },
-    handleCloseAddRonaAwal(reload) {
+    handleCloseAddRonaAwal(idSubProjectComponent) {
       this.kLDialogueVisible = false;
-      if (reload) {
-        this.reloadData();
-      }
+      this.currentIdSubProjectComponent = idSubProjectComponent;
+      this.reloadData();
     },
     handleDeleteComponent(id) {
       subProjectComponentResource
@@ -306,7 +342,20 @@ export default {
         this.kKDialogueVisible = true;
       }
     },
-    async handleViewComponents(idSubProject) {
+    async handleViewComponents(subP) {
+      const idSubProject = subP.id;
+      this.currentIdSubProject = idSubProject;
+
+      /* let subP = this.subProjects.utama.find(spu => spu.id === idSubProject);
+      if (!subP){
+        subP = this.subProjects.pendukung.find(spp => spp.id === idSubProject);
+      }*/
+      this.currentSubProject = {
+        id: idSubProject,
+        name: subP.name,
+      };
+
+      console.log('handleViewCompoents: ', this.currentSubProject);
       this.$emit('handleCurrentIdSubProject', idSubProject);
       this.getComponents(idSubProject);
       this.subProjectComponents = [];
@@ -338,8 +387,14 @@ export default {
         return { backgroundColor: '#ffffff', color: '#099C4B' };
       }
     },
-    async handleViewRonaAwals(idSubProjectComponent) {
-      this.currentIdSubProjectComponent = idSubProjectComponent;
+    async handleViewRonaAwals(comp) {
+      const idSubProjectComponent = comp.id;
+      this.currentIdSubProjectComponent = comp.id;
+      this.currentComponent = this.masterComponents.find(c => c.id === comp.component.id);
+      if (!this.currentComponent){
+        this.currentComponent = comp.component;
+      }
+      console.log('viewRonaAwals', this.currentComponent, comp);
       this.componentButtonStyle(idSubProjectComponent);
       this.getRonaAwals(idSubProjectComponent);
       // this.componentButtonStyle = { backgroundColor: '#facd7a' };
@@ -377,6 +432,7 @@ export default {
         if (sp.data.length > 0){
           this.getRonaAwals(sp.data[0].id);
         }
+        this.loadingKomponen = false;
         this.$emit('handleCurrentIdSubProject', firstSubProject.id);
         this.componentDialogKey = this.componentDialogKey + 1;
       }
@@ -394,25 +450,29 @@ export default {
         }
       });
       this.subProjectComponents = components.data;
-      this.loadingComponents = false;
-      if (this.subProjectComponents.length > 0) {
+      if (this.subProjectComponents.length > 0 && this.currentIdSubProjectComponent === 0) {
         this.currentIdSubProjectComponent = this.subProjectComponents[0].id;
       }
     },
     async getRonaAwals(idSubProjectComponent) {
-      const ronaAwals = await scopingResource.list({
-        sub_project_rona_awals: true,
-        id_sub_project_component: idSubProjectComponent,
-      });
-      ronaAwals.data.map((ra) => {
-        ra.rona_awals.map((r) => {
-          if (r.name === null) {
-            r.name = r.rona_awal.name;
-          }
+      if (parseInt(idSubProjectComponent) > 0) {
+        const ronaAwals = await scopingResource.list({
+          sub_project_rona_awals: true,
+          id_sub_project_component: idSubProjectComponent,
         });
-      });
-      this.subProjectRonaAwals = ronaAwals.data;
-      this.loadingRonaAwals = false;
+        ronaAwals.data.map((ra) => {
+          ra.rona_awals.map((r) => {
+            if (r.name === null) {
+              r.name = r.rona_awal.name;
+            }
+          });
+        });
+        this.subProjectRonaAwals = ronaAwals.data;
+      }
+      this.loadingKomponen = false;
+    },
+    onCurrentSubProject(val){
+      // this.currentSubProject = val;
     },
   },
 };

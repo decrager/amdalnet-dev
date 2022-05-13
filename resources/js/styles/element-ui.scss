@@ -45,6 +45,12 @@
   }
 }
 
+/* tab panes */
+div.el-tabs__item.is-active {
+  font-weight: bold;
+  letter-spacing: 0.05em;
+}
+
 .el-dialog {
   transform: none;
   left: 0;
@@ -81,6 +87,20 @@
   }
 }
 
+.el-select.filter-header {
+  .el-input {
+    .el-select__caret.el-input__icon.el-icon-circle-close{
+      color: orangered !important;
+      font-size: 150% !important;
+    }
+  }
+
+  ::placeholder {
+    color:#216221 !important;
+    font-weight:bold;
+  }
+
+}
 
 //collapse
 .el-collapse-item__header {
@@ -93,7 +113,7 @@
 	text-transform: uppercase;
 }
 .is-active .el-collapse-item__header{
-	background-color: #6cc26f !important;
+	background-color: #39773b !important; // #6cc26f !important;
 }
 .el-collapse-item__content {
 	padding: 3em 2em 3.5em;
@@ -101,6 +121,9 @@
 
 
 // table
+table {
+  border-collapse: collapse !important;
+}
 .el-table thead {
 	color: #333333 !important;
 }
@@ -108,10 +131,76 @@
 .el-table .cell { word-break: normal !important;}
 
   table.el-table__header {
-      background-color: #6cc26f !important;
+      background-color:#216221 !important; // #6cc26f !important;
   }
-.el-table thead.is-group th.el-table__cell {
-      background-color: #6cc26f !important;
+.el-table thead.is-group th.el-table__cell,
+.el-table thead th {
+      background-color: #216221 !important; // #528C52 !important; //39773b; //#6cc26f !important;
       color: white !important;
       text-align: center !important;
+}
+
+th.el-table__cell > .cell.highlight {
+    /* background: none !important;*/
+    color: white !important;
+
+  }
+  /*th.el-table__cell > .cell.highlight:before{
+    content: '\2022';
+    margin-right: 0.2em;
+  }*/
+
+span.el-table__column-filter-trigger {
+  margin-left: 0.2em;
+  color: white !important;
+  .el-icon-arrow-down{
+    font-size: 120%;
+    color: white !important;
+    font-weight: bold !important;
+  }
+}
+/*
+thead th {
+  background: #216221 !important; // #528C52; //39773b !important;
+  color: #ffffff !important;
+}*/
+
+
+/** workflow  */
+.el-steps {
+  margin: 1em auto 5em !important;
+  .el-step.is-horizontal .el-step__line {
+    top: 15px !important;
+  }
+  .el-step__icon{
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 17px !important;
+  }
+  .is-success .el-step__icon {
+    background: #39773b !important;
+    color: white !important;
+  }
+  .is-process .el-step__icon{
+    color: white !important;
+    background: #ebb84d !important;
+    border: 2px solid #ebb84d;
+
+  }
+  .el-step__title {
+    margin-top: 1em;
+    font-size: 12px !important;
+    line-height: 130% !important;
+  }
+}
+
+/** documents */
+.button-AMDAL, .AMDAL{
+  background: #347437 !important;
+}
+.button-UKL-UPL, .UKL-UPL{
+  background: #449748 !important;
+}
+.button-SPPL, .SPPL {
+  background: #EB8A00 !important;
 }

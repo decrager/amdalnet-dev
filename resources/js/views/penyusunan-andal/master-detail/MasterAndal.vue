@@ -79,6 +79,7 @@ export default {
   },
   methods: {
     showDetail({ stage, id }) {
+      this.$emit('backuplist');
       this.$emit('showDetail', { stage, id });
     },
   },

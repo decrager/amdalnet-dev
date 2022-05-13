@@ -18,17 +18,22 @@
           </div>
           <div class="expand-container__right">
             <el-button
-              type="text"
-              href="#"
-              icon="el-icon-edit"
+              type="primary"
+              size="medium"
+              @click="handleKelolaLPJP(scope.row.id)"
+            >
+              Kelola LPJP
+            </el-button>
+            <el-button
+              type="warning"
+              size="medium"
               @click="handleEditForm(scope.row.id)"
             >
               Ubah
             </el-button>
             <el-button
-              type="text"
-              size="#"
-              icon="el-icon-delete"
+              type="danger"
+              size="medium"
               @click="handleDelete(scope.row.id, scope.row.name)"
             >
               Hapus
@@ -37,23 +42,19 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="No. Registrasi">
-      <template slot-scope="scope">
-        <span>{{ scope.row.reg_no }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Nama Perusahaan">
-      <template slot-scope="scope">
-        <span>{{ scope.row.name }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Alamat">
-      <template slot-scope="scope">
-        <span>{{ scope.row.address }}</span>
-      </template>
-    </el-table-column>
+    <el-table-column
+      align="center"
+      label="No. Registrasi"
+      sortable
+      prop="reg_no"
+    />
+    <el-table-column
+      align="center"
+      label="Nama Perusahaan"
+      sortable
+      prop="name"
+    />
+    <el-table-column align="center" label="Alamat" sortable prop="address" />
 
     <el-table-column align="center" label="Sertifikat">
       <template slot-scope="scope">
@@ -131,6 +132,10 @@ export default {
     },
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });
+    },
+    handleKelolaLPJP(id) {
+      // eslint-disable-next-line object-curly-spacing
+      this.$router.push({ name: 'lpjpFormulatorMember', params: { id } });
     },
   },
 };

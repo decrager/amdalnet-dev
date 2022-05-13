@@ -1,38 +1,51 @@
 <template>
-  <el-table
-    v-loading="loading"
-    :data="list"
-    style="width: 100%;padding-top: 15px;"
-  >
-    <el-table-column label="Order #" min-width="200">
-      <template slot-scope="scope">
-        {{ scope.row && scope.row.order_no | orderNoFilter }}
-      </template>
-    </el-table-column>
-    <el-table-column label="Price" width="195" align="center">
-      <template slot-scope="scope">
-        ¥{{ scope.row && scope.row.price | toThousandFilter }}
-      </template>
-    </el-table-column>
-    <el-table-column label="Status" width="100" align="center">
-      <template slot-scope="scope">
-        <el-tag :type="scope.row && scope.row.status | statusFilter">
-          {{ scope.row && scope.row.status }}
-        </el-tag>
-      </template>
-    </el-table-column>
-  </el-table>
+  <div>
+    <el-table
+      v-loading="loading"
+      :data="list"
+      :stripe="true"
+      style="width: 100%"
+      class="initiator-list"
+    >
+      <el-table-column width="50">
+        <template slot-scope="scope">
+          {{ scope.$index + 1 + page * limit - limit }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Nama">
+        <template slot-scope="scope">
+          {{ scope.row.initiator !== null ? scope.row.initiator.name : '' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Tanggal Pengajuan">
+        <template slot-scope="scope">
+          {{ scope.row.filling_date }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Batas Pengajuan">
+        <template slot-scope="scope">
+          {{ scope.row.submission_deadline }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Status">
+        <template slot-scope="scope">
+          {{ checkStatus(scope.row.feasibility_test_recap) }}
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/order';
+// import { fetchList } from '@/api/order';
 
 export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        success: 'success',
-        pending: 'danger',
+        approved: 'success',
+        processing: 'warning',
+        rejected: 'danger',
       };
       return statusMap[status];
     },
@@ -40,21 +53,40 @@ export default {
       return str;
     },
   },
-  data() {
-    return {
-      list: [{ order_no: '1', price: '2', status: 'pending' }],
-      loading: true,
-    };
-  },
-  created() {
-    this.fetchData();
+  props: {
+    list: {
+      type: Array,
+      default: () => [],
+    },
+    loading: Boolean,
+    page: {
+      type: Number,
+      default: () => 1,
+    },
+    limit: {
+      type: Number,
+      default: () => 5,
+    },
   },
   methods: {
-    async fetchData() {
-      const { data } = await fetchList();
-      this.list = data.items.slice(0, 8);
-      this.loading = false;
+    checkStatus(data) {
+      if (data !== null) {
+        if (data.is_feasib) {
+          return 'Disetujui';
+        } else {
+          return 'Ditolak';
+        }
+      }
+
+      return 'Diproses';
     },
   },
 };
 </script>
+<style lang="scss" scoped>
+.initiator-list {
+  .cell {
+    font-weight: bolder;
+  }
+}
+</style>

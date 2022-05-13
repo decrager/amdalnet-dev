@@ -67,7 +67,7 @@ return [
             'type' => 'multiple_state',
             'property' => 'marking',
         ],
-        'supports' => ['App\Entity\Project'],
+        'supports' => ['App\Entity\ProjectX'],
         'events_to_dispatch' => [
             'workflow.enter',
             'workflow.leave',
@@ -123,9 +123,9 @@ return [
         ]
     ],
     'amdalnet' => [
-        'type' => 'workflow',
+        'type' => 'state_machine',
         'marking_store' => [
-            'type' => 'multiple_state', // multiple_state | single_state, can be omitted to default to workflow type's default
+            'type' => 'single_state', // multiple_state | single_state, can be omitted to default to workflow type's default
             'property' => 'marking', // this is the property on the model, defaults to 'marking'
         ],
         // optional top-level metadata
@@ -142,171 +142,239 @@ return [
             'workflow.announce',
             'workflow.guard',
         ],
-        'places' => ['init', 'in-screening', 'sppl-completed', 'amdal.announcement', 'amdal.announcement-completed', 'amdal.pubcons', 'amdal.pubcons-completed', 
-            'uklupl.mr-activities', 'uklupl.mr-ukl', 'uklupl.mr-upl', 'uklupl.mr-completed', 
-            'uklupl.mt-activities', 'uklupl.mt-environment-set', 'uklupl.mt-impact', 'uklupl.mt-ukl', 'uklupl.mt-upl', 'uklupl.mt-submitted',
-            'amdal.ka-draft', 'amdal.ka-draft-submitted', 'amdal.ka-draft-reviewed', 'amdal.ka-draft-approved', 'amdal.ka-resubmitted', 
-            'amdal.andal-draft', 'amdal.rklrpl.activities', 'amdal.rklrpl.environment-set', 'amdal.rklrpl.impact-matrix', 'amdal.rklrpl.dp', 'amdal.rklrpl.dph', 'amdal.rklrpl.rkl', 'amdal.rklrpl.rpl', 
-            'amdal.submitted', 'amdal.andal-submitted', 'uklupl.mr', 'uklupl.mt', 'amdal',
-            'uklupl.mt-reviewed', 'uklupl.mt-completed', 'amdal.reviewed', 'amdal.completed'],
+        'places' => ['init', 'info-filling', 'in-screening', 'screening-completed','formulator-assignment',
+        'announcement-drafting','announcement', 'announcement-completed', 'uklupl-mr.pkplh-published',
+        'uklupl-mt.form', 'uklupl-mt.matrix-ukl', 'uklupl-mt.matrix-upl','uklupl-mt.submitted',
+        'uklupl-mt.adm-review', 'uklupl-mt.adm-returned', 'uklupl-mt.examination-invitation-drafting',
+        'uklupl-mt.examination-invitation-sent',
+        'uklupl-mt.examination', 'uklupl-mt.examination-meeting', 'uklupl-mt.returned', 'uklupl-mt.ba-drafting',
+        'uklupl-mt.ba-signed', 'uklupl-mt.recommendation-drafting', 'uklupl-mt.recommendation-signed', 'uklupl-mt.pkplh-published',
+        'amdal.form-ka-drafting', 'amdal.form-ka-submitted', 'amdal.form-ka-adm-review','amdal.form-ka-adm-returned',
+        'amdal.form-ka-adm-approved', 'amdal.form-ka-examination-invitation-drafting', 'amdal.form-ka-examination-invitation-sent', 
+        'amdal.form-ka-examination','amdal.form-ka-examination-meeting', 'amdal.form-ka-returned', 'amdal.form-ka-approved',
+        'amdal.form-ka-ba-drafting', 'amdal.form-ka-ba-signed', 'amdal.andal-drafting','amdal.rklrpl-drafting',
+        'amdal.submitted', 'amdal.adm-review', 'amdal.adm-returned', 'amdal.adm-approved', 'amdal.examination',
+        'amdal.feasibility-invitation-drafting', 'amdal.feasibility-invitation-sent', 'amdal.feasibility-review',
+        'amdal.feasibility-meeting', 'amdal.feasibility-returned', 'amdal.feasibility-ba-drafting', 'amdal.feasibility-ba-signed',
+        'amdal.recommendation-drafting', 'amdal.recommendation-signed', 'amdal.skkl-published'],
         'initial_places' => ['init'], // defaults to the first place if omitted
         'transitions' => [
-            'screening' => [
+            'fill-info' => [
                 'from' => 'init',
+                'to' => 'info-filling',
+            ],
+            'screening' => [
+                'from' => 'info-filling',
                 'to' => 'in-screening',
             ],
-            'to_sppl' => [
+            'complete-screening' => [
                 'from' => 'in-screening',
-                'to' => 'sppl-completed',
+                'to' => 'screening-completed',
             ],
-            'to_uklupl_mr' => [
-                'from' => 'in-screening',
-                'to' => ['uklupl.mr', 'amdal.announcement'],
+            'assign-formulator' => [
+                'from' => 'screening-completed',
+                'to' => 'formulator-assignment',
             ],
-            'to_uklupl_mt' => [
-                'from' => 'in-screening',
-                'to' => ['uklupl.mt', 'amdal.announcement'],
+            'draft-announcement' => [
+                'from' => 'formulator-assignment',
+                'to' => 'announcement-drafting',
             ],
-            'to_amdal' => [
-                'from' => 'in-screening',
-                'to' => ['amdal', 'amdal.announcement'],
+            'announce' => [
+                'from' => 'announcement-drafting',
+                'to' => 'announcement',
             ],
-            'start_uklupl_mr' => [
-                'from' => ['uklupl.mr', 'amdal.announcement-completed'],
-                'to' => 'uklupl.mr-activities',
+            'complete-announcement' => [ 
+                'from' => 'announcement',
+                'to' => 'announcement-completed',
             ],
-            'start_uklupl_mt' => [
-                'from' => ['uklupl.mt', 'amdal.announcement-completed'],
-                'to' => 'uklupl.mt-activities',
-            ],
-            'plan_ukl_mr' => [
-                'from' => 'uklupl.mr-activities',
-                'to' => 'uklupl.mr-ukl',
-            ],
-            'plan_upl_mr' => [
-                'from' => 'uklupl.mr-ukl',
-                'to' => 'uklupl.mr-upl',
-            ],
-            'finish_uklupl_mr' => [
-                'from' => 'uklupl.mr-upl',
-                'to' => 'uklupl.mr-completed',
-            ],
-            'set_environment_mt' => [
-                'from' => 'uklupl.mt-activities',
-                'to' => 'uklupl.mt-environment-set',
-            ],
-            'set_impact_mt' => [
-                'from' => 'uklupl.mt-environment-set',
-                'to' => 'uklupl.mt-impact',
-            ],
-            'plan_ukl_mt' => [
-                'from' => 'uklupl.mt-impact',
-                'to' => 'uklupl.mt-ukl',
-            ],
-            'plan_upl_mt' => [
-                'from' => 'uklupl.mt-ukl',
-                'to' => 'uklupl.mt-upl',
-            ],
-            'submit_uklupl_mt' => [
-                'from' => 'uklupl.mt-upl',
-                'to' => 'uklupl.mt-submitted',
-            ],
-            'review_uklupl_mt' => [
-                'from' => 'uklupl.mt-submitted',
-                'to' => 'uklupl.mt-reviewed',
-            ],
-            'finish_uklupl_mt' => [
-                'from' => 'uklupl.mt-reviewed',
-                'to' => 'uklupl.mt-completed',
-            ],
-            'draft_amdal_ka' => [
-                'from' => ['amdal', 'amdal.pubcons-completed'],
-                'to' => 'amdal.ka-draft',
-            ],
-            'submit_amdal_ka' => [
-                'from' => 'amdal.ka-draft',
-                'to' => 'amdal.ka-draft-submitted',
-            ],
-            'review_amdal_ka' => [
-                'from' => 'amdal.ka-draft-submitted',
-                'to' => 'amdal.ka-draft-reviewed',
-            ],
-            'approve_amdal_ka' => [
-                'from' => 'amdal.ka-draft-reviewed',
-                'to' => 'amdal.ka-draft-approved',
-            ],
-            'resubmit_amdal_ka' => [
-                'from' => 'amdal.ka-draft-approved',
-                'to' => 'amdal.ka-resubmitted',
-            ],
-            'to_andal_rklrpl' => [
-                'from' => 'amdal.ka-resubmitted',
-                'to' => ['amdal.andal-draft', 'amdal.rklrpl.activities'],
-            ],
-            'submit_andal' => [
-                'from' => 'amdal.andal-draft',
-                'to' => 'amdal.andal-submitted',
-            ],
-            // 'approve_andal' => [
-            //     'from' => 'amdal.andal-submitted',
-            //     'to' => 'amdal.andal-approved',
-            // ],
-            'set_environment_rklrpl' => [
-                'from' => 'amdal.rklrpl.activities',
-                'to' => 'amdal.rklrpl.environment-set',
-            ],
-            'to_impact_matrix_rklrpl' => [
-                'from' => 'amdal.rklrpl.environment-set',
-                'to' => 'amdal.rklrpl.impact-matrix',
-            ],
-            'to_rklrpl_dp' => [
-                'from' => 'amdal.rklrpl.impact-matrix',
-                'to' => 'amdal.rklrpl.dp',
-            ],
-            'to_rklrpl_dph' => [
-                'from' => 'amdal.rklrpl.dp',
-                'to' => 'amdal.rklrpl.dph',
-            ],
-            'plan_rklrpl_rkl' => [
-                'from' => 'amdal.rklrpl.dph',
-                'to' => 'amdal.rklrpl.rkl',
-            ],
-            'plan_rklrpl_rpl' => [
-                'from' => 'amdal.rklrpl.rkl',
-                'to' => 'amdal.rklrpl.rpl',
-            ],
-            'submit_amdal' => [
-                'from' => ['amdal.rklrpl.rpl', 'amdal.andal-submitted'],
-                'to' => 'amdal.submitted',
-            ],
-            'review_amdal' => [
-                'from' => 'amdal.submitted',
-                'to' => 'amdal.reviewed',
-            ],
-            'finish_amdal' => [
-                'from' => ['amdal.reviewed', 'sppl-completed', 'uklupl.mt-completed', 'uklupl.mr-completed'],
-                'to' => 'amdal.completed',
-            ],
-            // 'finish_amdal_sppl' => [
-            //     'from' => 'sppl-completed',
-            //     'to' => 'amdal.completed',
-            // ],
-            // 'finish_amdal_' => [
-            //     'from' => 'sppl-completed',
-            //     'to' => 'amdal.completed',
-            // ],
-            'announced' => [
-                'from' => 'amdal.announcement',
-                'to' => 'amdal.announcement-completed',
-            ],
-            'pubcons' => [
-                'from' => 'amdal.announcement-completed',
-                'to' => 'amdal.pubcons',
-            ],
-            'finish_pubcons' => [
-                'from' => 'amdal.pubcons',
-                'to' => 'amdal.pubcons-completed',
-            ],
+              'publish-uklupl-mr-pkplh' => [   // 1. UKL-UPL MR
+                  'from' => 'announcement-completed',
+                  'to' => 'uklupl-mr.pkplh-published',
+              ],
+              'fill-uklupl-form' => [          // 2. UKL-UPL MT
+                  'from' => 'announcement-completed',
+                  'to' => 'uklupl-mt.form',
+              ],
+                'fill-uklupl-matrix-ukl' => [ 
+                    'from' => 'uklupl-mt.form',
+                    'to' => 'uklupl-mt.matrix-ukl',
+                ],
+                'fill-uklupl-matrix-upl' => [ 
+                    'from' => 'uklupl-mt.matrix-ukl',
+                    'to' => 'uklupl-mt.matrix-upl',
+                ],
+                'submit-uklupl' => [ 
+                    'from' => 'uklupl-mt.matrix-upl',
+                    'to' => 'uklupl-mt.submitted',
+                ],
+                'review-uklupl-adm' => [ 
+                    'from' => 'uklupl-mt.submitted',
+                    'to' => 'uklupl-mt.adm-review',
+                ],
+                  'return-uklupl-adm' => [                      // Adm returned
+                      'from' => 'uklupl-mt.adm-review',
+                      'to' => 'uklupl-mt.adm-returned',
+                  ],
+                  'draft-uklupl-examination-invitation' => [    // Continue
+                      'from' => 'uklupl-mt.adm-review',
+                      'to' => 'uklupl-mt.examination-invitation-drafting',
+                  ],
+                    'send-uklupl-examination-invitation' => [    
+                        'from' => 'uklupl-mt.examination-invitation-drafting',
+                        'to' => 'uklupl-mt.examination-invitation-sent',
+                    ],
+                    'examine-uklupl' => [  
+                        'from' => 'uklupl-mt.examination-invitation-sent',
+                        'to' => 'uklupl-mt.examination',
+                    ],
+                    'held-uklupl-examination-meeting' => [  
+                        'from' => 'uklupl-mt.examination',
+                        'to' => 'uklupl-mt.examination-meeting',
+                    ],
+                      'return-uklupl-examination' => [    // UKL-UPL returned
+                          'from' => 'uklupl-mt.examination-meeting',
+                          'to' => 'uklupl-mt.returned',
+                      ],
+                      'draft-uklupl-ba' => [              // continue
+                          'from' => 'uklupl-mt.examination-meeting',
+                          'to' => 'uklupl-mt.ba-drafting',
+                      ],
+                        'sign-uklupl-ba' => [  
+                            'from' => 'uklupl-mt.ba-drafting',
+                            'to' => 'uklupl-mt.ba-signed',
+                        ],
+                        'draft-uklupl-recommendation' => [  
+                            'from' => 'uklupl-mt.ba-signed',
+                            'to' => 'uklupl-mt.recommendation-drafting',
+                        ],
+                        'sign-uklupl-recommendation' => [  
+                            'from' => 'uklupl-mt.recommendation-drafting',
+                            'to' => 'uklupl-mt.recommendation-signed',
+                        ],
+                        'publish-uklupl-pkplh' => [  
+                            'from' => 'uklupl-mt.recommendation-signed',
+                            'to' => 'uklupl-mt.pkplh-published',
+                        ],
+              'draft-amdal-form-ka' => [          // 3. AMDAL
+                  'from' => 'announcement-completed',
+                  'to' => 'amdal.form-ka-drafting',
+              ],
+                'submit-amdal-form-ka' => [
+                    'from' => 'amdal.form-ka-drafting',
+                    'to' => 'amdal.form-ka-submitted',
+                ],
+                'review-amdal-form-ka' => [
+                    'from' => 'amdal.form-ka-submitted',
+                    'to' => 'amdal.form-ka-adm-review',
+                ],
+                  'return-amdal-form-ka-review' => [
+                      'from' => 'amdal.form-ka-adm-review',
+                      'to' => 'amdal.form-ka-adm-returned',
+                  ],
+                  'approve-amdal-form-ka' => [
+                      'from' => 'amdal.form-ka-adm-review',
+                      'to' => 'amdal.form-ka-adm-approved',
+                  ],
+                    'draft-amdal-form-ka-examination-invitation' => [
+                        'from' => 'amdal.form-ka-adm-approved',
+                        'to' => 'amdal.form-ka-examination-invitation-drafting',
+                    ],
+                    'send-amdal-form-ka-examination-invitation' => [
+                        'from' => 'amdal.form-ka-examination-invitation-drafting',
+                        'to' => 'amdal.form-ka-examination-invitation-sent',
+                    ],
+                    'examine-amdal-form-ka' => [
+                        'from' => 'amdal.form-ka-examination-invitation-sent',
+                        'to' => 'amdal.form-ka-examination',
+                    ],
+                    'held-amdal-form-ka-meeting' => [
+                        'from' => 'amdal.form-ka-examination',
+                        'to' => 'amdal.form-ka-examination-meeting',
+                    ],
+                      'return-amdal-form-ka' => [
+                          'from' => 'amdal.form-ka-examination-meeting',
+                          'to' => 'amdal.form-ka-returned',
+                      ],
+                      'aprrove-amdal-form-ka' => [
+                          'from' => 'amdal.form-ka-examination-meeting',
+                          'to' => 'amdal.form-ka-approved',
+                      ],
+                        'draft-amdal-form-ka-ba' => [
+                            'from' => 'amdal.form-ka-approved',
+                            'to' => 'amdal.form-ka-ba-drafting',
+                        ],
+                        'sign-amdal-form-ka-ba' => [
+                            'from' => 'amdal.form-ka-ba-drafting',
+                            'to' => 'amdal.form-ka-ba-signed',
+                        ],
+                        'draft-amdal-andal' => [
+                            'from' => 'amdal.form-ka-ba-signed',
+                            'to' => 'amdal.andal-drafting',
+                        ],
+                        'draft-amdal-rklrpl' => [
+                            'from' => 'amdal.andal-drafting',
+                            'to' => 'amdal.rklrpl-drafting',
+                        ],
+                        'submit-amdal' => [
+                            'from' => 'amdal.rklrpl-drafting',
+                            'to' => 'amdal.submitted',
+                        ],
+                        'review-amdal-adm' => [
+                            'from' => 'amdal.submitted',
+                            'to' => 'amdal.adm-review',
+                        ],
+                          'return-amdal-adm' => [
+                              'from' => 'amdal.adm-review',
+                              'to' => 'amdal.adm-returned',
+                          ],
+                          'approve-amdal-adm' => [
+                              'from' => 'amdal.adm-review',
+                              'to' => 'amdal.adm-approved',
+                          ],
+                            'examine-amdal' => [
+                                'from' => 'amdal.adm-approved',
+                                'to' => 'amdal.examination',
+                            ],
+                            'draft-amdal-feasibility-invitation' => [
+                                'from' => 'amdal.examination',
+                                'to' => 'amdal.feasibility-invitation-drafting',
+                            ],
+                            'send-amdal-feasibility-invitation' => [
+                                'from' => 'amdal.feasibility-invitation-drafting',
+                                'to' => 'amdal.feasibility-invitation-sent',
+                            ],
+                            'review-amdal-feasibility' => [
+                                'from' => 'amdal.feasibility-invitation-sent',
+                                'to' => 'amdal.feasibility-review',
+                            ],
+                            'held-amdal-feasibility-meeting' => [
+                                'from' => 'amdal.feasibility-review',
+                                'to' => 'amdal.feasibility-meeting',
+                            ],
+                              'return-amdal-feasibility' => [
+                                  'from' => 'amdal.feasibility-meeting',
+                                  'to' => 'amdal.feasibility-returned',
+                              ],
+                              'draft-amdal-feasibility-ba' => [
+                                  'from' => 'amdal.feasibility-meeting',
+                                  'to' => 'amdal.feasibility-ba-drafting',
+                              ],
+                                'sign-amdal-feasibility-ba' => [
+                                    'from' => 'amdal.feasibility-ba-drafting',
+                                    'to' => 'amdal.feasibility-ba-signed',
+                                ],
+                                'draft-amdal-recommendation' => [
+                                    'from' => 'amdal.feasibility-ba-signed',
+                                    'to' => 'amdal.recommendation-drafting',
+                                ],
+                                'sign-amdal-recommendation' => [
+                                    'from' => 'amdal.recommendation-drafting',
+                                    'to' => 'amdal.recommendation-signed',
+                                ],
+                                'publish-amdal-skkl' => [
+                                    'from' => 'amdal.recommendation-signed',
+                                    'to' => 'amdal.skkl-published',
+                                ],
         ],
     ],
 ];

@@ -16,12 +16,14 @@
           icon="el-icon-view"
           @click="handleCategory"
         >
-          {{ 'Lihat Map Service Kategori' }}
+          {{ 'Lihat Kategori' }}
         </el-button>
       </div>
       <map-service-table
         :loading="loading"
         :list="list"
+        :page="listQuery.page"
+        :limit="listQuery.limit"
         @handleEditForm="handleEditForm($event)"
         @handleDelete="handleDelete($event)"
       />
@@ -36,17 +38,18 @@
         :component="component"
         :show="show"
         :category="category"
+        :provinces="provinces"
         @handleSubmitComponent="handleSubmitComponent"
         @handleCancelComponent="handleCancelComponent"
       />
 
       <map-service-category-dialog
+        :create-category="createCategory"
         :show-category="showCategory"
         :category="category"
-        @handleSubmitComponent="handleSubmitComponent"
-        @handleCancelComponent="handleCancelComponent"
+        @handleSubmitCategory="handleSubmitCategory"
+        @handleCancelCategory="handleCancelCategory"
       />
-
     </el-card>
   </div>
 </template>
@@ -79,16 +82,57 @@ export default {
       showCategory: false,
       category: [],
       component: {},
+      componentCreate: {},
+      provinces: [],
+      createCategory: {},
     };
   },
   created() {
     this.getList();
     this.getKategory();
+    this.getProvinsi();
   },
   methods: {
     handleCancelComponent(){
       this.component = {};
       this.show = false;
+    },
+    handleCancelCategory(){
+      this.showCategory = false;
+    },
+    handleSubmitCategory() {
+      if (this.createCategory.id !== undefined) {
+        axios.patch(`api/arcgis-service-category/${this.createCategory.id}`, this.createCategory)
+          .then((response) => {
+            this.$message({
+              type: 'success',
+              message: 'Map Service Kategori Berhasil Diupdate',
+              duration: 5 * 1000,
+            });
+            this.showCategory = false;
+            this.getKategory();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        axios.post('api/arcgis-service-category', this.createCategory)
+          .then((response) => {
+            console.log(response);
+            this.$message({
+              message:
+                'Map Service Kategori Berhasil Dibuat',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+            this.showCategory = false;
+            this.createCategory = {};
+            this.getKategory();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
     handleSubmitComponent(){
       if (this.component.id !== undefined) {
@@ -126,6 +170,12 @@ export default {
     handleFilter() {
       this.getList();
     },
+    getProvinsi() {
+      axios.get('api/provinces')
+        .then((response) => {
+          this.provinces = response.data.data;
+        });
+    },
     getKategory() {
       axios.get('api/arcgis-service-categories')
         .then((response) => {
@@ -134,9 +184,10 @@ export default {
     },
     async getList() {
       this.loading = true;
-      axios.get('api/arcgis-services')
+      axios.get(`api/arcgis-services?page=${this.listQuery.page}&limit=${this.listQuery.limit}`)
         .then((response) => {
           this.list = response.data.data;
+          console.log(this.list);
           this.total = response.data.total;
         });
       this.loading = false;
@@ -179,5 +230,6 @@ export default {
         });
     },
   },
+
 };
 </script>

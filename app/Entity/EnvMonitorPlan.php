@@ -26,4 +26,14 @@ class EnvMonitorPlan extends Model
     {
         return $this->belongsTo(ImpactIdentificationClone::class, 'id_impact_identifications', 'id');
     }
+
+    public function sources()
+    {
+        return $this->hasMany(EnvPlanSource::class, 'id_env_monitor_plan', 'id');
+    }
+
+    public function indicators()
+    {
+        return $this->hasMany(EnvPlanIndicator::class, 'id_env_monitor_plan', 'id');
+    }
 }

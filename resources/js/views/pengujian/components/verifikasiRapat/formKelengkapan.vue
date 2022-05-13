@@ -18,24 +18,7 @@
 
       <el-table-column label="Data">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="Kelengkapan">
-        <template slot-scope="scope">
-          <el-select
-            v-model="scope.row.completeness"
-            placeholder="Pilih Kelengkapan"
-            style="width: 100%"
-          >
-            <el-option
-              v-for="lengkap in kelengkapan"
-              :key="lengkap.value"
-              :label="lengkap.label"
-              :value="lengkap.value"
-            />
-          </el-select>
+          <a :href="scope.row.link" download>{{ scope.row.name }}</a>
         </template>
       </el-table-column>
 
@@ -58,7 +41,7 @@
 
       <el-table-column label="Keterangan">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.description" />
+          <el-input v-model="scope.row.description" type="textarea" />
         </template>
       </el-table-column>
     </el-table>
@@ -111,28 +94,7 @@ export default {
     loadingverification: Boolean,
   },
   data() {
-    return {
-      kelengkapan: [
-        {
-          label: 'Lengkap',
-          value: 'Lengkap',
-        },
-        {
-          label: 'Tidak Lengkap',
-          value: 'Lengkap   ',
-        },
-      ],
-      kesesuaian: [
-        {
-          label: 'Sesuai',
-          value: 'Sesuai',
-        },
-        {
-          label: 'Tidak Sesuai',
-          value: 'Tidak Sesuai',
-        },
-      ],
-    };
+    return {};
   },
   methods: {},
 };

@@ -5,7 +5,7 @@ const configurationRoutes = {
   component: Layout,
   meta: {
     title: 'configuration',
-    icon: 'el-icon-reading',
+    icon: 'resources',
     permissions: ['view menu configuration'],
   },
   children: [

@@ -14,6 +14,8 @@ GET http://localhost:8000/api/districts?idProv=12
 ###
 GET http://localhost:8000/api/districts/12
 ###
+GET http://localhost:8000/api/testemail
+###
 GET http://localhost:8000/api/kblis?sectors=true
 ###
 GET http://localhost:8000/api/business/2
@@ -36,9 +38,76 @@ GET http://localhost:8000/api/formulators
 ###
 GET http://localhost:8000/api/rona-awals
 ###
+GET http://localhost:8000/api/regions?id=2
+###
 GET http://localhost:8000/api/support-docs?idProject=20
 ###
 GET http://localhost:8000/api/initiatorsByEmail?email=nurika@pemrakarsaa.com
 ###
 GET http://192.168.7.94:8000/api/clear-cache
+###
+
+POST http://localhost:8000/api/auth/login
+content-type: application/json
+
+{"email":"admin@amdalnet.dev","password":"amdalnet"}
+###
+POST http://localhost:8000/api/reset-password
+content-type: application/json
+
+{"email":"admin@amdalnet.dev","password":"amdalnet"}
+###
+POST http://localhost:8000/api/projects
+content-type: application/json
+
+{"email":"admin@amdalnet.dev","password":"amdalnet"}
+
+
+###
+GET http://localhost:8000/api/fire
+###
+GET http://localhost:8000/api/ossNibs?nib=9120406222016
+###
+GET http://localhost:8000/api/oss/sectorByKbli/27401
+###
+GET http://localhost:8000/api/authorities?sectors=Kehutanan
+###
+GET http://localhost:8000/api/oss/getField?kbli=27401&sector=Perindustrian
+###
+GET http://localhost:8000/api/oss/getParameterByFieldId/211
+###
+POST http://localhost:8000/api/oss/calculateDoc
+content-type: application/json
+
+{
+    "study_approach":"terpadu",
+    "listSubProject": [
+        {
+            "jenis": "pendukung",
+            "kbli":"01465",
+            "field_id":"3257",
+            "sector_id":"3256",
+            "params":[
+                {
+                    "id_param":27,
+                    "id_unit":19,
+                    "value":5001
+                }
+            ]
+        },
+        {
+            "jenis": "utama",
+            "kbli":"01465",
+            "field_id":"3257",
+            "sector_id":"3256",
+            "params":[
+                {
+                    "id_param":27,
+                    "id_unit":19,
+                    "value":1
+                }
+            ]
+        }
+    ]
+}
 ###

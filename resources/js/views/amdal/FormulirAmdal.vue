@@ -1,36 +1,48 @@
 <template>
-  <div v-if="isProjectAmdal" class="app-container" style="padding: 24px">
-    <el-card>
+  <div v-if="isProjectAmdal" class="app-container">
+    <el-card style="padding: 24px">
       <workflow />
-      <h2>Formulir Kerangka Acuan</h2>
-      <span>
-        <el-button
-          v-if="isFormulator"
-          class="pull-right"
-          type="success"
-          size="small"
-          icon="el-icon-check"
-          :disabled="!isSubmitEnabled"
-          @click="handleSaveForm()"
-        >
-          Simpan & Lanjutkan
-        </el-button>
-      </span>
+
+      <el-tabs
+        v-model="tabName"
+        type="card"
+      >
+        <el-tab-pane label="Formulir Kerangka Acuan" name="fka" />
+      </el-tabs>
+      <el-button
+        v-if="isFormulator"
+        class="pull-right"
+        type="success"
+        size="small"
+        icon="el-icon-check"
+        :disabled="!isSubmitEnabled"
+        @click="handleSaveForm()"
+      >
+        Simpan & Lanjutkan
+      </el-button>
+      <div class="clearfix" style="margin-bottom:1em;" />
+      <!-- <h2>Formulir Kerangka Acuan</h2> -->
+
       <el-collapse :key="accordionKey" v-model="activeName" :accordion="true">
         <el-collapse-item name="1" title="PELINGKUPAN">
-          <pelingkupan
+          <modul-pelingkupan v-if="activeName === '1'" />
+          <!-- <pelingkupan
             v-if="activeName === '1'"
             @handleReloadVsaList="handleReloadVsaList"
-          />
+          /> -->
         </el-collapse-item>
         <el-collapse-item name="2" title="MATRIKS IDENTIFIKASI DAMPAK">
           <matriks-identifikasi-dampak-table v-if="activeName === '2'" />
         </el-collapse-item>
-        <el-collapse-item name="3" title="DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+        <el-collapse-item name="3" title="EVALUASI DAMPAK POTENSIAL & DAMPAK PENTING HIPOTETIK">
+          <dampak-hipotetik-m-d
+            v-if="activeName === '3'"
+          />
+          <!--
           <dampak-hipotetik
             v-if="activeName === '3'"
             @handleReloadVsaList="handleReloadVsaList"
-          />
+          /> -->
           <!--
           <dampak-potensial
             @handleReloadVsaList="handleReloadVsaList"
@@ -65,10 +77,12 @@
 </template>
 
 <script>
-import Pelingkupan from './components/Pelingkupan.vue';
+// import Pelingkupan from './components/Pelingkupan.vue';
+import ModulPelingkupan from './pelingkupan/index.vue';
 import MatriksIdentifikasiDampakTable from './components/tables/MatriksIdentifikasiDampakTable.vue';
 import MatriksDPHTable from './components/tables/MatriksDPHTable.vue';
-import DampakHipotetik from './components/DampakHipotetik.vue';
+// import DampakHipotetik from './components/DampakHipotetik.vue';
+import DampakHipotetikMD from './components/DPDPH.vue';
 import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
 import BaganAlir from './components/BaganAlir.vue';
@@ -76,13 +90,16 @@ import UploadPetaBatas from './components/UploadPetaBatas.vue';
 
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
+const scopingResource = new Resource('scoping');
 
 export default {
   name: 'FormulirAmdal',
   components: {
-    Pelingkupan,
+    // Pelingkupan,
+    ModulPelingkupan, // dengan master komponen lokal
     MatriksIdentifikasiDampakTable,
-    DampakHipotetik,
+    // DampakHipotetik,
+    DampakHipotetikMD,
     MetodeStudi,
     MatriksDPHTable,
     Workflow,
@@ -97,6 +114,7 @@ export default {
   },
   data() {
     return {
+      sticky: 0,
       isProjectAmdal: false,
       accordionKey: 1,
       idProject: 0,
@@ -107,6 +125,7 @@ export default {
       dampakPentingHipotetikActive: false,
       metodeStudiActive: false,
       activeName: '1',
+      tabName: 'fka',
     };
   },
   computed: {
@@ -118,7 +137,6 @@ export default {
     this.setProjectId();
     this.checkifAmdal();
     this.$store.dispatch('getStep', 3);
-    this.data;
   },
   methods: {
     async checkifAmdal() {
@@ -141,12 +159,29 @@ export default {
       const id = this.$route.params && this.$route.params.id;
       this.idProject = id;
     },
-    handleSaveForm() {
+    async handleSaveForm() {
       const id = this.$route.params && this.$route.params.id;
-      this.$router.push({
-        name: 'DokumenAmdal',
-        params: id,
+      const checkFormulirKA = await scopingResource.list({
+        check_formulir_ka: true,
+        id_project: this.idProject,
       });
+      if (!checkFormulirKA.data) {
+        this.$message({
+          message: 'Mohon lengkapi Formulir KA terlebih dahulu',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      } else {
+        this.$message({
+          message: 'Formulir KA berhasil disimpan',
+          type: 'success',
+          duration: 5 * 1000,
+        });
+        this.$router.push({
+          name: 'DokumenAmdal',
+          params: id,
+        });
+      }
     },
     handleEnableSubmitForm() {
       this.isSubmitEnabled = true;

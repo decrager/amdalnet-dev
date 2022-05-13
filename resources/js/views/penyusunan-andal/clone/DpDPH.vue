@@ -1,17 +1,5 @@
 <template>
   <div v-loading="isLoading" class="app-container">
-
-    <el-button
-      v-if="isFormulator"
-      type="success"
-      size="small"
-      icon="el-icon-check"
-      style="margin-bottom: 10px;"
-      @click="handleSaveForm()"
-    >
-      Simpan Perubahan
-    </el-button>
-
     <span style="float:right">
       <span v-show="!isLoading"><el-button icon="el-icon-refresh" round @click="refresh" /></span>
       <span v-show="isLoading === true"><el-button icon="el-icon-loading"> Refreshing data...</el-button></span>
@@ -70,7 +58,7 @@
                 <p>{{ impact.rona_awal_name }} akibat {{ impact.component_name }}</p>
               </td>
               <td>
-                <template v-if="impact.is_hypothetical_significant">
+                <template>
                   <template v-for="(pie, index) in pieParams">
                     <div :key="'pie_'+impact.id+'_'+pie.id" class="div-fka formA">
                       <el-popover
@@ -108,6 +96,7 @@
               </td>
               <td>
                 <el-input
+                  v-if="impact.is_hypothetical_significant"
                   v-model="impact.study_location"
                   type="textarea"
                   :rows="3"
@@ -116,14 +105,25 @@
                 />
               </td>
               <td>
-                <p><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" :disabled="!isFormulator" /> tahun</p>
-                <p><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" :disabled="!isFormulator" /> bulan</p>
+                <p v-if="impact.is_hypothetical_significant"><el-input-number v-model="impact.study_length_year" :min="0" :max="10" size="mini" :disabled="!isFormulator" /> tahun</p>
+                <p v-if="impact.is_hypothetical_significant"><el-input-number v-model="impact.study_length_month" :min="0" :max="11" size="mini" :disabled="!isFormulator" /> bulan</p>
               </td>
             </tr>
           </template>
         </tbody>
       </template>
     </table>
+    <div style="margin: 2em 0 1em 0; text-align: right;">
+      <el-button
+        v-if="isFormulator"
+        type="success"
+        size="small"
+        icon="el-icon-check"
+        @click="handleSaveForm()"
+      >
+        Simpan Perubahan
+      </el-button>
+    </div>
   </div>
 </template>
 <script>
@@ -154,17 +154,8 @@ export default {
     };
   },
   computed: {
-    isSubstance() {
-      return this.$store.getters.roles.includes('examiner-substance');
-    },
-    isExaminer() {
-      return this.$store.getters.roles.includes('examiner');
-    },
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
-    },
-    isAdmin() {
-      return this.userInfo.roles.includes('examiner-administration');
     },
   },
   mounted() {

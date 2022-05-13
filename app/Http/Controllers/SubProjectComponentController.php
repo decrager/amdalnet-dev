@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Entity\ProjectStage;
 use App\Entity\SubProjectComponent;
+use App\Entity\Component;
 use App\Entity\SubProjectRonaAwal;
 use App\Http\Resources\SubProjectComponentResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Entity\ImpactIdentification;
+use App\Entity\ProjectComponent;
+use App\Entity\SubProject;
+use SebastianBergmann\CodeCoverage\Report\Xml\Project;
+use App\Entity\ProjectRonaAwal;
+use App\Entity\PotentialImpactEvaluation;
 
 class SubProjectComponentController extends Controller
 {
@@ -18,6 +26,11 @@ class SubProjectComponentController extends Controller
     public function index(Request $request)
     {
         $params = $request->all();
+        if(isset($params['inquire']) && ($params['inquire'])){
+           $spra = SubProjectRonaAwal::where('id_sub_project_component', $request->id_sub_project_component)
+                ->get();
+            return response($spra, 200);
+        }
         if (isset($params['id_project'])){
             $components = SubProjectComponent::select('sub_project_components.*',
                 'components.name AS name_master',
@@ -61,7 +74,7 @@ class SubProjectComponentController extends Controller
             }
         } else if (isset($params['id_sub_project'])){
             $id_sub_project = $params['id_sub_project'];
-            
+
             if (isset($params['id_project_stage'])) {
                 $id_project_stage = $params['id_project_stage'];
                 $level1 = SubProjectComponent::with('component')
@@ -81,8 +94,36 @@ class SubProjectComponentController extends Controller
                 return SubProjectComponentResource::collection($components);
             }
         } else {
-            return SubProjectComponentResource::collection(SubProjectComponent::with('component')->get()); 
+            return SubProjectComponentResource::collection(SubProjectComponent::with('component')->get());
         }
+    }
+
+    public function subProjectComponents(Request $request){
+
+        // commented by HH, on 20220326
+        $params = $request->all();
+        if (!isset($params['id_project']) || !$params['id_project'])
+        {
+            return response('no project specified', 500);
+        }
+
+        return response(Component::from('components')->
+              select(
+                  'components.*',
+                  'project_stages.name as project_stage_name',
+                  'sub_project_components.id as id_sub_project_component',
+                  'sub_projects.id as id_sub_project',
+                  'sub_project_components.description_specific as description',
+                  'sub_project_components.unit as measurement'
+              )
+              ->join('sub_project_components', 'sub_project_components.id_component','=', 'components.id')
+              ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+              // ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
+              ->leftJoin('project_stages', 'project_stages.id', '=', 'components.id_project_stage')
+              ->where('sub_projects.id_project', $request->id_project)
+              ->where('sub_project_components.is_andal', $request->mode)
+              ->get());
+
     }
 
     /**
@@ -103,7 +144,22 @@ class SubProjectComponentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // id_sub_project, id_component, desc, unit
+        $params = $request->all();
+        if(isset($params['id_sub_project']) && $params['id_sub_project']) {
+            $spc = SubProjectComponent::firstOrNew([
+                'id_sub_project' => $request->id_sub_project,
+                'id_component' => $request->id_component,
+                'is_andal' => $request->mode
+            ]);
+
+            $spc->description_specific = $request->description;
+            $spc->unit = $request->measurement;
+            if ($spc->save()){
+                return response($spc, 200);
+            }
+
+        }
     }
 
     /**
@@ -148,12 +204,62 @@ class SubProjectComponentController extends Controller
      */
     public function destroy(SubProjectComponent $subProjectComponent)
     {
+
         try {
-            // cascade delete for sub_project_rona_awals
-            SubProjectRonaAwal::select('id')
-                ->where('id_sub_project_component', $subProjectComponent->id)
-                ->delete();
-            $subProjectComponent->delete();
+            // get sister subprojects
+
+            $spra = SubProjectRonaAwal::where('id_sub_project_component', $subProjectComponent->id)->get();
+
+            if($spra){
+
+                $sp = SubProject::where('id', $subProjectComponent->id_sub_project)->first();
+                $sSP = SubProject::from('sub_projects')
+                    ->select('sub_projects.id')
+                    ->where('sub_projects.id_project', $sp->id_project)
+                    ->where('sub_projects.id', '<>', $sp->id)->get();
+                $idSubProjects = [];
+                foreach($sSP as $s){
+                    $idSubProjects[] = $s->id;
+                }
+
+
+                foreach($spra as $sra){
+
+                    // if if there's other combination of
+                    $id_rona_awal = $sra->id_rona_awal;
+                    $spcra = SubProjectComponent::from('sub_project_components')
+                      ->select('sub_project_components.id as id_spc', 'sub_project_rona_awals.id as id_spra')
+                      ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id' )
+                      ->where('sub_project_rona_awals.id_rona_awal', $id_rona_awal)
+                      ->where('sub_project_rona_awals.is_andal', $subProjectComponent->is_andal)
+                      ->where('sub_project_components.is_andal', $subProjectComponent->is_andal)
+                      ->where('sub_project_components.id_component', $subProjectComponent->id_component)
+                      ->whereIn('sub_project_components.id_sub_project', $idSubProjects)->get();
+
+                    if(count($spcra) === 0){
+                        // delete impacts with id_component and id_rona_awal
+                        $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone'];
+                        $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
+                        $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
+
+                        $mode = $subProjectComponent->is_andal? 1 : 0;
+                        $pc = ProjectComponent::where(['id_project' => $sp->id_project, 'id_component' => $subProjectComponent->id_component])->first();
+                        $pra = ProjectRonaAwal::where(['id_project' => $sp->id_project, 'id_rona_awal' => $id_rona_awal])->first();
+                        $imp = $impactClasses[$mode]::where([
+                            'id_project' => $sp->id_project,
+                            'id_project_component' => $pc->id,
+                            'id_project_rona_awal' => $pra->id
+                        ])->first();
+                        if($imp){
+                            $pie = $pieClasses[$mode]::where($pieIdNames[$mode], $imp->id)->delete();
+                            $imp->delete();
+                        }
+                    }
+
+                    $sra->delete();
+                }
+            }
+            return response($subProjectComponent->delete(), 200);
         } catch (\Exception $ex) {
             response()->json(['error' => $ex->getMessage()], 403);
         }

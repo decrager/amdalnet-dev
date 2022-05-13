@@ -6,7 +6,7 @@ image: php:7.4-cli
 stages:
   # - test
   - dev
-  - cloud
+  - staging
   - production
 
 # unit_test:
@@ -30,6 +30,9 @@ deploy_dev:
     - docker-compose exec -T laravel composer install
     - docker-compose exec -T laravel composer dump-autoload
     - docker-compose exec -T laravel php artisan migrate
+    - docker-compose exec -T laravel php artisan cache:clear
+    - docker-compose exec -T laravel php artisan config:clear
+    - docker-compose exec -T laravel php artisan route:clear
     - docker-compose exec -T laravel npm install
     - docker-compose exec -T laravel npm run production
     # - docker-compose restart laravel
@@ -43,42 +46,26 @@ deploy_dev:
   tags:
     - amdalnet
 
-deploy_cloud:
-  stage: cloud
-  script:
-    - cd /var/www/amdalnet/
-    - git reset --hard origin/master
-    - git pull
-    - composer install
-    - composer dump-autoload
-    - php artisan migrate
-    - npm install
-    - npm run production
-    #- PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql
-    #- PGPASSWORD=4md4lNET psql -h localhost -d amdalnet_bak -U postgres -f ~/amdalnet.sql
-  only:
-    - master
-  tags:
-    - cloud
-
-deploy_prod:
-  stage: production
-  script:
-    - cd /var/www/amdalnet/
-    - git reset --hard origin/master
-    - git pull
-    - composer install
-    - composer dump-autoload
-    - php artisan migrate
-    - npm install
-    - npm run production
-  only:
-    - tags
-  tags:
-    - prod
+# deploy_cloud:
+#   stage: cloud
+#   script:
+#     - cd /var/www/amdalnet/
+#     - git reset --hard origin/master
+#     - git pull
+#     - composer install
+#     - composer dump-autoload
+#     - php artisan migrate
+#     - npm install
+#     - npm run production
+#     #- PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql
+#     #- PGPASSWORD=4md4lNET psql -h localhost -d amdalnet_bak -U postgres -f ~/amdalnet.sql
+#   only:
+#     - master
+#   tags:
+#     - cloud
 
 deploy_api-dev_menlhk:
-  stage: production
+  stage: staging
   script:
     - cd /var/www/amdalnet/
     - git reset --hard origin/master
@@ -86,6 +73,9 @@ deploy_api-dev_menlhk:
     - composer install
     - composer dump-autoload
     - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - php artisan route:clear
     - npm install
     - npm run production
   only:
@@ -94,7 +84,7 @@ deploy_api-dev_menlhk:
     - amdalnet-api-dev-menlhk
 
 deploy_app-dev_menlhk:
-  stage: production
+  stage: staging
   script:
     - cd /var/www/amdalnet/
     - git reset --hard origin/master
@@ -102,8 +92,14 @@ deploy_app-dev_menlhk:
     - composer install
     - composer dump-autoload
     - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - php artisan route:clear
     - npm install
     - npm run production
+    - sudo systemctl restart php8.1-fpm.service
+    #- php /home/ubuntu/cachetool.phar opcache:reset --cli
+    #- php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
     #- echo "update app server"
     #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
   only:
@@ -121,12 +117,32 @@ deploy_api_menlhk:
     - composer install
     - composer dump-autoload
     - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - php artisan route:clear
     - npm install
     - npm run production
   only:
     - master
   tags:
     - amdalnet-api-menlhk
+
+# deploy_prod:
+#   stage: production
+#   script:
+#     - cd /var/www/amdalnet/
+#     - git reset --hard origin/master
+#     - git pull
+#     - composer install
+#     - composer dump-autoload
+#     - php artisan migrate
+#     - npm install
+#     - npm run production
+#   only:
+#     - tags
+#   tags:
+#     - prod
+
 
 deploy_app_menlhk:
   stage: production
@@ -137,8 +153,14 @@ deploy_app_menlhk:
     - composer install
     - composer dump-autoload
     - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - php artisan route:clear
     - npm install
     - npm run production
+    #- php /home/ubuntu/cachetool.phar opcache:reset --cli
+    - php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
+    # - sudo systemctl restart php8.1-fpm.service
     #- echo "update app server"
     #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
   only:

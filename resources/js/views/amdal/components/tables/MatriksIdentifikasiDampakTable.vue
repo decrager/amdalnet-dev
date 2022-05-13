@@ -47,6 +47,11 @@ export default {
       isLoading: true,
     };
   },
+  computed: {
+    isAndal() {
+      return this.$route.name === 'penyusunanAndal';
+    },
+  },
   mounted() {
     this.getData();
   },
@@ -83,11 +88,11 @@ export default {
     async getData() {
       this.isLoading = true;
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
-      await axios.get('api/matriks-dampak/rona-mapping/' + this.idProject)
+      await axios.get('api/matriks-dampak/rona-mapping/' + this.idProject + '?isAndal=' + this.isAndal)
         .then(response => {
           this.ronaMapping = response.data;
         });
-      await axios.get('api/matriks-dampak/table/' + this.idProject)
+      await axios.get('api/matriks-dampak/table/' + this.idProject + '?isAndal=' + this.isAndal)
         .then(response => {
           this.data = response.data;
           const ctypes = {};

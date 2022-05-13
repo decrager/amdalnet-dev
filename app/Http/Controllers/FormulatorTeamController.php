@@ -9,9 +9,12 @@ use App\Entity\FormulatorTeamMember;
 use App\Entity\Lpjp;
 use App\Entity\Project;
 use App\Http\Resources\FormulatorResource;
+use App\Laravue\Models\User;
+use App\Notifications\FormulatorTeamAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,8 +28,26 @@ class FormulatorTeamController extends Controller
     public function index(Request $request)
     {
         if($request->type && $request->type == 'formulator') {
-            return Formulator::select('id', 'name', 'expertise', 'cv_file', 'reg_no', 'membership_status')
-                                ->where('membership_status', '!=', 'TA')->orderBy('name')->get();
+            $id_project = $request->idProject;
+            if($request->lpjp) {
+                return Formulator::select('id', 'name', 'expertise', 'cv_file', 'cert_file', 'reg_no', 'membership_status', 'date_start', 'date_end')
+                    ->where([['membership_status', '!=', 'TA'],['id_lpjp', $request->idLpjp],['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+                    ->orWhere([['membership_status', '!=', 'TA'],['id_lpjp', $request->idLpjp],['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]])
+                    ->orderBy('name')
+                    ->get();
+            }
+
+            return Formulator::select('id', 'name', 'expertise', 'cv_file', 'cert_file', 'reg_no', 'membership_status', 'date_start', 'date_end')
+                                ->whereDoesntHave('teamMember', function($q) use($id_project) {
+                                    $q->whereHas('team', function($query) use($id_project) {
+                                        $query->where('id_project', $id_project);
+                                    });
+                                })
+                                ->where(function($q) {
+                                    $q->where([['membership_status', '!=', 'TA'],['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])->orWhere([['membership_status', '!=', 'TA'],['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
+                                })
+                                ->orderBy('name')
+                                ->get();
         }
 
         if($request->type && $request->type == 'project') {
@@ -55,12 +76,14 @@ class FormulatorTeamController extends Controller
                 $member[] = [
                     'num' => $num,
                     'id' => $f->id,
+                    'db_id' => $f->id_formulator,
                     'name' => $f->formulator->name,
                     'value' => $f->formulator->name,
                     'type' => 'update',
                     'position' => $f->position,
                     'expertise' => $f->formulator->expertise,
                     'file' => $f->formulator->cv_file,
+                    'certificate' => $f->formulator->cert_file,
                     'reg_no' => $f->formulator->reg_no,
                     'membership_status' => $f->formulator->membership_status
                 ];
@@ -184,6 +207,8 @@ class FormulatorTeamController extends Controller
         } else {
             $params = $request->all();
 
+            $receiver = array();
+
             // check if project team exist
             $team = FormulatorTeam::where('id_project', $request->idProject)->first();
             if(!$team) {
@@ -213,6 +238,17 @@ class FormulatorTeamController extends Controller
 
                 $teamMember->position = $members[$i]['position'];
                 $teamMember->save();
+
+                // add to list notification receiver
+                $formulator = Formulator::find($members[$i]['id']);
+
+                if($formulator){
+                    $user = User::where('email', $formulator->email)->first();
+
+                    if($user) {
+                        array_push($receiver, $user);
+                    }
+                }
             }
 
             // create team members ahli
@@ -262,6 +298,9 @@ class FormulatorTeamController extends Controller
             for($b = 0; $b < count($deletedAhli); $b++) {
                 FormulatorTeamMember::destroy($deletedAhli[$b]);
             }
+
+            // send notif
+            Notification::send($receiver, new FormulatorTeamAssigned($team));
 
             return response()->json(['message' => 'success']);
         }

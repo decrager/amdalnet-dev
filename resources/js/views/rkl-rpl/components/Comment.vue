@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-input
-      v-if="userInfo.roles.includes('examiner')"
+      v-if="!userInfo.roles.includes('formulator')"
       v-model="comment"
       type="textarea"
       :rows="3"
       placeholder="Silahkan isi komentar"
     />
-    <div v-if="userInfo.roles.includes('examiner')" class="send-btn-container">
+    <div v-if="!userInfo.roles.includes('formulator')" class="send-btn-container">
       <el-button
         :loading="loadingSubmit"
         type="primary"
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const matriksRklResource = new Resource('matriks-rkl');
 
@@ -47,21 +48,27 @@ export default {
       comment: null,
       loadingSubmit: false,
       loadingComments: false,
-      userInfo: {},
+      // userInfo: {},
       comments: [],
     };
+  },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
   },
   created() {
     this.getComments();
   },
   methods: {
     async getComments() {
-      await this.getUserInfo();
+      // await this.getUserInfo();
       const data = await matriksRklResource.list({
         idProject: this.idProject,
         idUser: this.userInfo.id,
         comment: 'true',
-        role: this.userInfo.roles.includes('examiner') ? 'true' : 'false',
+        role: this.userInfo.roles.includes('formulator') ? 'false' : 'true',
       });
       this.comments = data;
     },
@@ -82,9 +89,9 @@ export default {
       });
       this.loadingSubmit = false;
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
   },
 };
 </script>

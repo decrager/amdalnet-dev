@@ -4,8 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
 use App\Entity\SubProjectRonaAwal;
+use App\Entity\RonaAwal;
+use App\Entity\ImpactIdentification;
 use App\Http\Resources\SubProjectRonaAwalResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Entity\PotentialImpactEvalClone;
+use App\Entity\PotentialImpactEvaluation;
+use App\Entity\ProjectRonaAwal;
+use App\Entity\ProjectComponent;
+use App\Entity\SubProjectComponent;
+use App\Entity\Component;
+use App\Entity\SubProject;
 
 class SubProjectRonaAwalController extends Controller
 {
@@ -17,6 +27,53 @@ class SubProjectRonaAwalController extends Controller
     public function index(Request $request)
     {
         $params = $request->all();
+        if(isset($params['inquire']) && ($params['inquire'])){
+            /* $spra = SubProjectRonaAwal::where('id', $request->id_sub_project_rona_awal)->first();
+            $spc = SubProjectComponent::where('id', $request->id_sub_project_component)->first();
+            if($spra && $spc){
+                $pc = ProjectComponent::where(['id_project' => $request->id_project, 'id_component' => $spc->id_component])
+            }
+            return response([], 200);*/
+            return response([1], 200);
+        }
+
+        if(isset($params['id_project'] ) && (isset($params['scoping']) && ($params['scoping']))) {
+            // return response($params);
+            return DB::select( DB::raw("
+            select rona_awal.*,
+            rona_awal.name as value,
+            sub_project_rona_awals.description_specific as description,
+            sub_project_rona_awals.unit as measurement,
+            sub_project_rona_awals.id as id_sub_project_rona_awal,
+            sub_project_components.id as id_sub_project_component,
+            components.id_project_stage as id_project_stage,
+            sub_projects.id as id_sub_project
+          from rona_awal
+          join sub_project_rona_awals on sub_project_rona_awals.id_rona_awal = rona_awal.id
+          join sub_project_components on sub_project_components.id = sub_project_rona_awals.id_sub_project_component
+          join sub_projects on sub_projects.id = sub_project_components.id_sub_project
+          left join components on components.id = sub_project_components.id_component
+          join projects on projects.id = sub_projects.id_project
+          where sub_project_rona_awals.is_andal = :andal and  sub_project_components.is_andal = :andal and
+           projects.id = :val"), ['val' =>$request->id_project, 'andal' => $request->mode  ]);
+
+
+            /*return response(RonaAwal::from('rona_awal')->select(
+                'rona_awal.*',
+                'rona_awal.name as value',
+                'sub_project_rona_awals.description_specific as description',
+                'sub_project_rona_awals.unit as measurement',
+                'sub_project_rona_awals.id as id_sub_project_rona_awal',
+                'sub_project_components."id" as id_sub_project_component'
+            )
+            ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_rona_awal', '=', 'rona_awal.id' )
+            ->join('sub_project_components', 'sub_project_components.id','','sub_project_rona_awals.id_sub_project_component')
+            ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+            ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
+            ->where('projects.id',$request->id_project)
+            ->get(), 200);*/
+        }
+
         if (isset($params['id_project'])){
             $rona_awals = SubProjectRonaAwal::select('sub_project_rona_awals.*',
                 'rona_awal.name AS name_master',
@@ -33,7 +90,7 @@ class SubProjectRonaAwalController extends Controller
             if (isset($params['with_component_type']) && $params['with_component_type']){
                 $component_types = ComponentType::select('component_types.*')
                     ->orderBy('id', 'asc')
-                    ->get();                
+                    ->get();
                 $data = [];
                 foreach ($rona_awals as $rona_awal) {
                     $id_component_type = $rona_awal['id_component_type_master'];
@@ -74,6 +131,30 @@ class SubProjectRonaAwalController extends Controller
         }
     }
 
+    public function subProjectHues(Request $request)
+    {
+        $params = $request->all();
+
+        $res = RonaAwal::from("rona_awal")
+        ->select(
+            'rona_awal.*',
+            'rona_awal.name as value',
+            'sub_project_rona_awals.description_specific as description',
+            'sub_project_rona_awals.unit as measurement',
+            'sub_project_rona_awals.id as id_sub_project_rona_awal',
+
+
+        )
+        ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_rona_awal', '=', 'rona_awal.id' )
+        ->join('sub_project_components', 'sub_project_components.id','','sub_project_rona_awals.id_sub_project_component')
+        ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+        ->join('projects', 'projects.id', '=', 'sub_projects.id_project')
+        ->where('projects.id',$request->id_project);
+
+        return response($res->get(), 200);
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -92,7 +173,150 @@ class SubProjectRonaAwalController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // id, name, description, measurement, id_sub_project_component
+        $params = $request->all();
+        if(isset($params['id_sub_project_component']) && $params['id_sub_project_component']) {
+            $spr = SubProjectRonaAwal::firstOrNew([
+                'id_sub_project_component' => $request->id_sub_project_component,
+                'id_rona_awal' => $request->id,
+                'is_andal' => $request->mode
+            ]);
+
+            $spr->description_specific = $request->description;
+            $spr->unit = $request->measurement;
+            if ($spr->save()){
+                // save impact
+                $mode = $request->mode ? 1 : 0;
+                $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone'];
+                $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
+                $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
+
+                $imp = $impactClasses[$request->mode]::firstOrCreate([
+                    'id_project' => $request->id_project,
+                    'id_project_component' => $request->id_project_component,
+                    'id_project_rona_awal' => $request->id_project_rona_awal,
+                ]);
+
+                // save pies
+                if ($imp) {
+
+                    $pc = ProjectComponent::where('id', $request->id_project_component)->first();
+                    $component = Component::where('id', $pc->id_component)->first();
+
+                    $spcs = SubProjectComponent::from('sub_project_components')
+                        ->select('sub_project_components.id',
+                          'sub_project_components.description_specific as description',
+                          'sub_project_components.unit as measurement',
+                          'sub_projects.name as sub_project_name'
+                        )
+                        ->join('project_components', 'project_components.id_component', '=', 'sub_project_components.id_component')
+                        ->join('sub_projects', function($join){
+                            $join->on('sub_projects.id_project', '=', 'project_components.id_project')
+                            ->on('sub_projects.id', '=', 'sub_project_components.id_sub_project');
+                        })
+                        ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id')
+                        ->where('project_components.id_project', $imp->id_project)
+                        ->where('sub_project_rona_awals.is_andal', $request->mode)
+                        ->where('sub_project_rona_awals.id_rona_awal', $spr->id_rona_awal)
+                        ->where('sub_project_components.is_andal', $request->mode)
+                        ->where('sub_project_components.id_component', $pc->id_component)->get();
+                    $text = '<p><strong>Deskripsi '.$component->name.'</strong></p>';
+                    $text .= $pc->description;
+                    $text .= '<p><strong>Besaran</strong></p>';
+                    $text .= "<p>$pc->measurement</p>";
+
+                    $sub = '';
+                    $ids = [];
+                    foreach ($spcs as $s) {
+                        $sub .= '<li><p><strong>'.$component->name.' pada '.$s['sub_project_name'].'</strong></p>'.
+                        $s['description'].
+                        '<p><strong>Besaran</strong></p>'.
+                        '<p>'.$s['measurement'].'</p></li>';
+                        $ids[] = $s['id'];
+                    }
+
+                    $text .= '<ol>'.$sub.'</ol>';
+                    $pieA = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode] => $imp->id,
+                        'id_pie_param' => 1,
+                    ]);
+                    $pieA->text = $text;
+                    $pieA->save();
+
+                    $pra = ProjectRonaAwal::where('id',$imp->id_project_rona_awal)->first();
+                    $ra = RonaAwal::where('id',$pra->id_rona_awal)->first();
+
+                    $text = '<p><strong>Deskripsi '.$ra->name.'</strong></p>';
+                    $text .= $pra->description;
+                    $text .= '<p><strong>Besaran Dampak</strong></p>';
+                    $text .='<p>'.$pra->measurement.'</p>';
+
+                    $pieB = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode]  => $imp->id,
+                        'id_pie_param' => 2,
+                    ]);
+                    $pieB->text = $text;
+                    $pieB->save();
+
+                    $pieC = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode] => $imp->id,
+                        'id_pie_param' => 3,
+                    ]);
+                    if (!$pieC->exists)
+                    {
+                        $pieC->text = null;
+                        $pieC->save();
+                    }
+
+                    $pieD = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode] => $imp->id,
+                        'id_pie_param' => 4,
+                    ]);
+
+                    if (!$pieD->exists)
+                    {
+                        $pieD->text = null;
+                        $pieD->save();
+                    }
+
+                    $spra = SubProjectRonaAwal::from('sub_project_rona_awals')
+                      ->select(
+                        'sub_project_rona_awals.id',
+                        'sub_project_rona_awals.description_specific as description',
+                        'sub_project_rona_awals.unit as measurement',
+                        'sub_projects.name as sub_project_name'
+                      )
+                      ->join('sub_project_components', 'sub_project_components.id', '=', 'sub_project_rona_awals.id_sub_project_component')
+                      ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+                      ->whereIn('sub_project_rona_awals.id_sub_project_component', $ids)
+                      ->where('sub_project_rona_awals.is_andal', $request->mode)
+                      ->where('sub_project_rona_awals.id_rona_awal', $spr->id_rona_awal)->get();
+
+                    $text = '<p><strong>Deskripsi '.$ra->name.' terkait '.$component->name.'</strong></p>';
+                    $sub = '';
+                    foreach ($spra as $r) {
+                        $sub .= '<li><p><strong>'.$r['sub_project_name'].'</strong></p>'.
+                        $r['description'].
+                        '<p><strong>Besaran</strong></p>'.
+                        '<p>'.$r['measurement'].'</p></li>';
+                    }
+                    $text .='<ol>'.$sub.'</ol>';
+                    $pieE = $pieClasses[$request->mode]::firstOrNew([
+                        $pieIdNames[$request->mode] => $imp->id,
+                        'id_pie_param' => 5,
+                    ]);
+                    $pieE->text = $text;
+                    $pieE->save();
+                }
+
+                return response([
+                    'id_sub_project_rona_awal' =>  $spr->id,
+                    'id_impact_identification'=> $imp->id
+                ], 200);
+                // return response($spr->id, 200);
+            }
+        }
+        return response(500);
     }
 
     /**
@@ -137,12 +361,52 @@ class SubProjectRonaAwalController extends Controller
      */
     public function destroy(SubProjectRonaAwal $subProjectRonaAwal)
     {
-        try {
-            $subProjectRonaAwal->delete();
-        } catch (\Exception $ex) {
-            response()->json(['error' => $ex->getMessage()], 403);
-        }
+        // try {
+            $spc = SubProjectComponent::where('id', $subProjectRonaAwal->id_sub_project_component)->first();
+            $sp = SubProject::where('id', $spc->id_sub_project)->first();
+            $sSP = SubProject::where('id_project', $sp->id_project)
+                    ->where('id', '<>', $sp->id)->get();
 
-        return response()->json(null, 204);
+              $idSubProjects = [];
+              foreach($sSP as $s){
+                  $idSubProjects[] = $s->id;
+              }
+
+            $ospcra = SubProjectComponent::from('sub_project_components')
+            ->select('sub_project_components.id as id_spc', 'sub_project_rona_awals.id as id_spra')
+            ->join('sub_project_rona_awals', 'sub_project_rona_awals.id_sub_project_component', '=', 'sub_project_components.id' )
+            ->where('sub_project_rona_awals.id_rona_awal', $subProjectRonaAwal->id_rona_awal)
+            ->where('sub_project_rona_awals.is_andal', $subProjectRonaAwal->is_andal)
+            ->where('sub_project_components.id_component', $spc->id_component)
+            ->where('sub_project_components.is_andal', $subProjectRonaAwal->is_andal)
+            ->whereIn('sub_project_components.id_sub_project', $idSubProjects)->get();
+
+            if(count($ospcra) === 0){
+                $mode = $subProjectRonaAwal->is_andal ? 1 : 0;
+                $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone'];
+                $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
+                $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
+
+
+                $pc = ProjectComponent::where(['id_project' => $sp->id_project, 'id_component' => $spc->id_component])->first();
+                $pra = ProjectRonaAwal::where(['id_project' => $sp->id_project, 'id_rona_awal' => $subProjectRonaAwal->id_rona_awal])->first();
+                $imp = $impactClasses[$mode]::where([
+                    'id_project' => $sp->id_project,
+                    'id_project_component' => $pc->id,
+                    'id_project_rona_awal' => $pra->id
+                ])->first();
+                if($imp){
+                    $pie = $pieClasses[$mode]::where($pieIdNames[$mode], $imp->id)->delete();
+                    $imp->delete();
+                }
+            }
+
+            return response($subProjectRonaAwal->delete(), 200);
+
+        // } catch (\Exception $ex) {
+        //    response()->json(['error' => $ex->getMessage()], 403);
+        //}
+
+        //return response()->json(null, 204);
     }
 }

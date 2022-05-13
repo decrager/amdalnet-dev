@@ -60,6 +60,7 @@ class PublicConsultationController extends Controller
                 'negative_feedback_summary' => 'required',
                 'doc_files' => 'required',
                 'doc_metadatas' => 'required',
+                'doc_photo_metadatas' => 'required',
                 'doc_berita_acara_pelaksanaan' => 'required',
                 'doc_berita_acara_penunjukan_wakil_masyarakat' => 'required',
                 'doc_pengumuman' => 'required',
@@ -106,6 +107,7 @@ class PublicConsultationController extends Controller
             $doc_files = null;
             try {
                 //upload docs
+                $photo_metadatas = json_decode($validated['doc_photo_metadatas'], true);
                 $metadatas = json_decode($validated['doc_metadatas']);
                 $doc_files = json_decode($validated['doc_files']);
             } catch (Exception $e){
@@ -117,42 +119,64 @@ class PublicConsultationController extends Controller
                 return response()->json(['errors' => 'Metadata mismatch'], 400);
             }
             $doc_inserted = 0;
-            foreach ($doc_files as $i => $doc_file){
+
+            // === FOTO DOKUMENTASI === //
+            for ($i = 0; $i < count($photo_metadatas); $i++){
+                //upload file
+                $metadata = $photo_metadatas[$i];
+                $file_extension = '';
+                $filepath = '';
+                try {
+                    if($request->hasFile('file-' . $i)) {
+                        $file = $request->file('file-' . $i);
+                        $file_extension = $file->extension();
+                        $image_name = 'docs/pubcons/img/' . uniqid() . '.' . $file_extension;
+                        $filepath = Storage::url($image_name);
+                        $file->storePubliclyAs('public', $image_name);
+                    }
+                } catch (Exception $e){
+                    DB::rollBack();
+                    return response()->json(['errors' => 'Error uploading file'], 500);
+                }
+                $pubconsDoc = PublicConsultationDoc::create([
+                    'public_consultation_id' => $parent->id,
+                    'doc_json' => json_encode([
+                        'doc_type' => $metadata['doc_type'],
+                        'original_filename' => $metadata['filename'],
+                        'file_extension' => $file_extension,
+                        'filepath' => $filepath,
+                        'uploaded_by' => $metadata['uploaded_by'],
+                    ]),
+                ]);
+                if ($pubconsDoc){
+                    $doc_inserted++;
+                }
+            }
+
+            // === LAMPIRAN === //
+            for($i = 0; $i < count($metadatas); $i++){
                 //upload file
                 $metadata = $metadatas[$i];
                 $file_extension = '';
                 $filepath = '';
                 try {
-                    if (property_exists($doc_file, 'dataURL')){
-                        // Foto Dokumentasi (base64)
-                        $data = $doc_file->dataURL;
-                        list($type, $data) = explode(';', $data);
-                        list(,$extension) = explode('/',$type);
-                        list(,$data) = explode(',', $data);
-                        $decoded_data = base64_decode($data);
-                        // save img
-                        $img_filepath = 'docs/pubcons/img/' . uniqid() . '.' . $extension;
-                        Storage::put($img_filepath, $decoded_data);
-                        $filepath = 'storage/' . $img_filepath;
-                        $file_extension = $extension;
-                    } else {
-                        // Dokumen Lampiran
-                        $file_field_name = sprintf('doc_%s', 
-                                            str_replace(' ', '_', strtolower($metadata->doc_type)));
-                        $file = $request->file($file_field_name);
+                    // Dokumen Lampiran
+                    $file_field_name = sprintf('doc_%s', 
+                                        str_replace(' ', '_', strtolower($metadata->doc_type)));
+                    $file = $request->file($file_field_name);
 
-                        $filename = uniqid() . '.' . $file->extension();
-                        // create subfolder: ba/dh/p/u
-                        $exp = explode(' ', $metadata->doc_type);
-                        $f = $exp[0][0];
-                        $r = count($exp) == 2 ? $exp[1][0] : '';
-                        $subfolder = strtolower(sprintf('%s%s', $f, $r));
-                        $folder = sprintf('docs/pubcons/%s', $subfolder);
-                        // save file
-                        $file->storePubliclyAs($folder, $filename);
-                        $filepath = sprintf('storage/%s/%s', $folder, $filename);
-                        $file_extension = $file->extension();
-                    }
+                    $filename = uniqid() . '.' . $file->extension();
+                    // create subfolder: ba/dh/p/u
+                    $exp = explode(' ', $metadata->doc_type);
+                    $f = $exp[0][0];
+                    $r = count($exp) == 2 ? $exp[1][0] : '';
+                    $subfolder = strtolower(sprintf('%s%s', $f, $r));
+                    $folder = sprintf('docs/pubcons/%s', $subfolder);
+                    $file_name = '/' . $folder . '/' . $filename;
+                    // save file
+                    $file->storePubliclyAs('public', $file_name);
+                    $filepath = Storage::url($file_name);
+                    $file_extension = $file->extension();
                 } catch (Exception $e){
                     DB::rollBack();
                     return response()->json(['errors' => 'Error uploading file'], 500);
@@ -171,7 +195,7 @@ class PublicConsultationController extends Controller
                     $doc_inserted++;
                 }
             }
-            if ($parent && ($doc_inserted == count($metadatas))){
+            if ($parent && ($doc_inserted == (count($metadatas) + count($photo_metadatas)))){
                 DB::commit();
             } else {
                 DB::rollBack();

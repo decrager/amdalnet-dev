@@ -2,8 +2,10 @@
 
 namespace App\Laravue\Models;
 
+use App\Notifications\UserRegistered;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -28,7 +30,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'avatar'
+        'name', 'email', 'password', 'avatar', 'oss_username', 'active', 'access_token', 'refresh_token'
     ];
 
     /**
@@ -54,6 +56,18 @@ class User extends Authenticatable
      * @var string
      */
     protected $guard_name = 'api';
+
+    protected $raw_password = '';
+
+    public function getRawPassword()
+    {
+        return $this->raw_password;
+    }
+
+    public function setRawPassword($password)
+    {
+        $this->raw_password = $password;
+    }
 
     /**
      * @inheritdoc
@@ -98,5 +112,19 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::created(function ($user) {
+            // $admins = User::all()->filter(function($user) {
+            //     return $user->hasRole('admin');
+            // });
+
+            // Notification::send($admins, new UserRegistered($user));
+            Notification::send($user, new UserRegistered($user));
+            event(new \App\Events\NotificationEvent());
+        });
     }
 }

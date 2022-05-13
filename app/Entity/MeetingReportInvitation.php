@@ -20,4 +20,14 @@ class MeetingReportInvitation extends Model
     {
         return $this->belongsTo(ExpertBankTeamMember::class, 'id_expert_bank_team_member', 'id');
     }
+
+    public function feasibilityTestTeamMember()
+    {
+        return $this->belongsTo(FeasibilityTestTeamMember::class, 'id_feasibility_test_team_member', 'id');
+    }
+
+    public function tukSecretaryMember()
+    {
+        return $this->belongsTo(TukSecretaryMember::class, 'id_tuk_secretary_member', 'id');
+    }
 }

@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const ChunkRenamePlugin = require('webpack-chunk-rename-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 function resolve(dir) {
   return path.join(
@@ -28,6 +29,12 @@ module.exports = {
       '@': path.join(__dirname, '/resources/js'),
     },
   },
+  optimization: {
+    concatenateModules: true,
+    chunkIds: 'total-size',
+    minimize: true,
+    minimizer: [new TerserPlugin()],
+  },
   module: {
     rules: [
       {
@@ -44,5 +51,8 @@ module.exports = {
   output: {
     filename: '[name].js',
     chunkFilename: 'js/[name].[chunkhash:6].js',
+  },
+  node: {
+    fs: 'empty',
   },
 };

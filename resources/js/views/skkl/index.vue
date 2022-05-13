@@ -11,6 +11,8 @@
         <el-col :sm="24" :md="12">
           <h4>Dokumen Persetujuan Lingkungan</h4>
           <DokumenPersetujuan />
+          <h4>Dokumen Persetujuan Lingkungan Final</h4>
+          <SkklFinal />
         </el-col>
       </el-row>
       <el-row :gutter="32">
@@ -28,6 +30,7 @@
 <script>
 import Information from '@/views/skkl/components/Information';
 import DokumenPersetujuan from '@/views/skkl/components/DokumenPersetujuan';
+import SkklFinal from '@/views/skkl/components/SkklFinal';
 import WorkFlow from '@/components/Workflow';
 
 import axios from 'axios';
@@ -45,6 +48,7 @@ export default {
   components: {
     Information,
     DokumenPersetujuan,
+    SkklFinal,
     WorkFlow,
   },
   data() {
@@ -64,7 +68,7 @@ export default {
       axios.get('api/map/' + this.idProject)
         .then((response) => {
           const map = new Map({
-            basemap: 'topo',
+            basemap: 'satellite',
           });
 
           const projects = response.data;

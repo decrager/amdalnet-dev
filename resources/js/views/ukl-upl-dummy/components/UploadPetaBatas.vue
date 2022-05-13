@@ -166,7 +166,7 @@ export default {
         .then((response) => {
           if (response.data.length > 1) {
             const map = new Map({
-              basemap: 'topo',
+              basemap: 'satellite',
             });
 
             const projects = response.data;
@@ -626,7 +626,7 @@ export default {
     },
     uploadMap(){
       const map = new Map({
-        basemap: 'topo',
+        basemap: 'satellite',
       });
 
       //  Map Ekologis

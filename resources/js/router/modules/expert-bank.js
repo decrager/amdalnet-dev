@@ -3,13 +3,13 @@ import Layout from '@/layout';
 const expertBankRoutes = {
   path: '/bank-ahli',
   component: Layout,
-  meta: { title: 'expertBank', icon: 'documentation', permissions: ['view menu expert'] },
+  meta: { title: 'expertBank', icon: 'graduation-cap', permissions: ['view menu expert'] },
   children: [
     {
       path: '',
       component: () => import('@/views/expert-bank/index'),
       name: 'expertBank',
-      meta: { title: 'expertBank', icon: 'documentation', noCache: true, permissions: ['view menu expert'] },
+      meta: { title: 'expertBank', icon: 'graduation-cap', noCache: true, permissions: ['view menu expert'] },
     },
     {
       path: 'create',

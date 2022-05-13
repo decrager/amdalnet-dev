@@ -4,18 +4,20 @@
       <WorkFlow />
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane
-          v-if="isAdmin"
-          label="Verifikasi & Rapat"
+          label="Pemeriksaan Berkas Administrasi Formulir KA"
           name="verifikasi"
         >
-          <VerifikasiRapat v-if="activeName === 'verifikasi'" />
+          <Verifikasi
+            v-if="activeName === 'verifikasi'"
+            @changeIsComplete="changeIsComplete($event)"
+          />
         </el-tab-pane>
         <el-tab-pane
-          v-else-if="isSubtance"
-          label="Berita Acara"
-          name="beritaacara"
+          v-if="isComplete"
+          label="Undangan Rapat"
+          name="undanganrapat"
         >
-          <BeritaAcara v-if="activeName === 'beritaacara'" />
+          <UndanganRapat v-if="activeName === 'undanganrapat'" />
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -23,41 +25,47 @@
 </template>
 
 <script>
-import VerifikasiRapat from '@/views/pengujian/components/verifikasiRapat/index';
-import BeritaAcara from '@/views/pengujian/components/beritaAcara/index';
+import { mapGetters } from 'vuex';
+import Verifikasi from '@/views/pengujian/components/verifikasi/index';
+import UndanganRapat from '@/views/pengujian/components/undanganRapat/index';
 import WorkFlow from '@/components/Workflow';
+import Resource from '@/api/resource';
+const verifikasiRapatResource = new Resource('testing-verification');
 
 export default {
   name: 'Dump',
   components: {
-    VerifikasiRapat,
-    BeritaAcara,
+    Verifikasi,
+    UndanganRapat,
     WorkFlow,
   },
   data() {
     return {
       activeName: 'verifikasi',
-      userInfo: {
-        roles: [],
-      },
+      // userInfo: {
+      //   roles: [],
+      // },
+      isComplete: false,
     };
   },
   computed: {
-    isSubtance() {
-      return this.userInfo.roles.includes('examiner-substance');
-    },
-    isAdmin() {
-      return this.userInfo.roles.includes('examiner-administration');
-    },
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
   },
   async created() {
-    this.userInfo = await this.$store.dispatch('user/getInfo');
-    this.$store.dispatch('getStep', 6);
-    if (this.userInfo.roles.includes('examiner-substance')) {
-      this.activeName = 'beritaacara';
-    } else if (this.userInfo.roles.includes('examiner-administration')) {
-      this.activeName = 'verifikasi';
-    }
+    // this.userInfo = await this.$store.dispatch('user/getInfo');
+    this.isComplete = await verifikasiRapatResource.list({
+      checkComplete: 'true',
+      idProject: this.$route.params.id,
+    });
+    this.$store.dispatch('getStep', 3);
+  },
+  methods: {
+    changeIsComplete({ isComplete }) {
+      this.isComplete = isComplete;
+    },
   },
 };
 </script>

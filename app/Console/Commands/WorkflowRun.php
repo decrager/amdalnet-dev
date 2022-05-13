@@ -19,7 +19,7 @@ class WorkflowRun extends Command
      *
      * @var string
      */
-    protected $description = 'Workflow transition runner';
+    protected $description = 'Workflow transition runner for daily schedule';
 
     /**
      * Create a new command instance.
@@ -38,7 +38,7 @@ class WorkflowRun extends Command
      */
     public function handle()
     {
-        LOG::info("Workflow run, do workflow process scedhule");
+        LOG::info("Workflow run, do workflow process schedule daily");
         return 0;
     }
 }

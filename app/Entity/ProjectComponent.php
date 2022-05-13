@@ -14,11 +14,13 @@ class ProjectComponent extends Model
     protected $fillable = [
         'id_project',
         'id_component',
-        'name',
-        'id_project_stage'
+        'description',
+        'measurement',
+        'is_andal',
     ];
 
-    public function component(){
-        return $this->hasOne(Component::class, 'id', 'id_component');
+    public function component()
+    {
+        return $this->belongsTo(Component::class, 'id_component', 'id');
     }
 }

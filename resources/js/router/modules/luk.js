@@ -9,7 +9,7 @@ const lukRoutes = {
       path: '',
       component: () => import('@/views/error-page/404'),
       name: 'luk',
-      meta: { title: 'luk', icon: 'zip', noCache: true, permissions: ['view menu luk'] },
+      meta: { title: 'luk', icon: 'badge', noCache: true, permissions: ['view menu luk'] },
     },
   ],
 };

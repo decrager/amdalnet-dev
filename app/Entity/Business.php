@@ -10,4 +10,10 @@ class Business extends Model
     use HasFactory;
     protected $table = 'business';
     public $timestamps = false;
+
+    protected $fillable = [
+        'parent_id',
+        'value',
+        'description',
+    ];
 }

@@ -12,6 +12,14 @@ use App\Entity\PotentialImpactEvaluation;
 use App\Http\Resources\ImpactIdentificationCloneResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Entity\SubProjectComponent;
+use App\Entity\SubProject;
+use App\Entity\SubProjectRonaAwal;
+use App\Entity\ImpactKegiatanLainSekitar;
+use App\Entity\ProjectComponent;
+use App\Entity\Project;
+use App\Entity\ProjectRonaAwal;
+use App\Entity\ProjectKegiatanLainSekitar;
 
 class AndalCloneController extends Controller
 {
@@ -39,19 +47,21 @@ class AndalCloneController extends Controller
         if($request->join_tables) {
             $list = ImpactIdentificationClone::with('impactStudy')
             ->select('impact_identification_clones.*',
-            'pc.id_project_stage',
+            'c.id_project_stage',
             'c.id_project_stage AS id_project_stage_master',
-            'c.name AS component_name_master',
-            'pc.name AS component_name',
+            'c.name AS component_name',
+            'c.name AS component_name',
             'ra.name AS rona_awal_name_master',
-            'pra.name AS rona_awal_name',
+            'ra.name AS rona_awal_name',
             'ct.name AS change_type_name')
-            ->leftJoin('sub_project_components AS pc', 'impact_identification_clones.id_sub_project_component', '=', 'pc.id')
-            ->leftJoin('sub_project_rona_awals AS pra', 'impact_identification_clones.id_sub_project_rona_awal', '=', 'pra.id')
+            ->leftJoin('project_components AS pc', 'impact_identification_clones.id_project_component', '=', 'pc.id')
+            ->leftJoin('project_rona_awals AS pra', 'impact_identification_clones.id_project_rona_awal', '=', 'pra.id')
             ->leftJoin('change_types AS ct', 'impact_identification_clones.id_change_type', '=', 'ct.id')
             ->leftJoin('components AS c', 'pc.id_component', '=', 'c.id')
             ->leftJoin('rona_awal AS ra', 'pra.id_rona_awal', '=', 'ra.id')
             ->where('impact_identification_clones.id_project', $request->id_project)
+            ->whereNotNull('impact_identification_clones.id_project_component')
+            ->whereNotNull('impact_identification_clones.id_project_rona_awal')
             ->orderBy('impact_identification_clones.id', 'asc')
             ->get();
             return ImpactIdentificationCloneResource::collection($list);
@@ -97,7 +107,7 @@ class AndalCloneController extends Controller
                              if ($impact['id'] < 99999999) {
                                  //not dummy
                                  $num_impacts++;
-                                 
+
                                 $row = ImpactIdentificationClone::find($impact['id']);
 
                                  if ($row != null) {
@@ -127,7 +137,7 @@ class AndalCloneController extends Controller
                                      $row->save();
                                      // save impact_study
                                      $impact_study_saved = false;
- 
+
                                      if (isset($impact['impact_study'])) {
                                          $study = ImpactStudyClone::where('id_impact_identification_clone', $impact['id'])
                                              ->first();
@@ -147,13 +157,13 @@ class AndalCloneController extends Controller
                                              }
                                          }
                                      }
- 
+
                                      /** Potential Impact Evaluation */
                                      if(isset($impact['potential_impact_evaluation'])){
                                          foreach($impact['potential_impact_evaluation'] as $pie){
                                              $p = PotentialImpactEvalClone::where('id_impact_identification_clone', $impact['id'])
                                                  ->where('id_pie_param', $pie['id_pie_param'])->first();
- 
+
                                              if (!$p) {
                                                  $p = new PotentialImpactEvalClone();
                                                  $p->id_impact_identification_clone = $impact['id'];
@@ -163,7 +173,7 @@ class AndalCloneController extends Controller
                                              $p->save();
                                          }
                                      }
- 
+
                                      if ($impact_study_saved){
                                          array_push($response, new ImpactIdentificationCloneResource($row));
                                      }
@@ -190,7 +200,7 @@ class AndalCloneController extends Controller
                                      $impact_study_saved = true;
                                  }
                              }
- 
+
                              if ($impact_study_saved){
                                  array_push($response, new ImpactIdentificationCloneResource($row));
                              }
@@ -269,13 +279,113 @@ class AndalCloneController extends Controller
     }
 
     private function checkExist($id) {
+        /* MASTER KOMPONEN KEGIATAN */
+        $mkk_andal = ProjectComponent::where(['id_project' => $id, 'is_andal' => true])
+            ->pluck('id_component');
+
+
+        $mkk = ProjectComponent::where(['id_project' => $id,'is_andal' => false])
+            ->whereNotIn('id_component', $mkk_andal)->get();
+
+        foreach($mkk as $kk){
+            $new_kk = ProjectComponent::create([
+                'id_project' => $id,
+                'id_component' => $kk->id_component,
+                'description' => $kk->description,
+                'measurement' => $kk->measurement,
+                'is_andal' => true,
+            ]);
+        }
+        /* END OF MASTER KOMPONEN KEGIATAN */
+
+        /* MASTER KOMPONEN LINGKUNGAN */
+        $mkl_andal = ProjectRonaAwal::where(['id_project' => $id, 'is_andal' => true])
+            ->pluck('id_rona_awal');
+
+        $mkl = ProjectRonaAwal::where(['id_project' => $id, 'is_andal' => false])
+            ->whereNotIn('id_rona_awal', $mkl_andal)->get();
+
+        foreach($mkl as $kl){
+            $new_kl = ProjectRonaAwal::create([
+                'is_andal' => true,
+                'id_rona_awal' => $kl->id_rona_awal,
+                'id_project' => $id,
+                'measurement' => $kl->measurement,
+                'description' => $kl->description
+            ]);
+        }
+        /* END OF MASTER KOMPONEN LINGKUNGAN */
+
+        /* MASTER KOMPONEN KEGIATAN LAIN SEKITAR */
+        $mkkls_andal = ProjectKegiatanLainSekitar::where([
+            'project_id' => $id,
+            'is_andal' => true,
+        ])->pluck('kegiatan_lain_sekitar_id');
+        $mkkls = ProjectKegiatanLainSekitar::where([
+            'is_andal' =>false,
+            'project_id' => $id,
+        ])->whereNotIn('kegiatan_lain_sekitar_id', $mkkls_andal)->get();
+
+        foreach($mkkls as $kkls){
+            $new_kkls = ProjectKegiatanLainSekitar::create([
+                'project_id' => $id,
+                'kegiatan_lain_sekitar_id' => $kkls->kegiatan_lain_sekitar_id,
+                'is_andal' => true,
+                'address' => $kkls->address,
+                'province_id' => $kkls->province_id,
+                'district_id' => $kkls->district_id,
+                'description' => $kkls->description,
+                'measurement' => $kkls->measurement,
+            ]);
+
+        }
+        /* END OF MASTER KOMPONEN KEGIATAN LAIN SEKITAR */
+
+        /* PELINGKUPAN */
+        $sp = SubProject::where('id_project', $id)->pluck('id');
+        $spc = SubProjectComponent::where('is_andal', false)->whereIn('id_sub_project', $sp)->get();
+        foreach($spc as $comp){
+            // get sub_project_rona_awal
+            $new_comp = SubProjectComponent::firstOrNew([
+                'id_sub_project' => $comp->id_sub_project,
+                'id_component' => $comp->id_component,
+                'is_andal' => true
+            ]);
+            if(!$new_comp->exists){
+                $new_comp->description_specific = $comp->description_specific;
+                $new_comp->unit = $comp->unit;
+                $new_comp->save();
+            }
+
+            $spra = SubProjectRonaAwal::where('id_sub_project_component', $comp->id)->get();
+            if($spra){
+                foreach($spra as $ra){
+                    $new_ra = SubProjectRonaAwal::firstOrNew([
+                        'id_sub_project_component' => $new_comp->id,
+                        'id_rona_awal' => $ra->id_rona_awal,
+                        'is_andal' => true
+                    ]);
+                    if(!$new_ra->exists){
+                        // $new_ra->name = $ra->name;
+                        // $new_ra->id_component_type = $ra->id_component_type;
+                        $new_ra->description_common = $ra->description_common;
+                        $new_ra->description_specific = $ra->description_specific;
+                        $new_ra->unit = $ra->unit;
+                        $new_ra->save();
+                    }
+                }
+            }
+        }
+        /* END OF PELINGKUPAN */
+
+
         $old_impact = ImpactIdentification::where('id_project', $id)->get();
         $new_impact = ImpactIdentificationClone::select('id', 'id_project', 'id_impact_identification')->where('id_project', $id)->get();
 
         $new_ids = [];
         foreach($new_impact as $ni) {
             $new_ids[] = $ni->id_impact_identification;
-        } 
+        }
 
         foreach($old_impact as $oi) {
             if(!in_array($oi->id, $new_ids)) {
@@ -291,8 +401,8 @@ class AndalCloneController extends Controller
                 $imp->study_location = $oi->study_location;
                 $imp->study_length_month = $oi->study_length_month;
                 $imp->study_length_year = $oi->study_length_year;
-                $imp->id_sub_project_component = $oi->id_sub_project_component;
-                $imp->id_sub_project_rona_awal = $oi->id_sub_project_rona_awal;
+                $imp->id_project_component = $oi->id_project_component;
+                $imp->id_project_rona_awal = $oi->id_project_rona_awal;
                 $imp->is_managed = $oi->is_managed;
                 $imp->save();
 
@@ -317,6 +427,30 @@ class AndalCloneController extends Controller
                     $potential->id_pie_param = $p->id_pie_param;
                     $potential->text = $p->text;
                     $potential->save();
+                }
+
+                // IMPACT KEGIATAN LAIN SEKITAR
+                $ikls = ImpactKegiatanLainSekitar::where([
+                    'id_impact_identification' =>  $oi->id,
+                    'is_andal' => false
+
+                    ])->get();
+                foreach($ikls as $kls){
+                    $fka_kls = ProjectKegiatanLainSekitar::find($kls->id_project_kegiatan_lain_sekitar);
+                    if($fka_kls){
+                        $andal_kls = ProjectKegiatanLainSekitar::where([
+                            'is_andal' => true,
+                            'project_id' => $fka_kls->project_id,
+                            'kegiatan_lain_sekitar_id' => $fka_kls->kegiatan_lain_sekitar_id,
+                        ])->first();
+                        if($andal_kls){
+                            $new_ikls = ImpactKegiatanLainSekitar::firstOrCreate([
+                                'id_impact_identification' => $imp->id,
+                                'id_project_kegiatan_lain_sekitar' => $andal_kls->id,
+                                'is_andal' => true
+                            ]);
+                        }
+                    }
                 }
             }
         }

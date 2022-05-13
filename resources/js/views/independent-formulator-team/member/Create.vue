@@ -139,17 +139,21 @@ export default {
       ],
     };
   },
-  created() {
-    this.getFormulators();
-    this.getProjectName();
-    this.getLpjp();
-    this.getTimPenyusun();
-    this.getTimAhli();
+  async created() {
+    this.loadingTimPenyusun = true;
+    this.loadingTimAhli = true;
+    await this.getProjectName();
+    await this.getFormulators();
+    await this.getLpjp();
+    await this.getTimPenyusun();
+    await this.getTimAhli();
   },
   methods: {
     async getFormulators() {
       this.formulators = await formulatorTeamsResource.list({
         type: 'formulator',
+        lpjp: 'true',
+        idLpjp: this.selectedLPJP,
       });
     },
     async getTimPenyusun() {
@@ -228,6 +232,9 @@ export default {
           reg_no: member.reg_no,
           membership_status: member.membership_status,
         });
+        this.formulators = this.formulators.filter((x) => {
+          return x.id !== this.selectedMember;
+        });
         this.selectedMember = null;
       }
     },
@@ -288,11 +295,33 @@ export default {
       this.getTimAhli();
     },
     handleDeletePenyusun({ typeMember, num }) {
+      const idx = this.members.findIndex((mem) => mem.num === num);
       if (typeMember === 'update') {
-        const idx = this.members.findIndex((mem) => mem.num === num);
         this.deletedPenyusun.push(this.members[idx].id);
       }
       const oldData = [...this.members];
+      const member = this.members[idx];
+      this.formulators.push({
+        id: member.id,
+        name: member.name,
+        expertise: member.expertise,
+        cv: member.file,
+        cv_file: member.file,
+        reg_no: member.reg_no,
+        membership_status: member.membership_status,
+      });
+      this.formulators.sort((a, b) => {
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        return 0;
+      });
       this.members = oldData.filter((old) => old.num !== num);
     },
     handleDeleteAhli({ typeMember, num }) {

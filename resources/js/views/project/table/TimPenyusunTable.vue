@@ -67,6 +67,15 @@
         >
           CV
         </el-button>
+        <el-button
+          type="text"
+          size="medium"
+          icon="el-icon-download"
+          style="color: blue"
+          @click.prevent="download(scope.row.certificate)"
+        >
+          Sertifikat
+        </el-button>
       </template>
     </el-table-column>
 

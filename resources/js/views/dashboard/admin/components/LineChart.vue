@@ -1,5 +1,5 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}" />
+  <div :class="className" :style="{ height: height, width: width }" />
 </template>
 
 <script>
@@ -19,7 +19,7 @@ export default {
     },
     height: {
       type: String,
-      default: '350px',
+      default: '400px',
     },
     autoResize: {
       type: Boolean,
@@ -28,6 +28,10 @@ export default {
     chartData: {
       type: Object,
       required: true,
+    },
+    xAxis: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -57,7 +61,11 @@ export default {
 
     // Monitor the sidebar changes
     this.sidebarElm = document.getElementsByClassName('sidebar-container')[0];
-    this.sidebarElm && this.sidebarElm.addEventListener('transitionend', this.sidebarResizeHandler);
+    this.sidebarElm &&
+      this.sidebarElm.addEventListener(
+        'transitionend',
+        this.sidebarResizeHandler
+      );
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -67,7 +75,11 @@ export default {
       window.removeEventListener('resize', this.__resizeHandler);
     }
 
-    this.sidebarElm && this.sidebarElm.removeEventListener('transitionend', this.sidebarResizeHandler);
+    this.sidebarElm &&
+      this.sidebarElm.removeEventListener(
+        'transitionend',
+        this.sidebarResizeHandler
+      );
 
     this.chart.dispose();
     this.chart = null;
@@ -78,10 +90,11 @@ export default {
         this.__resizeHandler();
       }
     },
-    setOptions({ expectedData, actualData } = {}) {
+    setOptions({ amdalData, ukluplData, spplData, aARKLRPLData } = {}) {
+      const xAxisData = this.xAxis;
       this.chart.setOption({
         xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: xAxisData,
           boundaryGap: false,
           axisTick: {
             show: false,
@@ -107,45 +120,76 @@ export default {
           },
         },
         legend: {
-          data: ['expected', 'actual'],
+          data: ['AMDAL', 'UKL UPL', 'SPPL', 'Addendum ANDAL dan RKL RPL'],
         },
         series: [
           {
-            name: 'expected',
+            name: 'AMDAL',
             itemStyle: {
               normal: {
-                color: '#FF005A',
+                color: '#347437',
                 lineStyle: {
-                  color: '#FF005A',
+                  color: '#347437',
                   width: 2,
                 },
               },
             },
             smooth: true,
             type: 'line',
-            data: expectedData,
+            data: amdalData,
             animationDuration: 2800,
             animationEasing: 'cubicInOut',
           },
           {
-            name: 'actual',
+            name: 'UKL UPL',
             smooth: true,
             type: 'line',
             itemStyle: {
               normal: {
-                color: '#3888fa',
+                color: '#449748',
                 lineStyle: {
-                  color: '#3888fa',
+                  color: '#449748',
                   width: 2,
-                },
-                areaStyle: {
-                  color: '#f3f8ff',
                 },
               },
             },
-            data: actualData,
+            data: ukluplData,
             animationDuration: 2800,
             animationEasing: 'quadraticOut',
+          },
+          {
+            name: 'SPPL',
+            itemStyle: {
+              normal: {
+                color: '#eb8a00',
+                lineStyle: {
+                  color: '#eb8a00',
+                  width: 2,
+                },
+              },
+            },
+            smooth: true,
+            type: 'line',
+            data: spplData,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
+          },
+          {
+            name: 'Addendum ANDAL dan RKL RPL',
+            itemStyle: {
+              normal: {
+                color: '#fac400',
+                lineStyle: {
+                  color: '#fac400',
+                  width: 2,
+                },
+              },
+            },
+            smooth: true,
+            type: 'line',
+            data: aARKLRPLData,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
           },
         ],
       });

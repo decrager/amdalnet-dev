@@ -1,6 +1,6 @@
 <template>
   <div class="form-container" style="margin: 24px">
-    <el-card>
+    <el-card v-if="userInfo.roles !== undefined">
       <h3>Daftar Tim Penyusun Kegiatan</h3>
       <el-form
         ref="categoryForm"
@@ -136,10 +136,12 @@
       </div>
       <!-- <project-lpjp-table :selected-member="idLpjp" /> -->
     </el-card>
+    <el-card v-else v-loading="true" />
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const formulatorTeamsResource = new Resource('formulator-teams');
 import TimPenyusunTable from './table/TimPenyusunTable.vue';
@@ -190,17 +192,28 @@ export default {
       ],
     };
   },
-  created() {
-    this.getFormulators();
-    this.getProjectName();
-    this.getLpjp();
-    this.getTimPenyusun();
-    this.getTimAhli();
+  computed: {
+    ...mapGetters({
+      userInfo: 'user',
+      userId: 'userId',
+    }),
+  },
+  async created() {
+    this.loadingSelectLpjp = true;
+    this.loadingTimPenyusun = true;
+    this.loadingTimAhli = true;
+    // await this.getUserInfo();
+    await this.getFormulators();
+    await this.getProjectName();
+    await this.getLpjp();
+    await this.getTimPenyusun();
+    await this.getTimAhli();
   },
   methods: {
     async getFormulators() {
       this.formulators = await formulatorTeamsResource.list({
         type: 'formulator',
+        idProject: this.$route.params.id,
       });
     },
     async getTimPenyusun() {
@@ -293,12 +306,16 @@ export default {
           value: member.name,
           name: member.name,
           id: member.id,
+          db_id: member.id,
           type: 'new',
           position: 'Anggota',
           expertise: member.expertise,
           file: member.cv ? member.cv : member.cv_file,
           reg_no: member.reg_no,
           membership_status: member.membership_status,
+        });
+        this.formulators = this.formulators.filter((x) => {
+          return x.id !== this.selectedMember;
         });
         this.selectedMember = null;
       }
@@ -361,11 +378,33 @@ export default {
       this.getTimAhli();
     },
     handleDeletePenyusun({ typeMember, num }) {
+      const idx = this.members.findIndex((mem) => mem.num === num);
       if (typeMember === 'update') {
-        const idx = this.members.findIndex((mem) => mem.num === num);
         this.deletedPenyusun.push(this.members[idx].id);
       }
       const oldData = [...this.members];
+      const member = this.members[idx];
+      this.formulators.push({
+        id: member.id,
+        name: member.name,
+        expertise: member.expertise,
+        cv: member.file,
+        cv_file: member.file,
+        reg_no: member.reg_no,
+        membership_status: member.membership_status,
+      });
+      this.formulators.sort((a, b) => {
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        return 0;
+      });
       this.members = oldData.filter((old) => old.num !== num);
     },
     handleDeleteAhli({ typeMember, num }) {
@@ -376,6 +415,9 @@ export default {
       const oldData = [...this.membersAhli];
       this.membersAhli = oldData.filter((old) => old.num !== num);
     },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
   },
 };
 </script>

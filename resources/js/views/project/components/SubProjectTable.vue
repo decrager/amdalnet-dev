@@ -3,11 +3,39 @@
     <el-table
       :key="refresh"
       v-loading="loading"
+      max-height="800"
       :header-cell-style="{ background: '#099C4B', color: 'white' }"
       :data="list"
       fit
       highlight-current-row
     >
+      <el-table-column align="center" width="55">
+        <template slot-scope="scope">
+          <el-checkbox v-model="scope.row.isUsed" @change="onChangeIsUsed(scope.row)" />
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="No." width="50px">
+        <template slot-scope="scope">
+          {{ scope.$index + 1 }}
+        </template>
+      </el-table-column>
+
+      <el-table-column v-if="fromOss" align="left" header-align="center" label="Project" width="400px">
+        <template slot-scope="scope">
+          <div><b>ID Proyek :</b> {{ scope.row.id_proyek }}</div>
+          <div><b>ID Izin :</b> {{ scope.row.idizin }}</div>
+          <div><b>Nama Kegiatan :</b> {{ scope.row.name }}</div>
+          <div><b>KBLI :</b> {{ scope.row.kbli }}</div>
+          <div><b>Tingkat Resiko :</b> {{ scope.row.skala_resiko }}</div>
+          <div><b>Kewenangan :</b> {{ getKewenangan(scope.row.kewenangan) }}</div>
+          <div><b>Alamat :</b></div>
+          <ul style="margin-block-start: 0px">
+            <li v-for="(lokasi, index) in scope.row.lokasi" :key="index">Provinsi {{ lokasi.province.toLowerCase() }}, {{ lokasi.regency.toLowerCase() }}, {{ lokasi.alamat_usaha.toLowerCase() }}</li>
+          </ul>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Kegiatan Utama/Pendukung">
         <template slot-scope="scope">
           <el-select v-model="scope.row.type" filterable placeholder="Pilih" size="mini">
@@ -23,14 +51,14 @@
 
       <el-table-column align="center" label="Non KBLI" width="100px">
         <template slot-scope="scope">
-          <el-checkbox v-model="scope.row.nonKbli" @change="onChangeKbli(scope.row)" />
+          <el-checkbox v-model="scope.row.nonKbli" :disabled="fromOss" @change="onChangeKbli(scope.row)" />
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="KBLI" width="100px">
         <template slot-scope="scope">
           <div v-if="scope.row.nonKbli">{{ 'Non KBLI' }}</div>
-          <el-select v-else v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" :disabled="scope.row.nonKbli" @change="onChangeKbli(scope.row)">
+          <el-select v-else v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" :disabled="scope.row.nonKbli || fromOss" @change="onChangeKbli(scope.row)">
             <el-option
               v-for="item in listKbli"
               :key="item.value"
@@ -43,7 +71,7 @@
 
       <el-table-column align="center" label="Sektor">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)">
+          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)" @focus="onChangeSectorBlur(scope.row)">
             <el-option
               v-for="item in scope.row.listSector"
               :key="item.label"
@@ -121,6 +149,14 @@ export default {
       type: Array,
       default: () => [],
     },
+    fromOss: {
+      type: Boolean,
+      default: () => false,
+    },
+    idizin: {
+      type: String,
+      default: () => '',
+    },
   },
   data() {
     return {
@@ -140,6 +176,15 @@ export default {
     };
   },
   methods: {
+    getKewenangan(val){
+      if (val === '00'){
+        return 'Pusat';
+      } else if (val === '01'){
+        return 'Provinsi';
+      } else {
+        return 'Kabupaten';
+      }
+    },
     async onChangeKbli(sproject){
       this.loading = true;
       // await this.getBusinessByKbli(sproject);
@@ -157,11 +202,31 @@ export default {
       this.refresh++;
       this.loading = false;
     },
+    async onChangeSectorBlur(sproject){
+      if (sproject.listSector){
+        return;
+      }
+
+      this.loading = true;
+      try {
+        await this.getSectorByKbli(sproject);
+      } catch (error) {
+        console.error(error);
+        this.refresh++;
+        this.loading = false;
+      }
+
+      this.refresh++;
+      this.loading = false;
+    },
     async onChangeSector(sproject){
       this.loading = true;
       await this.getFieldBySector(sproject);
       this.refresh++;
       this.loading = false;
+    },
+    async onChangeIsUsed(sproject){
+      this.$emit('handlechecked', sproject);
     },
     async onChangeFieldType(sproject){
       this.loading = true;
@@ -220,6 +285,9 @@ export default {
     },
     handleRefreshDialog(){
       this.refresh++;
+    },
+    handleSelectionChange(value){
+      this.$emit('checksubpro', value);
     },
   },
 };

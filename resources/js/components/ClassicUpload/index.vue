@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     getContent(){
-      return this.name === 'No File Choosen' ? 'Mohon Unggah Data Anda' : 'Data Anda Sudah Diunggah';
+      return this.name === 'No File Selected' ? 'Mohon Unggah Data Anda' : 'Data Anda Sudah Diunggah';
     },
   },
   methods: {

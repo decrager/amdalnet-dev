@@ -17,6 +17,17 @@
         >
           <i class="el-icon-download" /> {{ scope.row.name }}
         </a>
+        <!-- <el-upload
+          v-if="(scope.row.name === 'Persetujuan Lingkungan SKKL') && !scope.row.uploaded"
+          action="#"
+          :auto-upload="false"
+          :on-change="handleUploadChange"
+          :show-file-list="false"
+          style="display: inline;"
+          :disabled="loadingUpload"
+        >
+          <el-button :loading="loadingUpload" type="warning" size="mini">Upload</el-button>
+        </el-upload> -->
       </template>
     </el-table-column>
 
@@ -38,6 +49,7 @@ export default {
   data() {
     return {
       loading: false,
+      loadingUpload: false,
       list: [],
       idProject: this.$route.params.id,
     };
@@ -59,6 +71,12 @@ export default {
       this.loading = false;
     },
     async handleUploadChange(file, fileList) {
+      if (file.raw.size > 1048576) {
+        this.showFileAlert();
+        return;
+      }
+
+      this.loadingUpload = true;
       const formData = new FormData();
       formData.append('idProject', this.idProject);
       formData.append('skkl', file.raw);
@@ -66,10 +84,11 @@ export default {
       await skklResource.store(formData);
       this.getDocuments();
       this.$message({
-        message: 'Data is saved Successfully',
+        message: 'SKKL Berhasil Diupload',
         type: 'success',
         duration: 5 * 1000,
       });
+      this.loadingUpload = false;
     },
     exportDocx() {
       const id = this.idProject;
@@ -89,6 +108,11 @@ export default {
         fileLink.setAttribute('download', `${newName}`);
         document.body.appendChild(fileLink);
         fileLink.click();
+      });
+    },
+    showFileAlert() {
+      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+        center: true,
       });
     },
   },

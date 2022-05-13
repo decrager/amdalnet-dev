@@ -1,106 +1,114 @@
 <template>
-  <el-tabs v-model="activeName" type="card" style="margin-top: 30px">
-    <el-tab-pane label="Pra Konstruksi" name="pra-konstruksi">
-      <div v-loading="loading">
-        <div class="pagination-andal">
-          <el-button
-            icon="el-icon-arrow-left"
-            circle
-            :disabled="currentPagePraKonstruksi === 1"
-            @click="currentPagePraKonstruksi--"
-          />
-          <el-input v-model="currentPagePraKonstruksi" class="input-page" />
-          <span> / {{ totalPraKonstruksi }}</span>
-          <el-button
-            icon="el-icon-arrow-right"
-            circle
-            :disabled="currentPagePraKonstruksi === totalPraKonstruksi"
-            @click="currentPagePraKonstruksi++"
-          />
-        </div>
+  <div style="margin-top: 30px">
+    <div v-if="activeName === 'pra-konstruksi'" v-loading="loading">
+      <div class="pagination-andal">
+        <el-button
+          icon="el-icon-arrow-left"
+          circle
+          :disabled="currentPagePraKonstruksi === 1"
+          @click="handlePaginate('left', 'pra konstruksi')"
+        />
+        <el-input v-model="currentPagePraKonstruksi" class="input-page" />
+        <span> / {{ totalPraKonstruksi }}</span>
+        <el-button
+          icon="el-icon-arrow-right"
+          circle
+          :disabled="currentPagePraKonstruksi === totalPraKonstruksi"
+          @click="handlePaginate('right', 'pra konstruksi')"
+        />
+      </div>
+      <div v-loading="loadingDestroy">
         <FormDetail
+          v-if="showDetail"
+          ref="formdetail"
           :andal="list[indexPraKonstruksi[currentPagePraKonstruksi - 1]]"
           :loadingsubmit="loadingsubmit"
           @handleSubmit="handleSubmit"
         />
       </div>
-    </el-tab-pane>
-    <el-tab-pane label="Konstruksi" name="konstruksi">
-      <div v-loading="loading">
-        <div class="pagination-andal">
-          <el-button
-            icon="el-icon-arrow-left"
-            circle
-            :disabled="currentPageKonstruksi === 1"
-            @click="currentPageKonstruksi--"
-          />
-          <el-input v-model="currentPageKonstruksi" class="input-page" />
-          <span> / {{ totalKonstruksi }}</span>
-          <el-button
-            icon="el-icon-arrow-right"
-            circle
-            :disabled="currentPageKonstruksi === totalKonstruksi"
-            @click="currentPageKonstruksi++"
-          />
-        </div>
+    </div>
+    <div v-if="activeName === 'konstruksi'" v-loading="loading">
+      <div class="pagination-andal">
+        <el-button
+          icon="el-icon-arrow-left"
+          circle
+          :disabled="currentPageKonstruksi === 1"
+          @click="handlePaginate('left', 'konstruksi')"
+        />
+        <el-input v-model="currentPageKonstruksi" class="input-page" />
+        <span> / {{ totalKonstruksi }}</span>
+        <el-button
+          icon="el-icon-arrow-right"
+          circle
+          :disabled="currentPageKonstruksi === totalKonstruksi"
+          @click="handlePaginate('right', 'konstruksi')"
+        />
+      </div>
+      <div v-loading="loadingDestroy">
         <FormDetail
+          v-if="showDetail"
+          ref="formdetail"
           :andal="list[indexKonstruksi[currentPageKonstruksi - 1]]"
           :loadingsubmit="loadingsubmit"
           @handleSubmit="handleSubmit"
         />
       </div>
-    </el-tab-pane>
-    <el-tab-pane label="Operasi" name="operasi">
-      <div v-loading="loading">
-        <div class="pagination-andal">
-          <el-button
-            icon="el-icon-arrow-left"
-            circle
-            :disabled="currentPageOperasi === 1"
-            @click="currentPageOperasi--"
-          />
-          <el-input v-model="currentPageOperasi" class="input-page" />
-          <span> / {{ totalOperasi }}</span>
-          <el-button
-            icon="el-icon-arrow-right"
-            circle
-            :disabled="currentPageOperasi === totalOperasi"
-            @click="currentPageOperasi++"
-          />
-        </div>
+    </div>
+    <div v-if="activeName === 'operasi'" v-loading="loading">
+      <div class="pagination-andal">
+        <el-button
+          icon="el-icon-arrow-left"
+          circle
+          :disabled="currentPageOperasi === 1"
+          @click="handlePaginate('left', 'operasi')"
+        />
+        <el-input v-model="currentPageOperasi" class="input-page" />
+        <span> / {{ totalOperasi }}</span>
+        <el-button
+          icon="el-icon-arrow-right"
+          circle
+          :disabled="currentPageOperasi === totalOperasi"
+          @click="handlePaginate('right', 'operasi')"
+        />
+      </div>
+      <div v-loading="loadingDestroy">
         <FormDetail
+          v-if="showDetail"
+          ref="formdetail"
           :andal="list[indexOperasi[currentPageOperasi - 1]]"
           :loadingsubmit="loadingsubmit"
           @handleSubmit="handleSubmit"
         />
       </div>
-    </el-tab-pane>
-    <el-tab-pane label="Pasca Operasi" name="pasca-operasi">
-      <div v-loading="loading">
-        <div class="pagination-andal">
-          <el-button
-            icon="el-icon-arrow-left"
-            circle
-            :disabled="currentPagePascaOperasi === 1"
-            @click="currentPagePascaOperasi--"
-          />
-          <el-input v-model="currentPagePascaOperasi" class="input-page" />
-          <span> / {{ totalPascaOperasi }}</span>
-          <el-button
-            icon="el-icon-arrow-right"
-            circle
-            :disabled="currentPagePascaOperasi === totalPascaOperasi"
-            @click="currentPagePascaOperasi++"
-          />
-        </div>
+    </div>
+    <div v-if="activeName === 'pasca-operasi'" v-loading="loading">
+      <div class="pagination-andal">
+        <el-button
+          icon="el-icon-arrow-left"
+          circle
+          :disabled="currentPagePascaOperasi === 1"
+          @click="handlePaginate('left', 'pasca operasi')"
+        />
+        <el-input v-model="currentPagePascaOperasi" class="input-page" />
+        <span> / {{ totalPascaOperasi }}</span>
+        <el-button
+          icon="el-icon-arrow-right"
+          circle
+          :disabled="currentPagePascaOperasi === totalPascaOperasi"
+          @click="handlePaginate('right', 'pasca operasi')"
+        />
+      </div>
+      <div v-loading="loadingDestroy">
         <FormDetail
+          v-if="showDetail"
+          ref="formdetail"
           :andal="list[indexPascaOperasi[currentPagePascaOperasi - 1]]"
           :loadingsubmit="loadingsubmit"
           @handleSubmit="handleSubmit"
         />
       </div>
-    </el-tab-pane>
-  </el-tabs>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -116,6 +124,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    listBackup: {
+      type: Array,
+      default: () => [],
+    },
     loading: Boolean,
     loadingsubmit: Boolean,
   },
@@ -127,6 +139,9 @@ export default {
       currentPageOperasi: 1,
       currentPagePascaOperasi: 1,
       totalPage: 10,
+      showDetail: true,
+      timeoutId: null,
+      loadingDestroy: false,
     };
   },
   computed: {
@@ -219,7 +234,62 @@ export default {
       return idx;
     },
   },
+  watch: {
+    activeName() {
+      this.$refs.formdetail.resetError();
+    },
+    currentPagePraKonstruksi() {
+      this.$refs.formdetail.resetError();
+    },
+    currentPageKonstruksi() {
+      this.$refs.formdetail.resetError();
+    },
+    currentPageOperasi() {
+      this.$refs.formdetail.resetError();
+    },
+    currentPagePascaOperasi() {
+      this.$refs.formdetail.resetError();
+    },
+  },
   methods: {
+    handlePaginate(direction, stage) {
+      if (direction === 'left') {
+        if (stage === 'pra konstruksi') {
+          this.currentPagePraKonstruksi--;
+        } else if (stage === 'konstruksi') {
+          this.currentPageKonstruksi--;
+        } else if (stage === 'operasi') {
+          this.currentPageOperasi--;
+        } else if (stage === 'pasca operasi') {
+          this.currentPagePascaOperasi--;
+        }
+      } else if (direction === 'right') {
+        if (stage === 'pra konstruksi') {
+          this.currentPagePraKonstruksi++;
+        } else if (stage === 'konstruksi') {
+          this.currentPageKonstruksi++;
+        } else if (stage === 'operasi') {
+          this.currentPageOperasi++;
+        } else if (stage === 'pasca operasi') {
+          this.currentPagePascaOperasi++;
+        }
+      }
+      this.$emit('backuplist');
+      this.destroyForAWhile();
+    },
+    destroyForAWhile() {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+
+      this.showDetail = false;
+      this.loadingDestroy = true;
+
+      this.timeoutId = setTimeout((e) => {
+        this.showDetail = true;
+        this.loadingDestroy = false;
+      }, 1000);
+    },
     setActiveAndal(stage, id) {
       const activeName = stage.toLowerCase().replace(' ', '-');
       this.activeName = activeName;

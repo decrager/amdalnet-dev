@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Business;
+use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
@@ -16,10 +17,12 @@ use App\Http\Resources\ProjectResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Services\OssService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -37,24 +40,93 @@ class ProjectController extends Controller
             return Project::with('feasibilityTest')->whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
-            return Project::with(['address','listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')->where(function ($query) use ($request) {
-                return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
-            })->where(
-                function ($query) use ($request) {
-                    return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
-                }
-            )->where(
-                function ($query) use ($request) {
-                    return $request->formulatorId ? $query->where('formulators.id', $request->formulatorId) : '';
-                }
-            )->where(
-                function ($query) use ($request) {
-                    return $request->search ? $query->where('projects.project_title', 'ilike' , '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
-                }
-            )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')->orderBy('projects.id', 'DESC')->paginate($request->limit);
+            return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+                $q->select('id', 'id_project', 'status', 'document_type');
+            }, 'meetingReports' => function ($q) {
+                $q->select('id', 'id_project', 'is_accepted', 'document_type');
+            }, 'impactIdentificationsClone' => function ($q) {
+                $q->select('id', 'id_project');
+                $q->with('envImpactAnalysis', function ($query) {
+                    $query->select('id', 'id_impact_identifications', 'condition_dev_no_plan');
+                });
+                $q->with('envManagePlan', function ($query) {
+                    $query->select('id', 'id_impact_identifications', 'period');
+                });
+                $q->with('envMonitorPlan', function ($query) {
+                    $query->select('id', 'id_impact_identifications', 'time_frequent');
+                });
+            }, 'tukProject' => function ($q) {
+                $q->where('id_user', Auth::user()->id);
+            }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
+                ->where(function ($query) use ($request) {
+                    return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
+                })->where(
+                    function ($query) use ($request) {
+                        return $request->lpjpId ? $query->where('projects.id_lpjp', $request->lpjpId) : '';
+                    }
+                )->where(
+                    function ($query) use ($request) {
+                        return $request->formulatorId ? $query->where('formulators.id', $request->formulatorId) : '';
+                    }
+                )
+                ->where(function ($query) use ($request) {
+                    return $request->filters ? $query->where('projects.required_doc', $request->filters) : '';
+                })
+                ->where(
+                    function ($query) use ($request) {
+                        if ($request->search) {
+                            $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                                ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                        }
+                        return $query;
+                    }
+                )
+                ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+                ->leftJoin('users', 'initiators.email', '=', 'users.email')
+                ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
+                ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
+                ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
+                ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+                ->distinct()
+                ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id')
+                ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
+        } else if ($request->registration_no) {
+            return ProjectResource::collection(Project::select('*')
+                ->where('registration_no', $request->registration_no)
+                ->orderBy('created_at', 'desc')
+                ->get());
+        } else if ($request->id) {
+            // return one just one
+            return response()->json(ProjectController::getProject($request->id));
         }
 
-        return Project::with(['address','listSubProject', 'feasibilityTest'])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
+        return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+            $q->select('id', 'id_project', 'status', 'document_type');
+        }, 'testingMeeting' => function ($q) {
+            $q->select('id', 'id_project', 'document_type', 'is_invitation_sent');
+        }, 'meetingReports' => function ($q) {
+            $q->select('id', 'id_project', 'is_accepted', 'document_type');
+        }, 'impactIdentificationsClone' => function ($q) {
+            $q->select('id', 'id_project');
+            $q->with('envImpactAnalysis', function ($query) {
+                $query->select('id', 'id_impact_identifications', 'condition_dev_no_plan');
+            });
+            $q->with('envManagePlan', function ($query) {
+                $query->select('id', 'id_impact_identifications', 'period');
+            });
+            $q->with('envMonitorPlan', function ($query) {
+                $query->select('id', 'id_impact_identifications', 'time_frequent');
+            });
+        }, 'tukProject', 'feasibilityTestRecap' => function ($q) {
+            $q->select('id', 'id_project', 'is_feasib', 'updated_at');
+        }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -64,11 +136,49 @@ class ProjectController extends Controller
             function ($query) use ($request) {
                 return $request->initiatorId ? $query->where('projects.id_applicant', $request->initiatorId) : '';
             }
-        )->where(
-            function ($query) use ($request) {
-                return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
-            }
-        )->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')->leftJoin('users', 'initiators.email', '=', 'users.email')->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')->orderBy('projects.id', 'DESC')->paginate($request->limit);
+        )
+            ->where(function ($query) use ($request) {
+                return $request->filters ? $query->where('projects.required_doc', $request->filters) : '';
+            })
+            ->where(
+                function ($query) use ($request) {
+                    //return $request->search ? $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%') : '';
+
+                    if ($request->search) {
+                        $query->where('projects.project_title', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.registration_no', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                            ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                    }
+                    return $query;
+                }
+            )
+            ->where(
+                function ($query) use ($request) {
+                    if ($request->tuk) {
+                        $query->whereHas('tukProject', function ($q) {
+                            $q->where('id_user', Auth::user()->id);
+                        })->orWhereHas('testingMeeting', function ($q) {
+                            $q->whereHas('invitations', function ($que) {
+                               $que->where('id_user', Auth::user()->id);
+                            });
+                        });
+                    }
+                }
+            )
+            ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+            ->leftJoin('users', 'initiators.email', '=', 'users.email')
+            ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
+            ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
+            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->distinct()
+            // ->groupBy('projects.id', 'projects.id_project', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
+            ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
     }
 
     /**
@@ -124,7 +234,7 @@ class ProjectController extends Controller
 
         // return $data;
 
-        //create fileKtr
+        //create filePreeagreement
         $preAgreementName = '';
         if ($request->file('filePreAgreement')) {
             $filePreAgreement = $request->file('filePreAgreement');
@@ -140,6 +250,22 @@ class ProjectController extends Controller
             $fileKtr->storePubliclyAs('public', $ktrName);
         }
 
+        //create filepippib
+        $pippibName = '';
+        if ($request->file('filepippib')) {
+            $filePippib = $request->file('filepippib');
+            $pippibName = 'project/pippib' . uniqid() . '.' . $filePippib->extension();
+            $filePippib->storePubliclyAs('public', $pippibName);
+        }
+
+        //create fileKawLin
+        $kawLinName = '';
+        if ($request->file('fileKawasanLindung')) {
+            $fileKawasanLindung = $request->file('fileKawasanLindung');
+            $kawLinName = 'project/kawasanlindung' . uniqid() . '.' . $fileKawasanLindung->extension();
+            $fileKawasanLindung->storePubliclyAs('public', $kawLinName);
+        }
+
         //create file map
 
         DB::beginTransaction();
@@ -149,7 +275,7 @@ class ProjectController extends Controller
             $project = Project::create([
                 // 'biz_type' => $data['biz_type'],
                 'project_title' => $data['project_title'],
-                'scale' => $data['scale'],
+                'scale' => floatval($data['scale']),
                 'scale_unit' => $data['scale_unit'],
                 'project_type' => $data['project_type'],
                 'sector' => $data['sector'],
@@ -174,7 +300,22 @@ class ProjectController extends Controller
                 'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
                 'pre_agreement_file' => Storage::url($preAgreementName),
                 'registration_no' => uniqid(),
+                'status' => isset($request['status']) ? $request['status'] : null,
+                'study_approach' => isset($request['study_approach']) ? $request['study_approach'] : null,
+                'auth_province' => isset($request['auth_province']) ? $request['auth_province'] : null,
+                'auth_district' => isset($request['auth_district']) ? $request['auth_district'] : null,
+                'authority' => isset($request['authority']) ? $request['authority'] : null,
+                'kawasan_lindung' => isset($request['kawasan_lindung']) ? $request['kawasan_lindung'] : null,
+                'kawasan_lindung_file' => Storage::url($kawLinName),
+                'ppib' => isset($request['pippib']) ? $request['pippib'] : null,
+                'ppib_file' => Storage::url($pippibName),
             ]);
+
+            // add workflow
+            $project->workflow_apply('fill-info');
+            $project->workflow_apply('screening');
+            $project->workflow_apply('complete-screening');
+            $project->save();
 
             if ($files = $request->file('fileMap')) {
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
@@ -184,7 +325,22 @@ class ProjectController extends Controller
                     'attachment_type' => 'tapak',
                     'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
-                    'stored_filename' => $mapName
+                    'stored_filename' => $mapName,
+                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                    'properties' => $request->geomProperties,
+                    'id_styles' => $request->geomStyles
+                ]);
+            }
+
+            if ($files = $request->file('filePdf')) {
+                $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.pdf';
+                $files->storePubliclyAs('public/map/', $mapName);
+                ProjectMapAttachment::create([
+                    'id_project' => $project->id,
+                    'attachment_type' => 'tapak',
+                    'file_type' => 'PDF',
+                    'original_filename' => 'Peta Tapak',
+                    'stored_filename' => $mapName,
                 ]);
             }
 
@@ -254,6 +410,7 @@ class ProjectController extends Controller
                 'process_b3' => isset($request['process_b3']) ? $request['process_b3'] : false,
                 'utilization_b3' => isset($request['utilization_b3']) ? $request['utilization_b3'] : false,
                 'dumping_b3' => isset($request['dumping_b3']) ? $request['dumping_b3'] : false,
+                'transport_b3' => isset($request['transport_b3']) ? $request['transport_b3'] : false,
                 'tps' => isset($request['tps']) ? $request['tps'] : false,
                 'traffic' => isset($request['traffic']) ? $request['traffic'] : false,
                 'low_traffic' => isset($request['low_traffic']) ? $request['low_traffic'] : false,
@@ -283,16 +440,17 @@ class ProjectController extends Controller
                     'biz_type' => $subPro->biz_type,
                     'id_project' => $project->id,
                     'sector' => $subPro->sector,
-                    'scale' => $subPro->scale,
+                    'scale' => floatval($subPro->scale),
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
                     'biz_name' => isset($business) ? $business->value : null,
                     'sector_name' => isset($sector) ? $sector->value : null,
+                    'id_proyek' => isset($subPro->id_proyek) ? $subPro->id_proyek : null,
                 ]);
 
                 foreach ($subPro->listSubProjectParams as $subProParam) {
                     SubProjectParam::create([
                         'param' => $subProParam->param,
-                        'scale' => $subProParam->scale,
+                        'scale' => floatval($subProParam->scale),
                         'scale_unit' => isset($subProParam->scale_unit) ? $subProParam->scale_unit : '',
                         'result' => $subProParam->result,
                         'id_sub_project' => $createdSubPro->id,
@@ -304,7 +462,12 @@ class ProjectController extends Controller
         } catch (Exception $e) {
             DB::rollback();
 
-            throw new Exception('Gagal Membuat Kegiatan karena '.$e);
+            throw new Exception('Gagal Membuat Kegiatan karena ' . $e);
+        }
+
+        // send status to OSS if not pemerintah
+        if (!isset($request['isPemerintah'])) {
+            OssService::receiveLicenseStatus($project, '45');
         }
 
         return new ProjectResource($project);
@@ -390,6 +553,43 @@ class ProjectController extends Controller
         // }
     }
 
+    private function getProject($id)
+    {
+
+        $project = Project::with(['address', 'listSubProject', 'initiator'])->from('projects')
+            ->selectRaw('
+        projects.*,
+        concat(initcap(project_address.district), \', \', initcap(project_address.prov)) as project_address,
+        announcements.id as announcement_id,
+        announcements.potential_impact as potential_impact,
+        initiators.name as initiator_name,
+        initiators.address as initiator_address,
+        users.avatar as logo')
+            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+            ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
+            ->leftJoin('users', 'initiators.email', '=', 'users.email');
+        return $project->where('projects.id', $id)->first();
+
+        /*
+        $project = Project::from('projects')
+            ->selectRaw('
+        projects.id,
+        projects.project_title,
+        projects.registration_no,
+        concat(initcap(project_address.district), \', \', initcap(project_address.prov)) as address,
+        projects.required_doc,
+        projects.description,
+        initiators.name as initiator_name,
+        initiators.address as initiator_address,
+        users.avatar as logo')
+            ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
+            ->leftJoin('users', 'initiators.email', '=', 'users.email');
+        return $project->where('projects.id', $id)->first();
+        */
+    }
+
     /**
      * Display the specified resource.
      *
@@ -400,6 +600,19 @@ class ProjectController extends Controller
     {
         return $project;
     }
+
+    /**
+     * Get one project.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    /* public function getProject(Request $request)
+    {
+
+        return response($request);
+    } */
+
 
     /**
      * Show the form for editing the specified resource.
@@ -533,5 +746,31 @@ class ProjectController extends Controller
         }
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Request $request
+     * @return Response
+     */
+
+    public function timeline(Request $request)
+    {
+        $res = [];
+        $res = DB::table('audits')
+            ->leftJoin('users', 'users.id', '=', 'audits.user_id')
+            ->select(
+                'audits.created_at as datetime',
+                'audits.event',
+                'audits.old_values',
+                'audits.new_values',
+                'users.name as user_name'
+            )
+            ->where('audits.auditable_id', $request->id)
+            ->orderBy('audits.id', $request->order ? $request->order : 'DESC')
+            ->get();
+
+        return response($res);
     }
 }

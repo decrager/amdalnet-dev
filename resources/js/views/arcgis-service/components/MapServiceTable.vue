@@ -8,13 +8,23 @@
   >
     <el-table-column label="No." width="54px">
       <template slot-scope="scope">
-        <span>{{ scope.$index + 1 }}</span>
+        <div style="text-align: center">
+          <span>{{ scope.$index + 1 + page * limit - limit }}</span>
+        </div>
+      </template>
+    </el-table-column>
+
+    <el-table-column label="Nama">
+      <template slot-scope="scope">
+        <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
 
     <el-table-column label="Kategori">
       <template slot-scope="scope">
-        <span>{{ scope.row.category.category_name }}</span>
+        <div style="text-align: center">
+          <span>{{ scope.row.category.category_name }}</span>
+        </div>
       </template>
     </el-table-column>
 
@@ -24,21 +34,19 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Sumber Data">
-      <template slot-scope="scope">
-        <span>{{ scope.row.source }}</span>
-      </template>
-    </el-table-column>
-
     <el-table-column label="Organisasi / Instansi">
       <template slot-scope="scope">
-        <span>{{ scope.row.organization }}</span>
+        <div style="text-align: center">
+          <span>{{ scope.row.organization }}</span>
+        </div>
       </template>
     </el-table-column>
 
     <el-table-column label="Status">
       <template slot-scope="scope">
-        <el-tag :type="scope.row.active === 1 ? 'success' : 'danger'">{{ scope.row.active === 1 ? 'Active' : 'Tidak Aktif' }}</el-tag>
+        <div style="text-align: center">
+          <el-tag effect="dark" :type="scope.row.active === 1 ? 'success' : 'danger'">{{ scope.row.active === 1 ? 'Active' : 'Tidak Aktif' }}</el-tag>
+        </div>
       </template>
     </el-table-column>
 
@@ -73,6 +81,14 @@ export default {
       default: () => [],
     },
     loading: Boolean,
+    page: {
+      type: Number,
+      default: () => 1,
+    },
+    limit: {
+      type: Number,
+      default: () => 10,
+    },
   },
   methods: {
     handleEditForm(id) {

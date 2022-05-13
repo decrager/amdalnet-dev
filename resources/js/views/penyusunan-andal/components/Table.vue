@@ -58,7 +58,7 @@
           >
             <h4>MASUKAN/SARAN PERBAIKAN</h4>
             <div class="comment-list">
-              <div v-if="isSubstance || isExaminer" class="comment-card">
+              <div v-if="!isFormulator" class="comment-card">
                 <el-card style="margin-bottom: 10px">
                   <div class="comment-body" style="padding-top: 20px">
                     <el-select
@@ -105,10 +105,10 @@
                       <p>{{ com.created_at }}</p>
                     </div>
                     <el-checkbox
-                      v-if="isFormulator"
                       v-model="
                         list[scope.$index - 1].comments[index].is_checked
                       "
+                      :disabled="!isFormulator"
                       @change="
                         handleCheckedComment(
                           list[scope.$index - 1].comments[index].id
@@ -329,6 +329,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
 // import TanggapanDialog from '@/views/penyusunan-andal/components/TanggapanDialog.vue';
@@ -352,7 +353,7 @@ export default {
       selectedImpactCommentId: null,
       impactComment: null,
       impactColumnType: null,
-      userInfo: {},
+      // userInfo: {},
       hasilEvaluasiDampak: [
         {
           label: 'Positif',
@@ -410,23 +411,18 @@ export default {
     };
   },
   computed: {
-    isSubstance() {
-      return this.$store.getters.roles.includes('examiner-substance');
-    },
-    isExaminer() {
-      return this.$store.getters.roles.includes('examiner');
-    },
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
-    },
-    isAdmin() {
-      return this.userInfo.roles.includes('examiner-administration');
     },
   },
   created() {
     this.getCompose();
     this.getLastTime();
-    this.getUserInfo();
+    // this.getUserInfo();
   },
   methods: {
     async getCompose() {
@@ -511,9 +507,9 @@ export default {
         id,
       });
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
-    },
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },

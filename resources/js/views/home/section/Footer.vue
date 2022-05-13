@@ -1,12 +1,33 @@
 <template>
   <footer class="footer section">
-    <div class="footer__container container grid">
+    <div class="footer__container container">
       <div class="footer__content grid">
         <div class="footer__data">
           <img src="/images/logo-klhk.png" alt="">
-          <p class="footer__description">Gedung Manggala Wanabakti Blok IV, Lt 6,<br>
-            Wing C, Jalan Gatot Subroto, Jakarta Pusat, 10270.
-          </p>
+          <div class="footer__description">
+            <ul>
+              <li class="footer__item">Direktorat Pencegahan Dampak Lingkungan Usaha dan Kegiatan</li>
+              <li class="footer__item">Direktorat Jenderal Planologi Kehutanan dan Tata Lingkungan</li>
+              <li class="footer__item">Kementerian Lingkungan Hidup dan Kehutanan</li>
+            </ul>
+            <p>Gedung Manggala Wanabakti Blok IV, Lt 6,<br>Wing C, Jalan Gatot Subroto, Jakarta Pusat, 10270.</p>
+          </div>
+        </div>
+
+        <div class="footer__data">
+          <h3 class="footer__subtitle">Tautan Terkait</h3>
+          <div class="footer__divider" />
+          <ul>
+            <li class="footer__item">
+              <a href="" class="footer__link">Konsultasi Publik</a>
+            </li>
+            <li class="footer__item">
+              <a href="https://bit.ly/pelayananPDLUK" class="footer__link" target="_blank">Formulir Kepuasan Pelayanan Publik</a>
+            </li>
+            <li class="footer__item">
+              <a href="" class="footer__link">Pengaduan Masyarakat</a>
+            </li>
+          </ul>
           <div class="footer__contact">
             <p>
               <i class="ri-phone-fill" /> (+62) 21-5730191
@@ -32,50 +53,23 @@
         </div>
 
         <div class="footer__data">
-          <h3 class="footer__subtitle">Tautan Terkait</h3>
-          <div class="footer__divider" />
-          <ul>
-            <li class="footer__item">
-              <a href="" class="footer__link">Konsultasi Publik</a>
-            </li>
-            <li class="footer__item">
-              <a href="" class="footer__link">Tentang Kami</a>
-            </li>
-            <li class="footer__item">
-              <a href="" class="footer__link">Kebijakan</a>
-            </li>
-            <li class="footer__item">
-              <a href="" class="footer__link">Materi</a>
-            </li>
-            <li class="footer__item">
-              <a href="" class="footer__link">FAQ</a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="footer__data">
           <h3 class="footer__subtitle">Mitra Kerja</h3>
           <div class="footer__divider" />
 
           <ul class="footer__mitra__item">
             <li class="footer__item">
               <a href="#" target="_blank">
-                <img src="/images/logo-investasi.svg" alt="" class="footer__mitra">
+                <img src="/images/logo-atr-bpn.png" alt="" class="footer__mitra">
               </a>
             </li>
             <li class="footer__item">
               <a href="#" target="_blank">
-                <img src="/images/logo-atr-bpn.svg" alt="" class="footer__mitra">
+                <img src="/images/kementrian-bkpm.svg" alt="" class="footer__mitra">
               </a>
             </li>
             <li class="footer__item">
               <a href="#" target="_blank">
-                <img src="/images/logo-big.svg" alt="" class="footer__mitra">
-              </a>
-            </li>
-            <li class="footer__item">
-              <a href="#" target="_blank">
-                <img src="/images/logo-kelautan.svg" alt="" class="footer__mitra">
+                <img src="/images/logo-kkp.png" alt="" class="footer__mitra">
               </a>
             </li>
           </ul>

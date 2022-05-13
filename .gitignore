@@ -20,3 +20,6 @@ yarn-error.log
 /public/*.js.map
 .idea
 .DS_Store
+laravel-echo-server.lock
+.vscode/*
+/public/proxy/proxy_log.log

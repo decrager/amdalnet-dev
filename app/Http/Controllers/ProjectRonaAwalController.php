@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
+use App\Entity\RonaAwal;
 use App\Entity\ProjectRonaAwal;
 use App\Http\Resources\ProjectRonaAwalResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Entity\SubProjectRonaAwal;
+use App\Entity\ImpactIdentification;
+use App\Entity\PotentialImpactEvalClone;
+use App\Entity\PotentialImpactEvaluation;
+use App\Entity\SubProject;
+use App\Entity\ImpactKegiatanLainSekitar;
+use PHPUnit\Framework\Constraint\IsEmpty;
 
 class ProjectRonaAwalController extends Controller
 {
@@ -17,6 +25,44 @@ class ProjectRonaAwalController extends Controller
      */
     public function index(Request $request)
     {
+        $params = $request->all();
+        if(isset($params['inquire']) && ($params['inquire'])){
+            $pra = ProjectRonaAwal::where([
+                'id_project' => $request->id_project,
+                'id_rona_awal' => $request->id,
+                'is_andal' => $request->mode,
+            ])->first();
+
+            if (!$pra) {
+                return response([], 200);
+            }
+            $ImpactClass = $request->mode  ? 'App\Entity\ImpactIdentificationClone' : 'App\Entity\ImpactIdentification';
+            $imps = $ImpactClass::where('id_project_rona_awal', $pra->id)->get();
+            return response($imps, 200);
+        }
+        return response(RonaAwal::from('rona_awal')
+          ->selectRaw('
+            rona_awal.*,
+            rona_awal.name as value,
+            project_rona_awals.description as description,
+            project_rona_awals.measurement as measurement,
+            project_rona_awals.id as id_project_rona_awal
+          ')
+          ->join('project_rona_awals', 'project_rona_awals.id_rona_awal', '=', 'rona_awal.id' )
+          ->where(function ($q) use ($request) {
+              $q->where('rona_awal.is_master', true);
+              $q->orWhere('rona_awal.originator_id', $request->id_project);
+              return $q;
+          })
+          ->where('project_rona_awals.is_andal', $request->mode)
+          ->where('project_rona_awals.id_project', $request->id_project)->get());
+
+
+
+
+
+        //
+        /*
         $params = $request->all();
         if (isset($params['id_project'])){
             $rona_awals = ProjectRonaAwal::select('project_rona_awals.*',
@@ -30,7 +76,7 @@ class ProjectRonaAwalController extends Controller
             if (isset($params['with_component_type']) && $params['with_component_type']){
                 $component_types = ComponentType::select('component_types.*')
                     ->orderBy('id', 'asc')
-                    ->get();                
+                    ->get();
                 $data = [];
                 foreach ($rona_awals as $rona_awal) {
                     $id_component_type = $rona_awal['id_component_type_master'];
@@ -71,7 +117,7 @@ class ProjectRonaAwalController extends Controller
             }
         } else {
             return ProjectRonaAwalResource::collection(ProjectRonaAwal::with('rona_awal')->get());
-        }
+        }*/
     }
 
     /**
@@ -92,7 +138,43 @@ class ProjectRonaAwalController extends Controller
      */
     public function store(Request $request)
     {
-        $all_params = $request->all();
+
+        $params = $request->all();
+        if(isset($params['id_project']) && isset($params['component'])){
+            $master = RonaAwal::where('id', $params['component']['id'])->first();
+            if(!$master){
+                $master = RonaAwal::create([
+                    'name' => $params['component']['name'],
+                    'id_component_type' => $params['component']['id_component_type'],
+                    'is_master' => false,
+                    'originator_id' => $request->id_project
+                ]);
+
+                if(!$master){
+                    return response( 'Komponen Kegiatan gagal disimpan', 500);
+                }
+            }
+
+            $pc = ProjectRonaAwal::firstOrNew([
+                'id_project' => $request->id_project,
+                'id_rona_awal' => $master->id,
+                'is_andal' => $request->mode,
+            ]);
+            $pc->description = $params['component']['description'];
+            $pc->measurement = $params['component']['measurement'];
+            if ($pc->save()) {
+                return response()->json([
+                    'code' => 200,
+                    'data' =>  $pc
+
+                ]);
+            }
+            return response()->json(['code' => 500]);
+        }
+
+        return response()->json(['code' => 500]);
+
+        /* $all_params = $request->all();
         if (isset($all_params['rona_awals'])){
             $validator = $request->validate([
                 'rona_awals' => 'required',
@@ -143,7 +225,7 @@ class ProjectRonaAwalController extends Controller
                 DB::rollBack();
                 return response()->json(['code' => 500]);
             }
-        }
+        }*/
     }
 
     /**
@@ -188,6 +270,49 @@ class ProjectRonaAwalController extends Controller
      */
     public function destroy(ProjectRonaAwal $projectRonaAwal)
     {
-        //
+        if($projectRonaAwal){
+            $mode = $projectRonaAwal->is_andal ? 1 :0;
+            $impactClasses = ['App\Entity\ImpactIdentification', 'App\Entity\ImpactIdentificationClone'];
+            $pieClasses=['App\Entity\PotentialImpactEvaluation', 'App\Entity\PotentialImpactEvalClone'];
+            $pieIdNames= ['id_impact_identification', 'id_impact_identification_clone'];
+
+            $imps = $impactClasses[$mode]::where(
+                ['id_project_rona_awal' => $projectRonaAwal->id,
+                'id_project' => $projectRonaAwal->id_project
+            ])->pluck('id');
+            if($imps){
+                $pieClasses[$mode]::whereIn($pieIdNames[$mode], $imps)->delete();
+                $impactClasses[$mode]::whereIn('id', $imps)->delete();
+                ImpactKegiatanLainSekitar::where('is_andal', $projectRonaAwal->is_andal)
+                ->whereIn('id_impact_identification', $imps)->delete();
+            }
+
+            $res = SubProjectRonaAwal::from('sub_project_rona_awals')
+              ->select('sub_project_rona_awals.id')
+              ->join('sub_project_components', 'sub_project_components.id', '=', 'sub_project_rona_awals.id_sub_project_component')
+              ->join('sub_projects', 'sub_projects.id', '=', 'sub_project_components.id_sub_project')
+              ->where('sub_project_rona_awals.id_rona_awal', $projectRonaAwal->id_rona_awal)
+              ->where('sub_project_rona_awals.is_andal', $projectRonaAwal->is_andal)
+              ->where('sub_projects.id_project', $projectRonaAwal->id_project)
+              ->get();
+
+            SubProjectRonaAwal::whereIn('id', $res)->delete();
+            $praids = ProjectRonaAwal::where([
+                'is_andal' => !$projectRonaAwal->is_andal,
+                'id_rona_awal' => $projectRonaAwal->id_rona_awal,
+                'id_project' => $projectRonaAwal->id_project
+            ])->pluck('id');
+
+            if(count($praids) === 0 ){
+                $ra = RonaAwal::where([
+                    'id' => $projectRonaAwal->id_rona_awal,
+                    'is_master' => false,
+                    'originator_id' => $projectRonaAwal->id_project
+                ])->delete();
+            }
+
+            return response($projectRonaAwal->delete(), 200);
+        }
+        return response('Komponen Lingkungan tidak ditemukan', 500);
     }
 }

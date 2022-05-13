@@ -26,4 +26,24 @@ class EnvManagePlan extends Model
     {
         return $this->belongsTo(ImpactIdentificationClone::class, 'id_impact_identifications', 'id');
     }
+
+    public function sources()
+    {
+        return $this->hasMany(EnvPlanSource::class, 'id_env_manage_plan', 'id');
+    }
+
+    public function indicators()
+    {
+        return $this->hasMany(EnvPlanIndicator::class, 'id_env_manage_plan', 'id');
+    }
+
+    public function locations()
+    {
+        return $this->hasMany(EnvPlanLocations::class, 'id_env_manage_plan', 'id');
+    }
+
+    public function forms()
+    {
+        return $this->hasMany(EnvPlanForms::class, 'id_env_manage_plan', 'id');
+    }
 }

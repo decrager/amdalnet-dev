@@ -1,24 +1,6 @@
 <template>
   <div>
-    <div
-      class="filter-container"
-      style="display: flex; justify-content: space-between"
-    >
-      <div>
-        <el-button
-          v-if="isFormulator"
-          :loading="loadingSubmit"
-          class="filter-item"
-          type="primary"
-          style="font-size: 0.8rem"
-          @click="handleSubmit"
-        >
-          {{ 'Simpan Perubahan' }}
-        </el-button>
-        <span style="font-size: 0.8rem">
-          <em>{{ lastTime }}</em>
-        </span>
-      </div>
+    <div class="filter-container" style="text-align: right">
       <el-upload
         v-if="isFormulator"
         :loading="loadingMap"
@@ -75,7 +57,7 @@
           >
             <h4>MASUKAN/SARAN PERBAIKAN</h4>
             <div class="comment-list">
-              <div v-if="isSubstance || isExaminer" class="comment-card">
+              <div v-if="!isFormulator" class="comment-card">
                 <el-card style="margin-bottom: 10px">
                   <div class="comment-body" style="padding-top: 20px">
                     <el-select
@@ -196,14 +178,39 @@
 
       <el-table-column label="Sumber Dampak">
         <template slot-scope="scope">
-          <el-input
-            v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.impact_source"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(source, index) in scope.row.impact_source"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <Tinymce
+                v-if="isFormulator"
+                v-model="scope.row.impact_source[index].description"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div v-else v-html="scope.row.impact_source[index].description" />
+            </div>
+          </div>
+          <el-button
+            v-if="scope.row.type == 'subtitle' && isFormulator"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddImpactSource(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'impact_source')"
+            style="color: #f56c6c; display: block"
+          >
+            Sumber Dampak Wajib Diisi
+          </small>
         </template>
       </el-table-column>
 
@@ -211,78 +218,290 @@
         label="Indikator Keberhasilan Pengelolaan Lingkungan Hidup"
       >
         <template slot-scope="scope">
-          <el-input
-            v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.success_indicator"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(indicator, index) in scope.row.success_indicator"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <Tinymce
+                v-if="isFormulator"
+                v-model="scope.row.success_indicator[index].description"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div
+                v-else
+                v-html="scope.row.success_indicator[index].description"
+              />
+            </div>
+          </div>
+          <el-button
+            v-if="scope.row.type == 'subtitle' && isFormulator"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddSuccessIndicator(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'success_indicator')"
+            style="color: #f56c6c; display: block"
+          >
+            Indikator Wajib Diisi
+          </small>
         </template>
       </el-table-column>
 
       <el-table-column label="Bentuk Pengelolaan Lingkungan Hidup">
         <template slot-scope="scope">
-          <el-input
-            v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.form"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(form, index) in scope.row.form"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <Tinymce
+                v-if="isFormulator"
+                v-model="scope.row.form[index].description"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div v-else v-html="scope.row.form[index].description" />
+            </div>
+          </div>
+          <el-button
+            v-if="scope.row.type == 'subtitle' && isFormulator"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddForm(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'form')"
+            style="color: #f56c6c; display: block"
+          >
+            Bentuk Pengelolaan Wajib Diisi
+          </small>
         </template>
       </el-table-column>
 
       <el-table-column label="Lokasi Pengelolaan Lingkungan Hidup">
         <template slot-scope="scope">
-          <el-input
-            v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.location"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
+          <div v-if="scope.row.type == 'subtitle'">
+            <div
+              v-for="(location, index) in scope.row.location"
+              :key="index"
+              style="margin-bottom: 5px"
+            >
+              <Tinymce
+                v-if="isFormulator"
+                v-model="scope.row.location[index].description"
+                output-format="html"
+                :menubar="''"
+                :image="false"
+                :toolbar="[
+                  'bold italic underline bullist numlist  preview undo redo fullscreen',
+                ]"
+                :height="50"
+              />
+              <div v-else v-html="scope.row.location[index].description" />
+            </div>
+          </div>
+          <el-button
+            v-if="scope.row.type == 'subtitle' && isFormulator"
+            icon="el-icon-plus"
+            circle
+            @click="handleAddLocation(scope.$index)"
           />
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'location')"
+            style="color: #f56c6c; display: block"
+          >
+            Lokasi Pengelolaan Wajib Diisi
+          </small>
         </template>
       </el-table-column>
 
-      <el-table-column label="Periode Pengelolaan Lingkungan Hidup">
+      <el-table-column
+        label="Periode Pengelolaan Lingkungan Hidup"
+        align="center"
+      >
         <template slot-scope="scope">
-          <el-input
+          <el-input-number
             v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.period"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
+            v-model="scope.row.period_number"
+            :min="0"
+            :disabled="!isFormulator"
+            style="width: 100%"
+            :class="{
+              'is-error': checkError(
+                scope.row.type,
+                scope.$index,
+                'period_number'
+              ),
+            }"
           />
+          <small
+            v-if="checkError(scope.row.type, scope.$index, 'period_number')"
+            style="color: #f56c6c"
+          >
+            Jumlah Periode Wajib Diisi
+          </small>
+          <span v-if="scope.row.type == 'subtitle'">x</span>
+          <el-select
+            v-if="scope.row.type == 'subtitle'"
+            v-model="scope.row.period_description"
+            placeholder="Pilihan"
+            :disabled="!isFormulator"
+            :class="{
+              'is-error': checkError(
+                scope.row.type,
+                scope.$index,
+                'period_description'
+              ),
+            }"
+          >
+            <el-option
+              v-for="item in periode"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
           <span v-else>{{ '' }}</span>
+          <small
+            v-if="
+              checkError(scope.row.type, scope.$index, 'period_description')
+            "
+            style="color: #f56c6c"
+          >
+            Periode Wajib Dipilih
+          </small>
         </template>
       </el-table-column>
 
-      <el-table-column label="Institusi Pengelolaan Lingkungan Hidup">
-        <template slot-scope="scope">
-          <el-input
-            v-if="scope.row.type == 'subtitle'"
-            v-model="scope.row.institution"
-            type="textarea"
-            :rows="2"
-            :readonly="!isFormulator"
-          />
-          <span v-else>{{ '' }}</span>
-        </template>
+      <el-table-column label="Institusi Pemantauan Lingkungan Hidup">
+        <el-table-column label="Pelaksana">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.executor"
+              type="textarea"
+              :rows="2"
+              :readonly="!isFormulator"
+              :class="{
+                'is-error': checkError(
+                  scope.row.type,
+                  scope.$index,
+                  'executor'
+                ),
+              }"
+            />
+            <span v-else>{{ '' }}</span>
+            <small
+              v-if="checkError(scope.row.type, scope.$index, 'executor')"
+              style="color: #f56c6c"
+            >
+              Pelaksana Wajib Diisi
+            </small>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="Pengawas">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.supervisor"
+              type="textarea"
+              :rows="2"
+              :readonly="!isFormulator"
+              :class="{
+                'is-error': checkError(
+                  scope.row.type,
+                  scope.$index,
+                  'supervisor'
+                ),
+              }"
+            />
+            <span v-else>{{ '' }}</span>
+            <small
+              v-if="checkError(scope.row.type, scope.$index, 'supervisor')"
+              style="color: #f56c6c"
+            >
+              Pengawas Wajib Diisi
+            </small>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="Penerima Laporan">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.type == 'subtitle'"
+              v-model="scope.row.report_recipient"
+              type="textarea"
+              :rows="2"
+              :readonly="!isFormulator"
+              :class="{
+                'is-error': checkError(
+                  scope.row.type,
+                  scope.$index,
+                  'report_recipient'
+                ),
+              }"
+            />
+            <span v-else>{{ '' }}</span>
+            <small
+              v-if="
+                checkError(scope.row.type, scope.$index, 'report_recipient')
+              "
+              style="color: #f56c6c"
+            >
+              Penerima Laporan Wajib Diisi
+            </small>
+          </template>
+        </el-table-column>
       </el-table-column>
     </el-table>
+    <div style="margin: 2em 0 1em; text-align: right">
+      <span style="font-size: 0.8rem; margin-right: 0.5em">
+        <em>{{ lastTime }}</em>
+      </span>
+      <el-button
+        v-if="isFormulator"
+        :loading="loadingSubmit"
+        class="filter-item"
+        type="primary"
+        style="font-size: 0.8rem"
+        @click="checkSubmit"
+      >
+        {{ 'Simpan Perubahan' }}
+      </el-button>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import Tinymce from '@/components/Tinymce';
 import Resource from '@/api/resource';
 const rklResource = new Resource('matriks-rkl');
 
 export default {
   name: 'TableRKL',
+  components: {
+    Tinymce,
+  },
   data() {
     return {
       list: [],
@@ -295,7 +514,26 @@ export default {
       selectedImpactCommentId: null,
       impactComment: null,
       impactColumnType: null,
-      userInfo: {},
+      // userInfo: {},
+      errors: [],
+      periode: [
+        {
+          label: 'per Hari',
+          value: 'per Hari',
+        },
+        {
+          label: 'per Minggu',
+          value: 'per Minggu',
+        },
+        {
+          label: 'per Bulan',
+          value: 'per Bulan',
+        },
+        {
+          label: 'per Tahun',
+          value: 'per Tahun',
+        },
+      ],
       kolom: [
         {
           label: 'Jenis Dampak yang Timbul',
@@ -329,23 +567,18 @@ export default {
     };
   },
   computed: {
-    isSubstance() {
-      return this.$store.getters.roles.includes('examiner-substance');
-    },
-    isExaminer() {
-      return this.$store.getters.roles.includes('examiner');
-    },
+    ...mapGetters({
+      userInfo: 'user',
+      userId: 'userId',
+    }),
     isFormulator() {
       return this.$store.getters.roles.includes('formulator');
-    },
-    isAdmin() {
-      return this.userInfo.roles.includes('examiner-administration');
     },
   },
   created() {
     this.getRKL();
     this.getLastTimeRKL();
-    this.getUserInfo();
+    // this.getUserInfo();
   },
   methods: {
     async getRKL() {
@@ -375,12 +608,116 @@ export default {
         duration: 5 * 1000,
       });
     },
+    checkSubmit() {
+      let errors = 0;
+
+      this.errors = this.list.map((x) => {
+        if (x.type === 'subtitle') {
+          if (
+            !x.impact_source ||
+            !x.success_indicator ||
+            !x.period_number ||
+            !x.period_description ||
+            !x.executor ||
+            !x.supervisor ||
+            !x.report_recipient ||
+            x.impact_source.length === 0 ||
+            x.success_indicator.length === 0 ||
+            x.form.length === 0 ||
+            x.location.length === 0
+          ) {
+            errors++;
+          }
+
+          let impactSourceError = x.impact_source.length === 0;
+
+          if (!impactSourceError) {
+            const filter = x.impact_source.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              impactSourceError = true;
+              errors++;
+            }
+          }
+
+          let successIndicatorError = x.success_indicator.length === 0;
+
+          if (!successIndicatorError) {
+            const filter = x.success_indicator.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              successIndicatorError = true;
+              errors++;
+            }
+          }
+
+          let formError = x.form.length === 0;
+
+          if (!formError) {
+            const filter = x.form.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              formError = true;
+              errors++;
+            }
+          }
+
+          let locationError = x.location.length === 0;
+
+          if (!locationError) {
+            const filter = x.location.filter((y) => {
+              return Boolean(!y.description);
+            });
+
+            if (filter.length > 0) {
+              locationError = true;
+              errors++;
+            }
+          }
+
+          return {
+            impact_source: impactSourceError,
+            success_indicator: successIndicatorError,
+            form: formError,
+            location: locationError,
+            period_number: !x.period_number,
+            period_description: !x.period_description,
+            executor: !x.executor,
+            supervisor: !x.supervisor,
+            report_recipient: !x.report_recipient,
+          };
+        }
+        return {};
+      });
+
+      if (errors === 0) {
+        this.handleSubmit();
+      }
+    },
+    checkError(scopeType, idx, name) {
+      if (scopeType === 'subtitle') {
+        if (this.errors.length > 0) {
+          if (this.errors[idx][name]) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
     async handleSubmit() {
       this.loadingSubmit = true;
       const sendForm = this.list.filter((com) => com.type === 'subtitle');
       const time = await rklResource.store({
         manage: sendForm,
         type: this.lastTime ? 'update' : 'new',
+        idProject: this.$route.params.id,
       });
       this.loadingSubmit = false;
       this.lastTime = time;
@@ -400,6 +737,7 @@ export default {
         id_impact_identification: this.selectedImpactCommentId,
         id_user: this.userInfo.id,
         column_type: this.impactColumnType,
+        id_project: this.$route.params.id,
       });
 
       const indexImpact = this.list.findIndex((ide) => {
@@ -421,6 +759,7 @@ export default {
         id_comment: id,
         id_user: this.userInfo.id,
         id_impact_identification: this.selectedImpactCommentId,
+        id_project: this.$route.params.id,
       });
 
       const indexImpact = this.list.findIndex((ide) => {
@@ -444,8 +783,32 @@ export default {
         id,
       });
     },
-    async getUserInfo() {
-      this.userInfo = await this.$store.dispatch('user/getInfo');
+    // async getUserInfo() {
+    //   this.userInfo = await this.$store.dispatch('user/getInfo');
+    // },
+    handleAddImpactSource(idx) {
+      this.list[idx].impact_source.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddSuccessIndicator(idx) {
+      this.list[idx].success_indicator.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddForm(idx) {
+      this.list[idx].form.push({
+        id: null,
+        description: null,
+      });
+    },
+    handleAddLocation(idx) {
+      this.list[idx].location.push({
+        id: null,
+        description: null,
+      });
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (row.type === 'title' && columnIndex === 1) {
@@ -564,5 +927,10 @@ export default {
   padding: 8px;
   color: white;
   border-radius: 3px;
+}
+.is-error .el-input__inner,
+.is-error .el-radio__inner,
+.is-error .el-textarea__inner {
+  border-color: #f56c6c;
 }
 </style>
