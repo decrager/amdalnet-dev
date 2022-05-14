@@ -31,7 +31,7 @@
                 <a href="#" @click="handleSetMenu('TEMPLATE')">Template Persetujuan Perlingkupan</a>
               </li>
               <li>
-                <a href="">Formulir KA Amdal Standar Spesifik</a>
+                <a href="">Formulir KA Andal Standar Spesifik</a>
               </li>
               <li>
                 <a href="">UKL-UPL Standar Spesifik</a>
