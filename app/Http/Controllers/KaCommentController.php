@@ -63,7 +63,7 @@ class KaCommentController extends Controller
 
         $komen = null;
 
-        if($request->commentType == 'pelingkupan' || $request->commentType == 'peta-batas-andal' || $request->commentType == 'peta-batas-ka') {
+        if($request->commentType == 'pelingkupan' || $request->commentType == 'pelingkupan-andal' || $request->commentType == 'peta-batas-andal' || $request->commentType == 'peta-batas-ka') {
             $komen = Comment::where([['document_type', $request->commentType], ['id_project', $request->idProject], ['reply_to', null]])
             ->orderBY('id', 'DESC')->get();
         } else {

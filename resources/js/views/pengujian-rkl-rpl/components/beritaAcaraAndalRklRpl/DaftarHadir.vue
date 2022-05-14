@@ -140,7 +140,7 @@
     </div>
     <el-upload
       :auto-upload="false"
-      :on-change="handleUploadChange"
+      :on-change="checkHandleUploadChange"
       :show-file-list="false"
       action=""
     >
@@ -282,13 +282,22 @@ export default {
     deleteRow(idx, id) {
       this.$emit('deleteinvitation', { idx, id });
     },
-    async handleUploadChange(file, fileList) {
+    checkHandleUploadChange(file, fileList) {
+      if (file.raw.size > 1048576) {
+        this.showFileAlert();
+        return;
+      } else {
+        this.handleUploadChange(file);
+      }
+    },
+    async handleUploadChange(file) {
       if (this.reports.type === 'update') {
         this.loadingUpload = true;
         const formData = new FormData();
         formData.append('idProject', this.$route.params.id);
-        formData.append('dokumen_file', file.raw);
         formData.append('file', 'true');
+        const fileUpload = await this.convertBase64(file.raw);
+        formData.append('dokumen_file', fileUpload);
         const data = await meetingReportResource.store(formData);
         this.errors = data.errors === null ? {} : data.errors;
         this.loadingUpload = false;
@@ -311,6 +320,25 @@ export default {
     },
     download(url) {
       window.open(url, '_blank').focus();
+    },
+    showFileAlert() {
+      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+        center: true,
+      });
+    },
+    convertBase64(file) {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
+      });
     },
   },
 };
