@@ -168,24 +168,20 @@ class AndalComposingController extends Controller
         if($request->type == 'attachment') {
             $project = Project::findOrFail($request->idProject);
 
-            if($request->hasFile('ktr')) {
+            if($request->ktr) {
                 $ktrName = '';
-                if ($request->file('ktr')) {
-                    $fileKtr = $request->file('ktr');
-                    $ktrName = 'project/ktr/' . uniqid() . '.' . $fileKtr->extension();
-                    $fileKtr->storePubliclyAs('public', $ktrName);
-                    $project->ktr = Storage::url($ktrName);
-                }
+                $fileKtr = $this->base64ToFile($request->ktr);
+                $ktrName = 'project/ktr/' . uniqid() . '.' . $fileKtr['extension'];
+                Storage::disk('public')->put($ktrName, $fileKtr['file']);
+                $project->ktr = Storage::url($ktrName);
             }
 
-            if($request->hasFile('pA')) {
+            if($request->pA) {
                 $pAName = '';
-                if ($request->file('pA')) {
-                    $filePa = $request->file('pA');
-                    $pAName = 'project/preAgreement/' . uniqid() . '.' . $filePa->extension();
-                    $filePa->storePubliclyAs('public', $pAName);
+                    $filePa = $this->base64ToFile($request->pA);
+                    $pAName = 'project/preAgreement/' . uniqid() . '.' . $filePa['extension'];
+                    Storage::disk('public')->put($pAName, $filePa['file']);
                     $project->pre_agreement_file = Storage::url($pAName);
-                }
             }
 
             $project->save();
@@ -196,14 +192,15 @@ class AndalComposingController extends Controller
             if(count($others) > 0) {
                 for($i = 0; $i < count($others); $i++) {
                     $fileRequest = 'file-' . $i;
-                    if($request->hasFile($fileRequest)) {
+
+                    if($request->input($fileRequest)) {
                         $attachment = new AndalAttachment();
                         $attachment->id_project = $request->idProject;
                         $attachment->name = $others[$i];
     
-                        $file = $request->file($fileRequest);
-                        $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file->extension();
-                        $file->storePubliclyAs('public', $fileName);
+                        $file = $this->base64ToFile($request->input($fileRequest));
+                        $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file['extension'];
+                        Storage::disk('public')->put($fileName, $filePa['file']);
                         $attachment->file = Storage::url($fileName);
     
                         $attachment->save();
@@ -3028,6 +3025,24 @@ class AndalComposingController extends Controller
             'kesesuaian_tata_ruang' => $project->ktr,
             'persetujuan_awal' => $project->pre_agreement_file,
             'lainnya' => $others ? $others->toArray() : []
+        ];
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
         ];
     }
 }
