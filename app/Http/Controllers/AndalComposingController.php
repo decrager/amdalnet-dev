@@ -681,7 +681,7 @@ class AndalComposingController extends Controller
 
         $save_file_name = $id_project . '-andal' . '.docx';
 
-        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        if (File::exists(storage_path('app/public/workspace/' . $save_file_name)) && $id_project == 920) {
             return response()->json(['message' => 'success']);
         }
 
