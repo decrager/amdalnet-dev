@@ -1,7 +1,9 @@
+<!-- eslint-disable vue/html-self-closing -->
 <template>
-  <div>
-    <div id="tree">
+  <div id="bagan_wrapper" v-loading="loading" style="padding: 15px 0">
+    <div id="tree" style="overflow: auto">
       <GChart
+        id="g-chart"
         :settings="{
           packages: ['orgchart'],
           callback: () => {
@@ -12,6 +14,17 @@
         :data="chartData"
       />
     </div>
+    <el-col :span="24" style="text-align: right; margin: 2em 0">
+      <el-button
+        :loading="loadingPDF"
+        size="small"
+        type="warning"
+        @click="download"
+      >
+        Export PDF
+      </el-button>
+    </el-col>
+    <div id="pdf" />
   </div>
 </template>
 
@@ -20,6 +33,8 @@
 /* eslint-disable vue/this-in-template */
 import axios from 'axios';
 import { GChart } from 'vue-google-charts';
+import * as html2canvas from 'html2canvas';
+import JsPDF from 'jspdf';
 
 export default {
   components: {
@@ -28,13 +43,18 @@ export default {
   data() {
     return {
       chartData: null,
+      loading: false,
+      loadingPDF: false,
     };
   },
   methods: {
     async drawChart() {
+      this.loading = true;
       const dataChart = await axios.get(
         `/api/bagan-alir-dampak-penting/${this.$route.params.id}`
       );
+
+      const data = dataChart.data.data;
 
       const rowData = [
         [{ v: '', f: `${dataChart.data.title}` }, '', ''],
@@ -44,6 +64,15 @@ export default {
         ['Tahap Pasca Operasi', `${dataChart.data.title}`, ''],
       ];
 
+      for (const tahap in data) {
+        for (const component in data[tahap]) {
+          rowData.push([component, `Tahap ${tahap}`, '']);
+          data[tahap][component].forEach((x) => {
+            rowData.push([x, component, '']);
+          });
+        }
+      }
+
       // eslint-disable-next-line no-undef
       this.chartData = new google.visualization.DataTable();
       this.chartData.addColumn('string', 'Name');
@@ -52,52 +81,29 @@ export default {
 
       this.chartData.addRows(rowData);
 
-      // For each orgchart box, provide the name, manager, and tooltip to show.
-      // this.chartData.addRows([
-      //   [{ v: 'Nama Rencana Kegiatan', f: 'Nama Rencana Kegiatan' }, '', ''],
-      //   ['Tahap Pra Konstruksi', 'Nama Rencana Kegiatan', ''],
-      //   ['Tahap Konstruksi', 'Nama Rencana Kegiatan', ''],
-      //   ['Tahap Operasi', 'Nama Rencana Kegiatan', ''],
-      //   ['Tahap Pasca Operasi', 'Nama Rencana Kegiatan', ''],
-
-      //   [{ v: 'Tahap Pra Konstruksi', f: 'Tahap Pra Konstruksi' }, '', ''],
-      //   ['Pengadaan Lahan', 'Tahap Pra Konstruksi', ''],
-      //   ['Kepemilikan Penguasaan Lahan', 'Pengadaan Lahan', ''],
-      //   ['Livelihood', 'Kepemilikan Penguasaan Lahan', ''],
-
-      //   [{ v: 'Tahap Konstruksi', f: 'Tahap Konstruksi' }, '', ''],
-      //   ['Penerimaan Tenaga Kerja', 'Tahap Konstruksi', ''],
-      //   ['Mobilisasi / Demobilisasi', 'Tahap Konstruksi', ''],
-      //   ['Penyiapan Tapak', 'Tahap Konstruksi', ''],
-      //   ['Pemboran Sumur', 'Tahap Konstruksi', ''],
-
-      //   ['Kesempatan Kerja', 'Penerimaan Tenaga Kerja', ''],
-      //   ['Lalu Lintas Darat', 'Mobilisasi / Demobilisasi', ''],
-      //   ['Flora', 'Penyiapan Tapak', ''],
-      //   ['Fauna', 'Penyiapan Tapak', ''],
-      //   ['Erosi Tanah', 'Penyiapan Tapak', ''],
-      //   ['Laju Aliran', 'Penyiapan Tapak', ''],
-
-      //   ['Sedimentasi', 'Erosi Tanah', ''],
-
-      //   ['Kualitas Udara', 'Pemboran Sumur', ''],
-      //   ['Kebisingan', 'Pemboran Sumur', ''],
-
-      //   ['Kesehatan Masyarakat', 'Kualitas Udara', ''],
-
-      //   [{ v: 'Tahap Operasi', f: 'Tahap Operasi' }, '', ''],
-      //   ['Penerimaan Tenaga Kerja', 'Tahap Operasi', ''],
-      //   ['Produksi Sumur', 'Tahap Operasi', ''],
-      //   ['Radiasi Panas', 'Produksi Sumur', ''],
-
-      //   [{ v: 'Tahap Pasca Operasi', f: 'Tahap Pasca Operasi' }, '', ''],
-      // ]);
-
       // Create the chart.
       const chart = new google.visualization.OrgChart(
         document.getElementById('tree')
       );
       chart.draw(this.chartData, { allowHtml: true });
+      this.loading = false;
+    },
+    download() {
+      this.loadingPDF = true;
+      var w = document.getElementById('tree').scrollWidth;
+      var h = document.getElementById('tree').scrollHeight;
+      html2canvas(document.querySelector('#tree table'), {
+        imageTimeout: 4000,
+        useCORS: true,
+      }).then((canvas) => {
+        document.getElementById('pdf').appendChild(canvas);
+        const img = canvas.toDataURL('image/png');
+        const pdf = new JsPDF('landscape', 'px', [w, h]);
+        pdf.addImage(img, 'PNG', 0, 0, w, h);
+        this.loadingPDF = false;
+        pdf.save('Bagan Alir Dampak Penting.pdf');
+        document.getElementById('pdf').innerHTML = '';
+      });
     },
   },
 };

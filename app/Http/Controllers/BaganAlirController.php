@@ -78,36 +78,17 @@ class BaganAlirController extends Controller
         $impact_identifications = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant', 'id_sub_project_component', 'id_sub_project_rona_awal')->where([['id_project', $id], ['is_hypothetical_significant', true]])->get();
 
         foreach ($impact_identifications as $imp) {
-            // if ($imp->projectComponent) {
-            //     $id_stages = $imp->projectComponent->component->id_project_stage;
-
-            //     if ($id_stages == $imp->id) {
-            //         if ($imp->projectRonaAwal) {
-            //             $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
-            //             $component = $imp->projectComponent->component->name;
-            //         } else {
-            //             continue;
-            //         }
-            //     } else {
-            //         continue;
-            //     }
-            // } else {
-            //     continue;
-            // }
-
-            if ($imp->subProjectComponent) {
-                $stage_name = $imp->subProjectComponent->component ? $imp->subProjectComponent->component->stage->name : $imp->subProjectComponent->projectStage->name;
-
-                if ($imp->subProjectRonaAwal) {
-                    $ronaAwal = $imp->subProjectRonaAwal->ronaAwal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                    $component = $imp->subProjectComponent->component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+            if ($imp->projectComponent) {
+                $stage_name = $imp->projectComponent->component->stage->name;
+                if ($imp->projectRonaAwal) {
+                    $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                    $component = $imp->projectComponent->component->name;
 
                     if(!array_key_exists($component, $data[$stage_name])) {
                         $data[$stage_name][$component] = [];
                     }
 
                     $data[$stage_name][$component][] = $ronaAwal;
-
                 } else {
                     continue;
                 }
