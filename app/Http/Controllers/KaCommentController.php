@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Entity\Comment;
 use App\Entity\ProjectStage;
+use App\Utils\Html;
+use App\Utils\TemplateProcessor;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\Element\Table;
+use Illuminate\Support\Facades\File;
 
 class KaCommentController extends Controller
 {
@@ -15,6 +19,10 @@ class KaCommentController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->download) {
+            return $this->download($request->idProject, $request->documentType);
+        }
+
         if($request->recap) {
             $comment_list = [];
             $comments = Comment::where([['document_type', $request->documentType],['reply_to', null],['id_project', $request->idProject]])->get();
@@ -231,5 +239,171 @@ class KaCommentController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function renderHtmlTable($data, $width = null, $font = null, $font_size = null)
+    {
+        $table = new Table();
+        $table->addRow();
+        $cell = null;
+        if($width) {
+            $cell = $table->addCell($width);
+        } else {
+            $cell = $table->addCell();
+        }
+        $selected_font = $font ? $font : 'Bookman Old Style';
+        $selected_font_size = $font_size ? $font_size : '9.5';
+        $content = '';
+        if($data) {
+            $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
+        }
+        Html::addHtml($cell, $content);
+        return $table;
+    }
+
+    private function replaceHtmlList($data)
+    {
+        if($data) {
+            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+        } else {
+            return '';
+        }
+    }
+
+    private function removeNestedParagraph($data)
+    {
+        $old_data = $data;
+        $new_data = null;
+
+        while(true) {
+            $new_data = preg_replace('/(.*<p>)(((?!<\/p>).)*?)(<p>)(.*?)(<\/p>)(.*)/', '\1\2\5\7', $old_data);
+            if($new_data == $old_data) {
+                break;
+            } else {
+                $old_data = $new_data;
+            }
+        }
+
+        return $new_data;
+    }
+
+    private function download($id_project, $type)
+    {
+        if (!File::exists(storage_path('app/public/recap/'))) {
+            File::makeDirectory(storage_path('app/public/recap/'));
+        }
+
+        $comment_list = [];
+        $document_type = [];
+        $html = [];
+
+        if($type == 'ka') {
+            $document_type = ['pelingkupan', 'dpdph-ka', 'peta-batas-ka', 'metode-studi-ka'];
+        } else if($type == 'andal') {
+            $document_type = ['peta-batas-andal', 'pelingkupan-andal', 'dpdph-andal', 'metode-studi-andal', 'andal'];
+        } else if($type == 'rkl-rpl') {
+            $document_type = ['rkl', 'rpl'];
+        }
+
+        $comments = Comment::where([['reply_to', null],['id_project', $id_project]])->whereIn('document_type', $document_type)->get();
+        
+
+        foreach($comments as $c) {
+            // stage
+            $change_type = '';
+            $rona_awal = '';
+            $component = '';
+
+            if($c->impactIdentification) {
+                $change_type = $c->impactIdentification->id_change_type ? $c->impactIdentification->changeType->name : '';
+
+                if($c->impactIdentification->component) {
+                    $component = $c->impactIdentification->component->component->name;
+                }
+
+                if($c->impactIdentification->ronaAwal) {
+                    $rona_awal = $c->impactIdentification->ronaAwal->rona_awal->name;
+                }
+            } else if($c->impactIdentificationClone) {
+                $change_type = $c->impactIdentificationClone->id_change_type ? $c->impactIdentificationClone->changeType->name : '';
+
+                if($c->impactIdentificationClone->projectComponent) {
+                    $component = $c->impactIdentificationClone->projectComponent->component->name;
+                }
+
+                if($c->impactIdentificationClone->projectRonaAwal) {
+                    $rona_awal = $c->impactIdentificationClone->projectRonaAwal->rona_awal->name;
+                }
+            }
+
+            $comment_list[] = [
+                'recap' => count($comment_list) + 1 . '.',
+                'name' => $c->user->name,
+                'category' => $this->documentType($c->document_type),
+                'stage' => $c->stage ? $c->stage->name : '',
+                'column' => str_replace('&', 'dan', $c->column_type),
+                'note' => '${' . count($comment_list) + 1 . '_desc' .  '}',
+            ];
+
+            $html[] = ['replace' => '${' . count($comment_list) . '_desc' .  '}', 'data' => $this->renderHtmlTable($c->description, 1200, 'Calibry', '16')];
+
+        }
+
+        $templateProcessor = new TemplateProcessor('template_rekap_komentar.docx');
+        $templateProcessor->cloneRowAndSetValues('recap', $comment_list);
+
+        if(count($html) > 0) {
+            for($i = 0; $i < count($html); $i++) {
+                $templateProcessor->setComplexBlock($html[$i]['replace'], $html[$i]['data']);
+            }
+        }
+
+        $save_file_name = storage_path('app/public/recap/' . $id_project . '-' . $type . '.docx');
+        $templateProcessor->saveAs($save_file_name);
+        return response()->download($save_file_name)->deleteFileAfterSend(true);
+    }
+
+    private function documentType($type)
+    {
+        $title = '';
+        switch ($type) {
+            case 'pelingkupan':
+                $title = 'Pelingkupan';
+                break;
+            case 'dpdph-ka':
+                $title = 'Evaluasi Dampak Potensial dan Dampak Penting Hipotetik';
+                break;
+            case 'peta-batas-ka':
+                $title = 'Peta Batas Wilayah Studi dan Peta Pendukung';
+                break;
+            case 'metode-studi-ka':
+                $title = 'Metode Studi';
+                break;
+            case 'peta-batas-andal':
+                $title = 'Peta Batas Wilayah Studi dan Peta Lainnya';
+                break;
+            case 'pelingkupan-andal':
+                $title = 'Pelingkupan';
+                break;
+            case 'dpdph-andal':
+                $title = 'Evaluasi Dampak Potensial dan Dampak Penting Hipotetik';
+                break;
+            case 'metode-studi-andal':
+                $title = 'Metode Studi';
+                break;
+            case 'andal':
+                $title = 'Analisa Dampak Lingkungan';
+                break;
+            case 'rkl':
+                $title = 'Matriks Rencana Pengelolaan Lingkungan Hidup';
+                break;
+            case 'rpl':
+                $title = 'Matriks Rencana Pemantauan Lingkungan Hidup';
+                break;
+            default:
+                break;
+        }
+
+        return $title;
     }
 }
