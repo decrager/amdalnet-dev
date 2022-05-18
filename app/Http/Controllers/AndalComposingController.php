@@ -7,7 +7,6 @@ use App\Entity\AndalComment;
 use App\Entity\Comment;
 use App\Entity\ComponentType;
 use App\Entity\EnvImpactAnalysis;
-use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
 use App\Entity\HolisticEvaluation;
@@ -30,14 +29,10 @@ use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
-use PhpOffice\PhpWord\Element\TextRun;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\Settings;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use PDF;
-use PhpOffice\PhpWord\SimpleType\TblWidth;
 
 class AndalComposingController extends Controller
 {
@@ -91,7 +86,6 @@ class AndalComposingController extends Controller
 
         if ($request->formulir) {
             return $this->formulirKa($request->idProject, $request->type);
-            // return $this->formulirKaPhpWord($request->idProject);
         }
 
         if ($request->docs) {
@@ -525,8 +519,6 @@ class AndalComposingController extends Controller
 
 
                 $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                // $ronaAwal = '';
-                // $component = '';
 
                 $comments = $this->getComments($imp->id);
 
@@ -715,8 +707,6 @@ class AndalComposingController extends Controller
         $formulator_team_date_end = '';
         $formulator_no_reg = '';
         $formulator_team_period = '';
-        $formulator_team_address = '';
-        $formulator_team_phone = '';
         if ($formulator_team) {
             $total_formulator = 1;
             $total_ahli = 1;
@@ -962,35 +952,30 @@ class AndalComposingController extends Controller
                     foreach ($imp->potentialImpactEvaluation as $pI) {
                         if ($pI->id_pie_param == 1) {
                             $ed_besaran_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_besaran_rencana = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 2) {
                             $ed_kondisi_rona = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_kondisi_rona = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 3) {
                             $ed_pengaruh_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_pengaruh_rencana = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 4) {
                             $ed_intensitas_perhatian = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_intensitas_perhatian = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 5) {
                             $ed_kesimpulan = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_kesimpulan = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
@@ -1035,12 +1020,6 @@ class AndalComposingController extends Controller
                 if($imp->is_hypothetical_significant) {
                     if($imp->envImpactAnalysis) {
                         $impact_result = $imp->envImpactAnalysis->impact_eval_result ?? '';
-                        // $table_with_no_plan = [
-                        //     'studies' => $this->htmlInTable($imp->envImpactAnalysis->studies_condition),
-                        //     'no_plan' => $this->htmlInTable($imp->envImpactAnalysis->condition_dev_no_plan),
-                        //     'with_plan' => $this->htmlInTable($imp->envImpactAnalysis->condition_dev_with_plan),
-                        //     'size_differ' => $this->htmlInTable($imp->envImpactAnalysis->impact_size_difference),
-                        // ];
                         $table_with_no_plan = [
                             'studies' => '${st_' . $s->id . '_' . $imp->id . '}',
                             'no_plan' => '${no_' . $s->id . '_' . $imp->id . '}',
@@ -1058,37 +1037,30 @@ class AndalComposingController extends Controller
                                 foreach($imp->envImpactAnalysis->detail as $det) {
                                     if($det->id_important_trait == 1) {
                                         $important_trait_1['nilai'] = $det->important_trait;
-                                        // $important_trait_1['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_1['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_1_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 2) {
                                         $important_trait_2['nilai'] = $det->important_trait;
-                                        // $important_trait_2['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_2['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_2_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 3) {
                                         $important_trait_3['nilai'] = $det->important_trait;
-                                        // $important_trait_3['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_3['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_3_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 4) {
                                         $important_trait_4['nilai'] = $det->important_trait;
-                                        // $important_trait_4['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_4['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_4_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 5) {
                                         $important_trait_5['nilai'] = $det->important_trait;
-                                        // $important_trait_5['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_5['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_5_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 6) {
                                         $important_trait_6['nilai'] = $det->important_trait;
-                                        // $important_trait_6['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_6['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_6_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 7) {
                                         $important_trait_7['nilai'] = $det->important_trait;
-                                        // $important_trait_7['keterangan'] = $this->htmlInTable($det->descr);
                                         $important_trait_7['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_7_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     }
@@ -1856,7 +1828,6 @@ class AndalComposingController extends Controller
 
         // ========= DESKRIPSI RENCANA USAHA DAN/ATAU KEGIATAN ======== //
         $deskripsi_rencana = [];
-        // $deskripsi_rencana_replace = [];
         $desk_ren_no = 'A';
         $sub_projects = SubProject::where([['id_project', $id_project],['type', 'utama']])->get();
         foreach($sub_projects as $sp) {
@@ -1895,34 +1866,34 @@ class AndalComposingController extends Controller
         }
 
         // ======= RONA AWAL ============
-        $fisika_kima = [];
-        $biologi = [];
-        $sosekbud = [];
-        $kesmas = [];
+        // $fisika_kima = [];
+        // $biologi = [];
+        // $sosekbud = [];
+        // $kesmas = [];
 
-        $component_type = ComponentType::all();
-        foreach($component_type as $ct) {
-            if($ct->name == 'Biologi') {
-                $rona_awal = RonaAwal::where('id_component_type', $ct->id)->get();
-                foreach($rona_awal as $ra) {
-                    $biologi[] = [
-                        'rona_biologi_name' => $ra->name
-                    ];
-                }
-                $sp_rona = SubProject::where('id_project', $id_project)->get();
-                foreach($sp_rona as $sr) {
-                    $spr_component = SubProjectComponent::where('id_sub_project', $sr->id)->get();
-                    foreach($spr_component as $sprc) {
-                        $spr_rona = SubProjectRonaAwal::where([['id_sub_project_component', $sprc->id],['id_component_type', $sr->id]])->get();
-                        foreach($spr_rona as $sprr) {
-                            $biologi[] = [
-                                'rona_biologi_name' => $sprr->name
-                            ];
-                        }
-                    }
-                }
-            }
-        }
+        // $component_type = ComponentType::all();
+        // foreach($component_type as $ct) {
+        //     if($ct->name == 'Biologi') {
+        //         $rona_awal = RonaAwal::where('id_component_type', $ct->id)->get();
+        //         foreach($rona_awal as $ra) {
+        //             $biologi[] = [
+        //                 'rona_biologi_name' => $ra->name
+        //             ];
+        //         }
+        //         $sp_rona = SubProject::where('id_project', $id_project)->get();
+        //         foreach($sp_rona as $sr) {
+        //             $spr_component = SubProjectComponent::where('id_sub_project', $sr->id)->get();
+        //             foreach($spr_component as $sprc) {
+        //                 $spr_rona = SubProjectRonaAwal::where([['id_sub_project_component', $sprc->id],['id_component_type', $sr->id]])->get();
+        //                 foreach($spr_rona as $sprr) {
+        //                     $biologi[] = [
+        //                         'rona_biologi_name' => $sprr->name
+        //                     ];
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         // ======== KONSULTASI PUBLIK ======== //
         $konsul_publik_date = '';
@@ -1971,15 +1942,7 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('date_small', Carbon::now()->isoFormat('MMMM Y'));
         $templateProcessor->setValue('year', '' . date('Y') . '');
         $templateProcessor->cloneBlock('sub_project_scale_block', count($sub_project_scale_block), true, false, $sub_project_scale_block);
-        // $templateProcessor->setValue('lpjp_name', $lpjp['name']);
-        // $templateProcessor->setValue('lpjp_address', $lpjp['address']);
-        // $templateProcessor->setValue('lpjp_reg_no', $lpjp['reg_no']);
-        // $templateProcessor->setValue('lpjp_date_start', $lpjp['date_start']);
-        // $templateProcessor->setValue('lpjp_date_end', $lpjp['date_end']);
-        // $templateProcessor->setValue('lpjp_period', $lpjp['period']);
-        // $templateProcessor->setValue('lpjp_telephone', $lpjp['telephone']);
         $templateProcessor->setValue('lpjp_faksimili', $lpjp['faksimili']);
-        // $templateProcessor->setValue('lpjp_pic', $lpjp['pic']);
         $templateProcessor->setValue('lpjp_position', $lpjp['position']);
         $templateProcessor->setValue('penyusun', $penyusun);
         $templateProcessor->setValue('penyusun_name', $penyusun_name);
@@ -2030,7 +1993,6 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneRowAndSetValues('k_bwk', $k_bwk);
         $templateProcessor->cloneRowAndSetValues('o_bwk', $o_bwk);
         $templateProcessor->cloneRowAndSetValues('po_bwk', $po_bwk);
-        $templateProcessor->cloneBlock('rona_biologi', count($biologi), true, false, $biologi);
         $templateProcessor->cloneBlock('com_pk_block', count($com_pk), true, false, $com_pk);
         $templateProcessor->cloneBlock('com_k_block', count($com_k), true, false, $com_k);
         $templateProcessor->cloneBlock('com_o_block', count($com_o), true, false, $com_o);
@@ -2144,7 +2106,6 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneBlock('dpg_po_block', count($pdp), true, false, $pdp);
         
         // DAMPAK PADA PRAKIRAAN DAMPAK PENTING
-        // dd($dpg_pk_block, $dpg_k_block, $dpg_o_block, $dpg_pk_block);
         if(count($dpg_pk_block) > 0) {
             for($i = 0; $i < count($dpg_pk_block); $i++) {
                 $dampak = [];
@@ -2349,14 +2310,14 @@ class AndalComposingController extends Controller
         return response()->json(['message' => 'success']);
     }
 
-    private function htmlInTable($data)
-    {
-        if($data) {
-            return str_replace('&nbsp', ' ', str_replace('-enter-', '', strip_tags(str_replace('<br/>', '-enter-', str_replace('</li>', '-enter-', str_replace('</p>', '-enter-', $data))))));
-        } else {
-            return '';
-        }
-    }
+    // private function htmlInTable($data)
+    // {
+    //     if($data) {
+    //         return str_replace('&nbsp', ' ', str_replace('-enter-', '', strip_tags(str_replace('<br/>', '-enter-', str_replace('</li>', '-enter-', str_replace('</p>', '-enter-', $data))))));
+    //     } else {
+    //         return '';
+    //     }
+    // }
 
     private function getComponentTypeImp($imp) {
         $component_type = '';
