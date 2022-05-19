@@ -68,7 +68,7 @@ export default {
         for (const component in data[tahap]) {
           rowData.push([component, `Tahap ${tahap}`, '']);
           data[tahap][component].forEach((x) => {
-            rowData.push([x, component, '']);
+            rowData.push([x.dampak, component, '']);
           });
         }
       }
