@@ -721,8 +721,13 @@ export default {
 
       map.add(rupabumis);
 
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://sigap.menlhk.go.id/',
+      });
+
       const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
         imageTransparency: true,
         visible: false,
       });
@@ -740,7 +745,7 @@ export default {
       map.add(penutupanLahan2020);
 
       const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
@@ -759,7 +764,7 @@ export default {
       map.add(kawasanHutanB);
 
       const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
