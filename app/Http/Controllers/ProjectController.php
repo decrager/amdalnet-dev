@@ -328,7 +328,20 @@ class ProjectController extends Controller
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
                     'properties' => $request->geomProperties,
-                    'id_styles' => $request->geomStyles
+                    'id_styles' => $request->geomStyles,
+                    'step' => 'ka',
+                ]);
+                // clone for Andal
+                ProjectMapAttachment::create([
+                    'id_project' => $project->id,
+                    'attachment_type' => 'tapak',
+                    'file_type' => 'SHP',
+                    'original_filename' => 'Peta Tapak',
+                    'stored_filename' => $mapName,
+                    'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
+                    'properties' => $request->geomProperties,
+                    'id_styles' => $request->geomStyles,
+                    'step' => 'andal',
                 ]);
             }
 
@@ -341,6 +354,16 @@ class ProjectController extends Controller
                     'file_type' => 'PDF',
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
+                    'step' => 'ka',
+                ]);
+                // clone for Andal
+                ProjectMapAttachment::create([
+                    'id_project' => $project->id,
+                    'attachment_type' => 'tapak',
+                    'file_type' => 'PDF',
+                    'original_filename' => 'Peta Tapak',
+                    'stored_filename' => $mapName,
+                    'step' => 'andal',
                 ]);
             }
 

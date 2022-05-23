@@ -355,6 +355,7 @@ export default {
       this.data = [];
       const files = await uploadMaps.list({
         id_project: this.idProject,
+        step: 'ka',
       });
       this.data = files.data;
       this.process(files.data);
@@ -395,6 +396,7 @@ export default {
     handleSubmit(){
       const formData = new FormData();
       formData.append('id_project', this.idProject);
+      formData.append('step', 'ka');
 
       this.files.forEach((e, i) => {
         formData.append('files[]', e[0]);

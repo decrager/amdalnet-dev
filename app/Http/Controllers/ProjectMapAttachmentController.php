@@ -22,6 +22,9 @@ class ProjectMapAttachmentController extends Controller
         $files = ProjectMapAttachment::all();
         if ($request->id_project) {
             $files = $files->where('id_project', $request->id_project);
+            if ($request->step) {
+                $files = $files->where('step', $request->step);
+            }
             return ProjectMapAttachmentResource::collection($files);
         }
         return ProjectMapAttachmentResource::collection($files);
@@ -54,7 +57,8 @@ class ProjectMapAttachmentController extends Controller
                 $map = ProjectMapAttachment::firstOrNew([
                     'id_project' => $id_project,
                     'attachment_type' => $temp->attachment_type,
-                    'file_type' => $temp->file_type
+                    'file_type' => $temp->file_type,
+                    'step' => $request['step'],
                 ]);
 
                 if ($map->id) {
@@ -90,6 +94,29 @@ class ProjectMapAttachmentController extends Controller
 
                 if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
                     $map->save();
+                    // clone andal, if step = 'ka'
+                    if ($request['step'] == 'ka') {
+                        $existingClone = ProjectMapAttachment::where('id_project', $id_project)
+                            ->where('attachment_type', $temp->attachment_type)
+                            ->where('file_type', $temp->file_type)
+                            ->where('step', 'andal')
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+                        if ($existingClone) {
+                            // update
+                            $existingClone->original_filename = $map->original_filename;
+                            $existingClone->stored_filename = $map->stored_filename;
+                            $existingClone->geom = $map->geom;
+                            $existingClone->properties = $map->properties;
+                            $existingClone->id_styles = $map->id_styles;
+                            $existingClone->save();
+                        } else {
+                            // create new clone
+                            $clone = $map->replicate();
+                            $clone->step = 'andal';
+                            $clone->save();
+                        }
+                    }
                     // Add workflow
                     $project = Project::findOrFail($id_project);
                     if ($project->marking == 'uklupl-mt.matrix-upl') {
@@ -142,9 +169,17 @@ class ProjectMapAttachmentController extends Controller
      */
     public function show($id)
     {
-        return response()->json(
-            ProjectMapAttachment::where('id_project', '=', $id)->where('file_type', '=', 'SHP')->get()
-        );
+        $map = ProjectMapAttachment::where('id_project', '=', $id)
+                ->where('file_type', '=', 'SHP')
+                ->where('step', 'andal')
+                ->get();
+        if (count($map) == 0) {
+            $map = ProjectMapAttachment::where('id_project', '=', $id)
+                ->where('file_type', '=', 'SHP')
+                ->where('step', 'ka')
+                ->get();
+        }
+        return response()->json($map);
     }
 
     /**
@@ -187,6 +222,7 @@ class ProjectMapAttachmentController extends Controller
             ->select('project_map_attachments.id_project', 'projects.project_title', 'project_map_attachments.attachment_type', 'project_map_attachments.stored_filename')
             ->leftJoin('projects', 'projects.id', '=', 'project_map_attachments.id_project')
             ->where('project_map_attachments.file_type', '=', 'SHP')
+            ->where('step', 'ka')
             ->get();
 
         return response()->json($getProjectMap);
@@ -229,6 +265,7 @@ class ProjectMapAttachmentController extends Controller
             })
             ->where('project_map_attachments.file_type', '=', 'SHP')
             ->whereNotNull('project_map_attachments.geom')
+            ->where('step', 'ka')
             ->groupBy('project_map_attachments.id')
             ->get();
 
@@ -261,6 +298,7 @@ class ProjectMapAttachmentController extends Controller
             ) as feature_layer"))
             ->whereNotNull('geom')
             ->where('file_type', '=', 'SHP')
+            ->where('step', 'ka')
             ->groupBy('attachment_type')
             ->get();
 
@@ -273,6 +311,7 @@ class ProjectMapAttachmentController extends Controller
             ->select('projects.id', 'projects.project_title')
             ->leftJoin('project_map_attachments', 'projects.id', 'project_map_attachments.id_project')
             ->whereNotNull('project_map_attachments.geom')
+            ->where('step', 'ka')
             ->orderBy('projects.created_at', 'desc')
             ->groupBy('projects.id', 'projects.project_title', 'projects.created_at')
             ->get();
@@ -293,6 +332,7 @@ class ProjectMapAttachmentController extends Controller
             ->when($request->has('id_project'), function ($query) use ($request) {
                 return $query->where('id_project', '=', $request->id_project);
             })
+            ->where('step', 'ka')
             ->leftJoin('projects', 'projects.id', '=', 'project_map_attachments.id_project')
             ->get();
 
