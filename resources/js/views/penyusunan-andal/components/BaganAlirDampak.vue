@@ -57,6 +57,9 @@ export default {
       const data = dataChart.data.data;
 
       const rowData = [
+        ['Dampak Primer', '', ''],
+        ['Dampak Sekunder', '', ''],
+        ['Dampak Tersier', '', ''],
         [{ v: '', f: `${dataChart.data.title}` }, '', ''],
         ['Tahap Pra Konstruksi', `${dataChart.data.title}`, ''],
         ['Tahap Konstruksi', `${dataChart.data.title}`, ''],
@@ -64,14 +67,35 @@ export default {
         ['Tahap Pasca Operasi', `${dataChart.data.title}`, ''],
       ];
 
+      const dampakSekunder = [];
+      const dampakTersier = [];
+
       for (const tahap in data) {
         for (const component in data[tahap]) {
           rowData.push([component, `Tahap ${tahap}`, '']);
           data[tahap][component].forEach((x) => {
-            rowData.push([x.dampak, component, '']);
+            if (x.type === 'Primer') {
+              rowData.push([x.dampak, component, '']);
+            } else if (x.type === 'Sekunder') {
+              dampakSekunder.push(x);
+            } else if (x.type === 'Tersier') {
+              dampakTersier.push(x);
+            }
           });
         }
       }
+
+      dampakSekunder.forEach((x) => {
+        x.parents.forEach((y) => {
+          rowData.push([x.dampak, y, '']);
+        });
+      });
+
+      dampakTersier.forEach((x) => {
+        x.parents.forEach((y) => {
+          rowData.push([x.dampak, y, '']);
+        });
+      });
 
       // eslint-disable-next-line no-undef
       this.chartData = new google.visualization.DataTable();
@@ -85,7 +109,9 @@ export default {
       const chart = new google.visualization.OrgChart(
         document.getElementById('tree')
       );
-      chart.draw(this.chartData, { allowHtml: true });
+      chart.draw(this.chartData, {
+        allowHtml: true,
+      });
       this.loading = false;
     },
     download() {
