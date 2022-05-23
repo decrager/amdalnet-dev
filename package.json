@@ -111,6 +111,7 @@
     "vue-loader": "^15.9.3",
     "vue-router": "^3.4.3",
     "vue-simple-accordion": "^0.1.0",
+    "vue-simple-flowchart": "^0.1.8",
     "vue-splitpane": "^1.0.4",
     "vue-tree-list": "^1.5.0",
     "vuedraggable": "^2.24.0",

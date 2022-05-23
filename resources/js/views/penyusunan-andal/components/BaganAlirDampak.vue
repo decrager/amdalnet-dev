@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/html-self-closing -->
 <template>
   <div id="bagan_wrapper" v-loading="loading" style="padding: 15px 0">
-    <div id="tree" style="overflow: auto">
+    <!-- <div id="tree" style="overflow: auto">
       <GChart
         id="g-chart"
         :settings="{
@@ -24,7 +24,8 @@
         Export PDF
       </el-button>
     </el-col>
-    <div id="pdf" />
+    <div id="pdf" /> -->
+    <SimpleFlowChart :height="800" :scene.sync="data" />
   </div>
 </template>
 
@@ -32,19 +33,86 @@
 /* eslint-disable no-undef */
 /* eslint-disable vue/this-in-template */
 import axios from 'axios';
-import { GChart } from 'vue-google-charts';
+import SimpleFlowChart from 'vue-simple-flowchart';
+import 'vue-simple-flowchart/dist/vue-flowchart.css';
+// import { GChart } from 'vue-google-charts';
 import * as html2canvas from 'html2canvas';
 import JsPDF from 'jspdf';
 
 export default {
   components: {
-    GChart,
+    // GChart,
+    SimpleFlowChart,
   },
   data() {
     return {
       chartData: null,
       loading: false,
       loadingPDF: false,
+      data: {
+        centerX: 1024,
+        centerY: 140,
+        scale: 1,
+        nodes: [
+          {
+            id: 1,
+            x: -400,
+            y: -69,
+            label: 'Judul Kegiatan',
+            type: 'title',
+          },
+          {
+            id: 2,
+            x: -757,
+            y: 80,
+            label: 'Tahap Pra Konstruksi',
+            type: 'tahap',
+          },
+          {
+            id: 3,
+            x: -557,
+            y: 80,
+            label: 'Tahap Konstruksi',
+            type: 'tahap',
+          },
+          {
+            id: 4,
+            x: -357,
+            y: 80,
+            label: 'Tahap Operasi',
+            type: 'tahap',
+          },
+          {
+            id: 5,
+            x: -157,
+            y: 80,
+            label: 'Tahap Pasca Operasi',
+            type: 'tahap',
+          },
+        ],
+        links: [
+          {
+            id: 6,
+            from: 1, // node id the link start
+            to: 2, // node id the link end
+          },
+          {
+            id: 7,
+            from: 1, // node id the link start
+            to: 3, // node id the link end
+          },
+          {
+            id: 8,
+            from: 1, // node id the link start
+            to: 4, // node id the link end
+          },
+          {
+            id: 9,
+            from: 1, // node id the link start
+            to: 5, // node id the link end
+          },
+        ],
+      },
     };
   },
   methods: {
@@ -185,5 +253,15 @@ export default {
 .google-visualization-orgchart-node-medium {
   font-size: 16px !important;
   padding: 10px !important;
+}
+.node-type {
+  display: none;
+}
+
+.flowchart-node {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
 }
 </style>
