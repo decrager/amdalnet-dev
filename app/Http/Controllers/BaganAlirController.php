@@ -78,11 +78,32 @@ class BaganAlirController extends Controller
         $impact_identifications = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant', 'id_sub_project_component', 'id_sub_project_rona_awal')->where('id_project', $id)->whereHas('envImpactAnalysis')->get();
 
         foreach ($impact_identifications as $imp) {
-            if ($imp->projectComponent) {
-                $stage_name = $imp->projectComponent->component->stage->name;
-                if ($imp->projectRonaAwal) {
-                    $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
-                    $component = $imp->projectComponent->component->name;
+            // if ($imp->projectComponent) {
+            //     $stage_name = $imp->projectComponent->component->stage->name;
+            //     if ($imp->projectRonaAwal) {
+            //         $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+            //         $component = $imp->projectComponent->component->name;
+            //         $change_type = $imp->id_change_type ? $imp->changeType->name : '';
+
+            //         if(!array_key_exists($component, $data[$stage_name])) {
+            //             $data[$stage_name][$component] = [];
+            //         }
+
+            //         $data[$stage_name][$component][] = [
+            //             'dampak' => $change_type . ' ' . $ronaAwal,
+            //             'type' => $imp->envImpactAnalysis->impact_type
+            //         ];
+            //     } else {
+            //         continue;
+            //     }
+            // } else {
+            //     continue;
+            // }
+            if ($imp->subProjectComponent) {
+                $stage_name = $imp->subProjectComponent->component ? $imp->subProjectComponent->component->stage->name : $imp->subProjectComponent->projectStage->name;
+                if ($imp->subProjectRonaAwal) {
+                    $ronaAwal = $imp->subProjectRonaAwal->ronaAwal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
+                    $component = $imp->subProjectComponent->component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
                     $change_type = $imp->id_change_type ? $imp->changeType->name : '';
 
                     if(!array_key_exists($component, $data[$stage_name])) {
@@ -90,8 +111,10 @@ class BaganAlirController extends Controller
                     }
 
                     $data[$stage_name][$component][] = [
+                        'id_env_impact_analysis' => $imp->envImpactAnalysis->id,
                         'dampak' => $change_type . ' ' . $ronaAwal,
-                        'type' => $imp->envImpactAnalysis->impact_type
+                        'type' => $imp->envImpactAnalysis->impact_type,
+                        'parents' => $this->getDampak($imp->envImpactAnalysis->child)
                     ];
                 } else {
                     continue;
@@ -216,5 +239,25 @@ class BaganAlirController extends Controller
     // to do
     private function getImpactNotifications($id, $stages) {
         return [];
+    }
+
+    private function getDampak($data)
+    {
+        $dampak = [];
+        foreach($data as $d) {
+            if($d->parent->impactIdentification->subProjectComponent) {
+                if ($d->parent->impactIdentification->subProjectRonaAwal) {
+                    $ronaAwal = $d->parent->impactIdentification->subProjectRonaAwal->ronaAwal ? $d->parent->impactIdentification->subProjectRonaAwal->ronaAwal->name : $d->parent->impactIdentification->subProjectRonaAwal->name;
+                    $change_type = $d->parent->impactIdentification->id_change_type ? $d->parent->impactIdentification->changeType->name : '';
+                    $dampak[] = $change_type . ' ' . $ronaAwal;
+                } else {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+        }
+
+        return $dampak;
     }
 }
