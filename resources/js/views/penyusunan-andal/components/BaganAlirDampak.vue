@@ -69,13 +69,18 @@ export default {
 
       const dampakSekunder = [];
       const dampakTersier = [];
+      const primerIdx = [];
+      const sekunderIdx = [];
+      const tersierIdx = [];
 
       for (const tahap in data) {
         for (const component in data[tahap]) {
           rowData.push([component, `Tahap ${tahap}`, '']);
+
           data[tahap][component].forEach((x) => {
             if (x.type === 'Primer') {
               rowData.push([x.dampak, component, '']);
+              primerIdx.push(rowData.length - 1);
             } else if (x.type === 'Sekunder') {
               dampakSekunder.push(x);
             } else if (x.type === 'Tersier') {
@@ -88,12 +93,14 @@ export default {
       dampakSekunder.forEach((x) => {
         x.parents.forEach((y) => {
           rowData.push([x.dampak, y, '']);
+          sekunderIdx.push(rowData.length - 1);
         });
       });
 
       dampakTersier.forEach((x) => {
         x.parents.forEach((y) => {
           rowData.push([x.dampak, y, '']);
+          tersierIdx.push(rowData.length - 1);
         });
       });
 
@@ -105,6 +112,44 @@ export default {
 
       this.chartData.addRows(rowData);
 
+      // set background color to label
+      this.chartData.setRowProperty(
+        0,
+        'style',
+        'background:green; color:white'
+      );
+      this.chartData.setRowProperty(
+        1,
+        'style',
+        'background:orange; color:white'
+      );
+      this.chartData.setRowProperty(2, 'style', 'background:blue; color:white');
+
+      // set background color to column
+      primerIdx.forEach((x) => {
+        this.chartData.setRowProperty(
+          x,
+          'style',
+          'background:green; color:white'
+        );
+      });
+
+      sekunderIdx.forEach((x) => {
+        this.chartData.setRowProperty(
+          x,
+          'style',
+          'background:orange; color:white'
+        );
+      });
+
+      tersierIdx.forEach((x) => {
+        this.chartData.setRowProperty(
+          x,
+          'style',
+          'background:blue; color:white'
+        );
+      });
+
       // Create the chart.
       const chart = new google.visualization.OrgChart(
         document.getElementById('tree')
@@ -112,6 +157,7 @@ export default {
       chart.draw(this.chartData, {
         allowHtml: true,
       });
+
       this.loading = false;
     },
     download() {
