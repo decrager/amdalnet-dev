@@ -310,7 +310,7 @@ export default {
           basemap: 'satellite',
         });
 
-        axios.get(`api/map-geojson?id=${this.project.id}&type=tapak`)
+        axios.get(`api/map-geojson?id=${this.project.id}&type=tapak&step=ka`)
           .then((response) => {
             response.data.forEach((item) => {
               const getType = JSON.parse(item.feature_layer);
