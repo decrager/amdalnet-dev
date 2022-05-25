@@ -150,7 +150,18 @@ export default {
         // console.log(kbliEnvParams);
 
         // this.calculatedProjectDoc();
+        let minimumResult = 'AMDAL';
+        let minimumResultRisk = 'Tinggi';
         kbliEnvParams.forEach((item) => {
+          // for set minimum result
+          if (item.doc_req === 'UKL-UPL' && minimumResult === 'AMDAL'){
+            minimumResult = 'UKL-UPL';
+            minimumResultRisk = item.risk_level;
+          } else if (item.doc_req === 'SPPL'){
+            minimumResult = 'SPPL';
+            minimumResultRisk = item.risk_level;
+          }
+
           let tempStatus = true;
           item.conditions.forEach((element) => {
             if (this.checkIfTrue(element)) {
@@ -168,8 +179,8 @@ export default {
 
         // check for any condition that not in kbli param
         if (!value.result) {
-          value.result = 'AMDAL';
-          value.result_risk = 'Tinggi';
+          value.result = minimumResult;
+          value.result_risk = minimumResultRisk;
         }
 
         this.handleRefreshDialog();

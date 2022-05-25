@@ -65,7 +65,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork"
+                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc !== 'SPPL'"
                   type="text"
                   href="#"
                   icon="el-icon-user"
@@ -74,7 +74,7 @@
                   Tim Penyusun
                 </el-button>
                 <el-button
-                  v-if="!scope.row.published && isInitiator"
+                  v-if="!scope.row.published && isInitiator && scope.row.required_doc !== 'SPPL'"
                   type="text"
                   href="#"
                   icon="el-icon-tickets"
@@ -110,7 +110,7 @@
                   Lihat Detil Penapisan
                 </el-button>
                 <el-button
-                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork)"
+                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork && scope.row.required_doc !== 'SPPL')"
                   href="#"
                   type="text"
                   icon="el-icon-view"
