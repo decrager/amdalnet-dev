@@ -58,7 +58,7 @@
           <div><b>ID Izin :</b> {{ scope.row.idizin }}</div>
           <div><b>Nama Kegiatan :</b> {{ scope.row.name }}</div>
           <div><b>KBLI :</b> {{ scope.row.kbli }}</div>
-          <div><b>Tingkat Resiko :</b> {{ scope.row.skala_resiko }}</div>
+          <div><b>Tingkat Risiko :</b> {{ scope.row.skala_resiko | tingkatResiko }}</div>
           <div>
             <b>Kewenangan :</b> {{ getKewenangan(scope.row.kewenangan) }}
           </div>
@@ -100,6 +100,19 @@
 <script>
 import { mapGetters } from 'vuex';
 export default {
+  filters: {
+    tingkatResiko: function(value) {
+      if (value === 'T'){
+        return 'Tinggi';
+      } else if (value === 'MT'){
+        return 'Menengah Tinggi';
+      } else if (value === 'MR'){
+        return 'Menengah Rendah';
+      } else {
+        return 'Rendah';
+      }
+    },
+  },
   data() {
     return {
       loading: false,
