@@ -1577,11 +1577,11 @@ export default {
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
-        urlPrefix: 'https://gistaru.atrbpn.go.id/',
+        urlPrefix: 'https://sigap.menlhk.go.id/',
       });
 
       const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',

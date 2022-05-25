@@ -1179,7 +1179,7 @@ export default {
       if ('file_url' in data && 'user_key' in data) {
         if (data.file_url === null) {
           this.$message({
-            message: 'URL file SPPL tidak ada.',
+            message: 'URL file PKPLH tidak ada.',
             type: 'error',
             duration: 5 * 1000,
           });

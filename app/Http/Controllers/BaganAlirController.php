@@ -65,6 +65,48 @@ class BaganAlirController extends Controller
         ]);
     }
 
+    public function baganAlirDampakPenting($id)
+    {
+        $project = Project::findOrFail($id);
+        $data = [
+            'Pra Konstruksi' => [],
+            'Konstruksi' => [],
+            'Operasi' => [],
+            'Pasca Operasi' => []
+        ];
+        
+        $impact_identifications = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant', 'id_sub_project_component', 'id_sub_project_rona_awal')->where('id_project', $id)->whereHas('envImpactAnalysis')->get();
+
+        foreach ($impact_identifications as $imp) {
+            if ($imp->projectComponent) {
+                $stage_name = $imp->projectComponent->component->stage->name;
+                if ($imp->projectRonaAwal) {
+                    $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                    $component = $imp->projectComponent->component->name;
+                    $change_type = $imp->id_change_type ? $imp->changeType->name : '';
+
+                    if(!array_key_exists($component, $data[$stage_name])) {
+                        $data[$stage_name][$component] = [];
+                    }
+
+                    $data[$stage_name][$component][] = [
+                        'dampak' => $change_type . ' ' . $ronaAwal,
+                        'type' => $imp->envImpactAnalysis->impact_type
+                    ];
+                } else {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+        }
+
+        return response()->json([
+            'title' => $project->project_title,
+            'data' => $data
+        ]);
+    }
+
     private function getEnvImpactAnalysis($id_project, $stages)
     {
         $alphabet_list = 'A';

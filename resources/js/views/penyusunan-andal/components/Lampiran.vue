@@ -205,13 +205,23 @@ export default {
       const formData = new FormData();
       formData.append('type', 'attachment');
       formData.append('idProject', this.$route.params.id);
-      formData.append('ktr', this.ktr.file);
-      formData.append('pA', this.preAgreement.file);
       formData.append('others', JSON.stringify(names));
       formData.append('deleted', JSON.stringify(this.deleted));
 
+      if (this.ktr.file) {
+        formData.append('ktr', await this.convertBase64(this.ktr.file));
+      }
+
+      if (this.preAgreement.file) {
+        formData.append('pA', await this.convertBase64(this.preAgreement.file));
+      }
+
       for (let i = 0; i < others.length; i++) {
-        formData.append(`file-${i}`, others[i].file);
+        let otherFile = null;
+        if (others[i].file) {
+          otherFile = await this.convertBase64(others[i].file);
+        }
+        formData.append(`file-${i}`, otherFile);
       }
 
       await andalComposingResource.store(formData);
@@ -277,6 +287,20 @@ export default {
     showFileAlert() {
       this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
         center: true,
+      });
+    },
+    convertBase64(file) {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
       });
     },
   },

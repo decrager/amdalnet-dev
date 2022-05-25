@@ -277,6 +277,7 @@ Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('subproject-components', [SubProjectComponentController::class,'subProjectComponents']);
 Route::get('subproject-hues', [SubProjectRonaAwalController::class,'subProjectHues']);
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
+Route::get('bagan-alir-dampak-penting/{id}', [BaganAlirController::class, 'baganAlirDampakPenting']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('map-pdf', [ProjectMapAttachmentController::class, 'getMapPdf']);
 Route::get('map-geojson-merge', [ProjectMapAttachmentController::class, 'getMergeGeojson']);

@@ -7,7 +7,6 @@ use App\Entity\AndalComment;
 use App\Entity\Comment;
 use App\Entity\ComponentType;
 use App\Entity\EnvImpactAnalysis;
-use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
 use App\Entity\HolisticEvaluation;
@@ -30,14 +29,10 @@ use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
-use PhpOffice\PhpWord\Element\TextRun;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\Settings;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use PDF;
-use PhpOffice\PhpWord\SimpleType\TblWidth;
 
 class AndalComposingController extends Controller
 {
@@ -91,7 +86,6 @@ class AndalComposingController extends Controller
 
         if ($request->formulir) {
             return $this->formulirKa($request->idProject, $request->type);
-            // return $this->formulirKaPhpWord($request->idProject);
         }
 
         if ($request->docs) {
@@ -168,24 +162,20 @@ class AndalComposingController extends Controller
         if($request->type == 'attachment') {
             $project = Project::findOrFail($request->idProject);
 
-            if($request->hasFile('ktr')) {
+            if($request->ktr) {
                 $ktrName = '';
-                if ($request->file('ktr')) {
-                    $fileKtr = $request->file('ktr');
-                    $ktrName = 'project/ktr/' . uniqid() . '.' . $fileKtr->extension();
-                    $fileKtr->storePubliclyAs('public', $ktrName);
-                    $project->ktr = Storage::url($ktrName);
-                }
+                $fileKtr = $this->base64ToFile($request->ktr);
+                $ktrName = 'project/ktr/' . uniqid() . '.' . $fileKtr['extension'];
+                Storage::disk('public')->put($ktrName, $fileKtr['file']);
+                $project->ktr = Storage::url($ktrName);
             }
 
-            if($request->hasFile('pA')) {
+            if($request->pA) {
                 $pAName = '';
-                if ($request->file('pA')) {
-                    $filePa = $request->file('pA');
-                    $pAName = 'project/preAgreement/' . uniqid() . '.' . $filePa->extension();
-                    $filePa->storePubliclyAs('public', $pAName);
+                    $filePa = $this->base64ToFile($request->pA);
+                    $pAName = 'project/preAgreement/' . uniqid() . '.' . $filePa['extension'];
+                    Storage::disk('public')->put($pAName, $filePa['file']);
                     $project->pre_agreement_file = Storage::url($pAName);
-                }
             }
 
             $project->save();
@@ -196,14 +186,15 @@ class AndalComposingController extends Controller
             if(count($others) > 0) {
                 for($i = 0; $i < count($others); $i++) {
                     $fileRequest = 'file-' . $i;
-                    if($request->hasFile($fileRequest)) {
+
+                    if($request->input($fileRequest)) {
                         $attachment = new AndalAttachment();
                         $attachment->id_project = $request->idProject;
                         $attachment->name = $others[$i];
     
-                        $file = $request->file($fileRequest);
-                        $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file->extension();
-                        $file->storePubliclyAs('public', $fileName);
+                        $file = $this->base64ToFile($request->input($fileRequest));
+                        $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file['extension'];
+                        Storage::disk('public')->put($fileName, $filePa['file']);
                         $attachment->file = Storage::url($fileName);
     
                         $attachment->save();
@@ -528,8 +519,6 @@ class AndalComposingController extends Controller
 
 
                 $changeType = $imp->id_change_type ? $imp->changeType->name : '';
-                // $ronaAwal = '';
-                // $component = '';
 
                 $comments = $this->getComments($imp->id);
 
@@ -685,6 +674,10 @@ class AndalComposingController extends Controller
         $save_file_name = $id_project . '-andal' . '.docx';
 
         if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            // if(request()->getHost() == 'amdalnet-dev.menlhk.go.id') {
+            //     File::delete(storage_path('app/public/workspace/' . $save_file_name));
+            // } else {
+            // }
             return response()->json(['message' => 'success']);
         }
 
@@ -701,7 +694,7 @@ class AndalComposingController extends Controller
             if($project->listSubProject->first()) {
                 foreach($project->listSubProject as $li) {
                     $sub_project_scale_block[] = [
-                        'desc' => $total_sub_project_scale . '. ' . $li->name . ' Seluas ' . $li->scale . ' ' . $li->scale_unit 
+                        'desc' => str_replace('&', 'dan', $total_sub_project_scale . '. ' . $li->name . ' Seluas ' . $li->scale . ' ' . $li->scale_unit) 
                     ];
                     $total_sub_project_scale++;
                 } 
@@ -714,8 +707,6 @@ class AndalComposingController extends Controller
         $formulator_team_date_end = '';
         $formulator_no_reg = '';
         $formulator_team_period = '';
-        $formulator_team_address = '';
-        $formulator_team_phone = '';
         if ($formulator_team) {
             $total_formulator = 1;
             $total_ahli = 1;
@@ -731,7 +722,7 @@ class AndalComposingController extends Controller
                     $formulatorStatus = $m->formulator->membership_status;
                     $formulatorRegNo = $m->formulator->reg_no;
                     $formulatorExpired = $m->formulator->date_end ? Carbon::createFromFormat('Y-m-d H:i:s', $m->formulator->date_end)->isoFormat('D MMMM Y') : '';
-                    $formulatorExpertise = $m->formulator->expertise;
+                    $formulatorExpertise = str_replace('&', 'dan', $m->formulator->expertise ?? '');
                     if($m->position == 'Ketua') {
                         $formulator_team_chairman = $formulatorName;
                         $formulator_no_reg = $formulatorRegNo;
@@ -757,7 +748,7 @@ class AndalComposingController extends Controller
                         'tim_ahli' => $total_ahli,
                         'name' => $formulatorName,
                         'position' => $m->expert->status == 'Asisten' ? $m->expert->status : 'Ahli',
-                        'expertise' => $m->expert->expertise
+                        'expertise' => str_replace('&', 'dan', $m->expert->expertise ?? 'dan')
                     ];
                     $total_ahli++;
                 }
@@ -782,8 +773,8 @@ class AndalComposingController extends Controller
             $date_start = $lpjp_data->date_start ? Carbon::createFromFormat('Y-m-d H:i:s', $lpjp_data->date_start) : '';
             $date_end = $lpjp_data->date_end ? Carbon::createFromFormat('Y-m-d H:i:s', $lpjp_data->date_end) : '';
             $lpjp = [
-                'name' => $lpjp_data->name,
-                'address' => $lpjp_data->address . ', ' . $lpjp_data->district->name . ', Provinsi ' . $lpjp_data->province->name,
+                'name' => str_replace('&', 'dan', $lpjp_data->name ?? ''),
+                'address' => str_replace('&', 'dan',  $lpjp_data->address . ', ' . $lpjp_data->district->name . ', Provinsi ' . $lpjp_data->province->name),
                 'reg_no' => $lpjp_data->reg_no,
                 'date_start' => $date_start->isoFormat('D MMMM Y'),
                 'date_end' => $date_end->isoFormat('D MMMM Y'),
@@ -914,6 +905,7 @@ class AndalComposingController extends Controller
         $ru_po_name = [];
         $kls_block = [];
         $ed_replace = [];
+        $initial_study_plan_replace = [];
 
         foreach ($stages as $s) {
             $total = 1;
@@ -931,13 +923,14 @@ class AndalComposingController extends Controller
 
                 // check stages
                 $id_stages = null;
+
                 if ($imp->projectComponent) {
                     $id_stages = $imp->projectComponent->component->id_project_stage;
 
                     if ($id_stages == $s->id) {
                         if ($imp->projectRonaAwal) {
-                            $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
-                            $component = $imp->projectComponent->component->name;
+                            $ronaAwal = str_replace('&', 'dan', $imp->projectRonaAwal->rona_awal->name);
+                            $component = str_replace('&', 'dan', $imp->projectComponent->component->name);
                         } else {
                             continue;
                         }
@@ -949,6 +942,7 @@ class AndalComposingController extends Controller
                 }
 
                 $component_type = $this->getComponentTypeImp($imp);
+                $initial_study_plan = $this->renderHtmlTable($imp->initial_study_plan , 1300, 'Arial', '11');
 
                 // ======= POTENTIAL IMPACT EVALUATIONS ======= //
                 $ed_besaran_rencana = '';
@@ -961,35 +955,30 @@ class AndalComposingController extends Controller
                     foreach ($imp->potentialImpactEvaluation as $pI) {
                         if ($pI->id_pie_param == 1) {
                             $ed_besaran_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_besaran_rencana = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 2) {
                             $ed_kondisi_rona = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_kondisi_rona = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 3) {
                             $ed_pengaruh_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_pengaruh_rencana = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 4) {
                             $ed_intensitas_perhatian = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_intensitas_perhatian = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 5) {
                             $ed_kesimpulan = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
-                            // $ed_kesimpulan = $this->htmlInTable($pI->text);
                             $ed_replace[] = [
                                 'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
@@ -1034,12 +1023,6 @@ class AndalComposingController extends Controller
                 if($imp->is_hypothetical_significant) {
                     if($imp->envImpactAnalysis) {
                         $impact_result = $imp->envImpactAnalysis->impact_eval_result ?? '';
-                        // $table_with_no_plan = [
-                        //     'studies' => $this->htmlInTable($imp->envImpactAnalysis->studies_condition),
-                        //     'no_plan' => $this->htmlInTable($imp->envImpactAnalysis->condition_dev_no_plan),
-                        //     'with_plan' => $this->htmlInTable($imp->envImpactAnalysis->condition_dev_with_plan),
-                        //     'size_differ' => $this->htmlInTable($imp->envImpactAnalysis->impact_size_difference),
-                        // ];
                         $table_with_no_plan = [
                             'studies' => '${st_' . $s->id . '_' . $imp->id . '}',
                             'no_plan' => '${no_' . $s->id . '_' . $imp->id . '}',
@@ -1057,37 +1040,30 @@ class AndalComposingController extends Controller
                                 foreach($imp->envImpactAnalysis->detail as $det) {
                                     if($det->id_important_trait == 1) {
                                         $important_trait_1['nilai'] = $det->important_trait;
-                                        // $important_trait_1['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_1['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_1_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 2) {
                                         $important_trait_2['nilai'] = $det->important_trait;
-                                        // $important_trait_2['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_2['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_2_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 3) {
                                         $important_trait_3['nilai'] = $det->important_trait;
-                                        // $important_trait_3['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_3['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_3_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 4) {
                                         $important_trait_4['nilai'] = $det->important_trait;
-                                        // $important_trait_4['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_4['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_4_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 5) {
                                         $important_trait_5['nilai'] = $det->important_trait;
-                                        // $important_trait_5['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_5['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_5_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 6) {
                                         $important_trait_6['nilai'] = $det->important_trait;
-                                        // $important_trait_6['keterangan'] = $this->htmlInTable($det->description);
                                         $important_trait_6['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_6_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     } else if($det->id_important_trait == 7) {
                                         $important_trait_7['nilai'] = $det->important_trait;
-                                        // $important_trait_7['keterangan'] = $this->htmlInTable($det->descr);
                                         $important_trait_7['keterangan'] = '${ket_' . $imp->envImpactAnalysis->id . '_' . $det->id . '}';
                                         $important_trait_7_data['keterangan'] = $this->renderHtmlTable($det->description, 3500, 'Arial', '13.5');
                                     }
@@ -1209,10 +1185,10 @@ class AndalComposingController extends Controller
                         'ka_pk' => $total,
                         'dp_pk' => $total,
                         'ka_pk_component' => $component,
-                        'ka_pk_plan' => $imp->initial_study_plan,
+                        'ka_pk_plan' => '${pk_' . $imp->id . '_study_plan}',
                         'ka_pk_rona_awal' => $ronaAwal,
                         'ka_pk_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
-                        'ka_pk_study_location' => $imp->study_location,
+                        'ka_pk_study_location' => str_replace('&', 'dan', $imp->study_location ?? ''),
                         'ka_pk_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                         'ka_pk_potential_impact' => "$change_type $ronaAwal akibat $component",
                         'ka_pk_ed_besaran_rencana' => $ed_besaran_rencana,
@@ -1222,16 +1198,17 @@ class AndalComposingController extends Controller
                         'ka_pk_ed_kesimpulan' => $ed_kesimpulan,
                         'ka_pk_env_impact' => "$change_type $ronaAwal"
                     ];
+                    $initial_study_plan_replace[] = ['replace' => '${pk_' . $imp->id . '_study_plan}' , 'data' => $initial_study_plan];
 
                     // MATRIKS DPH
                     $dph_pk[] = [
                         'dph_pk' => $total,
                         'dph_pk_component' => $component,
-                        'dph_pk_unit' => $imp->projectComponent->measurement,
-                        'dph_pk_plan' => $imp->initial_study_plan,
+                        'dph_pk_unit' => str_replace('&', 'dan', $imp->projectComponent->measurement ?? ''),
+                        'dph_pk_plan' => '${dph_pk_' . $imp->id . '_study_plan}',
                         'dph_pk_rona_awal' => $ronaAwal,
                         'dph_pk_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
-                        'dph_pk_study_location' => $imp->study_location,
+                        'dph_pk_study_location' => str_replace('&', 'dan', $imp->study_location ?? ''),
                         'dph_pk_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                         'dph_pk_potential_impact' => "$change_type $ronaAwal akibat $component",
                         'dph_pk_ed_besaran_rencana' => $ed_besaran_rencana,
@@ -1241,6 +1218,7 @@ class AndalComposingController extends Controller
                         'dph_pk_ed_kesimpulan' => $ed_kesimpulan,
                         'dph_pk_env_impact' => "$change_type $ronaAwal"
                     ];
+                    $initial_study_plan_replace[] = ['replace' => '${dph_pk_' . $imp->id . '_study_plan}' , 'data' => $initial_study_plan];
 
                     // BATAS WAKTU KAJIAN
                     $bwk_pk[] = [
@@ -1359,10 +1337,10 @@ class AndalComposingController extends Controller
                     $k[] = [
                         'ka_k' => $total,
                         'ka_k_component' => $component,
-                        'ka_k_plan' => $imp->initial_study_plan,
+                        'ka_k_plan' => '${k_' . $imp->id . '_study_plan}',
                         'ka_k_rona_awal' => $ronaAwal,
                         'ka_k_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
-                        'ka_k_study_location' => $imp->study_location,
+                        'ka_k_study_location' => str_replace('&', 'dan', $imp->study_location ?? ''),
                         'ka_k_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                         'ka_k_potential_impact' => "$change_type $ronaAwal akibat $component",
                         'ka_k_ed_besaran_rencana' => $ed_besaran_rencana,
@@ -1372,16 +1350,17 @@ class AndalComposingController extends Controller
                         'ka_k_ed_kesimpulan' => $ed_kesimpulan,
                         'ka_k_env_impact' => "$change_type $ronaAwal"
                     ];
+                    $initial_study_plan_replace[] = ['replace' => '${k_' . $imp->id . '_study_plan}' , 'data' => $initial_study_plan];
 
                     // MATRIKS DPH
                     $dph_k[] = [
                         'dph_k' => $total,
                         'dph_k_component' => $component,
-                        'dph_k_unit' => $imp->projectComponent->measurement, 
-                        'dph_k_plan' => $imp->initial_study_plan,
+                        'dph_k_unit' => str_replace('&', 'dan', $imp->projectComponent->measurement ?? ''), 
+                        'dph_k_plan' => '${dph_k_' . $imp->id . '_study_plan}',
                         'dph_k_rona_awal' => $ronaAwal,
                         'dph_k_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
-                        'dph_k_study_location' => $imp->study_location,
+                        'dph_k_study_location' => str_replace('&', 'dan', $imp->study_location ?? ''),
                         'dph_k_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                         'dph_k_potential_impact' => "$change_type $ronaAwal akibat $component",
                         'dph_k_ed_besaran_rencana' => $ed_besaran_rencana,
@@ -1391,6 +1370,7 @@ class AndalComposingController extends Controller
                         'dph_k_ed_kesimpulan' => $ed_kesimpulan,
                         'dph_k_env_impact' => "$change_type $ronaAwal"
                     ];
+                    $initial_study_plan_replace[] = ['replace' => '${dph_k_' . $imp->id . '_study_plan}' , 'data' => $initial_study_plan];
 
                     // BATAS WAKTU KAJIAN
                     $bwk_k[] = [
@@ -1510,10 +1490,10 @@ class AndalComposingController extends Controller
                     $o[] = [
                         'ka_o' => $total,
                         'ka_o_component' => $component,
-                        'ka_o_plan' => $imp->initial_study_plan,
+                        'ka_o_plan' => '${o_' . $imp->id . '_study_plan}',
                         'ka_o_rona_awal' => $ronaAwal,
                         'ka_o_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
-                        'ka_o_study_location' => $imp->study_location,
+                        'ka_o_study_location' => str_replace('&', 'dan', $imp->study_location ?? ''),
                         'ka_o_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                         'ka_o_potential_impact' => "$change_type $ronaAwal akibat $component",
                         'ka_o_ed_besaran_rencana' => $ed_besaran_rencana,
@@ -1523,16 +1503,17 @@ class AndalComposingController extends Controller
                         'ka_o_ed_kesimpulan' => $ed_kesimpulan,
                         'ka_o_env_impact' => "$change_type $ronaAwal"
                     ];
+                    $initial_study_plan_replace[] = ['replace' => '${o_' . $imp->id . '_study_plan}' , 'data' => $initial_study_plan];
 
                     // MATRIKS DPH
                     $dph_o[] = [
                         'dph_o' => $total,
                         'dph_o_component' => $component,
-                        'dph_o_unit' => $imp->projectComponent->measurement,
-                        'dph_o_plan' => $imp->initial_study_plan,
+                        'dph_o_unit' => str_replace('&', 'dan', $imp->projectComponent->measurement ?? ''),
+                        'dph_o_plan' => '${dph_o_' . $imp->id . '_study_plan}',
                         'dph_o_rona_awal' => $ronaAwal,
                         'dph_o_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
-                        'dph_o_study_location' => $imp->study_location,
+                        'dph_o_study_location' => str_replace('&', 'dan', $imp->study_location ?? ''),
                         'dph_o_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                         'dph_o_potential_impact' => "$change_type $ronaAwal akibat $component",
                         'dph_o_ed_besaran_rencana' => $ed_besaran_rencana,
@@ -1542,6 +1523,7 @@ class AndalComposingController extends Controller
                         'dph_o_ed_kesimpulan' => $ed_kesimpulan,
                         'dph_o_env_impact' => "$change_type $ronaAwal"
                     ];
+                    $initial_study_plan_replace[] = ['replace' => '${dph_o_' . $imp->id . '_study_plan}' , 'data' => $initial_study_plan];
 
                     // BATAS WAKTU KAJIAN
                     $bwk_o[] = [
@@ -1660,10 +1642,10 @@ class AndalComposingController extends Controller
                     $po[] = [
                         'ka_po' => $total,
                         'ka_po_component' => $component,
-                        'ka_po_plan' => $imp->initial_study_plan,
+                        'ka_po_plan' => '${po_' . $imp->id . '_study_plan}',
                         'ka_po_rona_awal' => $ronaAwal,
                         'ka_po_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
-                        'ka_po_study_location' => $imp->study_location,
+                        'ka_po_study_location' => str_replace('&', 'dan', $imp->study_location ?? ''),
                         'ka_po_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                         'ka_po_potential_impact' => "$change_type $ronaAwal akibat $component",
                         'ka_po_ed_besaran_rencana' => $ed_besaran_rencana,
@@ -1673,16 +1655,17 @@ class AndalComposingController extends Controller
                         'ka_po_ed_kesimpulan' => $ed_kesimpulan,
                         'ka_po_env_impact' => "$change_type $ronaAwal"
                     ];
+                    $initial_study_plan_replace[] = ['replace' => '${po_' . $imp->id . '_study_plan}' , 'data' => $initial_study_plan];
 
                     // MATRIKS DPH
                     $dph_po[] = [
                         'dph_po' => $total,
                         'dph_po_component' => $component,
-                        'dph_po_unit' => $imp->projectComponent->measurement,
-                        'dph_po_plan' => $imp->initial_study_plan,
+                        'dph_po_unit' => str_replace('&', 'dan', $imp->projectComponent->measurement ?? ''),
+                        'dph_po_plan' => '${dph_po_' . $imp->id . '_study_plan}',
                         'dph_po_rona_awal' => $ronaAwal,
                         'dph_po_hypothetical' => $imp->is_hypothetical_significant ? 'DPH' : 'Tidak DPH',
-                        'dph_po_study_location' => $imp->study_location,
+                        'dph_po_study_location' => str_replace('&', 'dan', $imp->study_location ?? ''),
                         'dph_po_study_length' => $imp->study_length_year . ' tahun ' . $imp->study_length_month . ' bulan',
                         'dph_po_potential_impact' => "$change_type $ronaAwal akibat $component",
                         'dph_po_ed_besaran_rencana' => $ed_besaran_rencana,
@@ -1692,6 +1675,7 @@ class AndalComposingController extends Controller
                         'dph_po_ed_kesimpulan' => $ed_kesimpulan,
                         'dph_po_env_impact' => "$change_type $ronaAwal"
                     ];
+                    $initial_study_plan_replace[] = ['replace' => '${dph_po_' . $imp->id . '_study_plan}' , 'data' => $initial_study_plan];
 
                     // BATAS WAKTU KAJIAN
                     $bwk_po[] = [
@@ -1723,7 +1707,7 @@ class AndalComposingController extends Controller
                     $com_desc = $sub_project_component_stages->description_specific;
                 }
 
-                $component_stages = $sub_project_component_stages->id_component  ? $sub_project_component_stages->component->name : $sub_project_component_stages->name;
+                $component_stages = str_replace('&', 'dan', $sub_project_component_stages->id_component  ? $sub_project_component_stages->component->name : $sub_project_component_stages->name);
 
                  // COMPONENT
 
@@ -1855,7 +1839,6 @@ class AndalComposingController extends Controller
 
         // ========= DESKRIPSI RENCANA USAHA DAN/ATAU KEGIATAN ======== //
         $deskripsi_rencana = [];
-        // $deskripsi_rencana_replace = [];
         $desk_ren_no = 'A';
         $sub_projects = SubProject::where([['id_project', $id_project],['type', 'utama']])->get();
         foreach($sub_projects as $sp) {
@@ -1864,17 +1847,17 @@ class AndalComposingController extends Controller
             foreach($sub_project_component as $spc) {
                 $desk_ren_pen = '';
                 if($spc->name) {
-                    $desk_ren_pen = $spc->name;
+                    $desk_ren_pen = str_replace('&', 'dan', $spc->name ?? '');
                 } else if($spc->component) {
-                    $desk_ren_pen = $spc->component->name;
+                    $desk_ren_pen =  str_replace('&', 'dan', $spc->component->name ?? '');
                 }
 
                 if($last_ren_no == $desk_ren_no) {
                     $ren_no = $desk_ren_no . '<w:vMerge w:val="continue"/>';
-                    $ren_ru =  $sp->name . '<w:vMerge w:val="continue"/>';
+                    $ren_ru =  str_replace('&', 'dan', $sp->name ?? '') . '<w:vMerge w:val="continue"/>';
                 } else {
                     $ren_no = $desk_ren_no . '<w:vMerge w:val="restart"/>'; 
-                    $ren_ru =  $sp->name . '<w:vMerge w:val="restart"/>';
+                    $ren_ru =  str_replace('&', 'dan', $sp->name ?? '') . '<w:vMerge w:val="restart"/>';
                 }
 
                 $deskripsi_rencana[] = [
@@ -1894,34 +1877,34 @@ class AndalComposingController extends Controller
         }
 
         // ======= RONA AWAL ============
-        $fisika_kima = [];
-        $biologi = [];
-        $sosekbud = [];
-        $kesmas = [];
+        // $fisika_kima = [];
+        // $biologi = [];
+        // $sosekbud = [];
+        // $kesmas = [];
 
-        $component_type = ComponentType::all();
-        foreach($component_type as $ct) {
-            if($ct->name == 'Biologi') {
-                $rona_awal = RonaAwal::where('id_component_type', $ct->id)->get();
-                foreach($rona_awal as $ra) {
-                    $biologi[] = [
-                        'rona_biologi_name' => $ra->name
-                    ];
-                }
-                $sp_rona = SubProject::where('id_project', $id_project)->get();
-                foreach($sp_rona as $sr) {
-                    $spr_component = SubProjectComponent::where('id_sub_project', $sr->id)->get();
-                    foreach($spr_component as $sprc) {
-                        $spr_rona = SubProjectRonaAwal::where([['id_sub_project_component', $sprc->id],['id_component_type', $sr->id]])->get();
-                        foreach($spr_rona as $sprr) {
-                            $biologi[] = [
-                                'rona_biologi_name' => $sprr->name
-                            ];
-                        }
-                    }
-                }
-            }
-        }
+        // $component_type = ComponentType::all();
+        // foreach($component_type as $ct) {
+        //     if($ct->name == 'Biologi') {
+        //         $rona_awal = RonaAwal::where('id_component_type', $ct->id)->get();
+        //         foreach($rona_awal as $ra) {
+        //             $biologi[] = [
+        //                 'rona_biologi_name' => $ra->name
+        //             ];
+        //         }
+        //         $sp_rona = SubProject::where('id_project', $id_project)->get();
+        //         foreach($sp_rona as $sr) {
+        //             $spr_component = SubProjectComponent::where('id_sub_project', $sr->id)->get();
+        //             foreach($spr_component as $sprc) {
+        //                 $spr_rona = SubProjectRonaAwal::where([['id_sub_project_component', $sprc->id],['id_component_type', $sr->id]])->get();
+        //                 foreach($spr_rona as $sprr) {
+        //                     $biologi[] = [
+        //                         'rona_biologi_name' => $sprr->name
+        //                     ];
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         // ======== KONSULTASI PUBLIK ======== //
         $konsul_publik_date = '';
@@ -1970,15 +1953,7 @@ class AndalComposingController extends Controller
         $templateProcessor->setValue('date_small', Carbon::now()->isoFormat('MMMM Y'));
         $templateProcessor->setValue('year', '' . date('Y') . '');
         $templateProcessor->cloneBlock('sub_project_scale_block', count($sub_project_scale_block), true, false, $sub_project_scale_block);
-        // $templateProcessor->setValue('lpjp_name', $lpjp['name']);
-        // $templateProcessor->setValue('lpjp_address', $lpjp['address']);
-        // $templateProcessor->setValue('lpjp_reg_no', $lpjp['reg_no']);
-        // $templateProcessor->setValue('lpjp_date_start', $lpjp['date_start']);
-        // $templateProcessor->setValue('lpjp_date_end', $lpjp['date_end']);
-        // $templateProcessor->setValue('lpjp_period', $lpjp['period']);
-        // $templateProcessor->setValue('lpjp_telephone', $lpjp['telephone']);
         $templateProcessor->setValue('lpjp_faksimili', $lpjp['faksimili']);
-        // $templateProcessor->setValue('lpjp_pic', $lpjp['pic']);
         $templateProcessor->setValue('lpjp_position', $lpjp['position']);
         $templateProcessor->setValue('penyusun', $penyusun);
         $templateProcessor->setValue('penyusun_name', $penyusun_name);
@@ -2029,7 +2004,6 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneRowAndSetValues('k_bwk', $k_bwk);
         $templateProcessor->cloneRowAndSetValues('o_bwk', $o_bwk);
         $templateProcessor->cloneRowAndSetValues('po_bwk', $po_bwk);
-        $templateProcessor->cloneBlock('rona_biologi', count($biologi), true, false, $biologi);
         $templateProcessor->cloneBlock('com_pk_block', count($com_pk), true, false, $com_pk);
         $templateProcessor->cloneBlock('com_k_block', count($com_k), true, false, $com_k);
         $templateProcessor->cloneBlock('com_o_block', count($com_o), true, false, $com_o);
@@ -2041,6 +2015,13 @@ class AndalComposingController extends Controller
         $templateProcessor->setComplexBlock('positive_feedback_summary',  $posFeedTable);
         $templateProcessor->setComplexBlock('negative_feedback_summary',  $negFeedTable);
         $templateProcessor->setComplexBlock('holistic_evaluation',  $holEvalTable);
+
+        // PENGELOLAAN LINGKUNGAN YANG DIRENCANAKAN
+        if(count($initial_study_plan_replace) > 0) {
+            for($ispr = 0; $ispr < count($initial_study_plan_replace); $ispr++) {
+                $templateProcessor->setComplexBlock($initial_study_plan_replace[$ispr]['replace'],  $initial_study_plan_replace[$ispr]['data']);
+            }
+        }
 
         // DESKRIPSI KEGIATAN
         if(count($com_replace) > 0) {
@@ -2143,7 +2124,6 @@ class AndalComposingController extends Controller
         $templateProcessor->cloneBlock('dpg_po_block', count($pdp), true, false, $pdp);
         
         // DAMPAK PADA PRAKIRAAN DAMPAK PENTING
-        // dd($dpg_pk_block, $dpg_k_block, $dpg_o_block, $dpg_pk_block);
         if(count($dpg_pk_block) > 0) {
             for($i = 0; $i < count($dpg_pk_block); $i++) {
                 $dampak = [];
@@ -2337,30 +2317,30 @@ class AndalComposingController extends Controller
         }
 
         // EVALUASI DAMPAK
-        if(count($ed_replace) > 0) {
-            for($edi = 0; $edi < count($ed_replace); $edi++) {
-                $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
-            }
-        }
+        // if(count($ed_replace) > 0) {
+        //     for($edi = 0; $edi < count($ed_replace); $edi++) {
+        //         $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
+        //     }
+        // }
 
         $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
 
         return response()->json(['message' => 'success']);
     }
 
-    private function htmlInTable($data)
-    {
-        if($data) {
-            return str_replace('&nbsp', ' ', str_replace('-enter-', '', strip_tags(str_replace('<br/>', '-enter-', str_replace('</li>', '-enter-', str_replace('</p>', '-enter-', $data))))));
-        } else {
-            return '';
-        }
-    }
+    // private function htmlInTable($data)
+    // {
+    //     if($data) {
+    //         return str_replace('&nbsp', ' ', str_replace('-enter-', '', strip_tags(str_replace('<br/>', '-enter-', str_replace('</li>', '-enter-', str_replace('</p>', '-enter-', $data))))));
+    //     } else {
+    //         return '';
+    //     }
+    // }
 
     private function getComponentTypeImp($imp) {
         $component_type = '';
         $com_type = ComponentType::find($imp->projectRonaAwal->rona_awal->id_component_type);
-        $component_type = $com_type ? $com_type->name : '';
+        $component_type = $com_type ? str_replace('&', 'dan', $com_type->name) : '';
 
         return $component_type;
     }
@@ -2370,13 +2350,13 @@ class AndalComposingController extends Controller
         if($sub_project_rona_awal->id_rona_awal) {
             $com_type = ComponentType::find($sub_project_rona_awal->ronaAwal->id_component_type);
             if($com_type) {
-                $component_type = $com_type->name;
+                $component_type = str_replace('&', 'dan', $com_type->name);
             }
         } else {
             if($sub_project_rona_awal->id_component_type) {
                 $com_type = ComponentType::find($sub_project_rona_awal->id_component_type);
                 if($com_type) {
-                    $component_type = $com_type->name;
+                    $component_type = str_replace('&', 'dan', $com_type->name);
                 }
             }
         }
@@ -3028,6 +3008,24 @@ class AndalComposingController extends Controller
             'kesesuaian_tata_ruang' => $project->ktr,
             'persetujuan_awal' => $project->pre_agreement_file,
             'lainnya' => $others ? $others->toArray() : []
+        ];
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
         ];
     }
 }
