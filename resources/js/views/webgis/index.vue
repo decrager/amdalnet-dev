@@ -325,7 +325,7 @@ export default {
       if (this.idProjectItem) {
         this.drawer = false;
 
-        axios.get(`api/map-geojson?id=${this.idProjectItem}`)
+        axios.get(`api/map-geojson?id=${this.idProjectItem}&step=ka`)
           .then((response) => {
             response.data.forEach((item) => {
               const getType = JSON.parse(item.feature_layer);
@@ -459,7 +459,7 @@ export default {
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
 
-      const tapakData = await axios.get(`api/map-geojson?type=tapak`);
+      const tapakData = await axios.get(`api/map-geojson?type=tapak&step=ka`);
       for (let i = 0; i < tapakData.data.length; i++) {
         const item = tapakData.data[i];
         const getType = JSON.parse(item.feature_layer);
@@ -543,7 +543,7 @@ export default {
       }
 
       if (this.checkedPantau === true) {
-        const responsePemantauan = await axios.get(`api/map-geojson?type=pemantauan`);
+        const responsePemantauan = await axios.get(`api/map-geojson?type=pemantauan&step=ka`);
         for (let i = 0; i < responsePemantauan.data.length; i++) {
           const item = responsePemantauan.data[i];
           const getType = JSON.parse(item.feature_layer);
@@ -577,7 +577,7 @@ export default {
       }
 
       if (this.checkedKelola === true) {
-        const responsepengelolaan = await axios.get(`api/map-geojson?type=pengelolaan`);
+        const responsepengelolaan = await axios.get(`api/map-geojson?type=pengelolaan&step=ka`);
         for (let i = 0; i < responsepengelolaan.data.length; i++) {
           const item = responsepengelolaan.data[i];
           const getType = JSON.parse(item.feature_layer);
@@ -610,7 +610,7 @@ export default {
       }
 
       if (this.checkedEcology === true) {
-        const responseEcology = await axios.get(`api/map-geojson?type=ecology`);
+        const responseEcology = await axios.get(`api/map-geojson?type=ecology&step=ka`);
         for (let i = 0; i < responseEcology.data.length; i++) {
           const item = responseEcology.data[i];
           const getType = JSON.parse(item.feature_layer);
@@ -643,7 +643,7 @@ export default {
       }
 
       if (this.checkedSosial === true) {
-        const responseSocial = await axios.get(`api/map-geojson?type=social`);
+        const responseSocial = await axios.get(`api/map-geojson?type=social&step=ka`);
         for (let i = 0; i < responseSocial.data.length; i++) {
           const item = responseSocial.data[i];
           const getType = JSON.parse(item.feature_layer);
@@ -676,7 +676,7 @@ export default {
       }
 
       if (this.checkedStudi === true) {
-        const responseStudy = await axios.get(`api/map-geojson?type=study`);
+        const responseStudy = await axios.get(`api/map-geojson?type=study&step=ka`);
         for (let i = 0; i < responseStudy.data.length; i++) {
           const item = responseStudy.data[i];
           const getType = JSON.parse(item.feature_layer);

@@ -263,9 +263,11 @@ class ProjectMapAttachmentController extends Controller
             ->when($request->has('id'), function ($query) use ($request) {
                 return $query->where('project_map_attachments.id_project', '=', $request->id);
             })
+            ->when($request->has('step'), function ($query) use ($request) {
+                return $query->where('step', '=', $request->step);
+            })
             ->where('project_map_attachments.file_type', '=', 'SHP')
             ->whereNotNull('project_map_attachments.geom')
-            ->where('step', 'ka')
             ->groupBy('project_map_attachments.id')
             ->get();
 

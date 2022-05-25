@@ -235,7 +235,7 @@ export default {
       });
       this.$parent.mapView = mapView;
 
-      axios.get(`api/map-geojson?id=${this.idProject}`)
+      axios.get(`api/map-geojson?id=${this.idProject}&step=ka`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
@@ -775,7 +775,7 @@ export default {
 
       // Map Tapak
       const projId = this.$route.params && this.$route.params.id;
-      axios.get(`api/map-geojson?id=${projId}&type=tapak`)
+      axios.get(`api/map-geojson?id=${projId}&type=tapak&step=ka`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
