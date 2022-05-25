@@ -263,7 +263,7 @@ export default {
     await this.loadMap();
     this.getProjectData();
     await this.getMappedProject();
-    await axios.get('api/provinces').then((result) => {
+    await axios.get('/api/provinces').then((result) => {
       this.provinces = result.data.data;
     });
   },
