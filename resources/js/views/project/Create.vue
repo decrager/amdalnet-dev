@@ -1008,14 +1008,14 @@ export default {
     if (this.$store.getters.isPemerintah){
       this.currentProject.isPemerintah = 'true';
     }
-    console.log(this.currentProject);
+    // console.log(this.currentProject);
     // load info user and initiator
     // const { email } = await this.$store.dispatch('user/getInfo');
 
-    console.log(this.userInfo);
+    // console.log(this.userInfo);
 
     if (!this.$store.getters.isPemerintah && !this.$route.params.project) {
-      console.log('masuk pak eko');
+      // console.log('masuk pak eko');
       await this.$store.dispatch('getOssByKbli', this.$store.getters.pemrakarsa[0].nib);
 
       await this.getProjectsFromOss();
@@ -1073,19 +1073,24 @@ export default {
       }
     },
     getKewenangan(list){
-      let temp = this.getKewenanganOss(this.kewenanganOSS);
-      const tempFile = this.currentProject.address[0].prov;
-      const tempKabFile = this.currentProject.address[0].district;
+      let temp = this.getKewenanganOss(this.kewenanganOSS); // kabupaten
+      // console.log('1', temp);
+      const tempFile = this.currentProject.address[0].prov; // JAWA TENGAH
+      // console.log('2', tempFile);
+      const tempKabFile = this.currentProject.address[0].district; // KABUPATEN KEBUMEN
+      // console.log('3', tempKabFile);
       list.forEach(async element => {
-        console.log(element.kewenangan, temp);
+        // console.log(element.kewenangan, temp);
         if (element.kewenangan === '02'){
           temp = 'Kabupaten';
           const authDistrict = await districtResource.list({ districtName: tempKabFile });
+          // console.log('3.1', authDistrict);
           this.currentProject.auth_district = authDistrict.id;
         }
         if (element.kewenangan === '01'){
           temp = 'Provinsi';
           const authProv = await provinceResource.list({ provName: tempFile });
+          // console.log('3.2', authProv);
           this.currentProject.auth_province = authProv.id;
         }
         if (element.kewenangan === '00'){
@@ -1093,38 +1098,42 @@ export default {
         }
       });
 
+      // console.log('4', { temp, project: this.currentProject });
       return temp;
     },
     async calculateKewenanganAnomali(){
       let kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
 
-      console.log(1, kewenanganTemp);
+      // console.log(11, kewenanganTemp);
 
       // if kwenangan not pusat use authority from address project
       if (kewenanganTemp !== 'Pusat' && this.currentProject.address.filter(e => e.isUsed).length > 1){
         kewenanganTemp = this.currentProject.authority;
       }
-      console.log(2, kewenanganTemp);
+      // console.log(12, kewenanganTemp);
 
-      const tempFile = this.currentProject.address[0].prov;
-      const tempKabFile = this.currentProject.address[0].district;
+      const tempFile = this.currentProject.address.filter(e => e.isUsed)[0].prov;
+      const tempKabFile = this.currentProject.address.filter(e => e.isUsed)[0].district;
+      // console.log(13, { tempFile, tempKabFile });
       if (kewenanganTemp === 'Provinsi'){
         const authProv = await provinceResource.list({ provName: tempFile });
         this.currentProject.auth_province = authProv.id;
+        // console.log(14, this.currentProject.auth_province);
       } else if (kewenanganTemp === 'Kabupaten'){
         const authDistrict = await districtResource.list({ districtName: tempKabFile });
         this.currentProject.auth_district = authDistrict.id;
+        // console.log(15, this.currentProject.auth_district);
       }
 
       // if kewenangan KEK
       if (this.jenisKawasanOSS === '02'){
         kewenanganTemp = 'Pusat';
       }
-      console.log(3, kewenanganTemp);
+      // console.log(16, kewenanganTemp);
 
       if (this.kewenanganPMA && this.kewenanganPMA === '01'){
         kewenanganTemp = 'Pusat';
-        console.log(4, kewenanganTemp);
+        // console.log(17, kewenanganTemp);
       }
 
       const anomaliPBG = await authorityResource.list({ listSubProject: this.currentProject.listSubProject });
@@ -1134,18 +1143,19 @@ export default {
       // if theres is anomali pbg skip kewenagan
       if (anomaliPBG === 1){
         kewenanganTemp = this.getKewenangan(this.currentProject.listSubProject);
-        console.log(5, kewenanganTemp);
+        // console.log(18, kewenanganTemp);
       }
 
       if (this.jenisKawasanOSS === '03'){
         kewenanganTemp = 'Pusat';
-        console.log(6, kewenanganTemp);
+        // console.log(19, kewenanganTemp);
       }
 
       this.currentProject.authority = kewenanganTemp;
+      // console.log(20, this.currentProject);
     },
     handlechecked(val){
-      console.log(val);
+      // console.log(val);
       this.currentProject.address.map(e => {
         if (e.id_proyek === val.id_proyek){
           e.isUsed = val.isUsed;
@@ -1156,7 +1166,7 @@ export default {
       this.refresh++;
     },
     checksubpro(val){
-      console.log(val);
+      // console.log(val);
       this.checkedSubProject = val;
     },
     async addAuthoritiesBasedOnAddress(address){
@@ -1183,7 +1193,7 @@ export default {
           this.currentProject.authority = 'Pusat';
           delete this.currentProject.auth_province;
           delete this.currentProject.auth_district;
-          console.log('add1', this.currentProject.authority);
+          // console.log('add1', this.currentProject.authority);
           return;
         }
 
@@ -1191,7 +1201,7 @@ export default {
           this.currentProject.authority = 'Provinsi';
           const authProv = await provinceResource.list({ provName: tempFile });
           this.currentProject.auth_province = authProv.id;
-          console.log('add2', this.currentProject.authority);
+          // console.log('add2', this.currentProject.authority);
           delete this.currentProject.auth_district;
         }
 
@@ -1200,7 +1210,7 @@ export default {
       }
 
       if (this.currentProject.authority === 'Provinsi'){
-        console.log('add3', this.currentProject.authority);
+        // console.log('add3', this.currentProject.authority);
         return;
       }
 
@@ -1208,7 +1218,7 @@ export default {
       const authDistrict = await districtResource.list({ districtName: tempKabFile });
       this.currentProject.auth_district = authDistrict.id;
 
-      console.log('kewenangan by alamat', this.currentProject);
+      // console.log('kewenangan by alamat', this.currentProject);
     },
     async goToPendekatanStudi(){
       if (!this.filepippib && this.currentProject.pippib === 'Y'){
@@ -1274,10 +1284,10 @@ export default {
         this.currentProject.authority = finalAuth;
       }
 
-      console.log('authority pemerintah', this.currentProject);
+      // console.log('authority pemerintah', this.currentProject);
     },
     async goToStatusKegiatan(){
-      console.log(this.currentProject);
+      // console.log(this.currentProject);
       if (this.currentProject.isPemerintah){
         this.activeName = '7';
       } else {
@@ -1806,7 +1816,7 @@ export default {
       await this.getKblis();
     },
     async getProjectsFromOss() {
-      console.log(this.$store.getters.ossByNib);
+      // console.log(this.$store.getters.ossByNib);
 
       if (!this.$store.getters.ossByNib.data_proyek){
         return;
@@ -1819,10 +1829,10 @@ export default {
       this.jenisKawasanOSS = this.$store.getters.ossByNib.jenis_kawasan;
 
       const ossProjects = this.$store.getters.ossByNib.data_proyek.filter(e => (e.file_izin === '-' || !e.file_izin) && !e.status_tapis);
-      console.log(ossProjects);
+      // console.log(ossProjects);
 
       ossProjects.forEach(e => {
-        console.log('ini', e);
+        // console.log('ini', e);
         e.data_lokasi_proyek.forEach(i => {
           this.currentProject.address.push({
             prov: i.province,
@@ -1857,7 +1867,7 @@ export default {
         }
       });
 
-      console.log(this.listSubProject);
+      // console.log(this.listSubProject);
     },
     async getProjectFields() {
       await this.$store.dispatch('getProjectFields');
@@ -1887,7 +1897,7 @@ export default {
       }
 
       // check if project in kawasan lindung without exception
-      console.log('perbandingan kawasan lindung', [this.currentProject.kawasan_lindung === 'Y', this.currentProject.fileKawasanLindung]);
+      // console.log('perbandingan kawasan lindung', [this.currentProject.kawasan_lindung === 'Y', this.currentProject.fileKawasanLindung]);
       if (this.currentProject.kawasan_lindung === 'Y' && !this.currentProject.fileKawasanLindung && this.currentProject.required_doc !== 'AMDAL') {
         this.currentProject.required_doc = 'AMDAL';
         this.currentProject.result_risk = 'Tinggi';
