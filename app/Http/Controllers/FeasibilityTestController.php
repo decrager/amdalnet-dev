@@ -462,7 +462,10 @@ class FeasibilityTestController extends Controller
         $tuk_member = FeasibilityTestTeamMember::select('id', 'id_luk_member', 'id_expert_bank', 'position')
                         ->whereHas('feasibilityTest', function($q) use($id_project) {
                             $q->where('id_project', $id_project);
-                        })->with(['feasibilityTest.detail.eligibility', 'lukMember' => function($q) {
+                        })->with(['feasibilityTest' => function($q) use($id_project) {
+                            $q->where('id_project', $id_project);
+                            $q->with('detail.eligibility');
+                        }, 'lukMember' => function($q) {
                             $q->select('id', 'name', 'institution');
                         }, 'expertBank' => function($q) {
                             $q->select('id', 'name', 'institution');
@@ -472,7 +475,10 @@ class FeasibilityTestController extends Controller
         $tuk_secretary_member = TukSecretaryMember::select('id', 'name', 'institution')
                                     ->whereHas('feasibilityTest', function($q) use($id_project) {
                                         $q->where('id_project', $id_project);
-                                    })->with('feasibilityTest.detail.eligibility')->get();
+                                    })->with(['feasibilityTest' => function($q) use($id_project) {
+                                        $q->where('id_project', $id_project);
+                                        $q->with('detail.eligibility');
+                                    }])->get();
                                     
         // === AHLI DARI UNDANGAN === //
         $tuk_invitation = FeasibilityTest::where([['id_project', $id_project],['email', '!=', null]])->with('detail.eligibility')->get();

@@ -194,7 +194,7 @@ class AndalComposingController extends Controller
     
                         $file = $this->base64ToFile($request->input($fileRequest));
                         $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file['extension'];
-                        Storage::disk('public')->put($fileName, $filePa['file']);
+                        Storage::disk('public')->put($fileName, $file['file']);
                         $attachment->file = Storage::url($fileName);
     
                         $attachment->save();
