@@ -12,6 +12,12 @@
         </template>
         <ManageApproach v-if="activeName === '1'" />
       </el-collapse-item>
+      <el-collapse-item name="4">
+        <template slot="title">
+          <span class="title">PETA TITIK PENGELOLAAN DAN PEMANTAUAN</span>
+        </template>
+        <UploadPetaBatasRklRpl v-if="activeName === '4'" />
+      </el-collapse-item>
       <el-collapse-item name="2">
         <template slot="title">
           <span class="title">
@@ -38,6 +44,7 @@ const rklResource = new Resource('matriks-rkl');
 import ManageApproach from '@/views/rkl-rpl/components/matriks-table/ManageApproach';
 import TableRKL from '@/views/rkl-rpl/components/matriks-table/TableRKL';
 import TableRPL from '@/views/rkl-rpl/components/matriks-table/TableRPL';
+import UploadPetaBatasRklRpl from '@/views/rkl-rpl/components/UploadPetaBatasRklRpl';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
@@ -48,6 +55,7 @@ export default {
     ManageApproach,
     TableRKL,
     TableRPL,
+    UploadPetaBatasRklRpl,
   },
   data() {
     return {

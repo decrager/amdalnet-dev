@@ -102,7 +102,7 @@ const uploadMaps = new Resource('project-map');
 // const unduhMaps = new Resource('download-map');
 
 export default {
-  name: 'UploadPetaBatasUklUpl',
+  name: 'UploadPetaBatasRklRpl',
   data() {
     return {
       data: [],
@@ -180,7 +180,7 @@ export default {
         basemap: 'satellite',
       });
 
-      axios.get(`api/map-geojson?id=${this.idProject}&step=ukl-upl`)
+      axios.get(`api/map-geojson?id=${this.idProject}&step=rkl-rpl`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
@@ -483,7 +483,7 @@ export default {
     handleSubmit(){
       const formData = new FormData();
       formData.append('id_project', this.idProject);
-      formData.append('step', 'ukl-upl');
+      formData.append('step', 'rkl-rpl');
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
