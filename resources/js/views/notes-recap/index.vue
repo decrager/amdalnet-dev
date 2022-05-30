@@ -20,7 +20,7 @@
       </el-col>
       <el-col :md="14" :sm="24">
         <el-button :loading="loadingDownload" type="primary" @click="download">
-          Download
+          Unduh Rekap Catatan
         </el-button>
       </el-col>
     </el-row>
