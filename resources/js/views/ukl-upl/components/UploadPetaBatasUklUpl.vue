@@ -180,7 +180,7 @@ export default {
         basemap: 'satellite',
       });
 
-      axios.get(`api/map-geojson?id=${this.idProject}`)
+      axios.get(`api/map-geojson?id=${this.idProject}&step=ukl-upl`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
@@ -483,6 +483,7 @@ export default {
     handleSubmit(){
       const formData = new FormData();
       formData.append('id_project', this.idProject);
+      formData.append('step', 'ukl-upl');
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
