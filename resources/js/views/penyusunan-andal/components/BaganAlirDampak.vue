@@ -1,14 +1,17 @@
 <!-- eslint-disable vue/html-self-closing -->
 <template>
-  <div id="bagan_wrapper" v-loading="loading" style="padding: 15px 0">
-    <div id="tree">
-      <SimpleFlowChart :height="height" :scene.sync="data" />
-    </div>
-    <div style="margin-top: 10px; text-align: right">
-      <el-button :loading="loadingPDF" type="warning" @click="download">
-        Export PDF
-      </el-button>
-      <div id="pdf"></div>
+  <div id="bagan_wrapper" style="padding: 15px 0">
+    <BaganTable @refreshBagan="refreshChart" />
+    <div v-loading="loading">
+      <div id="tree">
+        <SimpleFlowChart :height="height" :scene.sync="data" />
+      </div>
+      <div style="margin-top: 10px; text-align: right">
+        <el-button :loading="loadingPDF" type="warning" @click="download">
+          Export PDF
+        </el-button>
+        <div id="pdf"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -19,13 +22,15 @@
 import axios from 'axios';
 import SimpleFlowChart from 'vue-simple-flowchart';
 import 'vue-simple-flowchart/dist/vue-flowchart.css';
-// import * as html2canvas from 'html2canvas';
-// import JsPDF from 'jspdf';
+import * as html2canvas from 'html2canvas';
+import JsPDF from 'jspdf';
+import BaganTable from '@/views/penyusunan-andal/components/BaganTable.vue';
 // import { Canvg } from 'canvg';
 
 export default {
   components: {
     SimpleFlowChart,
+    BaganTable,
   },
   data() {
     return {
@@ -34,144 +39,109 @@ export default {
       loadingPDF: false,
       height: 10,
       data: {
-        centerX: 1024,
+        centerX: 924,
         centerY: 140,
         scale: 1,
-        nodes: [
-          {
-            id: 1,
-            x: -400,
-            y: -69,
-            label: '',
-            type: 'title',
-          },
-          {
-            id: 2,
-            x: -710,
-            y: 100,
-            label: 'Tahap Pra Konstruksi',
-            type: 'tahap',
-          },
-          {
-            id: 3,
-            x: -510,
-            y: 100,
-            label: 'Tahap Konstruksi',
-            type: 'tahap',
-          },
-          {
-            id: 4,
-            x: -310,
-            y: 100,
-            label: 'Tahap Operasi',
-            type: 'tahap',
-          },
-          {
-            id: 5,
-            x: -110,
-            y: 100,
-            label: 'Tahap Pasca Operasi',
-            type: 'tahap',
-          },
-          {
-            id: 100,
-            x: 110,
-            y: 100,
-            label: 'hehey',
-            type: 'hmm',
-          },
-          {
-            id: 101,
-            x: 310,
-            y: 100,
-            label: 'cuy',
-            type: 'hmm',
-          },
-          {
-            id: 102,
-            x: 510,
-            y: 100,
-            label: 'brr',
-            type: 'hmm',
-          },
-          {
-            id: 103,
-            x: 710,
-            y: 100,
-            label: 'ads',
-            type: 'hmm',
-          },
-          {
-            id: 104,
-            x: 910,
-            y: 100,
-            label: 'bfsds',
-            type: 'hmm',
-          },
-        ],
-        links: [
-          {
-            id: 6,
-            from: 1, // node id the link start
-            to: 2, // node id the link end
-          },
-          {
-            id: 7,
-            from: 1, // node id the link start
-            to: 3, // node id the link end
-          },
-          {
-            id: 8,
-            from: 1, // node id the link start
-            to: 4, // node id the link end
-          },
-          {
-            id: 9,
-            from: 1, // node id the link start
-            to: 5, // node id the link end
-          },
-          {
-            id: 105,
-            from: 1, // node id the link start
-            to: 100, // node id the link end
-          },
-          {
-            id: 106,
-            from: 1, // node id the link start
-            to: 101, // node id the link end
-          },
-          {
-            id: 107,
-            from: 1, // node id the link start
-            to: 102, // node id the link end
-          },
-          {
-            id: 108,
-            from: 1, // node id the link start
-            to: 103, // node id the link end
-          },
-          {
-            id: 109,
-            from: 1, // node id the link start
-            to: 104, // node id the link end
-          },
-        ],
+        nodes: [],
+        links: [],
       },
     };
   },
   created() {
-    this.drawChart().then(() => {
-      const flowChart = document.querySelector('.flowchart-container');
-      this.height = flowChart.scrollHeight;
-      document.querySelector(
-        '.flowchart-container svg'
-      ).style.width = `${flowChart.scrollWidth}px`;
-      document.querySelector('.flowchart-container svg').id = 'dampak-svg';
-    });
+    this.refreshChart();
   },
   methods: {
+    refreshChart() {
+      this.drawChart().then(() => {
+        const flowChart = document.querySelector('.flowchart-container');
+        this.height = flowChart.scrollHeight;
+        document.querySelector(
+          '.flowchart-container svg'
+        ).style.width = `${flowChart.scrollWidth}px`;
+        document.querySelector('.flowchart-container svg').id = 'dampak-svg';
+        document.querySelectorAll('.node-type').forEach((com) => {
+          if (com.innerHTML === 'title') {
+            com.parentElement.parentElement.style.backgroundColor = '#5a6260';
+            com.parentElement.parentElement.style.color = 'white';
+          } else if (com.innerHTML === 'tahap_pra_konstruksi') {
+            com.parentElement.parentElement.style.backgroundColor = '#f0c28c';
+          } else if (com.innerHTML === 'tahap_konstruksi') {
+            com.parentElement.parentElement.style.backgroundColor = '#8bcde8';
+          } else if (com.innerHTML === 'tahap_operasi') {
+            com.parentElement.parentElement.style.backgroundColor = '#b5d4b5';
+          } else if (com.innerHTML === 'tahap_pasca_operasi') {
+            com.parentElement.parentElement.style.backgroundColor = '#f0de21';
+          } else if (com.innerHTML === 'primer') {
+            com.parentElement.parentElement.style.backgroundColor = '#e4556e';
+          } else if (com.innerHTML === 'sekunder') {
+            com.parentElement.parentElement.style.backgroundColor = '#d0d013';
+          } else if (com.innerHTML === 'tersier') {
+            com.parentElement.parentElement.style.backgroundColor = '#1fb692';
+          }
+        });
+      });
+    },
     async drawChart() {
       this.loading = true;
+      this.data.nodes = [
+        {
+          id: 1,
+          x: -400,
+          y: -69,
+          label: '',
+          type: 'title',
+        },
+        {
+          id: 2,
+          x: -710,
+          y: 100,
+          label: 'Tahap Pra Konstruksi',
+          type: 'tahap_pra_konstruksi',
+        },
+        {
+          id: 3,
+          x: -510,
+          y: 100,
+          label: 'Tahap Konstruksi',
+          type: 'tahap_konstruksi',
+        },
+        {
+          id: 4,
+          x: -310,
+          y: 100,
+          label: 'Tahap Operasi',
+          type: 'tahap_operasi',
+        },
+        {
+          id: 5,
+          x: -110,
+          y: 100,
+          label: 'Tahap Pasca Operasi',
+          type: 'tahap_pasca_operasi',
+        },
+      ];
+      this.data.links = [
+        {
+          id: 6,
+          from: 1, // node id the link start
+          to: 2, // node id the link end
+        },
+        {
+          id: 7,
+          from: 1, // node id the link start
+          to: 3, // node id the link end
+        },
+        {
+          id: 8,
+          from: 1, // node id the link start
+          to: 4, // node id the link end
+        },
+        {
+          id: 9,
+          from: 1, // node id the link start
+          to: 5, // node id the link end
+        },
+      ];
       const dataChart = await axios.get(
         `/api/bagan-alir-dampak-penting/${this.$route.params.id}`
       );
@@ -231,7 +201,8 @@ export default {
           x: xAxisListComponent[idx],
           y: 250,
           label: component.component,
-          type: 'component',
+          type: 'tahap_' + component.tahap.replace(' ', '_').toLowerCase(),
+          component: true,
         };
       });
 
@@ -295,7 +266,7 @@ export default {
       dampakPrimer.forEach((dampak) => {
         id++;
         const from = this.data.nodes.find(
-          (node) => node.label === dampak.component && node.type === 'component'
+          (node) => node.label === dampak.component && node.component === true
         );
         const to = this.data.nodes.find(
           (node) => node.label === dampak.dampak && node.type === 'primer'
@@ -386,22 +357,25 @@ export default {
       // pdf.save('Bagan Alir Dampak Penting.pdf');
       // document.getElementById('pdf').innerHTML = '';
 
-      // var w = document.querySelector('.flowchart-container').scrollWidth;
-      // var h = document.querySelector('.flowchart-container').scrollHeight;
-      html2canvas(document.querySelector, {
+      var w = document.querySelector('#tree .flowchart-container').scrollWidth;
+      var wo = document.querySelector('#tree .flowchart-container').offsetWidth;
+      var h = document.querySelector('#tree').scrollHeight;
+      html2canvas(document.querySelector('#tree .flowchart-container'), {
         imageTimeout: 4000,
         useCORS: true,
-        scrollY: -window.scrollY,
       }).then((canvas) => {
+        console.log('second', canvas);
         document.getElementById('pdf').appendChild(canvas);
         const img = canvas.toDataURL('image/png');
-        window.open(img);
-        // const pdf = new JsPDF('landscape', 'px', [w, h]);
-        // pdf.addImage(img, 'PNG', 0, 0, w, h);
-        // this.loadingPDF = false;
-        // pdf.save('Bagan Alir Dampak Penting.pdf');
-        // document.getElementById('pdf').innerHTML = '';
+        const pdf = new JsPDF('landscape', 'px', [w, h]);
+        pdf.addImage(img, 'PNG', 0, 0, w, h);
+        this.loadingPDF = false;
+        pdf.save('Bagan Alir Dampak Penting.pdf');
+        document.getElementById('pdf').innerHTML = '';
       });
+      document.querySelector('.html2canvas-container').style.width = `${
+        w + wo / 2
+      }px`;
     },
   },
 };
@@ -427,7 +401,11 @@ export default {
   width: auto !important;
   max-width: 105px !important;
 }
+#tree,
 #tree .flowchart-container {
   overflow: auto !important;
 }
+/* .html2canvas-container {
+  width: 3000px !important;
+} */
 </style>

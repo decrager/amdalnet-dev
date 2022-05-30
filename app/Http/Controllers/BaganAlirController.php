@@ -8,6 +8,7 @@ use App\Entity\ImpactIdentificationClone;
 use App\Entity\KegiatanLainSekitar;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
+use App\Entity\SignificantImpactFlowchart;
 use App\Entity\SubProject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -78,32 +79,11 @@ class BaganAlirController extends Controller
         $impact_identifications = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant', 'id_sub_project_component', 'id_sub_project_rona_awal')->where('id_project', $id)->whereHas('envImpactAnalysis')->get();
 
         foreach ($impact_identifications as $imp) {
-            // if ($imp->projectComponent) {
-            //     $stage_name = $imp->projectComponent->component->stage->name;
-            //     if ($imp->projectRonaAwal) {
-            //         $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
-            //         $component = $imp->projectComponent->component->name;
-            //         $change_type = $imp->id_change_type ? $imp->changeType->name : '';
-
-            //         if(!array_key_exists($component, $data[$stage_name])) {
-            //             $data[$stage_name][$component] = [];
-            //         }
-
-            //         $data[$stage_name][$component][] = [
-            //             'dampak' => $change_type . ' ' . $ronaAwal,
-            //             'type' => $imp->envImpactAnalysis->impact_type
-            //         ];
-            //     } else {
-            //         continue;
-            //     }
-            // } else {
-            //     continue;
-            // }
-            if ($imp->subProjectComponent) {
-                $stage_name = $imp->subProjectComponent->component ? $imp->subProjectComponent->component->stage->name : $imp->subProjectComponent->projectStage->name;
-                if ($imp->subProjectRonaAwal) {
-                    $ronaAwal = $imp->subProjectRonaAwal->ronaAwal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                    $component = $imp->subProjectComponent->component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+            if ($imp->projectComponent) {
+                $stage_name = $imp->projectComponent->component->stage->name;
+                if ($imp->projectRonaAwal) {
+                    $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                    $component = $imp->projectComponent->component->name;
                     $change_type = $imp->id_change_type ? $imp->changeType->name : '';
 
                     if(!array_key_exists($component, $data[$stage_name])) {
@@ -114,7 +94,7 @@ class BaganAlirController extends Controller
                         'id_env_impact_analysis' => $imp->envImpactAnalysis->id,
                         'dampak' => $change_type . ' ' . $ronaAwal,
                         'type' => $imp->envImpactAnalysis->impact_type,
-                        'parents' => $this->getDampak($imp->envImpactAnalysis->child)
+                        'parents' => $this->getParents($imp->envImpactAnalysis->child)
                     ];
                 } else {
                     continue;
@@ -128,6 +108,72 @@ class BaganAlirController extends Controller
             'title' => $project->project_title,
             'data' => $data
         ]);
+    }
+
+    public function baganAlirDampakPentingTable($id)
+    {
+        $data = [
+            'primer' => [],
+            'sekunder' => [],
+            'tersier' => []
+        ];
+
+        $impact_identifications = ImpactIdentificationClone::select('id', 'id_project', 'id_project_component', 'id_change_type', 'id_project_rona_awal', 'is_hypothetical_significant', 'id_sub_project_component', 'id_sub_project_rona_awal')->where('id_project', $id)->whereHas('envImpactAnalysis')->get();
+
+        foreach($impact_identifications as $imp) {
+            if ($imp->projectComponent) {
+                if ($imp->projectRonaAwal) {
+                    $ronaAwal = $imp->projectRonaAwal->rona_awal->name;
+                    $change_type = $imp->id_change_type ? $imp->changeType->name : '';
+
+                    if($imp->envImpactAnalysis->impact_type === 'Primer') {
+                        $data['primer'][] = ['id' => $imp->envImpactAnalysis->id, 'dampak' => $change_type . ' ' . $ronaAwal];
+                    } else if($imp->envImpactAnalysis->impact_type === 'Sekunder') {
+                        $data['sekunder'][] = [
+                            'id' => $imp->envImpactAnalysis->id,
+                            'dampak' => $change_type . ' ' . $ronaAwal,
+                            'parents' => $this->getParents($imp->envImpactAnalysis->child, 'table')
+                        ];
+                    } else if($imp->envImpactAnalysis->impact_type === 'Tersier') {
+                        $data['tersier'][] = [
+                            'id' => $imp->envImpactAnalysis->id,
+                            'dampak' => $change_type . ' ' . $ronaAwal,
+                            'parents' => $this->getParents($imp->envImpactAnalysis->child, 'table')
+                        ];
+                    }
+                } else {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+        }
+
+        return response()->json($data);
+    }
+
+    public function storeBaganAlirDampakPenting(Request $request, $id)
+    {
+        $added_relation = $request->addedRelation;
+        $deleted_relation = $request->deletedRelation;
+
+        if(count($added_relation) > 0) {
+            for($i = 0; $i <= count($added_relation) - 1; $i++) {
+                $new_relation = new SignificantImpactFlowchart();
+                $new_relation->parent_id = $added_relation[$i]['parentId'];
+                $new_relation->child_id = $added_relation[$i]['childId'];
+                $new_relation->save();
+            }
+        }
+
+        if(count($deleted_relation) > 0) {
+            for($i = 0; $i <= count($deleted_relation) - 1; $i++) {
+                SignificantImpactFlowchart::where([['parent_id', $deleted_relation[$i]['parentId']], ['child_id', $deleted_relation[$i]['childId']]])
+                                            ->delete();
+            }
+        }
+
+        return response()->json(['message' => 'success']);
     }
 
     private function getEnvImpactAnalysis($id_project, $stages)
@@ -241,15 +287,22 @@ class BaganAlirController extends Controller
         return [];
     }
 
-    private function getDampak($data)
+    private function getParents($data, $type = 'svg')
     {
         $dampak = [];
         foreach($data as $d) {
-            if($d->parent->impactIdentification->subProjectComponent) {
-                if ($d->parent->impactIdentification->subProjectRonaAwal) {
-                    $ronaAwal = $d->parent->impactIdentification->subProjectRonaAwal->ronaAwal ? $d->parent->impactIdentification->subProjectRonaAwal->ronaAwal->name : $d->parent->impactIdentification->subProjectRonaAwal->name;
-                    $change_type = $d->parent->impactIdentification->id_change_type ? $d->parent->impactIdentification->changeType->name : '';
-                    $dampak[] = $change_type . ' ' . $ronaAwal;
+            if($d->parent->impactIdentification->projectComponent) {
+                if ($d->parent->impactIdentification->projectRonaAwal) {
+                    if($type == 'svg') {
+                        $ronaAwal = $d->parent->impactIdentification->projectRonaAwal->rona_awal->name;
+                        $change_type = $d->parent->impactIdentification->id_change_type ? $d->parent->impactIdentification->changeType->name : '';
+                        $dampak[] = $change_type . ' ' . $ronaAwal;
+                    } else if($type == 'table') {
+                        $dampak[] = [
+                            'id' => $d->parent->id,
+                            'real_id' => $d->parent->id
+                        ];
+                    }
                 } else {
                     continue;
                 }
