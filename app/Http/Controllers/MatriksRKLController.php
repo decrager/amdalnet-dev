@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\Comment;
+use App\Entity\DocumentAttachment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManageApproach;
 use App\Entity\EnvManagePlan;
@@ -40,13 +41,12 @@ class MatriksRKLController extends Controller
     public function index(Request $request)
     {
         if($request->checkDocument) {
-            if (!File::exists(storage_path('app/public/workspace/'))) {
+            if (!Storage::disk('public')->exists('workspace')) {
                 return 'false';
             }
-    
-            $save_file_name = $request->idProject . '-rkl-rpl' . '.docx';
-    
-            if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+
+            $document_attachment = DocumentAttachment::where([['id_project', $request->idProject], ['type', 'Dokumen RKL RPL']])->first();
+            if($document_attachment) {
                 return 'true';
             }
 
@@ -63,14 +63,16 @@ class MatriksRKLController extends Controller
         }
 
         if($request->docs) {
-            $save_file_name = $request->idProject .'-rkl-rpl' . '.docx'; 
-            if (!File::exists(storage_path('app/public/workspace/'))) {
-                File::makeDirectory(storage_path('app/public/workspace/'));
+            if (!Storage::disk('public')->exists('workspace')) {
+                Storage::disk('public')->makeDirectory('workspace');
             }
 
-            if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            $document_attachment = DocumentAttachment::where([['id_project', $request->idProject], ['type', 'Dokumen RKL RPL']])->first();
+            if($document_attachment) {
                 return response()->json(['message' => 'success']);
             }
+
+            $save_file_name = $request->idProject .'-rkl-rpl' . '.docx'; 
 
             $templateProcessor = new TemplateProcessor('template_rkl_rpl.docx');
 
@@ -247,7 +249,13 @@ class MatriksRKLController extends Controller
                 }
             }
 
-            $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+            $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+
+            $document_attachment = new DocumentAttachment();
+            $document_attachment->id_project = $request->idProject;
+            $document_attachment->attachment = 'workspace/' . $save_file_name;
+            $document_attachment->type = 'Dokumen RKL RPL';
+            $document_attachment->save();
             
 
             return response()->json(['message' => 'success']);
