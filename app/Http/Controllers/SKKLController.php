@@ -500,12 +500,8 @@ class SKKLController extends Controller
                     $resp = OssService::inqueryFileDS($dataNib['nib'], $id_izin);
                     if ((int)$resp['responInqueryFileDS']['status'] == 200 &&
                         isset($resp['responInqueryFileDS']['url_file_ds'])) {
-                        $url = $resp['responInqueryFileDS']['url_file_ds'];
-                        $spl = explode('/', $url);
-                        if ($spl[8] != 'null') {
-                            $fileUrl = $url;
-                            break;
-                        }
+                        $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
+                        break;
                     }
                 }
             } else {
