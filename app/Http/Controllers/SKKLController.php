@@ -319,11 +319,11 @@ class SKKLController extends Controller
             $templateProcessor->setValue('location', $location);
 
             $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
-            if (!File::exists(storage_path('app/public/skkl/'))) {
-                File::makeDirectory(storage_path('app/public/skkl/'));
+            if (!Storage::disk('public')->exists('skkl')) {
+                Storage::disk('public')->makeDirectory('skkl');
             }
 
-            $templateProcessor->saveAs(storage_path('app/public/skkl/' . $save_file_name));
+            $templateProcessor->saveAs(Storage::disk('public')->path('skkl/' . $save_file_name));
             $skkl_download_name = Storage::url('skkl/' . $save_file_name);
             $update_date_skkl = $project->updated_at->locale('id')->isoFormat('D MMMM Y');
         }
@@ -382,11 +382,11 @@ class SKKLController extends Controller
         $templateProcessor->setValue('project_address', $location);
 
         $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
-        if (!File::exists(storage_path('app/public/pkplh/'))) {
-            File::makeDirectory(storage_path('app/public/pkplh/'));
+        if (!Storage::disk('public')->exists('pkplh')) {
+            Storage::disk('public')->makeDirectory('pkplh');
         }
 
-        $templateProcessor->saveAs(storage_path('app/public/pkplh/' . $save_file_name));
+        $templateProcessor->saveAs(Storage::disk('public')->path('pkplh/' . $save_file_name));
 
         $uklDate = '';
         $ukl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {

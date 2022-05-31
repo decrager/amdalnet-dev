@@ -9,6 +9,7 @@ use App\Utils\TemplateProcessor;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class KaCommentController extends Controller
 {
@@ -289,8 +290,8 @@ class KaCommentController extends Controller
 
     private function download($id_project, $type)
     {
-        if (!File::exists(storage_path('app/public/recap/'))) {
-            File::makeDirectory(storage_path('app/public/recap/'));
+        if (!Storage::disk('public')->exists('recap')) {
+            Storage::disk('public')->makeDirectory('recap');
         }
 
         $comment_list = [];
@@ -358,8 +359,8 @@ class KaCommentController extends Controller
             }
         }
 
-        $save_file_name = storage_path('app/public/recap/' . $id_project . '-' . $type . '.docx');
-        $templateProcessor->saveAs($save_file_name);
+        $save_file_name = $id_project . '-' . $type . '.docx';
+        $templateProcessor->saveAs(Storage::disk('public')->path('recap/' . $save_file_name));
         return response()->download($save_file_name)->deleteFileAfterSend(true);
     }
 

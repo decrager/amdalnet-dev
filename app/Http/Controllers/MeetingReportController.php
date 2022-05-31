@@ -107,8 +107,8 @@ class MeetingReportController extends Controller
 
         if ($request->formulir) {
             $project_title = strtolower(Project::findOrFail($request->idProject)->project_title);
-            if (File::exists(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'))) {
-                File::delete(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'));
+            if(Storage::disk('public')->exists('berita-acara/ba-ka-andal/' . $project_title . '.docx')) {
+                Storage::disk('public')->delete('berita-acara/ba-ka-andal/' . $project_title . '.docx');
             }
 
             if ($request->hasFile('docx')) {
@@ -482,8 +482,8 @@ class MeetingReportController extends Controller
     } 
 
     private function getDocs($id_project) {
-        if (!File::exists(storage_path('app/public/ba-ka/'))) {
-            File::makeDirectory(storage_path('app/public/ba-ka/'));
+        if (!Storage::disk('public')->exists('ba-ka')) {
+            Storage::disk('public')->makeDirectory('ba-ka');
         }
 
         $project = Project::findOrFail($id_project);
@@ -619,7 +619,8 @@ class MeetingReportController extends Controller
         Html::addHtml($cell, $this->replaceHtmlList($meeting->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/ba-ka/ba-ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $save_file_name = 'ba-ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+        $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka/' . $save_file_name));
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }

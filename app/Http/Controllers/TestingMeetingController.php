@@ -522,8 +522,8 @@ class TestingMeetingController extends Controller
     } 
 
     private function dokumen($id_project) {
-        if (!File::exists(storage_path('app/public/adm/'))) {
-            File::makeDirectory(storage_path('app/public/adm/'));
+        if (!Storage::disk('public')->exists('adm')) {
+            Storage::disk('public')->makeDirectory('adm');
         }
 
         $project = Project::findOrFail($id_project);
@@ -760,15 +760,15 @@ class TestingMeetingController extends Controller
         Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }
 
     private function meetingInvitation($id_project)
     {
-        if (!File::exists(storage_path('app/public/meet-inv/'))) {
-            File::makeDirectory(storage_path('app/public/meet-inv/'));
+        if (!Storage::disk('public')->exists('meet-inv')) {
+            Storage::disk('public')->makeDirectory('meet-inv');
         }
         
         $project = Project::findOrFail($id_project);
@@ -925,7 +925,7 @@ class TestingMeetingController extends Controller
         $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
         $templateProcessor->cloneBlock('instansi', count($instansi), true, false, $instansi);
 
-        $templateProcessor->saveAs(storage_path('app/public/meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }

@@ -539,8 +539,8 @@ class TestVerifRKLRPLController extends Controller
 
     private function exportNoDocx($id_project, $document_type)
     {
-        if (!File::exists(storage_path('app/public/adm-no/'))) {
-            File::makeDirectory(storage_path('app/public/adm-no/'));
+        if (!Storage::disk('public')->exists('adm-no')) {
+            Storage::disk('public')->makeDirectory('adm-no');
         }
 
         $project = Project::findOrFail($id_project);
@@ -633,7 +633,7 @@ class TestVerifRKLRPLController extends Controller
         Html::addHtml($cell, $this->replaceHtmlList($verification->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }

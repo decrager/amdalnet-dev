@@ -6,6 +6,7 @@ use App\Entity\AndalAttachment;
 use App\Entity\AndalComment;
 use App\Entity\Comment;
 use App\Entity\ComponentType;
+use App\Entity\DocumentAttachment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
@@ -24,6 +25,7 @@ use App\Entity\RonaAwal;
 use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
+use App\Utils\Document;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
@@ -44,13 +46,12 @@ class AndalComposingController extends Controller
     public function index(Request $request)
     {
         if($request->checkDocument) {
-            if (!File::exists(storage_path('app/public/workspace/'))) {
+            if(!Storage::disk('public')->exists('workspace')) {
                 return 'false';
             }
     
-            $save_file_name = $request->idProject . '-andal' . '.docx';
-    
-            if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+            $document_attachment = DocumentAttachment::where([['id_project', $request->idProject],['type', 'Dokumen Andal']])->first();
+            if($document_attachment) {
                 return 'true';
             }
 
@@ -229,8 +230,8 @@ class AndalComposingController extends Controller
 
         if ($request->type == 'formulir') {
             $project = Project::findOrFail($request->idProject);
-            if (File::exists(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.docx'))) {
-                File::delete(storage_path('app/public/formulir/ka-andal-' . strtolower($project->project_title) . '.docx'));
+            if(Storage::disk('public')->exists('formulir/ka-andal/' . strtolower($project->project_title) . '.docx')) {
+                Storage::disk('public')->delete('formulir/ka-andal/' . strtolower($project->project_title) . '.docx');
             }
 
             if ($request->hasFile('docx')) {
@@ -667,19 +668,17 @@ class AndalComposingController extends Controller
 
     private function dokumen($id_project)
     {
-        if (!File::exists(storage_path('app/public/workspace/'))) {
-            File::makeDirectory(storage_path('app/public/workspace/'));
+        if (!Storage::disk('public')->exists('workspacee')) {
+            Storage::disk('public')->makeDirectory('workspacee');
+        }
+
+        // CHECK IF DOCUMENT ALREADY EXIST
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Andal']])->first();
+        if($document_attachment) {
+            // return response()->json(['message' => 'success']);
         }
 
         $save_file_name = $id_project . '-andal' . '.docx';
-
-        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-            // if(request()->getHost() == 'amdalnet-dev.menlhk.go.id') {
-            //     File::delete(storage_path('app/public/workspace/' . $save_file_name));
-            // } else {
-            // }
-            return response()->json(['message' => 'success']);
-        }
 
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
@@ -2323,7 +2322,14 @@ class AndalComposingController extends Controller
         //     }
         // }
 
-        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+
+        $document_attachment = new DocumentAttachment();
+        $document_attachment->id_project = $id_project;
+        $document_attachment->attachment = 'workspace/' . $save_file_name;
+        $document_attachment->type = 'Dokumen Andal';
+        $document_attachment->save();
+        
 
         return response()->json(['message' => 'success']);
     }
@@ -2367,12 +2373,12 @@ class AndalComposingController extends Controller
 
     private function formulirKa($id_project, $type)
     {
-        if (!File::exists(storage_path('app/public/formulir/'))) {
-            File::makeDirectory(storage_path('app/public/formulir/'));
+        if (!Storage::disk('public')->exists('formulir')) {
+            Storage::disk('public')->makeDirectory('formulir');
         }
 
-        if (!File::exists(storage_path('app/public/workspace/'))) {
-            File::makeDirectory(storage_path('app/public/workspace/'));
+        if (!Storage::disk('public')->exists('workspace')) {
+            Storage::disk('public')->makeDirectory('workspace');
         }
 
         $ids = [4, 1, 2, 3];
@@ -2688,9 +2694,25 @@ class AndalComposingController extends Controller
         }
 
         if($type == 'andal') {
-            $templateProcessor->saveAs(storage_path('app/public/formulir/' . $save_file_name));
+            $templateProcessor->saveAs(Storage::disk('public')->path('formulir/' . $save_file_name));
         } else {
-            $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+            $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+        }
+
+        $attachment_type = $type === 'andal' ? 'Formulir KA Andal' : 'Formulir KA';
+        $document_attachment = DocumentAttachment::where([['id_project', $project->id],['type', $attachment_type]])->first();
+        if(!$document_attachment) {
+            $document_attachment = new DocumentAttachment();
+            $document_attachment->id_project = $project->id;
+            $document_attachment->type = $attachment_type;
+
+            if($type == 'andal') {
+                $document_attachment->attachment = 'formulir/' . $save_file_name;
+            } else {
+                $document_attachment->attachment = 'workspace/' . $save_file_name;
+            }
+
+            $document_attachment->save();
         }
 
         return [

@@ -542,8 +542,8 @@ class TestMeetRKLRPLController extends Controller
     }
 
     private function dokumen($id_project, $document_type) {
-        if (!File::exists(storage_path('app/public/adm/'))) {
-            File::makeDirectory(storage_path('app/public/adm/'));
+        if (!Storage::disk('public')->exists('adm')) {
+            Storage::disk('public')->makeDirectory('adm');
         }
 
         $project = Project::findOrFail($id_project);
@@ -794,9 +794,9 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->setComplexBlock('notes', $notesTable);
         
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         } else {
-            $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         }
 
         return strtolower(str_replace('/', '-', $project->project_title));
@@ -804,8 +804,8 @@ class TestMeetRKLRPLController extends Controller
 
     private function meetingInvitation($id_project, $document_type)
     {
-        if (!File::exists(storage_path('app/public/meet-inv/'))) {
-            File::makeDirectory(storage_path('app/public/meet-inv/'));
+        if (!Storage::disk('public')->exists('meet-inv')) {
+            Storage::disk('public')->makeDirectory('meet-inv');
         }
 
         $project = Project::findOrFail($id_project);
@@ -958,9 +958,9 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->cloneBlock('instansi', count($instansi), true, false, $instansi);
 
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(storage_path('app/public/meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         } else {
-            $templateProcessor->saveAs(storage_path('app/public/meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         }
 
         return strtolower(str_replace('/', '-', $project->project_title));
