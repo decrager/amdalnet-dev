@@ -312,7 +312,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleGenerateSPPL(scope.row)"
+                  @click="handleGenerateSPPLPemerintah(scope.row)"
                 >
                   Unduh SPPL
                 </el-button>
@@ -1217,6 +1217,12 @@ export default {
           duration: 5 * 1000,
         });
       }
+    },
+    handleGenerateSPPLPemerintah(project){
+      console.log(`/project/sppl/${project.id}`);
+      this.$router.push({
+        path: `/project/sppl/${project.id}`,
+      });
     },
     async handleGenerateSPPL(project) {
       project.listSubProject = project.listSubProject.map((e, i) => {

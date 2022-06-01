@@ -595,7 +595,7 @@ export default {
 
         // eslint-disable-next-line no-undef
         _.each(this.project, (value, key) => {
-          if (key === 'listSubProject' || key === 'address'){
+          if (key === 'listSubProject' || key === 'address' || key === 'listKewenangan'){
             formData.append(key, JSON.stringify(value));
           } else {
             formData.append(key, value);
