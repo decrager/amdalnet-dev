@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class Project extends Model implements Auditable
@@ -145,6 +146,11 @@ class Project extends Model implements Auditable
         return $this->hasOne(FeasibilityTestRecap::class, 'id_project', 'id');
     }
 
+    public function DocumentAttachment()
+    {
+        return $this->hasMany(DocumentAttachment::class, 'id_project', 'id');
+    }
+
     public function getFillingDateAttribute()
     {
         Carbon::setLocale('id');
@@ -159,13 +165,13 @@ class Project extends Model implements Auditable
 
     public function getRklRplDocumentAttribute()
     {
-        if (!File::exists(storage_path('app/public/workspace/'))) {
+        if (!Storage::disk('public')->exists('workspace')) {
             return false;
         }
 
         $save_file_name = $this->id . '-rkl-rpl' . '.docx';
 
-        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        if (Storage::disk('public')->exists('workpace/' . $save_file_name)) {
             return true;
         }
 
@@ -174,13 +180,13 @@ class Project extends Model implements Auditable
 
     public function getUklUplDocumentAttribute()
     {
-        if (!File::exists(storage_path('app/public/workspace/'))) {
+        if (!Storage::disk('public')->exists('workspace')) {
             return false;
         }
 
         $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $this->project_title)) . '.docx';
 
-        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        if (Storage::disk('public')->exists('workspace/' . $save_file_name)) {
             return true;
         }
 

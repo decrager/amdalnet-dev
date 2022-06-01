@@ -272,7 +272,7 @@ export default {
         pippib:
           'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan PIPPIB',
         persetujuan_awal:
-          'Justifikasi/bukti rencana usaha dan/atau kegiatan secara prinsip dapat dilakukan',
+          'Justifikasi/bukti persetujuan awal rencana usaha dan/atau kegiatan',
         surat_penyusun:
           'Bukti Tanda Registrasi LPJP atau Surat pembentukan Tim Penyusun Amdal dari pihak pemrakarsa',
         sertifikasi_penyusun:

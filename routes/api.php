@@ -280,6 +280,8 @@ Route::get('subproject-components', [SubProjectComponentController::class,'subPr
 Route::get('subproject-hues', [SubProjectRonaAwalController::class,'subProjectHues']);
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
 Route::get('bagan-alir-dampak-penting/{id}', [BaganAlirController::class, 'baganAlirDampakPenting']);
+Route::get('bagan-alir-dampak-penting/table/{id}', [BaganAlirController::class, 'baganAlirDampakPentingTable']);
+Route::post('bagan-alir-dampak-penting/table/{id}', [BaganAlirController::class, 'storeBaganAlirDampakPenting']);
 Route::get('project-map', [ProjectMapAttachmentController::class, 'index']);
 Route::get('map-pdf', [ProjectMapAttachmentController::class, 'getMapPdf']);
 Route::get('map-geojson-merge', [ProjectMapAttachmentController::class, 'getMergeGeojson']);

@@ -55,7 +55,7 @@ class SKKLController extends Controller
             if (isset($request->type) && !empty($request->type)) {
                 $type = $request->type;
             }
-            return $this->getSkklOssFile($request->idProject, $type);
+            return $this->getDataChecklistFileUrl($request->idProject, $type);
         }
 
         if ($request->spplOss || $request->pkplhOss) {
@@ -319,11 +319,11 @@ class SKKLController extends Controller
             $templateProcessor->setValue('location', $location);
 
             $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
-            if (!File::exists(storage_path('app/public/skkl/'))) {
-                File::makeDirectory(storage_path('app/public/skkl/'));
+            if (!Storage::disk('public')->exists('skkl')) {
+                Storage::disk('public')->makeDirectory('skkl');
             }
 
-            $templateProcessor->saveAs(storage_path('app/public/skkl/' . $save_file_name));
+            $templateProcessor->saveAs(Storage::disk('public')->path('skkl/' . $save_file_name));
             $skkl_download_name = Storage::url('skkl/' . $save_file_name);
             $update_date_skkl = $project->updated_at->locale('id')->isoFormat('D MMMM Y');
         }
@@ -382,11 +382,11 @@ class SKKLController extends Controller
         $templateProcessor->setValue('project_address', $location);
 
         $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
-        if (!File::exists(storage_path('app/public/pkplh/'))) {
-            File::makeDirectory(storage_path('app/public/pkplh/'));
+        if (!Storage::disk('public')->exists('pkplh')) {
+            Storage::disk('public')->makeDirectory('pkplh');
         }
 
-        $templateProcessor->saveAs(storage_path('app/public/pkplh/' . $save_file_name));
+        $templateProcessor->saveAs(Storage::disk('public')->path('pkplh/' . $save_file_name));
 
         $uklDate = '';
         $ukl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
@@ -462,7 +462,8 @@ class SKKLController extends Controller
         $jsonContent = $ossNib->json_content;
         $idIzinSkkl = isset($ossNib->id_izin) ? $ossNib->id_izin : null;
         $idIzinList = [];
-        if ($type == 'sppl') {
+        $fileIzin = null;
+        if ($type == 'sppl' || $type == 'pkplh') {
             $subProject = SubProject::where('id_project', $idProject)
                 ->orderBy('created_at', 'desc')
                 ->first();
@@ -470,6 +471,9 @@ class SKKLController extends Controller
                 foreach ($jsonContent['data_checklist'] as $c) {
                     if ($c['id_proyek'] == $subProject->id_proyek) {
                         array_push($idIzinList, $c['id_izin']);
+                        if ($c['file_izin'] != '-') {
+                            $fileIzin = $c['file_izin'];
+                        }
                     }
                 }
             }
@@ -478,30 +482,39 @@ class SKKLController extends Controller
             'nib' => isset($jsonContent['nib']) ? $jsonContent['nib'] : null,
             'id_izin' => $idIzinSkkl,
             'id_izin_list' => $idIzinList,
+            'file_izin' => $fileIzin,
         ];
     }
 
-    private function getSkklOssFile($idProject, $type = 'skkl')
+    private function getDataChecklistFileUrl($idProject, $type = 'skkl')
     {
         $dataNib = $this->getDataNib($idProject, $type);
         $fileUrl = null;
-        if ($type == 'sppl') {
-            foreach ($dataNib['id_izin_list'] as $id_izin) {
-                $resp = OssService::inqueryFileDS($dataNib['nib'], $id_izin);
-                if (isset($resp['responInqueryFileDS']['url_file_ds'])) {
+        if (isset($dataNib['file_izin']) && !empty($dataNib['file_izin'])) {
+            $fileUrl = $dataNib['file_izin'];
+        }
+        // double check : akses inqueryFileDS
+        if ($fileUrl == null) {
+            if ($type == 'sppl' || $type == 'pkplh') {
+                foreach ($dataNib['id_izin_list'] as $id_izin) {
+                    $resp = OssService::inqueryFileDS($dataNib['nib'], $id_izin);
+                    if ((int)$resp['responInqueryFileDS']['status'] == 200 &&
+                        isset($resp['responInqueryFileDS']['url_file_ds'])) {
+                        $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
+                        break;
+                    }
+                }
+            } else {
+                // SKKL
+                try {
+                    $resp = OssService::inqueryFileDS($dataNib['nib'], $dataNib['id_izin']);
                     $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
-                    break;
+                } catch (Exception $e) {
+                    Log::error($e->getMessage());
                 }
             }
-        } else {
-            // SKKL
-            try {
-                $resp = OssService::inqueryFileDS($dataNib['nib'], $dataNib['id_izin']);
-                $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
-            } catch (Exception $e) {
-                Log::error($e->getMessage());
-            }
         }
+        
         return [
             'file_url' => $fileUrl,
             'user_key' => env('OSS_USER_KEY'),
