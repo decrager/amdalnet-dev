@@ -255,9 +255,19 @@ class OssService
                 // print_r($respJson);
                 Log::debug(json_encode($data));
                 Log::debug(json_encode($respJson));
-                // if ((int)$respJson['responreceiveLicenseStatus']['kode'] == 200) {
-                //     return true;
-                // }
+                $idIzinNew = null;
+                if (isset($respJson['responreceiveLicenseStatus']['id_izin_new'])) {
+                    $idIzinNew = $respJson['responreceiveLicenseStatus']['id_izin_new'];
+                }
+                if (!empty($idIzinNew) && $idIzinNew != $idIzin) {
+                    // update id_izin
+                    $ossNib->id_izin = $idIzinNew;
+                    $jsonContent['id_izin'] = $idIzinNew;
+                    $ossNib->json_content = $jsonContent;
+                    $ossNib->save();
+                    Log::debug('Upgrade kewenangan: oss_nibs .'
+                        . $ossNib->nib . ' updated with id_izin_new = ' . $idIzinNew);
+                }
             }
         }
         return true;
@@ -279,7 +289,25 @@ class OssService
         // print_r($respJson);
         Log::debug(json_encode($data));
         Log::debug(json_encode($respJson));
-        return true;
+        return $respJson;
+    }
+
+    public static function inqueryNIB($nib)
+    {
+        $data = [
+            "INQUERYNIB" => [
+                "nib" => $nib,
+            ]
+        ];
+        $sha1 = sha1(env('OSS_REQUEST_USERNAME') . env('OSS_REQUEST_PASSWORD') . $nib . date('Ymd'));
+        $response = Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+            'token' => $sha1,
+        ])->post(env('OSS_ENDPOINT') . '/inqueryNIB', $data);
+        $respJson = $response->json();
+        // Log::debug(json_encode($data));
+        // Log::debug(json_encode($respJson));
+        return $respJson;
     }
 }
 ?>

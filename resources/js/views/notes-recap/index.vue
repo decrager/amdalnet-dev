@@ -2,8 +2,8 @@
   <div>
     <h3>Ringkasan Catatan Anggota Tim Uji Kelayakan</h3>
     <el-row :gutter="32">
+      <label style="display: block; margin-left: 1.4%">Komentar</label>
       <el-col :md="10" :sm="24">
-        <label style="display: block">Komentar</label>
         <el-select
           v-model="selectedColumn"
           placeholder="Pilihan"
@@ -17,6 +17,11 @@
             :value="item.value"
           />
         </el-select>
+      </el-col>
+      <el-col :md="14" :sm="24">
+        <el-button :loading="loadingDownload" type="primary" @click="download">
+          Unduh Rekap Catatan
+        </el-button>
       </el-col>
     </el-row>
     <el-row :gutter="32">
@@ -54,7 +59,7 @@
 
           <el-table-column label="Catatan" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.notes }}</span>
+              <span v-html="scope.row.notes" />
             </template>
           </el-table-column>
 
@@ -71,6 +76,7 @@
 
 <script>
 import Resource from '@/api/resource';
+import axios from 'axios';
 const commentResource = new Resource('ka-comment');
 
 export default {
@@ -87,6 +93,7 @@ export default {
       columns: [],
       selectedColumn: null,
       loading: false,
+      loadingDownload: false,
       kaColumn: [
         {
           label: 'Pelingkupan',
@@ -109,6 +116,10 @@ export default {
         {
           label: 'Peta Batas Wilayah Studi & Peta Lainnya',
           value: 'peta-batas-andal',
+        },
+        {
+          label: 'Pelingkupan',
+          value: 'pelingkupan-andal',
         },
         {
           label: 'Evaluasi Dampak Potensial & Dampak Penting Hipotetik',
@@ -182,6 +193,31 @@ export default {
     },
     handleChangeDocumentType() {
       this.getData();
+    },
+    download() {
+      this.loadingDownload = true;
+      axios
+        .get(
+          `/api/ka-comment?download=true&idProject=${this.$route.params.id}&documentType=${this.flow}`,
+          {
+            responseType: 'blob',
+          }
+        )
+        .then((response) => {
+          const fileUrl = window.URL.createObjectURL(response.data);
+          const fileLink = document.createElement('a');
+
+          fileLink.href = fileUrl;
+          fileLink.setAttribute('download', 'rekap.docx');
+          document.body.appendChild(fileLink);
+
+          fileLink.click();
+          this.loadingDownload = false;
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          this.loadingDownload = false;
+        });
     },
   },
 };

@@ -13,15 +13,17 @@ class MeetingInvitation extends Notification
     use Queueable;
 
     public $meeting;
+    public $notification_type;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(TestingMeeting $meeting)
+    public function __construct(TestingMeeting $meeting, $notification_type)
     {
         $this->meeting = $meeting;
+        $this->notification_type = $notification_type;
     }
 
     /**
@@ -43,10 +45,16 @@ class MeetingInvitation extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
-                    ->line('Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title)
-                    ->attach(storage_path('app/public/' . $this->docxName()));
+        if($this->notification_type == 'tuk') {
+            return (new MailMessage)
+                        ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
+                        ->line('Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title)
+                        ->attach(Storage::disk('public')->path($this->docxName()));
+        } else {
+            return (new MailMessage)
+                        ->subject('Pemberitahuan Rapat Pembahasan ' . $this->documentType())
+                        ->line('Kegiatan ' . $this->meeting->project->project_title . ' akan dilakukan pembahasan ' . $this->documentType() . ' oleh Tim Uji Kelayakan');
+        }
     }
 
     /**
@@ -57,12 +65,21 @@ class MeetingInvitation extends Notification
      */
     public function toArray($notifiable)
     {
-        return [
-            'meeting' => $this->meeting ,
-            'member' => $notifiable,
-            'message' => 'Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title,
-            'path' => '#',
-        ];
+        if($this->notification_type == 'tuk') {
+            return [
+                'meeting' => $this->meeting ,
+                'member' => $notifiable,
+                'message' => 'Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title,
+                'path' => '#',
+            ];
+        } else {
+            return [
+                'meeting' => $this->meeting ,
+                'member' => $notifiable,
+                'message' => 'Kegiatan ' . $this->meeting->project->project_title . ' akan dilakukan pembahasan ' . $this->documentType() . ' oleh Tim Uji Kelayakan',
+                'path' => '#',
+            ];
+        }
     }
 
     private function documentType()

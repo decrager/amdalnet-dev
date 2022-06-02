@@ -65,7 +65,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork"
+                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc !== 'SPPL'"
                   type="text"
                   href="#"
                   icon="el-icon-user"
@@ -74,7 +74,7 @@
                   Tim Penyusun
                 </el-button>
                 <el-button
-                  v-if="!scope.row.published && isInitiator"
+                  v-if="!scope.row.published && isInitiator && scope.row.required_doc !== 'SPPL'"
                   type="text"
                   href="#"
                   icon="el-icon-tickets"
@@ -110,7 +110,7 @@
                   Lihat Detil Penapisan
                 </el-button>
                 <el-button
-                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork)"
+                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork && scope.row.required_doc !== 'SPPL')"
                   href="#"
                   type="text"
                   icon="el-icon-view"
@@ -128,7 +128,7 @@
                   Tim LPJP
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ka')) || testInvited(scope.row, 'ka')) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ka')) || testInvited(scope.row, 'ka')) && !isScreening && !isDigiWork && !isInitiator"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -324,6 +324,15 @@
                   @click="handleDownloadSPPLFromOSS(scope.row)"
                 >
                   Unduh SPPL
+                </el-button>
+                <el-button
+                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc === 'UKL-UPL' && scope.row.result_risk === 'Menengah Rendah'"
+                  href="#"
+                  type="text"
+                  icon="el-icon-document"
+                  @click="handleDownloadPKPLHFromOSS(scope.row)"
+                >
+                  Unduh PKPLH Otomatis
                 </el-button>
                 <el-button
                   v-if="isPJM(scope.row) && isMeetReportAccepted(scope.row)"
@@ -1117,18 +1126,32 @@ export default {
       const data = await skklResource.list({
         idProject: project.id,
         skklOss: 'true',
+        type: 'sppl',
       });
       if ('file_url' in data && 'user_key' in data) {
+        if (data.file_url === null) {
+          this.$message({
+            message: 'URL file SPPL tidak ada.',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          return;
+        }
         axios({
-          url: data.file_url,
+          url: `api/skkl`,
           method: 'GET',
           responseType: 'blob',
+          params: {
+            url: data.file_url,
+            spplOss: 'true',
+          },
           headers: {
             user_key: data.user_key,
           },
         }).then((response) => {
+          response.headers['content-type'] = 'application/pdf';
           const cd = response.headers['content-disposition'];
-          const fileName = cd.split('filename=')[1].replaceAll('"', '');
+          const fileName = cd.split('filename*=UTF-8\'\'')[1].replaceAll('"', '');
           var fileURL = window.URL.createObjectURL(new Blob([response.data]));
           var fileLink = document.createElement('a');
           fileLink.href = fileURL;
@@ -1138,7 +1161,54 @@ export default {
           );
           document.body.appendChild(fileLink);
           fileLink.click();
-          this.loading = false;
+        });
+      } else {
+        this.$message({
+          message: 'URL file tidak ada.',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      }
+    },
+    async handleDownloadPKPLHFromOSS(project) {
+      const data = await skklResource.list({
+        idProject: project.id,
+        skklOss: 'true',
+        type: 'sppl',
+      });
+      if ('file_url' in data && 'user_key' in data) {
+        if (data.file_url === null) {
+          this.$message({
+            message: 'URL file PKPLH tidak ada.',
+            type: 'error',
+            duration: 5 * 1000,
+          });
+          return;
+        }
+        axios({
+          url: `api/skkl`,
+          method: 'GET',
+          responseType: 'blob',
+          params: {
+            url: data.file_url,
+            pkplhOss: 'true',
+          },
+          headers: {
+            user_key: data.user_key,
+          },
+        }).then((response) => {
+          response.headers['content-type'] = 'application/pdf';
+          const cd = response.headers['content-disposition'];
+          const fileName = cd.split('filename*=UTF-8\'\'')[1].replaceAll('"', '');
+          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+          var fileLink = document.createElement('a');
+          fileLink.href = fileURL;
+          fileLink.setAttribute(
+            'download',
+            `${fileName}`
+          );
+          document.body.appendChild(fileLink);
+          fileLink.click();
         });
       } else {
         this.$message({

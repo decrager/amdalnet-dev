@@ -81,23 +81,12 @@ class MeetingReportController extends Controller
     public function store(Request $request)
     {
         if($request->file) {
-            $data = $request->all();
-            $validator = \Validator::make($data, [
-                'dokumen_file' => 'max:1024'
-            ],[
-                'dokumen_file.max' => 'Ukuran file tidak boleh melebihi 1 mb'
-            ]);
-
-            if($validator->fails()) {
-                return response()->json(['errors' => $validator->messages()]);
-            }
-            
             $project = Project::findOrFail($request->idProject);
 
-            if($request->hasFile('dokumen_file')) {
-                $file = $request->file('dokumen_file');
-                $name = '/berita-acara-ka/' . strtolower($project->project_title) . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
+            if($request->dokumen_file) {
+                $file = $this->base64ToFile($request->dokumen_file);
+                $name = '/berita-acara-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+                Storage::disk('public')->put($name, $file['file']);
     
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
                 $meeting_report->file = Storage::url($name);
@@ -118,8 +107,8 @@ class MeetingReportController extends Controller
 
         if ($request->formulir) {
             $project_title = strtolower(Project::findOrFail($request->idProject)->project_title);
-            if (File::exists(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'))) {
-                File::delete(storage_path('app/public/berita-acara/ba-ka-andal-' . $project_title . '.docx'));
+            if(Storage::disk('public')->exists('berita-acara/ba-ka-andal/' . $project_title . '.docx')) {
+                Storage::disk('public')->delete('berita-acara/ba-ka-andal/' . $project_title . '.docx');
             }
 
             if ($request->hasFile('docx')) {
@@ -493,8 +482,8 @@ class MeetingReportController extends Controller
     } 
 
     private function getDocs($id_project) {
-        if (!File::exists(storage_path('app/public/ba-ka/'))) {
-            File::makeDirectory(storage_path('app/public/ba-ka/'));
+        if (!Storage::disk('public')->exists('ba-ka')) {
+            Storage::disk('public')->makeDirectory('ba-ka');
         }
 
         $project = Project::findOrFail($id_project);
@@ -630,7 +619,8 @@ class MeetingReportController extends Controller
         Html::addHtml($cell, $this->replaceHtmlList($meeting->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/ba-ka/ba-ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $save_file_name = 'ba-ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+        $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka/' . $save_file_name));
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }
@@ -659,5 +649,23 @@ class MeetingReportController extends Controller
         } else {
             return '';
         }
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

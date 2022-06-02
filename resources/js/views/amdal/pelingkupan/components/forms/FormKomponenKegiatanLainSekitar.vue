@@ -126,7 +126,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="default" @click="handleClose">Batal</el-button>
-        <el-button type="primary" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -280,7 +280,29 @@ export default {
       this.data.id = null;
     },
     onSelectProvince(sel){
-      this.getDistricts();
+      this.data.district_id = null;
+      this.districts = [];
+      if (sel !== ''){
+        this.getDistricts();
+      }
+    },
+    onChangeDistrict(val){
+
+    },
+    disableSave(){
+      const emptyTexts = (this.data.description === null) ||
+        ((this.data.description).trim() === '') ||
+        (this.data.measurement === null) ||
+        ((this.data.measurement).trim() === '');
+      const emptyAddress = (this.data.address === null) ||
+        ((this.data.address).trim() === '') ||
+        (this.data.province_id === null) ||
+        (this.data.district_id === null);
+
+      if (this.noMaster){
+        return ((this.data.name).trim() === '') || emptyAddress || emptyTexts;
+      }
+      return (this.data.id === null) || (this.data.id <= 0) || emptyAddress || emptyTexts;
     },
   },
 };

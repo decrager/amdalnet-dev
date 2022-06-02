@@ -236,7 +236,7 @@
           </el-button>
           <el-upload
             :auto-upload="false"
-            :on-change="handleUploadChange"
+            :on-change="checkHandleUploadChange"
             :show-file-list="false"
             action=""
           >
@@ -418,8 +418,12 @@ export default {
       const formData = new FormData();
       formData.append('idProject', this.idProject);
       formData.append('meetings', JSON.stringify(this.meetings));
-      formData.append('invitation_file', this.invitation_file);
       formData.append('uklUpl', 'true');
+
+      if (this.invitation_file) {
+        const file = await this.convertBase64(this.invitation_file);
+        formData.append('invitation_file', file);
+      }
 
       await undanganRapatResource.store(formData);
       this.$message({
@@ -592,19 +596,25 @@ export default {
       this.loadingDocx = false;
     },
     async handleDownloadInvitation() {
-      this.loadingInvitationDocx = true;
-      const data = await undanganRapatResource.list({
-        meetingInvitation: 'true',
-        idProject: this.idProject,
-        uklUpl: 'true',
-      });
-      this.invitationDocxData = data;
-      const a = document.createElement('a');
-      a.href =
-        window.location.origin + `/storage/meet-inv/ukl-upl-${data}.docx`;
-      a.setAttribute('download', `ukl-upl-${data}.docx`);
-      a.click();
-      this.loadingInvitationDocx = false;
+      if (this.meetings.type === 'update') {
+        this.loadingInvitationDocx = true;
+        const data = await undanganRapatResource.list({
+          meetingInvitation: 'true',
+          idProject: this.idProject,
+          uklUpl: 'true',
+        });
+        this.invitationDocxData = data;
+        const a = document.createElement('a');
+        a.href =
+          window.location.origin + `/storage/meet-inv/ukl-upl-${data}.docx`;
+        a.setAttribute('download', `ukl-upl-${data}.docx`);
+        a.click();
+        this.loadingInvitationDocx = false;
+      } else {
+        this.$alert('Mohon Isi dan Simpan Data terlebih dahulu', {
+          confirmButtonText: 'OK',
+        });
+      }
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
@@ -729,13 +739,22 @@ export default {
         }
       );
     },
-    async handleUploadChange(file, fileList) {
+    checkHandleUploadChange(file, fileList) {
+      if (file.raw.size > 1048576) {
+        this.showFileAlert();
+        return;
+      } else {
+        this.handleUploadChange(file);
+      }
+    },
+    async handleUploadChange(file) {
       this.loadingUpload = true;
       const formData = new FormData();
       formData.append('idProject', this.idProject);
-      formData.append('dokumen_file', file.raw);
       formData.append('file', 'true');
       formData.append('uklUpl', 'true');
+      const fileUpload = await this.convertBase64(file.raw);
+      formData.append('dokumen_file', fileUpload);
       const data = await undanganRapatResource.store(formData);
       this.errors = data.errors === null ? {} : data.errors;
       this.loadingUpload = false;
@@ -808,6 +827,20 @@ export default {
     showFileAlert() {
       this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
         center: true,
+      });
+    },
+    convertBase64(file) {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
       });
     },
   },

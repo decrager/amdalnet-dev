@@ -40,7 +40,8 @@
         <p class="data">{{ data.potential_impact }}</p>
 
         <p class="header">Sifat Kegiatan</p>
-        <p class="data"> {{ data.project_type || '-' }}</p>
+        <!-- <p class="data"> {{ data.project_type || '-' }} </p> -->
+        <p class="data"> {{ [ (data.project_type || '-'), ('Kewenangan ' + (data.authority || '-')), (data.status || '-'), (data.study_approach || '-')].join(', ') }} </p>
 
         <p class="header">Kegiatan Utama</p>
         <project-activities :data="utama" />

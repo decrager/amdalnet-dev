@@ -82,7 +82,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" :disabled="isSaving" @click="handleClose">Batal</el-button>
-        <el-button type="primary" :disabled="isSaving" @click="handleSaveForm">Simpan</el-button>
+        <el-button type="primary" :disabled="isSaving || disableSave()" @click="handleSaveForm">Simpan</el-button>
       </span>
     </el-dialog>
   </div>
@@ -237,6 +237,14 @@ export default {
     onChangeHue(val){
       this.selected = this.masterHues.find(h => h.id === val);
       this.hue.name = this.selected.name;
+    },
+    disableSave(){
+      const emptyTexts = (this.hue.description === null) ||
+        ((this.hue.description).trim() === '') ||
+        (this.hue.measurement === null) ||
+        ((this.hue.measurement).trim() === '');
+
+      return (this.hue.id === null) || (this.hue.id <= 0) || emptyTexts;
     },
   },
 };

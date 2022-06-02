@@ -45,16 +45,22 @@ import Resource from '@/api/resource';
 const timelineResource = new Resource('timeline');
 export default {
   name: 'ProjectTimeline',
+  props: {
+    id: {
+      type: Number,
+      default: 0,
+    },
+  },
   data() {
     return {
-      id: 0,
+      // id: 0,
       reverse: false,
       activities: [],
       loading: false,
     };
   },
   mounted(){
-    this.id = this.project_id = this.$route.params && this.$route.params.id;
+    // this.id = this.project_id = this.$route.params && this.$route.params.id;
     this.getData();
   },
   methods: {

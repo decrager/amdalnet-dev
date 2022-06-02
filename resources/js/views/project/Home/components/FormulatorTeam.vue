@@ -3,14 +3,19 @@
 
     <p v-if="tim !== null" class="header">{{ tim.name }}</p>
 
-    <p class="header">Ketua</p>
-    <formulator-persons :data="ketua" />
+    <section v-if="(ketua !== null) && (ketua.length > 0) ">
+      <p class="header">Ketua</p>
+      <formulator-persons :data="ketua" />
+    </section>
+    <section v-if="(anggota !== null) && (anggota.length > 0)">
+      <p class="header">Anggota</p>
+      <formulator-persons :data="anggota" />
+    </section>
 
-    <p class="header">Anggota</p>
-    <formulator-persons :data="anggota" />
-
-    <p class="header">Tim Ahli</p>
-    <formulator-persons :data="ahli" :mode="2" />
+    <section v-if="(ahli !== null) && ((ahli.length > 0)) ">
+      <p class="header">Tim Ahli</p>
+      <formulator-persons :data="ahli" :mode="2" />
+    </section>
 
   </div>
 </template>
@@ -38,6 +43,7 @@ export default {
   },
   mounted(){
     // this.id = this.$route.params && this.$route.params.id;
+
     this.getFormulatorTeam();
     this.getFormulator();
     this.getExpert();

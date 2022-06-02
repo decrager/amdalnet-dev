@@ -20,7 +20,7 @@
       :refresh-components="doRefreshComponents"
       @refreshed="onRefreshedScoping"
     />
-    <Comment :withstage="true" commenttype="pelingkupan" :kolom="commentColumn" />
+    <Comment :withstage="true" :commenttype="commentType" :kolom="commentColumn" />
   </div>
 </template>
 <script>
@@ -89,6 +89,9 @@ export default {
   computed: {
     isAndal() {
       return this.$route.name === 'penyusunanAndal';
+    },
+    commentType() {
+      return this.$route.name === 'penyusunanAndal' ? 'pelingkupan-andal' : 'pelingkupan';
     },
   },
   mounted() {

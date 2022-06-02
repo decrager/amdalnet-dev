@@ -272,7 +272,7 @@ export default {
         pippib:
           'Justifikasi/bukti kesesuaian lokasi rencana usaha dan/atau kegiatan dengan PIPPIB',
         persetujuan_awal:
-          'Justifikasi/bukti rencana usaha dan/atau kegiatan secara prinsip dapat dilakukan',
+          'Justifikasi/bukti persetujuan awal rencana usaha dan/atau kegiatan',
         surat_penyusun:
           'Bukti Tanda Registrasi LPJP atau Surat pembentukan Tim Penyusun Amdal dari pihak pemrakarsa',
         sertifikasi_penyusun:
@@ -482,21 +482,27 @@ export default {
     },
     download(url, urlPdf) {
       if (url || urlPdf) {
-        if (url) {
-          if (url === '/storage/') {
-            this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
-              confirmButtonText: 'OK',
-            });
-          } else {
-            window.open(url);
-          }
+        if (
+          (url === '/storage/' || url === null) &&
+          (urlPdf === '/storage/' || urlPdf === null)
+        ) {
+          this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
+            confirmButtonText: 'OK',
+          });
         } else {
-          if (urlPdf === '/storage/') {
-            this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
-              confirmButtonText: 'OK',
-            });
-          } else {
-            window.open(urlPdf);
+          if (url) {
+            if (url !== '/storage/') {
+              var a = document.createElement('a');
+              a.href = url;
+              a.setAttribute('download', url);
+              a.click();
+            }
+          }
+
+          if (urlPdf) {
+            if (urlPdf !== '/storage/') {
+              window.open(urlPdf);
+            }
           }
         }
       } else {

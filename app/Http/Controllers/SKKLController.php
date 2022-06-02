@@ -10,10 +10,12 @@ use App\Entity\MeetingReport;
 use App\Entity\OssNib;
 use App\Entity\Project;
 use App\Entity\ProjectSkkl;
+use App\Entity\SubProject;
 use App\Services\OssService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -49,7 +51,15 @@ class SKKLController extends Controller
         }
 
         if ($request->skklOss) {
-            return $this->getSkklOssFile($request->idProject);
+            $type = 'skkl';
+            if (isset($request->type) && !empty($request->type)) {
+                $type = $request->type;
+            }
+            return $this->getDataChecklistFileUrl($request->idProject, $type);
+        }
+
+        if ($request->spplOss || $request->pkplhOss) {
+            return $this->getFileFromOSS($request->url);
         }
     }
 
@@ -309,11 +319,11 @@ class SKKLController extends Controller
             $templateProcessor->setValue('location', $location);
 
             $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
-            if (!File::exists(storage_path('app/public/skkl/'))) {
-                File::makeDirectory(storage_path('app/public/skkl/'));
+            if (!Storage::disk('public')->exists('skkl')) {
+                Storage::disk('public')->makeDirectory('skkl');
             }
 
-            $templateProcessor->saveAs(storage_path('app/public/skkl/' . $save_file_name));
+            $templateProcessor->saveAs(Storage::disk('public')->path('skkl/' . $save_file_name));
             $skkl_download_name = Storage::url('skkl/' . $save_file_name);
             $update_date_skkl = $project->updated_at->locale('id')->isoFormat('D MMMM Y');
         }
@@ -372,11 +382,11 @@ class SKKLController extends Controller
         $templateProcessor->setValue('project_address', $location);
 
         $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
-        if (!File::exists(storage_path('app/public/pkplh/'))) {
-            File::makeDirectory(storage_path('app/public/pkplh/'));
+        if (!Storage::disk('public')->exists('pkplh')) {
+            Storage::disk('public')->makeDirectory('pkplh');
         }
 
-        $templateProcessor->saveAs(storage_path('app/public/pkplh/' . $save_file_name));
+        $templateProcessor->saveAs(Storage::disk('public')->path('pkplh/' . $save_file_name));
 
         $uklDate = '';
         $ukl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
@@ -436,7 +446,7 @@ class SKKLController extends Controller
         return $skkl;
     }
 
-    private function getDataNib($idProject)
+    private function getDataNib($idProject, $type)
     {
         $project = Project::findOrFail($idProject);
         $initiator = Initiator::find($project->id_applicant);
@@ -450,25 +460,75 @@ class SKKLController extends Controller
             return false;
         }
         $jsonContent = $ossNib->json_content;
+        $idIzinSkkl = isset($ossNib->id_izin) ? $ossNib->id_izin : null;
+        $idIzinList = [];
+        $fileIzin = null;
+        if ($type == 'sppl' || $type == 'pkplh') {
+            $subProject = SubProject::where('id_project', $idProject)
+                ->orderBy('created_at', 'desc')
+                ->first();
+            if ($subProject) {
+                foreach ($jsonContent['data_checklist'] as $c) {
+                    if ($c['id_proyek'] == $subProject->id_proyek) {
+                        array_push($idIzinList, $c['id_izin']);
+                        if ($c['file_izin'] != '-') {
+                            $fileIzin = $c['file_izin'];
+                        }
+                    }
+                }
+            }
+        }
         return [
             'nib' => isset($jsonContent['nib']) ? $jsonContent['nib'] : null,
-            'id_izin' => isset($jsonContent['id_izin']) ? $jsonContent['id_izin'] : null,
+            'id_izin' => $idIzinSkkl,
+            'id_izin_list' => $idIzinList,
+            'file_izin' => $fileIzin,
         ];
     }
 
-    private function getSkklOssFile($idProject)
+    private function getDataChecklistFileUrl($idProject, $type = 'skkl')
     {
-        $dataNib = $this->getDataNib($idProject);
+        $dataNib = $this->getDataNib($idProject, $type);
         $fileUrl = null;
-        try {
-            $resp = OssService::inqueryFileDS($dataNib['nib'], $dataNib['id_izin']);
-            $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
+        if (isset($dataNib['file_izin']) && !empty($dataNib['file_izin'])) {
+            $fileUrl = $dataNib['file_izin'];
         }
+        // double check : akses inqueryFileDS
+        if ($fileUrl == null) {
+            if ($type == 'sppl' || $type == 'pkplh') {
+                foreach ($dataNib['id_izin_list'] as $id_izin) {
+                    $resp = OssService::inqueryFileDS($dataNib['nib'], $id_izin);
+                    if ((int)$resp['responInqueryFileDS']['status'] == 200 &&
+                        isset($resp['responInqueryFileDS']['url_file_ds'])) {
+                        $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
+                        break;
+                    }
+                }
+            } else {
+                // SKKL
+                try {
+                    $resp = OssService::inqueryFileDS($dataNib['nib'], $dataNib['id_izin']);
+                    $fileUrl = $resp['responInqueryFileDS']['url_file_ds'];
+                } catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
+            }
+        }
+        
         return [
             'file_url' => $fileUrl,
             'user_key' => env('OSS_USER_KEY'),
         ];
+    }
+
+    private function getFileFromOSS($url)
+    {
+        $response = Http::withHeaders([
+            'user_key' => env('OSS_USER_KEY'),
+        ])->get($url);
+        header('Content-Type: application/pdf');
+        $headers = $response->getHeaders();
+        header('Content-Disposition: ' . $headers['Content-Disposition'][0]);
+        return $response->getBody();           
     }
 }

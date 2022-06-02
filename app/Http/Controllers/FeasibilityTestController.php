@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\DocumentAttachment;
 use App\Entity\EligibilityCriteria;
 use App\Entity\FeasibilityTest;
 use App\Entity\FeasibilityTestDetail;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use PDF;
 
 class FeasibilityTestController extends Controller
@@ -297,8 +299,8 @@ class FeasibilityTestController extends Controller
     }
 
     private function dokumen($id_project, $document_type) {
-        if (!File::exists(storage_path('app/public/uji-kelayakan/'))) {
-            File::makeDirectory(storage_path('app/public/uji-kelayakan/'));
+        if (!Storage::disk('public')->exists('uji-kelayakan')) {
+            Storage::disk('public')->makeDirectory('uji-kelayakan');
         }
 
         Carbon::setLocale('id');
@@ -378,7 +380,16 @@ class FeasibilityTestController extends Controller
         $templateProcessor->setValue('ketua_tuk_position', $tuk['ketua_tuk_position']);
         $templateProcessor->setValue('ketua_tuk_nip', $tuk['ketua_tuk_nip']);
 
-        $templateProcessor->saveAs(storage_path('app/public/uji-kelayakan/' . $save_file_name));
+        $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
+
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project], ['type', 'Dokumen Uji Kelayakan']])->first();
+        if(!$document_attachment) {
+            $document_attachment = new DocumentAttachment();
+            $document_attachment->id_project = $id_project;
+            $document_attachment->attachment = 'uji-kelayakan/' . $save_file_name;
+            $document_attachment->type = 'Dokumen Uji Kelayakan';
+            $document_attachment->save();
+        }
 
         // WORKFLOW
         if($project->marking == 'amdal.feasibility-ba-signed') {
@@ -462,7 +473,10 @@ class FeasibilityTestController extends Controller
         $tuk_member = FeasibilityTestTeamMember::select('id', 'id_luk_member', 'id_expert_bank', 'position')
                         ->whereHas('feasibilityTest', function($q) use($id_project) {
                             $q->where('id_project', $id_project);
-                        })->with(['feasibilityTest.detail.eligibility', 'lukMember' => function($q) {
+                        })->with(['feasibilityTest' => function($q) use($id_project) {
+                            $q->where('id_project', $id_project);
+                            $q->with('detail.eligibility');
+                        }, 'lukMember' => function($q) {
                             $q->select('id', 'name', 'institution');
                         }, 'expertBank' => function($q) {
                             $q->select('id', 'name', 'institution');
@@ -472,7 +486,10 @@ class FeasibilityTestController extends Controller
         $tuk_secretary_member = TukSecretaryMember::select('id', 'name', 'institution')
                                     ->whereHas('feasibilityTest', function($q) use($id_project) {
                                         $q->where('id_project', $id_project);
-                                    })->with('feasibilityTest.detail.eligibility')->get();
+                                    })->with(['feasibilityTest' => function($q) use($id_project) {
+                                        $q->where('id_project', $id_project);
+                                        $q->with('detail.eligibility');
+                                    }])->get();
                                     
         // === AHLI DARI UNDANGAN === //
         $tuk_invitation = FeasibilityTest::where([['id_project', $id_project],['email', '!=', null]])->with('detail.eligibility')->get();

@@ -21,4 +21,8 @@ class Component extends Model
     {
         return $this->belongsTo(ProjectStage::class, 'id_project_stage', 'id');
     }
+    public function scopeMaster($query)
+    {
+        return $query->where('is_master', '=', true);
+    }
 }

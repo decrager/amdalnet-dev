@@ -148,26 +148,50 @@ class TestingMeetingController extends Controller
 
             if((count($receiver) > 0) || (count($receiver_non_user) > 0)) {
                 if(count($receiver) > 0) {
-                    Notification::send($receiver, new MeetingInvitation($meeting));
+                    Notification::send($receiver, new MeetingInvitation($meeting, 'tuk'));
                 }
 
                 if(count($receiver_non_user) > 0) {
-                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting));
+                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting, 'tuk'));
                 }
 
                 // === UPDATE STATUS INVITATION === //
                 $meeting->is_invitation_sent = true;
                 $meeting->save();
 
-                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
+                $project = Project::findOrFail($request->idProject);
+                // NOTIFICATION FOR FORMULATOR & INITIATOR
+                $extra_receiver = [];
+                $initiator = User::where('email', $project->initiator->email)->first();
+                $formulator_chief = FormulatorTeamMember::where('position', 'Ketua')->whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->first();
+
+                if($initiator) {
+                    $extra_receiver[] = $initiator;
+                }
+
+                if($formulator_chief) {
+                    if($formulator_chief->formulator) {
+                        $formulator_chief = User::where('email', $formulator_chief->formulator->email)->first();
+                        if($formulator_chief) {
+                            $extra_receiver[] = $formulator_chief;
+                        }
+                    }
+                }
+
+                if(count($extra_receiver) > 0) {
+                    Notification::send($extra_receiver, new MeetingInvitation($meeting, 'extra'));
+                }
 
                 // === WORKFLOW === //
-                $project = Project::findOrFail($request->idProject);
                 if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
                     $project->workflow_apply('send-amdal-form-ka-examination-invitation');
                     $project->workflow_apply('examine-amdal-form-ka');
                     $project->save();
                 }
+
+                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
             }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
@@ -175,21 +199,12 @@ class TestingMeetingController extends Controller
 
         if($request->file) {
             $data = $request->all();
-            $validator = \Validator::make($data, [
-                'dokumen_file' => 'max:1024'
-            ],[
-                'dokumen_file.max' => 'Ukuran file tidak boleh melebihi 1 mb'
-            ]);
 
-            if($validator->fails()) {
-                return response()->json(['errors' => $validator->messages()]);
-            }
-
-            if($request->hasFile('dokumen_file')) {
+            if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
-                $file = $request->file('dokumen_file');
-                $name = '/verifikasi-ka/' . strtolower($project->project_title) . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
+                $file = $this->base64ToFile($request->dokumen_file);
+                $name = '/verifikasi-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+                Storage::disk('public')->put($name, $file['file']);
     
                 $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
                 $testing_meeting->file = Storage::url($name);
@@ -220,12 +235,11 @@ class TestingMeetingController extends Controller
         $meeting->location = $data['location'];
 
         // Invitation File
-        if($request->hasFile('invitation_file')) {
+        if($request->invitation_file) {
             $project = Project::findOrFail($request->idProject);
-            $file = $request->file('invitation_file');
-            $name = '/meeting-ka/' . strtolower($project->project_title) . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
-
+            $file = $this->base64ToFile($request->invitation_file);
+            $name = '/meeting-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+            Storage::disk('public')->put($name, $file['file']);
             $meeting->invitation_file = Storage::url($name);
 
         }
@@ -508,8 +522,8 @@ class TestingMeetingController extends Controller
     } 
 
     private function dokumen($id_project) {
-        if (!File::exists(storage_path('app/public/adm/'))) {
-            File::makeDirectory(storage_path('app/public/adm/'));
+        if (!Storage::disk('public')->exists('adm')) {
+            Storage::disk('public')->makeDirectory('adm');
         }
 
         $project = Project::findOrFail($id_project);
@@ -746,15 +760,15 @@ class TestingMeetingController extends Controller
         Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(storage_path('app/public/adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }
 
     private function meetingInvitation($id_project)
     {
-        if (!File::exists(storage_path('app/public/meet-inv/'))) {
-            File::makeDirectory(storage_path('app/public/meet-inv/'));
+        if (!Storage::disk('public')->exists('meet-inv')) {
+            Storage::disk('public')->makeDirectory('meet-inv');
         }
         
         $project = Project::findOrFail($id_project);
@@ -911,7 +925,7 @@ class TestingMeetingController extends Controller
         $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
         $templateProcessor->cloneBlock('instansi', count($instansi), true, false, $instansi);
 
-        $templateProcessor->saveAs(storage_path('app/public/meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }
@@ -919,7 +933,7 @@ class TestingMeetingController extends Controller
     private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)
     {
         if($type == 'tata_ruang') {
-            if($project->ktr) {
+            if(!($project->ktr == null || $project->ktr == '/storage/')) {
                 if($is_exist == 'exist') {
                     return 'V';
                 } else {
@@ -947,7 +961,7 @@ class TestingMeetingController extends Controller
                 }
             }
         } else if($type == 'persetujuan_awal') {
-            if($project->pre_agreement_file) {
+            if(!($project->pre_agreement_file == null || $project->pre_agreement_file == '/storage/')) {
                 if($is_exist == 'exist') {
                     return 'V';
                 } else {
@@ -1134,5 +1148,23 @@ class TestingMeetingController extends Controller
         } else {
             return '';
         }
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }
