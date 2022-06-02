@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Workflow;
 
 class ProjectController extends Controller
 {
@@ -780,6 +781,13 @@ class ProjectController extends Controller
 
     public function timeline(Request $request)
     {
+        /* $project = Project::where('id', $request->id)->first();
+        if($project){
+            $workflow = Workflow::get($project);
+            $transitions = $project->workflow_transitions();
+            // return response($workflow->getMarking($project)->getPlaces());
+            return $transitions;
+        }*/
         $res = [];
         $res = DB::table('audits')
             ->leftJoin('users', 'users.id', '=', 'audits.user_id')
