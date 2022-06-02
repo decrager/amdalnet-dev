@@ -296,9 +296,9 @@ class ProjectController extends Controller
                 // 'type_formulator_team' => $data['type_formulator_team'],
                 'id_lpjp' => isset($request['id_lpjp']) ? $request['id_lpjp'] : null,
                 'map' => '',
-                'ktr' => Storage::url($ktrName),
+                'ktr' => $ktrName,
                 'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
-                'pre_agreement_file' => Storage::url($preAgreementName),
+                'pre_agreement_file' => $preAgreementName,
                 'registration_no' => uniqid(),
                 'status' => isset($request['status']) ? $request['status'] : null,
                 'study_approach' => isset($request['study_approach']) ? $request['study_approach'] : null,
@@ -306,9 +306,9 @@ class ProjectController extends Controller
                 'auth_district' => isset($request['auth_district']) ? $request['auth_district'] : null,
                 'authority' => isset($request['authority']) ? $request['authority'] : null,
                 'kawasan_lindung' => isset($request['kawasan_lindung']) ? $request['kawasan_lindung'] : null,
-                'kawasan_lindung_file' => Storage::url($kawLinName),
+                'kawasan_lindung_file' => $kawLinName,
                 'ppib' => isset($request['pippib']) ? $request['pippib'] : null,
-                'ppib_file' => Storage::url($pippibName),
+                'ppib_file' => $pippibName,
             ]);
 
             // add workflow
@@ -381,7 +381,7 @@ class ProjectController extends Controller
                     if (!isset($formulaTeam->id)) {
                         $cvName = '';
                         if (array_key_exists($key, $formulatorFiles)) {
-                            $cvName = '/penyusun/' . uniqid() . '.' . $formulatorFiles[$key]->extension();
+                            $cvName = 'penyusun/' . uniqid() . '.' . $formulatorFiles[$key]->extension();
                             $formulatorFiles[$key]->storePubliclyAs('public', $cvName);
                         }
 
@@ -399,7 +399,7 @@ class ProjectController extends Controller
 
                         $new = Formulator::create([
                             'name' => $formulaTeam->name,
-                            'cv_file' => Storage::url($cvName),
+                            'cv_file' => $cvName,
                             'email' => $formulaTeam->email,
                             'expertise' => $formulaTeam->expertise,
                             'membership_status' => 'TA',
@@ -700,8 +700,7 @@ class ProjectController extends Controller
                 $file = $request->file('fileMap');
                 $name = 'project/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-            } else {
-                $name = null;
+                $project->map = $name;
             }
 
             //create file ktr
@@ -709,8 +708,7 @@ class ProjectController extends Controller
                 $fileKtr = $request->file('fileKtr');
                 $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
                 $fileKtr->storePubliclyAs('public', $ktrName);
-            } else {
-                $ktrName = null;
+                $project->ktr = $ktrName;
             }
 
             //create Pre Agreement
@@ -719,6 +717,7 @@ class ProjectController extends Controller
                 $filePreAgreement = $request->file('fileKtr');
                 $preAgreementName = 'project/preAgreement' . uniqid() . '.' . $filePreAgreement->extension();
                 $filePreAgreement->storePubliclyAs('public', $preAgreementName);
+                $project->pre_agreement = $preAgreementName;
             }
 
             //Update Project
@@ -744,10 +743,6 @@ class ProjectController extends Controller
             $project->id_project = $params['id_project'];
             // $project->type_formulator_team = $params['type_formulator_team'];
             $project->id_lpjp = isset($params['id_lpjp']) ? $params['id_lpjp'] : null;
-            $project->map = $name != null ? Storage::url($name) : $project->map;
-            $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;
-            $project->pre_agreement = $preAgreementName != null ? Storage::url($preAgreementName) : $project->pre_agreement;
-
             $project->save();
         }
 

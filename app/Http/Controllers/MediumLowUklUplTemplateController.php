@@ -90,7 +90,7 @@ class MediumLowUklUplTemplateController extends Controller
             //create file
             if (!empty($request->file('file'))) {
                 $file = $request->file('file');
-                $name = '/template-ukl-upl-menengah/' . uniqid() . '.' . $file->extension();
+                $name = 'template-ukl-upl-menengah/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
             } else {
                 $name = NULL;
@@ -101,7 +101,7 @@ class MediumLowUklUplTemplateController extends Controller
             $permit = new MediumLowUklUplTemplate();
             $permit->template_type = $params['template_type'];
             $permit->type = $params['type'];
-            $permit->file = Storage::url($name);
+            $permit->file = $name;
             $permit->save();
 
             return response()->json($permit, 200);
@@ -156,12 +156,13 @@ class MediumLowUklUplTemplateController extends Controller
             if($request->file('file') !== null){
                 //create file
                 $file = $request->file('file');
-                $name = '/template-ukl-upl-menengah/' . uniqid() . '.' . $file->extension();
+                $name = 'template-ukl-upl-menengah/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-                $permit->file = Storage::url($name);
-            } else {
-                $name = $request->file('old_file');
+                $permit->file = $name;
             }
+            // } else {
+            //     $name = $request->file('old_file');
+            // }
             $permit->template_type = $params['template_type'];
             $permit->type = $params['type'];
             $permit->save();

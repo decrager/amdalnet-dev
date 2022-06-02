@@ -49,7 +49,7 @@ class SupportDocController extends Controller
         $supportDoc = SupportDoc::create([
             'id_project' => $params['id_project'],
             'name' => $params['name'],
-            'file' => Storage::url($name),
+            'file' => $name,
         ]);
 
         return new SupportDocResource($supportDoc);
@@ -93,6 +93,7 @@ class SupportDocController extends Controller
             $file = $request->file('fileDoc');
             $name = 'support-docs/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
+            $supportDoc->file = $name;
         } else {
             $name = null;
         }
@@ -100,7 +101,6 @@ class SupportDocController extends Controller
         //create support doc
         $supportDoc->id_project = $params['id_project'];
         $supportDoc->name = $params['name'];
-        $supportDoc->file = $name != null ? Storage::url($name) : $params['file'];
 
         $supportDoc->save();
 

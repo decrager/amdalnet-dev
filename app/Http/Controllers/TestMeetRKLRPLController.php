@@ -212,11 +212,11 @@ class TestMeetRKLRPLController extends Controller
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
                 $file = $this->base64ToFile($request->dokumen_file);
-                $name = '/verifikasi-' . $document_type . '/' . strtolower($project->project_title) . '.' . $file['extension'];
+                $name = 'verifikasi-' . $document_type . '/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
     
                 $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
-                $testing_meeting->file = Storage::url($name);
+                $testing_meeting->file = $name;
                 $testing_meeting->save();
 
             } else {
@@ -249,9 +249,9 @@ class TestMeetRKLRPLController extends Controller
             $project = Project::findOrFail($request->idProject);
             $file = $this->base64ToFile($request->invitation_file);
             $folder = $document_type === 'ukl-upl' ? 'ukl-upl' : 'andal-rkl-rpl';
-            $name = '/meeting-' . $folder . '/' . strtolower($project->project_title) . '.' . $file['extension'];
+            $name = 'meeting-' . $folder . '/' . strtolower($project->project_title) . '.' . $file['extension'];
             Storage::disk('public')->put($name, $file['file']);
-            $meeting->invitation_file = Storage::url($name);
+            $meeting->invitation_file = $name;
 
         }
 

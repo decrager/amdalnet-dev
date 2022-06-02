@@ -271,10 +271,10 @@ class FormulatorTeamController extends Controller
                 $fileRequestName = 'file-' . $a;
                 if($request->hasFile($fileRequestName)) {
                     $file = $request->file($fileRequestName);
-                    $name = '/cv/' . uniqid() . '.' . $file->extension();
+                    $name = 'cv/' . uniqid() . '.' . $file->extension();
                     $file->storePubliclyAs('public', $name);
 
-                    $ahli->cv = Storage::url($name);
+                    $ahli->cv = $name;
                }
 
                $ahli->save();

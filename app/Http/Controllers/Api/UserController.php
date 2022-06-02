@@ -195,9 +195,9 @@ class UserController extends BaseController
         } else {
             // create avatar file
             $file = $request->file('file');
-            $name = '/avatar/' . uniqid() . '.' . $file->extension();
+            $name = 'avatar/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
-            $user->avatar = Storage::url($name);
+            $user->avatar = $name;
 
             $user->save();
             return new UserResource($user);

@@ -85,11 +85,11 @@ class MeetingReportController extends Controller
 
             if($request->dokumen_file) {
                 $file = $this->base64ToFile($request->dokumen_file);
-                $name = '/berita-acara-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+                $name = 'berita-acara-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
     
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
-                $meeting_report->file = Storage::url($name);
+                $meeting_report->file = $name;
                 $meeting_report->save();
 
             } else {

@@ -91,22 +91,22 @@ class ExpertBankController extends Controller
 
             //create file cv
             $fileCv = $request->file('cvFileUpload');
-            $cvName = '/expert-bank/' . uniqid() . '.' . $fileCv->extension();
+            $cvName = 'expert-bank/' . uniqid() . '.' . $fileCv->extension();
             $fileCv->storePubliclyAs('public', $cvName);
 
             //create file cv
             $fileIjasah = $request->file('ijasahFileUpload');
-            $ijasahName = '/expert-bank/' . uniqid() . '.' . $fileIjasah->extension();
+            $ijasahName = 'expert-bank/' . uniqid() . '.' . $fileIjasah->extension();
             $fileIjasah->storePubliclyAs('public', $ijasahName);
 
             //create file cv
             $fileCertLuk = $request->file('certLukFileUpload');
-            $certLukName = '/expert-bank/' . uniqid() . '.' . $fileCertLuk->extension();
+            $certLukName = 'expert-bank/' . uniqid() . '.' . $fileCertLuk->extension();
             $fileCertLuk->storePubliclyAs('public', $certLukName);
 
             //create file sertifikat
             $fileCertNonLuk = $request->file('certNonLukFileUpload');
-            $fileCertNonLukName = '/expert-bank/' . uniqid() . '.' . $fileCertNonLuk->extension();
+            $fileCertNonLukName = 'expert-bank/' . uniqid() . '.' . $fileCertNonLuk->extension();
             $fileCertNonLuk->storePubliclyAs('public', $fileCertNonLukName);
 
             $email = $request->get('email');
@@ -131,10 +131,10 @@ class ExpertBankController extends Controller
                 'expertise'         => $params['expertise'],
                 'institution'       => $params['institution'],
                 'status'            => $params['status'],
-                'cv_file'           => Storage::url($cvName),
-                'cert_luk_file'     => Storage::url($certLukName),
-                'cert_non_luk_file' => Storage::url($fileCertNonLukName),
-                'ijazah_file'       => Storage::url($ijasahName),
+                'cv_file'           => $cvName,
+                'cert_luk_file'     => $certLukName,
+                'cert_non_luk_file' => $fileCertNonLukName,
+                'ijazah_file'       => $ijasahName,
             ]);
 
 
@@ -222,29 +222,33 @@ class ExpertBankController extends Controller
             if($request->file('cvFileUpload') !== null){
                 //create file cv
                 $fileCv = $request->file('cvFileUpload');
-                $cvName = '/expert-bank/' . uniqid() . '.' . $fileCv->extension();
+                $cvName = 'expert-bank/' . uniqid() . '.' . $fileCv->extension();
                 $fileCv->storePubliclyAs('public', $cvName);
+                $expertBank->cv_file = $cvName;
             }
 
             if($request->file('ijasahFileUpload') !== null){
                 //create file cv
                 $fileIjasah = $request->file('ijasahFileUpload');
-                $ijasahName = '/expert-bank/' . uniqid() . '.' . $fileIjasah->extension();
+                $ijasahName = 'expert-bank/' . uniqid() . '.' . $fileIjasah->extension();
                 $fileIjasah->storePubliclyAs('public', $ijasahName);
+                $expertBank->ijazah_file = $ijasahName;
             }
 
             if($request->file('certLukFileUpload') !== null){
                 //create file cv
                 $fileCertLuk = $request->file('certLukFileUpload');
-                $certLukName = '/expert-bank/' . uniqid() . '.' . $fileCertLuk->extension();
+                $certLukName = 'expert-bank/' . uniqid() . '.' . $fileCertLuk->extension();
                 $fileCertLuk->storePubliclyAs('public', $certLukName);
+                $expertBank->cert_luk_file = $certLukName;
             }
 
             if($request->file('certNonLukFileUpload') !== null){
                 //create file sertifikat
                 $fileCertNonLuk = $request->file('certNonLukFileUpload');
-                $fileCertNonLukName = '/expert-bank/' . uniqid() . '.' . $fileCertNonLuk->extension();
+                $fileCertNonLukName = 'expert-bank/' . uniqid() . '.' . $fileCertNonLuk->extension();
                 $fileCertNonLuk->storePubliclyAs('public', $fileCertNonLukName);
+                $expertBank->cert_non_luk_file = $fileCertNonLukName;
             }
 
             $expertBank->name = $params['name'];
@@ -254,10 +258,6 @@ class ExpertBankController extends Controller
             $expertBank->expertise = $params['expertise'];
             $expertBank->institution = $params['institution'];
             $expertBank->status = $params['status'];
-            $expertBank->cv_file = $cvName ? Storage::url($cvName) : $expertBank->cv_file;
-            $expertBank->cert_luk_file = $certLukName ? Storage::url($certLukName) : $expertBank->cert_luk_file;
-            $expertBank->cert_non_luk_file = $fileCertNonLukName ? Storage::url($fileCertNonLukName) : $expertBank->cert_non_luk_file;
-            $expertBank->ijazah_file = $ijasahName ? Storage::url($ijasahName) :$expertBank->ijazah_file;
             $expertBank->save();
         }
 

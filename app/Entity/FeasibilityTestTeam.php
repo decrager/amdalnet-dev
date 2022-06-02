@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class FeasibilityTestTeam extends Model
 {
@@ -39,5 +40,31 @@ class FeasibilityTestTeam extends Model
     public function secretary()
     {
         return $this->hasMany(TukSecretaryMember ::class, 'id_feasibility_test_team', 'id');
+    }
+
+    public function getLogoAttribute()
+    {
+        if($this->attributes['logo']) {
+            if(str_contains($this->attributes['logo'], 'storage/')) {
+                return $this->attributes['logo'];
+            } else {
+                return Storage::url($this->attributes['logo']);
+            }
+        }
+
+        return null;
+    }
+
+    public function getAssignmentFileAttribute()
+    {
+        if($this->attributes['assignment_file']) {
+            if(str_contains($this->attributes['assignment_file'], 'storage/')) {
+                return $this->attributes['assignment_file'];
+            } else {
+                return Storage::url($this->attributes['assignment_file']);
+            }
+        }
+
+        return null;
     }
 }

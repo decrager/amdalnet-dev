@@ -203,11 +203,11 @@ class TestingMeetingController extends Controller
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
                 $file = $this->base64ToFile($request->dokumen_file);
-                $name = '/verifikasi-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+                $name = 'verifikasi-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
     
                 $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
-                $testing_meeting->file = Storage::url($name);
+                $testing_meeting->file = $name;
                 $testing_meeting->save();
 
             } else {
@@ -238,9 +238,9 @@ class TestingMeetingController extends Controller
         if($request->invitation_file) {
             $project = Project::findOrFail($request->idProject);
             $file = $this->base64ToFile($request->invitation_file);
-            $name = '/meeting-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+            $name = 'meeting-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
             Storage::disk('public')->put($name, $file['file']);
-            $meeting->invitation_file = Storage::url($name);
+            $meeting->invitation_file = $name;
 
         }
 

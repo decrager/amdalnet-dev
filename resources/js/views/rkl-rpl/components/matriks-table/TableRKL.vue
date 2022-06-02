@@ -1,18 +1,5 @@
 <template>
   <div>
-    <div class="filter-container" style="text-align: right">
-      <el-upload
-        v-if="isFormulator"
-        :loading="loadingMap"
-        class="filter-item upload-demo"
-        style="font-size: 0.8rem"
-        :auto-upload="false"
-        :on-change="handleUploadChange"
-        action=""
-      >
-        Unggah Peta
-      </el-upload>
-    </div>
     <el-table
       v-loading="loading"
       :data="list"
