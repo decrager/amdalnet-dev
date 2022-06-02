@@ -9,6 +9,7 @@ use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
+use App\Entity\ProjectAuthority;
 use App\Entity\ProjectFilter;
 use App\Entity\ProjectMapAttachment;
 use App\Entity\SubProject;
@@ -201,6 +202,7 @@ class ProjectController extends Controller
     {
         $request['listSubProject'] = json_decode($request['listSubProject']);
         $request['address'] = json_decode($request['address']);
+        $request['listKewenangan'] = json_decode($request['listKewenangan']);
         if (isset($request['formulatorTeams'])) {
             $request['formulatorTeams'] = json_decode($request['formulatorTeams']);
         }
@@ -450,6 +452,15 @@ class ProjectController extends Controller
                     'address' => isset($add->address) ? $add->address : null,
                 ]);
             }
+            
+            foreach ($request['listKewenangan'] as $kew) {
+                ProjectAuthority::create([
+                    'id_project' => $project->id,
+                    'sector' => isset($kew->sector) ? $kew->sector : null,
+                    'project' => isset($kew->project) ? $kew->project : null,
+                    'authority' => isset($kew->authority) ? $kew->authority : null,
+                ]);
+            }
 
             //create sub project
             foreach ($data['listSubProject'] as $subPro) {
@@ -643,9 +654,31 @@ class ProjectController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function edit(Project $project)
+    public function edit(Project $project, Request $request)
     {
-        //
+        if ($project === null) {
+            return response()->json(['error' => 'Project not found'], 404);
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'ppjk' => ['required']
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $params = $request->all();
+            $project->ppjk = $params['ppjk'];
+            if(isset($params['isppjk'])){
+                $project->isppjk = $params['isppjk'];
+            }
+            $project->save();
+        }
+
+        return $project;
     }
 
     /**

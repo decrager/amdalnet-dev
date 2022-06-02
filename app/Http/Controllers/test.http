@@ -30,6 +30,8 @@ GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=Luas&unit=
 ###
 GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=Luas&unit=ha
 ###
+GET http://localhost:8000/api/project-authorities?idProject=238
+###
 GET http://localhost:8000/api/formulator-teams
 ###
 GET http://localhost:8000/api/oss-projects
@@ -61,6 +63,11 @@ POST http://localhost:8000/api/projects
 content-type: application/json
 
 {"email":"admin@amdalnet.dev","password":"amdalnet"}
+###
+POST http://localhost:8000/api/project-ppjk/238
+content-type: application/json
+
+{"email":"admin@amdalnet.dev","password":"amdalnet", "ppjk":"hu"}
 
 
 ###

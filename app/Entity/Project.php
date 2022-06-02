@@ -76,6 +76,11 @@ class Project extends Model implements Auditable
         return $this->hasMany(ProjectAddress::class, 'id_project', 'id');
     }
 
+    public function authorities()
+    {
+        return $this->hasMany(ProjectAuthority::class, 'id_project', 'id');
+    }
+
     public function listSubProject()
     {
         return $this->hasMany(SubProject::class, 'id_project', 'id');

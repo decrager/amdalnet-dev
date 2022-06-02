@@ -59,7 +59,7 @@ import Resource from '@/api/resource';
 const authorityResource = new Resource('authorities');
 
 export default {
-  name: 'SubProjectTable',
+  name: 'KewenanganTable',
   props: {
     list: {
       type: Array,

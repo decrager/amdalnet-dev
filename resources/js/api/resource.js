@@ -27,6 +27,13 @@ class Resource {
       data: resource,
     });
   }
+  storeId(id, resource) {
+    return request({
+      url: '/' + this.uri + '/' + id,
+      method: 'post',
+      data: resource,
+    });
+  }
   update(id, resource) {
     return request({
       url: '/' + this.uri + '/' + id,

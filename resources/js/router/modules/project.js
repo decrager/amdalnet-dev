@@ -88,6 +88,14 @@ const projectRoutes = {
       meta: { title: 'projectWorkspace', icon: 'edit', noCache: true },
       props: true,
     },
+    {
+      path: 'sppl/:id',
+      component: () => import('@/views/project/sppl'),
+      name: 'sppl',
+      hidden: true,
+      meta: { title: 'sppl', icon: 'edit', noCache: true },
+      props: true,
+    },
   ],
 };
 
