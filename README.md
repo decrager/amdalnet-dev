@@ -133,3 +133,8 @@ PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet -U postgres -f ~/amdalnet.
 <iframe name="embed_readwrite" src="http://192.168.7.23:9001/p/6?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>
 
 this.$store.dispatch('user/getInfo')
+
+# Install larel octane - swoole
+
+https://laravel.com/docs/8.x/octane#swoole
+
