@@ -50,7 +50,7 @@ class SKKLFinalController extends Controller
             //create file
             $file_name = $project->project_title .' - ' . $project->initiator->name . ' - final';
             $file = $request->file('skkl_final');
-            $name = '/skkl/' . $file_name . '.' . $file->extension();
+            $name = 'skkl/' . $file_name . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
             //create environmental expert  
@@ -66,7 +66,7 @@ class SKKLFinalController extends Controller
                 $skkl->date_published = $data['date_published'];
             }
 
-            $skkl->file = Storage::url($name);
+            $skkl->file = $name;
             $saved = $skkl->save();
 
             if ($saved) {

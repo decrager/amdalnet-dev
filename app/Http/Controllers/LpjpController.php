@@ -153,7 +153,7 @@ class LpjpController extends Controller
 
             //create file
             $file = $request->file('file');
-            $name = '/lpjp/' . uniqid() . '.' . $file->extension();
+            $name = 'lpjp/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
             $email = $request->get('email');
@@ -178,7 +178,7 @@ class LpjpController extends Controller
                 'id_district' => $params['id_district'],
                 'mobile_phone_no' => $params['mobile_phone_no'],
                 'email' => $params['email'],
-                'cert_file' => Storage::url($name),
+                'cert_file' => $name,
                 'contact_person' => $params['contact_person'],
                 'phone_no' => $params['phone_no'],
                 'url_address' => $params['url_address'],
@@ -271,9 +271,9 @@ class LpjpController extends Controller
             if ($request->file('file') !== null) {
                 //create file
                 $file = $request->file('file');
-                $name = '/lpjp/' . uniqid() . '.' . $file->extension();
+                $name = 'lpjp/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-                $lpjp->cert_file = Storage::url($name);
+                $lpjp->cert_file = $name;
             }
             $lpjp->name = $params['name'];
             $lpjp->pic = $params['pic'];

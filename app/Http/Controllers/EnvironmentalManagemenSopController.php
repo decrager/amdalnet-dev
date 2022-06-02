@@ -76,7 +76,7 @@ class EnvironmentalManagemenSopController extends Controller
             //create file
             if (!empty($request->file('file'))) {
                 $file = $request->file('file');
-                $name = '/env-management-sop/' . uniqid() . '.' . $file->extension();
+                $name = 'env-management-sop/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
             } else {
                 $name = NULL;
@@ -85,7 +85,7 @@ class EnvironmentalManagemenSopController extends Controller
 
             $permit = new EnvManagamentSop();
             $permit->sop_type = $params['sop_type'];
-            $permit->file = Storage::url($name);
+            $permit->file = $name;
             $permit->save();
 
             return response()->json($permit, 200);
@@ -140,9 +140,9 @@ class EnvironmentalManagemenSopController extends Controller
             if($request->file('file') !== null){
                 //create file
                 $file = $request->file('file');
-                $name = '/env-management-sop/' . uniqid() . '.' . $file->extension();
+                $name = 'env-management-sop/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-                $permit->file = Storage::url($name);
+                $permit->file = $name;
             } else {
                 $name = $request->file('old_file');
             }

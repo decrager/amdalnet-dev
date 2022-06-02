@@ -75,9 +75,9 @@ class PublicSPTController extends Controller
         if($request->hasFile('photo')) {
             //create file
             $file = $request->file('photo');
-            $name = '/spt/' . uniqid() . '.' . $file->extension();
+            $name = 'spt/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
-            $spt->photo = Storage::url($name);
+            $spt->photo = $name;
        }
 
         $spt->save();

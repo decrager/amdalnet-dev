@@ -71,7 +71,7 @@ class VideoTutorialController extends Controller
             //create file
             if (!empty($request->file('url_video'))) {
                 $file = $request->file('url_video');
-                $name = '/tutorial-video/' . uniqid() . '.' . $file->extension();
+                $name = 'tutorial-video/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
             } else {
                 $name = NULL;
@@ -80,7 +80,7 @@ class VideoTutorialController extends Controller
 
             $permit = new VideoTutorial();
             $permit->tutorial_type = $params['tutorial_type'];
-            $permit->url_video = Storage::url($name);
+            $permit->url_video = $name;
             $permit->save();
 
             return response()->json($permit, 200);
@@ -135,11 +135,9 @@ class VideoTutorialController extends Controller
             if($request->file('url_video') !== null){
                 //create file
                 $file = $request->file('url_video');
-                $name = '/tutorial-video/' . uniqid() . '.' . $file->extension();
+                $name = 'tutorial-video/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-                $permit->url_video = Storage::url($name);
-            } else {
-                $name = $request->file('old_file');
+                $permit->url_video = $name;
             }
             
             $permit->tutorial_type = $params['tutorial_type'];
