@@ -7,6 +7,7 @@ Container yang sudah disetup:
   Container object storage yang bersifat private, hanya dapat diakses dengan menggunakan key signature
   tempUrlKey=rahasia123456
 
+
 ## Setting
 
 `config/filesystem.php`
@@ -56,8 +57,15 @@ Ini adalah menyimpan dalam path, relatif terhadap container yang digunakan di se
 
 Akses ke url file 
 
+example
 ```
-http://s3.palapacloud.id:8080/9adeb3dc3c6a4eabad717eea434f0a9a/amdalnet/public/test/61dc1555d7782.docx
+http://localhost:8000/api/home
+
+```
+
+```
+http://s3.palapacloud.id:8080/swift/v1/9adeb3dc3c6a4eabad717eea434f0a9a/amdalnet/amdal.png
+http://s3.palapacloud.id:8080/amdalnet/public/test/61dc1555d7782.docx
 
 http://s3.palapacloud.id:8080/amdalnet/amdal.png?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=f35f44f34e984536a128c22e1b17d1fb%2F20220110%2FJakarta-1%2Fs3%2Faws4_request&X-Amz-Date=20220110T112138Z&X-Amz-SignedHeaders=host&X-Amz-Expires=1800&X-Amz-Signature=23bc76b7a9f191936c69ae474f1dfea301374aef0f8813a407c28d258af03aef
 
@@ -155,4 +163,5 @@ cp upload / download
 
 ```
 mc cp 
+mc cp openstack/amdalnet/amdal.png ~/
 ```
