@@ -15,11 +15,13 @@
           :key="index"
           :timestamp="activity.datetime"
           size="large"
-          :type="(activity.value.marking)? 'primary': ((activity.event === 'created')? 'info' : 'default')"
+          :type="(index === 0) ? 'primary': (index === (activities.length - 1) ? 'info' : 'default' )"
           placement="top"
         >
-          <div v-if="activity.event === 'created'">
-            <p>Permohonan Persetujuan Lingkungan untuk <b>{{ activity.value.project_title }}</b> dibuat oleh <i>{{ activity.username }}</i>.</p>
+          <!--
+            :type="(activity.value.marking)? 'primary': ((activity.event === 'created')? 'info' : 'default')"
+             <div v-if="activity.event === 'created'">
+            <p>{{ activity.value.project_title }}</b> dibuat oleh <i>{{ activity.username }}</i>.</p>
           </div>
           <div v-else-if="activity.value.marking">
             <p>{{ activity.value.marking }}, oleh <i>{{ activity.username }}</i></p>
@@ -27,9 +29,12 @@
           <div v-else-if="activity.value.type_formulator_team">
             <p>Tim Penyusun ditetapkan oleh <i>{{ activity.username }}</i></p>
           </div>
-          <!-- <div v-else>
+          <div v-else>
             <p>{{ activity.content }}, oleh <i>{{ activity.username }}</i></p>
           </div> -->
+          <div>
+            <p>{{ activity.label }}</p>
+          </div>
         </el-timeline-item>
       </el-timeline>
     </template>
@@ -76,6 +81,8 @@ export default {
         });
     },
     process(data){
+      return data;
+      /*
       const res = [];
 
       data.map((e) => {
@@ -91,7 +98,7 @@ export default {
           res.push(processed);
         }
       });
-      return res;
+      return res;*/
     },
   },
 };

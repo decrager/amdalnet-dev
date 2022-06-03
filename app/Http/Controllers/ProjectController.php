@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Workflow;
+use App\Entity\WorkflowLog;
 
 class ProjectController extends Controller
 {
@@ -781,14 +782,28 @@ class ProjectController extends Controller
 
     public function timeline(Request $request)
     {
-        /* $project = Project::where('id', $request->id)->first();
-        if($project){
-            $workflow = Workflow::get($project);
-            $transitions = $project->workflow_transitions();
-            // return response($workflow->getMarking($project)->getPlaces());
-            return $transitions;
-        }*/
-        $res = [];
+        $project = Project::where('id', $request->id)->first();
+        if(!$project){
+            return response('Status Kegiatan tidak ditemukan', 404);
+        }
+
+        /*$workflow = Workflow::get($project);
+        $transitions = $project->workflow_transitions();
+        // return response($workflow->getMarking($project)->getPlaces());
+        return $transitions;*/
+
+        return response(WorkflowLog::where('id_project', $project->id)
+            ->select('from_place', 'to_place', 'workflow_logs.created_at as datetime',
+                'workflow_states.public_tracking as label' ) // , 'users.name as user_name')
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'to_place')
+            //->leftJoin('audits', 'audits.auditable_id', '=', 'workflow_logs.id_project')
+            //->leftJoin('users', 'users.id', '=', 'audits.user_id')
+            // ->where('audits.created_at', '=', 'workflow_logs.created_at')
+            ->orderBy('workflow_logs.id', $request->order ? $request->order : 'DESC')
+            ->get());
+
+
+        /*$res = [];
         $res = DB::table('audits')
             ->leftJoin('users', 'users.id', '=', 'audits.user_id')
             ->select(
@@ -802,6 +817,6 @@ class ProjectController extends Controller
             ->orderBy('audits.id', $request->order ? $request->order : 'DESC')
             ->get();
 
-        return response($res);
+        return response($res);*/
     }
 }

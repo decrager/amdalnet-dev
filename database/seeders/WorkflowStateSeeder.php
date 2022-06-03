@@ -50,12 +50,12 @@ class WorkflowStateSeeder extends Seeder
                 'public_tracking' => 'Penerimaan SPT Masyarakat',
                 'code' => 'PRO-5'
             ],
-            [
+/*            [
                 'state' => 'announcement',
                 'public_tracking' => 'Konsultasi Public',
                 'code' => 'AMD-1',
                 'flag' => 'pubcons',
-            ],
+            ], */
             [
                 'state' => 'announcement-end',
                 'public_tracking' => 'Pengumuman Selesai',
