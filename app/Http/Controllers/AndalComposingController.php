@@ -2322,7 +2322,10 @@ class AndalComposingController extends Controller
         //     }
         // }
 
-        $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
 
         $document_attachment = new DocumentAttachment();
         $document_attachment->id_project = $id_project;
@@ -2694,9 +2697,15 @@ class AndalComposingController extends Controller
         }
 
         if($type == 'andal') {
-            $templateProcessor->saveAs(Storage::disk('public')->path('formulir/' . $save_file_name));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('formulir/' . $save_file_name));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('formulir/' . $save_file_name, file_get_contents($tmpName));
+            unlink($tmpName);
         } else {
-            $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
+            unlink($tmpName);
         }
 
         $attachment_type = $type === 'andal' ? 'Formulir KA Andal' : 'Formulir KA';

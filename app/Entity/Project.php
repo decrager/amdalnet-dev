@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 use OwenIt\Auditing\Contracts\Auditable;
-use Illuminate\Support\Facades\File;
+// use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 

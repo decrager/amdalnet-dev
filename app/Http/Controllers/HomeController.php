@@ -23,6 +23,7 @@ class HomeController extends Controller
         echo Storage::temporaryUrl('amdal.png', Carbon::now()->addMinutes(30));
         echo '<br/>';
         echo Storage::temporaryUrl('public/test/61dc1555d7782.docx', Carbon::now()->addMinutes(30));
+        var_dump(Storage::url('public/test/61dc1555d7782.docx'));
     }
 
     /**
