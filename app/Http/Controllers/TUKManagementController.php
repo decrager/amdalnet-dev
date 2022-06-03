@@ -378,10 +378,10 @@ class TUKManagementController extends Controller
 
             if($request->hasFile('cv')) {
                 $file = $request->file('cv');
-                $name = '/cv/' . uniqid() . '.' . $file->extension();
+                $name = 'cv/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
 
-                $secretary_member->cv = Storage::url($name);
+                $secretary_member->cv = $name;
             }
 
             $saved = $secretary_member->save();
@@ -435,9 +435,9 @@ class TUKManagementController extends Controller
                 }
 
                 $file = $request->file('logo');
-                $name = '/logo_tuk/' . uniqid() . '.' . $file->extension();
+                $name = 'logo_tuk/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-                $tuk->logo = Storage::url($name);
+                $tuk->logo = $name;
             }
 
             $tuk->save();
@@ -631,10 +631,10 @@ class TUKManagementController extends Controller
 
         if($request->hasFile('assignment_file')) {
             $file = $request->file('assignment_file');
-            $name = '/assignment_letter/' . uniqid() . '.' . $file->extension();
+            $name = 'assignment_letter/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
-            $tuk->assignment_file = Storage::url($name);
+            $tuk->assignment_file = $name;
         }
 
         $tuk->save();

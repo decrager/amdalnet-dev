@@ -168,7 +168,7 @@ class AndalComposingController extends Controller
                 $fileKtr = $this->base64ToFile($request->ktr);
                 $ktrName = 'project/ktr/' . uniqid() . '.' . $fileKtr['extension'];
                 Storage::disk('public')->put($ktrName, $fileKtr['file']);
-                $project->ktr = Storage::url($ktrName);
+                $project->ktr = $ktrName;
             }
 
             if($request->pA) {
@@ -176,7 +176,7 @@ class AndalComposingController extends Controller
                     $filePa = $this->base64ToFile($request->pA);
                     $pAName = 'project/preAgreement/' . uniqid() . '.' . $filePa['extension'];
                     Storage::disk('public')->put($pAName, $filePa['file']);
-                    $project->pre_agreement_file = Storage::url($pAName);
+                    $project->pre_agreement_file = $pAName;
             }
 
             $project->save();
@@ -196,7 +196,7 @@ class AndalComposingController extends Controller
                         $file = $this->base64ToFile($request->input($fileRequest));
                         $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file['extension'];
                         Storage::disk('public')->put($fileName, $file['file']);
-                        $attachment->file = Storage::url($fileName);
+                        $attachment->file = $fileName;
     
                         $attachment->save();
                     }
@@ -3026,10 +3026,11 @@ class AndalComposingController extends Controller
     {
         $project = Project::findOrFail($id_project);
         $others = AndalAttachment::where('id_project', $id_project)->get();
+        
         return [
             'kesesuaian_tata_ruang' => $project->ktr,
             'persetujuan_awal' => $project->pre_agreement_file,
-            'lainnya' => $others ? $others->toArray() : []
+            'lainnya' => $others ? $others->toArray() : [],
         ];
     }
 

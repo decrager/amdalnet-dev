@@ -130,7 +130,7 @@ class AnnouncementController extends Controller
 
             //create file
             $file = $request->file('fileProof');
-            $name = '/announcement/' . uniqid() . '.' . $file->extension();
+            $name = 'announcement/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
             DB::beginTransaction();
@@ -144,7 +144,7 @@ class AnnouncementController extends Controller
                 'project_type' => $params['project_type'],
                 'project_location' => $params['project_location'],
                 'project_scale' => $params['project_scale'],
-                'proof' => Storage::url($name),
+                'proof' => $name,
                 'potential_impact' => $params['potential_impact'],
                 'start_date' => $params['start_date'],
                 'end_date' => $params['end_date'],

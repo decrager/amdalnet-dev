@@ -146,10 +146,10 @@ class EmployeeTUKController extends Controller
 
         if($request->hasFile('cv')) {
             $file = $request->file('cv');
-            $name = '/cv/' . uniqid() . '.' . $file->extension();
+            $name = 'cv/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
-            $employee_tuk->cv = Storage::url($name);
+            $employee_tuk->cv = $name;
         }
 
         $saved = $employee_tuk->save();

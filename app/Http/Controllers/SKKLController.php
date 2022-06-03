@@ -89,7 +89,7 @@ class SKKLController extends Controller
 
              //create file
              $file = $request->file('skkl');
-             $name = '/skkl/' . $file_name . '.' . $file->extension();
+             $name = 'skkl/' . $file_name . '.' . $file->extension();
              $file->storePubliclyAs('public', $name);
  
              //create environmental expert  
@@ -100,7 +100,7 @@ class SKKLController extends Controller
                 $skkl->id_project = $data['idProject'];
             }
 
-             $skkl->file = Storage::url($name);
+             $skkl->file = $name;
              $skkl->save();
 
              // send status 45 to OSS

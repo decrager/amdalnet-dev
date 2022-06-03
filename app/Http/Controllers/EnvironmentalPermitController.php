@@ -89,7 +89,7 @@ class EnvironmentalPermitController extends Controller
             //create file
             if (!empty($request->file('file'))) {
                 $file = $request->file('file');
-                $name = '/environmental-permit/' . uniqid() . '.' . $file->extension();
+                $name = 'environmental-permit/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
             } else {
                 $name = NULL;
@@ -104,7 +104,7 @@ class EnvironmentalPermitController extends Controller
             $permit->sk_number = $params['sk_number'];
             $permit->date = $params['date'];
             $permit->publisher = $params['publisher'];
-            $permit->file = Storage::url($name);
+            $permit->file = $name;
             $permit->save();
 
             return new EnvironmentalExpertResource($permit);
@@ -164,9 +164,9 @@ class EnvironmentalPermitController extends Controller
             if($request->file('file') !== null){
                 //create file
                 $file = $request->file('file');
-                $name = '/environmental-permit/' . uniqid() . '.' . $file->extension();
+                $name = 'environmental-permit/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-                $permit->file = Storage::url($name);
+                $permit->file = $name;
             } else {
                 $name = $request->file('old_file');
             }

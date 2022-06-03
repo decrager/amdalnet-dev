@@ -86,9 +86,9 @@ class FormulatorController extends Controller
             if ($request->hasFile('file_sertifikat')) {
                 //create file sertifikat
                 $fileSertifikat = $request->file('file_sertifikat');
-                $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
+                $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
                 $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
-                $formulator->cert_file = Storage::url($fileSertifikatName);
+                $formulator->cert_file = $fileSertifikatName;
             }
 
             $formulator->membership_status = $request->membership_status;
@@ -101,9 +101,9 @@ class FormulatorController extends Controller
                 $user = User::where('email', $formulator->email)->first();
                 if($user) {
                     $fileAvatar = $request->file('avatarFile');
-                    $fileAvatarName = '/avatar/' . uniqid() . '.' . $fileAvatar->extension();
+                    $fileAvatarName = 'avatar/' . uniqid() . '.' . $fileAvatar->extension();
                     $fileAvatar->storePubliclyAs('public', $fileAvatarName);
-                    $user->avatar = Storage::url($fileAvatarName);
+                    $user->avatar = $fileAvatarName;
                     $user->save();
                 }
             }
@@ -139,14 +139,14 @@ class FormulatorController extends Controller
             if ($request->file('cv_penyusun') !== null) {
                 //create file cv
                 $fileCv = $request->file('cv_penyusun');
-                $cvName = '/penyusun/' . uniqid() . '.' . $fileCv->extension();
+                $cvName = 'penyusun/' . uniqid() . '.' . $fileCv->extension();
                 $fileCv->storePubliclyAs('public', $cvName);
             }
 
             if ($request->file_sertifikat && ($request->file('file_sertifikat') !== null)) {
                 //create file sertifikat
                 $fileSertifikat = $request->file('file_sertifikat');
-                $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
+                $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
                 $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
             }
 
@@ -169,8 +169,8 @@ class FormulatorController extends Controller
                 'cert_no'           => isset($params['cert_no'])  ? $params['cert_no'] : null,
                 'date_start'        => isset($params['date_start']) ? $params['date_start'] : null,
                 'date_end'          => $request->date_start ? Carbon::createFromDate($request->date_start)->addYears(3) : null,
-                'cert_file'         => isset($fileSertifikatName) ? Storage::url($fileSertifikatName) : null,
-                'cv_file'           => isset($cvName) ? Storage::url($cvName) : null,
+                'cert_file'         => isset($fileSertifikatName) ? $fileSertifikatName : null,
+                'cv_file'           => isset($cvName) ? $cvName : null,
                 'reg_no'            => isset($params['reg_no']) ? $params['reg_no'] : null,
                 'id_institution'    => isset($params['id_institution']) ? $params['id_institution'] : null,
                 'membership_status' => isset($params['membership_status']) ? $params['membership_status'] : 'TA',
@@ -278,17 +278,17 @@ class FormulatorController extends Controller
         if ($request->file('cv_penyusun') !== null) {
             //create file cv
             $fileCv = $request->file('cv_penyusun');
-            $cvName = '/penyusun/' . uniqid() . '.' . $fileCv->extension();
+            $cvName = 'penyusun/' . uniqid() . '.' . $fileCv->extension();
             $fileCv->storePubliclyAs('public', $cvName);
-            $formulator->cv_file = Storage::url($cvName);
+            $formulator->cv_file = $cvName;
         }
 
         if ($request->file('file_sertifikat') !== null) {
             //create file sertifikat
             $fileSertifikat = $request->file('file_sertifikat');
-            $fileSertifikatName = '/penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
+            $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
             $fileCv->storePubliclyAs('public', $fileSertifikatName);
-            $formulator->cert_file = Storage::url($fileSertifikatName);
+            $formulator->cert_file = $fileSertifikatName;
         }
 
         $formulator->name = $params['name'];

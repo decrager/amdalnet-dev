@@ -103,14 +103,14 @@ class EnvManageDocController extends Controller
             if ($params['is_update']) {
                 $envManageDoc = EnvManageDoc::find($params['id']);
                 if ($envManageDoc != null) {
-                    $envManageDoc->filepath = Storage::url($name);
+                    $envManageDoc->filepath = $name;
                     $envManageDoc->save();
                 }
             } else {
                 $envManageDoc = EnvManageDoc::create([
                     'id_project' => $params['id_project'],
                     'type' => $type,
-                    'filepath' => Storage::url($name),
+                    'filepath' => $name,
                 ]);
             }
             DB::commit();

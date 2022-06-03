@@ -107,7 +107,7 @@ class InitiatorController extends Controller
                 'district'    =>  isset($params['district']) ? $params['district'] : null,
                 'pic_role'    =>  isset($params['picRole']) ? $params['picRole'] : null,
                 'nib'    =>  isset($params['nib']) ? $params['nib'] : null,
-                'logo'        =>  Storage::url($logoName),
+                'logo'        =>  $logoName,
             ]);
 
 

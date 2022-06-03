@@ -84,7 +84,7 @@ class MaterialController extends Controller
 
             //create file
             $file = $request->file('link');
-            $name = '/materi/' . uniqid() . '.' . $file->extension();
+            $name = 'materi/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
             DB::beginTransaction();
@@ -94,7 +94,7 @@ class MaterialController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'raise_date' => $request->raise_date,
-                'link' => Storage::url($name),
+                'link' => $name,
             ]);
 
 
@@ -152,25 +152,23 @@ class MaterialController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
+            $update = [
+                'name' => $request->name,
+                'description' => $request->description,
+                'raise_date' => $request->raise_date
+            ];
 
             //create file
             if(!empty($request->file('link'))) {
                 $file = $request->file('link');
-                $name = '/materi/' . uniqid() . '.' . $file->extension();
+                $name = 'materi/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-                $name = Storage::url($name);
-            } else {
-                $name = $request->old_link;
+                $update['link'] = $name;
             }
 
 
             //create Kebijakan
-            $materi = Material::where('id', $request->id)->update([
-                'name' => $request->name,
-                'description' => $request->description,
-                'raise_date' => $request->raise_date,
-                'link' => $name,
-            ]);
+            $materi = Material::where('id', $request->id)->update($update);
 
             if ($materi) {
                 return response()->json([

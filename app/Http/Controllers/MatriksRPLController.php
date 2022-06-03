@@ -110,22 +110,22 @@ class MatriksRPLController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->map) {
-            if($request->hasFile('map_file')) {
-                //create file
-                $file = $request->file('map_file');
-                $name = '/map/' . uniqid() . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
+        // if($request->map) {
+        //     if($request->hasFile('map_file')) {
+        //         //create file
+        //         $file = $request->file('map_file');
+        //         $name = '/map/' . uniqid() . '.' . $file->extension();
+        //         $file->storePubliclyAs('public', $name);
 
-                $project = Project::findOrFail($request->idProject);
-                $project->map_rpl = Storage::url($name);
-                $project->save();
+        //         $project = Project::findOrFail($request->idProject);
+        //         $project->map_rpl = Storage::url($name);
+        //         $project->save();
 
-                return response()->json(['message' => 'success']);
-           }
+        //         return response()->json(['message' => 'success']);
+        //    }
 
-           return response()->json(['message' => 'failed'], 404);
-        }
+        //    return response()->json(['message' => 'failed'], 404);
+        // }
 
         if($request->type == 'impact-comment') {
             $comment = new Comment();

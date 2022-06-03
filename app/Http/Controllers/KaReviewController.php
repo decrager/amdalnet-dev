@@ -89,7 +89,6 @@ class KaReviewController extends Controller
         }
 
         if($request->type == 'pemrakarsa') {
-            // dd($request->all());
             $project = Project::findOrFail($request->idProject);
 
             $review = new KaReview();
@@ -100,19 +99,11 @@ class KaReviewController extends Controller
             if($request->status == 'revisi') {
                 $review->notes = $request->notes;
             } else if($request->status == 'submit') {
-                // if($request->hasFile('file')) {
-                //     if ($request->file('file')) {
-                //         $file = $request->file('file');
-                //         $fileName = 'ka-reviews/' . uniqid() . '.' . $file->extension();
-                //         $file->storePubliclyAs('public', $fileName);
-                //         $review->application_letter = Storage::url($fileName);
-                //     }
-                // }
                 if($request->file) {
                     $file = $this->base64ToFile($request->file);
                     $fileName = 'ka-reviews/' . uniqid() . '.' . $file['extension'];
                     Storage::disk('public')->put($fileName, $file['file']);
-                    $review->application_letter = Storage::url($fileName);
+                    $review->application_letter = $fileName;
                 }
             }
 
