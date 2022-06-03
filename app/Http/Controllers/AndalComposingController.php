@@ -675,7 +675,7 @@ class AndalComposingController extends Controller
         // CHECK IF DOCUMENT ALREADY EXIST
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Andal']])->first();
         if($document_attachment) {
-            // return response()->json(['message' => 'success']);
+            return response()->json(['message' => 'success']);
         }
 
         $save_file_name = $id_project . '-andal' . '.docx';
@@ -2316,7 +2316,7 @@ class AndalComposingController extends Controller
         }
 
         // EVALUASI DAMPAK
-        if(count($ed_replace) > 0 && $id_project == 913) {
+        if(count($ed_replace) > 0) {
             for($edi = 0; $edi < count($ed_replace); $edi++) {
                 $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
             }
@@ -2324,14 +2324,11 @@ class AndalComposingController extends Controller
 
         $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
 
-        if(!$document_attachment) {
-            $document_attachment = new DocumentAttachment();
-            $document_attachment->id_project = $id_project;
-            $document_attachment->attachment = 'workspace/' . $save_file_name;
-            $document_attachment->type = 'Dokumen Andal';
-            $document_attachment->save();
-        }
-        
+        $document_attachment = new DocumentAttachment();
+        $document_attachment->id_project = $id_project;
+        $document_attachment->attachment = 'workspace/' . $save_file_name;
+        $document_attachment->type = 'Dokumen Andal';
+        $document_attachment->save();
 
         return response()->json(['message' => 'success']);
     }
