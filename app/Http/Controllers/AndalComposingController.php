@@ -955,31 +955,31 @@ class AndalComposingController extends Controller
                         if ($pI->id_pie_param == 1) {
                             $ed_besaran_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 2) {
                             $ed_kondisi_rona = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 3) {
                             $ed_pengaruh_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 4) {
                             $ed_intensitas_perhatian = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 5) {
                             $ed_kesimpulan = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         }
@@ -2316,19 +2316,21 @@ class AndalComposingController extends Controller
         }
 
         // EVALUASI DAMPAK
-        // if(count($ed_replace) > 0) {
-        //     for($edi = 0; $edi < count($ed_replace); $edi++) {
-        //         $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
-        //     }
-        // }
+        if(count($ed_replace) > 0 && $id_project == 913) {
+            for($edi = 0; $edi < count($ed_replace); $edi++) {
+                $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
+            }
+        }
 
         $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
 
-        $document_attachment = new DocumentAttachment();
-        $document_attachment->id_project = $id_project;
-        $document_attachment->attachment = 'workspace/' . $save_file_name;
-        $document_attachment->type = 'Dokumen Andal';
-        $document_attachment->save();
+        if(!$document_attachment) {
+            $document_attachment = new DocumentAttachment();
+            $document_attachment->id_project = $id_project;
+            $document_attachment->attachment = 'workspace/' . $save_file_name;
+            $document_attachment->type = 'Dokumen Andal';
+            $document_attachment->save();
+        }
         
 
         return response()->json(['message' => 'success']);
