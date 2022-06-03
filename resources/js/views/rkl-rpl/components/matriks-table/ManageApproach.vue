@@ -195,15 +195,15 @@ export default {
       if (typeApp === 'technology') {
         this.technology.push(data);
         this.technologyInput.show = false;
-        this.technologyInput.value = false;
+        this.technologyInput.value = null;
       } else if (typeApp === 'social_economy') {
         this.socialEconomy.push(data);
         this.socialEconomyInput.show = false;
-        this.socialEconomyInput.value = false;
+        this.socialEconomyInput.value = null;
       } else {
         this.institution.push(data);
         this.institutionInput.show = false;
-        this.institutionInput.value = false;
+        this.institutionInput.value = null;
       }
 
       this.loadingSubmitTechnology = false;
