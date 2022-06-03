@@ -627,8 +627,6 @@ class AndalComposingController extends Controller
                     } else {
                         $important_trait = $traits;
                     }
-                } else {
-                    continue;
                 }
 
                 $results[] = [
@@ -639,12 +637,12 @@ class AndalComposingController extends Controller
                     'component' => $component,
                     'ronaAwal' => $ronaAwal,
                     'important_trait' => $important_trait,
-                    'impact_type' => $imp->envImpactAnalysis->impact_type,
-                    'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
-                    'studies_condition' => $imp->envImpactAnalysis->studies_condition,
-                    'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
-                    'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
-                    'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference,
+                    'impact_type' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->impact_type : null,
+                    'impact_eval_result' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->impact_eval_result : null,
+                    'studies_condition' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->studies_condition : null,
+                    'condition_dev_no_plan' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->condition_dev_no_plan : null,
+                    'condition_dev_with_plan' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->condition_dev_with_plan : null,
+                    'impact_size_difference' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->impact_size_difference : null,
                     'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
                     'comments' => $comments
                 ];
