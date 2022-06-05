@@ -121,17 +121,17 @@ export default {
     },
     async handleBlur(value){
       // const a = value.scale;
-      console.log(0, value.scale);
+      // console.log(0, value.scale);
       // remove . change , to .
       value.scale = value.scale.replace(/\./g, '');
-      console.log(1, value.scale);
+      // console.log(1, value.scale);
       value.scale = value.scale.replace(',', '.');
-      console.log(2, value.scale);
+      // console.log(2, value.scale);
 
       // const b = value.scale;
       // console.log(b);
       value.scaleNumber = parseFloat(value.scale);
-      console.log(3, value.scaleNumber);
+      // console.log(3, value.scaleNumber);
       // console.log(value.scaleNumber);
       if (value.scaleNumber && value.scaleNumber > 0) {
         // console.log(value);
