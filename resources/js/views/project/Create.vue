@@ -203,7 +203,7 @@
             <el-row>
               <el-form-item prop="listSubProject">
                 <keep-alive>
-                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" :idizin="idizin" @handlechecked="handlechecked($event)" />
+                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :sectors="getSectorOptions" :from-oss="fromOss" :idizin="idizin" :pemerintah="currentProject.isPemerintah === 'true'" @handlechecked="handlechecked($event)" />
                 </keep-alive>
                 <el-button
                   type="primary"

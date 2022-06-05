@@ -18,7 +18,7 @@ class BusinessController extends Controller
     public function index(Request $request)
     {
         if($request->sectors){
-            return BusinessResource::collection(Business::distinct()->where('description', 'sector')->get(['value']));
+            return BusinessResource::collection(Business::distinct()->where('description', 'sector')->get());
           } else if ($request->sectorsByKbli) {
             $kbliName = $request->sectorsByKbli;
 

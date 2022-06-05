@@ -49,13 +49,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Non KBLI" width="100px">
+      <el-table-column v-if="!pemerintah" align="center" label="Non KBLI" width="100px">
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.nonKbli" :disabled="fromOss" @change="onChangeKbli(scope.row)" />
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="KBLI" width="100px">
+      <el-table-column v-if="!pemerintah" align="center" label="KBLI" width="100px">
         <template slot-scope="scope">
           <div v-if="scope.row.nonKbli">{{ 'Non KBLI' }}</div>
           <el-select v-else v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" :disabled="scope.row.nonKbli || fromOss" @change="onChangeKbli(scope.row)">
@@ -71,10 +71,18 @@
 
       <el-table-column align="center" label="Sektor">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)" @focus="onChangeSectorBlur(scope.row)">
+          <el-select v-if="!pemerintah" v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)" @focus="onChangeSectorBlur(scope.row)">
             <el-option
               v-for="item in scope.row.listSector"
               :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-select v-else v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)">
+            <el-option
+              v-for="item in sectors"
+              :key="item.value"
               :label="item.label"
               :value="item.value"
             />
@@ -156,6 +164,14 @@ export default {
     idizin: {
       type: String,
       default: () => '',
+    },
+    pemerintah: {
+      type: Boolean,
+      default: () => false,
+    },
+    sectors: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
