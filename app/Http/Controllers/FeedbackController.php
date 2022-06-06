@@ -54,12 +54,11 @@ class FeedbackController extends Controller
             'concern' => 'required',
             'expectation' => 'required',
             'rating' => 'required',
-            'photo_filepath' => 'image|file',
             'responder_type_id' => 'required',
             'environment_condition' => 'nullable',
             'local_impact' => 'nullable',
             'community_type' => 'nullable',
-            'community_gender' => 'nullable',
+            'community_gender' => 'required',
         ]);
 
         if ($request->file('photo_filepath')) {
@@ -76,6 +75,11 @@ class FeedbackController extends Controller
 
         DB::beginTransaction();
         $validator['announcement_id'] = $request->announcement_id;
+        if($validator['responder_type_id'] == '1' || $validator['responder_type_id'] == '3') {
+            $validator['is_relevant'] = true;
+        } else {
+            $validator['is_relevant'] = false;
+        }
 
         $feedback = Feedback::create($validator);
         if ($feedback){
