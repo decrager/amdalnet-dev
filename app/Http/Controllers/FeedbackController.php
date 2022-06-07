@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Announcement;
 use App\Entity\Feedback;
+use App\Entity\Project;
 use App\Http\Resources\FeedbackResource;
 use DateInterval;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -22,10 +25,39 @@ class FeedbackController extends Controller
     public function index(Request $request)
     {
         // filter by project/announcement ID;
-        return FeedbackResource::collection(Feedback::where(function ($query) use ($request) {
-                $query->where('announcement_id', $request->announcement_id)
-                ->where('deleted', $request->deleted);
-        })->orderBy('id', 'ASC')->get());
+        $search = $request->search;
+        return FeedbackResource::collection(Feedback::where([['announcement_id', $request->announcement_id],['deleted', $request->deleted]])
+                ->where(function($q) {
+                    if(Auth::check()) {
+                        if(Auth::user()->roles->first()->name == 'initiator') {
+                            $q->where('is_relevant', true);
+                        }
+                    }
+                })
+                ->where(function($q) use($search) {
+                    if($search) {
+                        if(str_contains(strtolower($search),'relevan')) {
+                            if(str_contains(strtolower($search),'tidak')) {
+                                $q->where('is_relevant', false);
+                            } else {
+                                $q->where('is_relevant', true);
+                            }
+                        } else if(str_contains(strtolower($search), 'peserta')) {
+                            $q->where('responder_type_id', 3);
+                        } else if(str_contains(strtolower($search), 'masyarakat')) {
+                            if(str_contains(strtolower($search), 'terdampak')) {
+                                $q->where('responder_type_id', 1);
+                            } else if(str_contains(strtolower($search), 'pemerhati')) {
+                                $q->where('responder_type_id', 2);
+                            } else {
+                                $q->whereIn('responder_type_id', [1,2]);
+                            }
+                        } else {
+                            $q->where(DB::raw('lower(name)'), 'LIKE', '%' . strtolower($search) . '%');
+                        }
+                    }
+                })
+                ->orderBy('id', 'ASC')->get());
     }
 
     /**
@@ -46,6 +78,19 @@ class FeedbackController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->relevance) {
+            $relevance = $request->updatedspt;
+            if(count($relevance) > 0) {
+                for($i = 0; $i < count($relevance); $i++) {
+                    $feedback = Feedback::findOrFail($relevance[$i]['id']);
+                    $feedback->is_relevant = $relevance[$i]['is_relevant'];
+                    $feedback->save();
+                }
+            }
+
+            return response()->json(['message' => 'success']);
+        }
+
         $validator = $request->validate([
             'name' => 'required',
             'id_card_number' => 'required',

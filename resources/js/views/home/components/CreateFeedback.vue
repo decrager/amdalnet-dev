@@ -30,14 +30,25 @@
           </el-form-item>
           <el-form-item label="Unggah Foto Selfie">
             <input ref="file" type="file" class="el-input__inner" @change="handleFileUpload()">
+            <small v-if="errorSelfie" style="color: red;">{{ errorSelfie }}</small>
           </el-form-item>
         </div>
 
-        <div>
+        <div class="input__wrapper">
           <el-form-item label="Peran">
             <el-select v-model="form.responder_type_id" placeholder="Pilih" class="select__peran">
               <el-option
                 v-for="item in responders"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Gender" prop="comunity_gender">
+            <el-select v-model="form.comunity_gender" placeholder="Pilih" class="select__peran">
+              <el-option
+                v-for="item in genders"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -125,9 +136,11 @@ export default {
         expectation: null,
         announcement_id: 0,
         rating: null,
+        comunity_gender: null,
       },
       rules: {
         name: [{ required: true, message: 'Nama wajib diisi', trigger: 'blur' }],
+        comunity_gender: [{ required: true, message: 'Gender wajib dipilih', trigger: 'blur' }],
         // peran: [{ required: true, message: 'Peran wajib diisi', trigger: 'blur' }],
         id_card_number: [{ required: true, message: 'NIK wajib diisi' }, { pattern: /([1-9][0-9])(\d{4})(\d{6})(\d{4})/, message: 'NIK tidak valid', trigger: ['blur', 'change'] }],
         email: [
@@ -138,6 +151,17 @@ export default {
       responders: [],
       errorMessage: null,
       photo_filepath: null,
+      genders: [
+        {
+          id: '1',
+          name: 'Laki-laki',
+        },
+        {
+          id: '2',
+          name: 'Perempuan',
+        },
+      ],
+      errorSelfie: null,
 
       // rules: {
       //   phone: [
@@ -171,12 +195,22 @@ export default {
     },
 
     handleFileUpload(){
+      this.errorSelfie = null;
+      this.photo_filepath = null;
+      if (this.$refs.file.files[0].size > 1048576) {
+        this.errorSelfie = 'Ukuran File Tidak Boleh Melebihi 1 MB';
+        return;
+      }
+      if (!this.isFileImage(this.$refs.file.files[0])) {
+        this.errorSelfie = 'File yang diunggah Wajib Berformat Gambar';
+        return;
+      }
       this.photo_filepath = this.$refs.file.files[0];
     },
     async saveFeedback() {
       // validasi dulu
       this.$refs.feedForm.validate((valid) => {
-        if (valid) {
+        if (valid && (this.errorSelfie === null)) {
           const formData = new FormData();
           formData.append('photo_filepath', this.photo_filepath);
           formData.append('name', this.form.name);
@@ -190,6 +224,7 @@ export default {
           formData.append('local_impact', this.form.local_impact);
           formData.append('rating', this.form.rating);
           formData.append('announcement_id', this.announcementId);
+          formData.append('community_gender', this.form.comunity_gender);
 
           _.each(this.formData, (value, key) => {
             formData.append(key, value);
@@ -211,6 +246,9 @@ export default {
           return false;
         }
       });
+    },
+    isFileImage(file) {
+      return file && file['type'].split('/')[0] === 'image';
     },
 
   },

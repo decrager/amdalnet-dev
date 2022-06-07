@@ -507,7 +507,7 @@ export default {
     },
     handleSubmit() {
       this.$refs['form'].validate((valid) => {
-        if (valid) {
+        if (valid && (this.errorSelfie === null)) {
           this.saveFeedback();
         } else {
           this.$message({
@@ -586,8 +586,6 @@ export default {
       }
     },
     handleCloseModal(){
-      console.log(this.form.comunityType);
-      console.log(this.form.comunityGender);
       if (this.form.comunityType.length === 0 && this.form.comunityGender === null) {
         this.warningDialog = true;
         this.centerDialogVisible = true;
