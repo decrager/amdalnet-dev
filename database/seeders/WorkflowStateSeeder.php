@@ -57,7 +57,7 @@ class WorkflowStateSeeder extends Seeder
                 'flag' => 'pubcons',
             ],
             [
-                'state' => 'announcement-end',
+                'state' => 'announcement-completed',
                 'public_tracking' => 'Pengumuman Selesai',
                 'code' => 'PRO-6'
             ],

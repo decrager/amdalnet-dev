@@ -3,12 +3,17 @@
     :title="'Lacak Pengajuan Persetujuan Lingkungan'"
     :visible.sync="show"
     :before-close="handleClose"
+    :close-on-click-modal="false"
+    class="home-tracking-detail"
   >
 
-    <div v-if="project">
-      <h2>{{ project.project_title }}</h2>
-      <div style="margin-top:1em;"><p><span style="font-weight:bold">No Registrasi</span> {{ project.registration_no }}</p></div>
-      <div style="margin-top:1.5em; padding: 1em; border: 1px solid #e0e0e0; border-radius: 1em; line-height:130% !important; word-wrap:break-word!important;">
+    <div v-if="project" style="margin: auto 2em;line-height:130% !important; word-wrap:break-word!important;">
+      <p style="font-weight:bold; margin-top:1em;">Kegiatan</p>
+      <p style="font-size:130%;">{{ project.project_title }}</p>
+      <p style="font-weight:bold; margin-top:1em;">No Registrasi</p>
+      <p>{{ project.registration_no }} </p>
+      <!-- <div style="margin-top:1em;"><p><span style="font-weight:bold">No Registrasi</span> {{ project.registration_no }}</p></div> -->
+      <div style="margin-top:1.5em; padding: 1em; border: 1px solid #e0e0e0; border-radius: 1em;">
 
         <el-row :gutter="4">
           <el-col :span="10">
@@ -26,15 +31,17 @@
           </el-col>
           <el-col :span="14">
             <div v-loading="loading">
+              <el-button type="info" :icon="reverse? 'el-icon-bottom': 'el-icon-top' " style="float:right;" circle @click="reverse = !reverse" />
               <p style="font-weight:bold;">Status</p>
               <div style="padding: 0.5em;">
-                <el-timeline v-if="data.length > 0" style="margin-top: 2em;">
+                <el-timeline v-if="data.length > 0" style="margin-top: 2em;" :reverse="reverse">
                   <el-timeline-item
                     v-for="(activity, index) in data"
                     :key="index"
                     :timestamp="activity.datetime"
                     size="large"
-                    :type="(index === 0) ? 'primary': (index === (data.length - 1) ? 'info' : 'default' )"
+                    :type="(index === 0) ? 'warning': (index === (data.length - 1) ? 'info' : 'primary' )"
+                    :icon="(index === 0) ? 'el-icon-location': (index === (data.length - 1) ? 'el-icon-plus' : 'el-icon-check' )"
                     placement="top"
                   >
                     <div>
@@ -125,6 +132,7 @@ export default {
     return {
       loading: true,
       data: [],
+      reverse: true,
     };
   },
   mounted() {
