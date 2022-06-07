@@ -1,10 +1,10 @@
 <template>
   <el-dialog
-    :title="'Lihat Progres Dokumen Lingkungan'"
+    :title="'Lacak Pengajuan Persetujuan Lingkungan'"
     :visible.sync="show"
     :before-close="handleClose"
   >
-    <div class="form-container">
+    <div v-loading="loading" class="form-container">
       <el-form
         ref="form"
         :model="form"
@@ -12,13 +12,13 @@
         label-width="100%"
         :rules="rules"
       >
-        <el-form-item label="Masukkan Nomor Registrasi Dokumen Lingkungan" prop="registrationNo">
+        <el-form-item label="Nomor Registrasi Dokumen Lingkungan" prop="registrationNo">
           <el-input v-model="form.registrationNo" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleSubmit"> Track </el-button>
-      </div>
+    </div>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" :disabled="loading" @click="handleSubmit"> Lacak </el-button>
     </div>
   </el-dialog>
 </template>
@@ -40,6 +40,7 @@ export default {
           { required: true, message: 'Mohon Masukan Nomor Registrasi', trigger: 'blur' },
         ],
       },
+      loading: false,
     };
   },
   methods: {
@@ -48,13 +49,38 @@ export default {
         registration_no !== null &&
         registration_no.replace(/\s+/g, '').trim() !== '';
     },
-    async handleSubmit() {
-      '';
-      const { data } = await projectResource.list({
-        registration_no: this.form.registrationNo,
+    async getProject(){
+      this.loading = true;
+      await projectResource.list({ registration_no: this.form.registrationNo }).then((res) => {
+        if (res.data.length > 0) {
+          this.$emit('showTrackingDocumentDetail', res.data[0]);
+          // this.handleClose();
+        } else {
+          this.$message({
+            message: 'Tidak ditemukan kegiatan dengan nomor registrasi ' + this.form.registrationNo,
+            type: 'error',
+            duration: 5 * 1000,
+          });
+        }
+      }).finally(() => {
+        this.loading = false;
       });
+    },
+
+    handleSubmit() {
+      // '';
+      /* const { data } = await projectResource.list({
+        registration_no: this.form.registrationNo,
+      }); */
+
       this.$refs['form'].validate((valid) => {
-        if (valid && data.length > 0) {
+        if (!valid){
+          return false;
+        }
+
+        this.getProject();
+
+        /* if (valid && data.length > 0) {
           if (this.isValidRegistrationNo(data[0].registration_no)) {
             this.$emit('showTrackingDocumentDetail', data[0]);
           } else {
@@ -67,12 +93,13 @@ export default {
         } else {
           console.log('error submit!!');
           return false;
-        }
+        }*/
       });
     },
     async handleClose() {
-      this.$emit('handleClose');
       this.form = {};
+      this.$refs['form'].resetFields();
+      this.$emit('handleClose');
     },
   },
 };

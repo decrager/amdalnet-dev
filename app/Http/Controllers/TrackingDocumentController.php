@@ -15,10 +15,21 @@ use App\Entity\TestingVerification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use App\Entity\WorkflowLog;
 
 class TrackingDocumentController extends Controller
 {
     public function index($id) {
+        $data = WorkflowLog::where('id_project', $id)->select()
+          ->addSelect("users.name as username")
+          ->leftJoin('users', 'users.id', '=', 'workflow_logs.updated_by')
+          ->get();
+        return response()->json([
+            'status' => 200,
+            'code' => 200,
+            'data' => $data,
+        ], 200);
+
         $project = Project::with('address')
             ->where('id', $id)
             ->first();
