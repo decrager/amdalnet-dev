@@ -38,7 +38,7 @@ class AnnouncementController extends Controller
             // 'project.initiator'
         ])->withCount('feedbacks')
         ->select()
-        ->addSelect('users.avatar as applicant_logo')
+        ->addSelect(DB::raw('coalesce(initiators.logo, users.avatar) as applicant_logo'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
         ->orWhereHas("project.address",function($q) use($request){
@@ -82,7 +82,7 @@ class AnnouncementController extends Controller
             'project.address'
         ])->withCount('feedbacks')
         ->select()
-        ->addSelect('users.avatar as applicant_logo')
+        ->addSelect(DB::raw('coalesce(initiators.logo, users.avatar) as applicant_logo'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
         ->orWhereHas("project.address",function($q) use($request){
