@@ -45,10 +45,12 @@ class Announcement extends Model
         parent::boot();
         static::created(function ($announcement) {
             $project = Project::find($announcement->project_id);
-            $project->workflow_apply('draft-announcement');
-            $project->workflow_apply('announce');
-            $project->workflow_apply('complete-announcement');
-            $project->save();
+            if ($project && ($project->marking=='formulator-assignment')) {
+                $project->workflow_apply('draft-announcement');
+                $project->workflow_apply('announce');
+                $project->workflow_apply('complete-announcement');
+                $project->save();
+            }
         });
     }
 
