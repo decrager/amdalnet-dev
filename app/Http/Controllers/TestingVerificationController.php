@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Announcement;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
+use App\Entity\Feedback;
 use App\Entity\FormulatorTeam;
 use App\Entity\KaForm;
 use App\Entity\Lpjp;
@@ -21,6 +22,7 @@ use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use PDF;
 
 class TestingVerificationController extends Controller
 {
@@ -31,6 +33,10 @@ class TestingVerificationController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->spt) {
+            return $this->rekapSPT($request->idProject);
+        }
+
         if($request->checkComplete) {
             $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
             if($verification) {
@@ -434,6 +440,16 @@ class TestingVerificationController extends Controller
                 'name' => 'Webgis'
             ]
         ];
+    }
+
+    private function rekapSPT($id_project)
+    {
+        $feedbacks = Feedback::whereHas('announcement', function($q) use($id_project) {
+            $q->where('project_id', $id_project);
+        })->where('is_relevant', true)->get();
+
+        $pdf = PDF::loadView('document.template_rekap_spt', compact('feedbacks'))->setPaper('a4', 'potrait');
+        return $pdf->download('Rekap SPT Masyarakat.pdf');
     }
 
     private function exportNoDocx($id_project)

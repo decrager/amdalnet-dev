@@ -110,7 +110,7 @@
                   Lihat Detil Penapisan
                 </el-button>
                 <el-button
-                  v-if="(scope.row.published && (isInitiator || isExaminer) && !isScoping && !isDigiWork && scope.row.required_doc !== 'SPPL')"
+                  v-if="(scope.row.published && (isInitiator || tukAccess(scope.row, 'valsub') || isPJM(scope.row)) && !isScoping && !isDigiWork && scope.row.required_doc !== 'SPPL')"
                   href="#"
                   type="text"
                   icon="el-icon-view"

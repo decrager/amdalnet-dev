@@ -1,7 +1,13 @@
 <template>
-  <el-dialog :title="'Berikan Tanggapan Baru'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
+  <el-dialog
+    :title="'Berikan Tanggapan Baru'"
+    :visible.sync="show"
+    :close-on-click-modal="false"
+    :show-close="false"
+  >
     <form enctype="multipart/form-data" @submit.prevent="saveFeedback">
-      <input v-model="announcementId" type="hidden">
+      <!-- eslint-disable-next-line vue/html-self-closing -->
+      <input v-model="announcementId" type="hidden" />
       <el-form
         ref="feedForm"
         :model="form"
@@ -10,7 +16,11 @@
         :rules="rules"
       >
         <el-form-item label="Nama" prop="name">
-          <el-input v-model="form.name" autocomplete="off" placeholder="Nama Lengkap" />
+          <el-input
+            v-model="form.name"
+            autocomplete="off"
+            placeholder="Nama Lengkap"
+          />
         </el-form-item>
 
         <div class="input__wrapper">
@@ -29,15 +39,42 @@
             <el-input v-model="form.id_card_number" autocomplete="off" />
           </el-form-item>
           <el-form-item label="Unggah Foto Selfie">
-            <input ref="file" type="file" class="el-input__inner" @change="handleFileUpload()">
+            <!-- eslint-disable-next-line vue/html-self-closing -->
+            <input
+              ref="file"
+              type="file"
+              class="el-input__inner"
+              @change="handleFileUpload()"
+            />
+            <small v-if="errorSelfie" style="color: red">{{
+              errorSelfie
+            }}</small>
           </el-form-item>
         </div>
 
-        <div>
+        <div class="input__wrapper">
           <el-form-item label="Peran">
-            <el-select v-model="form.responder_type_id" placeholder="Pilih" class="select__peran">
+            <el-select
+              v-model="form.responder_type_id"
+              placeholder="Pilih"
+              class="select__peran"
+            >
               <el-option
                 v-for="item in responders"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Gender" prop="comunity_gender">
+            <el-select
+              v-model="form.comunity_gender"
+              placeholder="Pilih"
+              class="select__peran"
+            >
+              <el-option
+                v-for="item in genders"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -50,15 +87,31 @@
           <el-input v-model="form.concern" type="textarea" autocomplete="off" />
         </el-form-item>
         <el-form-item label="Harapan">
-          <el-input v-model="form.expectation" type="textarea" autocomplete="off" />
+          <el-input
+            v-model="form.expectation"
+            type="textarea"
+            autocomplete="off"
+          />
         </el-form-item>
-        <el-form-item label="Kondisi Lingkungan di Dalam dan Sekitar Lokasi Tapak Proyek">
-          <el-input v-model="form.environment_condition" type="textarea" autocomplete="off" />
+        <el-form-item
+          label="Kondisi Lingkungan di Dalam dan Sekitar Lokasi Tapak Proyek"
+        >
+          <el-input
+            v-model="form.environment_condition"
+            type="textarea"
+            autocomplete="off"
+          />
         </el-form-item>
         <el-form-item label="Nilai Lokal yang Berpotensi akan Terkena Dampak">
-          <el-input v-model="form.local_impact" type="textarea" autocomplete="off" />
+          <el-input
+            v-model="form.local_impact"
+            type="textarea"
+            autocomplete="off"
+          />
         </el-form-item>
-        <el-form-item label="Berikan rating Anda untuk Rencana Usaha/Kegiatan ini">
+        <el-form-item
+          label="Berikan rating Anda untuk Rencana Usaha/Kegiatan ini"
+        >
           <div class="rating">
             <span>Khawatir </span>
             <el-rate
@@ -88,7 +141,6 @@
           >
             Simpan
           </el-button>
-
         </el-form-item>
       </el-form>
     </form>
@@ -112,7 +164,7 @@ export default {
       default: 0,
     },
   },
-  data(){
+  data() {
     return {
       data: {},
       form: {
@@ -125,19 +177,59 @@ export default {
         expectation: null,
         announcement_id: 0,
         rating: null,
+        comunity_gender: null,
       },
       rules: {
-        name: [{ required: true, message: 'Nama wajib diisi', trigger: 'blur' }],
+        name: [
+          { required: true, message: 'Nama wajib diisi', trigger: 'blur' },
+        ],
+        comunity_gender: [
+          { required: true, message: 'Gender wajib dipilih', trigger: 'blur' },
+        ],
         // peran: [{ required: true, message: 'Peran wajib diisi', trigger: 'blur' }],
-        id_card_number: [{ required: true, message: 'NIK wajib diisi' }, { pattern: /([1-9][0-9])(\d{4})(\d{6})(\d{4})/, message: 'NIK tidak valid', trigger: ['blur', 'change'] }],
+        id_card_number: [
+          { required: true, message: 'NIK wajib diisi' },
+          {
+            pattern: /([1-9][0-9])(\d{4})(\d{6})(\d{4})/,
+            message: 'NIK tidak valid',
+            trigger: ['blur', 'change'],
+          },
+        ],
         email: [
-          { required: true, message: 'Alamat email wajib diisi', trigger: 'blur' },
-          { type: 'email', message: 'Format alamat email tidak benar', trigger: ['blur', 'change'] }],
-        phone: [{ required: true, message: 'Nomor Telepon wajib diisi' }, { pattern: /\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{2})\D*/, message: 'Nomor Telepon tidak valid', trigger: ['blur', 'change'] }],
+          {
+            required: true,
+            message: 'Alamat email wajib diisi',
+            trigger: 'blur',
+          },
+          {
+            type: 'email',
+            message: 'Format alamat email tidak benar',
+            trigger: ['blur', 'change'],
+          },
+        ],
+        phone: [
+          { required: true, message: 'Nomor Telepon wajib diisi' },
+          {
+            pattern: /\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{2})\D*/,
+            message: 'Nomor Telepon tidak valid',
+            trigger: ['blur', 'change'],
+          },
+        ],
       },
       responders: [],
       errorMessage: null,
       photo_filepath: null,
+      genders: [
+        {
+          id: '1',
+          name: 'Laki-laki',
+        },
+        {
+          id: '2',
+          name: 'Perempuan',
+        },
+      ],
+      errorSelfie: null,
 
       // rules: {
       //   phone: [
@@ -154,29 +246,37 @@ export default {
   },
   methods: {
     getAnnouncement() {
-      axios.get('/api/announcements')
-        .then(response => {
-          return response.data.data;
-        });
+      axios.get('/api/announcements').then((response) => {
+        return response.data.data;
+      });
     },
     closeDialog() {
       // this.show = false;
       this.$emit('handleCloseDialog');
     },
     async getResponderType() {
-      await axios.get('api/responder-types')
-        .then(response => {
-          this.responders = response.data.data;
-        });
+      await axios.get('api/responder-types').then((response) => {
+        this.responders = response.data.data.filter((x) => x.id !== 2);
+      });
     },
 
-    handleFileUpload(){
+    handleFileUpload() {
+      this.errorSelfie = null;
+      this.photo_filepath = null;
+      if (this.$refs.file.files[0].size > 1048576) {
+        this.errorSelfie = 'Ukuran File Tidak Boleh Melebihi 1 MB';
+        return;
+      }
+      if (!this.isFileImage(this.$refs.file.files[0])) {
+        this.errorSelfie = 'File yang diunggah Wajib Berformat Gambar';
+        return;
+      }
       this.photo_filepath = this.$refs.file.files[0];
     },
     async saveFeedback() {
       // validasi dulu
       this.$refs.feedForm.validate((valid) => {
-        if (valid) {
+        if (valid && this.errorSelfie === null) {
           const formData = new FormData();
           formData.append('photo_filepath', this.photo_filepath);
           formData.append('name', this.form.name);
@@ -186,10 +286,14 @@ export default {
           formData.append('responder_type_id', this.form.responder_type_id);
           formData.append('concern', this.form.concern);
           formData.append('expectation', this.form.expectation);
-          formData.append('environment_condition', this.form.environment_condition);
+          formData.append(
+            'environment_condition',
+            this.form.environment_condition
+          );
           formData.append('local_impact', this.form.local_impact);
           formData.append('rating', this.form.rating);
           formData.append('announcement_id', this.announcementId);
+          formData.append('community_gender', this.form.comunity_gender);
 
           _.each(this.formData, (value, key) => {
             formData.append(key, value);
@@ -202,7 +306,7 @@ export default {
               this.closeDialog();
               this.getAnnouncement();
             })
-            .catch(error => {
+            .catch((error) => {
               this.errorMessage = error.message;
               console.error('There was an error!', error);
             });
@@ -212,7 +316,9 @@ export default {
         }
       });
     },
-
+    isFileImage(file) {
+      return file && file['type'].split('/')[0] === 'image';
+    },
   },
 };
 </script>
