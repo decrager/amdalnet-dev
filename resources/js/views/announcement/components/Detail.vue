@@ -6,6 +6,7 @@
       <h2 v-if="isInitiator">SPT Dari Masyarakat</h2>
       <h2 v-else>SPT Masyarakat {{ projectTitle }}</h2>
       <el-input
+        v-if="!isInitiator"
         v-model="search"
         style="flex-grow: 0; flex-shrink: 0; flex-basis: 30%"
         suffix-icon="el-icon search"

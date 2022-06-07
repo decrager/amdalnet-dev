@@ -205,6 +205,25 @@
             </p>
           </div>
         </div>
+        <p>
+          <b>Daftar Saran, Pendapat, dan Tanggapan Masyarakat</b>
+          <a
+            v-if="!loadingPDFSPT"
+            href="#"
+            style="color: #216221"
+            @click.prevent="downloadPDFSPT"
+          >
+            Lihat
+          </a>
+          <a
+            v-else
+            href="#"
+            style="color: #216221; cursor: default"
+            @click.prevent
+          >
+            Loading...
+          </a>
+        </p>
         <p><b>Rangkuman Deskriptif atas Harapan Masyarakat:</b></p>
         <div v-html="publicConsultation.positive_feedback_summary" />
         <p><b>Rangkuman Deskriptif atas Kekhawatiran Masyarakat:</b></p>
@@ -226,6 +245,7 @@ import PizZipUtils from 'pizzip/utils/index.js';
 import FormulatorTeamTable from '@/views/pengujian/components/FormulatorTeamDialog';
 import WebgisVerifikasi from '@/views/pengujian/components/verifikasi/Webgis';
 import { saveAs } from 'file-saver';
+import axios from 'axios';
 const verifikasiRapatResource = new Resource('test-verif-rkl-rpl');
 
 export default {
@@ -253,6 +273,7 @@ export default {
       docxData: {},
       loadingComplete: false,
       loadingDocx: false,
+      loadingPDFSPT: false,
       showWebgisDialog: false,
       out: '',
       errors: {},
@@ -403,6 +424,32 @@ export default {
       a.setAttribute('download', `hasil-adm-${data}.docx`);
       a.click();
       this.loadingDocx = false;
+    },
+    async downloadPDFSPT() {
+      this.loadingPDFSPT = true;
+
+      axios({
+        url: `api/testing-verification`,
+        method: 'GET',
+        responseType: 'blob',
+        params: {
+          idProject: this.$route.params.id,
+          spt: 'true',
+        },
+      })
+        .then((response) => {
+          this.loadingPDFSPT = false;
+          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+          var fileLink = document.createElement('a');
+          fileLink.href = fileURL;
+          fileLink.setAttribute('download', 'Rekap SPT Masyarakat.pdf');
+          document.body.appendChild(fileLink);
+          fileLink.click();
+        })
+        .catch((err) => {
+          err = '';
+          this.loadingPDFSPT = false;
+        });
     },
     exportDocx() {
       PizZipUtils.getBinaryContent(
