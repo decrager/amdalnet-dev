@@ -56,9 +56,12 @@ class ScopingController extends Controller
             }
             $result = empty($id) && empty($id2) ? false : $id == $id2;
             if($result){
-                /*$project = Project::where('id', $request->id_project)->first();
-                $project->workflow_apply('draft-amdal-form-ka');
-                $project->save();*/
+                $project = Project::where('id', $request->id_project)->first();
+                if($project && $project->marking == 'announcement-completed'){
+                    $project->workflow_apply('draft-amdal-form-ka');
+                    $project->save();
+                }
+
             }
             return response()->json([
                 'status' => 200,

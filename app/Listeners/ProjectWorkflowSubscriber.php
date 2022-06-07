@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Auth;
 use ZeroDaHero\LaravelWorkflow\Events\GuardEvent;
 use App\Entity\WorkflowLog;
 
@@ -35,7 +36,7 @@ class ProjectWorkflowSubscriber
      */
     public function onGuard(GuardEvent $event)
     {
-        
+
     }
 
     /**
@@ -43,7 +44,7 @@ class ProjectWorkflowSubscriber
      */
     public function onLeave($event)
     {
-        
+
     }
 
     /**
@@ -78,12 +79,14 @@ class ProjectWorkflowSubscriber
         $oriEvent = $event->getOriginalEvent();
         $transition = $oriEvent->getTransition();
         $project = $oriEvent->getSubject();
-        
+        $userid = Auth::user() ? Auth::user()->id : NULL;
+        var_dump($userid);
+
         // transition data
         $tname = $transition->getName();
         $tfroms = $transition->getFroms();
         $ttos = $transition->getTos();
-        
+
         $duration = 0;
         $duration_total = 0;
         $now = now();
@@ -100,7 +103,7 @@ class ProjectWorkflowSubscriber
             }
             $duration_total = $now->floatDiffInSeconds($project->created_at);
         }
-        
+
         // var_dump($oriEvent->getMarking());
         // var_dump($transition->getTransition());
         // var_dump($oriEvent->getWorkflowName());
@@ -112,6 +115,8 @@ class ProjectWorkflowSubscriber
             'to_place' => $ttos[0],
             'duration' => $duration,
             'duration_total' => $duration_total,
+            'created_by' => $userid,
+            'updated_by' => $userid,
         ]);
     }
 

@@ -49,6 +49,7 @@ export default {
         registration_no.replace(/\s+/g, '').trim() !== '';
     },
     async handleSubmit() {
+      '';
       const { data } = await projectResource.list({
         registration_no: this.form.registrationNo,
       });

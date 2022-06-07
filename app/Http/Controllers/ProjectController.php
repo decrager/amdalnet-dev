@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Workflow;
+use App\Entity\WorkflowLog;
 
 class ProjectController extends Controller
 {
@@ -99,6 +101,7 @@ class ProjectController extends Controller
                 ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id')
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
+            // return $request->registration_no;
             return ProjectResource::collection(Project::select('*')
                 ->where('registration_no', $request->registration_no)
                 ->orderBy('created_at', 'desc')
@@ -808,7 +811,29 @@ class ProjectController extends Controller
 
     public function timeline(Request $request)
     {
-        $res = [];
+        $project = Project::where('id', $request->id)->first();
+        if(!$project){
+            return response('Status Kegiatan tidak ditemukan', 404);
+        }
+
+        /*$workflow = Workflow::get($project);
+        $transitions = $project->workflow_transitions();
+        // return response($workflow->getMarking($project)->getPlaces());
+        return $transitions;*/
+
+        return response(WorkflowLog::where('id_project', $project->id)
+            ->selectRaw(
+                'from_place, to_place, workflow_logs.created_at as datetime,
+                workflow_states.public_tracking as label, users.name as username') //string_agg(users.name, \',\') as username')
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'to_place')
+            ->leftJoin('users', 'users.id', '=', 'updated_by')
+            // ->whereRaw('audits.new_values like \'%\' || workflow_logs.to_place || \'%\'')
+            //->groupBy('workflow_logs.id', 'workflow_states.public_tracking', 'users.name', 'audits.created_at')
+            ->orderBy('workflow_logs.id', $request->order ? $request->order : 'DESC')
+            ->get());
+
+
+        /*$res = [];
         $res = DB::table('audits')
             ->leftJoin('users', 'users.id', '=', 'audits.user_id')
             ->select(
@@ -822,6 +847,6 @@ class ProjectController extends Controller
             ->orderBy('audits.id', $request->order ? $request->order : 'DESC')
             ->get();
 
-        return response($res);
+        return response($res);*/
     }
 }
