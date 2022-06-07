@@ -8,14 +8,14 @@
   >
 
     <div v-if="project" style="margin: auto 2em;line-height:130% !important; word-wrap:break-word!important;">
-      <p style="font-weight:bold; margin-top:1em;">Kegiatan</p>
-      <p style="font-size:130%;">{{ project.project_title }}</p>
+      <p style="font-weight:bold; margin-top:1em;">Rencana Usaha dan/atau Kegiatan</p>
+      <p style="font-size:150%;">{{ project.project_title }}</p>
       <p style="font-weight:bold; margin-top:1em;">No Registrasi</p>
-      <p>{{ project.registration_no }} </p>
+      <p>{{ (project.registration_no).toUpperCase() }} </p>
       <!-- <div style="margin-top:1em;"><p><span style="font-weight:bold">No Registrasi</span> {{ project.registration_no }}</p></div> -->
       <div style="margin-top:1.5em; padding: 1em; border: 1px solid #e0e0e0; border-radius: 1em;">
 
-        <el-row :gutter="4">
+        <el-row :gutter="8">
           <el-col :span="10">
             <p style="font-weight:bold;">Jenis Dokumen</p>
             <p>{{ project.required_doc }}</p>
@@ -45,7 +45,7 @@
                     placement="top"
                   >
                     <div>
-                      <p>{{ activity.label || activity.to_place }} <br> <span style="font-size:80%;">oleh {{ activity.username }}</span> </p>
+                      <p>{{ activity.label || activity.to_place }} <br> <span v-if="activity.username" style="font-size:80%;">oleh {{ activity.username }}</span> </p>
                     </div>
                   </el-timeline-item>
                 </el-timeline>
