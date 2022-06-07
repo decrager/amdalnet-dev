@@ -1,9 +1,57 @@
 <template>
   <el-dialog
-    :title="'Lihat Progres Dokumen Lingkungan'"
+    :title="'Lacak Pengajuan Persetujuan Lingkungan'"
     :visible.sync="show"
     :before-close="handleClose"
   >
+
+    <div v-if="project">
+      <h2>{{ project.project_title }}</h2>
+      <div style="margin-top:1em;"><p><span style="font-weight:bold">No Registrasi</span> {{ project.registration_no }}</p></div>
+      <div style="margin-top:1.5em; padding: 1em; border: 1px solid #e0e0e0; border-radius: 1em; line-height:130% !important; word-wrap:break-word!important;">
+
+        <el-row :gutter="4">
+          <el-col :span="10">
+            <p style="font-weight:bold;">Jenis Dokumen</p>
+            <p>{{ project.required_doc }}</p>
+            <p style="font-weight:bold; margin-top:1em;">Risiko</p>
+            <p>{{ project.risk_level }} </p>
+            <p style="font-weight:bold; margin-top:1em;">Kewenangan</p>
+            <p>{{ project.authority }} </p>
+            <p style="font-weight:bold; margin-top:1em;">Lokasi</p>
+            <p>{{ project.address[0].address }}<br>{{ project.address[0].district }} {{ project.address[0].prov }} </p>
+            <p style="font-weight:bold; margin-top:1em;">Deskripsi</p>
+            <div v-html="project.description" />
+
+          </el-col>
+          <el-col :span="14">
+            <div v-loading="loading">
+              <p style="font-weight:bold;">Status</p>
+              <div style="padding: 0.5em; max-height:350px; overflow-y: scroll;">
+                <el-timeline v-if="data.length > 0" style="margin-top: 2em;">
+                  <el-timeline-item
+                    v-for="(activity, index) in data"
+                    :key="index"
+                    :timestamp="activity.datetime"
+                    size="large"
+                    :type="(index === 0) ? 'primary': (index === (data.length - 1) ? 'info' : 'default' )"
+                    placement="top"
+                  >
+                    <div>
+                      <p>{{ activity.label || activity.to_place }} <br> <span style="font-size:80%;">oleh {{ activity.username }}</span> </p>
+                    </div>
+                  </el-timeline-item>
+                </el-timeline>
+              </div>
+
+            </div>
+          </el-col>
+        </el-row>
+
+      </div>
+    </div>
+
+    <!--
     <div v-loading="loading" class="form-container">
       <h3>Kegiatan {{ data.project_title }}</h3>
       <el-card>
@@ -52,9 +100,11 @@
           </el-col>
         </el-row>
       </el-card>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="cancel"> Close </el-button>
-      </div>
+
+    </div> -->
+
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="cancel"> Close </el-button>
     </div>
   </el-dialog>
 </template>
@@ -74,7 +124,7 @@ export default {
   data() {
     return {
       loading: true,
-      data: {},
+      data: [],
     };
   },
   mounted() {
@@ -82,14 +132,18 @@ export default {
   },
   methods: {
     cancel() {
-      this.data = {};
+      this.data = [];
       this.$emit('cancel');
     },
     async getData(){
       this.loading = true;
-      await axios.get('api/tracking-document/' + this.project.id)
+      this.data = [];
+      // await axios.get('api/tracking-document/' + this.project.id)
+      await axios.get('api/timeline?id=' + this.project.id)
         .then(response => {
-          this.data = response.data.data;
+          // this.data = response.data.data;
+          this.data = response.data;
+        }).finally(() => {
           this.loading = false;
         });
     },
@@ -99,6 +153,5 @@ export default {
   },
 };
 </script>
-
 <style>
 </style>

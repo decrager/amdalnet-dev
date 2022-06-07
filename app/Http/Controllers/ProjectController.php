@@ -103,8 +103,10 @@ class ProjectController extends Controller
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
             // return $request->registration_no;
-            return ProjectResource::collection(Project::select('*')
-                ->where('registration_no', $request->registration_no)
+            return ProjectResource::collection(Project::with(['address'])->select('projects.*')
+                ->addSelect('workflow_states.public_tracking as marking_label')
+                ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
+                ->where('registration_no', '=', strtolower($request->registration_no))
                 ->orderBy('created_at', 'desc')
                 ->get());
         } else if ($request->id) {
