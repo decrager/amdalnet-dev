@@ -37,7 +37,7 @@ class AnnouncementController extends Controller
             'project.address',
             // 'project.initiator'
         ])->withCount('feedbacks')
-        ->select()
+        ->select('announcements.*')
         ->addSelect(DB::raw('coalesce(initiators.logo, users.avatar) as applicant_logo'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
@@ -81,7 +81,7 @@ class AnnouncementController extends Controller
             'project.province',
             'project.address'
         ])->withCount('feedbacks')
-        ->select()
+        ->select('announcements.*')
         ->addSelect(DB::raw('coalesce(initiators.logo, users.avatar) as applicant_logo'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
