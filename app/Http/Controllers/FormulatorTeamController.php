@@ -187,6 +187,10 @@ class FormulatorTeamController extends Controller
                 $project->type_formulator_team = 'lpjp';
                 $project->save();
 
+                if($project->marking == 'screening-completed'){
+                    $project->workflow_apply('assign-formulator');
+                    $project->save();
+                }
                 return response()->json(['message' => 'success']);
             }
         }
@@ -278,7 +282,7 @@ class FormulatorTeamController extends Controller
                }
 
                $ahli->save();
-               
+
                if($membersAhli[$a]['type'] == 'new') {
                    $teamMember = new FormulatorTeamMember();
                    $teamMember->id_formulator_team = $team->id;

@@ -4,8 +4,8 @@
       <div class="radio">
         <span style="display:inline-block;font-size:0.9em; margin-right:1em;">Urutkan:</span>
         <el-radio-group v-model="reverse">
-          <el-radio :label="true">Terdahulu</el-radio>
           <el-radio :label="false">Terbaru</el-radio>
+          <el-radio :label="true">Terdahulu</el-radio>
         </el-radio-group>
       </div>
 
@@ -33,7 +33,7 @@
             <p>{{ activity.content }}, oleh <i>{{ activity.username }}</i></p>
           </div> -->
           <div>
-            <p>{{ activity.label }}</p>
+            <p>{{ activity.label || activity.to_place }} <br> <span style="font-size:80%;">oleh {{ activity.username }}</span> </p>
           </div>
         </el-timeline-item>
       </el-timeline>

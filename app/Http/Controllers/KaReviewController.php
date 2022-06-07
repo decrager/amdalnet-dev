@@ -86,6 +86,36 @@ class KaReviewController extends Controller
                 $user = User::where('email', $email)->first();
                 Notification::send([$user], new AppKaReview($review, $document_type));
             }
+
+            // workflow
+
+            // === WORKFLOW === //
+            if($document_type == 'KA') {
+                if($project->marking == 'amdal.form-ka-drafting') {
+                    $project->workflow_apply('submit-amdal-form-ka');
+                    // $project->workflow_apply('review-amdal-form-ka');
+                    $project->save();
+                } else if($project->marking == 'amdal.form-ka-submitted') {
+                    $project->workflow_apply('review-amdal-form-ka');
+                    $project->save();
+                }
+            } else if($document_type == 'ANDAL RKL RPL') {
+                if($project->marking == 'amdal.form-rklrpl-drafting') {
+                    $project->workflow_apply('submit-amdal');
+                    // $project->workflow_apply('review-amdal-adm');
+                    $project->save();
+                }
+            } else if($document_type == 'UKL UPL') {
+                if($project->marking == 'uklupl-mt.matrix-upl') {
+                    $project->workflow_apply('submit-uklupl');
+                    // $project->workflow_apply('review-uklupl-adm');
+                    $project->save();
+                } else if($project->marking == 'uklupl-mt.submitted') {
+                    // $project->workflow_apply('review-uklupl-adm');
+                    // $project->save();
+                }
+            }
+
         }
 
         if($request->type == 'pemrakarsa') {
@@ -142,6 +172,37 @@ class KaReviewController extends Controller
                         }
                     }
                 }
+
+                // === WORKFLOW === //
+                if($document_type == 'KA') {
+                    if($project->marking == 'amdal.form-ka-adm-review') {
+                        $project->workflow_apply('return-amdal-form-ka-review');
+                        $project->save();
+                    } else if($project->marking == 'amdal.form-ka-submitted') {
+                        $project->workflow_apply('review-amdal-form-ka');
+                        $project->workflow_apply('return-amdal-form-ka-review');
+                        $project->save();
+                    }
+                } else if($document_type == 'ANDAL RKL RPL') {
+                    if($project->marking == 'amdal.form-rklrpl-drafting') {
+                        $project->workflow_apply('submit-amdal');
+                        $project->workflow_apply('review-amdal-adm');
+                        $project->save();
+                    }
+                } else if($document_type == 'UKL UPL') {
+                    if($project->marking == 'uklupl-mt.matrix-upl') {
+                        $project->workflow_apply('submit-uklupl');
+                        $project->workflow_apply('review-uklupl-adm');
+                        $project->workflow_apply('return-uklupl-adm');
+                        $project->save();
+                    } else if($project->marking == 'uklupl-mt.submitted') {
+                        $project->workflow_apply('review-uklupl-adm');
+                        $project->workflow_apply('return-uklupl-adm');
+                        $project->save();
+                    }
+                }
+
+
             } else {
                 $feasibility_test_team = null;
 
@@ -187,6 +248,11 @@ class KaReviewController extends Controller
                         $project->workflow_apply('review-amdal-form-ka');
                         $project->save();
                     }
+                    if($project->marking == 'amdal.form-ka-review') {
+                        $project->workflow_apply('approve-amdal-form-ka');
+                        $project->save();
+                    }
+
                 } else if($document_type == 'ANDAL RKL RPL') {
                     if($project->marking == 'amdal.form-rklrpl-drafting') {
                         $project->workflow_apply('submit-amdal');

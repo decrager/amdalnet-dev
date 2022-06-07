@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 class TrackingDocumentController extends Controller
-{    
+{
     public function index($id) {
         $project = Project::with('address')
             ->where('id', $id)
@@ -66,7 +66,7 @@ class TrackingDocumentController extends Controller
         return str_replace($dayEN, $this->translateDay($dayEN), $f);
     }
 
-    
+
     private function getTimeline($project) {
         $timeline = [];
         array_push($timeline, [
@@ -225,7 +225,7 @@ class TrackingDocumentController extends Controller
                 ->where('id_project', $project->id)
                 ->orderBy('created_at', 'asc')
                 ->get();
-            
+
             if ($andal && count($fTest) > 0) {
                 $pengujianComplete = true;
                 array_push($amdalTimeline, [
@@ -331,7 +331,7 @@ class TrackingDocumentController extends Controller
                     'icon' => 'el-icon-success',
                     'color' => 'green',
                 ]);
-            } else {                
+            } else {
                 array_push($uklUplTimeline, [
                     'content' => 'Matriks UKL UPL',
                     'timestamp' => null,
@@ -354,7 +354,7 @@ class TrackingDocumentController extends Controller
                 'icon' => 'el-icon-success',
                 'color' => 'green',
             ]);
-        } else if ($sppl && $dpt) {            
+        } else if ($sppl && $dpt) {
             array_push($uklUplTimeline, [
                 'content' => 'Dokumen UKL UPL',
                 'timestamp' => null,
@@ -378,7 +378,7 @@ class TrackingDocumentController extends Controller
                 'icon' => 'el-icon-success',
                 'color' => 'green',
             ]);
-        } else if ($dokumenComplete) {            
+        } else if ($dokumenComplete) {
             array_push($uklUplTimeline, [
                 'content' => 'Surat Keputusan',
                 'timestamp' => null,
@@ -389,5 +389,5 @@ class TrackingDocumentController extends Controller
         }
         return array_merge($timeline, $uklUplTimeline);
     }
-    
+
 }

@@ -100,6 +100,7 @@ class ProjectController extends Controller
                 ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id')
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
+            // return $request->registration_no;
             return ProjectResource::collection(Project::select('*')
                 ->where('registration_no', $request->registration_no)
                 ->orderBy('created_at', 'desc')
@@ -793,12 +794,13 @@ class ProjectController extends Controller
         return $transitions;*/
 
         return response(WorkflowLog::where('id_project', $project->id)
-            ->select('from_place', 'to_place', 'workflow_logs.created_at as datetime',
-                'workflow_states.public_tracking as label' ) // , 'users.name as user_name')
+            ->selectRaw(
+                'from_place, to_place, workflow_logs.created_at as datetime,
+                workflow_states.public_tracking as label, users.name as username') //string_agg(users.name, \',\') as username')
             ->leftJoin('workflow_states', 'workflow_states.state', '=', 'to_place')
-            //->leftJoin('audits', 'audits.auditable_id', '=', 'workflow_logs.id_project')
-            //->leftJoin('users', 'users.id', '=', 'audits.user_id')
-            // ->where('audits.created_at', '=', 'workflow_logs.created_at')
+            ->leftJoin('users', 'users.id', '=', 'updated_by')
+            // ->whereRaw('audits.new_values like \'%\' || workflow_logs.to_place || \'%\'')
+            //->groupBy('workflow_logs.id', 'workflow_states.public_tracking', 'users.name', 'audits.created_at')
             ->orderBy('workflow_logs.id', $request->order ? $request->order : 'DESC')
             ->get());
 

@@ -432,6 +432,8 @@ Route::put('activateUser/{user}', function (User $user) {
     return response(['message' => 'done']);
 });
 
+// workflow related
+// Route::get('workflow-states', WorkflowStateController::class, 'index');
 
 // Route::get('/testemail', function () {
 
