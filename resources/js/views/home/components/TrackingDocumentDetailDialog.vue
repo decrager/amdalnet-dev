@@ -21,13 +21,13 @@
             <p style="font-weight:bold; margin-top:1em;">Lokasi</p>
             <p>{{ project.address[0].address }}<br>{{ project.address[0].district }} {{ project.address[0].prov }} </p>
             <p style="font-weight:bold; margin-top:1em;">Deskripsi</p>
-            <div v-html="project.description" />
+            <section v-html="project.description" />
 
           </el-col>
           <el-col :span="14">
             <div v-loading="loading">
               <p style="font-weight:bold;">Status</p>
-              <div style="padding: 0.5em; max-height:350px; overflow-y: scroll;">
+              <div style="padding: 0.5em;">
                 <el-timeline v-if="data.length > 0" style="margin-top: 2em;">
                   <el-timeline-item
                     v-for="(activity, index) in data"
