@@ -70,7 +70,16 @@
       <template v-if="allData.length > 0">
         <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
           <el-col :xs="24" :sm="2" style="padding-top:0.5rem;padding-bottom:0.5rem">
-            <img alt="" class="customImage" src="/images/list.svg">
+            <el-image
+              style="width: 50px; height: 50px;"
+              :src="amdal.applicant_logo"
+              fit="contain"
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline" style="font-size: 200%; line-height: 130%;" />
+              </div>
+            </el-image>
+            <!-- <img alt="" class="customImage" src="/images/list.svg"> -->
           </el-col>
           <el-col :xs="24" :sm="6" style="padding-top:1rem">
             <p class="tw fz11 fw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</p>
