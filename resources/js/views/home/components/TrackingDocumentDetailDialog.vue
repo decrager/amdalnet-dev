@@ -58,7 +58,7 @@
       </div>
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="cancel"> Close </el-button>
+      <el-button type="primary" @click="cancel"> Tutup </el-button>
     </div>
   </el-dialog>
 </template>
