@@ -27,7 +27,7 @@ class WorkflowStateSeeder extends Seeder
             ],
             [
                 'state' => 'in-screening',
-                'public_tracking' => 'Penapisan',
+                'public_tracking' => 'Dalam Penapisan',
                 'code' => 'PRO-1.5'
             ],
             [
@@ -50,21 +50,16 @@ class WorkflowStateSeeder extends Seeder
                 'public_tracking' => 'Penerimaan SPT Masyarakat',
                 'code' => 'PRO-5'
             ],
-            [
+            /*[
                 'state' => 'announcement',
                 'public_tracking' => 'Konsultasi Public',
                 'code' => 'AMD-1',
                 'flag' => 'pubcons',
-            ],
+            ],*/
             [
                 'state' => 'announcement-completed',
                 'public_tracking' => 'Pengumuman Selesai',
                 'code' => 'PRO-6'
-            ],
-            [
-                'state' => 'uklupl-mr.pkplh-published',
-                'public_tracking' => 'Penerbitan PKPLH',
-                'code' => 'UKL-13'
             ],
             [
                 'state' => 'uklupl-mt.form',
@@ -79,7 +74,7 @@ class WorkflowStateSeeder extends Seeder
             [
                 'state' => 'uklupl-mt.matrix-upl',
                 'public_tracking' => 'Penyusunan Matriks UKL-UPL',
-                'code' => 'UKL-2'
+                'code' => 'UKL-2.5'
             ],
             [
                 'state' => 'uklupl-mt.sent',
@@ -117,8 +112,14 @@ class WorkflowStateSeeder extends Seeder
                 'code' => 'UKL-9'
             ],
             [
+                'state' => 'uklupl-mt.returned',
+                'public_tracking' => 'UKL-UPL Dikembalikan untuk Diperbaiki',
+                'code' => 'UKL-10'
+            ],
+            [
                 'state' => 'uklupl-mt.ba-drafting',
                 'public_tracking' => 'Penyusunan Berita Acara',
+                'code'=> 'UKL-11'
             ],
             [
                 'state' => 'uklupl-mt.ba-signed',
@@ -128,11 +129,17 @@ class WorkflowStateSeeder extends Seeder
             [
                 'state' => 'uklupl-mt.recommendation-drafting',
                 'public_tracking' => 'Penyusunan Rekomendasi',
+                'code' => 'UKL-12.1'
             ],
             [
                 'state' => 'uklupl-mt.recommendation-signed',
                 'public_tracking' => 'Penerbitan Rekomendasi',
                 'code' => 'UKL-12.5'
+            ],
+            [
+                'state' => 'uklupl-mr.pkplh-published',
+                'public_tracking' => 'Penerbitan PKPLH',
+                'code' => 'UKL-13'
             ],
             // amdal
             [
@@ -163,7 +170,7 @@ class WorkflowStateSeeder extends Seeder
             [
                 'state' => 'amdal.form-ka-examination-invitation-drafting',
                 'public_tracking' => 'Penyusunan Undangan Rapat Pemeriksaan Formulir Kerangka Acuan',
-                // 'code' => ''
+                'code' => 'AMD-6.5'
             ],
             [
                 'state' => 'amdal.form-ka-examination-invitation-sent',
@@ -193,7 +200,7 @@ class WorkflowStateSeeder extends Seeder
             [
                 'state' => 'amdal.form-ka-ba-drafting',
                 'public_tracking' => 'Penyusunan Berita Acara Formulir Kerangka Acuan',
-                // 'code' => ''
+                'code' => 'AMD-11.5'
             ],
             [
                 'state' => 'amdal.form-ka-ba-signed',
@@ -233,12 +240,12 @@ class WorkflowStateSeeder extends Seeder
             [
                 'state' => 'amdal.examination',
                 'public_tracking' => 'Dalam Masa Pengujian',
-                // 'code' => ''
+                'code' => 'AMD-18.1'
             ],
             [
                 'state' => 'amdal.feasibility-invitation-drafting',
                 'public_tracking' => 'Penyusunan Undangan Rapat Uji Kelayakan Andal dan RKL RPL',
-                // 'code' => ''
+                'code' => 'AMD-18.2'
             ],
             [
                 'state' => 'amdal.feasibility-invitation-sent',
@@ -258,12 +265,12 @@ class WorkflowStateSeeder extends Seeder
             [
                 'state' => 'amdal.feasibility-returned',
                 'public_tracking' => 'Tidak Lulus Uji Kelayakan Andal dan RKL RPL',
-                // 'code' => 'AMD-19'
+                'code' => 'AMD-21.5'
             ],
             [
                 'state' => 'amdal.feasibility-ba-drafting',
                 'public_tracking' => 'Penyusunan Berita Acara Uji Kelayakan Andal dan RKL RPL',
-                // 'code' => ''
+                'code' => 'AMD-21.6'
             ],
             [
                 'state' => 'amdal.feasibility-ba-signed',
@@ -273,7 +280,7 @@ class WorkflowStateSeeder extends Seeder
             [
                 'state' => 'amdal.recommendation-drafting',
                 'public_tracking' => 'Penyusunan Surat Rekomendasi',
-                // 'code' => ''
+                'code' => 'AMD-22.5'
             ],
             [
                 'state' => 'amdal.recommendation-signed',

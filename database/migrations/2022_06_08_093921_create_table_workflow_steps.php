@@ -18,6 +18,7 @@ class CreateTableWorkflowSteps extends Migration
             $table->string('code');
             $table->enum('doc_type', ['AMDAL', 'UKL-UPL', 'SPPL'])->nullable();
             $table->integer('rank')->default(0);
+            $table->boolean('is_conditional')->default(false);
             $table->timestamps();
         });
     }

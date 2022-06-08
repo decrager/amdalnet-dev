@@ -14,7 +14,6 @@
       <p>{{ (project.registration_no).toUpperCase() }} </p>
       <!-- <div style="margin-top:1em;"><p><span style="font-weight:bold">No Registrasi</span> {{ project.registration_no }}</p></div> -->
       <div style="margin-top:1.5em; padding: 1em; border: 1px solid #e0e0e0; border-radius: 1em;">
-
         <el-row :gutter="8">
           <el-col :span="10">
             <p style="font-weight:bold;">Jenis Dokumen</p>
@@ -40,76 +39,21 @@
                     :key="index"
                     :timestamp="activity.datetime"
                     size="large"
-                    :type="(index === 0) ? 'warning': (index === (data.length - 1) ? 'info' : 'primary' )"
-                    :icon="(index === 0) ? 'el-icon-location': (index === (data.length - 1) ? 'el-icon-plus' : 'el-icon-check' )"
+                    :type="index === current_marking ? (current_marking === 0? 'primary': 'warning') : (index === (data.length -1) ? 'info': (index < current_marking ? 'default' : 'primary')) "
+                    :icon="index === current_marking ? (current_marking === 0? 'el-icon-check': 'el-icon-location') : (index === (data.length -1) ? 'el-icon-plus': (index < current_marking ? '' : 'el-icon-check')) "
                     placement="top"
                   >
                     <div>
-                      <p>{{ activity.label || activity.to_place }} <br> <span v-if="activity.username" style="font-size:80%;">oleh {{ activity.username }}</span> </p>
+                      <p>{{ activity.label || activity.to_place }} <br> <span v-if="activity.username" style="font-size:80%;">oleh {{ activity.username }}</span></p>
                     </div>
                   </el-timeline-item>
                 </el-timeline>
               </div>
-
             </div>
           </el-col>
         </el-row>
-
       </div>
     </div>
-
-    <!--
-    <div v-loading="loading" class="form-container">
-      <h3>Kegiatan {{ data.project_title }}</h3>
-      <el-card>
-        <div align="center">No Registrasi: {{ data.registration_no }}</div>
-        <el-row :gutter="4">
-          <el-col :span="12" :xs="24">
-            <el-form
-              label-position="left"
-              label-width="200px"
-              style="max-width: 300px"
-            >
-              <el-form-item label="Jenis Dokumen Lingkungan :">
-                <div>{{ data.required_doc }}</div>
-              </el-form-item>
-              <el-form-item label="Risiko :">
-                <div>{{ data.risk_level }}</div>
-              </el-form-item>
-              <el-form-item label="Kewenangan :">
-                <div>{{ data.authority }}</div>
-              </el-form-item>
-              <el-form-item label="Lokasi Rencana Usaha dan/atau Kegiatan :">
-                <div v-if="data.address[0] === undefined || data.address[0] === null">-</div>
-                <div v-if="data.address[0] !== undefined">{{ data.address[0].address }}</div>
-              </el-form-item>
-              <el-form-item label="Deskripsi :">
-                <div>{{ data.description }}</div>
-              </el-form-item>
-            </el-form>
-          </el-col>
-          <el-col :span="12" :xs="24">
-            <el-card>
-              <el-timeline>
-                <el-timeline-item
-                  v-for="(step, index) in data.timeline"
-                  :key="index"
-                  :icon="step.icon"
-                  :type="step.type"
-                  :color="step.color"
-                  :size="step.size"
-                  :timestamp="step.timestamp"
-                >
-                  {{ step.content }}
-                </el-timeline-item>
-              </el-timeline>
-            </el-card>
-          </el-col>
-        </el-row>
-      </el-card>
-
-    </div> -->
-
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="cancel"> Close </el-button>
     </div>
@@ -133,6 +77,9 @@ export default {
       loading: true,
       data: [],
       reverse: true,
+      current_marking: 0,
+      showAll: false,
+      all: [],
     };
   },
   mounted() {
@@ -151,6 +98,7 @@ export default {
         .then(response => {
           // this.data = response.data.data;
           this.data = response.data;
+          this.current_marking = this.data.findIndex(e => e.to_place === this.project.marking);
         }).finally(() => {
           this.loading = false;
         });
