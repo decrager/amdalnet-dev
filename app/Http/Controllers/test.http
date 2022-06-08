@@ -20,6 +20,10 @@ GET http://localhost:8000/api/kblis?sectors=true
 ###
 GET http://localhost:8000/api/business/2
 ###
+GET http://localhost:8000/api/business-env-params?businessTypePem=Industri+Nonwoven&sectorName=Perindustrian
+###
+GET http://localhost:8000/api/business?fieldBySectorName=Perindustrian
+###
 GET http://localhost:8000/api/kblis?sectorsByKbli=41011
 ###
 GET http://localhost:8000/api/kbli-env-params?kbli=41011

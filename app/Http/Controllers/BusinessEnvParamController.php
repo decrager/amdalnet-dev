@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Business;
 use App\Entity\BusinessEnvParam;
 use App\Http\Resources\BusinessEnvParamResource;
 use Exception;
@@ -17,6 +18,13 @@ class BusinessEnvParamController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->businessTypePem){
+            // return BusinessEnvParamResource::collection(BusinessEnvParam::select('business_env_params.id_param','business_env_params.id_unit','params.name as param', 'units.name as unit')->distinct()->where('business_id', $request->fieldId)->leftJoin('params', 'business_env_params.id_param', '=', 'params.id')->leftJoin('units', 'business_env_params.id_unit', '=', 'units.id')->get());
+            
+            return BusinessEnvParamResource::collection(BusinessEnvParam::leftJoin('business', 'business.id','=','business_env_params.business_id')->leftJoin('business as b2','business.parent_id','=','b2.id')->leftJoin('params', 'business_env_params.id_param', '=', 'params.id')->leftJoin('units', 'business_env_params.id_unit', '=', 'units.id')
+            ->select('business_env_params.id_param','business_env_params.id_unit','params.name as param', 'units.name as unit')->distinct()
+            ->where('business.value', $request->businessTypePem)->where('b2.value',$request->sectorName)->get());
+        }
         if ($request->businessType) {
             if ($request->unit) {
                 if ($request->unit == 'true') {
@@ -24,6 +32,21 @@ class BusinessEnvParamController extends Controller
                 }
 
                 //get kbli env param by kbli_id, business_type and scale
+                if(gettype($request->fieldId) === 'string'){
+                    // return BusinessEnvParam::leftJoin('business', 'business.id','=','business_env_params.business_id')
+                    // ->leftJoin('business as b2','business.parent_id','=','b2.id')
+                    // ->where('business.value', $request->fieldId)
+                    // ->where('b2.value',$request->sector)
+                    // ->where('business_env_params.id_param', $request->businessType)
+                    // ->where('business_env_params.id_unit', $request->unit)->toSql();
+                    return BusinessEnvParamResource::collection(
+                        BusinessEnvParam::leftJoin('business', 'business.id','=','business_env_params.business_id')
+                        ->leftJoin('business as b2','business.parent_id','=','b2.id')
+                        ->where('business.value', $request->fieldId)
+                        ->where('b2.value',$request->sector)
+                        ->where('business_env_params.id_param', $request->businessType)
+                        ->where('business_env_params.id_unit', $request->unit)->get());
+                }
                 return BusinessEnvParamResource::collection(BusinessEnvParam::where('business_id', $request->fieldId)->where('id_param', $request->businessType)->where('id_unit', $request->unit)->get());
             } else if (isset($request->unit) && $request->unit == 0){
                 //get kbli env param by kbli_id, business_type and scale
