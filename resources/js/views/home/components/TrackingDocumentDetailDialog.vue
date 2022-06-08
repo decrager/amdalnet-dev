@@ -31,16 +31,19 @@
           <el-col :span="14">
             <div v-loading="loading">
               <el-button type="info" :icon="reverse? 'el-icon-bottom': 'el-icon-top' " style="float:right;" circle @click="reverse = !reverse" />
-              <p style="font-weight:bold;">Status</p>
+              <p style="font-weight:bold;">Status</p> <!-- <p><el-button type="primary" size="mini" plain @click="showAll = !showAll"><span v-if="showAll">tampilkan semua tahapan</span><span v-else>tampilkan hingga tahapan terkini</span></el-button></p> -->
+              <div style="margin-top: 1em;">
+                <el-checkbox v-model="showAll">tampilkan seluruh tahapan</el-checkbox>
+              </div>
               <div style="padding: 0.5em;">
                 <el-timeline v-if="data.length > 0" style="margin-top: 2em;" :reverse="reverse">
                   <el-timeline-item
-                    v-for="(activity, index) in data"
+                    v-for="(activity, index) in (showAll ? data : data.filter(e => e.rank <= current_rank))"
                     :key="index"
                     :timestamp="activity.datetime"
                     size="large"
-                    :type="index === current_marking ? (current_marking === 0? 'primary': 'warning') : (index === (data.length -1) ? 'info': (index < current_marking ? 'default' : 'primary')) "
-                    :icon="index === current_marking ? (current_marking === 0? 'el-icon-check': 'el-icon-location') : (index === (data.length -1) ? 'el-icon-plus': (index < current_marking ? '' : 'el-icon-check')) "
+                    :type="activity.rank < current_rank ? (activity.rank === 1 ? 'info' : 'primary') : (activity.rank === current_rank ? (current_rank === data[0].rank ? 'primary' : 'warning') : 'default')"
+                    :icon="activity.rank < current_rank ? (activity.rank === 1 ? 'el-icon-plus' : 'el-icon-check') : (activity.rank === current_rank ? (current_rank === data[0].rank ? 'el-icon-check' : 'el-icon-location') : '')"
                     placement="top"
                   >
                     <div>
@@ -78,7 +81,7 @@ export default {
       data: [],
       reverse: true,
       current_marking: 0,
-      showAll: false,
+      showAll: true,
       all: [],
     };
   },
@@ -93,12 +96,17 @@ export default {
     async getData(){
       this.loading = true;
       this.data = [];
+      this.current_rank = 0;
       // await axios.get('api/tracking-document/' + this.project.id)
       await axios.get('api/timeline?id=' + this.project.id)
         .then(response => {
-          // this.data = response.data.data;
-          this.data = response.data;
-          this.current_marking = this.data.findIndex(e => e.to_place === this.project.marking);
+          if (response.data && response.data.length > 0){
+            this.data = response.data;
+            if (this.project.marking !== null){
+              const current_marking = this.data.find(e => e.to_place === this.project.marking);
+              this.current_rank = current_marking.rank;
+            }
+          }
         }).finally(() => {
           this.loading = false;
         });

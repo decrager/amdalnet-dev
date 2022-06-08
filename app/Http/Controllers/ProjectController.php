@@ -824,9 +824,10 @@ class ProjectController extends Controller
             return response('Status Kegiatan tidak ditemukan', 404);
         }
 
-        return response(WorkflowStep::where(['is_conditional' => 0, 'doc_type' => $project->required_doc])
+        return response(WorkflowStep::where('doc_type', $project->required_doc)
             ->select('workflow_steps.code', 'workflow_logs.from_place', 'workflow_logs.to_place',
                 'workflow_logs.created_at as datetime',
+                'workflow_steps.rank',
                 'workflow_states.public_tracking as label', 'users.name as username')
             // ->addSelect(DB::raw('\''.$project->marking.'\' as current_marking'))
             ->leftJoin('workflow_states', 'workflow_states.code', '=', 'workflow_steps.code')
