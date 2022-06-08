@@ -93,6 +93,29 @@
                     </div>
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
                   </el-form-item>
+                  <div v-if="isMapUploaded">
+                    <div style="margin-top: 15px">
+                      <h3>PETA RTRW PROPINSI</h3>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                      <div style="margin-top: 10px;">
+                        <el-select
+                          v-model="province"
+                          placeholder="Pilih"
+                          style="width: 100%"
+                          filterable
+                          @change="getLayerRtrw($event)"
+                        >
+                          <el-option
+                            v-for="item in provinces"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
+                          />
+                        </el-select>
+                      </div>
+                    </div>
+                  </div>
                 </el-row>
               </el-col>
             </el-row>
@@ -638,6 +661,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { mapGetters } from 'vuex';
 import Workflow from '@/components/Workflow';
 import ClassicUpload from '@/components/ClassicUpload';
@@ -750,17 +774,23 @@ export default {
       preeAgreementLabel: '',
       preProject: true,
       activeName: '1',
+      currentRtRwLayer: null,
       currentProject: {
         address: [],
         pippib: 'N',
         kawasan_lindung: 'N',
         listKewenangan: [],
       },
+      map: null,
+      province: '',
+      provinces: [],
+      layerRtrw: [],
       listSupportTable: [],
       listSubProject: [],
       checkedSubProject: [],
       loadingSupportTable: false,
       isUpload: 'Upload',
+      isMapUploaded: false,
       fileName: 'No File Selected.',
       fileMap: null,
       filePdf: null,
@@ -1061,6 +1091,14 @@ export default {
     }
     this.getAllData();
     this.loading = false;
+    // get provinces
+    await axios.get('/api/provinces').then((result) => {
+      this.provinces = result.data.data;
+    });
+    // init map
+    this.map = new Map({
+      basemap: 'satellite',
+    });
   },
   methods: {
     getKewenanganOss(val){
@@ -1581,9 +1619,6 @@ export default {
         this.fileMap = e.target.files[0];
         this.fileMapName = e.target.files[0].name;
       }
-      const map = new Map({
-        basemap: 'satellite',
-      });
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
@@ -1619,7 +1654,7 @@ export default {
         opacity: 0.90,
       });
 
-      map.add(sigapLayer);
+      this.map.add(sigapLayer);
 
       const fr = new FileReader();
       fr.onload = (event) => {
@@ -1698,6 +1733,7 @@ export default {
             },
           };
           const url = URL.createObjectURL(blob);
+
           const geojsonLayer = new GeoJSONLayer({
             url: url,
             visible: true,
@@ -1708,7 +1744,7 @@ export default {
             popupTemplate: popupTemplate(propFields),
           });
 
-          map.add(geojsonLayer);
+          this.map.add(geojsonLayer);
           mapView.on('layerview-create', async(event) => {
             await mapView.goTo({
               target: geojsonLayer.fullExtent,
@@ -1720,7 +1756,7 @@ export default {
 
       const mapView = new MapView({
         container: 'mapView',
-        map: map,
+        map: this.map,
         center: [115.287, -1.588],
         zoom: 5,
       });
@@ -1774,6 +1810,42 @@ export default {
       mapView.ui.add(layerListExpand, 'top-right');
       mapView.ui.add(legendListExpand, 'top-right');
       mapView.ui.add(printExpand, 'top-left');
+      this.isMapUploaded = true;
+    },
+    getLayerRtrw(e) {
+      axios.get(`api/arcgis-services?id_province=${e}`)
+        .then((response) => {
+          this.layerRtrw = response.data.data;
+          console.log('this.layerRtrw.length = ' + this.layerRtrw.length);
+          if (this.layerRtrw.length > 0) {
+            this.layerRtrw.forEach((item) => {
+              if (item.is_proxy === true) {
+                urlUtils.addProxyRule({
+                  proxyUrl: 'proxy/proxy.php',
+                  urlPrefix: 'https://gistaru.atrbpn.go.id/',
+                });
+              }
+
+              const rtrwLayer = new MapImageLayer({
+                url: item.url_service,
+                imageTransparency: true,
+                visible: true,
+              });
+              if (this.currentRtRwLayer !== null) {
+                this.map.layers.remove(this.currentRtRwLayer);
+              }
+              this.currentRtRwLayer = rtrwLayer;
+              this.map.add(rtrwLayer);
+            });
+          } else {
+            return this.$notify({
+              type: 'warning',
+              title: 'Perhatian!',
+              message: 'Peta RTRW tidak / belum tersedia!',
+              duration: 5000,
+            });
+          }
+        });
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });

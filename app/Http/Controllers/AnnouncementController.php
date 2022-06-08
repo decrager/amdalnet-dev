@@ -34,14 +34,20 @@ class AnnouncementController extends Controller
         $getAllAnnouncement = Announcement::with([
             'project',
             'project.province',
-            'project.address'
+            'project.address',
+            // 'project.initiator'
         ])->withCount('feedbacks')
+        ->select('announcements.*')
+        ->addSelect(DB::raw('coalesce(initiators.logo, users.avatar) as applicant_logo'))
+        ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
+        ->leftJoin('users', 'users.email', '=', 'initiators.email')
         ->orWhereHas("project.address",function($q) use($request){
             $q->where("prov", "=", $request->provName);
         })
         ->orWhereHas("project.address",function($q) use($request){
             $q->where("district", "=", $request->kotaName);
         })
+
         ->when($request->has('keyword'), function ($query) use ($request) {
             $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
             $searchQuery = '%' . $request->keyword . '%';
@@ -75,6 +81,10 @@ class AnnouncementController extends Controller
             'project.province',
             'project.address'
         ])->withCount('feedbacks')
+        ->select('announcements.*')
+        ->addSelect(DB::raw('coalesce(initiators.logo, users.avatar) as applicant_logo'))
+        ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
+        ->leftJoin('users', 'users.email', '=', 'initiators.email')
         ->orWhereHas("project.address",function($q) use($request){
             $q->where("prov", "=", $request->provName);
         })

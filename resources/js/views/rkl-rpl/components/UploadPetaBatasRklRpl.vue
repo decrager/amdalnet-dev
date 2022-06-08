@@ -112,11 +112,27 @@ export default {
       petaPemantauanSHP: '',
       petaPemantauanPDF: '',
       petaPengelolaanSHP: '',
+      petaTapakPDF: '',
+      petaTapakSHP: '',
+      petaEkologisPDF: '',
+      petaEkologisSHP: '',
+      petaSosialPDF: '',
+      petaSosialSHP: '',
+      petaStudiPDF: '',
+      petaStudiSHP: '',
       files: [],
       idPengelolaanSHP: 0,
       idPengelolaanPDF: 0,
       idPemantauanPDF: 0,
       idPemantauanSHP: 0,
+      idTapakSHP: 0,
+      idTapakPDF: 0,
+      idEkologisSHP: 0,
+      idEkologisPDF: 0,
+      idSosialSHP: 0,
+      idSosialPDF: 0,
+      idStudiSHP: 0,
+      idStudiPDF: 0,
       index: 0,
       param: [],
       required: true,
@@ -179,30 +195,87 @@ export default {
       const map = new Map({
         basemap: 'satellite',
       });
+      // Tapak
+      axios.get('api/map/' + this.idProject)
+        .then(response => {
+          const projects = response.data;
+          for (let i = 0; i < projects.length; i++) {
+            if (projects[i].attachment_type === 'tapak') {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
 
-      axios.get(`api/map-geojson?id=${this.idProject}&step=rkl-rpl`)
+                const renderer = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'simple-fill',
+                    color: [0, 0, 0, 0.0],
+                    outline: {
+                      color: 'red',
+                      width: 2,
+                    },
+                  },
+                };
+
+                const geojsonLayer = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  title: 'Peta Tapak',
+                  renderer: renderer,
+                });
+                map.add(geojsonLayer);
+              });
+            }
+          }
+        });
+
+      axios.get(`api/map-geojson?id=${this.idProject}`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
             const propStyles = getType.features[0].properties.styles;
-
-            // Tapak
-            if (propType === 'tapak') {
+            // Ecology
+            if (propType === 'ecology') {
               const geojsonLayerArray = new GeoJSONLayer({
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
+                title: 'Layer Batas Ekologis',
                 visible: true,
-                title: 'Layer Tapak Proyek',
                 renderer: propStyles,
                 popupTemplate: popupTemplate(propFields),
               });
 
-              mapView.on('layerview-create', async function() {
-                await mapView.goTo({
-                  target: geojsonLayerArray.fullExtent,
-                });
+              this.mapGeojsonArrayProject.push(geojsonLayerArray);
+            }
+
+            // Social
+            if (propType === 'social') {
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: urlBlob(item.feature_layer),
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Batas Sosial',
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
+              });
+
+              this.mapGeojsonArrayProject.push(geojsonLayerArray);
+            }
+
+            // Study
+            if (propType === 'study') {
+              const geojsonLayerArray = new GeoJSONLayer({
+                url: urlBlob(item.feature_layer),
+                outFields: ['*'],
+                visible: true,
+                title: 'Layer Batas Studi',
+                renderer: propStyles,
+                popupTemplate: popupTemplate(propFields),
               });
 
               this.mapGeojsonArrayProject.push(geojsonLayerArray);
@@ -281,6 +354,42 @@ export default {
     process(files){
       files.forEach((e) => {
         switch (e.attachment_type){
+          case 'tapak':
+            if (e.file_type === 'SHP') {
+              this.petaTapakSHP = e.original_filename;
+              this.idTapakSHP = e.id;
+            } else {
+              this.petaTapakPDF = e.original_filename;
+              this.idTapakPDF = e.id;
+            }
+            break;
+          case 'ecology':
+            if (e.file_type === 'SHP') {
+              this.petaEkologisSHP = e.original_filename;
+              this.idEkologisSHP = e.id;
+            } else {
+              this.petaEkologisPDF = e.original_filename;
+              this.idEkologisPDF = e.id;
+            }
+            break;
+          case 'social':
+            if (e.file_type === 'SHP') {
+              this.petaSosialSHP = e.original_filename;
+              this.idSosialSHP = e.id;
+            } else {
+              this.petaSosialPDF = e.original_filename;
+              this.idSosialPDF = e.id;
+            }
+            break;
+          case 'study':
+            if (e.file_type === 'SHP') {
+              this.petaStudiSHP = e.original_filename;
+              this.idStudiSHP = e.id;
+            } else {
+              this.petaStudiPDF = e.original_filename;
+              this.idStudiPDF = e.id;
+            }
+            break;
           case 'pengelolaan':
             if (e.file_type === 'SHP') {
               this.petaPengelolaanSHP = e.original_filename;

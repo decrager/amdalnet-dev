@@ -153,9 +153,11 @@ export default {
       data: [],
       idProject: 0,
       currentMaps: [],
+      petaTapakPDF: '',
       petaEkologisPDF: '',
       petaSosialPDF: '',
       petaStudiPDF: '',
+      petaTapakSHP: '',
       petaEkologisSHP: '',
       petaSosialSHP: '',
       petaStudiSHP: '',
@@ -166,6 +168,8 @@ export default {
       idPSS: 0,
       idPSuP: 0,
       idPSuS: 0,
+      idPTS: 0,
+      idPTP: 0,
       index: 0,
       param: [],
       required: true,
@@ -314,6 +318,47 @@ export default {
           });
         });
 
+      // Map Tapak
+      axios.get('api/map/' + this.idProject)
+        .then(response => {
+          const projects = response.data;
+          for (let i = 0; i < projects.length; i++) {
+            if (projects[i].attachment_type === 'tapak') {
+              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
+                const blob = new Blob([JSON.stringify(data)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+
+                const renderer = {
+                  type: 'simple',
+                  field: '*',
+                  symbol: {
+                    type: 'simple-fill',
+                    color: [0, 0, 0, 0.0],
+                    outline: {
+                      color: 'red',
+                      width: 2,
+                    },
+                  },
+                };
+
+                const geojsonLayer = new GeoJSONLayer({
+                  url: url,
+                  outFields: ['*'],
+                  title: 'Peta Tapak',
+                  renderer: renderer,
+                });
+                map.add(geojsonLayer);
+                mapView.on('layerview-create', (event) => {
+                  mapView.goTo({
+                    target: geojsonLayer.fullExtent,
+                  });
+                });
+              });
+            }
+          }
+        });
       const layerList = new LayerList({
         view: mapView,
         container: document.createElement('div'),
@@ -363,6 +408,15 @@ export default {
     process(files){
       files.forEach((e) => {
         switch (e.attachment_type){
+          case 'tapak':
+            if (e.file_type === 'SHP') {
+              this.petaTapakSHP = e.original_filename;
+              this.idPTS = e.id;
+            } else {
+              this.petaTapakPDF = e.original_filename;
+              this.idPTP = e.id;
+            }
+            break;
           case 'ecology':
             if (e.file_type === 'SHP') {
               this.petaEkologisSHP = e.original_filename;
@@ -772,43 +826,6 @@ export default {
         });
       };
       readerWilayahStudi.readAsArrayBuffer(mapBatasWilayahStudi);
-
-      // Map Tapak
-      const projId = this.$route.params && this.$route.params.id;
-      axios.get(`api/map-geojson?id=${projId}&type=tapak&step=ka`)
-        .then((response) => {
-          response.data.forEach((item) => {
-            const getType = JSON.parse(item.feature_layer);
-            const propFields = getType.features[0].properties.field;
-
-            const blob = new Blob([item.feature_layer], {
-              type: 'application/json',
-            });
-            const rendererTapak = {
-              type: 'simple',
-              field: '*',
-              symbol: {
-                type: 'simple-fill',
-                color: [200, 0, 0, 1],
-                outline: {
-                  color: [200, 0, 0, 1],
-                  width: 2,
-                },
-              },
-            };
-            const url = URL.createObjectURL(blob);
-            const geojsonLayerArray = new GeoJSONLayer({
-              url: url,
-              outFields: ['*'],
-              visible: true,
-              title: 'Layer Tapak',
-              renderer: rendererTapak,
-              popupTemplate: popupTemplate(propFields),
-            });
-            map.add(geojsonLayerArray);
-          });
-        });
-
       const mapView = new MapView({
         container: 'mapView',
         map: map,

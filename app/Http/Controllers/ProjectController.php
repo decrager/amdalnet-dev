@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Workflow;
+use App\Entity\WorkflowLog;
 
 class ProjectController extends Controller
 {
@@ -58,7 +60,7 @@ class ProjectController extends Controller
                 });
             }, 'tukProject' => function ($q) {
                 $q->where('id_user', Auth::user()->id);
-            }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
+            }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'workflow_states.public_tracking as marking_label')
                 ->where(function ($query) use ($request) {
                     return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
                 })->where(
@@ -95,12 +97,16 @@ class ProjectController extends Controller
                 ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
                 ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
                 ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+                ->leftJoin('workflow_states', 'workflow_states.state', '=' , 'projects.marking')
                 ->distinct()
-                ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id')
+                ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'workflow_states.public_tracking')
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
-            return ProjectResource::collection(Project::select('*')
-                ->where('registration_no', $request->registration_no)
+            // return $request->registration_no;
+            return ProjectResource::collection(Project::with(['address'])->select('projects.*')
+                ->addSelect('workflow_states.public_tracking as marking_label')
+                ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
+                ->where('registration_no', '=', strtolower($request->registration_no))
                 ->orderBy('created_at', 'desc')
                 ->get());
         } else if ($request->id) {
@@ -127,7 +133,7 @@ class ProjectController extends Controller
             });
         }, 'tukProject', 'feasibilityTestRecap' => function ($q) {
             $q->select('id', 'id_project', 'is_feasib', 'updated_at');
-        }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
+        }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId', 'workflow_states.public_tracking as marking_label')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -177,6 +183,7 @@ class ProjectController extends Controller
             ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
             ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
             ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
             ->distinct()
             // ->groupBy('projects.id', 'projects.id_project', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
             ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
@@ -452,7 +459,7 @@ class ProjectController extends Controller
                     'address' => isset($add->address) ? $add->address : null,
                 ]);
             }
-            
+
             foreach ($request['listKewenangan'] as $kew) {
                 ProjectAuthority::create([
                     'id_project' => $project->id,
@@ -603,11 +610,14 @@ class ProjectController extends Controller
         announcements.potential_impact as potential_impact,
         initiators.name as initiator_name,
         initiators.address as initiator_address,
-        users.avatar as logo')
+        users.avatar as logo,
+        workflow_states.public_tracking as marking_label')
             ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
             ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
             ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
             ->leftJoin('users', 'initiators.email', '=', 'users.email');
+
         return $project->where('projects.id', $id)->first();
 
         /*
@@ -813,7 +823,29 @@ class ProjectController extends Controller
 
     public function timeline(Request $request)
     {
-        $res = [];
+        $project = Project::where('id', $request->id)->first();
+        if(!$project){
+            return response('Status Kegiatan tidak ditemukan', 404);
+        }
+
+        /*$workflow = Workflow::get($project);
+        $transitions = $project->workflow_transitions();
+        // return response($workflow->getMarking($project)->getPlaces());
+        return $transitions;*/
+
+        return response(WorkflowLog::where('id_project', $project->id)
+            ->selectRaw(
+                'from_place, to_place, workflow_logs.created_at as datetime,
+                workflow_states.public_tracking as label, users.name as username') //string_agg(users.name, \',\') as username')
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'to_place')
+            ->leftJoin('users', 'users.id', '=', 'updated_by')
+            // ->whereRaw('audits.new_values like \'%\' || workflow_logs.to_place || \'%\'')
+            //->groupBy('workflow_logs.id', 'workflow_states.public_tracking', 'users.name', 'audits.created_at')
+            ->orderBy('workflow_logs.id', $request->order ? $request->order : 'DESC')
+            ->get());
+
+
+        /*$res = [];
         $res = DB::table('audits')
             ->leftJoin('users', 'users.id', '=', 'audits.user_id')
             ->select(
@@ -827,6 +859,6 @@ class ProjectController extends Controller
             ->orderBy('audits.id', $request->order ? $request->order : 'DESC')
             ->get();
 
-        return response($res);
+        return response($res);*/
     }
 }

@@ -36,6 +36,11 @@ class Feedback extends Model
         return $this->belongsTo(Announcement::class);
     }
 
+    public function responderType()
+    {
+        return $this->belongsTo(ResponderType::class, 'responder_type_id', 'id');
+    }
+
     public function getPhotoFilepathAttribute()
     {
         if($this->attributes['photo_filepath']) {

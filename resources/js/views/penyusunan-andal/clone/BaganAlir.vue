@@ -12,19 +12,19 @@
                 <hr />
                 <p class="sub_text">Kegiatan Utama :</p>
                 <div
-                  v-for="utama in kegiatanUtama"
+                  v-for="(utama, idx) in kegiatanUtama"
                   :key="utama.id"
                   class="text item"
                 >
-                  <p>- {{ utama.name }}</p>
+                  <p class="list_item">{{ idx + 1 }}. {{ utama.name }}</p>
                 </div>
                 <p class="sub_text">Kegiatan Pendukung :</p>
                 <div
-                  v-for="pendukung in kegiatanPendukung"
+                  v-for="(pendukung, idx) in kegiatanPendukung"
                   :key="pendukung.id"
                   class="text item"
                 >
-                  <p>- {{ pendukung.name }}</p>
+                  <p class="list_item">{{ idx + 1 }}. {{ pendukung.name }}</p>
                 </div>
               </div>
             </li>
@@ -33,11 +33,11 @@
                 <span class="header__text">Kegiatan Lain</span>
                 <hr />
                 <div
-                  v-for="kegiatan in data.kegiatan_lain_sekitar"
+                  v-for="(kegiatan, idx) in data.kegiatan_lain_sekitar"
                   :key="kegiatan.id"
                   class="text item"
                 >
-                  <p>- {{ kegiatan.name }}</p>
+                  <p class="list_item">{{ idx + 1 }}. {{ kegiatan.name }}</p>
                 </div>
               </div>
             </li>
@@ -50,7 +50,7 @@
                   :key="idx"
                   class="text item"
                 >
-                  <p>- {{ rona }}</p>
+                  <p class="list_item">{{ idx + 1 }}. {{ rona }}</p>
                 </div>
               </div>
             </li>
@@ -62,22 +62,16 @@
                 <hr />
                 <p class="sub_text">Kekhawatiran :</p>
                 <div
-                  v-for="rencana in data.feedback"
-                  :key="rencana.id"
+                  v-if="data.public_consultation"
                   class="text item"
-                >
-                  <p v-if="rencana.concern != null">- {{ rencana.concern }}</p>
-                </div>
+                  v-html="data.public_consultation.negative_feedback_summary"
+                ></div>
                 <p class="sub_text">Harapan :</p>
                 <div
-                  v-for="rencana in data.feedback"
-                  :key="rencana.id"
+                  v-if="data.public_consultation"
                   class="text item"
-                >
-                  <p v-if="rencana.expectation != null">
-                    - {{ rencana.expectation }}
-                  </p>
-                </div>
+                  v-html="data.public_consultation.positive_feedback_summary"
+                ></div>
               </div>
             </li>
           </ul>
@@ -86,7 +80,10 @@
           <ul>
             <li class="bottom">
               <div class="bottom_content">
-                <span class="header__text">Identifikasi Dampak Potensial</span>
+                <span class="header__text">
+                  Identifikasi <br />
+                  Dampak Potensial
+                </span>
                 <!-- <hr />
                 <div v-for="item in identifikasiDampaks" :key="item.id">
                   <div v-if="item.type === 'stage'">
@@ -106,37 +103,49 @@
             <hr />
             <div>
               <p class="sub_text">Pra-konstruksi :</p>
-              <div v-for="item in impacts" :key="item.id">
-                <p v-if="item.id_project_stage === 4">
-                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
-                  {{ item.component_name }}.
+              <div
+                v-for="(item, idx) in dampakPotensial.praKonstruksi"
+                :key="item.id"
+              >
+                <p class="list_item">
+                  {{ idx + 1 }}. {{ item.change_type_name }}
+                  {{ item.rona_awal_name }} akibat {{ item.component_name }}.
                 </p>
               </div>
             </div>
             <div>
               <p class="sub_text">Konstruksi :</p>
-              <div v-for="item in impacts" :key="item.id">
-                <p v-if="item.id_project_stage === 1">
-                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
-                  {{ item.component_name }}.
+              <div
+                v-for="(item, idx) in dampakPotensial.konstruksi"
+                :key="item.id"
+              >
+                <p class="list_item">
+                  {{ idx + 1 }}. {{ item.change_type_name }}
+                  {{ item.rona_awal_name }} akibat {{ item.component_name }}.
                 </p>
               </div>
             </div>
             <div>
               <p class="sub_text">Operasi :</p>
-              <div v-for="item in impacts" :key="item.id">
-                <p v-if="item.id_project_stage === 2">
-                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
-                  {{ item.component_name }}.
+              <div
+                v-for="(item, idx) in dampakPotensial.operasi"
+                :key="item.id"
+              >
+                <p class="list_item">
+                  {{ idx + 1 }}. {{ item.change_type_name }}
+                  {{ item.rona_awal_name }} akibat {{ item.component_name }}.
                 </p>
               </div>
             </div>
             <div>
               <p class="sub_text">Pasca Operasi :</p>
-              <div v-for="item in impacts" :key="item.id">
-                <p v-if="item.id_project_stage === 3">
-                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
-                  {{ item.component_name }}.
+              <div
+                v-for="(item, idx) in dampakPotensial.pascaOperasi"
+                :key="item.id"
+              >
+                <p class="list_item">
+                  {{ idx + 1 }}. {{ item.change_type_name }}
+                  {{ item.rona_awal_name }} akibat {{ item.component_name }}.
                 </p>
               </div>
             </div>
@@ -146,7 +155,10 @@
           <ul>
             <li class="bottom">
               <div class="bottom_content">
-                <span class="header__text">Evaluasi Dampak Penting</span>
+                <span class="header__text">
+                  Evaluasi <br />
+                  Dampak Penting
+                </span>
                 <!-- <hr />
                 <div>
                   <div v-for="stages in evaluations" :key="stages.id">
@@ -180,54 +192,49 @@
             <hr />
             <div>
               <p class="sub_text">Pra-konstruksi :</p>
-              <div v-for="item in impacts" :key="item.id">
-                <p
-                  v-if="
-                    item.id_project_stage === 4 &&
-                    item.is_hypothetical_significant === true
-                  "
-                >
-                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
-                  {{ item.component_name }}.
+              <div
+                v-for="(item, idx) in dampakPentingHipotetik.praKonstruksi"
+                :key="item.id"
+              >
+                <p class="list_item">
+                  {{ idx + 1 }}. {{ item.change_type_name }}
+                  {{ item.rona_awal_name }} akibat {{ item.component_name }}.
                 </p>
               </div>
             </div>
             <div>
               <p class="sub_text">Konstruksi :</p>
-              <div v-for="item in impacts" :key="item.id">
-                <p
-                  v-if="
-                    item.id_project_stage === 1 &&
-                    item.is_hypothetical_significant === true
-                  "
-                >
-                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
-                  {{ item.component_name }}.
+              <div
+                v-for="(item, idx) in dampakPentingHipotetik.konstruksi"
+                :key="item.id"
+              >
+                <p class="list_item">
+                  {{ idx + 1 }}. {{ item.change_type_name }}
+                  {{ item.rona_awal_name }} akibat {{ item.component_name }}.
                 </p>
               </div>
             </div>
             <div>
               <p class="sub_text">Operasi :</p>
-              <div v-for="item in impacts" :key="item.id">
-                <p
-                  v-if="
-                    item.id_project_stage === 2 &&
-                    item.is_hypothetical_significant === true
-                  "
-                >
-                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
-                  {{ item.component_name }}.
+              <div
+                v-for="(item, idx) in dampakPentingHipotetik.operasi"
+                :key="item.id"
+              >
+                <p class="list_item">
+                  {{ idx + 1 }}. {{ item.change_type_name }}
+                  {{ item.rona_awal_name }} akibat {{ item.component_name }}.
                 </p>
               </div>
             </div>
             <div>
               <p class="sub_text">Pasca Operasi :</p>
-              <div v-for="item in impacts" :key="item.id">
-                <p
-                  v-if="item.id_project_stage === 3 && item.is_managed === true"
-                >
-                  - {{ item.change_type_name }} {{ item.rona_awal_name }} akibat
-                  {{ item.component_name }}.
+              <div
+                v-for="(item, idx) in dampakPentingHipotetik.pascaOperasi"
+                :key="item.id"
+              >
+                <p class="list_item">
+                  {{ idx + 1 }}. {{ item.change_type_name }}
+                  {{ item.rona_awal_name }} akibat {{ item.component_name }}.
                 </p>
               </div>
             </div>
@@ -238,7 +245,7 @@
     <el-col :span="24" style="text-align: right; margin: 2em 0">
       <el-button size="small" type="warning" @click="download">
         <img v-if="loader" width="24px" src="images/loader.gif" alt="" />
-        Export PDF
+        Export PDF (A3)
       </el-button>
     </el-col>
     <div id="pdf" />
@@ -259,7 +266,18 @@ export default {
       data: [],
       identifikasiDampaks: [],
       rona_mappings: [],
-      impacts: [],
+      dampakPotensial: {
+        praKonstruksi: [],
+        konstruksi: [],
+        operasi: [],
+        pascaOperasi: [],
+      },
+      dampakPentingHipotetik: {
+        praKonstruksi: [],
+        konstruksi: [],
+        operasi: [],
+        pascaOperasi: [],
+      },
       evaluations: [],
       loader: false,
       kegiatanUtama: [],
@@ -323,18 +341,47 @@ export default {
       axios
         .get(`api/andal-clone?id_project=${this.projectId}&join_tables=true`)
         .then((response) => {
-          this.impacts = response.data.data;
+          const impacts = response.data.data;
+          this.dampakPotensial = {
+            praKonstruksi: impacts.filter((x) => x.id_project_stage === 4),
+            konstruksi: impacts.filter((x) => x.id_project_stage === 1),
+            operasi: impacts.filter((x) => x.id_project_stage === 2),
+            pascaOperasi: impacts.filter((x) => x.id_project_stage === 3),
+          };
+          this.dampakPentingHipotetik = {
+            praKonstruksi: impacts.filter(
+              (x) =>
+                x.id_project_stage === 4 &&
+                x.is_hypothetical_significant === true
+            ),
+            konstruksi: impacts.filter(
+              (x) =>
+                x.id_project_stage === 1 &&
+                x.is_hypothetical_significant === true
+            ),
+            operasi: impacts.filter(
+              (x) =>
+                x.id_project_stage === 2 &&
+                x.is_hypothetical_significant === true
+            ),
+            pascaOperasi: impacts.filter(
+              (x) =>
+                x.id_project_stage === 3 &&
+                x.is_hypothetical_significant === true
+            ),
+          };
           this.loadingImpacts = false;
         });
-      //   axios
-      //     .get(`api/eval-dampak?idProject=${this.projectId}`)
-      //     .then((response) => {
-      //       this.evaluations = response.data;
-      //     });
+      // axios
+      //   .get(`api/eval-dampak?idProject=${this.projectId}`)
+      //   .then((response) => {
+      //     this.evaluations = response.data;
+      //   });
     },
     download() {
       this.loader = true;
-      var w = document.getElementById('bagan').scrollWidth;
+      // var w = document.getElementById('bagan').scrollWidth;
+
       var h = document.getElementById('bagan').scrollHeight;
       html2canvas(document.querySelector('.process_diagram'), {
         imageTimeout: 4000,
@@ -342,10 +389,10 @@ export default {
       }).then((canvas) => {
         document.getElementById('pdf').appendChild(canvas);
         const img = canvas.toDataURL('image/png');
-        const pdf = new JsPDF('landscape', 'px', [w, h]);
-        pdf.addImage(img, 'PNG', 0, 0, w, h);
+        const pdf = new JsPDF('p', 'mm', 'a3');
+        pdf.addImage(img, 'png', 0, 0, 297, Math.floor(h * 0.264583)); // add image & convert height from px to mm
         this.loader = false;
-        pdf.save('Bagan Alir Formulir KA.pdf');
+        pdf.save('Bagan Alir Pelingkupan.pdf');
         document.getElementById('pdf').innerHTML = '';
       });
     },
@@ -374,6 +421,8 @@ export default {
   font-size: 15px;
   font-weight: 600;
   color: #464646;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .sub_sub_text {
@@ -529,7 +578,7 @@ hr {
 
 .bottom_content {
   margin-top: 150% !important;
-  width: 400px !important;
+  width: 205px !important;
 }
 
 .bottom_content:before,
@@ -574,7 +623,7 @@ hr {
 
 .process_diagram li:last-child > div:after,
 .process_diagram li:last-child > div:before {
-  top: 0;
+  top: 0.4%;
   border-width: 0 0 var(--linethick);
 }
 
@@ -623,5 +672,10 @@ ol.process_diagram > li:last-child > div,
 ol.process_diagram > li:last-child > ul,
 .process_diagram ol > li:last-child > ul {
   padding-right: var(--linewidth);
+}
+
+.list_item {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 </style>
