@@ -62,11 +62,13 @@
                 <hr />
                 <p class="sub_text">Kekhawatiran :</p>
                 <div
+                  v-if="data.public_consultation"
                   class="text item"
                   v-html="data.public_consultation.negative_feedback_summary"
                 ></div>
                 <p class="sub_text">Harapan :</p>
                 <div
+                  v-if="data.public_consultation"
                   class="text item"
                   v-html="data.public_consultation.positive_feedback_summary"
                 ></div>
@@ -264,7 +266,6 @@ export default {
       data: [],
       identifikasiDampaks: [],
       rona_mappings: [],
-      impacts: [],
       dampakPotensial: {
         praKonstruksi: [],
         konstruksi: [],
@@ -339,7 +340,6 @@ export default {
         )
         .then((response) => {
           const impacts = response.data.data;
-          this.impacts = response.data.data;
           this.dampakPotensial = {
             praKonstruksi: impacts.filter((x) => x.id_project_stage === 4),
             konstruksi: impacts.filter((x) => x.id_project_stage === 1),
@@ -378,7 +378,8 @@ export default {
     },
     download() {
       this.loader = true;
-      var w = document.getElementById('bagan').scrollWidth;
+      // var w = document.getElementById('bagan').scrollWidth;
+
       var h = document.getElementById('bagan').scrollHeight;
       html2canvas(document.querySelector('.process_diagram'), {
         imageTimeout: 4000,
@@ -386,10 +387,10 @@ export default {
       }).then((canvas) => {
         document.getElementById('pdf').appendChild(canvas);
         const img = canvas.toDataURL('image/png');
-        const pdf = new JsPDF('landscape', 'px', [w, h]);
-        pdf.addImage(img, 'PNG', 0, 0, w, h);
+        const pdf = new JsPDF('p', 'mm', 'a3');
+        pdf.addImage(img, 'png', 0, 0, 297, Math.floor(h * 0.264583)); // add image & convert height from px to mm
         this.loader = false;
-        pdf.save('Bagan Alir Formulir KA.pdf');
+        pdf.save('Bagan Alir Pelingkupan.pdf');
         document.getElementById('pdf').innerHTML = '';
       });
     },
