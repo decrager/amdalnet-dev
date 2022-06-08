@@ -359,9 +359,9 @@ class KaCommentController extends Controller
             }
         }
 
-        $save_file_name = $id_project . '-' . $type . '.docx';
-        $templateProcessor->saveAs(Storage::disk('public')->path('recap/' . $save_file_name));
-        return response()->download($save_file_name)->deleteFileAfterSend(true);
+        $save_file_name = 'recap/' .  $id_project . '-' . $type . '.docx';
+        $templateProcessor->saveAs(Storage::disk('public')->path($save_file_name));
+        return response()->download(Storage::disk('public')->path($save_file_name))->deleteFileAfterSend(true);
     }
 
     private function documentType($type)
