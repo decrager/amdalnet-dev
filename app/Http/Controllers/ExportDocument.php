@@ -47,7 +47,7 @@ class ExportDocument extends Controller
         $praKonstruksi = DB::table('sub_project_components')
             ->select(
                 'project_stages.name as project_stages_name',
-                'components.name as component_name',
+                'components.name as component_name'
             )
             ->selectRaw('ROW_NUMBER () OVER (ORDER BY sub_project_components.id) as number')
             ->join('components', 'components.id', '=', 'sub_project_components.id_component')
@@ -60,7 +60,7 @@ class ExportDocument extends Controller
         $konstruksi = DB::table('sub_project_components')
             ->select(
                 'project_stages.name as project_stages_name',
-                'components.name as component_name',
+                'components.name as component_name'
             )
             ->selectRaw('ROW_NUMBER () OVER (ORDER BY sub_project_components.id) as number')
             ->join('components', 'components.id', '=', 'sub_project_components.id_component')
@@ -73,7 +73,7 @@ class ExportDocument extends Controller
         $operasi = DB::table('sub_project_components')
             ->select(
                 'project_stages.name as project_stages_name',
-                'components.name as component_name',
+                'components.name as component_name'
             )
             ->selectRaw('ROW_NUMBER () OVER (ORDER BY sub_project_components.id) as number')
             ->join('components', 'components.id', '=', 'sub_project_components.id_component')
@@ -86,7 +86,7 @@ class ExportDocument extends Controller
         $pascaOperasi = DB::table('sub_project_components')
             ->select(
                 'project_stages.name as project_stages_name',
-                'components.name as component_name',
+                'components.name as component_name'
             )
             ->selectRaw('ROW_NUMBER () OVER (ORDER BY sub_project_components.id) as number')
             ->join('components', 'components.id', '=', 'sub_project_components.id_component')
@@ -276,7 +276,7 @@ class ExportDocument extends Controller
                 'sops.impact',
                 'sops.other_impact',
                 'sops.monitoring_period',
-                'sops.impact_quantity',
+                'sops.impact_quantity'
             )
             ->leftJoin("kbli_clusters", function ($join) {
                 $join->on('list_kbli', 'LIKE', DB::raw("'%''' || projects.kbli || '''%'"));
