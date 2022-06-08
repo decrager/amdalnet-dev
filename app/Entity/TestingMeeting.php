@@ -35,7 +35,7 @@ class TestingMeeting extends Model
         return null;
     }
 
-    public function getInvitationFile()
+    public function getInvitationFileAttribute()
     {
         if($this->attributes['invitation_file']) {
             if(str_contains($this->attributes['invitation_file'], 'storage/')) {
