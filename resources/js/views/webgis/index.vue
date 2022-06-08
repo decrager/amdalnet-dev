@@ -241,6 +241,7 @@ export default {
       pageSize: 10,
       page: 1,
       loadStatus: false,
+      currentRtRwLayer: null,
     };
   },
   computed: {
@@ -297,11 +298,10 @@ export default {
                 imageTransparency: true,
                 visible: true,
               });
-
-              if (rtrwLayer.loaded === true) {
-                this.mapInit.leyers.remove(rtrwLayer);
+              if (this.currentRtRwLayer !== null) {
+                this.mapInit.layers.remove(this.currentRtRwLayer);
               }
-
+              this.currentRtRwLayer = rtrwLayer;
               this.mapInit.add(rtrwLayer);
             });
           } else {
