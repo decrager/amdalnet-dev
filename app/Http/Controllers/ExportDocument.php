@@ -225,15 +225,26 @@ class ExportDocument extends Controller
         Settings::setPdfRendererName('DomPDF');
 
         //Load word file
-        $Content = IOFactory::load(storage_path('app/public/formulir/' . $getProject->attachment));
+        // $Content = IOFactory::load(storage_path('app/public/formulir/' . $getProject->attachment));
+        $tmpName = tempnam();
+        $tmpFile = Storage::disk('public')->get('formulir/' . $getProject->attachment);
+        file_put_contents($tmpName, $tmpFile);
+        $Content = IOFactory::load($tmpName);
 
         //Save it into PDF
         $getName = explode('.', $getProject->attachment);
         $PDFWriter = IOFactory::createWriter($Content, 'PDF');
+        
+        unlink($tmpName);
 
-        $PDFWriter->save(storage_path('app/public/formulir/' . $getName[0]) . '.pdf');
+        // $PDFWriter->save(storage_path('app/public/formulir/' . $getName[0]) . '.pdf');
+        $tmpName = tempnam();
+        $PDFWriter->save($tmpName);
+        Storage::disk('public')->put('formulir/' . $getName[0] . '.pdf', file_get_contents($tmpName));
+        unlink($tmpName);
 
-        return response()->download(storage_path('app/public/formulir/' . $getName[0] . '.pdf'))->deleteFileAfterSend(false);
+        // return response()->download(storage_path('app/public/formulir/' . $getName[0] . '.pdf'))->deleteFileAfterSend(false);
+        return redirect()->away(Storage::disk('public')->get('formulir/' . $getName[0] . '.pdf'));
     }
 
     public function ExportUklUpl($id)
@@ -380,8 +391,12 @@ class ExportDocument extends Controller
         }
 
         $save_file_name = str_replace('/', '-', $getData->project_title) . ".docx";
-        $templateProcessor->saveAs($save_file_name);
-        return response()->download($save_file_name)->deleteFileAfterSend(false);
+        // $templateProcessor->saveAs($save_file_name);
+        // return response()->download($save_file_name)->deleteFileAfterSend(false);
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put($save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
+        return redirect()->away(Storage::disk('public')->get(save_file_name));
     }
 
     public function ExportBA($id, $type)
@@ -411,12 +426,17 @@ class ExportDocument extends Controller
         $templateProcessor->setValue('institution', $institution);
 
         $save_file_name = 'berita-acara-ka-' . str_replace('/', '-', $beritaAcara->project->project_title) . '.docx';
-        if (!File::exists(storage_path('app/public/berita-acara/'))) {
-            File::makeDirectory(storage_path('app/public/berita-acara/'));
-            $templateProcessor->saveAs(storage_path('app/public/berita-acara/' . $save_file_name));
-        }
+        // if (!File::exists(storage_path('app/public/berita-acara/'))) {
+        //     File::makeDirectory(storage_path('app/public/berita-acara/'));
+        //     $templateProcessor->saveAs(storage_path('app/public/berita-acara/' . $save_file_name));
+        // }
 
-        return response()->download(storage_path('app/public/berita-acara/' . $save_file_name))->deleteFileAfterSend(false);
+        // return response()->download(storage_path('app/public/berita-acara/' . $save_file_name))->deleteFileAfterSend(false);
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('berita-acara/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
+
+        return redirect()->away(Storage::disk('public')->get('berita-acara/' . $save_file_name));
     }
 
     public function saveKADoc(Request $request)
@@ -425,8 +445,9 @@ class ExportDocument extends Controller
         if ($request->file('dokumenKa')) {
             $dokumenKa = $request->file('dokumenKa');
             $docName = 'form-ka-' . $request->project_name . '.docx';
-            $dokumenKa->storePubliclyAs('public/formulir/', $docName);
-
+            // $dokumenKa->storePubliclyAs('public/formulir/', $docName);
+            $dokumenKa->storeAs('formulir', $docName, 'public');
+            
             $getDocumentData = DocumentAttachment::where('attachment', '=', $docName)
                 ->where('type', '=', 'Formulir KA')
                 ->where('id_project', '=', $request->id_project)
@@ -456,16 +477,20 @@ class ExportDocument extends Controller
 
     public function uklUpl($id_project)
     {
-        if (!File::exists(storage_path('app/public/workspace/'))) {
-            File::makeDirectory(storage_path('app/public/workspace/'));
-        }
+        // if (!File::exists(storage_path('app/public/workspace/'))) {
+        //     File::makeDirectory(storage_path('app/public/workspace/'));
+        // }
 
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
 
         $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
 
-        if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        // if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
+        //     return $save_file_name;
+        // }
+
+        if (Storage::disk('public')->exists('workspace/' . $save_file_name)) {
             return $save_file_name;
         }
 
@@ -737,7 +762,10 @@ class ExportDocument extends Controller
         $templateProcessor->cloneRowAndSetValues('oll', $oll);
         $templateProcessor->cloneRowAndSetValues('po', $po);
 
-        $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        // $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
 
         return $save_file_name;
     }
@@ -750,14 +778,24 @@ class ExportDocument extends Controller
         $project = Project::findOrFail($idProject);
 
         //Load word file
-        $Content = IOFactory::load(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        // $Content = IOFactory::load(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $tmpName = tempnam();
+        $tmpFile = Storage::disk('public')->get('ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx');
+        file_put_contents($tmpName, $tmpFile);
+        $Content = IOFactory::load($tmpName);
 
         //Save it into PDF
         $PDFWriter = IOFactory::createWriter($Content, 'PDF');
 
-        $PDFWriter->save(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'));
+        // $PDFWriter->save(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'));
+        // return response()->download(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'))->deleteFileAfterSend(false);
 
-        return response()->download(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'))->deleteFileAfterSend(false);
+        $tmpName = tempnam();
+        $PDFWriter->save($tmpName);
+        Storage::disk('public')->put('ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf', file_get_contents($tmpName));
+        unlink($tmpName);
+
+        return redirect()->away(Storage::disk('public')->get('formulir/' .'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'));
     }
 
     private function getComponentType($imp) {
