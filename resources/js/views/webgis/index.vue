@@ -282,6 +282,7 @@ export default {
       axios.get(`api/arcgis-services?id_province=${e}`)
         .then((response) => {
           this.layerRtrw = response.data.data;
+          console.log('this.layerRtrw.length = ' + this.layerRtrw.length);
           if (this.layerRtrw.length > 0) {
             this.layerRtrw.forEach((item) => {
               if (item.is_proxy === true) {
