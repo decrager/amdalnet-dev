@@ -8,6 +8,7 @@ use App\Entity\ImpactIdentificationClone;
 use App\Entity\KegiatanLainSekitar;
 use App\Entity\Project;
 use App\Entity\ProjectStage;
+use App\Entity\PublicConsultation;
 use App\Entity\SignificantImpactFlowchart;
 use App\Entity\SubProject;
 use Illuminate\Http\Request;
@@ -25,12 +26,8 @@ class BaganAlirController extends Controller
             $q->where('is_andal', $is_andal);
         })->get();
 
-        $getFeedback = DB::table('announcements')
-            ->select('feedbacks.concern', 'feedbacks.expectation')
-            ->join('feedbacks', 'feedbacks.announcement_id', '=', 'announcements.id')
-            ->join('projects', 'projects.id', '=', 'announcements.project_id')
-            ->where('projects.id', '=', $id)
-            ->get();
+        $getPublicConsultation = PublicConsultation::select('id', 'project_id', 'positive_feedback_summary', 'negative_feedback_summary')
+                                                    ->where('project_id', $id)->first();
 
         $getRonaAwal = DB::table('sub_project_rona_awals')
             ->select('component_types.name as component_name', 'project_stages.name as stage_name', 'sub_project_rona_awals.name as rona_name')
@@ -61,7 +58,7 @@ class BaganAlirController extends Controller
             'rencana_kegiatan' => $getRencanaKegiatan,
             'kegiatan_lain_sekitar' => $getKegiatanLainSekitar,
             'rona_awal' => $getRonaAwal,
-            'feedback' => $getFeedback,
+            'public_consultation' => $getPublicConsultation,
             'dampak_penting_potensi' => $dampakPentingPotensi,
         ]);
     }
