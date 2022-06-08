@@ -27,7 +27,7 @@
         <el-card type="box">
           <el-tabs type="card">
             <el-tab-pane label="Linimasa">
-              <project-timeline :id="project_id" />
+              <project-timeline v-if="data" :id="project_id" :marking="data.marking" />
             </el-tab-pane>
             <el-tab-pane label="Lokasi">
               <project-location :data="data" />

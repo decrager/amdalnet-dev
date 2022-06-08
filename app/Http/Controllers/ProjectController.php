@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Workflow;
 use App\Entity\WorkflowLog;
+use App\Entity\WorkflowStep;
 
 class ProjectController extends Controller
 {
@@ -828,11 +829,22 @@ class ProjectController extends Controller
             return response('Status Kegiatan tidak ditemukan', 404);
         }
 
-        /*$workflow = Workflow::get($project);
-        $transitions = $project->workflow_transitions();
-        // return response($workflow->getMarking($project)->getPlaces());
-        return $transitions;*/
+        return response(WorkflowStep::where('doc_type', $project->required_doc)
+            ->select('workflow_steps.code', 'workflow_logs.from_place', 'workflow_logs.to_place',
+                'workflow_logs.created_at as datetime',
+                'workflow_steps.rank',
+                'workflow_states.public_tracking as label', 'users.name as username')
+            // ->addSelect(DB::raw('\''.$project->marking.'\' as current_marking'))
+            ->leftJoin('workflow_states', 'workflow_states.code', '=', 'workflow_steps.code')
+            ->leftJoin('workflow_logs',  function ($join) use ($project) {
+                $join->on('workflow_logs.id_project', '=', DB::raw($project->id));
+                $join->on('workflow_logs.to_place', '=', 'workflow_states.state');
+            })
+            ->leftJoin('users', 'users.id', '=', 'updated_by')
+            ->orderBy('rank', 'DESC')
+            ->get());
 
+        /*
         return response(WorkflowLog::where('id_project', $project->id)
             ->selectRaw(
                 'from_place, to_place, workflow_logs.created_at as datetime,
@@ -843,7 +855,7 @@ class ProjectController extends Controller
             //->groupBy('workflow_logs.id', 'workflow_states.public_tracking', 'users.name', 'audits.created_at')
             ->orderBy('workflow_logs.id', $request->order ? $request->order : 'DESC')
             ->get());
-
+        */
 
         /*$res = [];
         $res = DB::table('audits')

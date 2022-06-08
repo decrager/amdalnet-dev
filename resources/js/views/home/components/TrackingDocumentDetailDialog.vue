@@ -14,7 +14,6 @@
       <p>{{ (project.registration_no).toUpperCase() }} </p>
       <!-- <div style="margin-top:1em;"><p><span style="font-weight:bold">No Registrasi</span> {{ project.registration_no }}</p></div> -->
       <div style="margin-top:1.5em; padding: 1em; border: 1px solid #e0e0e0; border-radius: 1em;">
-
         <el-row :gutter="8">
           <el-col :span="10">
             <p style="font-weight:bold;">Jenis Dokumen</p>
@@ -32,84 +31,32 @@
           <el-col :span="14">
             <div v-loading="loading">
               <el-button type="info" :icon="reverse? 'el-icon-bottom': 'el-icon-top' " style="float:right;" circle @click="reverse = !reverse" />
-              <p style="font-weight:bold;">Status</p>
+              <p style="font-weight:bold;">Status</p> <!-- <p><el-button type="primary" size="mini" plain @click="showAll = !showAll"><span v-if="showAll">tampilkan semua tahapan</span><span v-else>tampilkan hingga tahapan terkini</span></el-button></p> -->
+              <div style="margin-top: 1em;">
+                <el-checkbox v-model="showAll">tampilkan seluruh tahapan</el-checkbox>
+              </div>
               <div style="padding: 0.5em;">
                 <el-timeline v-if="data.length > 0" style="margin-top: 2em;" :reverse="reverse">
                   <el-timeline-item
-                    v-for="(activity, index) in data"
+                    v-for="(activity, index) in (showAll ? data : data.filter(e => e.rank <= current_rank))"
                     :key="index"
                     :timestamp="activity.datetime"
                     size="large"
-                    :type="(index === 0) ? 'warning': (index === (data.length - 1) ? 'info' : 'primary' )"
-                    :icon="(index === 0) ? 'el-icon-location': (index === (data.length - 1) ? 'el-icon-plus' : 'el-icon-check' )"
+                    :type="activity.rank < current_rank ? (activity.rank === 1 ? 'info' : 'primary') : (activity.rank === current_rank ? (current_rank === data[0].rank ? 'primary' : 'warning') : 'default')"
+                    :icon="activity.rank < current_rank ? (activity.rank === 1 ? 'el-icon-plus' : 'el-icon-check') : (activity.rank === current_rank ? (current_rank === data[0].rank ? 'el-icon-check' : 'el-icon-location') : '')"
                     placement="top"
                   >
                     <div>
-                      <p>{{ activity.label || activity.to_place }} <br> <span v-if="activity.username" style="font-size:80%;">oleh {{ activity.username }}</span> </p>
+                      <p>{{ activity.label || activity.to_place }} <br> <span v-if="activity.username" style="font-size:80%;">oleh {{ activity.username }}</span></p>
                     </div>
                   </el-timeline-item>
                 </el-timeline>
               </div>
-
             </div>
           </el-col>
         </el-row>
-
       </div>
     </div>
-
-    <!--
-    <div v-loading="loading" class="form-container">
-      <h3>Kegiatan {{ data.project_title }}</h3>
-      <el-card>
-        <div align="center">No Registrasi: {{ data.registration_no }}</div>
-        <el-row :gutter="4">
-          <el-col :span="12" :xs="24">
-            <el-form
-              label-position="left"
-              label-width="200px"
-              style="max-width: 300px"
-            >
-              <el-form-item label="Jenis Dokumen Lingkungan :">
-                <div>{{ data.required_doc }}</div>
-              </el-form-item>
-              <el-form-item label="Risiko :">
-                <div>{{ data.risk_level }}</div>
-              </el-form-item>
-              <el-form-item label="Kewenangan :">
-                <div>{{ data.authority }}</div>
-              </el-form-item>
-              <el-form-item label="Lokasi Rencana Usaha dan/atau Kegiatan :">
-                <div v-if="data.address[0] === undefined || data.address[0] === null">-</div>
-                <div v-if="data.address[0] !== undefined">{{ data.address[0].address }}</div>
-              </el-form-item>
-              <el-form-item label="Deskripsi :">
-                <div>{{ data.description }}</div>
-              </el-form-item>
-            </el-form>
-          </el-col>
-          <el-col :span="12" :xs="24">
-            <el-card>
-              <el-timeline>
-                <el-timeline-item
-                  v-for="(step, index) in data.timeline"
-                  :key="index"
-                  :icon="step.icon"
-                  :type="step.type"
-                  :color="step.color"
-                  :size="step.size"
-                  :timestamp="step.timestamp"
-                >
-                  {{ step.content }}
-                </el-timeline-item>
-              </el-timeline>
-            </el-card>
-          </el-col>
-        </el-row>
-      </el-card>
-
-    </div> -->
-
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="cancel"> Close </el-button>
     </div>
@@ -133,6 +80,9 @@ export default {
       loading: true,
       data: [],
       reverse: true,
+      current_marking: 0,
+      showAll: true,
+      all: [],
     };
   },
   mounted() {
@@ -146,11 +96,17 @@ export default {
     async getData(){
       this.loading = true;
       this.data = [];
+      this.current_rank = 0;
       // await axios.get('api/tracking-document/' + this.project.id)
       await axios.get('api/timeline?id=' + this.project.id)
         .then(response => {
-          // this.data = response.data.data;
-          this.data = response.data;
+          if (response.data && response.data.length > 0){
+            this.data = response.data;
+            if (this.project.marking !== null){
+              const current_marking = this.data.find(e => e.to_place === this.project.marking);
+              this.current_rank = current_marking.rank;
+            }
+          }
         }).finally(() => {
           this.loading = false;
         });
