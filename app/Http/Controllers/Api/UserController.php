@@ -9,8 +9,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Entity\ExpertBank;
 use App\Entity\Formulator;
 use App\Entity\Initiator;
+use App\Entity\LukMember;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
 use App\Laravue\JsonResponse;
@@ -162,6 +164,22 @@ class UserController extends BaseController
                 // update formulator with user email
                 $formulator->email = $email;
                 $formulator->save();
+            }
+
+            // checking if this user is tuk member
+            $tuk_member = LukMember::where('email', $user->email)->first();
+            if($tuk_member && $tuk_member->email !== $email) {
+                // update tuk member with user email
+                $tuk_member->email = $email;
+                $tuk_member->save();
+            }
+
+            // checking if this user is inside expert bank
+            $expert_bank = ExpertBank::where('email', $user->email)->first();
+            if($expert_bank && $expert_bank->email !== $email) {
+                // update expert bank with user email
+                $expert_bank->email = $email;
+                $expert_bank->save();
             }
 
             $user->name = $request->get('name');
