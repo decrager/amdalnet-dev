@@ -115,7 +115,7 @@ const projects = {
     async getSectors({ commit }, payload) {
       const { data } = await kbliResource.list(payload);
       const option = data.map((i) => {
-        return { value: i.id, label: i.value };
+        return { value: i.value, label: i.value };
       });
       commit('SET_SECTOR_OPTIONS', option);
     },

@@ -88,6 +88,10 @@ export default {
       type: String,
       default: () => '',
     },
+    sector: {
+      type: String,
+      default: () => '',
+    },
   },
   data(){
     return {
@@ -140,6 +144,7 @@ export default {
         // calculate result
         const { data } = await kbliEnvParamResource.list({
           fieldId: this.kbli,
+          sector: this.sector,
           businessType: value.id_param,
           unit: value.id_unit,
         });

@@ -464,20 +464,25 @@ class ProjectController extends Controller
 
             //create sub project
             foreach ($data['listSubProject'] as $subPro) {
-                $business = Business::find($subPro->biz_type);
-                $sector = Business::find($subPro->sector);
+                if(gettype($subPro->biz_type) !== 'string'){
+                    $business = Business::find($subPro->biz_type);
+                }
+                if(gettype($subPro->sector) !== 'string'){
+                    $sector = Business::find($subPro->sector);
+                }
+                
                 $createdSubPro = SubProject::create([
                     'kbli' => isset($subPro->kbli) ? $subPro->kbli : 'Non KBLI',
                     'name' => $subPro->name,
                     'result' => $subPro->result,
                     'type' => $subPro->type,
-                    'biz_type' => $subPro->biz_type,
+                    'biz_type' => gettype($subPro->biz_type) !== 'string' ? $subPro->biz_type : 0,
                     'id_project' => $project->id,
-                    'sector' => $subPro->sector,
+                    'sector' => gettype($subPro->sector) !== 'string'? $subPro->sector : 0,
                     'scale' => floatval($subPro->scale),
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
-                    'biz_name' => isset($business) ? $business->value : null,
-                    'sector_name' => isset($sector) ? $sector->value : null,
+                    'biz_name' => isset($business) ? $business->value : $subPro->biz_name,
+                    'sector_name' => isset($sector) ? $sector->value : $subPro->sector_name,
                     'id_proyek' => isset($subPro->id_proyek) ? $subPro->id_proyek : null,
                 ]);
 
