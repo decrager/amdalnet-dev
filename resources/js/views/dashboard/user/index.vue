@@ -10,7 +10,7 @@
         </el-col>
       </el-row>
       <el-row v-if="!isPemerintah">
-        <project-table />
+        <project-table v-if="!isFormulator" />
       </el-row>
     </div>
     <div v-if="isExaminer">
