@@ -2,7 +2,7 @@
   <div class="app-container" style="padding: 24px">
     <el-card v-if="formulirKACompleted && templateKALoaded" v-loading="loading">
       <h2>
-        Submit Formulir kerangka Acuan
+        Submit Formulir Kerangka Acuan
         <span v-if="isFormulator">ke Pemrakarsa</span>
       </h2>
       <div>

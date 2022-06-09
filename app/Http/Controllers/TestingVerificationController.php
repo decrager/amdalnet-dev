@@ -98,7 +98,7 @@ class TestingVerificationController extends Controller
         } else {
             $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
         }
-        
+
         $verification->notes = $data['notes'];
 
         if($request->complete) {
@@ -133,6 +133,20 @@ class TestingVerificationController extends Controller
             $form->description = isset($data['ka_forms'][$i]) ? $data['ka_forms'][$i]['description'] : null;
             $form->name = isset($data['ka_forms'][$i]) ? $data['ka_forms'][$i]['name'] : null;
             $form->save();
+        }
+        /* WORKFLOW */
+        $project = Project::where('id', $verification->id_project)->first();
+        if($project && $project->marking == 'amdal.form-ka-submitted'){
+
+            if($verification->is_complete){
+                $project->workflow_apply('review-amdal-form-ka');
+                $project->workflow_apply('approve-amdal-form-ka');
+                $project->save();
+            }else {
+                $project->workflow_apply('review-amdal-form-ka');
+                $project->workflow_apply('return-amdal-form-ka');
+                $project->save();
+            }
         }
 
         return response()->json(['message' => 'success']);
@@ -227,7 +241,7 @@ class TestingVerificationController extends Controller
                 }
             }
         }
-        
+
         $announcement = Announcement::where('project_id', $id_project)->first();
 
         // LPJP
@@ -255,12 +269,12 @@ class TestingVerificationController extends Controller
 
         // Konsultasi Publik
         $public_consultation = PublicConsultation::where('project_id', $project->id)->with('docs')->first();
-        
+
         // Verification Form Disable
         $is_disabled = false;
-        
+
         $form = [];
-        
+
         if($verification) {
             // Verification Form Disable
             if($verification->is_complete !== null) {
@@ -287,9 +301,9 @@ class TestingVerificationController extends Controller
                             $link = $project->pre_agreement_file;
                         } else if($f->name == 'peta') {
                             $link = $this->petaLink(
-                                $peta_tapak, 
-                                $peta_sosial, 
-                                $peta_ekologis, 
+                                $peta_tapak,
+                                $peta_sosial,
+                                $peta_ekologis,
                                 $peta_wilayah_studi,
                                 $peta_tapak_pdf,
                                 $peta_sosial_pdf,
@@ -347,9 +361,9 @@ class TestingVerificationController extends Controller
                   [
                     'name' => 'peta',
                     'link' => $this->petaLink(
-                        $peta_tapak, 
-                        $peta_sosial, 
-                        $peta_ekologis, 
+                        $peta_tapak,
+                        $peta_sosial,
+                        $peta_ekologis,
                         $peta_wilayah_studi,
                         $peta_tapak_pdf,
                         $peta_sosial_pdf,
@@ -402,9 +416,9 @@ class TestingVerificationController extends Controller
     }
 
     private function petaLink(
-            $peta_tapak, 
-            $peta_sosial, 
-            $peta_ekologis, 
+            $peta_tapak,
+            $peta_sosial,
+            $peta_ekologis,
             $peta_wilayah_studi,
             $peta_tapak_pdf,
             $peta_sosial_pdf,
@@ -460,7 +474,7 @@ class TestingVerificationController extends Controller
 
         $project = Project::findOrFail($id_project);
         $verification = TestingVerification::where([['id_project', $id_project],['document_type', 'ka']])->first();
-        
+
         Carbon::setLocale('id');
 
         $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', $verification->updated_at)->isoFormat('D MMMM Y');
@@ -472,7 +486,7 @@ class TestingVerificationController extends Controller
             }
         }
 
-        // === TUK === // 
+        // === TUK === //
         $tuk = null;
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
@@ -498,7 +512,7 @@ class TestingVerificationController extends Controller
                 $authority_big = strtoupper($tuk->districtAuthority->name);
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $tuk_telp = $tuk->phone;

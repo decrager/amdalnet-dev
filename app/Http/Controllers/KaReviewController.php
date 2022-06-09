@@ -35,10 +35,6 @@ class KaReviewController extends Controller
             $review->setAttribute('formulator_notes', $review_penyusun->notes);
         }
 
-        /*$project = Project::where('id', $id_project)->first();
-        $project->workflow_apply('submit-amdal-form-ka');
-        $project->save();*/
-
         return $review;
     }
 
@@ -92,13 +88,12 @@ class KaReviewController extends Controller
             // === WORKFLOW === //
             if($document_type == 'KA') {
                 if($project->marking == 'amdal.form-ka-drafting') {
-                    $project->workflow_apply('submit-amdal-form-ka');
-                    // $project->workflow_apply('review-amdal-form-ka');
-                    $project->save();
-                } else if($project->marking == 'amdal.form-ka-submitted') {
+                    //$project->workflow_apply('submit-amdal-form-ka');
+                    // $project->save();
+                } /* else if($project->marking == 'amdal.form-ka-submitted') {
                     $project->workflow_apply('review-amdal-form-ka');
                     $project->save();
-                }
+                }*/
             } else if($document_type == 'ANDAL RKL RPL') {
                 if($project->marking == 'amdal.form-rklrpl-drafting') {
                     $project->workflow_apply('submit-amdal');
@@ -166,6 +161,7 @@ class KaReviewController extends Controller
 
                 // === WORKFLOW === //
                 if($document_type == 'KA') {
+                    /*
                     if($project->marking == 'amdal.form-ka-adm-review') {
                         $project->workflow_apply('return-amdal-form-ka-review');
                         $project->save();
@@ -173,7 +169,7 @@ class KaReviewController extends Controller
                         $project->workflow_apply('review-amdal-form-ka');
                         $project->workflow_apply('return-amdal-form-ka-review');
                         $project->save();
-                    }
+                    }*/
                 } else if($document_type == 'ANDAL RKL RPL') {
                     if($project->marking == 'amdal.form-rklrpl-drafting') {
                         $project->workflow_apply('submit-amdal');
@@ -233,16 +229,16 @@ class KaReviewController extends Controller
                 if($document_type == 'KA') {
                     if($project->marking == 'amdal.form-ka-drafting') {
                         $project->workflow_apply('submit-amdal-form-ka');
-                        $project->workflow_apply('review-amdal-form-ka');
+                        // $project->workflow_apply('review-amdal-form-ka');
                         $project->save();
-                    } else if($project->marking == 'amdal.form-ka-submitted') {
-                        $project->workflow_apply('review-amdal-form-ka');
-                        $project->save();
+                    } /* else if($project->marking == 'amdal.form-ka-submitted') {
+                        // $project->workflow_apply('review-amdal-form-ka');
+                        // $project->save();
                     }
                     if($project->marking == 'amdal.form-ka-review') {
                         $project->workflow_apply('approve-amdal-form-ka');
                         $project->save();
-                    }
+                    }*/
 
                 } else if($document_type == 'ANDAL RKL RPL') {
                     if($project->marking == 'amdal.form-rklrpl-drafting') {

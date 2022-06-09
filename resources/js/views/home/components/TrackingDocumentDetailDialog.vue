@@ -38,7 +38,7 @@
               <div style="padding: 0.5em;">
                 <el-timeline v-if="data.length > 0" style="margin-top: 2em;" :reverse="reverse">
                   <el-timeline-item
-                    v-for="(activity, index) in (showAll ? data : data.filter(e => e.rank <= current_rank))"
+                    v-for="(activity, index) in (showAll ? data.filter(e => !e.is_conditional) : data.filter(e => (e.rank <= current_rank) && (e.is_conditional === false )))"
                     :key="index"
                     :timestamp="activity.datetime"
                     size="large"

@@ -87,7 +87,7 @@ class MeetingReportController extends Controller
                 $file = $this->base64ToFile($request->dokumen_file);
                 $name = 'berita-acara-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
-    
+
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
                 $meeting_report->file = $name;
                 $meeting_report->save();
@@ -182,7 +182,7 @@ class MeetingReportController extends Controller
         $project = Project::findOrFail($request->idProject);
         if($project->marking == 'amdal.form-ka-examination') {
             $project->workflow_apply('held-amdal-form-ka-meeting');
-            $project->workflow_apply('approve-amdal-form-ka');
+            $project->workflow_apply('aprrove-amdal-form-ka');
             $project->workflow_apply('draft-amdal-form-ka-ba');
             $project->save();
         }
@@ -278,7 +278,7 @@ class MeetingReportController extends Controller
                         'type' => $type_member,
                         'type_member' => $type_member,
                         'institution' => $institution,
-                        'tuk_member_id' => $i->id_feasibility_test_team_member 
+                        'tuk_member_id' => $i->id_feasibility_test_team_member
                     ];
                 } else if($i->id_tuk_secretary_member) {
                     $invitations[] = [
@@ -310,7 +310,7 @@ class MeetingReportController extends Controller
                 if($a['type']==$b['type']) return 0;
                 return $a['type'] < $b['type']?1:-1;
             });
-        } 
+        }
 
         $data = [
             'type' => 'new',
@@ -398,7 +398,7 @@ class MeetingReportController extends Controller
                 if($a['type']==$b['type']) return 0;
                 return $a['type'] < $b['type']?1:-1;
             });
-        } 
+        }
 
         $data = [
             'type' => 'update',
@@ -433,13 +433,13 @@ class MeetingReportController extends Controller
 
         if($tuk) {
             $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $tuk->id)->get();
-            
+
             foreach($members as $m) {
                 $name = '';
                 $email = '';
                 $type_member = '';
                 $institution = '';
-    
+
                 if($m->expertBank) {
                     $name = $m->expertBank->name;
                     $email = $m->expertBank->email;
@@ -451,7 +451,7 @@ class MeetingReportController extends Controller
                     $institution = $m->lukMember->institution;
                     $type_member = 'employee';
                 }
-    
+
                 $newMembers[] = [
                     'id' => $m->id,
                     'role' => $m->position,
@@ -479,7 +479,7 @@ class MeetingReportController extends Controller
         }
 
         return $newMembers;
-    } 
+    }
 
     private function getDocs($id_project) {
         if (!Storage::disk('public')->exists('ba-ka')) {
@@ -490,7 +490,7 @@ class MeetingReportController extends Controller
         $meeting = MeetingReport::select('id', 'id_project', 'updated_at', 'location', 'meeting_date', 'meeting_time', 'notes')->where([['id_project', $id_project],['document_type', 'ka']])->first();
         $invitations = MeetingReportInvitation::where('id_meeting_report', $meeting->id)->get();
         Carbon::setLocale('id');
-        
+
         $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s', strtotime($meeting->updated_at)))->isoFormat('MMMM Y');
 
         $project_address = '';
@@ -533,7 +533,7 @@ class MeetingReportController extends Controller
                 $authority_big = strtoupper($tuk->districtAuthority->name);
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $authority_real = $tuk->authority;
@@ -551,10 +551,10 @@ class MeetingReportController extends Controller
                 $institution_name = strtoupper($tuk->institution);
             }
         }
-        
+
         $member = [];
         $ahli = [];
-        
+
         foreach($invitations as $i) {
             if($i->id_feasibility_test_team_member) {
                 $tuk_member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
@@ -654,15 +654,15 @@ class MeetingReportController extends Controller
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
-      
-        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
-      
+
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1);
+
         // find substring fro replace here eg: data:image/png;base64,
-      
-        $file = str_replace($replace, '', $file_64); 
-      
-        $file = str_replace(' ', '+', $file); 
-      
+
+        $file = str_replace($replace, '', $file_64);
+
+        $file = str_replace(' ', '+', $file);
+
         return [
             'extension' => $extension,
             'file' => base64_decode($file)
