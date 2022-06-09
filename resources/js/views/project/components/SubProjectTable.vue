@@ -344,6 +344,7 @@ export default {
 <style>
 .el-select-dropdown{
   width: 250px;
-  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
 }
 </style>

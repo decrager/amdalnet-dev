@@ -32,7 +32,7 @@ class BusinessController extends Controller
           } else if ($request->fieldBySector) {
                 return BusinessResource::collection(Business::where('description', 'field')->where('parent_id', $request->fieldBySector)->get(['id','value']));
           } else if ($request->fieldBySectorName) {
-            return BusinessResource::collection(Business::leftJoin('business as sectors', 'sectors.id','=','business.parent_id')
+            return BusinessResource::collection(Business::leftJoin('business as sectors', 'sectors.id','=','business.parent_id')->distinct()
             ->select('business.id','business.value')->where('sectors.description','sector')->where('sectors.value', $request->fieldBySectorName)
             ->get());
           } else if ($request->kblis) {

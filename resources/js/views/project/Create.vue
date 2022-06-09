@@ -236,7 +236,7 @@
               </el-form-item>
             </el-row>
             <!-- Alamat -->
-            <el-row type="flex" justify="end" :gutter="4">
+            <el-row v-show="currentProject.isPemerintah === 'true'" type="flex" justify="end" :gutter="4">
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
                   <el-table :key="refresh" :data="currentProject.address" max-height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
