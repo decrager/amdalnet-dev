@@ -217,7 +217,7 @@ export default {
       } else {
         sort = `&sort=${this.form.sort}`;
       }
-      axios.get(`/api/announcements?keyword=${this.keyword}&page=${this.listQuery.page}`)
+      axios.get(`/api/announcements?keyword=${this.keyword}&page=${this.listQuery.page}&active=1`)
         .then(response => {
           this.allData = response.data.data;
           this.total = response.data.total;

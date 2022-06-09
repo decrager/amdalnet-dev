@@ -104,6 +104,19 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
+        <div v-if="pdfError || pdfName" style="display: inline-block;">
+          <small v-if="pdfError" style="color:red;">{{ pdfError }}</small>
+          <small v-if="pdfName">{{ pdfName }}</small>
+        </div>
+        <el-upload
+          action="#"
+          :auto-upload="false"
+          :on-change="handleUploadPDF"
+          :show-file-list="false"
+          style="display: inline-block; margin-right: 11px;"
+        >
+          <el-button type="warning"> Upload PDF </el-button>
+        </el-upload>
         <el-button type="danger" @click="handleClose">Batal</el-button>
         <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
       </span>
@@ -157,6 +170,9 @@ export default {
       master: [],
       noMaster: false,
       saving: false,
+      pdfName: null,
+      pdfFile: null,
+      pdfError: null,
     };
   },
   /* watch: {
@@ -192,6 +208,9 @@ export default {
         id_project: parseInt(this.$route.params && this.$route.params.id),
         id_project_rona_awal: null,
       };
+      this.pdfName = null;
+      this.pdfFile = null;
+      this.pdfError = null;
     },
     onOpen(){
       console.log('opening!');
@@ -209,11 +228,16 @@ export default {
     async handleSaveForm(){
       // save data in this form!
       this.saving = true;
-      await projectRonaAwalResource.store({
-        id_project: this.project_id,
-        component: this.data,
-        mode: this.mode,
-      })
+      const formData = new FormData();
+      formData.append('id_project', this.project_id);
+      formData.append('component', JSON.stringify(this.data));
+      formData.append('mode', this.mode);
+
+      if (this.pdfFile) {
+        formData.append('file', await this.convertBase64(this.pdfFile));
+      }
+
+      await projectRonaAwalResource.store(formData)
         .then((res) => {
           this.data.id_project_rona_awal = res.data.id;
         })
@@ -286,6 +310,38 @@ export default {
         return ((this.data.name).trim() === '') || emptyTexts;
       }
       return (this.data.id === null) || (this.data.id <= 0) || emptyTexts;
+    },
+    handleUploadPDF(file, filelist) {
+      this.pdfError = null;
+      this.pdfFile = null;
+      this.pdfName = null;
+      if (file.raw.size > 2097152) {
+        this.pdfError = 'Ukuran File Tidak Boleh Melebihi 2 MB';
+        return;
+      }
+
+      const extension = file.name.split('.');
+      if (extension[extension.length - 1].toLowerCase() !== 'pdf') {
+        this.pdfError = 'File Harus Berformat PDF';
+        return;
+      }
+
+      this.pdfFile = file.raw;
+      this.pdfName = file.name;
+    },
+    convertBase64(file) {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
+      });
     },
   },
 };

@@ -28,6 +28,7 @@ export default {
   },
   methods: {
     loadMap() {
+      let layerTapak = null;
       axios.get('api/map/' + this.idProject).then((response) => {
         if (response.data.length > 1) {
           const map = new Map({
@@ -180,7 +181,11 @@ export default {
                     title: 'Layer Tapak',
                     renderer: rendererTapak,
                   });
+                  if (layerTapak !== null) {
+                    map.layers.remove(layerTapak);
+                  }
                   map.add(geojsonLayerArray);
+                  layerTapak = geojsonLayerArray;
                 });
               });
             }
