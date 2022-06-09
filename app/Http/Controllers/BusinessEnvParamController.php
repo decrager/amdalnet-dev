@@ -32,10 +32,11 @@ class BusinessEnvParamController extends Controller
                 }
 
                 //get kbli env param by kbli_id, business_type and scale
-                if(gettype($request->fieldId) === 'string'){
+                // if(gettype($request->fieldId) === 'string'){
+                if($request->isPemerintah){
                     // return BusinessEnvParam::leftJoin('business', 'business.id','=','business_env_params.business_id')
                     // ->leftJoin('business as b2','business.parent_id','=','b2.id')
-                    // ->where('business.value', $request->fieldId)
+                    // ->where('business.value', $request->fieldName)
                     // ->where('b2.value',$request->sector)
                     // ->where('business_env_params.id_param', $request->businessType)
                     // ->where('business_env_params.id_unit', $request->unit)->toSql();
@@ -50,7 +51,7 @@ class BusinessEnvParamController extends Controller
                 return BusinessEnvParamResource::collection(BusinessEnvParam::where('business_id', $request->fieldId)->where('id_param', $request->businessType)->where('id_unit', $request->unit)->get());
             } else if (isset($request->unit) && $request->unit == 0){
                 //get kbli env param by kbli_id, business_type and scale
-                if(gettype($request->fieldId) === 'string'){
+                if($request->isPemerintah){
                     // return BusinessEnvParam::leftJoin('business', 'business.id','=','business_env_params.business_id')
                     // ->leftJoin('business as b2','business.parent_id','=','b2.id')
                     // ->where('business.value', $request->fieldId)
