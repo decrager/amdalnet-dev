@@ -14,6 +14,7 @@ use App\Entity\PotentialImpactEvalClone;
 use App\Entity\PotentialImpactEvaluation;
 use App\Entity\SubProject;
 use App\Entity\ImpactKegiatanLainSekitar;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Constraint\IsEmpty;
 
 class ProjectRonaAwalController extends Controller
@@ -141,11 +142,12 @@ class ProjectRonaAwalController extends Controller
 
         $params = $request->all();
         if(isset($params['id_project']) && isset($params['component'])){
-            $master = RonaAwal::where('id', $params['component']['id'])->first();
+            $component = json_decode($params['component'], true);
+            $master = RonaAwal::where('id', $component['id'])->first();
             if(!$master){
                 $master = RonaAwal::create([
-                    'name' => $params['component']['name'],
-                    'id_component_type' => $params['component']['id_component_type'],
+                    'name' => $component['name'],
+                    'id_component_type' => $component['id_component_type'],
                     'is_master' => false,
                     'originator_id' => $request->id_project
                 ]);
@@ -155,8 +157,8 @@ class ProjectRonaAwalController extends Controller
                 }
             } else {
                 if (!$master->is_master){
-                    if(!empty($params['component']['name']) && (strcmp($master->name, $params['component']['name']) !== 0)) {
-                        $master->name = $params['component']['name'];
+                    if(!empty($component['name']) && (strcmp($master->name, $component['name']) !== 0)) {
+                        $master->name = $component['name'];
                         $master->save();
                     }
                 }
@@ -167,8 +169,16 @@ class ProjectRonaAwalController extends Controller
                 'id_rona_awal' => $master->id,
                 'is_andal' => $request->mode,
             ]);
-            $pc->description = $params['component']['description'];
-            $pc->measurement = $params['component']['measurement'];
+            $pc->description = $component['description'];
+            $pc->measurement = $component['measurement'];
+
+            if($request->file) {
+                $file = $this->base64ToFile($request->file);
+                $file_pdf = 'rona-awal/' . uniqid() . '.' . $file['extension'];
+                Storage::disk('public')->put($file_pdf, $file['file']);
+                $pc->file = $file_pdf;
+            }
+            
             if ($pc->save()) {
                 return response()->json([
                     'code' => 200,
@@ -321,5 +331,23 @@ class ProjectRonaAwalController extends Controller
             return response($projectRonaAwal->delete(), 200);
         }
         return response('Komponen Lingkungan tidak ditemukan', 500);
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }
