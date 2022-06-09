@@ -92,6 +92,10 @@ export default {
       type: String,
       default: () => '',
     },
+    pemerintah: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   data(){
     return {
@@ -142,13 +146,19 @@ export default {
         // console.log(this.kbli);
 
         // calculate result
-        const { data } = await kbliEnvParamResource.list({
-          fieldId: this.kbli,
-          fieldName: this.kbli,
-          sector: this.sector,
-          businessType: value.id_param,
-          unit: value.id_unit,
-        });
+        const { data } = this.pemerintah
+          ? await kbliEnvParamResource.list({
+            fieldId: this.kbli,
+            isPemerintah: 'true',
+            sector: this.sector,
+            businessType: value.id_param,
+            unit: value.id_unit,
+          }) : await kbliEnvParamResource.list({
+            fieldId: this.kbli,
+            sector: this.sector,
+            businessType: value.id_param,
+            unit: value.id_unit,
+          });
         // console.log('1', data);
         const kbliEnvParams = data.map((item) => {
           const items = item.condition.replace(/[\[\"\]]/g, '').split(',');

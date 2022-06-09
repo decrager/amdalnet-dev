@@ -119,7 +119,7 @@
       <el-table-column align="center" label="Skala Besaran">
         <template slot-scope="scope">
           <el-button type="primary" @click="handleClick(scope.row)">Input</el-button>
-          <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.biz_type ? scope.row.biz_type.toString() : scope.row.biz_type" :sector="scope.row.sector ? scope.row.sector.toString() : scope.row.sector" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
+          <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.biz_type ? scope.row.biz_type.toString() : scope.row.biz_type" :sector="scope.row.sector ? scope.row.sector.toString() : scope.row.sector" :pemerintah="pemerintah" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
         </template>
       </el-table-column>
 

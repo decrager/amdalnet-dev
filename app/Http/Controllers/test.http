@@ -22,7 +22,10 @@ GET http://localhost:8000/api/business/2
 ###
 GET http://localhost:8000/api/business-env-params?businessTypePem=Industri+Nonwoven&sectorName=Perindustrian
 ###
-GET http://localhost:8000/api/business-env-params?fieldId=2954&sector=2952&businessType=96&unit=29
+# fieldId=2953&fieldName=2953&sector=2952&businessType=96&unit=29
+# fieldId=2954&sector=2952&businessType=96&unit=29
+
+GET http://localhost:8000/api/business-env-params?fieldId=Apotek&isPemerintah=true&sector=Kesehatan&businessType=105&unit=0
 ###
 GET http://localhost:8000/api/business?fieldBySectorName=Perindustrian
 ###
