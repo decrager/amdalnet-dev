@@ -104,7 +104,7 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-upload
+        <!-- <el-upload
           action="#"
           :auto-upload="false"
           :on-change="handleUploadPDF"
@@ -115,7 +115,7 @@
           <div slot="tip" class="el-upload__tip">
             {{ pdfName }}
           </div>
-        </el-upload>
+        </el-upload> -->
         <el-button type="danger" @click="handleClose">Batal</el-button>
         <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
       </span>
