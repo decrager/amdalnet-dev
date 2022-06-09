@@ -188,11 +188,14 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
-      this.attachment = await andalComposingResource.list({
+      await andalComposingResource.list({
         attachment: 'true',
         idProject: this.$route.params.id,
+      }).then((res) => {
+        this.attachment = res;
+      }).finally(() => {
+        this.loading = false;
       });
-      this.loading = false;
     },
     async handleSubmit() {
       this.loadingSubmit = true;
