@@ -171,7 +171,7 @@ class Project extends Model implements Auditable
 
         $save_file_name = $this->id . '-rkl-rpl' . '.docx';
 
-        if (Storage::disk('public')->exists('workpace/' . $save_file_name)) {
+        if (Storage::disk('public')->exists('workspace/' . $save_file_name)) {
             return true;
         }
 
