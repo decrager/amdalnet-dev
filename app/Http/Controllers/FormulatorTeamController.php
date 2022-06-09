@@ -187,10 +187,6 @@ class FormulatorTeamController extends Controller
                 $project->type_formulator_team = 'lpjp';
                 $project->save();
 
-                if($project->marking == 'screening-completed'){
-                    $project->workflow_apply('assign-formulator');
-                    $project->save();
-                }
                 return response()->json(['message' => 'success']);
             }
         }
