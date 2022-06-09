@@ -826,6 +826,43 @@ export default {
         });
       };
       readerWilayahStudi.readAsArrayBuffer(mapBatasWilayahStudi);
+
+      // Map Tapak
+      const projId = this.$route.params && this.$route.params.id;
+      axios.get(`api/map-geojson?id=${projId}&type=tapak`)
+        .then((response) => {
+          response.data.forEach((item) => {
+            const getType = JSON.parse(item.feature_layer);
+            const propFields = getType.features[0].properties.field;
+
+            const blob = new Blob([item.feature_layer], {
+              type: 'application/json',
+            });
+            const rendererTapak = {
+              type: 'simple',
+              field: '*',
+              symbol: {
+                type: 'simple-fill',
+                color: [200, 0, 0, 1],
+                outline: {
+                  color: [200, 0, 0, 1],
+                  width: 2,
+                },
+              },
+            };
+            const url = URL.createObjectURL(blob);
+            const geojsonLayerArray = new GeoJSONLayer({
+              url: url,
+              outFields: ['*'],
+              visible: true,
+              title: 'Layer Tapak',
+              renderer: rendererTapak,
+              popupTemplate: popupTemplate(propFields),
+            });
+            map.add(geojsonLayerArray);
+          });
+        });
+
       const mapView = new MapView({
         container: 'mapView',
         map: map,
