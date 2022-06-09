@@ -387,8 +387,8 @@ export default {
       }).then((canvas) => {
         document.getElementById('pdf').appendChild(canvas);
         const img = canvas.toDataURL('image/png');
-        const pdf = new JsPDF('p', 'mm', 'a3');
-        pdf.addImage(img, 'png', 0, 0, 297, Math.floor(h * 0.264583)); // add image & convert height from px to mm
+        const pdf = new JsPDF('l', 'mm', 'a3');
+        pdf.addImage(img, 'png', 0, 0, 420, Math.floor(h * 0.264583)); // add image & convert height from px to mm
         this.loader = false;
         pdf.save('Bagan Alir Pelingkupan.pdf');
         document.getElementById('pdf').innerHTML = '';
@@ -413,6 +413,7 @@ export default {
   font-weight: 700;
   margin: 0;
   color: #464646;
+  line-height: 0px;
 }
 
 .sub_text {
@@ -421,6 +422,7 @@ export default {
   color: #464646;
   padding-bottom: 0;
   margin-bottom: 0;
+  margin-top: 2px;
 }
 
 .sub_sub_text {
@@ -452,7 +454,7 @@ hr {
   border-color: #55bf73;
   border-radius: 5px;
   text-align: left;
-  width: 350px;
+  width: 620px;
 }
 
 /* connecting lines between nodes */
@@ -674,6 +676,10 @@ ol.process_diagram > li:last-child > ul,
 
 .list_item {
   padding: 0 !important;
-  margin: 0 !important;
+  margin-top: 0 !important;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-bottom: -2px !important;
+  line-height: 17px;
 }
 </style>

@@ -104,6 +104,18 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
+        <!-- <el-upload
+          action="#"
+          :auto-upload="false"
+          :on-change="handleUploadPDF"
+          :show-file-list="false"
+          style="display: inline-block; margin-right: 11px;"
+        >
+          <el-button type="warning"> Upload PDF </el-button>
+          <div slot="tip" class="el-upload__tip">
+            {{ pdfName }}
+          </div>
+        </el-upload> -->
         <el-button type="danger" @click="handleClose">Batal</el-button>
         <el-button type="primary" :disabled="disableSave()" @click="handleSaveForm">Simpan</el-button>
       </span>
@@ -157,6 +169,8 @@ export default {
       master: [],
       noMaster: false,
       saving: false,
+      pdfName: null,
+      pdfFile: null,
     };
   },
   /* watch: {
@@ -286,6 +300,9 @@ export default {
         return ((this.data.name).trim() === '') || emptyTexts;
       }
       return (this.data.id === null) || (this.data.id <= 0) || emptyTexts;
+    },
+    handleUploadPDF() {
+
     },
   },
 };
