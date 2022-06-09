@@ -342,9 +342,12 @@ export default {
 };
 </script>
 <style>
-.el-select-dropdown{
-  width: 250px;
-  word-break: break-all;
+.el-select-dropdown__item {
+  width: 350px;
   white-space: normal;
+  overflow: unset;
+  height: auto;
+  padding-top: 10;
+  padding-bottom: 10;
 }
 </style>
