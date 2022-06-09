@@ -75,6 +75,8 @@ class AndalCloneController extends Controller
             $list = ImpactIdentificationClone::where('id_project', $request->id_project)->get();
             return ['data' => $list];
         }
+        //
+
     }
 
     /**
@@ -282,6 +284,13 @@ class AndalCloneController extends Controller
     }
 
     private function checkExist($id) {
+
+        $project = Project::where('id', $id)->first();
+        if($project && ($project->marking == 'amdal.form-ka-ba-signed')){
+            $project->workflow_apply('draft-amdal-andal');
+            $project->save();
+        }
+
         /* MASTER KOMPONEN KEGIATAN */
         $mkk_andal = ProjectComponent::where(['id_project' => $id, 'is_andal' => true])
             ->pluck('id_component');

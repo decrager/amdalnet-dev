@@ -52,6 +52,7 @@
             v-if="isInitiator"
             :documenttype="'Kerangka Acuan'"
           />
+          <Lampiran />
         </el-col>
       </el-row>
     </el-card>
@@ -63,6 +64,7 @@ import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
 import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
+import Lampiran from '@/views/review-dokumen/Lampiran';
 const scopingResource = new Resource('scoping');
 const andalComposingResource = new Resource('andal-composing');
 import axios from 'axios';
@@ -71,6 +73,7 @@ export default {
   components: {
     ReviewPenyusun,
     ReviewPemrakarsa,
+    Lampiran,
   },
   data() {
     return {

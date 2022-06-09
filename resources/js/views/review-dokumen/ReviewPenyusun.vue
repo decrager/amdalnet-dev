@@ -5,13 +5,19 @@
       <div v-html="notesShow" />
     </div>
     <div v-if="isShowNotes">
-      <p>Pesan:</p>
-      <Tinymce v-model="notes" />
-      <div style="text-align: right; margin-top: 8px">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <p>Pesan:</p>
         <el-button :loading="loadingSubmit" type="primary" @click="checkSubmit">
           Kirim
         </el-button>
       </div>
+      <Tinymce v-model="notes" />
     </div>
     <div v-else>
       <p>Pesan:</p>
