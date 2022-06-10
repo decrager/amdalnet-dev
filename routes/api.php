@@ -279,6 +279,7 @@ Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('subproject-components', [SubProjectComponentController::class,'subProjectComponents']);
 Route::get('subproject-hues', [SubProjectRonaAwalController::class,'subProjectHues']);
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
+Route::post('bagan-alir-pelingkupan/pdf', [BaganAlirController::class, 'storeBaganAlirPelingkupanPDF']);
 Route::get('bagan-alir-dampak-penting/{id}', [BaganAlirController::class, 'baganAlirDampakPenting']);
 Route::get('bagan-alir-dampak-penting/table/{id}', [BaganAlirController::class, 'baganAlirDampakPentingTable']);
 Route::post('bagan-alir-dampak-penting/table/{id}', [BaganAlirController::class, 'storeBaganAlirDampakPenting']);

@@ -668,8 +668,8 @@ class AndalComposingController extends Controller
 
     private function dokumen($id_project)
     {
-        if (!Storage::disk('public')->exists('workspacee')) {
-            Storage::disk('public')->makeDirectory('workspacee');
+        if (!Storage::disk('public')->exists('workspace')) {
+            Storage::disk('public')->makeDirectory('workspace');
         }
 
         // CHECK IF DOCUMENT ALREADY EXIST
