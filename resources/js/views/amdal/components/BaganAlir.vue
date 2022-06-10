@@ -389,8 +389,10 @@ export default {
         const img = canvas.toDataURL('image/png');
         const pdf = new JsPDF('l', 'mm', 'a3');
         pdf.addImage(img, 'png', 0, 0, 420, Math.floor(h * 0.264583)); // add image & convert height from px to mm
+        this.loader = false;
+        pdf.save('Bagan Alir Pelingkupan.pdf');
         document.getElementById('pdf').innerHTML = '';
-        return this.uploadPdf(pdf);
+        // return this.uploadPdf(pdf);
       });
     },
     handleCancelComponent() {
@@ -405,6 +407,7 @@ export default {
         this.loader = false;
         pdf.save('Bagan Alir Pelingkupan.pdf');
       });
+      return;
     },
   },
 };
