@@ -17,4 +17,9 @@ class RonaAwal extends Model
         'is_master',
         'originator_id'
     ];
+
+    public function projectRonaAwal()
+    {
+        return $this->hasMany(ProjectRonaAwal::class, 'id_rona_awal', 'id');
+    }
 }

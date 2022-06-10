@@ -56,7 +56,12 @@ class ProjectRonaAwalController extends Controller
               return $q;
           })
           ->where('project_rona_awals.is_andal', $request->mode)
-          ->where('project_rona_awals.id_project', $request->id_project)->get());
+          ->where('project_rona_awals.id_project', $request->id_project)
+          ->with(['projectRonaAwal' => function($q) use($request) {
+            $q->select('id', 'id_rona_awal', 'id_project', 'file', 'is_andal');
+            $q->where([['id_project', $request->id_project], ['is_andal', $request->mode]]);
+          }])
+          ->get());
 
 
 
@@ -172,7 +177,20 @@ class ProjectRonaAwalController extends Controller
             $pc->description = $component['description'];
             $pc->measurement = $component['measurement'];
 
+            if($request->deletePdfId && $pc->file) {
+                $file = str_replace(Storage::url(''), '', $pc->file);
+                Storage::disk('public')->delete($file);
+                $pc->file = null;
+            }
+
             if($request->file) {
+                if($component['id_project_rona_awal']) {
+                    if($pc->file) {
+                        $file = str_replace(Storage::url(''), '', $pc->file);
+                        Storage::disk('public')->delete($file);
+                    }
+                }
+
                 $file = $this->base64ToFile($request->file);
                 $file_pdf = 'rona-awal/' . uniqid() . '.' . $file['extension'];
                 Storage::disk('public')->put($file_pdf, $file['file']);
@@ -326,6 +344,11 @@ class ProjectRonaAwalController extends Controller
                     'is_master' => false,
                     'originator_id' => $projectRonaAwal->id_project
                 ])->delete();
+            }
+
+            if($projectRonaAwal->file) {
+                $file = str_replace(Storage::url(''), '', $projectRonaAwal->file);
+                Storage::disk('public')->delete($file);
             }
 
             return response($projectRonaAwal->delete(), 200);
