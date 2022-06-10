@@ -63,6 +63,7 @@ export default {
   },
   methods: {
     async loadMap() {
+      let layerTapak = null;
       axios.get('api/map/' + this.idProject).then((response) => {
         const map = new Map({
           basemap: 'satellite',
@@ -101,6 +102,10 @@ export default {
                   title: 'Layer Batas Ekologi',
                   renderer: rendererTapak,
                 });
+                if (layerTapak !== null) {
+                  map.layers.remove(layerTapak);
+                }
+                layerTapak = geojsonLayerArray;
                 map.add(geojsonLayerArray);
               });
             });

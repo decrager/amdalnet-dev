@@ -309,6 +309,7 @@ export default {
       ];
     },
     loadMap() {
+      let layerTapak = null;
       if (this.readonly === true) {
         const map = new Map({
           basemap: 'satellite',
@@ -349,6 +350,10 @@ export default {
                   target: geojsonLayerArray.fullExtent,
                 });
               });
+              if (layerTapak !== null) {
+                map.layers.remove(layerTapak);
+              }
+              layerTapak = geojsonLayerArray;
               map.add(geojsonLayerArray);
             });
           });
