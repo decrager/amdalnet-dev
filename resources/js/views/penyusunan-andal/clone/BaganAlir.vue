@@ -391,13 +391,23 @@ export default {
         const img = canvas.toDataURL('image/png');
         const pdf = new JsPDF('l', 'mm', 'a3');
         pdf.addImage(img, 'png', 0, 0, 420, Math.floor(h * 0.264583)); // add image & convert height from px to mm
-        this.loader = false;
-        pdf.save('Bagan Alir Pelingkupan.pdf');
         document.getElementById('pdf').innerHTML = '';
+        return this.uploadPdf(pdf);
       });
     },
     handleCancelComponent() {
       this.showRencanaKegiatan = false;
+    },
+    uploadPdf(pdf) {
+      const blob = pdf.output('blob');
+      const formData = new FormData();
+      formData.append('idProject', this.$route.params.id);
+      formData.append('file', blob);
+      formData.append('isAndal', 'true');
+      axios.post('/api/bagan-alir-pelingkupan/pdf', formData).then((res) => {
+        this.loader = false;
+        pdf.save('Bagan Alir Pelingkupan.pdf');
+      });
     },
   },
 };

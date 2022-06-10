@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\DocumentAttachment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
@@ -13,6 +14,7 @@ use App\Entity\SignificantImpactFlowchart;
 use App\Entity\SubProject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BaganAlirController extends Controller
 {
@@ -61,6 +63,35 @@ class BaganAlirController extends Controller
             'public_consultation' => $getPublicConsultation,
             'dampak_penting_potensi' => $dampakPentingPotensi,
         ]);
+    }
+
+    public function storeBaganAlirPelingkupanPDF(Request $request)
+    {
+        // Storage::disk('public')->deleteDirectory('bagan-alir-pelingkupan/' . $request->idProject);
+
+        $folder_name = $request->isAndal ? $request->idProject . '-andal' : $request->idProject;
+        $type = $request->isAndal ? 'Bagan Alir Pelingkupan Andal' : 'Bagan Alir Pelingkupan KA';
+
+        if(Storage::disk('public')->exists('bagan-alir-pelingkupan/' . $folder_name)) {
+            Storage::disk('public')->deleteDirectory('bagan-alir-pelingkupan/' . $folder_name);
+        }
+
+        $name = Storage::disk('public')->put('bagan-alir-pelingkupan/' . $folder_name, $request->file);
+
+        $document = DocumentAttachment::where([['id_project', $request->idProject],['type', $type]])->first();
+
+        if($document) {
+            $document->attachment = $name;
+            $document->save();
+        } else {
+            $document =  new DocumentAttachment();
+            $document->id_project = $request->idProject;
+            $document->attachment = $name;
+            $document->type = $type;
+            $document->save();
+        }
+
+        return response()->json(['message' => 'success']);
     }
 
     public function baganAlirDampakPenting($id)
