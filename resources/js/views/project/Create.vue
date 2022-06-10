@@ -791,6 +791,7 @@ export default {
       loadingSupportTable: false,
       isUpload: 'Upload',
       isMapUploaded: false,
+      currentTapakProyekLayer: null,
       fileName: 'No File Selected.',
       fileMap: null,
       filePdf: null,
@@ -1745,6 +1746,7 @@ export default {
           });
 
           this.map.add(geojsonLayer);
+          this.currentTapakProyekLayer = geojsonLayer;
           mapView.on('layerview-create', async(event) => {
             await mapView.goTo({
               target: geojsonLayer.fullExtent,
@@ -1836,6 +1838,11 @@ export default {
               }
               this.currentRtRwLayer = rtrwLayer;
               this.map.add(rtrwLayer);
+              // remove, re-add tapak proyek layer
+              if (this.currentTapakProyekLayer !== null) {
+                this.map.layers.remove(this.currentTapakProyekLayer);
+                this.map.add(this.currentTapakProyekLayer);
+              }
             });
           } else {
             return this.$notify({
