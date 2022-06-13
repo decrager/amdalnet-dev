@@ -22,4 +22,9 @@ class RonaAwal extends Model
     {
         return $this->hasMany(ProjectRonaAwal::class, 'id_rona_awal', 'id');
     }
+
+    public function componentType()
+    {
+        return $this->belongsTo(ComponentType::class, 'id_component_type', 'id');
+    }
 }

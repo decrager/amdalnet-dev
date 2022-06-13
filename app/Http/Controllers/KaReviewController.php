@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\DocumentAttachment;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
 use App\Entity\KaReview;
 use App\Entity\Project;
+use App\Entity\ProjectMapAttachment;
+use App\Entity\ProjectRonaAwal;
 use App\Laravue\Models\User;
 use App\Notifications\KaReview as AppKaReview;
 use Illuminate\Support\Facades\Notification;
@@ -22,6 +25,10 @@ class KaReviewController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->attachment) {
+            return $this->attachment($request->idProject, $request->isAndal);
+        }
+
         $document_type = $request->documentType;
         $id_project = $request->idProject;
 
@@ -311,6 +318,138 @@ class KaReviewController extends Controller
         //
     }
 
+    private function attachment($id_project, $is_andal)
+    {
+        $project = Project::findOrFail($id_project);
+        $peta_lokasi_kegiatan = ProjectMapAttachment::where([['id_project', $id_project],['file_type', 'PDF'],['attachment_type', 'tapak']])
+                                                        ->first();
+        $peta_batas_wilayah_studi = ProjectMapAttachment::where([['id_project', $id_project],['file_type', 'PDF'],['attachment_type', 'study'],['step','ka']])->first();
+        $bagan_alir_pelingkupan = DocumentAttachment::where([['id_project', $id_project], ['type', 'Bagan Alir Pelingkupan KA']])->first();
+        $rona_awal = ProjectRonaAwal::where([['id_project', $id_project],['file', '!=', null],['is_andal', false]])->get();
+        $geofisik_kimia = [];
+        $biologi = [];
+        $sosial_budaya = [];
+        $kesehatan_masyakarat = [];
+        $lain_lain = [];
+
+        foreach($rona_awal as $rona) {
+            switch ($rona->rona_awal->componentType->name) {
+                case 'Geofisik Kimia':
+                    $geofisik_kimia[] = [
+                        'file' => $rona->file,
+                        'name' => $rona->rona_awal->name
+                    ];
+                    break;
+                case 'Biologi':
+                    $biologi[] = [
+                        'file' => $rona->file,
+                        'name' => $rona->rona_awal->name
+                    ];
+                    break;
+                case 'Sosial, Ekonomi, dan Budaya':
+                    $sosial_budaya[] = [
+                        'file' => $rona->file,
+                        'name' => $rona->rona_awal->name
+                    ];
+                    break;
+                case 'Kesehatan Masyarakat':
+                    $kesehatan_masyakarat[] = [
+                        'file' => $rona->file,
+                        'name' => $rona->rona_awal->name
+                    ];
+                    break;
+                case 'Lain Lain':
+                    $lain_lain[] = [
+                        'file' => $rona->file,
+                        'name' => $rona->rona_awal->name
+                    ];
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        
+        $attachment = [
+            [
+                'no' => 1,
+                'name' => 'Peta Lokasi Kegiatan',
+                'file' => $peta_lokasi_kegiatan ? Storage::url('map/' . $peta_lokasi_kegiatan->stored_filename) : null,
+            ],
+            [
+                'no' => 2,
+                'name' => 'Bukti Kesesuaian Tata Ruang',
+                'file' => $project->pre_agreement_file ?? null,
+            ],
+            [
+                'no' => 3,
+                'name' => 'Izin Persetujuan Awal',
+                'file' => $project->pre_agreement_file,
+            ],
+            [
+                'no' => 4,
+                'name' => 'Bagan Alir Pelingkupan',
+                'file' => $bagan_alir_pelingkupan ? $bagan_alir_pelingkupan->attachment : null,
+            ],
+            [
+                'no' => 5,
+                'name' => 'Hasil Pelibatan Masyarakat',
+                'file' => 'undefined',
+            ],
+            [
+                'no' => null,
+                'name' => 'a. Saran, Pendapat dan Tanggapan Masyarakat',
+                'file' => true,
+                'generate' => true,
+            ],
+            [
+                'no' => null,
+                'name' => 'b. Konsultasi Publik',
+                'file' => true,
+                'generate' => true,
+            ],
+            [
+                'no' => 6,
+                'name' => 'Rona Lingkungan Awal',
+                'file' => 'undefined',
+            ],
+        ];
+
+        $no_rona = 'a';
+        if(count($geofisik_kimia) > 0) {
+            $attachment = $this->getRonaFileArray($attachment, $geofisik_kimia, 'Geofisik Kimia', $no_rona);
+            $no_rona++;
+        }
+        if(count($biologi) > 0) {
+            $attachment = $this->getRonaFileArray($attachment, $biologi, 'Biologi', $no_rona);
+            $no_rona++;
+        }
+        if(count($sosial_budaya) > 0) {
+            $attachment = $this->getRonaFileArray($attachment, $sosial_budaya, 'Sosial, Ekonomi, dan Budaya', $no_rona);
+            $no_rona++;
+        }
+        if(count($kesehatan_masyakarat) > 0) {
+            $attachment = $this->getRonaFileArray($attachment, $kesehatan_masyakarat, 'Kesehatan Masyarakat', $no_rona);
+            $no_rona++;
+        }
+        if(count($lain_lain) > 0) {
+            $attachment = $this->getRonaFileArray($attachment, $lain_lain, 'Lain-Lain', $no_rona);
+        }
+
+        array_push($attachment,  [
+            'no' => 7,
+            'name' => 'Data Pendukung Deskripsi Kegiatan',
+            'file' => null,
+        ],
+        [
+            'no' => 8,
+            'name' => 'Peta Batas Wilayah Studi',
+            'file' => $peta_batas_wilayah_studi ? Storage::url('map/' . $peta_batas_wilayah_studi->stored_filename) : null,
+        ]);
+
+        return response()->json($attachment);
+    }
+
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
@@ -327,5 +466,22 @@ class KaReviewController extends Controller
             'extension' => $extension,
             'file' => base64_decode($file)
         ];
+    }
+
+    private function getRonaFileArray($attachment, $data, $name, $no) {
+        $attachment[] = [
+            'no' => null,
+            'name' => $no . '. ' . $name,
+            'file' => 'undefined'
+        ];
+        for($i = 0; $i < count($data); $i++) {
+            $attachment[] = [
+                'no' => null,
+                'name' => $data[$i]['name'],
+                'file' => $data[$i]['file']
+            ];
+        }
+
+        return $attachment;
     }
 }
