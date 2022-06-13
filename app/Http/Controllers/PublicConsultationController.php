@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Project;
 use App\Entity\PublicConsultation;
 use App\Entity\PublicConsultationDoc;
 use App\Http\Resources\PublicConsultationResource;
+use App\Utils\Html;
+use App\Utils\TemplateProcessor;
 use DateInterval;
 use DateTime;
 use Exception;
@@ -12,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use PDF;
 
 class PublicConsultationController extends Controller
 {
@@ -22,6 +26,10 @@ class PublicConsultationController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->dokumen) {
+            return $this->dokumen($request->idProject);
+        }
+
         if($request->idProject) {
             return PublicConsultation::where('project_id', $request->idProject)->first();
         }
@@ -248,5 +256,15 @@ class PublicConsultationController extends Controller
     public function destroy(PublicConsultation $publicConsultation)
     {
         //
+    }
+
+    private function dokumen($id_project)
+    {
+        $project = Project::findOrFail($id_project);
+        $public_consultation = PublicConsultation::where('project_id', $id_project)->first();
+
+        $pdf = PDF::loadView('document.template_hasil_konsultasi_publik', compact('project', 'public_consultation'));
+        return $pdf->download('Konsultasi Publik.pdf');
+
     }
 }
