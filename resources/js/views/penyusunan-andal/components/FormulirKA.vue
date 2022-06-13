@@ -101,8 +101,7 @@ export default {
       });
       this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
-      this.projects =
-        window.location.origin + `/storage/formulir/${this.downloadDocxPath}`;
+      this.projects = this.downloadDocxPath;
       this.showDocument = true;
       this.loading = false;
     },
