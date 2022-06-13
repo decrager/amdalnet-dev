@@ -67,20 +67,23 @@ class BaganAlirController extends Controller
 
     public function storeBaganAlirPelingkupanPDF(Request $request)
     {
-        // Storage::disk('public')->deleteDirectory('bagan-alir-pelingkupan/' . $request->idProject);
-
-        $folder_name = $request->isAndal ? $request->idProject . '-andal' : $request->idProject;
-        $type = $request->isAndal ? 'Bagan Alir Pelingkupan Andal' : 'Bagan Alir Pelingkupan KA';
-
-        if(Storage::disk('public')->exists('bagan-alir-pelingkupan/' . $folder_name)) {
-            Storage::disk('public')->deleteDirectory('bagan-alir-pelingkupan/' . $folder_name);
+        if (!Storage::disk('public')->exists('bagan-alir-pelingkupan')) {
+            Storage::disk('public')->makeDirectory('bagan-alir-pelingkupan');
         }
 
-        $name = Storage::disk('public')->put('bagan-alir-pelingkupan/' . $folder_name, $request->file);
+        $type = $request->isAndal ? 'Bagan Alir Pelingkupan Andal' : 'Bagan Alir Pelingkupan KA';
+
+        $file = $this->base64ToFile($request->file);
+        $name = 'bagan-alir-pelingkupan/' . uniqid() . '.' . $file['extension'];
+        Storage::disk('public')->put($name, $file['file']);
 
         $document = DocumentAttachment::where([['id_project', $request->idProject],['type', $type]])->first();
 
         if($document) {
+            if(Storage::disk('public')->exists($document->attachment)) {
+                Storage::disk('public')->delete($document->attachment);
+            }
+
             $document->attachment = $name;
             $document->save();
         } else {
@@ -340,5 +343,23 @@ class BaganAlirController extends Controller
         }
 
         return $dampak;
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

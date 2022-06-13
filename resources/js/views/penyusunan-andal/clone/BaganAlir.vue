@@ -388,23 +388,30 @@ export default {
         useCORS: true,
       }).then((canvas) => {
         document.getElementById('pdf').appendChild(canvas);
-        const img = canvas.toDataURL('image/png');
+        const img = canvas.toDataURL('image/png', 0.3);
         const pdf = new JsPDF('l', 'mm', 'a3');
-        pdf.addImage(img, 'png', 0, 0, 420, Math.floor(h * 0.264583)); // add image & convert height from px to mm
-        this.loader = false;
-        pdf.save('Bagan Alir Pelingkupan.pdf');
+        pdf.addImage(
+          img,
+          'png',
+          0,
+          0,
+          420,
+          Math.floor(h * 0.264583),
+          undefined,
+          'FAST'
+        ); // add image & convert height from px to mm
         document.getElementById('pdf').innerHTML = '';
-        // return this.uploadPdf(pdf);
+        return this.uploadPdf(pdf);
       });
     },
     handleCancelComponent() {
       this.showRencanaKegiatan = false;
     },
     uploadPdf(pdf) {
-      const blob = pdf.output('blob');
+      const base64String = pdf.output('datauristring');
       const formData = new FormData();
       formData.append('idProject', this.$route.params.id);
-      formData.append('file', blob);
+      formData.append('file', base64String);
       formData.append('isAndal', 'true');
       axios.post('/api/bagan-alir-pelingkupan/pdf', formData).then((res) => {
         this.loader = false;
