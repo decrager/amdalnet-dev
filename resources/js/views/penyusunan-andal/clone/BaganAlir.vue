@@ -152,7 +152,7 @@
           </div>
         </li>
         <li>
-          <ul>
+          <ul class="evaluasi-dampak-penting">
             <li class="bottom">
               <div class="bottom_content">
                 <span class="header__text">
@@ -186,7 +186,7 @@
             </li>
           </ul>
         </li>
-        <li>
+        <li class="dampak-penting-hipotetik">
           <div v-loading="loadingImpacts">
             <span class="header__text">Dampak Penting Hipotetik</span>
             <hr />
@@ -417,6 +417,7 @@ export default {
         this.loader = false;
         pdf.save('Bagan Alir Pelingkupan.pdf');
       });
+      return;
     },
   },
 };
@@ -548,6 +549,11 @@ hr {
   border-width: var(--linethick) 0 0;
 }
 
+.process_diagram ul.evaluasi-dampak-penting:before,
+.process_diagram ul.evaluasi-dampak-penting:after {
+  width: 109%;
+}
+
 .process_diagram ul:before {
   left: 0;
 }
@@ -644,8 +650,13 @@ hr {
 
 .process_diagram li:last-child > div:after,
 .process_diagram li:last-child > div:before {
-  top: 0.4%;
+  top: 2px;
   border-width: 0 0 var(--linethick);
+}
+
+.process_diagram li.dampak-penting-hipotetik:last-child > div:after,
+.process_diagram li.dampak-penting-hipotetik:last-child > div:before {
+  display: none;
 }
 
 /* remove dash for the very first/last nodes keeping margin and padding */
