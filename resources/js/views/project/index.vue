@@ -1174,7 +1174,7 @@ export default {
       const data = await skklResource.list({
         idProject: project.id,
         skklOss: 'true',
-        type: 'sppl',
+        type: 'pkplh',
       });
       if ('file_url' in data && 'user_key' in data) {
         if (data.file_url === null) {

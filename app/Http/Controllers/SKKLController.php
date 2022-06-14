@@ -470,9 +470,12 @@ class SKKLController extends Controller
             if ($subProject) {
                 foreach ($jsonContent['data_checklist'] as $c) {
                     if ($c['id_proyek'] == $subProject->id_proyek) {
-                        array_push($idIzinList, $c['id_izin']);
-                        if ($c['file_izin'] != '-') {
-                            $fileIzin = $c['file_izin'];
+                        if (($type == 'sppl' && str_contains(strtolower($c['nama_izin']), 'sppl'))
+                            || ($type == 'pkplh' && str_contains(strtolower($c['nama_izin']), 'pkplh'))) {
+                            array_push($idIzinList, $c['id_izin']);
+                            if ($c['file_izin'] != '-') {
+                                $fileIzin = $c['file_izin'];
+                            }
                         }
                     }
                 }
