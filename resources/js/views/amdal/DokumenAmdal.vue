@@ -115,7 +115,17 @@ export default {
         check_formulir_ka: true,
         id_project: this.$route.params.id,
       });
-      if (!checkFormulirKA.data) {
+      if (checkFormulirKA.errBaganAlir) {
+        this.$message({
+          message: 'Mohon lakukan export File PDF Bagan Alir Pelingkupan terlebih dahulu',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.$router.push({
+          name: 'FormulirAmdal',
+          params: this.$route.params.id,
+        });
+      } else if (!checkFormulirKA.data) {
         this.$message({
           message: 'Mohon lengkapi Formulir KA terlebih dahulu',
           type: 'error',

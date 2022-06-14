@@ -157,7 +157,7 @@
               <div class="bottom_content">
                 <span class="header__text">
                   Evaluasi <br />
-                  Dampak Penting
+                  Dampak Potensial
                 </span>
                 <!-- <hr />
                 <div>
