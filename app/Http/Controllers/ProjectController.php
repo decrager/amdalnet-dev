@@ -873,4 +873,13 @@ class ProjectController extends Controller
 
         return response($res);*/
     }
+
+    public function states(Request $request){
+
+        return response([
+            'amdal' => Project::where('required_doc', 'AMDAL')->count(),
+            'uklupl' => Project::where('required_doc', 'UKL-UPL')->count(),
+            'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
+        ]);
+    }
 }

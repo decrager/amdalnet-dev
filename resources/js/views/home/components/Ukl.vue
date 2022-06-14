@@ -91,7 +91,8 @@
             <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
           </el-col>
           <el-col :xs="24" :sm="3">
-            <button class="el-button el-button--warning fz11 el-button--medium is-plain" @click="openDetails(amdal.id,'UKL')">Berikan<br>Tanggapan</button>
+            <el-button :type="amdal.expired? 'info' : 'warning'" :disabled="amdal.expired" size="medium" :style="'margin-top: 0.5em; ' + (amdal.expired?'color: #666;opacity:0.5;':'')" @click="openDetails(amdal.id)">Berikan <br>Tanggapan</el-button>
+            <!-- <button :class="'el-button'+ (amdal.expired? 'el-button--default' : ' el-button--warning ') +' fz11 el-button--medium is-plain'" :disabled="amdal.expired" @click="openDetails(amdal.id,'UKL')">Berikan<br>Tanggapan</button> -->
           </el-col>
         </el-row>
         <div class="block" style="text-align:right">
