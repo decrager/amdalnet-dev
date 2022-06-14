@@ -80,7 +80,7 @@
                 </td>
                 <td width=348 valign=top style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
                     <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
-                            style='font-size:12.0pt'>{{ $project->initiator->name }} heheya asdadsa a adsa dads a dsad sad adsadsad sadasad sa dasdsadad asd sa da</span></p>
+                            style='font-size:12.0pt'>{{ $project->initiator->name }}</span></p>
                 </td>
             </tr>
             <tr>
