@@ -106,7 +106,6 @@ class AnnouncementController extends Controller
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
         ->whereRaw('announcements.start_date::timestamp::date <= now()::timestamp::date')
-
         ->where(function($query) use($request) {
             if($request->has('provName')) {
                 $query->where('project.address.prov', '=', $request->provName);
