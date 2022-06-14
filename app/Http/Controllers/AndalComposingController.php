@@ -941,7 +941,7 @@ class AndalComposingController extends Controller
                 }
 
                 $component_type = $this->getComponentTypeImp($imp);
-                $initial_study_plan = $this->renderHtmlTable($imp->initial_study_plan , 1300, 'Arial', '11');
+                $initial_study_plan = $this->renderHtmlTable($imp->initial_study_plan , 3500, 'Arial', '11');
 
                 // ======= POTENTIAL IMPACT EVALUATIONS ======= //
                 $ed_besaran_rencana = '';
@@ -955,31 +955,31 @@ class AndalComposingController extends Controller
                         if ($pI->id_pie_param == 1) {
                             $ed_besaran_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 2) {
                             $ed_kondisi_rona = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 3) {
                             $ed_pengaruh_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 4) {
                             $ed_intensitas_perhatian = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 5) {
                             $ed_kesimpulan = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         }
