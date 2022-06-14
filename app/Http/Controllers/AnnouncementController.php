@@ -52,7 +52,7 @@ class AnnouncementController extends Controller
                     return $q->where('district', '=', $request->kotaName);
                 });
             }
-            if($request->has('keyword')) {
+             if($request->has('keyword')) {
                 $columnsToSearch = ['pic_name', 'project_type', 'project_location'];
                 $searchQuery = '%' . $request->keyword . '%';
                 $query->where('project_result', 'ILIKE', $searchQuery );
@@ -62,23 +62,24 @@ class AnnouncementController extends Controller
             }
             return $query;
         })
+        /*
         ->whereHas("project.address",function($q) use($request){
             $q->where("prov", "=", $request->provName);
         })
         ->orWhereHas("project.address",function($q) use($request){
             $q->where("district", "=", $request->kotaName);
-        })
-        /*
-        ->when($request->has('keyword'), function ($query) use ($request) {
-            $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
+        }) */
+
+        /*->when($request->has('keyword'), function ($query) use ($request) {
+            $columnsToSearch = ['pic_name', 'project_type', 'project_location'];
             $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('pic_name', 'ILIKE', '%'.$request->keyword.'%');
+            $indents = $query->where('project_result', 'ILIKE', '%'.$request->keyword.'%');
             foreach($columnsToSearch as $column) {
                 $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
             }
 
             return $indents;
-        }) */
+        })*/
         ->whereRaw('announcements.start_date::timestamp::date <= now()::timestamp::date')
         ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
 

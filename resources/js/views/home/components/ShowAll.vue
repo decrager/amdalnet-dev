@@ -68,33 +68,35 @@
         </el-col>
       </el-row>
       <template v-if="allData.length > 0">
-        <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
-          <el-col :xs="24" :sm="2" style="padding-top:0.5rem;padding-bottom:0.5rem">
-            <el-image
-              style="width: 50px; height: 50px;"
-              :src="amdal.applicant_logo"
-              fit="contain"
-            >
-              <div slot="error" class="image-slot">
-                <i class="el-icon-picture-outline" style="font-size: 200%; line-height: 130%;" />
-              </div>
-            </el-image>
-            <!-- <img alt="" class="customImage" src="amdal.project.logo"> -->
-          </el-col>
-          <el-col :xs="24" :sm="6" style="padding-top:1rem">
-            <p class="tw fz11 fw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</p>
-          </el-col>
-          <el-col :xs="24" :sm="8" style="padding-top:1rem">
-            <p class="tw fz11">Dampak Potensial: {{ amdal.potential_impact }}</p>
-          </el-col>
-          <el-col :xs="24" :sm="5" style="padding-top:1rem">
-            <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
-          </el-col>
-          <el-col :xs="24" :sm="3">
-            <el-button :type="amdal.expired? 'info' : 'warning'" :disabled="amdal.expired" size="medium" :style="'margin-top: 0.5em; ' + (amdal.expired?'color: #666;opacity:0.5;':'')" @click="openDetails(amdal.id)">Berikan <br>Tanggapan</el-button>
-            <!-- <button :class="'el-button'+ (amdal.expired? 'el-button--default' : ' el-button--warning ') +' el-button--medium is-plain fz11  el-button--medium is-plain'" :disabled="amdal.expired" @click="openDetails(amdal.id)">Berikan<br>Tanggapan</button>-->
-          </el-col>
-        </el-row>
+        <div v-loading="loading">
+          <el-row v-for="amdal in allData" :key="amdal.id" :gutter="20" class="wrapOutside">
+            <el-col :xs="24" :sm="2" style="padding-top:0.5rem;padding-bottom:0.5rem">
+              <el-image
+                style="width: 50px; height: 50px;"
+                :src="amdal.applicant_logo"
+                fit="contain"
+              >
+                <div slot="error" class="image-slot">
+                  <i class="el-icon-picture-outline" style="font-size: 200%; line-height: 130%;" />
+                </div>
+              </el-image>
+              <!-- <img alt="" class="customImage" src="amdal.project.logo"> -->
+            </el-col>
+            <el-col :xs="24" :sm="6" style="padding-top:1rem">
+              <p class="tw fz11 fw">{{ amdal.project_type }}, {{ amdal.project && amdal.project.province ? amdal.project.province.name : '' }} {{ amdal.pic_name }}</p>
+            </el-col>
+            <el-col :xs="24" :sm="8" style="padding-top:1rem">
+              <p class="tw fz11">Dampak Potensial: {{ amdal.potential_impact }}</p>
+            </el-col>
+            <el-col :xs="24" :sm="5" style="padding-top:1rem">
+              <p class="tw fz11">{{ formatDateStr(amdal.start_date) }} - {{ formatDateStr(amdal.end_date) }}</p>
+            </el-col>
+            <el-col :xs="24" :sm="3">
+              <el-button :type="amdal.expired? 'info' : 'warning'" :disabled="amdal.expired" size="medium" :style="'margin-top: 0.5em; ' + (amdal.expired?'color: #666;opacity:0.5;':'')" @click="openDetails(amdal.id)">Berikan <br>Tanggapan</el-button>
+              <!-- <button :class="'el-button'+ (amdal.expired? 'el-button--default' : ' el-button--warning ') +' el-button--medium is-plain fz11  el-button--medium is-plain'" :disabled="amdal.expired" @click="openDetails(amdal.id)">Berikan<br>Tanggapan</button>-->
+            </el-col>
+          </el-row>
+        </div>
         <div class="block" style="text-align:right">
           <pagination
             v-if="paginationNoFilter"
@@ -116,7 +118,7 @@
           />
         </div>
       </template>
-      <template v-else>
+      <template v-else-if="!loading">
         <el-row :gutter="20">
           <el-col :xs="24" style="padding-top:0.5rem;padding-bottom:0.5rem">
             <el-alert
@@ -190,6 +192,7 @@ export default {
         },
       ],
       toggle: false,
+      loading: false,
     };
   },
   created() {
@@ -218,12 +221,16 @@ export default {
       } else {
         sort = `&sort=${this.form.sort}`;
       }
+      // this.allData = [];
+      this.loading = true;
       axios.get(`/api/announcements?keyword=${this.keyword}&page=${this.listQuery.page}&active=1`)
         .then(response => {
           this.allData = response.data.data;
           this.total = response.data.total;
           this.paginationNoFilter = true;
           this.paginationFilter = false;
+        }).finally(() => {
+          this.loading = false;
         });
     },
     openDetails(id) {
@@ -284,7 +291,7 @@ export default {
       if (this.urutValue !== null || this.urutValue !== 'undefined') {
         var urutValue = 'sort=' + this.urutValue;
       }
-
+      this.loading = true;
       axios.get(`/api/announcement-by-filter?${provName}&${kotaName}&page=${this.listQuery.page}&${urutValue}`)
         .then(response => {
           this.allData = response.data.data;
@@ -292,6 +299,8 @@ export default {
           this.paginationNoFilter = false;
           this.paginationFilter = true;
           this.toggle = false;
+        }).finally(() => {
+          this.loading = false;
         });
     },
   },
