@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entity\ComponentType;
+use App\Entity\DocumentAttachment;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactStudy;
 use App\Entity\SubProject;
@@ -34,6 +35,17 @@ class ScopingController extends Controller
     private function checkFormulirKA(Request $request) {
         // check if formulir KA is complete
         try {
+            // check if bagan alir pelingkupan already exported as pdf file
+            $bagan_alir_pelingkupan = DocumentAttachment::where([['id_project', $request->id_project],['type', 'Bagan Alir Pelingkupan KA']])
+                                                            ->first();
+            if(!$bagan_alir_pelingkupan) {
+                return response()->json([
+                    'status' => 200,
+                    'code' => 200,
+                    'errBaganAlir' => true
+                ], 200);
+            }
+
             $impacts = ImpactIdentification::select('id')
                 ->where('id_project', $request->id_project)
                 ->where('is_hypothetical_significant', true)
