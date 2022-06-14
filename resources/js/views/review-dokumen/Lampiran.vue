@@ -19,7 +19,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Lampiran">
+      <el-table-column align="left" label="Lampiran">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>

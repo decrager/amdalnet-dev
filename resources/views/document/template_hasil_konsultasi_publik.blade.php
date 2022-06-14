@@ -70,74 +70,74 @@
 
         <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none'>
             <tr>
-                <td width=246 style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=246 valign=top style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>Nama Pemrakarsa</span></p>
                 </td>
-                <td width=30 style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
+                <td width=30 valign=top style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='margin:0cm;text-align:center;
   line-height:normal'><span lang=EN-US style='font-size:12.0pt'>:</span></p>
                 </td>
-                <td width=348 style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
-                            style='font-size:12.0pt'>{{ $project->initiator->name }}</span></p>
+                <td width=348 valign=top style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
+                            style='font-size:12.0pt'>{{ $project->initiator->name }} heheya asdadsa a adsa dads a dsad sad adsadsad sadasad sa dasdsadad asd sa da</span></p>
                 </td>
             </tr>
             <tr>
-                <td width=246 style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=246 valign=top style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>Nama Rencana Usaha/Kegiatan</span></p>
                 </td>
-                <td width=30 style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
+                <td width=30 valign=top style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='margin:0cm;text-align:center;
   line-height:normal'><span lang=EN-US style='font-size:12.0pt'>:</span></p>
                 </td>
-                <td width=348 style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=348 valign=top style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>{{ $project->project_title }}</span></p>
                 </td>
             </tr>
             <tr>
-                <td width=246 style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=246 valign=top style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>Tanggal</span></p>
                 </td>
-                <td width=30 style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
+                <td width=30 valign=top style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='margin:0cm;text-align:center;
   line-height:normal'><span lang=EN-US style='font-size:12.0pt'>:</span></p>
                 </td>
-                <td width=348 style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=348 valign=top style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>{{ date('d-m-Y', strtotime($public_consultation->event_date))
                             }}</span></p>
                 </td>
             </tr>
             <tr>
-                <td width=246 style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=246 valign=top style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>Lokasi Tempat Konsultasi Publik</span></p>
                 </td>
-                <td width=30 style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
+                <td width=30 valign=top style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='margin:0cm;text-align:center;
   line-height:normal'><span lang=EN-US style='font-size:12.0pt'>:</span></p>
                 </td>
-                <td width=348 style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=348 valign=top style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>{{ $public_consultation->location }}</span></p>
                 </td>
             </tr>
             <tr>
-                <td width=246 style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=246 valign=top style='width:184.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>Alamat Tempat Pelaksanaan Konsultasi
                             Publik</span></p>
                 </td>
-                <td width=30 style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
+                <td width=30 valign=top style='width:22.5pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='margin:0cm;text-align:center;
   line-height:normal'><span lang=EN-US style='font-size:12.0pt'>:</span></p>
                 </td>
-                <td width=348 style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                <td width=348 valign=top style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='margin:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>{{ $public_consultation->address }}</span></p>
                 </td>
             </tr>
@@ -148,31 +148,31 @@
         <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none'>
             <tr>
                 <td width=252 valign=top style='width:188.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                    <p class=MsoNormal style='margin:0cm;padding:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>Rangkuman Deskriptif atas Harapan
                             Masyarakat</span></p>
                 </td>
                 <td width=24 valign=top style='width:18.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
+                    <p class=MsoNormal align=center style='margin:0cm;text-align:center;
   line-height:normal'><span lang=EN-US style='font-size:12.0pt'>:</span></p>
                 </td>
                 <td width=348 valign=top style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                    <p class=MsoNormal style='margin:0cm;padding:0cm;line-height:normal;margin-top:-16.8px !important;'><span lang=EN-US
                             style='font-size:12.0pt'>{!! $public_consultation->positive_feedback_summary !!}</span></p>
                 </td>
             </tr>
             <tr>
                 <td width=252 valign=top style='width:188.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                    <p class=MsoNormal style='margin:0cm;padding:0cm;line-height:normal'><span lang=EN-US
                             style='font-size:12.0pt'>Rangkuman Deskriptif atas Kekhawatiran
                             Masyarakat</span></p>
                 </td>
                 <td width=24 valign=top style='width:18.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
+                    <p class=MsoNormal align=center style='margin:0cm;text-align:center;
   line-height:normal'><span lang=EN-US style='font-size:12.0pt'>:</span></p>
                 </td>
                 <td width=348 valign=top style='width:260.75pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                    <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span lang=EN-US
+                    <p class=MsoNormal style='margin:0cm;padding:0cm;line-height:normal;margin-top:-16.8px !important;'><span lang=EN-US
                             style='font-size:12.0pt'>{!! $public_consultation->negative_feedback_summary !!}</span></p>
                 </td>
             </tr>
