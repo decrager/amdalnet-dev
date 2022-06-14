@@ -56,9 +56,9 @@
             v-else
             :href="scope.row.file"
             class="link-lampiran"
-            :download="scope.row.name + '.pdf'"
+            :download="scope.row.file_name ? scope.row.file_name : scope.row.name + '.pdf'"
           >
-            Unduh File PDF
+            Unduh File {{ scope.row.file_name ? scope.row.file_name.split('.')[scope.row.file_name.split('.').length - 1].toUpperCase() : 'PDF' }}
           </a>
         </template>
       </el-table-column>

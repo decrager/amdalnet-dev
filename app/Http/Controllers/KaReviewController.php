@@ -10,6 +10,7 @@ use App\Entity\KaReview;
 use App\Entity\Project;
 use App\Entity\ProjectMapAttachment;
 use App\Entity\ProjectRonaAwal;
+use App\Entity\PublicConsultationDoc;
 use App\Laravue\Models\User;
 use App\Notifications\KaReview as AppKaReview;
 use Illuminate\Support\Facades\Notification;
@@ -325,6 +326,50 @@ class KaReviewController extends Controller
                                                         ->first();
         $peta_batas_wilayah_studi = ProjectMapAttachment::where([['id_project', $id_project],['file_type', 'PDF'],['attachment_type', 'study'],['step','ka']])->first();
         $bagan_alir_pelingkupan = DocumentAttachment::where([['id_project', $id_project], ['type', 'Bagan Alir Pelingkupan KA']])->first();
+
+        // === FILE PUBLIC CONSULTATION DOCS === //
+        $public_consultation_docs = PublicConsultationDoc::whereHas('publicConsultation', function($q) use($id_project) {
+            $q->where('project_id', $id_project);
+        })->get();
+        $file_berita_acara_pelaksanaan = ['file' => null, 'file_name' => null];
+        $file_berita_acara_penunjukan_wakil_masyarakat = ['file' => null, 'file_name' => null];
+        $file_daftar_hadir = ['file' => null, 'file_name' => null];
+        $file_pengumuman = ['file' => null, 'file_name' => null];
+        $file_undangan = ['file' => null, 'file_name' => null];
+
+        foreach($public_consultation_docs as $doc) {
+            $file_array = json_decode($doc->doc_json, true);
+            $explode_extension = explode('.', $file_array['original_filename']);
+            if($file_array['doc_type'] == 'Berita Acara Pelaksanaan') {
+                $file_berita_acara_pelaksanaan = [
+                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file_name' => 'Berita Acara Pelaksanaan.' . $explode_extension[count($explode_extension) - 1] 
+                ];
+            } else if($file_array['doc_type'] == 'Berita Acara Penunjukan Wakil Masyarakat') {
+                $file_berita_acara_penunjukan_wakil_masyarakat = [
+                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file_name' => 'Berita Acara Penunjukan Wakil Masyarakat.' . $explode_extension[count($explode_extension) - 1] 
+                ];
+            } else if($file_array['doc_type'] == 'Daftar Hadir') {
+                $file_daftar_hadir = [
+                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file_name' => 'Daftar Hadir.' . $explode_extension[count($explode_extension) - 1] 
+                ];
+            } else if($file_array['doc_type'] == 'Pengumuman') {
+                $file_pengumuman = [
+                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file_name' => 'Pengumuman.' . $explode_extension[count($explode_extension) - 1] 
+                ];
+            } else if($file_array['doc_type'] == 'Undangan') {
+                $file_undangan = [
+                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file_name' => 'Undangan.' . $explode_extension[count($explode_extension) - 1] 
+                ];
+            }
+        }
+        
+
+        // === PDF RONA AWAL === //
         $rona_awal = ProjectRonaAwal::where([['id_project', $id_project],['file', '!=', null],['is_andal', false]])->get();
         $geofisik_kimia = [];
         $biologi = [];
@@ -407,6 +452,36 @@ class KaReviewController extends Controller
                 'name' => 'b. Konsultasi Publik',
                 'file' => true,
                 'generate' => true,
+            ],
+            [
+                'no' => null,
+                'name' => 'c. Berita Acara Pelaksanaan',
+                'file' => $file_berita_acara_pelaksanaan['file'],
+                'file_name' => $file_berita_acara_pelaksanaan['file_name'],
+            ],
+            [
+                'no' => null,
+                'name' => 'd. Berita Acara Penunjukan Wakil Masyarakat',
+                'file' => $file_berita_acara_penunjukan_wakil_masyarakat['file'],
+                'file_name' => $file_berita_acara_penunjukan_wakil_masyarakat['file_name'],
+            ],
+            [
+                'no' => null,
+                'name' => 'e. Daftar Hadir',
+                'file' => $file_daftar_hadir['file'],
+                'file_name' => $file_daftar_hadir['file_name'],
+            ],
+            [
+                'no' => null,
+                'name' => 'f. Pengumuman',
+                'file' => $file_pengumuman['file'],
+                'file_name' => $file_pengumuman['file_name'],
+            ],
+            [
+                'no' => null,
+                'name' => 'g. Undangan',
+                'file' => $file_undangan['file'],
+                'file_name' => $file_undangan['file_name'],
             ],
             [
                 'no' => 6,
