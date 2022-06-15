@@ -818,22 +818,16 @@ export default {
           csrf().then(() => {
             this.$store.dispatch('user/login', this.loginForm)
               .then((response) => {
-                if (response) {
-                  this.$message({
-                    message: response.error,
-                    type: 'error',
-                    duration: 5 * 1000,
-                  });
-                  this.loading = false;
-
-                  return false;
-                }
-
                 this.$router.push({ path: this.redirect || '/dashboard', query: this.otherQuery }, onAbort => {});
                 this.loading = false;
                 window.location.reload();
               })
               .catch(() => {
+                this.$message({
+                  message: 'Maaf Email atau Password yang anda masukkan kurang tepat',
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
                 this.loading = false;
               });
           });
