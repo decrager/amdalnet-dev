@@ -170,6 +170,7 @@ export default {
                 tahap,
                 component,
                 dampak: dampak.dampak,
+                parents: dampak.parents,
               });
             } else if (dampak.type === 'Sekunder') {
               dampakSekunder.push({
@@ -265,16 +266,20 @@ export default {
 
       dampakPrimer.forEach((dampak) => {
         id++;
-        const from = this.data.nodes.find(
-          (node) => node.label === dampak.component && node.component === true
-        );
         const to = this.data.nodes.find(
           (node) => node.label === dampak.dampak && node.type === 'primer'
         );
-        links.push({
-          id,
-          from: from.id,
-          to: to.id,
+
+        dampak.parents.forEach((parent) => {
+          id++;
+          const from = this.data.nodes.find(
+            (node) => node.label === parent && node.component === true
+          );
+          links.push({
+            id,
+            from: from.id,
+            to: to.id,
+          });
         });
       });
 
@@ -284,14 +289,16 @@ export default {
         );
 
         dampak.parents.forEach((parent) => {
-          id++;
-          const from = this.data.nodes.find(
+          const fromArray = this.data.nodes.filter(
             (node) => node.label === parent && node.type === 'primer'
           );
-          links.push({
-            id,
-            from: from.id,
-            to: to.id,
+          fromArray.forEach(fA => {
+            id++;
+            links.push({
+              id,
+              from: fA.id,
+              to: to.id,
+            });
           });
         });
       });
