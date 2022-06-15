@@ -132,6 +132,13 @@ class FormulatorController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
+            $email = $request->get('email');
+            $found = User::where('email', $email)->first();
+
+            if($found) {
+                return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+            }
+
             $params = $request->all();
 
             DB::beginTransaction();
@@ -149,9 +156,7 @@ class FormulatorController extends Controller
                 $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
                 $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
             }
-
-            $email = $request->get('email');
-            $found = User::where('email', $email)->first();
+            
             if (!$found) {
                 $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
                 $user = User::create([
