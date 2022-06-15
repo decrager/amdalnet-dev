@@ -882,6 +882,17 @@ export default {
               initiatorResource
                 .store(formData)
                 .then((response) => {
+                  if (response.error) {
+                    this.$message({
+                      message: response.error,
+                      type: 'error',
+                      duration: 5 * 1000,
+                    });
+                    this.loading = false;
+
+                    return false;
+                  }
+
                   this.$message({
                     message:
                 'User Dengan Email ' +
@@ -924,6 +935,17 @@ export default {
               initiatorResource
                 .store(formData)
                 .then((response) => {
+                  if (response.error) {
+                    this.$message({
+                      message: response.error,
+                      type: 'error',
+                      duration: 5 * 1000,
+                    });
+                    this.loading = false;
+
+                    return false;
+                  }
+
                   this.$message({
                     message:
                 'User Dengan Email ' +
@@ -967,6 +989,17 @@ export default {
               formulatorResource
                 .store(formData)
                 .then((response) => {
+                  if (response.error) {
+                    this.$message({
+                      message: response.error,
+                      type: 'error',
+                      duration: 5 * 1000,
+                    });
+                    this.loading = false;
+
+                    return false;
+                  }
+
                   this.$message({
                     message:
                 'User Dengan Email ' +
