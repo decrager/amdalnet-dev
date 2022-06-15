@@ -215,6 +215,7 @@ export default {
           y: 400,
           label: dampak.dampak,
           type: 'primer',
+          component: dampak.component,
         };
       });
 
@@ -270,7 +271,7 @@ export default {
             (node) => node.label === parent && node.component === true
           );
           const to = this.data.nodes.find(
-            (node) => node.label === dampak.dampak && node.type === 'primer' && dampak.component === from.label
+            (node) => node.label === dampak.dampak && node.type === 'primer' && node.component === from.label
           );
 
           id++;
