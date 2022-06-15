@@ -205,7 +205,7 @@ class TestingMeetingController extends Controller
                 $file = $this->base64ToFile($request->dokumen_file);
                 $name = 'verifikasi-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
-    
+
                 $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
                 $testing_meeting->file = $name;
                 $testing_meeting->save();
@@ -435,7 +435,7 @@ class TestingMeetingController extends Controller
                 if($a['type']==$b['type']) return 0;
                 return $a['type'] < $b['type']?1:-1;
             });
-        } 
+        }
 
         $data = [
             'type' => 'update',
@@ -473,13 +473,13 @@ class TestingMeetingController extends Controller
 
         if($tuk) {
             $members = FeasibilityTestTeamMember::where('id_feasibility_test_team', $tuk->id)->get();
-            
+
             foreach($members as $m) {
                 $name = '';
                 $email = '';
                 $type_member = '';
                 $institution = '';
-    
+
                 if($m->expertBank) {
                     $name = $m->expertBank->name;
                     $email = $m->expertBank->email;
@@ -491,7 +491,7 @@ class TestingMeetingController extends Controller
                     $institution = $m->lukMember->institution;
                     $type_member = 'employee';
                 }
-    
+
                 $newMembers[] = [
                     'id' => $m->id,
                     'role' => $m->position,
@@ -519,7 +519,7 @@ class TestingMeetingController extends Controller
         }
 
         return $newMembers;
-    } 
+    }
 
     private function dokumen($id_project) {
         if (!Storage::disk('public')->exists('adm')) {
@@ -539,10 +539,10 @@ class TestingMeetingController extends Controller
                 $project_address = $project->address->first()->address . ' ' . ucwords(strtolower($project->address->first()->district)) . ' Provinsi ' . ucwords(strtolower($project->address->first()->prov));
             }
         }
-        
+
         $meeting_time = '';
         $meeting_date = '';
-        
+
         if($testing_meeting->meeting_time) {
             $meeting_time = date('H:i', strtotime($testing_meeting->meeting_time));
         }
@@ -574,7 +574,7 @@ class TestingMeetingController extends Controller
                  if($f->formulator) {
                      $total++;
                      $anggota_penyusun[] = [
-                         'penyusun' => $total . '. ' .  $f->formulator->name . ' (' . $f->position . ')' 
+                         'penyusun' => $total . '. ' .  $f->formulator->name . ' (' . $f->position . ')'
                      ];
                  } else if($f->expert) {
                     $ahli[] = $f->expert->name . ' (Anggota Ahli)';
@@ -588,7 +588,7 @@ class TestingMeetingController extends Controller
                          'penyusun' => $total . '. ' . $ahli[$i]
                         ];
                     $total++;
-                } 
+                }
              }
          }
 
@@ -611,7 +611,7 @@ class TestingMeetingController extends Controller
                 }
              } else {
                  $meeting_invitations[] = [
-                   'invitations' => $total . '. ' . $i->name . ' (' . $i->role . ')'  
+                   'invitations' => $total . '. ' . $i->name . ' (' . $i->role . ')'
                  ];
              }
              $total++;
@@ -619,14 +619,14 @@ class TestingMeetingController extends Controller
 
         // === PETA === //
         $checkPeta = $this->checkPeta($id_project);
-        
+
         // === KONSULTASI PUBLIK === //
         $checkKonsulPublik = $this->checkKonsulPublik($id_project);
 
         // === PENYUSUN === //
         $checkCvPenyusun = $this->checkCvPenyusun($id_project);
 
-        // === TUK === // 
+        // === TUK === //
         $tuk = null;
         $kepala_sekretariat_tuk = '';
         $authority = '';
@@ -665,7 +665,7 @@ class TestingMeetingController extends Controller
                 }
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $tuk_telp = $tuk->phone;
@@ -699,7 +699,7 @@ class TestingMeetingController extends Controller
         if($authority_big !== 'PUSAT') {
             $templateProcessor->setValue('institution_name', $institution_name);
         }
-        
+
         $templateProcessor->setValue('authority', $authority);
         $templateProcessor->setValue('project_title', $project->project_title);
         $templateProcessor->setValue('pemrakarsa', $project->initiator->name);
@@ -721,27 +721,27 @@ class TestingMeetingController extends Controller
              $final_pro_desc = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $this->replaceHtmlList($final_pro_desc));
          }
          Html::addHtml($proDescCell, $final_pro_desc);
- 
+
          $templateProcessor->setComplexBlock('project_description', $proDescTable);
 
         if($verification->forms) {
             if($verification->forms->first()) {
                 foreach($verification->forms as $f) {
-                    $templateProcessor->setValue($f->name . '_exist', 
+                    $templateProcessor->setValue($f->name . '_exist',
                                 $this->checkFileAdmExist(
-                                                'exist', 
-                                                $f->name, 
-                                                $project, 
-                                                $checkPeta, 
-                                                $checkKonsulPublik, 
+                                                'exist',
+                                                $f->name,
+                                                $project,
+                                                $checkPeta,
+                                                $checkKonsulPublik,
                                                 $checkCvPenyusun));
-                    $templateProcessor->setValue($f->name . '_not_exist', 
+                    $templateProcessor->setValue($f->name . '_not_exist',
                     $this->checkFileAdmExist(
-                                    'not_exist', 
-                                    $f->name, 
-                                    $project, 
-                                    $checkPeta, 
-                                    $checkKonsulPublik, 
+                                    'not_exist',
+                                    $f->name,
+                                    $project,
+                                    $checkPeta,
+                                    $checkKonsulPublik,
                                     $checkCvPenyusun));
                     $templateProcessor->setValue($f->name . '_yes', $f->suitability == 'Sesuai' ? 'V' : '');
                     $templateProcessor->setValue($f->name . '_no', $f->suitability == 'Tidak Sesuai' ? 'V' : '');
@@ -770,12 +770,12 @@ class TestingMeetingController extends Controller
         if (!Storage::disk('public')->exists('meet-inv')) {
             Storage::disk('public')->makeDirectory('meet-inv');
         }
-        
+
         $project = Project::findOrFail($id_project);
         $testing_meeting = TestingMeeting::select('id', 'id_project', 'updated_at', 'location', 'meeting_date', 'meeting_time')->where([['id_project', $id_project],['document_type', 'ka']])->first();
         $invitations = TestingMeetingInvitation::where('id_testing_meeting', $testing_meeting->id)->get();
         Carbon::setLocale('id');
-        
+
         $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s', strtotime($testing_meeting->updated_at)))->isoFormat('MMMM Y');
 
         $project_address = '';
@@ -832,7 +832,7 @@ class TestingMeetingController extends Controller
                 }
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $ketua = FeasibilityTestTeamMember::where([['id_feasibility_test_team', $tuk->id],['position', 'Ketua']])->first();
@@ -846,11 +846,11 @@ class TestingMeetingController extends Controller
             }
             $tuk_logo = $tuk->logo;
         }
-        
+
         $member = [];
         $ahli = [];
         $instansi = [];
-        
+
         foreach($invitations as $i) {
             if($i->id_feasibility_test_team_member) {
                 $tuk_member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
@@ -1153,15 +1153,15 @@ class TestingMeetingController extends Controller
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
-      
-        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
-      
+
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1);
+
         // find substring fro replace here eg: data:image/png;base64,
-      
-        $file = str_replace($replace, '', $file_64); 
-      
-        $file = str_replace(' ', '+', $file); 
-      
+
+        $file = str_replace($replace, '', $file_64);
+
+        $file = str_replace(' ', '+', $file);
+
         return [
             'extension' => $extension,
             'file' => base64_decode($file)

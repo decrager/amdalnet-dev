@@ -26,12 +26,15 @@ class FeedbackController extends Controller
     {
         // filter by project/announcement ID;
         $search = $request->search;
-        return FeedbackResource::collection(Feedback::where([['announcement_id', $request->announcement_id],['deleted', $request->deleted]])
-                ->where(function($q) {
+        $res =  Feedback::with(['responderType'])->where([['announcement_id', $request->announcement_id],['deleted', $request->deleted]])
+                ->where(function($q) use ($request){
                     if(Auth::check()) {
                         if(Auth::user()->roles->first()->name == 'initiator') {
                             $q->where('is_relevant', true);
                         }
+                    }
+                    if($request->has('is_relevant')){
+                        $q->where('is_relevant', $request->is_relevant);
                     }
                 })
                 ->where(function($q) use($search) {
@@ -57,7 +60,13 @@ class FeedbackController extends Controller
                         }
                     }
                 })
-                ->orderBy('id', 'ASC')->get());
+                ->orderBy('id', 'ASC');
+
+            if ($request->paginate){
+                return $res->paginate($request->limit);
+            } else {
+                return FeedbackResource::collection($res->get());
+            }
     }
 
     /**

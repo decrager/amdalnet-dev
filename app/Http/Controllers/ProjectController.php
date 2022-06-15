@@ -31,7 +31,11 @@ use Illuminate\Support\Facades\Hash;
 use Workflow;
 use App\Entity\WorkflowLog;
 use App\Entity\WorkflowStep;
+<<<<<<< HEAD
 use App\Notifications\CreateProjectNotification;
+=======
+use App\Entity\ProjectSkklFinal;
+>>>>>>> ba602adf8266d984a77692550c5661f623e20c59
 
 class ProjectController extends Controller
 {
@@ -490,7 +494,7 @@ class ProjectController extends Controller
                 if(gettype($subPro->sector) !== 'string'){
                     $sector = Business::find($subPro->sector);
                 }
-                
+
                 $createdSubPro = SubProject::create([
                     'kbli' => isset($subPro->kbli) ? $subPro->kbli : 'Non KBLI',
                     'name' => $subPro->name,
@@ -844,7 +848,7 @@ class ProjectController extends Controller
         return response(WorkflowStep::where('doc_type', $project->required_doc)
             ->select('workflow_steps.code', 'workflow_logs.from_place', 'workflow_logs.to_place',
                 'workflow_logs.created_at as datetime',
-                'workflow_steps.rank',
+                'workflow_steps.rank', 'workflow_steps.is_conditional',
                 'workflow_states.public_tracking as label', 'users.name as username')
             // ->addSelect(DB::raw('\''.$project->marking.'\' as current_marking'))
             ->leftJoin('workflow_states', 'workflow_states.code', '=', 'workflow_steps.code')
@@ -884,5 +888,21 @@ class ProjectController extends Controller
             ->get();
 
         return response($res);*/
+    }
+
+    public function states(Request $request){
+
+        return response([
+            'amdal' => ProjectSkklFinal::count(),
+            'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
+            'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
+        ]);
+
+        /*
+        return response([
+            'amdal' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'amdal.skkl-published'])->count(),
+            'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
+            'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
+        ]); */
     }
 }

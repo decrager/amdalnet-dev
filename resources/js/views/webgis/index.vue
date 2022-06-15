@@ -450,6 +450,8 @@ export default {
       ];
     },
     async loadMap() {
+      let layerTapak = null;
+      let layerTapakPoint = null;
       const map = new Map({
         basemap: 'satellite',
       });
@@ -526,7 +528,11 @@ export default {
           popupTemplate: popupTemplate(propFields),
         });
 
+        if (layerTapakPoint !== null) {
+          map.layers.remove(layerTapakPoint);
+        }
         map.add(tapakPoint);
+        layerTapakPoint = tapakPoint;
 
         this.mapGeojsonArray.push(geojsonLayerArray);
         const toggle = document.getElementById('layerTapakCheckBox');
@@ -539,8 +545,11 @@ export default {
             geojsonLayerArray.visible = false;
           }
         });
-
+        if (layerTapak !== null) {
+          map.layers.remove(layerTapak);
+        }
         map.add(geojsonLayerArray);
+        layerTapak = geojsonLayerArray;
       }
 
       if (this.checkedPantau === true) {

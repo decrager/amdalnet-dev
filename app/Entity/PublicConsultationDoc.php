@@ -20,4 +20,9 @@ class PublicConsultationDoc extends Model
     protected $casts = [
         'doc_json' => 'array',
     ];
+
+    public function publicConsultation()
+    {
+        return $this->belongsTo(PublicConsultation::class, 'public_consultation_id', 'id');
+    }
 }

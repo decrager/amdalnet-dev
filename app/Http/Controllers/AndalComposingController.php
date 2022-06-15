@@ -668,8 +668,8 @@ class AndalComposingController extends Controller
 
     private function dokumen($id_project)
     {
-        if (!Storage::disk('public')->exists('workspacee')) {
-            Storage::disk('public')->makeDirectory('workspacee');
+        if (!Storage::disk('public')->exists('workspace')) {
+            Storage::disk('public')->makeDirectory('workspace');
         }
 
         // CHECK IF DOCUMENT ALREADY EXIST
@@ -941,7 +941,7 @@ class AndalComposingController extends Controller
                 }
 
                 $component_type = $this->getComponentTypeImp($imp);
-                $initial_study_plan = $this->renderHtmlTable($imp->initial_study_plan , 1300, 'Arial', '11');
+                $initial_study_plan = $this->renderHtmlTable($imp->initial_study_plan , 3500, 'Arial', '11');
 
                 // ======= POTENTIAL IMPACT EVALUATIONS ======= //
                 $ed_besaran_rencana = '';
@@ -955,31 +955,31 @@ class AndalComposingController extends Controller
                         if ($pI->id_pie_param == 1) {
                             $ed_besaran_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 2) {
                             $ed_kondisi_rona = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 3) {
                             $ed_pengaruh_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 4) {
                             $ed_intensitas_perhatian = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 5) {
                             $ed_kesimpulan = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1000, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         }
@@ -2397,7 +2397,7 @@ class AndalComposingController extends Controller
             $submit = KaReview::where([['id_project', $id_project], ['status', 'submit']])->first();
             if($submit) {
                 return [
-                    'file_name' => $save_file_name,
+                    'file_name' => Storage::url($save_file_name),
                     'project_title' => strtolower($project->project_title)
                 ];
             }
@@ -2611,12 +2611,12 @@ class AndalComposingController extends Controller
 
 
                 // === HTML CONTENT === //
-                $html_content[] = $this->renderHtml('rencana', $s->id, $pA->id, 2000, $pA->initial_study_plan);
-                $html_content[] = $this->renderHtml('ed_besaran_rencana', $s->id, $pA->id, 1200, $ed_besaran_rencana);
-                $html_content[] = $this->renderHtml('ed_kondisi_rona', $s->id, $pA->id, 1200, $ed_kondisi_rona);
-                $html_content[] = $this->renderHtml('ed_pengaruh_rencana', $s->id, $pA->id, 1200, $ed_pengaruh_rencana);
-                $html_content[] = $this->renderHtml('ed_intensitas_perhatian', $s->id, $pA->id, 1200, $ed_intensitas_perhatian);
-                $html_content[] = $this->renderHtml('ed_kesimpulan', $s->id, $pA->id, 1200, $ed_kesimpulan);
+                $html_content[] = $this->renderHtml('rencana', $s->id, $pA->id, 6800, $pA->initial_study_plan);
+                $html_content[] = $this->renderHtml('ed_besaran_rencana', $s->id, $pA->id, 6800, $ed_besaran_rencana);
+                $html_content[] = $this->renderHtml('ed_kondisi_rona', $s->id, $pA->id, 6800, $ed_kondisi_rona);
+                $html_content[] = $this->renderHtml('ed_pengaruh_rencana', $s->id, $pA->id, 6800, $ed_pengaruh_rencana);
+                $html_content[] = $this->renderHtml('ed_intensitas_perhatian', $s->id, $pA->id, 6800, $ed_intensitas_perhatian);
+                $html_content[] = $this->renderHtml('ed_kesimpulan', $s->id, $pA->id, 6800, $ed_kesimpulan);
 
                 $total++;
             }
@@ -2715,7 +2715,7 @@ class AndalComposingController extends Controller
         }
 
         return [
-            'file_name' => $save_file_name,
+            'file_name' => $document_attachment->attachment,
             'project_title' => strtolower(str_replace('/', '-', $project->project_title))
         ];
     }

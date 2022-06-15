@@ -65,6 +65,7 @@ export default {
   },
   methods: {
     async loadMap() {
+      let layerTapak = null;
       axios.get('api/map/' + this.idProject)
         .then((response) => {
           const map = new Map({
@@ -201,7 +202,11 @@ export default {
                     title: 'Layer Tapak',
                     renderer: rendererTapak,
                   });
+                  if (layerTapak !== null) {
+                    map.layers.remove(layerTapak);
+                  }
                   map.add(geojsonLayerArray);
+                  layerTapak = geojsonLayerArray;
 
                   mapView.on('layerview-create', (event) => {
                     mapView.goTo({

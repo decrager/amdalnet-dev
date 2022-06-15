@@ -102,6 +102,10 @@
         </el-form-item>
 
       </el-form>
+      <div v-if="data.project_rona_awal[0].file && showFile">
+        <a :href="data.project_rona_awal[0].file" target="_blank">File PDF</a>
+        <a href="#" @click="deleteFilePdf">Hapus</a>
+      </div>
 
       <span slot="footer" class="dialog-footer">
         <div v-if="pdfError || pdfName" style="display: inline-block;">
@@ -173,6 +177,8 @@ export default {
       pdfName: null,
       pdfFile: null,
       pdfError: null,
+      deletePdfId: null,
+      showFile: false,
     };
   },
   /* watch: {
@@ -207,10 +213,13 @@ export default {
         component_type_name: '',
         id_project: parseInt(this.$route.params && this.$route.params.id),
         id_project_rona_awal: null,
+        project_rona_awal: [{}],
       };
       this.pdfName = null;
       this.pdfFile = null;
       this.pdfError = null;
+      this.deletePdfId = null;
+      this.showFile = true;
     },
     onOpen(){
       console.log('opening!');
@@ -233,6 +242,10 @@ export default {
       formData.append('component', JSON.stringify(this.data));
       formData.append('mode', this.mode);
 
+      if (this.deletePdfId) {
+        formData.append('deletePdfId', this.deletePdfId);
+      }
+
       if (this.pdfFile) {
         formData.append('file', await this.convertBase64(this.pdfFile));
       }
@@ -240,6 +253,7 @@ export default {
       await projectRonaAwalResource.store(formData)
         .then((res) => {
           this.data.id_project_rona_awal = res.data.id;
+          this.data.project_rona_awal = [res.data];
         })
         .catch((err) => {
           console.log(err);
@@ -328,6 +342,10 @@ export default {
 
       this.pdfFile = file.raw;
       this.pdfName = file.name;
+    },
+    deleteFilePdf() {
+      this.showFile = false;
+      this.deletePdfId = this.data.id_project_rona_awal;
     },
     convertBase64(file) {
       return new Promise((resolve, reject) => {

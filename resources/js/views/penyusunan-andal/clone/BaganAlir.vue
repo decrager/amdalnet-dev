@@ -152,12 +152,12 @@
           </div>
         </li>
         <li>
-          <ul>
+          <ul class="evaluasi-dampak-penting">
             <li class="bottom">
               <div class="bottom_content">
                 <span class="header__text">
                   Evaluasi <br />
-                  Dampak Penting
+                  Dampak Potensial
                 </span>
                 <!-- <hr />
                 <div>
@@ -186,7 +186,7 @@
             </li>
           </ul>
         </li>
-        <li>
+        <li class="dampak-penting-hipotetik">
           <div v-loading="loadingImpacts">
             <span class="header__text">Dampak Penting Hipotetik</span>
             <hr />
@@ -388,16 +388,36 @@ export default {
         useCORS: true,
       }).then((canvas) => {
         document.getElementById('pdf').appendChild(canvas);
-        const img = canvas.toDataURL('image/png');
+        const img = canvas.toDataURL('image/png', 0.3);
         const pdf = new JsPDF('l', 'mm', 'a3');
-        pdf.addImage(img, 'png', 0, 0, 420, Math.floor(h * 0.264583)); // add image & convert height from px to mm
-        this.loader = false;
-        pdf.save('Bagan Alir Pelingkupan.pdf');
+        pdf.addImage(
+          img,
+          'png',
+          0,
+          0,
+          420,
+          Math.floor(h * 0.264583),
+          undefined,
+          'FAST'
+        ); // add image & convert height from px to mm
         document.getElementById('pdf').innerHTML = '';
+        return this.uploadPdf(pdf);
       });
     },
     handleCancelComponent() {
       this.showRencanaKegiatan = false;
+    },
+    uploadPdf(pdf) {
+      const base64String = pdf.output('datauristring');
+      const formData = new FormData();
+      formData.append('idProject', this.$route.params.id);
+      formData.append('file', base64String);
+      formData.append('isAndal', 'true');
+      axios.post('/api/bagan-alir-pelingkupan/pdf', formData).then((res) => {
+        this.loader = false;
+        pdf.save('Bagan Alir Pelingkupan.pdf');
+      });
+      return;
     },
   },
 };
@@ -529,6 +549,11 @@ hr {
   border-width: var(--linethick) 0 0;
 }
 
+.process_diagram ul.evaluasi-dampak-penting:before,
+.process_diagram ul.evaluasi-dampak-penting:after {
+  width: 109%;
+}
+
 .process_diagram ul:before {
   left: 0;
 }
@@ -625,8 +650,13 @@ hr {
 
 .process_diagram li:last-child > div:after,
 .process_diagram li:last-child > div:before {
-  top: 0.4%;
+  top: 2px;
   border-width: 0 0 var(--linethick);
+}
+
+.process_diagram li.dampak-penting-hipotetik:last-child > div:after,
+.process_diagram li.dampak-penting-hipotetik:last-child > div:before {
+  display: none;
 }
 
 /* remove dash for the very first/last nodes keeping margin and padding */

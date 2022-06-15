@@ -33,31 +33,54 @@ class AnnouncementController extends Controller
 
         $getAllAnnouncement = Announcement::with([
             'project',
-            'project.province',
             'project.address',
             // 'project.initiator'
         ])->withCount('feedbacks')
         ->select('announcements.*')
         ->addSelect(DB::raw('coalesce(initiators.logo, users.avatar) as applicant_logo'))
+        ->addSelect(DB::raw('case when announcements.end_date::timestamp::date < now()::timestamp::date then true else false end as expired'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
-        ->orWhereHas("project.address",function($q) use($request){
+        ->where(function($query) use($request) {
+            if($request->provName && ($request->provName !== null)) {
+                $query->whereHas('project.address', function($q) use ($request) {
+                    return $q->where('prov', '=', $request->provName);
+                });
+            }
+            if($request->kotaName && ($request->kotaName !== null)) {
+                $query->whereHas('project.address', function($q) use ($request) {
+                    return $q->where('district', '=', $request->kotaName);
+                });
+            }
+             if($request->has('keyword')) {
+                $columnsToSearch = ['pic_name', 'project_type', 'project_location'];
+                $searchQuery = '%' . $request->keyword . '%';
+                $query->where('project_result', 'ILIKE', $searchQuery );
+                foreach($columnsToSearch as $column) {
+                    $query->orWhere($column, 'ILIKE', $searchQuery);
+                }
+            }
+            return $query;
+        })
+        /*
+        ->whereHas("project.address",function($q) use($request){
             $q->where("prov", "=", $request->provName);
         })
         ->orWhereHas("project.address",function($q) use($request){
             $q->where("district", "=", $request->kotaName);
-        })
+        }) */
 
-        ->when($request->has('keyword'), function ($query) use ($request) {
-            $columnsToSearch = ['pic_name', 'project_result', 'project_type', 'project_location'];
+        /*->when($request->has('keyword'), function ($query) use ($request) {
+            $columnsToSearch = ['pic_name', 'project_type', 'project_location'];
             $searchQuery = '%' . $request->keyword . '%';
-            $indents = $query->where('pic_name', 'ILIKE', '%'.$request->keyword.'%');
+            $indents = $query->where('project_result', 'ILIKE', '%'.$request->keyword.'%');
             foreach($columnsToSearch as $column) {
                 $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
             }
 
             return $indents;
-        })
+        })*/
+        ->whereRaw('announcements.start_date::timestamp::date <= now()::timestamp::date')
         ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
 
         return AnnouncementResource::make($getAllAnnouncement);
@@ -78,22 +101,45 @@ class AnnouncementController extends Controller
 
         $getAllAnnouncement = Announcement::with([
             'project',
-            'project.province',
+            //'project.province',
             'project.address'
         ])->withCount('feedbacks')
         ->select('announcements.*')
         ->addSelect(DB::raw('coalesce(initiators.logo, users.avatar) as applicant_logo'))
+        ->addSelect(DB::raw('case when announcements.end_date::timestamp::date < now()::timestamp::date then true else false end as expired'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
-        ->orWhereHas("project.address",function($q) use($request){
+        ->whereRaw('announcements.start_date::timestamp::date <= now()::timestamp::date')
+        /*->whereHas("project.address",function($q) use($request){
             $q->where("prov", "=", $request->provName);
         })
         ->orWhereHas("project.address",function($q) use($request){
             $q->where("district", "=", $request->kotaName);
+        })*/
+        ->where(function($query) use($request) {
+            if($request->provName && ($request->provName !== 'null')) {
+                $query->whereHas('project.address', function($q) use ($request) {
+                    return $q->where('prov', '=', $request->provName);
+                });
+            }
+            if($request->kotaName && ($request->kotaName !== 'null')) {
+                $query->whereHas('project.address', function($q) use ($request) {
+                    return $q->where('district', '=', $request->kotaName);
+                });
+            }
+            if($request->has('keyword')) {
+                $columnsToSearch = ['pic_name', 'project_type', 'project_location'];
+                $searchQuery = '%' . $request->keyword . '%';
+                $query->where('project_result', 'ILIKE', $searchQuery );
+                foreach($columnsToSearch as $column) {
+                    $query->orWhere($column, 'ILIKE', $searchQuery);
+                }
+            }
+            return $query;
         })
 
-        ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
 
+        ->orderby('start_date', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
         return AnnouncementResource::make($getAllAnnouncement);
     }
 

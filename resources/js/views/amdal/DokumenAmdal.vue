@@ -2,7 +2,7 @@
   <div class="app-container" style="padding: 24px">
     <el-card v-if="formulirKACompleted && templateKALoaded" v-loading="loading">
       <h2>
-        Submit Formulir kerangka Acuan
+        Submit Formulir Kerangka Acuan
         <span v-if="isFormulator">ke Pemrakarsa</span>
       </h2>
       <div>
@@ -17,7 +17,7 @@
         <a
           v-if="showDocument"
           class="btn-docx"
-          :href="'/storage/workspace/' + downloadDocxPath"
+          :href="downloadDocxPath"
           download
         >
           Export to .DOCX
@@ -115,7 +115,17 @@ export default {
         check_formulir_ka: true,
         id_project: this.$route.params.id,
       });
-      if (!checkFormulirKA.data) {
+      if (checkFormulirKA.errBaganAlir) {
+        this.$message({
+          message: 'Mohon lakukan export File PDF Bagan Alir Pelingkupan terlebih dahulu',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.$router.push({
+          name: 'FormulirAmdal',
+          params: this.$route.params.id,
+        });
+      } else if (!checkFormulirKA.data) {
         this.$message({
           message: 'Mohon lengkapi Formulir KA terlebih dahulu',
           type: 'error',
@@ -135,8 +145,7 @@ export default {
       });
       this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
-      this.projects =
-        window.location.origin + `/storage/workspace/${this.downloadDocxPath}`;
+      this.projects = window.location.origin + `/${this.downloadDocxPath}`;
       this.showDocument = true;
       this.loading = false;
       this.templateKALoaded = true;

@@ -47,6 +47,7 @@ export default {
   },
   methods: {
     async loadMap() {
+      let layerTapak = null;
       const map = new Map({
         basemap: 'satellite',
       });
@@ -83,6 +84,10 @@ export default {
                   title: 'Peta Tapak',
                   renderer: renderer,
                 });
+                if (layerTapak !== null) {
+                  map.layers.remove(layerTapak);
+                }
+                layerTapak = geojsonLayer;
                 map.add(geojsonLayer);
                 mapView.on('layerview-create', (event) => {
                   mapView.goTo({

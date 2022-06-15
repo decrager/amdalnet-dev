@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\DocumentAttachment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\ImpactIdentification;
 use App\Entity\ImpactIdentificationClone;
@@ -13,6 +14,7 @@ use App\Entity\SignificantImpactFlowchart;
 use App\Entity\SubProject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BaganAlirController extends Controller
 {
@@ -61,6 +63,39 @@ class BaganAlirController extends Controller
             'public_consultation' => $getPublicConsultation,
             'dampak_penting_potensi' => $dampakPentingPotensi,
         ]);
+    }
+
+    public function storeBaganAlirPelingkupanPDF(Request $request)
+    {
+        if (!Storage::disk('public')->exists('bagan-alir-pelingkupan')) {
+            Storage::disk('public')->makeDirectory('bagan-alir-pelingkupan');
+        }
+
+        $type = $request->isAndal ? 'Bagan Alir Pelingkupan Andal' : 'Bagan Alir Pelingkupan KA';
+
+        $file = $this->base64ToFile($request->file);
+        $name = 'bagan-alir-pelingkupan/' . uniqid() . '.' . $file['extension'];
+        Storage::disk('public')->put($name, $file['file']);
+
+        $document = DocumentAttachment::where([['id_project', $request->idProject],['type', $type]])->first();
+
+        if($document) {
+            $attachment = str_replace(Storage::url(''), '', $document->attachment);
+            if(Storage::disk('public')->exists($attachment)) {
+                Storage::disk('public')->delete($attachment);
+            }
+
+            $document->attachment = $name;
+            $document->save();
+        } else {
+            $document =  new DocumentAttachment();
+            $document->id_project = $request->idProject;
+            $document->attachment = $name;
+            $document->type = $type;
+            $document->save();
+        }
+
+        return response()->json(['message' => 'success']);
     }
 
     public function baganAlirDampakPenting($id)
@@ -309,5 +344,23 @@ class BaganAlirController extends Controller
         }
 
         return $dampak;
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

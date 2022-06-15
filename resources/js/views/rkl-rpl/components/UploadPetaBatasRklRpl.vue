@@ -192,6 +192,7 @@ export default {
   },
   methods: {
     getMap() {
+      let layerTapak = null;
       const map = new Map({
         basemap: 'satellite',
       });
@@ -226,7 +227,11 @@ export default {
                   title: 'Peta Tapak',
                   renderer: renderer,
                 });
+                if (layerTapak !== null) {
+                  map.layers.remove(layerTapak);
+                }
                 map.add(geojsonLayer);
+                layerTapak = geojsonLayer;
               });
             }
           }

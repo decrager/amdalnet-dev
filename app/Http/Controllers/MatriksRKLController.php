@@ -1447,7 +1447,7 @@ class MatriksRKLController extends Controller
 
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell(1300);
+        $cell = $table->addCell(2000);
         Html::addHtml($cell, $imp_source);
 
         return [
@@ -1470,7 +1470,7 @@ class MatriksRKLController extends Controller
 
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell(1300);
+        $cell = $table->addCell(3000);
         Html::addHtml($cell, $indicator_data);
 
         return [
@@ -1493,7 +1493,7 @@ class MatriksRKLController extends Controller
 
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell(3000);
+        $cell = $table->addCell(3800);
         Html::addHtml($cell, $form);
 
         return [
@@ -1516,7 +1516,7 @@ class MatriksRKLController extends Controller
 
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell(1600);
+        $cell = $table->addCell(3300);
         Html::addHtml($cell, $location);
 
         return [

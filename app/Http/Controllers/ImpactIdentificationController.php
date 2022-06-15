@@ -601,13 +601,6 @@ class ImpactIdentificationController extends Controller
             $created = ImpactIdentification::create($validator);
             if ($created){
                 DB::commit();
-                // Workflow Amdal: drafting
-                /* $project = Project::findOrFail($params['id_project']);
-                if ($project->marking == 'announcement-completed') {
-                    $project->workflow_apply('draft-amdal-form-ka');
-                    $project->save();
-                } */
-
                 // init pies //proe
                 // A
                 $subProj = SubProjectComponent::where('id', $request['id_sub_project_component'])->first();

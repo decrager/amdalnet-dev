@@ -317,48 +317,6 @@ export default {
             map.addMany(this.mapGeojsonArrayProject);
           });
         });
-
-      // Map Tapak
-      axios.get('api/map/' + this.idProject)
-        .then(response => {
-          const projects = response.data;
-          for (let i = 0; i < projects.length; i++) {
-            if (projects[i].attachment_type === 'tapak') {
-              shp(window.location.origin + '/storage/map/' + projects[i].stored_filename).then(data => {
-                const blob = new Blob([JSON.stringify(data)], {
-                  type: 'application/json',
-                });
-                const url = URL.createObjectURL(blob);
-
-                const renderer = {
-                  type: 'simple',
-                  field: '*',
-                  symbol: {
-                    type: 'simple-fill',
-                    color: [0, 0, 0, 0.0],
-                    outline: {
-                      color: 'red',
-                      width: 2,
-                    },
-                  },
-                };
-
-                const geojsonLayer = new GeoJSONLayer({
-                  url: url,
-                  outFields: ['*'],
-                  title: 'Peta Tapak',
-                  renderer: renderer,
-                });
-                map.add(geojsonLayer);
-                mapView.on('layerview-create', (event) => {
-                  mapView.goTo({
-                    target: geojsonLayer.fullExtent,
-                  });
-                });
-              });
-            }
-          }
-        });
       const layerList = new LayerList({
         view: mapView,
         container: document.createElement('div'),
