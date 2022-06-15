@@ -265,16 +265,15 @@ export default {
       });
 
       dampakPrimer.forEach((dampak) => {
-        id++;
-        const to = this.data.nodes.find(
-          (node) => node.label === dampak.dampak && node.type === 'primer'
-        );
-
         dampak.parents.forEach((parent) => {
-          id++;
           const from = this.data.nodes.find(
             (node) => node.label === parent && node.component === true
           );
+          const to = this.data.nodes.find(
+            (node) => node.label === dampak.dampak && node.type === 'primer' && dampak.component === from.label
+          );
+
+          id++;
           links.push({
             id,
             from: from.id,
