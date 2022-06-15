@@ -53,8 +53,12 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ email: email.trim(), password: password })
         .then(response => {
-          setLogged('1');
-          resolve();
+          if (response.error && !response.success) {
+            resolve(response);
+          } else {
+            setLogged('1');
+            resolve();
+          }
         })
         .catch(error => {
           console.log(error);
