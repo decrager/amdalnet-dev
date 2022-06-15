@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Hash;
 use Workflow;
 use App\Entity\WorkflowLog;
 use App\Entity\WorkflowStep;
+use App\Entity\ProjectSkklFinal;
 
 class ProjectController extends Controller
 {
@@ -877,9 +878,16 @@ class ProjectController extends Controller
     public function states(Request $request){
 
         return response([
-            'amdal' => Project::where('required_doc', 'AMDAL')->count(),
-            'uklupl' => Project::where('required_doc', 'UKL-UPL')->count(),
+            'amdal' => ProjectSkklFinal::count(),
+            'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
             'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
         ]);
+
+        /*
+        return response([
+            'amdal' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'amdal.skkl-published'])->count(),
+            'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
+            'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
+        ]); */
     }
 }

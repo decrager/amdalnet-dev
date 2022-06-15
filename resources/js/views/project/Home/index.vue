@@ -37,6 +37,7 @@
             </el-tab-pane>
             <el-tab-pane label="SPT">
               <project-public-feedback v-if="announcement_id > 0" :id="announcement_id" />
+              <!-- <project-public-consultation v-if="announcement_id > 0" :id="announcement_id" /> -->
             </el-tab-pane>
           </el-tabs>
         </el-card>
