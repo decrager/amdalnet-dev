@@ -1623,24 +1623,29 @@ export default {
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
-        urlPrefix: 'https://sigap.menlhk.go.id/',
+        urlPrefix: 'https://gistaru.atrbpn.go.id/',
+        // urlPrefix: 'https://sigap.menlhk.go.id/',
       });
+
       const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
+        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
         imageTransparency: true,
-        visible: true,
+        visible: false,
+        visibilityMode: '',
       });
 
       const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
         imageTransparency: true,
         visible: true,
+        visibilityMode: '',
       });
 
       const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
         imageTransparency: true,
         visible: true,
+        visibilityMode: '',
       });
 
       const sigapLayer = new GroupLayer({
@@ -1784,10 +1789,6 @@ export default {
         content: layerList,
       });
 
-      urlUtils.addProxyRule({
-        proxyUrl: 'proxy/proxy.php',
-        urlPrefix: 'https://amdalgis.menlhk.go.id/',
-      });
       const print = new Print({
         view: mapView,
         printServiceUrl:
