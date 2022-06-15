@@ -113,7 +113,7 @@ export default {
       this.loading = false;
     },
     checkSubmit() {
-      this.$confirm('Apakah anda yakin ?', 'Warning', {
+      this.$confirm('Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.', 'Warning', {
         confirmButtonText: 'Ya',
         cancelButtonText: 'Tidak',
         type: 'warning',

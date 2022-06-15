@@ -255,7 +255,7 @@ export default {
       this.error = 0;
 
       if (this.recap.recap) {
-        this.$confirm('Apakah anda yakin ?', 'Warning', {
+        this.$confirm('Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.', 'Warning', {
           confirmButtonText: 'Ya',
           cancelButtonText: 'Tidak',
           type: 'warning',
