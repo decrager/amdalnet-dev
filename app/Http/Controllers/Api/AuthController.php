@@ -44,7 +44,7 @@ class AuthController extends BaseController
 
         // return $credentials;
         if (!Auth::attempt($credentials)) {
-            return response()->json(new JsonResponse([], 'Maaf Email atau Password yang anda masukkan kurang tepat'), Response::HTTP_UNAUTHORIZED);
+            return response()->json(new JsonResponse([], 'Maaf Email atau Password yang anda masukkan kurang tepat'), Response::HTTP_OK);
         }
 
         $user = $request->user();
