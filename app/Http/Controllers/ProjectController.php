@@ -7,6 +7,7 @@ use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
+use App\Entity\Initiator;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
 use App\Entity\ProjectAuthority;
@@ -30,7 +31,11 @@ use Illuminate\Support\Facades\Hash;
 use Workflow;
 use App\Entity\WorkflowLog;
 use App\Entity\WorkflowStep;
+<<<<<<< HEAD
+use App\Notifications\CreateProjectNotification;
+=======
 use App\Entity\ProjectSkklFinal;
+>>>>>>> ba602adf8266d984a77692550c5661f623e20c59
 
 class ProjectController extends Controller
 {
@@ -327,6 +332,16 @@ class ProjectController extends Controller
             $project->workflow_apply('screening');
             $project->workflow_apply('complete-screening');
             $project->save();
+
+            // send email
+            try {
+                $initpro = Initiator::find($project->id_applicant);
+                $user = User::where('email', $initpro->email)->first();
+
+                Notification::send($user, new CreateProjectNotification($project, $user));
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
 
             if ($files = $request->file('fileMap')) {
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
