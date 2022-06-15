@@ -72,7 +72,7 @@ class InitiatorController extends Controller
             
             $found = User::where('email', $params['email'])->first();
             if ($found) {
-                return response()->json(['error' => 'Email yang anda masukkan sudah terpakai'], 403);
+                return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
             }
 
             $initiatorRole = Role::findByName(Acl::ROLE_INITIATOR);
