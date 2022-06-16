@@ -31,11 +31,8 @@ use Illuminate\Support\Facades\Hash;
 use Workflow;
 use App\Entity\WorkflowLog;
 use App\Entity\WorkflowStep;
-<<<<<<< HEAD
 use App\Notifications\CreateProjectNotification;
-=======
 use App\Entity\ProjectSkklFinal;
->>>>>>> ba602adf8266d984a77692550c5661f623e20c59
 
 class ProjectController extends Controller
 {
