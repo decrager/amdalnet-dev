@@ -179,6 +179,22 @@ class AndalComposingController extends Controller
                     $project->pre_agreement_file = $pAName;
             }
 
+            if($request->pippib) {
+                $pippibName = '';
+                    $filePippib = $this->base64ToFile($request->pippib);
+                    $pippibName = 'project/pippib/' . uniqid() . '.' . $filePippib['extension'];
+                    Storage::disk('public')->put($pippibName, $filePippib['file']);
+                    $project->ppib_file = $pippibName;
+            }
+
+            if($request->kL) {
+                $kLName = '';
+                    $fileKl = $this->base64ToFile($request->kL);
+                    $kLName = 'project/kawasanlindung/' . uniqid() . '.' . $fileKl['extension'];
+                    Storage::disk('public')->put($kLName, $fileKl['file']);
+                    $project->kawasan_lindung_file = $kLName;
+            }
+
             $project->save();
 
             // === ANDAL ATTACHMENT === //
@@ -3029,7 +3045,10 @@ class AndalComposingController extends Controller
         return [
             'kesesuaian_tata_ruang' => $project->ktr,
             'persetujuan_awal' => $project->pre_agreement_file,
-            'lainnya' => $others ? $others->toArray() : [],
+            'pippib' => $project->ppib_file,
+            'kawasan_lindung' => $project->kawasan_lindung_file,
+            'pertek' => $others->where('is_pertek', true) ? $others->where('is_pertek', true)->toArray() : [],
+            'lainnya' => $others->where('is_pertek', false) ? $others->where('is_pertek', false)->toArray() : [],
         ];
     }
 

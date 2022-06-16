@@ -18,7 +18,7 @@ class AndalAttachment extends Model
             if(str_contains($this->attributes['file'], 'storage/')) {
                 return $this->attributes['file'];
             } else {
-                return Storage::url($this->attributes['cv']);
+                return Storage::url($this->attributes['file']);
             }
         }
 
