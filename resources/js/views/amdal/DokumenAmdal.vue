@@ -67,7 +67,7 @@ import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
 import Lampiran from '@/views/review-dokumen/Lampiran';
 const scopingResource = new Resource('scoping');
 const andalComposingResource = new Resource('andal-composing');
-import axios from 'axios';
+const kaReviewResounce = new Resource('ka-reviews');
 
 export default {
   components: {
@@ -117,7 +117,8 @@ export default {
       });
       if (checkFormulirKA.errBaganAlir) {
         this.$message({
-          message: 'Mohon lakukan export File PDF Bagan Alir Pelingkupan terlebih dahulu',
+          message:
+            'Mohon lakukan export File PDF Bagan Alir Pelingkupan terlebih dahulu',
           type: 'error',
           duration: 5 * 1000,
         });
@@ -152,27 +153,21 @@ export default {
     },
     async exportPdf() {
       this.loadingPDF = true;
-      axios({
-        url: `api/andal-composing`,
-        method: 'GET',
-        responseType: 'blob',
-        params: {
-          pdf: 'true',
-          idProject: this.$route.params.id,
-          type: 'ka',
-        },
-      }).then((response) => {
-        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-        var fileLink = document.createElement('a');
-        fileLink.href = fileURL;
-        fileLink.setAttribute(
-          'download',
-          `ka-${this.project_title.toLowerCase()}.pdf`
-        );
-        document.body.appendChild(fileLink);
-        fileLink.click();
-        this.loadingPDF = false;
+      const fileURL = await kaReviewResounce.list({
+        pdf: 'true',
+        idProject: this.$route.params.id,
       });
+
+      const fileLink = document.createElement('a');
+      fileLink.href = fileURL;
+      fileLink.setAttribute(
+        'download',
+        `ka-${this.project_title.toLowerCase()}.pdf`
+      );
+      document.body.appendChild(fileLink);
+      fileLink.click();
+
+      this.loadingPDF = false;
     },
   },
 };

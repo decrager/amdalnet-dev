@@ -126,7 +126,7 @@ class BaganAlirController extends Controller
                         'id_env_impact_analysis' => $imp->envImpactAnalysis->id,
                         'dampak' => $change_type . ' ' . $ronaAwal,
                         'type' => $imp->envImpactAnalysis->impact_type,
-                        'parents' => $this->getParents($imp->envImpactAnalysis->child)
+                        'parents' => $imp->envImpactAnalysis->impact_type == 'Primer' ? [$component] : $this->getParents($imp->envImpactAnalysis->child)
                     ];
                 } else {
                     continue;

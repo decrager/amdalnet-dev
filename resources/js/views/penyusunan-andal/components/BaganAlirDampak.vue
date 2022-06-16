@@ -170,6 +170,7 @@ export default {
                 tahap,
                 component,
                 dampak: dampak.dampak,
+                parents: dampak.parents,
               });
             } else if (dampak.type === 'Sekunder') {
               dampakSekunder.push({
@@ -214,6 +215,7 @@ export default {
           y: 400,
           label: dampak.dampak,
           type: 'primer',
+          component: dampak.component,
         };
       });
 
@@ -264,17 +266,20 @@ export default {
       });
 
       dampakPrimer.forEach((dampak) => {
-        id++;
-        const from = this.data.nodes.find(
-          (node) => node.label === dampak.component && node.component === true
-        );
-        const to = this.data.nodes.find(
-          (node) => node.label === dampak.dampak && node.type === 'primer'
-        );
-        links.push({
-          id,
-          from: from.id,
-          to: to.id,
+        dampak.parents.forEach((parent) => {
+          const from = this.data.nodes.find(
+            (node) => node.label === parent && node.component === true
+          );
+          const to = this.data.nodes.find(
+            (node) => node.label === dampak.dampak && node.type === 'primer' && node.component === from.label
+          );
+
+          id++;
+          links.push({
+            id,
+            from: from.id,
+            to: to.id,
+          });
         });
       });
 
@@ -284,14 +289,16 @@ export default {
         );
 
         dampak.parents.forEach((parent) => {
-          id++;
-          const from = this.data.nodes.find(
+          const fromArray = this.data.nodes.filter(
             (node) => node.label === parent && node.type === 'primer'
           );
-          links.push({
-            id,
-            from: from.id,
-            to: to.id,
+          fromArray.forEach(fA => {
+            id++;
+            links.push({
+              id,
+              from: fA.id,
+              to: to.id,
+            });
           });
         });
       });
@@ -366,9 +373,9 @@ export default {
       }).then((canvas) => {
         console.log('second', canvas);
         document.getElementById('pdf').appendChild(canvas);
-        const img = canvas.toDataURL('image/png');
-        const pdf = new JsPDF('landscape', 'px', [w, h]);
-        pdf.addImage(img, 'PNG', 0, 0, w, h);
+        const img = canvas.toDataURL('image/png', 0.3);
+        const pdf = new JsPDF('l', 'mm', 'a3');
+        pdf.addImage(img, 'PNG', 0, 0, 420, Math.floor(h * 0.264583), undefined, 'FAST');
         this.loadingPDF = false;
         pdf.save('Bagan Alir Dampak Penting.pdf');
         document.getElementById('pdf').innerHTML = '';

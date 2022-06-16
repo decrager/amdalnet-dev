@@ -13,6 +13,7 @@ use App\Entity\ProjectRonaAwal;
 use App\Entity\PublicConsultationDoc;
 use App\Laravue\Models\User;
 use App\Notifications\KaReview as AppKaReview;
+use App\Utils\Document;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -26,6 +27,10 @@ class KaReviewController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->pdf) {
+            return $this->exportPDF($request->idProject, $request->isAndal);
+        }
+
         if($request->attachment) {
             return $this->attachment($request->idProject, $request->isAndal);
         }
@@ -554,5 +559,16 @@ class KaReviewController extends Controller
         }
 
         return $attachment;
+    }
+
+    private function exportPDF($id_project, $is_andal)
+    {
+        $document_type = $is_andal ? 'Formulir KA Andal' : 'Formulir KA';
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', $document_type]])->first();
+        $downloadUri = url(Storage::url(str_replace('/storage/', '', $document_attachment->attachment)));
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 }
