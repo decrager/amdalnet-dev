@@ -565,7 +565,7 @@ class KaReviewController extends Controller
     {
         $document_type = $is_andal ? 'Formulir KA Andal' : 'Formulir KA';
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', $document_type]])->first();
-        $downloadUri = Storage::url(str_replace('/storage/', '', $document_attachment->attachment));
+        $downloadUri = url(Storage::url(str_replace('/storage/', '', $document_attachment->attachment)));
         $key = Document::GenerateRevisionId($downloadUri);
         $convertedUri;
         $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
