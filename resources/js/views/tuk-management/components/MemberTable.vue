@@ -50,7 +50,7 @@
           style="width: 100%"
         >
           <el-option
-            v-for="item in role"
+            v-for="item in list[scope.$index].type === 'employee' ? role : roleExpert"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -134,6 +134,16 @@ export default {
         {
           value: 'Kepala Sekretariat',
           label: 'Kepala Sekretariat Tim Uji Kelayakan',
+        },
+        {
+          value: 'Anggota',
+          label: 'Anggota Tim Uji Kelayakan',
+        },
+      ],
+      roleExpert: [
+        {
+          value: 'Ketua',
+          label: 'Ketua Tim Uji Kelayakan',
         },
         {
           value: 'Anggota',
