@@ -7,7 +7,7 @@ stages:
   # - test
   - dev
   - staging
-  - production
+  # - production
 
 # unit_test:
 #   stage: test
@@ -21,6 +21,7 @@ stages:
 deploy_dev:
   stage: dev
   script:
+    - echo "BUILD ${REPOSITORY_URL}:${CI_COMMIT_TAG} ${CI_COMMIT_SHORT_SHA}"
     - cd /home/adminhadoop/apps/amdalnet/
     - git reset --hard origin/master
     - git pull
