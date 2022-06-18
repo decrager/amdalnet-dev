@@ -124,6 +124,7 @@ deploy_api_menlhk:
     - npm run production
   only:
     - master
+    - tags
   tags:
     - amdalnet-api-menlhk
 
@@ -165,5 +166,6 @@ deploy_app_menlhk:
     #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
   only:
     - master
+    - tags
   tags:
     - amdalnet-app-menlhk
