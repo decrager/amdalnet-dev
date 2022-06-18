@@ -42,95 +42,97 @@ deploy_dev:
     #- ssh amdalnet@103.172.205.4 'PGPASSWORD=4md4lNET pg_dump -h localhost -U postgres -d amdalnet -c --if-exists --no-owner > ~/amdalnet.sql; PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet_bak -U postgres -f ~/amdalnet.sql'
   environment:
     name: staging
+  only:
+    - master
   rules:
     - if: $CI_COMMIT_TAG != null && $CI_COMMIT_TAG =~ /^v*/
   tags:
     - amdalnet
 
 
-# deploy_api-dev_menlhk:
-#   stage: staging
-#   script:
-#     - cd /var/www/amdalnet/
-#     - git reset --hard origin/master
-#     - git pull
-#     - composer install
-#     - composer dump-autoload
-#     - php artisan migrate
-#     - php artisan cache:clear
-#     - php artisan config:clear
-#     - php artisan route:clear
-#     - npm install
-#     - npm run production
-#   only:
-#     - master
-#   tags:
-#     - amdalnet-api-dev-menlhk
+deploy_api-dev_menlhk:
+  stage: staging
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard origin/master
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - php artisan route:clear
+    - npm install
+    - npm run production
+  only:
+    - master
+  tags:
+    - amdalnet-api-dev-menlhk
 
-# deploy_app-dev_menlhk:
-#   stage: staging
-#   script:
-#     - cd /var/www/amdalnet/
-#     - git reset --hard origin/master
-#     - git pull
-#     - composer install
-#     - composer dump-autoload
-#     - php artisan migrate
-#     - php artisan cache:clear
-#     - php artisan config:clear
-#     - php artisan route:clear
-#     - npm install
-#     - npm run production
-#     - sudo systemctl restart php8.1-fpm.service
-#     #- php /home/ubuntu/cachetool.phar opcache:reset --cli
-#     #- php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
-#     #- echo "update app server"
-#     #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
-#   only:
-#     - master
-#   tags:
-#     - amdalnet-app-dev-menlhk
+deploy_app-dev_menlhk:
+  stage: staging
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard origin/master
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - php artisan route:clear
+    - npm install
+    - npm run production
+    - sudo systemctl restart php8.1-fpm.service
+    #- php /home/ubuntu/cachetool.phar opcache:reset --cli
+    #- php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
+    #- echo "update app server"
+    #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
+  only:
+    - master
+  tags:
+    - amdalnet-app-dev-menlhk
 
 
-# deploy_api_menlhk:
-#   stage: production
-#   script:
-#     - cd /var/www/amdalnet/
-#     - git reset --hard origin/master
-#     - git pull
-#     - composer install
-#     - composer dump-autoload
-#     - php artisan migrate
-#     - php artisan cache:clear
-#     - php artisan config:clear
-#     - php artisan route:clear
-#     - npm install
-#     - npm run production
-#   rules:
-#     - if: $CI_COMMIT_TAG != "" && $CI_COMMIT_TAG =~ /^v*/
-#   tags:
-#     - amdalnet-api-menlhk
+deploy_api_menlhk:
+  stage: production
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard origin/master
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - php artisan route:clear
+    - npm install
+    - npm run production
+  rules:
+    - if: $CI_COMMIT_TAG != null && $CI_COMMIT_TAG =~ /^v*/
+  tags:
+    - amdalnet-api-menlhk
 
-# deploy_app_menlhk:
-#   stage: production
-#   script:
-#     - cd /var/www/amdalnet/
-#     - git reset --hard origin/master
-#     - git pull
-#     - composer install
-#     - composer dump-autoload
-#     - php artisan migrate
-#     - php artisan cache:clear
-#     - php artisan config:clear
-#     - php artisan route:clear
-#     - npm install
-#     - npm run production
-#     #- php /home/ubuntu/cachetool.phar opcache:reset --cli
-#     - php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
-#     # - sudo systemctl restart php8.1-fpm.service
-#     #- echo "update app server"
-#     #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
-#   rules:
-#     - if: $CI_COMMIT_TAG != "" && $CI_COMMIT_TAG =~ /^v*/
-#   tags:
-#     - amdalnet-app-menlhk
+deploy_app_menlhk:
+  stage: production
+  script:
+    - cd /var/www/amdalnet/
+    - git reset --hard origin/master
+    - git pull
+    - composer install
+    - composer dump-autoload
+    - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - php artisan route:clear
+    - npm install
+    - npm run production
+    #- php /home/ubuntu/cachetool.phar opcache:reset --cli
+    - php /home/ubuntu/cachetool.phar opcache:reset --fcgi=/var/run/php/php8.1-fpm.sock
+    # - sudo systemctl restart php8.1-fpm.service
+    #- echo "update app server"
+    #- ssh ubuntu@192.168.102.33 -p 52222 'sudo -u www-data bash; cd /var/www/amdalnet; git reset --hard HEAD; git pull; composer install; composer dump-autoload; php artisan migrate; npm install; npm run production'
+  rules:
+    - if: $CI_COMMIT_TAG != null && $CI_COMMIT_TAG =~ /^v*/
+  tags:
+    - amdalnet-app-menlhk
