@@ -413,8 +413,8 @@ class AndalCloneController extends Controller
                 $imp->study_location = $oi->study_location;
                 $imp->study_length_month = $oi->study_length_month;
                 $imp->study_length_year = $oi->study_length_year;
-                $imp->id_project_component = $oi->id_project_component;
-                $imp->id_project_rona_awal = $oi->id_project_rona_awal;
+                $imp->id_project_component = $oi->component? $oi->id_project_component : null;
+                $imp->id_project_rona_awal = $oi->ronaAwal ? $oi->id_project_rona_awal : null;
                 $imp->is_managed = $oi->is_managed;
                 $imp->save();
 
