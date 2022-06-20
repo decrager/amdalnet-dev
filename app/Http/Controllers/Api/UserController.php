@@ -218,6 +218,7 @@ class UserController extends BaseController
             $user->avatar = $name;
 
             $user->save();
+            // return $user;
             return new UserResource($user);
         }
     }
