@@ -25,7 +25,7 @@ class UserResource extends JsonResource
             $this->roles->toArray()
         );
         $avatar = $this->avatar;
-        if(in_array('initiator', $roles)){
+        if(!$avatar && in_array('initiator', $roles)){
             $initiator = Initiator::where('email', $this->email)->first();
             if($initiator && $initiator->logo){
                 $avatar = $initiator->logo;
