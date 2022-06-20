@@ -73,7 +73,7 @@
     </div>
     <div v-if="isInitiator">
       <el-alert
-        v-if="publicConst.id"
+        v-if="publicConst.id && publicConst.is_publish"
         title="Konsultasi Publik Telah Diterima"
         type="success"
         description="Terimakasih Sudah Mengirimkan Konsultasi Publik"
@@ -133,7 +133,6 @@ export default {
       this.publicConst = await publicConsultations.list({
         idProject: data.project_id,
       });
-      console.log(this.publicConst);
       // const district = await districtResource.get(data.project.id_district);
       // data.district = district;
       this.announcement = data;
