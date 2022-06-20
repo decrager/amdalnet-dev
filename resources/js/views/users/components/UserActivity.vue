@@ -30,9 +30,9 @@
           <el-form-item label="Alamat">
             <el-input v-model="user.initiatorData.address" />
           </el-form-item>
-          <!-- <el-form-item label="NIB">
+          <el-form-item v-if="user.initiatorData.user_type !== 'Pemerintah'" label="NIB">
             <el-input v-model="user.initiatorData.nib" />
-          </el-form-item> -->
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onInitiatorSubmit">
               Ubah
@@ -169,6 +169,8 @@ export default {
     return {
       activeActivity: 'akunTab',
       updating: false,
+      isPemerintah: true,
+      loading: false,
     };
   },
   methods: {
