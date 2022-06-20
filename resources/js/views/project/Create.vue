@@ -24,7 +24,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 1MB, Opsional)" prop="fileKtr">
+                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 10MB, Opsional)" prop="fileKtr">
                   <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -65,7 +65,7 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="filePdf">
                     <div slot="label">
-                      <span>* Upload Peta PDF (Max 1MB) <el-tooltip class="item" effect="dark" content="Peta yang diunggah adalah peta tapak proyek yang telah dibuat oleh pemrakarsa atau lampiran peta atas rekomendasi kesesuaian tata ruang(format pdf ukuran A3)" placement="top">
+                      <span>* Upload Peta PDF (Max 10MB) <el-tooltip class="item" effect="dark" content="Peta yang diunggah adalah peta tapak proyek yang telah dibuat oleh pemrakarsa atau lampiran peta atas rekomendasi kesesuaian tata ruang(format pdf ukuran A3)" placement="top">
                         <i class="el-alert__icon el-icon-warning" />
                       </el-tooltip></span>
                     </div>
@@ -87,7 +87,7 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="fileMap">
                     <div slot="label">
-                      <span>* Upload SHP Peta Tapak Proyek (File .zip max 1 MB)</span>
+                      <span>* Upload SHP Peta Tapak Proyek (File .zip max 10 MB)</span>
                       <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" title="Download Sample SHP" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
                       <a href="/amdalnet-juknis-penyiapan-peta.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
                     </div>
@@ -133,7 +133,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item v-if="currentProject.pippib === 'Y'" label="Upload Surat Pengecualian PIPPIB (Max 1MB, Opsional)" prop="filepippib">
+                <el-form-item v-if="currentProject.pippib === 'Y'" label="Upload Surat Pengecualian PIPPIB (Max 10MB, Opsional)" prop="filepippib">
                   <classic-upload :name="filepippibName" :fid="'ppippibFile'" @handleFileUpload="handleFilePIPPIBUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -148,7 +148,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item v-if="currentProject.kawasan_lindung === 'Y'" label="Unggah Surat Pengecualian Dalam Kawasan Lindung (Max 1MB, Opsional)" prop="fileKawasanLindung">
+                <el-form-item v-if="currentProject.kawasan_lindung === 'Y'" label="Unggah Surat Pengecualian Dalam Kawasan Lindung (Max 10MB, Opsional)" prop="fileKawasanLindung">
                   <classic-upload :name="fileKawasanLindungName" :fid="'kawasanLindungFile'" @handleFileUpload="handleFileKawasanLindungUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -486,7 +486,7 @@
 
                 <el-form-item
                   v-if="currentProject.pre_agreement"
-                  :label="preeAgreementLabel + ' Max 1MB'"
+                  :label="preeAgreementLabel + ' Max 10MB'"
                   prop="pre_agreement"
                 >
                   <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
@@ -1510,7 +1510,7 @@ export default {
       document.querySelector('#ktrFile').click();
     },
     showFileAlert(){
-      this.$alert('File Yang Diupload Melebihi 1 MB', {
+      this.$alert('File Yang Diupload Melebihi 10 MB', {
         confirmButtonText: 'OK',
       });
     },
@@ -1518,7 +1518,7 @@ export default {
       // reset validation
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKtr').resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1536,7 +1536,7 @@ export default {
       // reset validation
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filepippib').resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1554,7 +1554,7 @@ export default {
       // reset validation
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKawasanLindung').resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1569,7 +1569,7 @@ export default {
       this.fileKawasanLindungName = e.target.files[0].name;
     },
     handleFilePreAgreementUpload(e){
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1584,7 +1584,7 @@ export default {
 
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filePdf')?.resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1606,7 +1606,7 @@ export default {
       // reset validation
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileMap')?.resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
