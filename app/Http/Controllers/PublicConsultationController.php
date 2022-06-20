@@ -98,6 +98,7 @@ class PublicConsultationController extends Controller
                     'address' => $validated['address'],
                     'positive_feedback_summary' => $validated['positive_feedback_summary'],
                     'negative_feedback_summary' => $validated['negative_feedback_summary'],
+                    'is_publish' => $validated['is_publish'],
                 ]);
             } else {
                 $parent = PublicConsultation::findOrFail($request->all()['id']);
@@ -108,6 +109,7 @@ class PublicConsultationController extends Controller
                 $parent->address = $validated['address'];
                 $parent->positive_feedback_summary = $validated['positive_feedback_summary'];
                 $parent->negative_feedback_summary = $validated['negative_feedback_summary'];
+                $parent->is_publish = $validated['is_publish'];
                 $parent->save();
             }
 
@@ -127,6 +129,26 @@ class PublicConsultationController extends Controller
                 return response()->json(['errors' => 'Metadata mismatch'], 400);
             }
             $doc_inserted = 0;
+
+            // === EXISTING DOC === //
+            $doc = [];
+            if($request->data_type !== 'new') {
+                $docs = PublicConsultationDoc::where('public_consultation_id', $request->id)->get();
+                foreach($docs as $d) {
+                    $doc_json = json_decode($d->doc_json, true);
+                    switch ($doc_json['doc_type']) {
+                        case 'Berita Acara Pelaksanaan':
+                            $docs['berita_acara_pelaksanaan'] = $doc_json['filepath'];
+                            break;
+                        case 'Berita Acara Pelaksanaan':
+                            $docs['berita_acara_pelaksanaan'] = $doc_json['filepath'];
+                            break;
+                        
+                        default:
+                            break;
+                    }
+                }
+            }
 
             // === FOTO DOKUMENTASI === //
             for ($i = 0; $i < count($photo_metadatas); $i++){
