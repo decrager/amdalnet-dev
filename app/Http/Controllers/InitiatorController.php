@@ -69,7 +69,7 @@ class InitiatorController extends Controller
             // return $params['password'];
 
             DB::beginTransaction();
-            
+
             $found = User::where('email', $params['email'])->first();
             if ($found) {
                 return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
@@ -93,6 +93,10 @@ class InitiatorController extends Controller
                 $fileAgencyUpload = $request->file('fileAgencyUpload');
                 $logoName = 'project/fileAgencyUpload/' . uniqid() . '.' . $fileAgencyUpload->extension();
                 $fileAgencyUpload->storePubliclyAs('public', $logoName);
+
+                // save logoname to user's avatar
+                $user->avatar = $logoName;
+                $user->save();
             }
 
             $initiator = Initiator::create([
@@ -134,10 +138,10 @@ class InitiatorController extends Controller
     }
 
     public function showByEmail(Request $request)
-    { 
+    {
         If($request->email){
             $initiator = Initiator::where('email', $request->email)->first();
-            
+
             if($initiator) {
                 return $initiator;
             } else {
