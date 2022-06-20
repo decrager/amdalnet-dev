@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Entity\Initiator;
 
 class UserResource extends JsonResource
 {
@@ -15,16 +16,26 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         $this->load('notifications');
+        // get initiator fotos
+
+        $roles = array_map(
+            function ($role) {
+                return $role['name'];
+            },
+            $this->roles->toArray()
+        );
+        $avatar = $this->avatar;
+        if(in_array('initiator', $roles)){
+            $initiator = Initiator::where('email', $this->email)->first();
+            if($initiator && $initiator->logo){
+                $avatar = $initiator->logo;
+            }
+        }
         return [
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'roles' => array_map(
-                function ($role) {
-                    return $role['name'];
-                },
-                $this->roles->toArray()
-            ),
+            'roles' => $roles,
             'permissions' => array_map(
                 function ($permission) {
                     return $permission['name'];
@@ -32,7 +43,7 @@ class UserResource extends JsonResource
                 $this->getAllPermissions()->toArray()
             ),
             'notifications' => $this->notifications,
-            'avatar' => $this->avatar,
+            'avatar' => $avatar, // 'avatar' => $this->avatar,
         ];
     }
 }
