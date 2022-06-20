@@ -192,6 +192,7 @@ import { generateFeatureCollection, layerIn } from './scripts/uploadShapefile';
 import widgetMap from './scripts/widgetMap';
 import popupTemplate from './scripts/popupTemplate';
 import urlBlob from './scripts/urlBlob';
+import generateArcgisToken from './scripts/arcgisGenerateToken';
 
 export default {
   name: 'WebGis',
@@ -242,6 +243,7 @@ export default {
       page: 1,
       loadStatus: false,
       currentRtRwLayer: null,
+      token: null,
     };
   },
   computed: {
@@ -260,6 +262,7 @@ export default {
     },
   },
   mounted: async function() {
+    generateArcgisToken(this.token);
     console.log('Map Component Mounted');
     await this.loadMap();
     this.getProjectData();
@@ -349,6 +352,8 @@ export default {
                 this.$parent.mapView.on('layerview-create', async(event) => {
                   await this.$parent.mapView.goTo({
                     target: geojsonLayerArray.fullExtent,
+                  }).catch(function(error) {
+                    console.error(error);
                   });
                 });
 
@@ -450,6 +455,7 @@ export default {
       ];
     },
     async loadMap() {
+      console.log('this.token = ' + this.token);
       let layerTapak = null;
       let layerTapakPoint = null;
       const map = new Map({
@@ -731,15 +737,16 @@ export default {
 
       map.add(rupabumis);
 
-      // urlUtils.addProxyRule({
-      //   proxyUrl: 'proxy/proxy.php',
-      //   urlPrefix: 'https://sigap.menlhk.go.id/',
-      // });
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://sigap.menlhk.go.id/',
+      });
 
       const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
         imageTransparency: true,
         visible: false,
+        token: this.token,
       });
 
       const penutupanLahanToggle = document.getElementById('layerTutupanLahanCheckBox');
@@ -755,10 +762,11 @@ export default {
       map.add(penutupanLahan2020);
 
       const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
+        token: this.token,
       });
 
       const kawasanHutanToggle = document.getElementById('layerKawasanHutanCheckBox');
@@ -774,10 +782,11 @@ export default {
       map.add(kawasanHutanB);
 
       const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
+        token: this.token,
       });
 
       const pipbipToggle = document.getElementById('layerPIPPIBCheckBox');

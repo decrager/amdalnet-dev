@@ -133,3 +133,19 @@ PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet -U postgres -f ~/amdalnet.
 <iframe name="embed_readwrite" src="http://192.168.7.23:9001/p/6?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>
 
 this.$store.dispatch('user/getInfo')
+
+# Deployment Production
+
+Trough CI/CD with tags format v*
+
+```
+git tag v0.1.2
+git push origin v0.1.2
+```
+
+remove tag
+
+```
+git tag --delete v0.1.2
+git push --delete origin v0.1.2
+```

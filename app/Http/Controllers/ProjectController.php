@@ -267,7 +267,7 @@ class ProjectController extends Controller
         $pippibName = '';
         if ($request->file('filepippib')) {
             $filePippib = $request->file('filepippib');
-            $pippibName = 'project/pippib' . uniqid() . '.' . $filePippib->extension();
+            $pippibName = 'project/pippib/' . uniqid() . '.' . $filePippib->extension();
             $filePippib->storePubliclyAs('public', $pippibName);
         }
 
@@ -275,7 +275,7 @@ class ProjectController extends Controller
         $kawLinName = '';
         if ($request->file('fileKawasanLindung')) {
             $fileKawasanLindung = $request->file('fileKawasanLindung');
-            $kawLinName = 'project/kawasanlindung' . uniqid() . '.' . $fileKawasanLindung->extension();
+            $kawLinName = 'project/kawasanlindung/' . uniqid() . '.' . $fileKawasanLindung->extension();
             $fileKawasanLindung->storePubliclyAs('public', $kawLinName);
         }
 

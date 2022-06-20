@@ -54,6 +54,7 @@ export default {
     refreshChart() {
       this.drawChart().then(() => {
         const flowChart = document.querySelector('.flowchart-container');
+        flowChart.style.backgroundColor = '#fff';
         this.height = flowChart.scrollHeight;
         document.querySelector(
           '.flowchart-container svg'
@@ -204,6 +205,7 @@ export default {
           label: component.component,
           type: 'tahap_' + component.tahap.replace(' ', '_').toLowerCase(),
           component: true,
+          tahap: component.tahap,
         };
       });
 
@@ -216,6 +218,7 @@ export default {
           label: dampak.dampak,
           type: 'primer',
           component: dampak.component,
+          tahap: dampak.tahap,
         };
       });
 
@@ -256,7 +259,7 @@ export default {
           (node) => node.label === 'Tahap ' + component.tahap
         );
         const to = this.data.nodes.find(
-          (node) => node.label === component.component
+          (node) => node.label === component.component && node.tahap === component.tahap
         );
         links.push({
           id,
@@ -268,7 +271,7 @@ export default {
       dampakPrimer.forEach((dampak) => {
         dampak.parents.forEach((parent) => {
           const from = this.data.nodes.find(
-            (node) => node.label === parent && node.component === true
+            (node) => node.label === parent && node.component === true && node.tahap === dampak.tahap
           );
           const to = this.data.nodes.find(
             (node) => node.label === dampak.dampak && node.type === 'primer' && node.component === from.label
