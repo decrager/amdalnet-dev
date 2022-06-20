@@ -294,7 +294,7 @@
                       </template>
                     </el-table-column>
 
-                    <!-- <el-table-column width="100px">
+                    <el-table-column width="100px">
                       <template slot-scope="scope">
                         <el-popconfirm
                           title="Hapus Alamat ?"
@@ -303,7 +303,7 @@
                           <el-button slot="reference" type="danger" icon="el-icon-close" />
                         </el-popconfirm>
                       </template>
-                    </el-table-column> -->
+                    </el-table-column>
                   </el-table>
                   <el-button
                     type="primary"
