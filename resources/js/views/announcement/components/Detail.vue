@@ -81,7 +81,10 @@
         center
         :closable="false"
       />
-      <PublicConsultationForm v-else />
+      <PublicConsultationForm
+        v-else
+        @updatepc="updatePublicConsultation($event)"
+      />
     </div>
   </div>
 </template>
@@ -187,6 +190,10 @@ export default {
       this.timeoutId = setTimeout(() => {
         this.$refs.feedbacklist.getFeedbacks(this.search);
       }, 500);
+    },
+    updatePublicConsultation({ id, isPublish }) {
+      this.publicConst.id = id;
+      this.publicConst.is_publish = isPublish;
     },
   },
 };

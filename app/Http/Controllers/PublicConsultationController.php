@@ -31,7 +31,9 @@ class PublicConsultationController extends Controller
         }
 
         if($request->idProject) {
-            return PublicConsultation::where('project_id', $request->idProject)->first();
+            return PublicConsultation::where('project_id', $request->idProject)
+                                        ->with('docs')
+                                        ->first();
         }
 
         return PublicConsultationResource::collection(PublicConsultation::all());
@@ -130,30 +132,11 @@ class PublicConsultationController extends Controller
             }
             $doc_inserted = 0;
 
-            // === EXISTING DOC === //
-            $doc = [];
-            if($request->data_type !== 'new') {
-                $docs = PublicConsultationDoc::where('public_consultation_id', $request->id)->get();
-                foreach($docs as $d) {
-                    $doc_json = json_decode($d->doc_json, true);
-                    switch ($doc_json['doc_type']) {
-                        case 'Berita Acara Pelaksanaan':
-                            $docs['berita_acara_pelaksanaan'] = $doc_json['filepath'];
-                            break;
-                        case 'Berita Acara Pelaksanaan':
-                            $docs['berita_acara_pelaksanaan'] = $doc_json['filepath'];
-                            break;
-                        
-                        default:
-                            break;
-                    }
-                }
-            }
-
             // === FOTO DOKUMENTASI === //
             for ($i = 0; $i < count($photo_metadatas); $i++){
                 //upload file
                 $metadata = $photo_metadatas[$i];
+
                 $file_extension = '';
                 $filepath = '';
                 try {
@@ -183,10 +166,71 @@ class PublicConsultationController extends Controller
                 }
             }
 
+            // === FOTO DOKUMENTASI YANG DIHAPUS === //
+            $deleted_photo = json_decode($request->deleted_photo, true);
+            if(count($deleted_photo) > 0) {
+                for($i = 0; $i < count($deleted_photo); $i++) {
+                    $deleted_file = PublicConsultationDoc::find($deleted_photo[$i]);
+                    if($deleted_file) {
+                        $json_file = json_decode($deleted_file->doc_json, true);
+                        $file = str_replace(Storage::url(''), '', $json_file['filepath']);
+                        Storage::disk('public')->delete($file);
+                        $deleted_file->delete();
+                    }
+                }
+            }
+
+             // === EXISTING DOC === //
+             $doc = [];
+             if($request->data_type !== 'new') {
+                 $docs = PublicConsultationDoc::where('public_consultation_id', $request->id)->get();
+                 foreach($docs as $d) {
+                     $doc_json = json_decode($d->doc_json, true);
+                     switch ($doc_json['doc_type']) {
+                         case 'Berita Acara Pelaksanaan':
+                             $doc['berita_acara_pelaksanaan'] = [
+                                 'id' => $d->id,
+                                 'filepath' => $doc_json['filepath']
+                                ];
+                             break;
+                         case 'Berita Acara Penunjukan Wakil Masyarakat':
+                             $doc['berita_acara_penunjukan_wakil_masyarakat'] = [
+                                'id' => $d->id,
+                                'filepath' => $doc_json['filepath']
+                               ];
+                             break;
+                         case 'Daftar Hadir':
+                             $doc['daftar_hadir'] = [
+                                'id' => $d->id,
+                                'filepath' => $doc_json['filepath']
+                               ];
+                             break;
+                         case 'Pengumuman':
+                             $doc['pengumuman'] = [
+                                'id' => $d->id,
+                                'filepath' => $doc_json['filepath']
+                               ];
+                             break;
+                         default:
+                             break;
+                     }
+                 }
+             }
+
             // === LAMPIRAN === //
             for($i = 0; $i < count($metadatas); $i++){
                 //upload file
                 $metadata = $metadatas[$i];
+                
+                if($request->data_type !== 'new') {
+                    $key = str_replace(' ', '_', strtolower($metadata->doc_type));
+                    if(array_key_exists($key, $doc)) {
+                         $file = str_replace(Storage::url(''), '', $doc[$key]['filepath']);
+                         Storage::disk('public')->delete($file);
+                         PublicConsultationDoc::destroy($doc[$key]['id']);
+                    }
+                 }
+
                 $file_extension = '';
                 $filepath = '';
                 try {

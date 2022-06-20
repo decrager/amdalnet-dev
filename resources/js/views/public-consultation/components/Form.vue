@@ -76,6 +76,25 @@
                   @dropzone-success="dropzoneS"
                 />
               </div>
+              <div style="margin-top: 10px">
+                <div
+                  v-for="photo in doc_photo"
+                  :key="photo.id"
+                  class="photo-list"
+                >
+                  <a :href="photo.filepath" target="_blank" class="photo-link">
+                    {{ photo.name }}
+                  </a>
+                  <a
+                    href="#"
+                    style="color: #706060"
+                    @click.prevent="deleteDocPhoto(photo.id)"
+                  >
+                    <i class="el-icon-close" />
+                    Hapus
+                  </a>
+                </div>
+              </div>
             </div>
           </el-form-item>
         </el-col>
@@ -179,10 +198,18 @@
     </el-form>
     <div slot="footer" class="dialog-footer" align="right">
       <el-button type="danger" @click="handleBack()"> Kembali </el-button>
-      <el-button type="warning" @click="checkSubmit(false)">
+      <el-button
+        :loading="loading_submit"
+        type="warning"
+        @click="checkSubmit(false)"
+      >
         Simpan Sementara
       </el-button>
-      <el-button type="primary" @click="checkSubmit(true)">
+      <el-button
+        :loading="loading_submit"
+        type="primary"
+        @click="checkSubmit(true)"
+      >
         Simpan & Lanjutkan
       </el-button>
     </div>
@@ -235,6 +262,9 @@ export default {
       daftarHadirDone: false,
       pengumumanDone: false,
       undanganDone: false,
+      doc_photo: [],
+      deleted_photo: [],
+      loading_submit: false,
     };
   },
   created() {},
@@ -260,6 +290,25 @@ export default {
       this.postForm.positive_feedback_summary = data.positive_feedback_summary;
       this.postForm.negative_feedback_summary = data.negative_feedback_summary;
       this.postForm.is_publish = data.is_publish;
+
+      this.doc_photo = data.docs
+        .filter((doc) => {
+          const docJson = JSON.parse(doc.doc_json);
+          if (docJson.doc_type === 'Foto Dokumentasi') {
+            return true;
+          }
+
+          return false;
+        })
+        .map((doc, idx) => {
+          const docJson = JSON.parse(doc.doc_json);
+
+          return {
+            id: doc.id,
+            filepath: docJson.filepath,
+            name: `Foto Dokumentasi ${idx + 1}`,
+          };
+        });
     },
     async getProjectDetail(annId) {
       const data = await announcementResource.get(annId);
@@ -292,6 +341,7 @@ export default {
       });
     },
     async handleSubmit() {
+      this.loading_submit = true;
       const headers = { 'Content-Type': 'multipart/form-data' };
       const formData = new FormData();
       formData.append('id', this.postForm.id);
@@ -335,6 +385,7 @@ export default {
       formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
       formData.append('doc_undangan', this.postForm.doc_undangan);
       formData.append('is_publish', this.postForm.is_publish);
+      formData.append('deleted_photo', JSON.stringify(this.deleted_photo));
 
       for (let i = 0; i < this.postForm.doc_photo_files.length; i++) {
         formData.append(`file-${i}`, this.postForm.doc_photo_files[i]);
@@ -347,10 +398,10 @@ export default {
       _.each(this.formData, (value, key) => {
         formData.append(key, value);
       });
-      this.$message({
-        message: 'Mengunggah file...',
-        type: 'info',
-      });
+      // this.$message({
+      //   message: 'Mengunggah file...',
+      //   type: 'info',
+      // });
       await axios
         .post('api/public-consultations', formData, { headers })
         .then((response) => {
@@ -368,7 +419,14 @@ export default {
             type: msg_type,
             duration: 5 * 1000,
           });
-          this.getPublicConsultation();
+          this.getPublicConsultation().then(() => {
+            this.deleted_photo = [];
+            this.$emit('updatepc', {
+              id: this.postForm.id,
+              isPublish: this.postForm.is_publish,
+            });
+            this.loading_submit = false;
+          });
         })
         .catch((error) => {
           console.log(error.message);
@@ -437,6 +495,24 @@ export default {
       this.postForm.doc_undangan = file.raw;
       this.undanganDone = true;
     },
+    deleteDocPhoto(id) {
+      this.doc_photo = [...this.doc_photo].filter((doc) => doc.id !== id);
+      this.deleted_photo.push(id);
+    },
   },
 };
 </script>
+
+<style scoped>
+.photo-link {
+  color: #186cac;
+}
+.photo-link:hover {
+  text-decoration: underline;
+}
+.photo-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between !important;
+}
+</style>
