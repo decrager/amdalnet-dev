@@ -73,7 +73,7 @@
     </div>
     <div v-if="isInitiator">
       <el-alert
-        v-if="publicConst.id"
+        v-if="publicConst.id && publicConst.is_publish"
         title="Konsultasi Publik Telah Diterima"
         type="success"
         description="Terimakasih Sudah Mengirimkan Konsultasi Publik"
@@ -81,7 +81,10 @@
         center
         :closable="false"
       />
-      <PublicConsultationForm v-else />
+      <PublicConsultationForm
+        v-else
+        @updatepc="updatePublicConsultation($event)"
+      />
     </div>
   </div>
 </template>
@@ -133,7 +136,6 @@ export default {
       this.publicConst = await publicConsultations.list({
         idProject: data.project_id,
       });
-      console.log(this.publicConst);
       // const district = await districtResource.get(data.project.id_district);
       // data.district = district;
       this.announcement = data;
@@ -188,6 +190,10 @@ export default {
       this.timeoutId = setTimeout(() => {
         this.$refs.feedbacklist.getFeedbacks(this.search);
       }, 500);
+    },
+    updatePublicConsultation({ id, isPublish }) {
+      this.publicConst.id = id;
+      this.publicConst.is_publish = isPublish;
     },
   },
 };
