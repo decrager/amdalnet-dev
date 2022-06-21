@@ -100,7 +100,7 @@ class PublicConsultationController extends Controller
                     'address' => $validated['address'],
                     'positive_feedback_summary' => $validated['positive_feedback_summary'],
                     'negative_feedback_summary' => $validated['negative_feedback_summary'],
-                    'is_publish' => $validated['is_publish'],
+                    'is_publish' => $validated['is_publish'] == 'true' ? true : false,
                 ]);
             } else {
                 $parent = PublicConsultation::findOrFail($request->all()['id']);
@@ -111,7 +111,7 @@ class PublicConsultationController extends Controller
                 $parent->address = $validated['address'];
                 $parent->positive_feedback_summary = $validated['positive_feedback_summary'];
                 $parent->negative_feedback_summary = $validated['negative_feedback_summary'];
-                $parent->is_publish = $validated['is_publish'];
+                $parent->is_publish = $validated['is_publish'] == 'true' ? true : false;
                 $parent->save();
             }
 
