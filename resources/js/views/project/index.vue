@@ -312,7 +312,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleGenerateSPPLPemerintah(scope.row)"
+                  @click="handleGenerateSPPLPemerintahNew(scope.row)"
                 >
                   Unduh SPPL
                 </el-button>
@@ -489,6 +489,7 @@ const formulatorResource = new Resource('formulatorsByEmail');
 const andalComposingResource = new Resource('andal-composing');
 const rklResource = new Resource('matriks-rkl');
 const skklResource = new Resource('skkl');
+const authoritiesResource = new Resource('project-authorities');
 // const kbliResource = new Resource('business');
 
 export default {
@@ -1223,6 +1224,50 @@ export default {
       this.$router.push({
         path: `/project/sppl/${project.id}`,
       });
+    },
+    async handleGenerateSPPLPemerintahNew(project) {
+      this.authorities = await authoritiesResource.list({
+        idProject: project.id,
+      });
+
+      const bidArr = Array.prototype.map
+        .call(this.authorities, function(item) {
+          return item.project;
+        }).join(',');
+
+      const districtData = await districtResource.get(this.initiator.district);
+
+      PizZipUtils.getBinaryContent(
+        '/template_sppl_pem.docx',
+        (error, content) => {
+          if (error) {
+            throw error;
+          }
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          doc.render({
+            name: `${this.initiator.user_type} ${this.initiator.name}`,
+            address: this.initiator.address,
+            phone: this.initiator.phone,
+            pic: this.initiator.pic,
+            pic_role: this.initiator.pic_role,
+            bidang: bidArr,
+            tempat: districtData.name,
+            tanggal: project.created_at.substring(0, 10),
+          });
+
+          const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          });
+
+          saveAs(out, 'SPPL-' + project.project_title + '.docx');
+          // this.docOutput = out;
+        }
+      );
     },
     async handleGenerateSPPL(project) {
       project.listSubProject = project.listSubProject.map((e, i) => {
