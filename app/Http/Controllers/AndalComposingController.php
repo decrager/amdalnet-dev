@@ -3069,8 +3069,8 @@ class AndalComposingController extends Controller
     private function getAttachment($id_project)
     {
         $project = Project::findOrFail($id_project);
-        $pertek = AndalAttachment::where([['id_project', $id_project],['is_pertek', true]])->get();
-        $others = AndalAttachment::where([['id_project', $id_project],['is_pertek', false]])->get();
+        $pertek = AndalAttachment::where([['id_project', $id_project],['is_pertek', true],['is_andal', true]])->get();
+        $others = AndalAttachment::where([['id_project', $id_project],['is_pertek', false],['is_andal', true]])->get();
         
         return [
             'kesesuaian_tata_ruang' => $project->ktr,

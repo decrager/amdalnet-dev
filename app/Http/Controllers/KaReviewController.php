@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\AndalAttachment;
 use App\Entity\DocumentAttachment;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FormulatorTeam;
@@ -323,8 +324,7 @@ class KaReviewController extends Controller
     private function attachment($id_project, $is_andal)
     {
         $project = Project::findOrFail($id_project);
-        $peta_lokasi_kegiatan = ProjectMapAttachment::where([['id_project', $id_project],['file_type', 'PDF'],['attachment_type', 'tapak']])
-                                                        ->first();
+        $peta_lokasi_kegiatan = ProjectMapAttachment::where([['id_project', $id_project],['file_type', 'PDF'],['attachment_type', 'tapak']])->first();
         $peta_batas_wilayah_studi = ProjectMapAttachment::where([['id_project', $id_project],['file_type', 'PDF'],['attachment_type', 'study'],['step','ka']])->first();
         $bagan_alir_pelingkupan = DocumentAttachment::where([['id_project', $id_project], ['type', 'Bagan Alir Pelingkupan KA']])->first();
 
@@ -415,6 +415,8 @@ class KaReviewController extends Controller
             }
         }
 
+        // === DATA PENDUKUNG DESKRIPSI KEGIATAN === //
+        $deskripsi_kegiatan = AndalAttachment::where([['id_project', $id_project],['is_andal', false]])->get();
         
         $attachment = [
             [
@@ -515,9 +517,23 @@ class KaReviewController extends Controller
         array_push($attachment,  [
             'no' => 7,
             'name' => 'Data Pendukung Deskripsi Kegiatan',
-            'file' => null,
-        ],
-        [
+            'file' => 'undefined',
+        ]);
+
+        // ADD DATA PENDUKUNG DESKRIPSI KEGIATAN
+        $dk_no = 'a';
+        foreach($deskripsi_kegiatan as $dk) {
+            array_push($attachment, [
+                'no' => null,
+                'name' => $dk_no . '. ' . $dk->name,
+                'file' => $dk->file,
+                'file_name' => $dk->name,
+                'data_pendukung' => true,
+            ]);
+            $dk_no++;
+        }
+
+        array_push($attachment, [
             'no' => 8,
             'name' => 'Peta Batas Wilayah Studi',
             'file' => $peta_batas_wilayah_studi ? Storage::url('map/' . $peta_batas_wilayah_studi->stored_filename) : null,

@@ -53,12 +53,31 @@
             {{ loadingPublicConsultation ? 'Loading...' : 'Unduh File PDF' }}
           </a>
           <a
+            v-else-if="scope.row.data_pendukung"
+            :href="scope.row.file"
+            class="link-lampiran"
+            :download="scope.row.file_name"
+          >
+            Unduh File
+          </a>
+          <a
             v-else
             :href="scope.row.file"
             class="link-lampiran"
-            :download="scope.row.file_name ? scope.row.file_name : scope.row.name + '.pdf'"
+            :download="
+              scope.row.file_name
+                ? scope.row.file_name
+                : scope.row.name + '.pdf'
+            "
           >
-            Unduh File {{ scope.row.file_name ? scope.row.file_name.split('.')[scope.row.file_name.split('.').length - 1].toUpperCase() : 'PDF' }}
+            Unduh File
+            {{
+              scope.row.file_name
+                ? scope.row.file_name
+                    .split('.')
+                    [scope.row.file_name.split('.').length - 1].toUpperCase()
+                : 'PDF'
+            }}
           </a>
         </template>
       </el-table-column>
