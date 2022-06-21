@@ -87,8 +87,8 @@
               <p>{{ com.created_at }}</p>
             </div>
             <el-checkbox
+              v-if="!isFormulator"
               v-model="comments[index].is_checked"
-              :disabled="!isFormulator"
               @change="handleCheckedComment(comments[index].id)"
             />
           </div>
@@ -96,7 +96,7 @@
           <div v-for="rep in comments[index].replies" :key="rep.id">
             <div class="comment-header reply">
               <div>
-                <p>Catatan Balasan Penyusun</p>
+                <p>{{ rep.role }}</p>
                 <p>
                   {{ rep.created_at }}
                 </p>
@@ -104,14 +104,7 @@
             </div>
             <div class="comment-body reply" v-html="rep.description" />
           </div>
-          <div v-if="isFormulator" class="comment-reply">
-            <!-- <el-input
-              v-model="comments[index].temp_reply"
-              type="textarea"
-              :rows="2"
-              placeholder="Tulis Catatan Balasan..."
-              :class="{ 'is-error': errorReply[`reply-${index}`] }"
-            /> -->
+          <div v-if="!comments[index].is_checked" class="comment-reply">
             <TextEditor
               v-model="comments[index].temp_reply"
               output-format="html"
