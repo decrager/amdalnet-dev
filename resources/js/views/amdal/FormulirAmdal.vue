@@ -71,6 +71,9 @@
         <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
           <bagan-alir v-if="activeName === '7'" />
         </el-collapse-item>
+        <el-collapse-item title="Lampiran" name="8">
+          <Lampiran v-if="activeName === '8'" />
+        </el-collapse-item>
       </el-collapse>
     </el-card>
   </div>
@@ -87,6 +90,7 @@ import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
 import BaganAlir from './components/BaganAlir.vue';
 import UploadPetaBatas from './components/UploadPetaBatas.vue';
+import Lampiran from './Lampiran.vue';
 
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
@@ -105,6 +109,7 @@ export default {
     Workflow,
     BaganAlir,
     UploadPetaBatas,
+    Lampiran,
   },
   props: {
     data: {

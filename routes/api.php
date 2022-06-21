@@ -322,6 +322,7 @@ Route::get('timeline', [ProjectController::class, 'timeline']);
 Route::get('activities', [ProjectController::class, 'states']);
 Route::apiResource('tuk-project', 'TukProjectController');
 Route::apiResource('reset-password', 'ResetPasswordController');
+Route::apiResource('ka-attachments', 'KaAttachmentController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
