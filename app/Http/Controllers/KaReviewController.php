@@ -80,8 +80,8 @@ class KaReviewController extends Controller
 
             // === NOTIFICATIONS === //
             $project = Project::findOrFail($request->idProject);
-            $email = $project->initiator->email;
-            $user = User::where('email', $email)->count();
+            // $email = $project->initiator->email;
+            // $user = User::where('email', $email)->count();
 
             $document_type = '';
             if($request->documentType == 'ka') {
@@ -92,10 +92,10 @@ class KaReviewController extends Controller
                 $document_type = 'UKL UPL';
             }
 
-            if($user > 0) {
-                $user = User::where('email', $email)->first();
-                Notification::send([$user], new AppKaReview($review, $document_type));
-            }
+            // if($user > 0) {
+            //     $user = User::where('email', $email)->first();
+            //     Notification::send([$user], new AppKaReview($review, $document_type));
+            // }
 
             // workflow
 
@@ -158,20 +158,20 @@ class KaReviewController extends Controller
             }
 
             if($request->status == 'revisi') {
-                $formulator_team = FormulatorTeam::where('id_project', $request->idProject)->first();
-                if($formulator_team) {
-                    $ketua = FormulatorTeamMember::where([['id_formulator_team', $formulator_team->id],['position', 'Ketua']])->first();
-                    if($ketua) {
-                        if($ketua->formulator) {
-                            $email = $ketua->formulator->email;
-                            $user = User::where('email', $email)->count();
-                            if($user > 0) {
-                                $user = User::where('email', $email)->first();
-                                Notification::send([$user], new AppKaReview($review, $document_type));
-                            }
-                        }
-                    }
-                }
+                // $formulator_team = FormulatorTeam::where('id_project', $request->idProject)->first();
+                // if($formulator_team) {
+                //     $ketua = FormulatorTeamMember::where([['id_formulator_team', $formulator_team->id],['position', 'Ketua']])->first();
+                //     if($ketua) {
+                //         if($ketua->formulator) {
+                //             $email = $ketua->formulator->email;
+                //             $user = User::where('email', $email)->count();
+                //             if($user > 0) {
+                //                 $user = User::where('email', $email)->first();
+                //                 Notification::send([$user], new AppKaReview($review, $document_type));
+                //             }
+                //         }
+                //     }
+                // }
 
                 // === WORKFLOW === //
                 if($document_type == 'KA') {
@@ -205,36 +205,61 @@ class KaReviewController extends Controller
 
 
             } else {
-                $feasibility_test_team = null;
+                // $feasibility_test_team = null;
 
-                if(strtolower($project->authority) == 'pusat') {
-                    $feasibility_test_team = FeasibilityTestTeam::where('authority', 'Pusat')->with(['member' => function($q) {
-                        $q->where('position', 'Kepala Sekretariat');
-                        $q->with('lukMember', 'expertBank');
-                    }])->first();
-                } else if(strtolower($project->authority) == 'provinsi') {
-                    $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Provinsi'], ['id_province_name', $project->auth_province]])->with(['member' => function($q) {
-                        $q->where('position', 'Kepala Sekretariat');
-                    }])->first();
-                } else if(strtolower($project->authority) == 'kabupaten') {
-                    $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'], ['id_district_name', $project->auth_district]])->with(['member' => function($q) {
-                        $q->where('position', 'Kepala Sekretariat');
-                    }])->first();
+                // if(strtolower($project->authority) == 'pusat') {
+                //     $feasibility_test_team = FeasibilityTestTeam::where('authority', 'Pusat')->with(['member' => function($q) {
+                //         $q->where('position', 'Kepala Sekretariat');
+                //         $q->with('lukMember', 'expertBank');
+                //     }])->first();
+                // } else if(strtolower($project->authority) == 'provinsi') {
+                //     $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Provinsi'], ['id_province_name', $project->auth_province]])->with(['member' => function($q) {
+                //         $q->where('position', 'Kepala Sekretariat');
+                //     }])->first();
+                // } else if(strtolower($project->authority) == 'kabupaten') {
+                //     $feasibility_test_team = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'], ['id_district_name', $project->auth_district]])->with(['member' => function($q) {
+                //         $q->where('position', 'Kepala Sekretariat');
+                //     }])->first();
+                // }
+
+                // if($feasibility_test_team) {
+                //     if($feasibility_test_team->member->first()) {
+                //         $email = null;
+                //         if($feasibility_test_team->member->first()->lukMember) {
+                //             $email = $feasibility_test_team->member->first()->lukMember->email;
+                //         } else if($feasibility_test_team->member->first()->expertBank) {
+                //             $email = $feasibility_test_team->member->first()->expertBank->email;
+                //         }
+                //         if($email) {
+                //             $user = User::where('email', $email)->first();
+                //             if($user) {
+                //                 Notification::send([$user], new AppKaReview($review, $document_type));
+                //             }
+                //         }
+                //     }
+                // }
+
+                // === NOTIFICATION === //
+                // 1. PEMRAKARSA
+                $pemrakarsa = User::where('email', $project->initiator->email)->first();
+                if($pemrakarsa) {
+                    Notification::send([$pemrakarsa], new AppKaReview($review, $document_type, $pemrakarsa->name, 'pemrakarsa'));
                 }
 
-                if($feasibility_test_team) {
-                    if($feasibility_test_team->member->first()) {
-                        $email = null;
-                        if($feasibility_test_team->member->first()->lukMember) {
-                            $email = $feasibility_test_team->member->first()->lukMember->email;
-                        } else if($feasibility_test_team->member->first()->expertBank) {
-                            $email = $feasibility_test_team->member->first()->expertBank->email;
+                // 2. PENYUSUN
+                $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->get();
+                foreach($formulator_team_members as $ftm) {
+                    if($ftm->formulator) {
+                        $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                        if($formulator_user) {
+                            Notification::send([$formulator_user], new AppKaReview($review, $document_type, $formulator_user->name, 'penyusun'));
                         }
-                        if($email) {
-                            $user = User::where('email', $email)->first();
-                            if($user) {
-                                Notification::send([$user], new AppKaReview($review, $document_type));
-                            }
+                    } else if($ftm->expert) {
+                        $expert_user = User::where('email', $ftm->expert->email)->first();
+                        if($expert_user) {
+                            Notification::send([$expert_user], new AppKaReview($review, $document_type, $expert_user->name, 'penyusun'));
                         }
                     }
                 }
