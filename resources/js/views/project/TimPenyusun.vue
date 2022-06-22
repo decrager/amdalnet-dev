@@ -249,6 +249,7 @@ export default {
       const timPenyusun = await formulatorTeamsResource.list({
         type: 'tim-penyusun',
         idProject: this.$route.params.id,
+        pemrakarsa: 'true',
       });
       this.members = timPenyusun;
       this.loadingTimPenyusun = false;
@@ -377,10 +378,11 @@ export default {
             : this.membersAhli[this.membersAhli.length - 1].num + 1,
         id: null,
         name: '',
+        id_formulator: null,
         type: 'new',
-        status: 'Tenaga Ahli',
+        position: 'Tenaga Ahli',
         expertise: '',
-        cv: null,
+        cv_file: null,
       };
       this.membersAhli.push(newAhli);
     },
@@ -430,7 +432,10 @@ export default {
     async handleSubmit() {
       const formData = new FormData();
       formData.append('members', JSON.stringify(this.members));
-      formData.append('membersAhli', JSON.stringify(this.membersAhli));
+      formData.append(
+        'membersAhli',
+        JSON.stringify(this.membersAhli.filter((x) => x.id_formulator !== null))
+      );
       formData.append('idProject', this.$route.params.id);
       formData.append('team_type', this.teamType);
       formData.append('deletedPenyusun', JSON.stringify(this.deletedPenyusun));
