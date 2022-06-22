@@ -327,7 +327,8 @@ class TestingVerificationController extends Controller
             $mandiri_data = FormulatorTeam::where('id_project', $project->id)->first();
             if($mandiri_data) {
                 $penyusun_mandiri = [
-                    'name' => $mandiri_data->name
+                    'name' => $mandiri_data->name,
+                    'sk_letter' => $mandiri_data->evidence_letter
                 ];
             }
         }
