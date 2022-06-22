@@ -7,6 +7,7 @@ use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Feedback;
 use App\Entity\FormulatorTeam;
+use App\Entity\FormulatorTeamMember;
 use App\Entity\KaForm;
 use App\Entity\Lpjp;
 use App\Entity\Project;
@@ -15,12 +16,16 @@ use App\Entity\ProjectMapAttachment;
 use App\Entity\PublicConsultation;
 use App\Entity\TestingMeeting;
 use App\Entity\TestingVerification;
+use App\Entity\TukProject;
+use App\Laravue\Models\User;
+use App\Notifications\TestingVerificationNotification;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use PDF;
 
@@ -134,6 +139,66 @@ class TestingVerificationController extends Controller
             $form->name = isset($data['ka_forms'][$i]) ? $data['ka_forms'][$i]['name'] : null;
             $form->save();
         }
+
+        // === NOTIFICATIONS === //
+        if($data['type'] == 'new') {
+            // 1. Pemrakarsa
+            $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+            if($pemrakarsa_user) {
+                Notification::send([$pemrakarsa_user], new TestingVerificationNotification($verification, 'ka', $pemrakarsa_user->name, 'pemrakarsa'));
+            }
+
+            // 2. Penyusun
+            $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                $q->where('id_project', $project->id);
+            })->get();
+            foreach($formulator_team_members as $ftm) {
+                if($ftm->formulator) {
+                    $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                    if($formulator_user) {
+                        Notification::send([$formulator_user], new TestingVerificationNotification($verification, 'ka', $formulator_user->name, 'penyusun'));
+                    }
+                } else if($ftm->expert) {
+                    $expert_user = User::where('email', $ftm->expert->email)->first();
+                    if($expert_user) {
+                        Notification::send([$expert_user],new TestingVerificationNotification($verification, 'ka', $expert_user->name, 'penyusun'));
+                    }
+                }
+            }
+
+            // 3. Kepala Sekretariat TUK
+            $authority = strtolower($project->authority) == 'kabupaten' ? 'Kabupaten/Kota' : ucwords(strtolower($project->authority));
+            $kepala_sekretariat = FeasibilityTestTeamMember::whereHas('feasibilityTestTeam', function($q) use($project, $authority) {
+                $q->where('authority', $authority);
+                if($authority == 'Kabupaten/Kota') {
+                    $q->where('id_district_name', $project->auth_district);
+                } else if($authority == 'Provinsi') {
+                    $q->where('id_province_name', $project->auth_province);
+                }
+            })->where('position', 'Kepala Sekretariat')->first();
+            if($kepala_sekretariat) {
+                $ks_user = null;
+                if($kepala_sekretariat->lukMember) {
+                    $ks_user = User::where('email', $kepala_sekretariat->lukMember->email)->first();
+                } else if($kepala_sekretariat->expertBank) {
+                    $ks_user = User::where('email', $kepala_sekretariat->expertBank->email)->first();
+                }
+
+                if($ks_user) {
+                    Notification::send([$ks_user],new TestingVerificationNotification($verification, 'ka', $ks_user->name, 'kepala sekretariat'));
+                }
+            }
+
+            // 4.Validator Administasi/PJM
+            $tuk_member = TukProject::where('id_project', $project->id)->whereIn('role', ['valadm','pjm'])->get();
+            foreach($tuk_member as $tm) {
+                $tuk_user = User::find($tm->id_user);
+                if($tuk_user) {
+                    Notification::send([$tuk_user],new TestingVerificationNotification($verification, 'ka', $tuk_user->name, 'valadm'));
+                }
+            }
+        }
+
         /* WORKFLOW */
         $project = Project::where('id', $verification->id_project)->first();
         if($project && $project->marking == 'amdal.form-ka-submitted'){
@@ -142,7 +207,7 @@ class TestingVerificationController extends Controller
                 $project->workflow_apply('review-amdal-form-ka');
                 $project->workflow_apply('approve-amdal-form-ka');
                 $project->save();
-            }else {
+            } else {
                 $project->workflow_apply('review-amdal-form-ka');
                 $project->workflow_apply('return-amdal-form-ka');
                 $project->save();

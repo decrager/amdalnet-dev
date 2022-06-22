@@ -15,4 +15,9 @@ class TestingVerification extends Model
     {
         return $this->hasMany(ProjectKaForm::class, 'id_testing_verification', 'id');
     }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'id_project', 'id');
+    }
 }
