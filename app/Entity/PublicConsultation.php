@@ -16,6 +16,7 @@ class PublicConsultation extends Model
         'address',
         'positive_feedback_summary',
         'negative_feedback_summary',
+        'is_publish',
     ];
 
     public function docs(){
