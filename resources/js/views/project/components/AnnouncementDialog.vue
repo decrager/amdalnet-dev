@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="'Publish Pengumuman'" :visible.sync="show" :close-on-click-modal="false" :show-close="false">
+  <el-dialog :title="'Publish Pengumuman'" :visible.sync="show" :close-on-click-modal="false" :show-close="false" :destroy-on-close="true">
     <div class="form-container">
       <el-form ref="announcement" :model="announcement" :rules="announcementRules">
         <el-row :gutter="8">
