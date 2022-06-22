@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class FormulatorTeam extends Model
 {
@@ -26,5 +27,18 @@ class FormulatorTeam extends Model
             $project->workflow_apply('assign-formulator');
             $project->save();
         });
+    }
+
+    public function getEvidenceLetterAttribute()
+    {
+        if($this->attributes['evidence_letter']) {
+            if(str_contains($this->attributes['evidence_letter'], 'storage/')) {
+                return $this->attributes['evidence_letter'];
+            } else {
+                return Storage::url($this->attributes['evidence_letter']);
+            }
+        }
+
+        return null;
     }
 }
