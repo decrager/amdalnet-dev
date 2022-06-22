@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="'Publish Pengumuman'" :visible.sync="show" :close-on-click-modal="false" :show-close="false" :destroy-on-close="true">
+  <el-dialog :title="'Publish Pengumuman'" :visible.sync="show" :close-on-click-modal="false" :show-close="false" :destroy-on-close="true" @close="onClose">
     <div class="form-container">
       <el-form ref="announcement" :model="announcement" :rules="announcementRules">
         <el-row :gutter="8">
@@ -248,8 +248,17 @@ export default {
     console.log(this.announcement);
     const day = new Date();
     this.yesterday = day.setDate(day.getDate() - 1);
+    this.end_date = '';
   },
   methods: {
+    onClose() {
+      this.fileName = '';
+      this.end_date = '';
+      this.$refs.fileProofUpload.clearValidate();
+      this.$refs.announcement.clearValidate();
+      document.getElementById('proofFile').value = null;
+      console.log('onClose!');
+    },
     handleSaveAnnouncement(){
       this.$refs.announcement.validate(valid => {
         if (valid) {
@@ -264,9 +273,23 @@ export default {
     doConfirmPublish(){
       this.$refs.announcement.validate(valid => {
         if (valid) {
-          this.confirmPublishDialog = true;
+          this.$confirm(
+            'Data yang sudah dipublikasikan, tidak dapat diubah lagi. Lanjutkan publikasi pengumuman?',
+            'Warning',
+            {
+              confirmButtonText: 'Ya. Publikasikan!',
+              cancelButtonText: 'Tidak',
+              type: 'warning',
+            }
+          )
+            .then(() => {
+              this.handleSubmitAnnouncement();
+            })
+            .catch();
+
+          /* this.confirmPublishDialog = true;
           // this.announcement.publish = true;
-          // this.$emit('handleSubmitAnnouncement', this.fileProof);
+          // this.$emit('handleSubmitAnnouncement', this.fileProof); */
         } else {
           this.confirmPublishDialog = false;
           // console.log('error submit!!');
@@ -275,7 +298,7 @@ export default {
       });
     },
     handleSubmitAnnouncement() {
-      this.confirmPublishDialog = false;
+      // this.confirmPublishDialog = false;
       this.announcement.publish = true;
       this.$emit('handleSubmitAnnouncement', this.fileProof);
 
@@ -291,11 +314,6 @@ export default {
       });*/
     },
     handleCancelAnnouncement() {
-      // console.log(this.announcement.project_location);
-      this.fileName = '';
-      this.$refs.fileProofUpload.clearValidate();
-      this.$refs.announcement.clearValidate();
-
       this.$emit('handleCancelAnnouncement');
     },
     checkProofFile() {
@@ -306,6 +324,7 @@ export default {
         this.showFileAlert();
         return;
       }
+      console.log();
       this.fileName = document.querySelector('#proofFile').files[0].name;
       this.fileProof = document.querySelector('#proofFile').files[0];
       this.announcement.fileProof = this.fileProof;
@@ -333,6 +352,14 @@ export default {
       this.end_date = this.announcement.end_date;
       console.log(this.announcement.end_date);
     },
+    /* clearFileInput(ctrl) {
+      try {
+        ctrl.value = null;
+      } catch (ex) { }
+      if (ctrl.value) {
+        ctrl.parentNode.replaceChild(ctrl.cloneNode(true), ctrl);
+      }
+    },*/
   },
 };
 </script>

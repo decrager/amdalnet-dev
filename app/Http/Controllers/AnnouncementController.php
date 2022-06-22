@@ -235,12 +235,17 @@ class AnnouncementController extends Controller
                     'id_applicant' => $params['id_applicant'],
                 ]);
             }
+
             if($params['publish'] && ($params['publish'] === 'true')){
 
                 $project = Project::where('id', $params['project_id'])->first();
-
                 $project->published = true;
                 $project->save();
+                if ($project->marking == 'announcement-drafting'){
+                    $project->workflow_apply('announce');
+                    $project->workflow_apply('complete-announcement');
+                    $project->save();
+                }
             }
 
             if (!$announcement) {

@@ -47,8 +47,8 @@ class Announcement extends Model
             $project = Project::find($announcement->project_id);
             if ($project && ($project->marking=='formulator-assignment')) {
                 $project->workflow_apply('draft-announcement');
-                $project->workflow_apply('announce');
-                $project->workflow_apply('complete-announcement');
+                // $project->workflow_apply('announce');
+                // $project->workflow_apply('complete-announcement');
                 $project->save();
             }
         });

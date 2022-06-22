@@ -879,14 +879,15 @@ export default {
         formData.append(key, value);
       });
 
+      const message = (this.announcement.publish ? '' : 'Rancangan Pengumuman untuk ') +
+        'Rencana Kegiatan ' + this.announcement.project_type +
+        (this.announcement.publish ? ' Telah Dipublikasikan Di Daftar Pengumuman & Informasi Pada Halaman Utama Amdalnet' : ' Berhasil Disimpan');
+
       announcementResource
         .store(formData)
         .then((response) => {
           this.$message({
-            message:
-                'Rencana Kegiatan ' +
-                this.announcement.project_type +
-                ' Telah Dipublikasikan Di Daftar Pengumuman & Informasi Pada Halaman Utama Amdalnet',
+            message: message,
             type: 'success',
             duration: 5 * 1000,
           });
