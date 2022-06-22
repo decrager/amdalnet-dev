@@ -30,6 +30,29 @@
               <el-input v-model="teamName" :readonly="true" />
             </el-form-item>
             <el-form-item v-if="teamType === 'mandiri'">
+              <label>Unggah SK Penunjukan Tim Penyusun</label>
+              <el-row :gutter="32">
+                <el-col :sm="12" :md="20">
+                  <el-input v-model="sk.name" :readonly="true" />
+                </el-col>
+                <el-col :sm="12" :md="2">
+                  <el-upload
+                    action="#"
+                    :auto-upload="false"
+                    :on-change="handleUploadSk"
+                    :show-file-list="false"
+                  >
+                    <el-button type="primary"> Unggah </el-button>
+                  </el-upload>
+                </el-col>
+                <el-col :sm="24" :md="24">
+                  <small v-if="skError" style="color: red">
+                    SK Penunjukan Tim Penyusun Wajib Diunggah
+                  </small>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item v-if="teamType === 'mandiri'">
               <el-row :gutter="32">
                 <el-col :sm="12" :md="20">
                   <el-select
@@ -167,6 +190,11 @@ export default {
       formulatorMember: [],
       searchResult: '',
       lpjp: [],
+      sk: {
+        file: null,
+        name: null,
+      },
+      skError: false,
       loadingTimPenyusun: false,
       loadingTimAhli: false,
       loadingSubmit: false,
@@ -240,6 +268,7 @@ export default {
         idProject: this.$route.params.id,
       });
       this.teamName = data.name;
+      this.sk.name = data.sk_letter;
       if (data.type_team) {
         this.teamType = data.type_team;
         this.isTeamExist = true;
@@ -276,11 +305,15 @@ export default {
       this.loadingSelectLpjp = false;
     },
     checkSaveLPJP() {
-      this.$confirm('Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.', 'Warning', {
-        confirmButtonText: 'Ya',
-        cancelButtonText: 'Tidak',
-        type: 'warning',
-      })
+      this.$confirm(
+        'Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.',
+        'Warning',
+        {
+          confirmButtonText: 'Ya',
+          cancelButtonText: 'Tidak',
+          type: 'warning',
+        }
+      )
         .then(() => {
           this.handleSaveLPJP();
         })
@@ -352,16 +385,29 @@ export default {
       this.membersAhli.push(newAhli);
     },
     checkSubmit() {
+      this.skError = false;
+
+      if (this.teamType === 'mandiri') {
+        if (!this.sk.name) {
+          this.skError = true;
+          return false;
+        }
+      }
+
       this.compositionError = false;
       const ketua = this.members.filter((mem) => mem.position === 'Ketua');
       const anggota = this.members.filter((mem) => mem.position === 'Anggota');
 
       if (ketua.length === 1 && anggota.length >= 2) {
-        this.$confirm('Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.', 'Warning', {
-          confirmButtonText: 'Ya',
-          cancelButtonText: 'Tidak',
-          type: 'warning',
-        })
+        this.$confirm(
+          'Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.',
+          'Warning',
+          {
+            confirmButtonText: 'Ya',
+            cancelButtonText: 'Tidak',
+            type: 'warning',
+          }
+        )
           .then(() => {
             this.handleSubmit();
           })
@@ -389,6 +435,11 @@ export default {
       formData.append('team_type', this.teamType);
       formData.append('deletedPenyusun', JSON.stringify(this.deletedPenyusun));
       formData.append('deletedAhli', JSON.stringify(this.deletedAhli));
+
+      if (this.teamType === 'mandiri' && this.sk.file) {
+        formData.append('skFile', await this.convertBase64(this.sk.file));
+      }
+
       let num = 0;
       this.membersAhli.map((mem) => {
         formData.append(`file-${num}`, mem.cv);
@@ -444,9 +495,34 @@ export default {
       const oldData = [...this.membersAhli];
       this.membersAhli = oldData.filter((old) => old.num !== num);
     },
-    // async getUserInfo() {
-    //   this.userInfo = await this.$store.dispatch('user/getInfo');
-    // },
+    handleUploadSk(file, filelist) {
+      if (file.raw.size > 1048576) {
+        this.showFileAlert();
+        return;
+      }
+
+      this.sk.file = file.raw;
+      this.sk.name = file.name;
+    },
+    showFileAlert() {
+      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+        center: true,
+      });
+    },
+    convertBase64(file) {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
+      });
+    },
   },
 };
 </script>

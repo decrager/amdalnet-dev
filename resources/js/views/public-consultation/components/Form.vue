@@ -233,14 +233,14 @@
         type="warning"
         @click="checkSubmit(false)"
       >
-        Simpan Sementara
+        Simpan
       </el-button>
       <el-button
         :loading="loading_submit"
         type="primary"
         @click="checkSubmit(true)"
       >
-        Simpan & Lanjutkan
+        Submit
       </el-button>
     </div>
   </div>
@@ -314,7 +314,6 @@ export default {
   },
   methods: {
     async getPublicConsultation() {
-      console.log('aa', this.currentProject);
       const data = await publicConsultations.list({
         idProject: this.currentProject.id,
       });
@@ -328,24 +327,43 @@ export default {
       this.postForm.negative_feedback_summary = data.negative_feedback_summary;
       this.postForm.is_publish = data.is_publish;
 
-      this.doc_photo = data.docs
-        .filter((doc) => {
+      if (data.docs) {
+        data.docs.forEach((doc) => {
           const docJson = JSON.parse(doc.doc_json);
-          if (docJson.doc_type === 'Foto Dokumentasi') {
-            return true;
+          if (docJson.doc_type === 'Berita Acara Pelaksanaan') {
+            this.document_name.ba = docJson.original_filename;
+          } else if (
+            docJson.doc_type === 'Berita Acara Penunjukan Wakil Masyarakat'
+          ) {
+            this.document_name.bapwm = docJson.original_filename;
+          } else if (docJson.doc_type === 'Daftar Hadir') {
+            this.document_name.dh = docJson.original_filename;
+          } else if (docJson.doc_type === 'Pengumuman') {
+            this.document_name.pe = docJson.original_filename;
+          } else if (docJson.doc_type === 'Undangan') {
+            this.document_name.un = docJson.original_filename;
           }
-
-          return false;
-        })
-        .map((doc, idx) => {
-          const docJson = JSON.parse(doc.doc_json);
-
-          return {
-            id: doc.id,
-            filepath: docJson.filepath,
-            name: `Foto Dokumentasi ${idx + 1}`,
-          };
         });
+
+        this.doc_photo = data.docs
+          .filter((doc) => {
+            const docJson = JSON.parse(doc.doc_json);
+            if (docJson.doc_type === 'Foto Dokumentasi') {
+              return true;
+            }
+
+            return false;
+          })
+          .map((doc, idx) => {
+            const docJson = JSON.parse(doc.doc_json);
+
+            return {
+              id: doc.id,
+              filepath: docJson.filepath,
+              name: `Foto Dokumentasi ${idx + 1}`,
+            };
+          });
+      }
     },
     async getProjectDetail(annId) {
       const data = await announcementResource.get(annId);
@@ -470,13 +488,6 @@ export default {
             this.postForm.doc_photo_metadatas = [];
             this.postForm.doc_files = [];
             this.postForm.doc_metadatas = [];
-            this.document_name = {
-              ba: null,
-              bapwm: null,
-              dh: null,
-              pe: null,
-              un: null,
-            };
           });
         })
         .catch((error) => {

@@ -15,6 +15,8 @@ class KaReview extends Notification
 
     public $kaReviews;
     public $document_type;
+    public $name;
+    public $role;
 
 
     /**
@@ -22,10 +24,12 @@ class KaReview extends Notification
      *
      * @return void
      */
-    public function __construct(AppKaReview $kaReviews, $document_type)
+    public function __construct(AppKaReview $kaReviews, $document_type, $name, $role)
     {
         $this->kaReviews = $kaReviews;
         $this->document_type = $document_type;
+        $this->name = $name;
+        $this->role = $role;
     }
 
     /**
@@ -62,12 +66,14 @@ class KaReview extends Notification
     public function toArray($notifiable)
     {
         $path = '#';
-        if($this->document_type == 'KA') {
-            $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen';
-        } else if($this->document_type == 'ANDAL RKL RPL') {
-            $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen-andal-rkl-rpl';
-        } else if($this->document_type == 'UKL UPL') {
-            $path = '/uklupl' . '/' . $this->kaReviews->id_project . '/dokumen';
+        if($this->role == 'pemrakarsa' || $this->role == 'penyusun') {
+            if($this->document_type == 'KA') {
+                $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen';
+            } else if($this->document_type == 'ANDAL RKL RPL') {
+                $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen-andal-rkl-rpl';
+            } else if($this->document_type == 'UKL UPL') {
+                $path = '/uklupl' . '/' . $this->kaReviews->id_project . '/dokumen';
+            }
         }
 
         return [
@@ -82,15 +88,23 @@ class KaReview extends Notification
     {
         $message = '';
 
-        if($this->kaReviews->status == 'submit-to-pemrakarsa') {
-            $message = 'Penyusun telah selesai menyusun ' . $this->formulirOrDokumen() . ' ' . $this->document_type . ' untuk direview';
-        } else if($this->kaReviews->status == 'revisi') {
-            $message = 'Pemrakarsa mengembalikan ' . $this->formulirOrDokumen() . ' ' . $this->document_type . ' untuk direvisi';
-        } else if($this->kaReviews->status == 'submit') {
-            $message = 'Pemrakara telah mereview ' . $this->formulirOrDokumen() . ' '  . $this->document_type . ' untuk dinilai';
+        // if($this->kaReviews->status == 'submit-to-pemrakarsa') {
+        //     $message = 'Penyusun telah selesai menyusun ' . $this->formulirOrDokumen() . ' ' . $this->document_type . ' untuk direview';
+        // } else if($this->kaReviews->status == 'revisi') {
+        //     $message = 'Pemrakarsa mengembalikan ' . $this->formulirOrDokumen() . ' ' . $this->document_type . ' untuk direvisi';
+        // } else if($this->kaReviews->status == 'submit') {
+        //     $message = 'Pemrakara telah mereview ' . $this->formulirOrDokumen() . ' '  . $this->document_type . ' untuk dinilai';
+        // }
+
+        if($this->document_type == 'KA') {
+            $message = 'Penyusunan Formulir Kerangka Acuan';
+        } else if($this->document_type == 'ANDAL RKL RPL') {
+            $message = 'Andal RKL RPL';
+        } else if($this->document_type == 'UKL UPL') {
+            $message = 'Penyusunan Formulir UKL-UPL';
         }
 
-        return $message;
+        return "Halo " . $this->name . ', ' . $message . ' dengan nama usaha/kegiatan ' . $this->kaReviews->project->project_title . ' berhasil terkirim.';
     }
 
     private function formulirOrDokumen()

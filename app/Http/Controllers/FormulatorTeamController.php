@@ -52,10 +52,22 @@ class FormulatorTeamController extends Controller
 
         if($request->type && $request->type == 'project') {
             $project = Project::findOrFail($request->idProject);
+            $sk_letter = null;
+            if(!$project->team_type == 'mandiri') {
+                $team = FormulatorTeam::where('id_project', $project->id)->first();
+                if($team) {
+                    if($team->evidence_letter) {
+                        $arr_exp = explode('/', $team->evidence_letter);
+                        $sk_letter = $arr_exp[count($arr_exp) - 1];
+                    }
+                }
+            }
+
             return [
                 'name' => 'Tim Penyusun ' . $project->project_title,
                 'type_team' => $project->type_formulator_team,
-                'id_lpjp' => $project->id_lpjp
+                'id_lpjp' => $project->id_lpjp,
+                'sk_letter' => $sk_letter,
             ];
         }
 
@@ -221,8 +233,23 @@ class FormulatorTeamController extends Controller
                 $team->id_team = uniqid();
                 $team->name = 'Tim Penyusun ' . $project->project_title;
                 $team->id_project = $params['idProject'];
-                $team->save();
+            } else {
+                if($request->skFile) {
+                    if($team->evidence_letter) {
+                        $file_name = str_replace(Storage::url(''), '', $team->evidence_letter);
+                        Storage::disk('public')->delete($file_name);
+                    }
+                }
             }
+
+            if($request->skFile) {
+                $fileSK = $this->base64ToFile($request->skFile);
+                $skName = 'formulator-team/' . uniqid() . '.' . $fileSK['extension'];
+                Storage::disk('public')->put($skName, $fileSK['file']);
+                $team->evidence_letter = $skName;
+            }
+
+            $team->save();
 
             // create team members
             $members = json_decode($request->members, true);
@@ -355,5 +382,23 @@ class FormulatorTeamController extends Controller
     {
         $getData = DB::table('formulator_teams')->get();
         return response()->json($getData);
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

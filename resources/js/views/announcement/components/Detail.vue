@@ -83,6 +83,7 @@
       />
       <PublicConsultationForm
         v-else
+        v-loading="loadingAnnouncement"
         @updatepc="updatePublicConsultation($event)"
       />
     </div>
@@ -115,6 +116,7 @@ export default {
       projectTitle: null,
       search: null,
       timeoutId: null,
+      loadingAnnouncement: false,
     };
   },
   computed: {
@@ -132,6 +134,7 @@ export default {
   },
   methods: {
     async getAnnouncement() {
+      this.loadingAnnouncement = true;
       const data = await announcementResource.get(this.id);
       this.publicConst = await publicConsultations.list({
         idProject: data.project_id,
@@ -182,6 +185,7 @@ export default {
           value: data.district,
         },
       ];
+      this.loadingAnnouncement = false;
     },
     inputSearch(val) {
       if (this.timeoutId) {
