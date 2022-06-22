@@ -463,7 +463,7 @@
         :announcement="announcement"
         :show="show"
         @handleSubmitAnnouncement="handleSubmitAnnouncement($event)"
-        @handleCancelAnnouncement="handleCancelAnnouncement"
+        @handleCancelAnnouncement="show = false"
       />
     </el-card>
   </div>
@@ -986,6 +986,7 @@ export default {
       // this.$router.push('penyusun/' + currentProject.id);
     },
     handlePublishForm(id) {
+      this.announcement = {};
       const currentProject = this.filtered.find((item) => item.id === id);
       const subProject = currentProject.list_sub_project.map(curr => {
         return {
@@ -993,16 +994,23 @@ export default {
           scale: curr.scale + ' ' + curr.scale_unit,
         };
       });
-      this.announcement.sub_project = subProject;
-      this.announcement.pic_name = this.initiator.pic;
-      this.announcement.pic_address = this.initiator.address;
-      this.announcement.project_id = currentProject.id;
-      this.announcement.project_result = currentProject.required_doc;
-      this.announcement.project_type = currentProject.project_title;
-      this.announcement.project_scale =
-        currentProject.scale + ' ' + currentProject.scale_unit;
+
+      if (currentProject.announcement === null){
+        this.announcement.pic_name = this.initiator.pic;
+        this.announcement.pic_address = this.initiator.address;
+        this.announcement.project_id = currentProject.id;
+        this.announcement.project_result = currentProject.required_doc;
+        this.announcement.project_type = currentProject.project_title;
+        this.announcement.project_scale =
+          currentProject.scale + ' ' + currentProject.scale_unit;
+
+        this.announcement.id_applicant = currentProject.id_applicant;
+      } else {
+        this.announcement = currentProject.announcement;
+      }
       this.announcement.project_location = currentProject.address;
-      this.announcement.id_applicant = currentProject.id_applicant;
+      this.announcement.sub_project = subProject;
+      console.log(this.announcement);
       this.show = true;
     },
     handleDelete(id, nama) {

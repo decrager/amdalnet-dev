@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use File;
 
 // use DB;
 
@@ -162,6 +163,7 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         //validate request
+
         $validator = Validator::make(
             $request->all(),
             [
@@ -191,28 +193,55 @@ class AnnouncementController extends Controller
 
             DB::beginTransaction();
 
+            $announcement = Announcement::where('project_id', $params['project_id'])->first();
+            if($announcement){
+                if(File::exists(public_path($announcement->proof))){
+                    File::delete(public_path($announcement->proof));
+
+                }
+                $announcement->update([
+                    'pic_name' => $params['pic_name'],
+                    'pic_address' => $params['pic_address'],
+                    'cs_name' => $params['cs_name'],
+                    'cs_address' => $params['cs_address'],
+                    'project_type' => $params['project_type'],
+                    'project_location' => $params['project_location'],
+                    'project_scale' => $params['project_scale'],
+                    'proof' => $name,
+                    'potential_impact' => $params['potential_impact'],
+                    'start_date' => $params['start_date'],
+                    'end_date' => $params['end_date'],
+                    // 'project_id' => $params['project_id'],
+                    'project_result' => $params['project_result'],
+                    'id_applicant' => $params['id_applicant'],
+                ]);
+
+            }else {
             //create Announcement
-            $announcement = Announcement::create([
-                'pic_name' => $params['pic_name'],
-                'pic_address' => $params['pic_address'],
-                'cs_name' => $params['cs_name'],
-                'cs_address' => $params['cs_address'],
-                'project_type' => $params['project_type'],
-                'project_location' => $params['project_location'],
-                'project_scale' => $params['project_scale'],
-                'proof' => $name,
-                'potential_impact' => $params['potential_impact'],
-                'start_date' => $params['start_date'],
-                'end_date' => $params['end_date'],
-                'project_id' => $params['project_id'],
-                'project_result' => $params['project_result'],
-                'id_applicant' => $params['id_applicant'],
-            ]);
+                $announcement = Announcement::create([
+                    'pic_name' => $params['pic_name'],
+                    'pic_address' => $params['pic_address'],
+                    'cs_name' => $params['cs_name'],
+                    'cs_address' => $params['cs_address'],
+                    'project_type' => $params['project_type'],
+                    'project_location' => $params['project_location'],
+                    'project_scale' => $params['project_scale'],
+                    'proof' => $name,
+                    'potential_impact' => $params['potential_impact'],
+                    'start_date' => $params['start_date'],
+                    'end_date' => $params['end_date'],
+                    'project_id' => $params['project_id'],
+                    'project_result' => $params['project_result'],
+                    'id_applicant' => $params['id_applicant'],
+                ]);
+            }
+            if($params['publish'] && ($params['publish'] === 'true')){
 
-            $project = Project::where('id', $params['project_id'])->first();
+                $project = Project::where('id', $params['project_id'])->first();
 
-            $project->published = true;
-            $project->save();
+                $project->published = true;
+                $project->save();
+            }
 
             if (!$announcement) {
                 DB::rollback();

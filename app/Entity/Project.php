@@ -53,7 +53,7 @@ class Project extends Model implements Auditable
     // ];
 
     protected $guarded = [];
-    
+
     protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document'];
 
     public function team()
@@ -114,6 +114,11 @@ class Project extends Model implements Auditable
     public function mapFiles()
     {
         return $this->hasMany(ProjectMapAttachment::class, 'id_project', 'id');
+    }
+
+    public function announcement()
+    {
+        return $this->hasOne(Announcement::class, 'project_id', 'id');
     }
 
     public function feasibilityTest()

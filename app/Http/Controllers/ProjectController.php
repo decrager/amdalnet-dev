@@ -118,7 +118,7 @@ class ProjectController extends Controller
             return response()->json(ProjectController::getProject($request->id));
         }
 
-        return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+        return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
             $q->select('id', 'id_project', 'status', 'document_type');
         }, 'testingMeeting' => function ($q) {
             $q->select('id', 'id_project', 'document_type', 'is_invitation_sent');
