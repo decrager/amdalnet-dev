@@ -246,8 +246,8 @@ export default {
   },
   mounted(){
     console.log(this.announcement);
-    // const day = new Date();
-    // this.yesterday = day.setDate(day.getDate()-1);
+    const day = new Date();
+    this.yesterday = day.setDate(day.getDate() - 1);
   },
   methods: {
     handleSaveAnnouncement(){
