@@ -207,6 +207,19 @@ class TestingVerificationController extends Controller
              if($pemrakarsa_user) {
                  Notification::send([$pemrakarsa_user], new TestingVerificationNotification($verification, $pemrakarsa_user->name, 'pemrakarsa', 'selesai'));
              }
+             // 2. Penyusun Non TA
+             $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                $q->where('id_project', $project->id);
+            })->whereIn('position', ['Ketua', 'Anggota'])->get();
+            foreach($formulator_team_members as $ftm) {
+                if($ftm->formulator) {
+                    $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                    if($formulator_user) {
+                        Notification::send([$formulator_user], new TestingVerificationNotification($verification, $formulator_user->name, 'penyusun', 'pemeriksaan'));
+                    }
+                }
+            }
+
         }
 
         /* WORKFLOW */
