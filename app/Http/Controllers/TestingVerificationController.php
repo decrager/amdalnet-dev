@@ -141,11 +141,12 @@ class TestingVerificationController extends Controller
         }
 
         // === NOTIFICATIONS === //
+        // A. PEMERIKSAAN
         if($data['type'] == 'new') {
             // 1. Pemrakarsa
             $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
             if($pemrakarsa_user) {
-                Notification::send([$pemrakarsa_user], new TestingVerificationNotification($verification, 'ka', $pemrakarsa_user->name, 'pemrakarsa'));
+                Notification::send([$pemrakarsa_user], new TestingVerificationNotification($verification, $pemrakarsa_user->name, 'pemrakarsa', 'pemeriksaan'));
             }
 
             // 2. Penyusun
@@ -156,12 +157,12 @@ class TestingVerificationController extends Controller
                 if($ftm->formulator) {
                     $formulator_user = User::where('email', $ftm->formulator->email)->first();
                     if($formulator_user) {
-                        Notification::send([$formulator_user], new TestingVerificationNotification($verification, 'ka', $formulator_user->name, 'penyusun'));
+                        Notification::send([$formulator_user], new TestingVerificationNotification($verification, $formulator_user->name, 'penyusun', 'pemeriksaan'));
                     }
                 } else if($ftm->expert) {
                     $expert_user = User::where('email', $ftm->expert->email)->first();
                     if($expert_user) {
-                        Notification::send([$expert_user],new TestingVerificationNotification($verification, 'ka', $expert_user->name, 'penyusun'));
+                        Notification::send([$expert_user],new TestingVerificationNotification($verification, $expert_user->name, 'penyusun', 'pemeriksaan'));
                     }
                 }
             }
@@ -185,7 +186,7 @@ class TestingVerificationController extends Controller
                 }
 
                 if($ks_user) {
-                    Notification::send([$ks_user],new TestingVerificationNotification($verification, 'ka', $ks_user->name, 'kepala sekretariat'));
+                    Notification::send([$ks_user],new TestingVerificationNotification($verification, $ks_user->name, 'kepala sekretariat', 'pemeriksaan'));
                 }
             }
 
@@ -194,9 +195,18 @@ class TestingVerificationController extends Controller
             foreach($tuk_member as $tm) {
                 $tuk_user = User::find($tm->id_user);
                 if($tuk_user) {
-                    Notification::send([$tuk_user],new TestingVerificationNotification($verification, 'ka', $tuk_user->name, 'valadm'));
+                    Notification::send([$tuk_user],new TestingVerificationNotification($verification, $tuk_user->name, 'valadm', 'pemeriksaan'));
                 }
             }
+        }
+
+        // B. PENILAIAN SELESAI
+        if($request->complete) {
+             // 1. Pemrakarsa
+             $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+             if($pemrakarsa_user) {
+                 Notification::send([$pemrakarsa_user], new TestingVerificationNotification($verification, $pemrakarsa_user->name, 'pemrakarsa', 'selesai'));
+             }
         }
 
         /* WORKFLOW */
