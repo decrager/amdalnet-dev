@@ -91,11 +91,12 @@ class TestingMeetingController extends Controller
     public function store(Request $request)
     {
         if($request->invitation) {
-            $receiver = [];
+            $receiver = 0;
             $receiver_non_user = [];
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
             if($meeting) {
                 $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
+                // 1. TUK
                 foreach($invitations as $i) {
                     if($i->id_feasibility_test_team_member) {
                         $member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
@@ -109,7 +110,8 @@ class TestingMeetingController extends Controller
                         if($email) {
                             $user = User::where('email', $email)->first();
                             if($user) {
-                                $receiver[] = $user;
+                                Notification::send([$user], new MeetingInvitation($meeting, $user->name, 'tuk'));
+                                $receiver++;
                             }
                         }
 
@@ -118,7 +120,8 @@ class TestingMeetingController extends Controller
                         if($secretary) {
                             $user = User::where('email', $secretary->email)->first();
                             if($user) {
-                                $receiver[] = $user;
+                                Notification::send([$user], new MeetingInvitation($meeting, $user->name, 'tuk'));
+                                $receiver++;
                             }
                         }
                     } else if($i->email) {
@@ -141,47 +144,35 @@ class TestingMeetingController extends Controller
                             $user = User::where('email', $i->email)->first();
                         }
 
-                        $receiver[] = $user;
+                        Notification::send([$user], new MeetingInvitation($meeting, $user->name, 'tuk'));
+                        $receiver++;
                     }
                 }
             }
 
-            if((count($receiver) > 0) || (count($receiver_non_user) > 0)) {
-                if(count($receiver) > 0) {
-                    Notification::send($receiver, new MeetingInvitation($meeting, 'tuk'));
-                }
-
-                if(count($receiver_non_user) > 0) {
-                    Notification::route('mail', $receiver_non_user)->notify(new MeetingInvitation($meeting, 'tuk'));
-                }
-
+            if($receiver > 0 || (count($receiver_non_user) > 0)) {
                 // === UPDATE STATUS INVITATION === //
                 $meeting->is_invitation_sent = true;
                 $meeting->save();
 
                 $project = Project::findOrFail($request->idProject);
                 // NOTIFICATION FOR FORMULATOR & INITIATOR
-                $extra_receiver = [];
                 $initiator = User::where('email', $project->initiator->email)->first();
-                $formulator_chief = FormulatorTeamMember::where('position', 'Ketua')->whereHas('team', function($q) use($project) {
-                    $q->where('id_project', $project->id);
-                })->first();
 
                 if($initiator) {
-                    $extra_receiver[] = $initiator;
+                    Notification::send([$initiator], new MeetingInvitation($meeting, $initiator->name, 'pemrakarsa'));
                 }
 
-                if($formulator_chief) {
-                    if($formulator_chief->formulator) {
-                        $formulator_chief = User::where('email', $formulator_chief->formulator->email)->first();
-                        if($formulator_chief) {
-                            $extra_receiver[] = $formulator_chief;
+                $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->get();
+                foreach($formulator_team_members as $ftm) {
+                    if($ftm->formulator) {
+                        $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                        if($formulator_user) {
+                            Notification::send([$formulator_user], new MeetingInvitation($meeting, $initiator->name, 'penyusun'));
                         }
                     }
-                }
-
-                if(count($extra_receiver) > 0) {
-                    Notification::send($extra_receiver, new MeetingInvitation($meeting, 'extra'));
                 }
 
                 // === WORKFLOW === //
