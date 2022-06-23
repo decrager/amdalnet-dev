@@ -2,16 +2,22 @@
   <el-dialog :title="'Publish Pengumuman'" :visible.sync="show" :close-on-click-modal="false" :show-close="false" :destroy-on-close="true" @close="onClose">
     <div class="form-container">
       <el-form ref="announcement" :model="announcement" :rules="announcementRules">
-        <el-row :gutter="8">
-          <el-col
-            :span="8"
-          ><el-form-item label="Nama Penanggung Jawab" prop="pic_name">
-            <el-input v-model="announcement.pic_name" /> </el-form-item></el-col>
-          <el-col
-            :span="16"
-          ><el-form-item label="Alamat Penanggung Jawab" prop="pic_address">
-            <el-input v-model="announcement.pic_address" /> </el-form-item></el-col>
-        </el-row>
+
+        <div>
+          <p style="font-weight:bold;">Penanggung Jawab</p>
+          <div style="padding:1em 2em; border: 1px solid #efefef; border-radius: 0.3em; margin: 1em auto;">
+            <el-row :gutter="8">
+              <el-col
+                :span="8"
+              ><el-form-item label="Nama" prop="pic_name">
+                <el-input v-model="announcement.pic_name" /> </el-form-item></el-col>
+              <el-col
+                :span="16"
+              ><el-form-item label="Alamat" prop="pic_address">
+                <el-input v-model="announcement.pic_address" /> </el-form-item></el-col>
+            </el-row>
+          </div>
+        </div>
         <!--
         <el-row :gutter="8">
           <el-col
@@ -75,11 +81,13 @@
           />
         </el-form-item>
            -->
-        <div style="padding: 1em 2em ; border: 1px solid #e0e0e0; border-radius: 0.5em; margin-bottom: 2em;">
-          <div class="el-form-item">
-            <p style="font-weight:bold;">Nama Rencana Usaha dan/atau Kegiatan</p>
-            <p>{{ announcement.project_type }}</p>
-          </div>
+        <div style="margin: 1.5em auto 0.8em;">
+          <p style="font-weight:bold; line-height:120% !important; margin: unset;">Rencana Usaha dan/atau Kegiatan</p>
+          <p style="font-size:120%;  line-height:120% !important; margin: unset;">{{ announcement.project_type }}</p>
+        </div>
+
+        <div style="padding: 1em 2em ; border: 1px solid #efefef; border-radius: 0.3em; margin-bottom: 2em;">
+          <p style="font-weight:bold;">Kegiatan Utama dan Pendukung</p>
           <el-table
             :data="announcement.sub_project"
             :border="true"
@@ -100,85 +108,100 @@
             />
           </el-table>
           <div>
-            <p style="font-weight:bold;">Lokasi Rencana Usaha dan/atau Kegiatan</p>
-
+            <p style="font-weight:bold;">Lokasi</p>
             <template
               v-for="(location,idx) in announcement.project_location"
             >
               <p :key="idx">{{ idx+1 }}. {{ announcement.project_location[idx].address }}</p>
             </template>
           </div>
+          <el-form-item label="Dampak Potensial" prop="potential_impact">
+            <el-input v-model="announcement.potential_impact" type="textarea" />
+          </el-form-item>
         </div>
 
-        <el-form-item ref="fileProofUpload" label="Bukti Pengumuman (Max 1MB)" prop="fileProof">
+        <div style="margin: 1em auto 2em;">
+          <p style="font-weight:bold;">Pengumuman</p>
+          <div style="border:1px solid #efefef; border-radius: 0.3em; padding: 1em 2em;">
+            <el-row :gutter="8">
+              <el-col :span="12">
+                <el-form-item label="Dimulai tanggal" prop="start_date">
+                  <el-date-picker
+                    v-model="announcement.start_date"
+                    placeholder="Tanggal Awal"
+                    style="width: 100%"
+                    value-format="yyyy-M-d"
+                    :picker-options="dateOptions"
+                    @change="setEndDate"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="selama 15 hari, hingga tanggal" prop="end_date">
 
-          <el-col :span="24"><div
-            style="
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    height: 36px;
-                  "
-          >
-            <el-button
-              icon="el-icon-document-copy"
-              type="primary"
-              size="mini"
-              style="margin-left: 15px"
-              @click="checkProofFile"
-            >Upload</el-button>
-            <span>{{ fileName }}</span>
-            <input
-              id="proofFile"
-              type="file"
-              style="display: none"
-              @change="checkProfFileSure"
-            >
-          </div></el-col>
-        </el-form-item>
-        <el-form-item label="Dampak Potensial" prop="potential_impact">
-          <el-input v-model="announcement.potential_impact" type="textarea" />
-        </el-form-item>
+                  <!-- <p style="font-weight:bold;">selama 15 hari, hingga tanggal</p>-->
+                  <div style="clear:both !important; margin: 0 auto;">
+                    {{ end_date || ((announcement.end_date && announcement.end_date !== '') ? (announcement.end_date.split(" "))[0] : '' ) }}
+                  </div>
 
-        <el-row :gutter="8">
-          <el-col :span="12">
-            <el-form-item label="Pengumuman dimulai tanggal" prop="start_date">
-              <el-date-picker
-                v-model="announcement.start_date"
-                placeholder="Tanggal Awal"
-                style="width: 100%"
-                value-format="yyyy-M-d"
-                :picker-options="dateOptions"
-                @change="setEndDate"
-              />
+                <!--
+                <el-form-item label="selama 15 hari,  hingga" prop="end_date">
+                  <el-date-picker
+                    v-model="end_date"
+                    read-only
+                    placeholder="Tanggal Akhir"
+                    style="width: 100%"
+                    value-format="yyyy-M-d"
+                  />
+                </el-form-item> -->
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item ref="fileProofUpload" label="Bukti Pengumuman (Max 1MB)" prop="fileProof">
+              <div v-if="announcement.proof" style="clear: both !important; margin-bottom: 0.8em;">
+                <a :href="announcement.proof" target="_blank" style="font-weight: bold;">Bukti Pengumuman yang tersimpan <i class="el-icon-download" /></a>
+              </div>
+              <el-col :span="24"><div
+                style="
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        height: 36px;
+                      "
+              >
+                <el-button
+                  icon="el-icon-document-copy"
+                  type="primary"
+                  size="mini"
+                  style="margin-left: 15px"
+                  @click="checkProofFile"
+                >Upload</el-button>
+                <span>{{ fileName }}</span>
+                <input
+                  id="proofFile"
+                  type="file"
+                  accept=".pdf"
+                  style="display: none"
+                  @change="checkProfFileSure"
+                >
+              </div></el-col>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
-
-            <p style="font-weight:bold;">selama 15 hari, hingga tanggal</p>
-            <p>{{ end_date || ((announcement.end_date && announcement.end_date !== '') ? (announcement.end_date.split(" "))[0] : '' ) }}</p>
-
-            <!--
-             <el-form-item label="selama 15 hari,  hingga" prop="end_date">
-              <el-date-picker
-                v-model="end_date"
-                read-only
-                placeholder="Tanggal Akhir"
-                style="width: 100%"
-                value-format="yyyy-M-d"
-              />
-            </el-form-item> -->
-          </el-col>
-        </el-row>
-        <el-row :gutter="8">
-          <el-col :span="8">
-            <el-form-item label="Nama Penerima SPT" prop="cs_name">
-              <el-input v-model="announcement.cs_name" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="16">
-            <el-form-item label="Alamat Penerima SPT" prop="cs_address">
-              <el-input v-model="announcement.cs_address" /> </el-form-item></el-col>
-        </el-row>
+          </div>
+        </div>
+        <div>
+          <p style="font-weight:bold;">Penerima SPT</p>
+          <div style="padding:1em 2em; border: 1px solid #efefef; border-radius: 0.3em; margin: 1em auto;">
+            <el-row :gutter="8">
+              <el-col :span="8">
+                <el-form-item label="Nama" prop="cs_name">
+                  <el-input v-model="announcement.cs_name" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="16">
+                <el-form-item label="Alamat" prop="cs_address">
+                  <el-input v-model="announcement.cs_address" /> </el-form-item></el-col>
+            </el-row>
+          </div>
+        </div>
       </el-form>
 
     </div>
@@ -242,7 +265,20 @@ export default {
       yesterday: null,
       end_date: null,
       confirmPublishDialog: false,
+      fileRequired: true,
     };
+  },
+  watch: {
+    announcement: {
+      deep: true,
+      handler(val) {
+        if (typeof val.proof === 'undefined'){
+          this.announcementRules.fileProof = [{ required: true, trigger: 'change', message: 'Data Belum Diinput' }];
+        } else {
+          this.announcementRules.fileProof = [];
+        }
+      },
+    },
   },
   mounted(){
     console.log(this.announcement);
