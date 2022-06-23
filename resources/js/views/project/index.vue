@@ -915,7 +915,7 @@ export default {
     async getFiltered(query) {
       this.loading = true;
       this.filtered = [];
-      console.log('getFiltered', query);
+      // console.log('getFiltered', query);
       await projectResource.list(query)
         .then((res) => {
           const { data, total } = res;
@@ -926,7 +926,7 @@ export default {
           this.filtered = mapped;
           this.total = total;
           this.loading = false;
-          console.log(data, this.filtered);
+          // console.log(data, this.filtered);
         }).finally(() => {
           this.loading = false;
         });
@@ -1011,7 +1011,7 @@ export default {
       }
       this.announcement.project_location = currentProject.address;
       this.announcement.sub_project = subProject;
-      console.log(this.announcement);
+      // console.log(this.announcement);
       this.show = true;
     },
     handleDelete(id, nama) {

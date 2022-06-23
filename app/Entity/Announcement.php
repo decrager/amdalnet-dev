@@ -66,4 +66,10 @@ class Announcement extends Model
 
         return null;
     }
+
+    public function rawProof(){
+        // $arrFile = explode('/', $this->attributes['proof']);
+        // return implode(DIRECTORY_SEPARATOR, $arrFile);
+        return $this->attributes['proof'];
+    }
 }

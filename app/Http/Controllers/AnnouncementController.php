@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
-use File;
+
 
 // use DB;
 
@@ -163,23 +164,27 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         //validate request
+        $required = [
+            'pic_name' => 'required',
+            'pic_address' => 'required',
+            'cs_name' => 'required',
+            'cs_address' => 'required',
+            'project_type' => 'required',
+            'project_location' => 'required',
+            'project_scale' => 'required',
+            'potential_impact' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            // 'fileProof' => 'required',
+        ];
+        $announcement = Announcement::where('project_id', $request->project_id)->first();
+        if(!$announcement || ($announcement->proof === '')){
+            $required['fileProof'] = 'required';
+        }
 
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'pic_name' => 'required',
-                'pic_address' => 'required',
-                'cs_name' => 'required',
-                'cs_address' => 'required',
-                'project_type' => 'required',
-                'project_location' => 'required',
-                'project_scale' => 'required',
-                'potential_impact' => 'required',
-                'start_date' => 'required',
-                'end_date' => 'required',
-                'fileProof' => 'required',
-            ]
-        );
+        // return $announcement->rawProof();
+
+        $validator = Validator::make($request->all(), $required);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
@@ -187,19 +192,18 @@ class AnnouncementController extends Controller
             $params = $request->all();
 
             //create file
+            $name = '';
             $file = $request->file('fileProof');
-            $name = 'announcement/' . uniqid() . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
+            if($file) {
+                $name = 'announcement/' . uniqid() . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+            }
 
             DB::beginTransaction();
 
-            $announcement = Announcement::where('project_id', $params['project_id'])->first();
+            // $announcement = Announcement::where('project_id', $params['project_id'])->first();
             if($announcement){
-                if(File::exists(public_path($announcement->proof))){
-                    File::delete(public_path($announcement->proof));
-
-                }
-                $announcement->update([
+                $update_fields = [
                     'pic_name' => $params['pic_name'],
                     'pic_address' => $params['pic_address'],
                     'cs_name' => $params['cs_name'],
@@ -207,14 +211,25 @@ class AnnouncementController extends Controller
                     'project_type' => $params['project_type'],
                     'project_location' => $params['project_location'],
                     'project_scale' => $params['project_scale'],
-                    'proof' => $name,
+                    // 'proof' => $name,
                     'potential_impact' => $params['potential_impact'],
                     'start_date' => $params['start_date'],
                     'end_date' => $params['end_date'],
                     // 'project_id' => $params['project_id'],
                     'project_result' => $params['project_result'],
                     'id_applicant' => $params['id_applicant'],
-                ]);
+
+                ];
+                if($file){
+                    if (Storage::disk('public')->exists($announcement->rawProof()))
+                    {
+                        Storage::disk('public')->delete($announcement->rawProof());
+                    }
+
+                    $update_fields['proof'] = $name;
+                }
+
+                $announcement->update($update_fields);
 
             }else {
             //create Announcement
