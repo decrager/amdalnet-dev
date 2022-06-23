@@ -6,6 +6,7 @@ use App\Entity\ExpertBankTeam;
 use App\Entity\ExpertBankTeamMember;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
+use App\Entity\FormulatorTeamMember;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Initiator;
 use App\Entity\MeetingReport;
@@ -14,12 +15,14 @@ use App\Entity\Project;
 use App\Entity\ProjectStage;
 use App\Entity\TestingMeeting;
 use App\Entity\TukSecretaryMember;
+use App\Laravue\Models\User;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class MeetingReportController extends Controller
@@ -82,6 +85,7 @@ class MeetingReportController extends Controller
     {
         if($request->file) {
             $project = Project::findOrFail($request->idProject);
+            $meeting_report = null;
 
             if($request->dokumen_file) {
                 $file = $this->base64ToFile($request->dokumen_file);
@@ -94,6 +98,30 @@ class MeetingReportController extends Controller
 
             } else {
                 return response()->json(['errors' => ['dokumen_file' => ['Dokumen Tidak Valid']]]);
+            }
+
+            // === NOTIFICATIONS === //
+            $receiver = [];
+            // 1. Pemrakarsa
+            $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+            if($pemrakarsa_user) {
+                $receiver[] = $pemrakarsa_user;
+            }
+            // 2. Penyusun
+            $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                $q->where('id_project', $project->id);
+            })->get();
+            foreach($formulator_team_members as $ftm) {
+                if($ftm->formulator) {
+                    $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                    if($formulator_user) {
+                       $receiver[] = $formulator_user;
+                    }
+                }
+            }
+
+            if(count($receiver) > 0) {
+                Notification::send($receiver, new MeetingReportInvitation($meeting_report, 'disetujui'));
             }
 
             // === WORKFLOW === //
