@@ -91,7 +91,7 @@ class TestingMeetingController extends Controller
     public function store(Request $request)
     {
         if($request->invitation) {
-            $receiver = 0;
+            $receiver = [];
             $receiver_non_user = [];
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
             if($meeting) {
@@ -110,8 +110,7 @@ class TestingMeetingController extends Controller
                         if($email) {
                             $user = User::where('email', $email)->first();
                             if($user) {
-                                Notification::send([$user], new MeetingInvitation($meeting, $user->name, 'tuk'));
-                                $receiver++;
+                                $receiver[] = $user;
                             }
                         }
 
@@ -120,8 +119,7 @@ class TestingMeetingController extends Controller
                         if($secretary) {
                             $user = User::where('email', $secretary->email)->first();
                             if($user) {
-                                Notification::send([$user], new MeetingInvitation($meeting, $user->name, 'tuk'));
-                                $receiver++;
+                                $receiver[] = $user;
                             }
                         }
                     } else if($i->email) {
@@ -144,13 +142,12 @@ class TestingMeetingController extends Controller
                             $user = User::where('email', $i->email)->first();
                         }
 
-                        Notification::send([$user], new MeetingInvitation($meeting, $user->name, 'tuk'));
-                        $receiver++;
+                        $receiver[] = $user;
                     }
                 }
             }
 
-            if($receiver > 0 || (count($receiver_non_user) > 0)) {
+            if(count($receiver) > 0 || (count($receiver_non_user) > 0)) {
                 // === UPDATE STATUS INVITATION === //
                 $meeting->is_invitation_sent = true;
                 $meeting->save();
@@ -160,7 +157,7 @@ class TestingMeetingController extends Controller
                 $initiator = User::where('email', $project->initiator->email)->first();
 
                 if($initiator) {
-                    Notification::send([$initiator], new MeetingInvitation($meeting, $initiator->name, 'pemrakarsa'));
+                   $receiver[] = $initiator;
                 }
 
                 $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
@@ -170,10 +167,12 @@ class TestingMeetingController extends Controller
                     if($ftm->formulator) {
                         $formulator_user = User::where('email', $ftm->formulator->email)->first();
                         if($formulator_user) {
-                            Notification::send([$formulator_user], new MeetingInvitation($meeting, $initiator->name, 'penyusun'));
+                           $receiver[] = $formulator_user;
                         }
                     }
                 }
+
+                Notification::send($receiver, new MeetingInvitation($meeting));
 
                 // === WORKFLOW === //
                 if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {

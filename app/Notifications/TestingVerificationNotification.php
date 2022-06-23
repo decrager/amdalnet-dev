@@ -13,8 +13,6 @@ class TestingVerificationNotification extends Notification
     use Queueable;
 
     public $testingVerification;
-    public $name;
-    public $role;
     public $type;
 
     /**
@@ -22,11 +20,9 @@ class TestingVerificationNotification extends Notification
      *
      * @return void
      */
-    public function __construct(TestingVerification $testingVerification, $name, $role, $type)
+    public function __construct(TestingVerification $testingVerification, $type)
     {
         $this->testingVerification = $testingVerification;
-        $this->name = $name;
-        $this->role = $role;
         $this->type = $type;
     }
 
@@ -64,9 +60,10 @@ class TestingVerificationNotification extends Notification
     public function toArray($notifiable)
     {
         $path = '#';
+        $role = $notifiable->roles->first()->name;
 
         if($this->type == 'pemeriksaan') {
-            if($this->role == 'valadm') {
+            if(!($role == 'formulator' || $role == 'examiner-secretary' || $role == 'initiator')) {
                 $path = '/amdal' . '/' . $this->testingVerification->id_project . '/uji-berkas-administrasi-ka';
             }
         }
@@ -74,24 +71,24 @@ class TestingVerificationNotification extends Notification
         return [
             'testingVerification' => $this->testingVerification,
             'user' => $notifiable,
-            'message' => $this->getMessage(),
+            'message' => $this->getMessage($notifiable),
             'path' => $path,
         ];
     }
 
-    private function getMessage() {
+    private function getMessage($notifiable) {
         $message = '';
 
         if($this->type == 'pemeriksaan') {
             if($this->testingVerification->document_type == 'ka') {
-                $message = 'Halo ' . $this->name . ', Formulir Kerangka Acuan dengan nama usaha/kegiatan ' . $this->testingVerification->project->project_title . ' sedang dilakukan pemeriksaan berkas kelengkapan Formulir Kerangka Acuan. Kami akan segera memberikan info selanjutnya.';
+                $message = 'Halo ' . $notifiable->name . ', Formulir Kerangka Acuan dengan nama usaha/kegiatan ' . $this->testingVerification->project->project_title . ' sedang dilakukan pemeriksaan berkas kelengkapan Formulir Kerangka Acuan. Kami akan segera memberikan info selanjutnya.';
             }
         } else if($this->type == 'selesai') {
             if($this->testingVerification->document_type == 'ka') {
                 if($this->testingVerification->is_complete) {
-                    $message = 'Selamat ' . $this->name . ', berkas Formulir Kerangka Acuan dengan nama ' . $this->testingVerification->project->project_title . ' anda sudah sesuai.';
+                    $message = 'Selamat ' . $notifiable->name . ', berkas Formulir Kerangka Acuan dengan nama ' . $this->testingVerification->project->project_title . ' anda sudah sesuai.';
                 } else {
-                    $message = 'Halo ' . $this->name . ', mohon maaf setelah hasil rapat dapat kami simpulkan bahwa Formulir Kerangka Acuan dengan nama ' . $this->testingVerification->project->project_title . ' anda akan dikembalikan karena berkas Formulir Kerangka Acuan anda tidak lengkap / salah, silahkan lakukan perbaikan dan kirim kembali, terimakasih.';
+                    $message = 'Halo ' . $notifiable->name . ', mohon maaf setelah hasil rapat dapat kami simpulkan bahwa Formulir Kerangka Acuan dengan nama ' . $this->testingVerification->project->project_title . ' anda akan dikembalikan karena berkas Formulir Kerangka Acuan anda tidak lengkap / salah, silahkan lakukan perbaikan dan kirim kembali, terimakasih.';
                 }
             }
         }

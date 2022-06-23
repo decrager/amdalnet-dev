@@ -18,18 +18,15 @@ class MeetingInvitation extends Notification
 
     public $meeting;
     public $name;
-    public $notification_type;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(TestingMeeting $meeting, $name, $notification_type)
+    public function __construct(TestingMeeting $meeting)
     {
         $this->meeting = $meeting;
-        $this->name = $name;
-        $this->notification_type = $notification_type;
     }
 
     /**
@@ -40,10 +37,10 @@ class MeetingInvitation extends Notification
      */
     public function via($notifiable)
     {
-        if($this->notification_type == 'tuk' || $this->notification_type == 'pemrakarsa') {
-            return ['mail', 'database'];
-        } else {
+        if($notifiable->roles->first()->name == 'formulator') {
             return ['database'];
+        } else {
+            return ['mail', 'database'];
         }
     }
 
@@ -63,7 +60,7 @@ class MeetingInvitation extends Notification
 
         return (new MailMessage)
                     ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
-                    ->greeting('Yth. ' . $this->name)
+                    ->greeting('Yth. ' . $notifiable->name)
                     ->line('Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada:')
                     ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . '<br>' . 'Tempat: ' . $this->meeting->location))
                     ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
@@ -85,7 +82,7 @@ class MeetingInvitation extends Notification
             $document = 'Formulir Kerangka Acuan';
         }
 
-        if($this->notification_type == 'tuk' || $this->notification_type == 'pemrakarsa') {
+        if($notifiable->roles->first()->name != 'formulator') {
             $message = 'Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada: ';
             $message .= 'Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . ', ';
             $message .= 'Waktu: ' . $this->meeting->meeting_time . ', ';

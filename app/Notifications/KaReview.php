@@ -14,9 +14,6 @@ class KaReview extends Notification
     use Queueable;
 
     public $kaReviews;
-    public $document_type;
-    public $name;
-    public $role;
 
 
     /**
@@ -24,12 +21,9 @@ class KaReview extends Notification
      *
      * @return void
      */
-    public function __construct(AppKaReview $kaReviews, $document_type, $name, $role)
+    public function __construct(AppKaReview $kaReviews)
     {
         $this->kaReviews = $kaReviews;
-        $this->document_type = $document_type;
-        $this->name = $name;
-        $this->role = $role;
     }
 
     /**
@@ -66,12 +60,13 @@ class KaReview extends Notification
     public function toArray($notifiable)
     {
         $path = '#';
-        if($this->role == 'pemrakarsa' || $this->role == 'penyusun') {
-            if($this->document_type == 'KA') {
+        $role = $notifiable->roles->first()->name;
+        if($role == 'initiator' || $role == 'formulator') {
+            if($this->kaReviews->document_type == 'ka') {
                 $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen';
-            } else if($this->document_type == 'ANDAL RKL RPL') {
+            } else if($this->kaReviews->document_type == 'andal-rkl-rpl') {
                 $path = '/amdal' . '/' . $this->kaReviews->id_project . '/dokumen-andal-rkl-rpl';
-            } else if($this->document_type == 'UKL UPL') {
+            } else if($this->kaReviews->document_type == 'ukl-upl') {
                 $path = '/uklupl' . '/' . $this->kaReviews->id_project . '/dokumen';
             }
         }
@@ -79,12 +74,12 @@ class KaReview extends Notification
         return [
             'kaReview' => $this->kaReviews,
             'user' => $notifiable,
-            'message' => $this->getMessage(),
+            'message' => $this->getMessage($notifiable),
             'path' => $path,
         ];
     }
 
-    private function getMessage()
+    private function getMessage($notifiable)
     {
         $message = '';
 
@@ -96,20 +91,20 @@ class KaReview extends Notification
         //     $message = 'Pemrakara telah mereview ' . $this->formulirOrDokumen() . ' '  . $this->document_type . ' untuk dinilai';
         // }
 
-        if($this->document_type == 'KA') {
+        if($this->kaReviews->document_type == 'ka') {
             $message = 'Penyusunan Formulir Kerangka Acuan';
-        } else if($this->document_type == 'ANDAL RKL RPL') {
+        } else if($this->kaReviews->document_type == 'andal-rkl-rpl') {
             $message = 'Andal RKL RPL';
-        } else if($this->document_type == 'UKL UPL') {
+        } else if($this->kaReviews->document_type == 'ukl-upl') {
             $message = 'Penyusunan Formulir UKL-UPL';
         }
 
-        return "Halo " . $this->name . ', ' . $message . ' dengan nama usaha/kegiatan ' . $this->kaReviews->project->project_title . ' berhasil terkirim.';
+        return "Halo " . $notifiable->name . ', ' . $message . ' dengan nama usaha/kegiatan ' . $this->kaReviews->project->project_title . ' berhasil terkirim.';
     }
 
     private function formulirOrDokumen()
     {
-        if($this->document_type == 'ANDAL RKL RPL') {
+        if($this->kaReviews->document_type == 'andal-rkl-rpl') {
             return 'Dokumen';
         } else {
             return 'Formulir';
