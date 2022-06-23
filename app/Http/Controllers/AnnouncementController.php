@@ -43,6 +43,10 @@ class AnnouncementController extends Controller
         ->addSelect(DB::raw('case when announcements.end_date::timestamp::date < now()::timestamp::date then true else false end as expired'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
+        ->whereHas('project', function($q){
+            $q->whereRaw('published is true');
+            return $q;
+        })
         ->where(function($query) use($request) {
             if($request->provName && ($request->provName !== null)) {
                 $query->whereHas('project.address', function($q) use ($request) {
