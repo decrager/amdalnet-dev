@@ -240,10 +240,11 @@ class KaReviewController extends Controller
                 // }
 
                 // === NOTIFICATION === //
+                $receiver = [];
                 // 1. PEMRAKARSA
                 $pemrakarsa = User::where('email', $project->initiator->email)->first();
                 if($pemrakarsa) {
-                    Notification::send([$pemrakarsa], new AppKaReview($review, $document_type, $pemrakarsa->name, 'pemrakarsa'));
+                    $receiver[] = $pemrakarsa;
                 }
 
                 // 2. PENYUSUN
@@ -254,14 +255,13 @@ class KaReviewController extends Controller
                     if($ftm->formulator) {
                         $formulator_user = User::where('email', $ftm->formulator->email)->first();
                         if($formulator_user) {
-                            Notification::send([$formulator_user], new AppKaReview($review, $document_type, $formulator_user->name, 'penyusun'));
-                        }
-                    } else if($ftm->expert) {
-                        $expert_user = User::where('email', $ftm->expert->email)->first();
-                        if($expert_user) {
-                            Notification::send([$expert_user], new AppKaReview($review, $document_type, $expert_user->name, 'penyusun'));
+                            $receiver[] = $formulator_user;
                         }
                     }
+                }
+
+                if(count($receiver) > 0) {
+                    Notification::send($receiver, new AppKaReview($review));
                 }
 
                 // === WORKFLOW === //

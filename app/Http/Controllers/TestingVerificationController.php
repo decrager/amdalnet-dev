@@ -141,11 +141,13 @@ class TestingVerificationController extends Controller
         }
 
         // === NOTIFICATIONS === //
+        // A. PEMERIKSAAN
         if($data['type'] == 'new') {
+            $receiver = [];
             // 1. Pemrakarsa
             $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
             if($pemrakarsa_user) {
-                Notification::send([$pemrakarsa_user], new TestingVerificationNotification($verification, 'ka', $pemrakarsa_user->name, 'pemrakarsa'));
+                $receiver[] = $pemrakarsa_user;
             }
 
             // 2. Penyusun
@@ -156,12 +158,7 @@ class TestingVerificationController extends Controller
                 if($ftm->formulator) {
                     $formulator_user = User::where('email', $ftm->formulator->email)->first();
                     if($formulator_user) {
-                        Notification::send([$formulator_user], new TestingVerificationNotification($verification, 'ka', $formulator_user->name, 'penyusun'));
-                    }
-                } else if($ftm->expert) {
-                    $expert_user = User::where('email', $ftm->expert->email)->first();
-                    if($expert_user) {
-                        Notification::send([$expert_user],new TestingVerificationNotification($verification, 'ka', $expert_user->name, 'penyusun'));
+                        $receiver[] = $formulator_user;
                     }
                 }
             }
@@ -185,7 +182,7 @@ class TestingVerificationController extends Controller
                 }
 
                 if($ks_user) {
-                    Notification::send([$ks_user],new TestingVerificationNotification($verification, 'ka', $ks_user->name, 'kepala sekretariat'));
+                    $receiver[] = $ks_user;
                 }
             }
 
@@ -194,9 +191,40 @@ class TestingVerificationController extends Controller
             foreach($tuk_member as $tm) {
                 $tuk_user = User::find($tm->id_user);
                 if($tuk_user) {
-                    Notification::send([$tuk_user],new TestingVerificationNotification($verification, 'ka', $tuk_user->name, 'valadm'));
+                   $receiver[] = $tuk_user;
                 }
             }
+
+            if(count($receiver) > 0) {
+                Notification::send($receiver,new TestingVerificationNotification($verification, 'pemeriksaan'));
+            }
+        }
+
+        // B. PENILAIAN SELESAI
+        if($request->complete) {
+            $receiver = [];
+             // 1. Pemrakarsa
+             $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+             if($pemrakarsa_user) {
+                $receiver[] = $pemrakarsa_user;
+             }
+             // 2. Penyusun Non TA
+             $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                $q->where('id_project', $project->id);
+            })->whereIn('position', ['Ketua', 'Anggota'])->get();
+            foreach($formulator_team_members as $ftm) {
+                if($ftm->formulator) {
+                    $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                    if($formulator_user) {
+                        $receiver[] = $formulator_user;
+                    }
+                }
+            }
+
+            if(count($receiver) > 0) {
+                Notification::send($receiver, new TestingVerificationNotification($verification, 'selesai'));
+            }
+
         }
 
         /* WORKFLOW */

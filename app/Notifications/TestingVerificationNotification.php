@@ -13,21 +13,17 @@ class TestingVerificationNotification extends Notification
     use Queueable;
 
     public $testingVerification;
-    public $document_type;
-    public $name;
-    public $role;
+    public $type;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(TestingVerification $testingVerification, $document_type, $name, $role)
+    public function __construct(TestingVerification $testingVerification, $type)
     {
         $this->testingVerification = $testingVerification;
-        $this->document_type = $document_type;
-        $this->name = $name;
-        $this->role = $role;
+        $this->type = $type;
     }
 
     /**
@@ -63,21 +59,52 @@ class TestingVerificationNotification extends Notification
      */
     public function toArray($notifiable)
     {
-        $message = '';
         $path = '#';
+        $role = $notifiable->roles->first()->name;
 
-        if($this->document_type == 'ka') {
-            $message = 'Halo ' . $this->name . ', Formulir Kerangka Acuan dengan nama usaha/kegiatan ' . $this->testingVerification->project->project_title . ' sedang dilakukan pemeriksaan berkas kelengkapan Formulir Kerangka Acuan. Kami akan segera memberikan info selanjutnya.';
-            if($this->role == 'valadm') {
-                $path = '/amdal' . '/' . $this->testingVerification->id_project . '/uji-berkas-administrasi-ka';
+        if($this->type == 'pemeriksaan') {
+            if(!($role == 'formulator' || $role == 'examiner-secretary' || $role == 'initiator')) {
+                if($this->testingVerification->document_type == 'ka') {
+                    $path = '/amdal' . '/' . $this->testingVerification->id_project . '/uji-berkas-administrasi-ka';
+                } else if($this->testingVerification->document_type == 'rkl-rpl') {
+                    $path = '/amdal' . '/' . $this->testingVerification->id_project . '/uji-berkas-administrasi-andal-rkl-rpl';
+                }
             }
         }
 
         return [
             'testingVerification' => $this->testingVerification,
             'user' => $notifiable,
-            'message' => $message,
+            'message' => $this->getMessage($notifiable),
             'path' => $path,
         ];
+    }
+
+    private function getMessage($notifiable) {
+        $message = '';
+
+        if($this->type == 'pemeriksaan') {
+            if($this->testingVerification->document_type == 'ka') {
+                $message = 'Halo ' . $notifiable->name . ', Formulir Kerangka Acuan dengan nama usaha/kegiatan ' . $this->testingVerification->project->project_title . ' sedang dilakukan pemeriksaan berkas kelengkapan Formulir Kerangka Acuan. Kami akan segera memberikan info selanjutnya.';
+            } else if($this->testingVerification->document_type == 'rkl-rpl') {
+                $message = 'Halo ' . $notifiable->name . ', kegiatan/usaha dengan nama ' . $this->testingVerification->project->project_title . ' sedang dilakukan pemeriksaan berkas administrasi. Kami akan segera memberikan info selanjutnya.';
+            }
+        } else if($this->type == 'selesai') {
+            if($this->testingVerification->is_complete) {
+                if($this->testingVerification->document_type == 'ka') {
+                    $message = 'Selamat ' . $notifiable->name . ', berkas Formulir Kerangka Acuan dengan nama ' . $this->testingVerification->project->project_title . ' anda sudah sesuai.';
+                } else if($this->testingVerification->document_type == 'rkl-rpl') {
+                    $message = 'Selamat ' . $notifiable->name . ', Dokumen Andal dan RKL RPL dengan nama kegiatan/usaha ' . $this->testingVerification->project->project_title . ' anda sudah sesuai.';
+                }
+            } else {
+                if($this->testingVerification->document_type == 'ka') {
+                    $message = 'Halo ' . $notifiable->name . ', mohon maaf setelah hasil rapat dapat kami simpulkan bahwa Formulir Kerangka Acuan dengan nama ' . $this->testingVerification->project->project_title . ' anda akan dikembalikan karena berkas Formulir Kerangka Acuan anda tidak lengkap / salah, silahkan lakukan perbaikan dan kirim kembali, terimakasih.';
+                } else if($this->testingVerification->document_type == 'rkl-rpl') {
+                    $message = 'Halo ' . $notifiable->name . ', mohon maaf setelah hasil rapat dapat kami simpulkan bahwa Dokumen Andal dan RKL RPL dengan nama kegiatan/usaha ' . $this->testingVerification->project->project_title . ' anda dikembalikan karena berkas Dokumen Andal dan RKL RPL anda tidak lengkap / salah, silahkan lakukan perbaikan dan kirim kembali, terimakasih.';
+                }
+            }
+        }
+
+        return $message;
     }
 }
