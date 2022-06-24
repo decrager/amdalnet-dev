@@ -212,6 +212,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        // return $request;
         $request['listSubProject'] = json_decode($request['listSubProject']);
         $request['address'] = json_decode($request['address']);
         $request['listKewenangan'] = json_decode($request['listKewenangan']);
@@ -289,7 +290,7 @@ class ProjectController extends Controller
             $project = Project::create([
                 // 'biz_type' => $data['biz_type'],
                 'project_title' => $data['project_title'],
-                'scale' => floatval($data['scale']),
+                'scale' => floatval(str_replace(',', '.', str_replace('.', '', $data['scale']))),
                 'scale_unit' => $data['scale_unit'],
                 'project_type' => $data['project_type'],
                 'sector' => $data['sector'],
@@ -501,7 +502,7 @@ class ProjectController extends Controller
                     'biz_type' => gettype($subPro->biz_type) !== 'string' ? $subPro->biz_type : 0,
                     'id_project' => $project->id,
                     'sector' => gettype($subPro->sector) !== 'string'? $subPro->sector : 0,
-                    'scale' => floatval($subPro->scale),
+                    'scale' => floatval(str_replace(',', '.', str_replace('.', '', $subPro->scale))),
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
                     'biz_name' => isset($business) ? $business->value : $subPro->biz_name,
                     'sector_name' => isset($sector) ? $sector->value : $subPro->sector_name,
@@ -511,7 +512,7 @@ class ProjectController extends Controller
                 foreach ($subPro->listSubProjectParams as $subProParam) {
                     SubProjectParam::create([
                         'param' => $subProParam->param,
-                        'scale' => floatval($subProParam->scale),
+                        'scale' => floatval(str_replace(',', '.', str_replace('.', '', $subProParam->scale))),
                         'scale_unit' => isset($subProParam->scale_unit) ? $subProParam->scale_unit : '',
                         'result' => $subProParam->result,
                         'id_sub_project' => $createdSubPro->id,
