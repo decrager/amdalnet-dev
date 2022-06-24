@@ -111,7 +111,7 @@
             </div>
           </div>
           <el-form-item>
-            <el-button type="primary" @click="onFormulatorSubmit">
+            <el-button type="primary" @click="checkFormulatorSubmit">
               Ubah
             </el-button>
           </el-form-item>
@@ -336,6 +336,15 @@ export default {
           console.log(error);
           this.updating = false;
         });
+    },
+    checkFormulatorSubmit() {
+      this.$confirm('apakah anda yakin akan menyimpan data ?', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Batal',
+        type: 'warning',
+      }).then(() => {
+        this.onFormulatorSubmit();
+      }).catch(() => {});
     },
     async onFormulatorSubmit(){
       this.updating = true;
