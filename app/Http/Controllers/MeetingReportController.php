@@ -16,6 +16,7 @@ use App\Entity\ProjectStage;
 use App\Entity\TestingMeeting;
 use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
+use App\Notifications\AndalNotification;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
@@ -102,10 +103,12 @@ class MeetingReportController extends Controller
 
             // === NOTIFICATIONS === //
             $receiver = [];
+            $receiver_andal = [];
             // 1. Pemrakarsa
             $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
             if($pemrakarsa_user) {
                 $receiver[] = $pemrakarsa_user;
+                $receiver_andal[] = $pemrakarsa_user;
             }
             // 2. Penyusun
             $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
@@ -116,12 +119,20 @@ class MeetingReportController extends Controller
                     $formulator_user = User::where('email', $ftm->formulator->email)->first();
                     if($formulator_user) {
                        $receiver[] = $formulator_user;
+                       if($ftm->position == 'Ketua' || $ftm->position == 'Anggota') {
+                           $receiver_andal[] = $formulator_user;
+                       }
                     }
                 }
             }
 
             if(count($receiver) > 0) {
                 Notification::send($receiver, new MeetingReportInvitation($meeting_report, 'disetujui'));
+            }
+            
+            // Notification Penyusunan Andal
+            if(count($receiver_andal) > 0) {
+                Notification::send($receiver_andal, new AndalNotification($project));
             }
 
             // === WORKFLOW === //

@@ -17,7 +17,6 @@ class MeetingInvitation extends Notification
     use Queueable;
 
     public $meeting;
-    public $name;
 
     /**
      * Create a new notification instance.
@@ -56,6 +55,8 @@ class MeetingInvitation extends Notification
         $document = '';
         if($this->meeting->document_type == 'ka') {
             $document = 'Formulir Kerangka Acuan';
+        } else if($this->meeting->document_type == 'rkl-rpl') {
+            $document = 'Dokumen Andal dan RKL RPL';
         }
 
         return (new MailMessage)
@@ -80,6 +81,8 @@ class MeetingInvitation extends Notification
         $document = '';
         if($this->meeting->document_type == 'ka') {
             $document = 'Formulir Kerangka Acuan';
+        } else if($this->meeting->document_type == 'rkl-rpl') {
+            $document = 'Dokumen Andal dan RKL RPL';
         }
 
         if($notifiable->roles->first()->name != 'formulator') {

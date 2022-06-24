@@ -7,6 +7,7 @@ use App\Entity\ExpertBankTeamMember;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Formulator;
+use App\Entity\FormulatorTeamMember;
 use App\Entity\ImpactIdentificationClone;
 use App\Entity\Initiator;
 use App\Entity\MeetingReport;
@@ -93,28 +94,28 @@ class MeetReportRKLRPLController extends Controller
             $meeting_report->save();
 
             // === SEND NOTIFICATION === //
-            $project = Project::findOrFail($request->idProject);
-            $user = [];
-            $pemrakarsa = User::where('email', $project->initiator->email)->first();
-            if($pemrakarsa) {
-                $user[] = $pemrakarsa;
-            }
-            $ketua_penyusun = Formulator::whereHas('teamMember', function($q) use($request) {
-                $q->where('position', 'Ketua');
-                $q->whereHas('team', function($query) use($request) {
-                    $query->where('id_project', $request->idProject);
-                });
-            })->first();
-            if($ketua_penyusun) {
-                $user_penyusun = User::where('email', $ketua_penyusun->email)->first();
-                if($user_penyusun) {
-                    $user[] = $user_penyusun;
-                }
-            }
+            // $project = Project::findOrFail($request->idProject);
+            // $user = [];
+            // $pemrakarsa = User::where('email', $project->initiator->email)->first();
+            // if($pemrakarsa) {
+            //     $user[] = $pemrakarsa;
+            // }
+            // $ketua_penyusun = Formulator::whereHas('teamMember', function($q) use($request) {
+            //     $q->where('position', 'Ketua');
+            //     $q->whereHas('team', function($query) use($request) {
+            //         $query->where('id_project', $request->idProject);
+            //     });
+            // })->first();
+            // if($ketua_penyusun) {
+            //     $user_penyusun = User::where('email', $ketua_penyusun->email)->first();
+            //     if($user_penyusun) {
+            //         $user[] = $user_penyusun;
+            //     }
+            // }
 
-            if(count($user) > 0) {
-                Notification::send($user, new AcceptToFeasibilityTest($meeting_report));
-            }
+            // if(count($user) > 0) {
+            //     Notification::send($user, new AcceptToFeasibilityTest($meeting_report));
+            // }
 
             return response()->json(['message' => 'Data sukses disimpan']);
         }
@@ -131,6 +132,30 @@ class MeetReportRKLRPLController extends Controller
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
                 $meeting_report->file = $name;
                 $meeting_report->save();
+
+                // === NOTIFICATIONS === //
+                $receiver = [];
+                // 1. Pemrakarsa
+                $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+                if($pemrakarsa_user) {
+                    $receiver[] = $pemrakarsa_user;
+                }
+                // 2. Penyusun
+                $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                    $q->where('id_project', $project->id);
+                })->get();
+                foreach($formulator_team_members as $ftm) {
+                    if($ftm->formulator) {
+                        $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                        if($formulator_user) {
+                            $receiver[] = $formulator_user;
+                        }
+                    }
+                }
+
+                if(count($receiver) > 0) {
+                    Notification::send($receiver, new MeetingReportInvitation($meeting_report, 'disetujui'));
+                }
 
                 // === WORKFLOW === //
                 if($document_type == 'ukl-upl') {
