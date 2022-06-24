@@ -24,6 +24,11 @@ class FormulatorController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->byUserId) {
+            $formulator = Formulator::where('email', $request->email)->first();
+            return $formulator;
+        }
+
         if($request->avatar) {
             $user = User::where('email', $request->email)->first();
             if($user) {
@@ -81,6 +86,23 @@ class FormulatorController extends Controller
     public function store(Request $request)
     {
         if($request->sertifikasi) {
+            // CHECK EXIST NO REGISTRATION
+            $error = [];
+            $check_reg_no = Formulator::where([['id', '!=', $request->id],['reg_no', $request->reg_no]])->count();
+            if($check_reg_no > 0) {
+                $error['error_reg_no'] = true;
+            }
+
+            // CHECK EXIST NO SERTIFIKAT
+            $check_cert_no = Formulator::where([['id', '!=', $request->id],['cert_no', $request->cert_no]])->count();
+            if($check_cert_no > 0) {
+                $error['error_cert_no'] = true;
+            }
+
+            if(count($error) > 0) {
+                return response()->json($error);
+            }
+
             $formulator = Formulator::findOrFail($request->id);
 
             if ($request->hasFile('file_sertifikat')) {
@@ -91,6 +113,8 @@ class FormulatorController extends Controller
                 $formulator->cert_file = $fileSertifikatName;
             }
 
+            $formulator->reg_no = $request->reg_no;
+            $formulator->cert_no = $request->cert_no;
             $formulator->membership_status = $request->membership_status;
             $formulator->date_start = $request->date_start;
             $formulator->date_end =  Carbon::createFromDate($request->date_start)->addYears(3);
@@ -259,6 +283,25 @@ class FormulatorController extends Controller
             return response()->json(['error' => 'formulator not found'], 404);
         }
 
+        if($request->profile) {
+            if($request->cv_file) {
+                $file = $this->base64ToFile($request->cv_file);
+                $file_name = 'penyusun/' . uniqid() . '.' . $file['extension'];
+                Storage::disk('public')->put($file_name, $file['file']);
+                
+                if($formulator->cv_file) {
+                    $old_file = str_replace(Storage::url(''), '', $formulator->cv_file);
+                    Storage::disk('public')->delete($old_file);
+                }
+
+                $formulator->cv_file = $file_name;
+            }
+
+            $formulator->expertise = $request->expertise;
+            $formulator->save();
+            return response()->json(['message' => 'success']);
+        }
+
         // $validator = Validator::make(
         //     $request->all(),
         //     [
@@ -331,5 +374,23 @@ class FormulatorController extends Controller
             ->get();
 
         return response()->json($getData);
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }
