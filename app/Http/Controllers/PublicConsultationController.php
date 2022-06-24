@@ -100,7 +100,7 @@ class PublicConsultationController extends Controller
                     'address' => $validated['address'],
                     'positive_feedback_summary' => $validated['positive_feedback_summary'],
                     'negative_feedback_summary' => $validated['negative_feedback_summary'],
-                    'is_publish' => $validated['is_publish'],
+                    'is_publish' => $validated['is_publish'] == 'true' ? true : false,
                 ]);
             } else {
                 $parent = PublicConsultation::findOrFail($request->all()['id']);
@@ -111,8 +111,26 @@ class PublicConsultationController extends Controller
                 $parent->address = $validated['address'];
                 $parent->positive_feedback_summary = $validated['positive_feedback_summary'];
                 $parent->negative_feedback_summary = $validated['negative_feedback_summary'];
-                $parent->is_publish = $validated['is_publish'];
+                $parent->is_publish = $validated['is_publish'] == 'true' ? true : false;
                 $parent->save();
+
+            }
+
+            // get project to set announcement set
+            if($validated['is_publish'] == 'true') {
+                $project = Project::find($validated['project_id']);
+                if($project){
+                    switch ($project->marking) {
+                        case 'announcement':
+                            $project->workflow_apply('complete-announcement');
+                            $project->save();
+                            break;
+                        case 'formulator-assignment':
+                            $project->applyWorkFlowTransition('complete-announcement', 'announcement', 'announcement-completed');
+                            break;
+                    }
+                }
+
             }
 
             $metadatas = null;
@@ -221,7 +239,7 @@ class PublicConsultationController extends Controller
             for($i = 0; $i < count($metadatas); $i++){
                 //upload file
                 $metadata = $metadatas[$i];
-                
+
                 if($request->data_type !== 'new') {
                     $key = str_replace(' ', '_', strtolower($metadata->doc_type));
                     if(array_key_exists($key, $doc)) {
@@ -235,7 +253,7 @@ class PublicConsultationController extends Controller
                 $filepath = '';
                 try {
                     // Dokumen Lampiran
-                    $file_field_name = sprintf('doc_%s', 
+                    $file_field_name = sprintf('doc_%s',
                                         str_replace(' ', '_', strtolower($metadata->doc_type)));
                     $file = $request->file($file_field_name);
 

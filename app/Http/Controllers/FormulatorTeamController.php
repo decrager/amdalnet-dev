@@ -50,12 +50,32 @@ class FormulatorTeamController extends Controller
                                 ->get();
         }
 
+        if($request->type && $request->type == 'tenaga-ahli') {
+            $id_project = $request->idProject;
+            return Formulator::select('id', 'name', 'expertise', 'cv_file', 'cert_file', 'reg_no', 'membership_status', 'date_start', 'date_end')
+                                ->where('membership_status', 'TA')
+                                ->orderBy('name')
+                                ->get();
+        }
+
         if($request->type && $request->type == 'project') {
             $project = Project::findOrFail($request->idProject);
+            $sk_letter = null;
+            if(!$project->team_type == 'mandiri') {
+                $team = FormulatorTeam::where('id_project', $project->id)->first();
+                if($team) {
+                    if($team->evidence_letter) {
+                        $arr_exp = explode('/', $team->evidence_letter);
+                        $sk_letter = $arr_exp[count($arr_exp) - 1];
+                    }
+                }
+            }
+
             return [
                 'name' => 'Tim Penyusun ' . $project->project_title,
                 'type_team' => $project->type_formulator_team,
-                'id_lpjp' => $project->id_lpjp
+                'id_lpjp' => $project->id_lpjp,
+                'sk_letter' => $sk_letter,
             ];
         }
 
@@ -67,9 +87,15 @@ class FormulatorTeamController extends Controller
         if($request->type && $request->type == 'tim-penyusun') {
             $id_project = $request->idProject;
             $member = [];
+            $pemrakarsa = $request->pemrakarsa;
             $formulatorTeamMember = FormulatorTeamMember::whereHas('team', function($q) use($id_project) {
                 $q->where('id_project', $id_project);
-            })->where([['id_formulator', '!=', null],['id_expert', null]])->get();
+            })->where([['id_formulator', '!=', null],['id_expert', null]])
+            ->where(function($q) use($pemrakarsa) {
+                if($pemrakarsa) {
+                    $q->whereNotIn('position', ['Tenaga Ahli', 'Asisten']);
+                }
+            })->get();
 
             $num = 1;
             foreach($formulatorTeamMember as $f) {
@@ -99,18 +125,19 @@ class FormulatorTeamController extends Controller
             $member = [];
             $formulatorTeamMember = FormulatorTeamMember::whereHas('team', function($q) use($id_project) {
                 $q->where('id_project', $id_project);
-            })->where([['id_formulator', null],['id_expert', '!=', null]])->get();
+            })->where('id_formulator', '!=',  null)->whereIn('position', ['Tenaga Ahli','Asisten'])->get();
 
             $num = 1;
             foreach($formulatorTeamMember as $f) {
                 $member[] = [
                     'num' => $num,
                     'id' => $f->id,
-                    'name' => $f->expert->name,
+                    'name' => $f->formulator->name,
+                    'id_formulator' => $f->id_formulator,
                     'type' => 'update',
-                    'status' => $f->expert->status,
-                    'expertise' => $f->expert->expertise,
-                    'cv' => $f->expert->cv
+                    'position' => $f->position,
+                    'expertise' => $f->formulator->expertise,
+                    'cv_file' => $f->formulator->cv_file
                 ];
 
                 $num++;
@@ -221,8 +248,23 @@ class FormulatorTeamController extends Controller
                 $team->id_team = uniqid();
                 $team->name = 'Tim Penyusun ' . $project->project_title;
                 $team->id_project = $params['idProject'];
-                $team->save();
+            } else {
+                if($request->skFile) {
+                    if($team->evidence_letter) {
+                        $file_name = str_replace(Storage::url(''), '', $team->evidence_letter);
+                        Storage::disk('public')->delete($file_name);
+                    }
+                }
             }
+
+            if($request->skFile) {
+                $fileSK = $this->base64ToFile($request->skFile);
+                $skName = 'formulator-team/' . uniqid() . '.' . $fileSK['extension'];
+                Storage::disk('public')->put($skName, $fileSK['file']);
+                $team->evidence_letter = $skName;
+            }
+
+            $team->save();
 
             // create team members
             $members = json_decode($request->members, true);
@@ -253,38 +295,29 @@ class FormulatorTeamController extends Controller
 
             // create team members ahli
             $membersAhli = json_decode($request->membersAhli, true);
-            for($a = 0; $a < count($membersAhli); $a++) {
+            for ($i = 0; $i < count($membersAhli); $i++) {
                 $teamMember = null;
-                $ahli = null;
-                if($membersAhli[$a]['type'] == 'new') {
-                    $ahli = new EnvironmentalExpert();
+                if($membersAhli[$i]['type'] == 'new') {
+                    $teamMember = new FormulatorTeamMember();
+                    $teamMember->id_formulator_team = $team->id;
+                    $teamMember->id_formulator = $membersAhli[$i]['id_formulator'];
                 } else {
-                    $teamMember = FormulatorTeamMember::findOrFail($membersAhli[$a]['id']);
-                    $ahli = EnvironmentalExpert::findOrFail($teamMember->id_expert);
+                    $teamMember = FormulatorTeamMember::findOrFail($membersAhli[$i]['id']);
                 }
 
-                $ahli->name = $membersAhli[$a]['name'];
-                $ahli->status = $membersAhli[$a]['status'];
-                $ahli->expertise = $membersAhli[$a]['expertise'];
+                $teamMember->position = $membersAhli[$i]['position'];
+                $teamMember->save();
 
-                // Upload CV
-                $fileRequestName = 'file-' . $a;
-                if($request->hasFile($fileRequestName)) {
-                    $file = $request->file($fileRequestName);
-                    $name = 'cv/' . uniqid() . '.' . $file->extension();
-                    $file->storePubliclyAs('public', $name);
+                // add to list notification receiver
+                $formulator = Formulator::find($membersAhli[$i]['id']);
 
-                    $ahli->cv = $name;
-               }
+                if($formulator){
+                    $user = User::where('email', $formulator->email)->first();
 
-               $ahli->save();
-
-               if($membersAhli[$a]['type'] == 'new') {
-                   $teamMember = new FormulatorTeamMember();
-                   $teamMember->id_formulator_team = $team->id;
-                   $teamMember->id_expert = $ahli->id;
-                   $teamMember->save();
-               }
+                    if($user) {
+                        array_push($receiver, $user);
+                    }
+                }
             }
 
             // Delete Team Penyusun
@@ -355,5 +388,23 @@ class FormulatorTeamController extends Controller
     {
         $getData = DB::table('formulator_teams')->get();
         return response()->json($getData);
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }

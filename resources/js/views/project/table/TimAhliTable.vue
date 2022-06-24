@@ -1,6 +1,6 @@
 <template>
   <el-table
-    v-loading="loading"
+    v-loading="loading || loadingAhli"
     :data="list"
     fit
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
@@ -15,16 +15,17 @@
       <template slot-scope="scope">
         <el-select
           v-if="teamtype === 'mandiri'"
-          v-model="list[scope.$index].name"
+          v-model="list[scope.$index].id_formulator"
           filterable
-          placeholder="Nama Tenaga Ahli"
+          placeholder="Pilih Tenaga Ahli"
           style="width: 100%"
+          @change="handleChangeName($event, scope.$index)"
         >
           <el-option
             v-for="item in ahli"
-            :key="item.value"
-            :label="item.value"
-            :value="item.value"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           />
         </el-select>
         <span v-else>{{ scope.row.name }}</span>
@@ -35,73 +36,40 @@
       <template slot-scope="scope">
         <el-select
           v-if="teamtype === 'mandiri'"
-          v-model="list[scope.$index].status"
+          v-model="list[scope.$index].position"
           placeholder="Posisi"
           style="width: 100%"
         >
           <el-option
-            v-for="item in status"
+            v-for="item in position"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           />
         </el-select>
-        <span v-else>{{ scope.row.status }}</span>
+        <span v-else>{{ scope.row.position }}</span>
       </template>
     </el-table-column>
 
     <el-table-column label="Keahlian">
       <template slot-scope="scope">
-        <el-select
-          v-if="teamtype === 'mandiri'"
-          v-model="list[scope.$index].expertise"
-          filterable
-          placeholder="Keahlian"
-          style="width: 100%"
-        >
-          <el-option
-            v-for="item in keahlian"
-            :key="item.value"
-            :label="item.value"
-            :value="item.value"
-          />
-        </el-select>
-        <span v-else>{{ scope.row.expertise }}</span>
+        <span>{{ scope.row.expertise }}</span>
       </template>
     </el-table-column>
 
     <el-table-column label="File">
       <template slot-scope="scope">
-        <el-upload
-          v-if="teamtype === 'mandiri'"
-          class="upload-demo"
-          :auto-upload="false"
-          :on-change="handleUploadChange"
-          action="#"
-          :show-file-list="false"
-        >
-          <el-button
-            type="text"
-            size="medium"
-            icon="el-icon-upload"
-            @click="fileNum = scope.row.num"
-          >
-            Upload
-          </el-button>
-          <span v-if="teamtype === 'mandiri'" style="padding-left: 10px">{{
-            list[scope.$index].file_name
-          }}</span>
-        </el-upload>
         <el-button
-          v-if="scope.row.cv && scope.row.type === 'update'"
+          v-if="scope.row.cv_file"
           type="text"
           size="medium"
           icon="el-icon-download"
           style="color: blue"
-          @click.prevent="download(scope.row.cv)"
+          @click.prevent="download(scope.row.cv_file)"
         >
           CV
         </el-button>
+        <span v-else>-</span>
       </template>
     </el-table-column>
 
@@ -120,6 +88,9 @@
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const formulatorTeamsResource = new Resource('formulator-teams');
+
 export default {
   name: 'TeamAhliTable',
   props: {
@@ -145,7 +116,7 @@ export default {
     return {
       editId: null,
       currentExpert: {},
-      status: [
+      position: [
         {
           value: 'Tenaga Ahli',
           label: 'Tenaga Ahli',
@@ -158,75 +129,38 @@ export default {
       fileUpload: null,
       fileName: null,
       fileNum: null,
-      ahli: [
-        {
-          value: 'Prof. Dr. Ir. Arief Sabdo Yuwono, M.Sc',
-        },
-        {
-          value: 'Nanik Irawati, M.Si',
-        },
-        {
-          value: 'Selamet Kusdaryanto, SP, M.Si',
-        },
-        {
-          value: 'Berry Lira Rafiu S.Hut',
-        },
-        {
-          value: 'Rudi Sudarjat, S.Si',
-        },
-        {
-          value: 'Dian Anggraini, M.Si',
-        },
-        {
-          value: 'Wanasherpa, M.T',
-        },
-        {
-          value: 'Dhama Susanthi, M.Si',
-        },
-        {
-          value: 'Arif Nurcahyanto, S.Pi',
-        },
-        {
-          value: 'Ria Andriani, M.Si.',
-        },
-      ],
-      keahlian: [
-        {
-          value: 'Kualitas Udara',
-        },
-        {
-          value: 'Kualitas Air',
-        },
-        {
-          value: 'Fisika Kimia Perairan',
-        },
-        {
-          value: 'Tanah dan Hidrologi',
-        },
-        {
-          value: 'Flora Fauna',
-        },
-        {
-          value: 'GIS/Mapping',
-        },
-        {
-          value: 'Perencanaan Tata Ruang',
-        },
-        {
-          value: 'Geologi',
-        },
-        {
-          value: 'Biologi Teresterial',
-        },
-        {
-          value: 'Biologi Perairan',
-        },
-      ],
+      ahli: [],
+      loadingAhli: false,
     };
+  },
+  created() {
+    this.getTenagaAhli();
   },
   methods: {
     download(url) {
       window.open(url, '_blank').focus();
+    },
+    async getTenagaAhli() {
+      this.loadingAhli = true;
+      this.ahli = await formulatorTeamsResource.list({
+        type: 'tenaga-ahli',
+        idProject: this.$route.params.id,
+      });
+      this.loadingAhli = false;
+    },
+    handleChangeName(id, idx) {
+      const check = this.list.filter((x) => x.id_formulator === id);
+      if (check.length > 1) {
+        this.$alert('Tenaga Ahli Tersebut Sudah Ditambahkan', '', {
+          center: true,
+        });
+        this.list[idx].id_formulator = null;
+        return false;
+      }
+
+      const formulator = this.ahli.find((x) => x.id === id);
+      this.list[idx].expertise = formulator.expertise;
+      this.list[idx].cv_file = formulator.cv_file;
     },
     handleEditForm(id) {
       this.editId = id;

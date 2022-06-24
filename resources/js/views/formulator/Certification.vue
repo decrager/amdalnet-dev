@@ -62,6 +62,16 @@
           style="margin-top: 40px; padding-left: 16px; padding-right: 16px"
         >
           <el-col :sm="24" :md="12">
+            <el-form-item label="No Registrasi" prop="regNo">
+              <el-input v-model="formulator.reg_no" name="regNo" />
+            </el-form-item>
+          </el-col>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="No Sertifikat" prop="certNo">
+              <el-input v-model="formulator.cert_no" name="certNo" />
+            </el-form-item>
+          </el-col>
+          <el-col :sm="24" :md="12">
             <el-form-item label="Sertifikasi" prop="membership_status">
               <el-select
                 v-model="formulator.membership_status"
@@ -173,6 +183,20 @@ export default {
         callback();
       }
     };
+    const validateRegNo = (rule, value, callback) => {
+      if (!this.formulator.reg_no) {
+        callback(new Error('No Registrasi Wajib Diisi'));
+      } else {
+        callback();
+      }
+    };
+    const validateCertNo = (rule, value, callback) => {
+      if (!this.formulator.cert_no) {
+        callback(new Error('No Sertifikat Wajib Diisi'));
+      } else {
+        callback();
+      }
+    };
 
     return {
       loading: false,
@@ -261,6 +285,20 @@ export default {
             message: 'Sertifikasi Wajib Dipilih',
           },
         ],
+        regNo: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: validateRegNo,
+          },
+        ],
+        certNo: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: validateCertNo,
+          },
+        ],
       },
     };
   },
@@ -303,18 +341,36 @@ export default {
       formData.append('sertifikasi', 'true');
       formData.append('id', this.$route.params.id);
       formData.append('avatarFile', this.formulator.avatarFile);
+      formData.append('reg_no', this.formulator.reg_no);
+      formData.append('cert_no', this.formulator.cert_no);
       formData.append('membership_status', this.formulator.membership_status);
       formData.append('file_sertifikat', this.formulator.file_sertifikat);
       formData.append('date_start', this.formulator.date_start);
       formData.append('expertise', this.formulator.expertise);
 
-      await formulatorResource.store(formData);
-      this.$message({
-        type: 'success',
-        message: 'Penyusun Berhasil di Update',
-        duration: 5 * 1000,
-      });
-      this.$router.push({ name: 'formulator' });
+      const response = await formulatorResource.store(formData);
+      if (response.message) {
+        this.$message({
+          type: 'success',
+          message: 'Penyusun Berhasil di Update',
+          duration: 5 * 1000,
+        });
+        this.$router.push({ name: 'formulator' });
+      } else if (response.error_reg_no) {
+        this.$message({
+          message: 'No Registrasi Sudah Terdaftar',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.loadingSubmit = false;
+      } else if (response.error_cert_no) {
+        this.$message({
+          message: 'No Sertifikat Sudah Terdaftar',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.loadingSubmit = false;
+      }
     },
     handleUploadAvatar(file) {
       if (file.raw.size > 1048576) {

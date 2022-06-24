@@ -7,6 +7,7 @@ use App\Entity\EnvManageDoc;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\FormulatorTeam;
+use App\Entity\FormulatorTeamMember;
 use App\Entity\KaForm;
 use App\Entity\Lpjp;
 use App\Entity\Project;
@@ -15,12 +16,16 @@ use App\Entity\ProjectMapAttachment;
 use App\Entity\PublicConsultation;
 use App\Entity\TestingMeeting;
 use App\Entity\TestingVerification;
+use App\Entity\TukProject;
+use App\Laravue\Models\User;
+use App\Notifications\TestingVerificationNotification;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class TestVerifRKLRPLController extends Controller
@@ -158,6 +163,57 @@ class TestVerifRKLRPLController extends Controller
             $form->save();
         }
 
+        // === NOTIFICATIONS === //
+        // A. PEMERIKSAAN
+        if($data['type'] == 'new') {
+            $receiver = [];
+            // 1. Pemrakarsa
+            $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+            if($pemrakarsa_user) {
+                $receiver[] = $pemrakarsa_user;
+            }
+
+            // 2.Validator Administasi/PJM
+            $tuk_member = TukProject::where('id_project', $project->id)->whereIn('role', ['valadm','pjm'])->get();
+            foreach($tuk_member as $tm) {
+                $tuk_user = User::find($tm->id_user);
+                if($tuk_user) {
+                   $receiver[] = $tuk_user;
+                }
+            }
+
+            if(count($receiver) > 0) {
+                Notification::send($receiver,new TestingVerificationNotification($verification, 'pemeriksaan'));
+            }
+        }
+
+        // B. PENILAIAN SELESAI
+        if($request->complete) {
+            $receiver = [];
+             // 1. Pemrakarsa
+             $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+             if($pemrakarsa_user) {
+                $receiver[] = $pemrakarsa_user;
+             }
+             // 2. Penyusun Non TA
+             $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                $q->where('id_project', $project->id);
+            })->whereIn('position', ['Ketua', 'Anggota'])->get();
+            foreach($formulator_team_members as $ftm) {
+                if($ftm->formulator) {
+                    $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                    if($formulator_user) {
+                        $receiver[] = $formulator_user;
+                    }
+                }
+            }
+
+            if(count($receiver) > 0) {
+                Notification::send($receiver, new TestingVerificationNotification($verification, 'selesai'));
+            }
+
+        }
+
         return response()->json(['message' => 'success']);
     }
 
@@ -287,7 +343,8 @@ class TestVerifRKLRPLController extends Controller
             $mandiri_data = FormulatorTeam::where('id_project', $project->id)->first();
             if($mandiri_data) {
                 $penyusun_mandiri = [
-                    'name' => $mandiri_data->name
+                    'name' => $mandiri_data->name,
+                    'sk_letter' => $mandiri_data->evidence_letter
                 ];
             }
         }

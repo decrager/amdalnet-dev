@@ -108,9 +108,8 @@
             <el-row>
               <el-col :span="2" :xs="12">1.</el-col>
               <el-col :span="12" :xs="12">Berita Acara Pelaksanaan</el-col>
-              <el-col :span="5" :xs="12">
+              <el-col :span="5" :xs="12" class="document_upload">
                 <el-upload
-                  v-if="!baPelDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadBA"
@@ -119,7 +118,14 @@
                 >
                   <el-button size="small" type="primary">Upload</el-button>
                 </el-upload>
-                <el-button v-else size="small" type="primary">Done</el-button>
+              </el-col>
+              <el-col
+                v-if="document_name.ba"
+                :sm="24"
+                :md="24"
+                style="text-align: right"
+              >
+                <small>{{ document_name.ba }}</small>
               </el-col>
             </el-row>
             <el-row>
@@ -129,7 +135,6 @@
               </el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
-                  v-if="!baPenWakDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadBA2"
@@ -138,7 +143,14 @@
                 >
                   <el-button size="small" type="primary">Upload</el-button>
                 </el-upload>
-                <el-button v-else size="small" type="primary">Done</el-button>
+              </el-col>
+              <el-col
+                v-if="document_name.bapwm"
+                :sm="24"
+                :md="24"
+                style="text-align: right"
+              >
+                <small>{{ document_name.bapwm }}</small>
               </el-col>
             </el-row>
             <el-row>
@@ -146,7 +158,6 @@
               <el-col :span="12" :xs="12">Daftar Hadir</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
-                  v-if="!daftarHadirDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadDH"
@@ -155,7 +166,14 @@
                 >
                   <el-button size="small" type="primary">Upload</el-button>
                 </el-upload>
-                <el-button v-else size="small" type="primary">Done</el-button>
+              </el-col>
+              <el-col
+                v-if="document_name.dh"
+                :sm="24"
+                :md="24"
+                style="text-align: right"
+              >
+                <small>{{ document_name.dh }}</small>
               </el-col>
             </el-row>
             <el-row>
@@ -163,7 +181,6 @@
               <el-col :span="12" :xs="12">Pengumuman</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
-                  v-if="!pengumumanDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadP"
@@ -172,7 +189,14 @@
                 >
                   <el-button size="small" type="primary">Upload</el-button>
                 </el-upload>
-                <el-button v-else size="small" type="primary">Done</el-button>
+              </el-col>
+              <el-col
+                v-if="document_name.pe"
+                :sm="24"
+                :md="24"
+                style="text-align: right"
+              >
+                <small>{{ document_name.pe }}</small>
               </el-col>
             </el-row>
             <el-row>
@@ -180,7 +204,6 @@
               <el-col :span="12" :xs="12">Undangan</el-col>
               <el-col :span="5" :xs="12">
                 <el-upload
-                  v-if="!undanganDone"
                   class="upload-demo"
                   :auto-upload="false"
                   :on-change="handleUploadU"
@@ -189,7 +212,14 @@
                 >
                   <el-button size="small" type="primary">Upload</el-button>
                 </el-upload>
-                <el-button v-else size="small" type="primary">Done</el-button>
+              </el-col>
+              <el-col
+                v-if="document_name.un"
+                :sm="24"
+                :md="24"
+                style="text-align: right"
+              >
+                <small>{{ document_name.un }}</small>
               </el-col>
             </el-row>
           </el-form-item>
@@ -203,14 +233,14 @@
         type="warning"
         @click="checkSubmit(false)"
       >
-        Simpan Sementara
+        Simpan
       </el-button>
       <el-button
         :loading="loading_submit"
         type="primary"
         @click="checkSubmit(true)"
       >
-        Simpan & Lanjutkan
+        Submit
       </el-button>
     </div>
   </div>
@@ -265,6 +295,13 @@ export default {
       doc_photo: [],
       deleted_photo: [],
       loading_submit: false,
+      document_name: {
+        ba: null,
+        bapwm: null,
+        dh: null,
+        pe: null,
+        un: null,
+      },
     };
   },
   created() {},
@@ -277,7 +314,6 @@ export default {
   },
   methods: {
     async getPublicConsultation() {
-      console.log('aa', this.currentProject);
       const data = await publicConsultations.list({
         idProject: this.currentProject.id,
       });
@@ -291,24 +327,43 @@ export default {
       this.postForm.negative_feedback_summary = data.negative_feedback_summary;
       this.postForm.is_publish = data.is_publish;
 
-      this.doc_photo = data.docs
-        .filter((doc) => {
+      if (data.docs) {
+        data.docs.forEach((doc) => {
           const docJson = JSON.parse(doc.doc_json);
-          if (docJson.doc_type === 'Foto Dokumentasi') {
-            return true;
+          if (docJson.doc_type === 'Berita Acara Pelaksanaan') {
+            this.document_name.ba = docJson.original_filename;
+          } else if (
+            docJson.doc_type === 'Berita Acara Penunjukan Wakil Masyarakat'
+          ) {
+            this.document_name.bapwm = docJson.original_filename;
+          } else if (docJson.doc_type === 'Daftar Hadir') {
+            this.document_name.dh = docJson.original_filename;
+          } else if (docJson.doc_type === 'Pengumuman') {
+            this.document_name.pe = docJson.original_filename;
+          } else if (docJson.doc_type === 'Undangan') {
+            this.document_name.un = docJson.original_filename;
           }
-
-          return false;
-        })
-        .map((doc, idx) => {
-          const docJson = JSON.parse(doc.doc_json);
-
-          return {
-            id: doc.id,
-            filepath: docJson.filepath,
-            name: `Foto Dokumentasi ${idx + 1}`,
-          };
         });
+
+        this.doc_photo = data.docs
+          .filter((doc) => {
+            const docJson = JSON.parse(doc.doc_json);
+            if (docJson.doc_type === 'Foto Dokumentasi') {
+              return true;
+            }
+
+            return false;
+          })
+          .map((doc, idx) => {
+            const docJson = JSON.parse(doc.doc_json);
+
+            return {
+              id: doc.id,
+              filepath: docJson.filepath,
+              name: `Foto Dokumentasi ${idx + 1}`,
+            };
+          });
+      }
     },
     async getProjectDetail(annId) {
       const data = await announcementResource.get(annId);
@@ -384,7 +439,10 @@ export default {
       formData.append('doc_daftar_hadir', this.postForm.doc_daftar_hadir);
       formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
       formData.append('doc_undangan', this.postForm.doc_undangan);
-      formData.append('is_publish', this.postForm.is_publish);
+      formData.append(
+        'is_publish',
+        this.postForm.is_publish ? 'true' : 'false'
+      );
       formData.append('deleted_photo', JSON.stringify(this.deleted_photo));
 
       for (let i = 0; i < this.postForm.doc_photo_files.length; i++) {
@@ -426,6 +484,10 @@ export default {
               isPublish: this.postForm.is_publish,
             });
             this.loading_submit = false;
+            this.postForm.doc_photo_files = [];
+            this.postForm.doc_photo_metadatas = [];
+            this.postForm.doc_files = [];
+            this.postForm.doc_metadatas = [];
           });
         })
         .catch((error) => {
@@ -460,40 +522,90 @@ export default {
       };
     },
     handleUploadBA(file, fileList) {
+      file.doc_type = 'Berita Acara Pelaksanaan';
+      this.postForm.doc_files = this.postForm.doc_files.filter(
+        (d) => d.doc_type !== file.doc_type
+      );
+
       this.postForm.doc_files.push(file);
+
+      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(
+        (x) => x.doc_type !== 'Berita Acara Pelaksanaan'
+      );
+
       this.postForm.doc_metadatas.push(
         this.createDocJson('Berita Acara Pelaksanaan', file)
       );
       this.postForm.doc_ba_pelaksanaan = file.raw;
-      this.baPelDone = true;
+      this.document_name.ba = file.name;
     },
     handleUploadBA2(file, fileList) {
+      file.doc_type = 'Berita Acara Penunjukan Wakil Masyarakat';
+      this.postForm.doc_files = this.postForm.doc_files.filter(
+        (d) => d.doc_type !== file.doc_type
+      );
+
       this.postForm.doc_files.push(file);
+
+      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(
+        (x) => x.doc_type !== 'Berita Acara Penunjukan Wakil Masyarakat'
+      );
+
       this.postForm.doc_metadatas.push(
         this.createDocJson('Berita Acara Penunjukan Wakil Masyarakat', file)
       );
       this.postForm.doc_ba_penunjukan_wakil_masyarakat = file.raw;
-      this.baPenWakDone = true;
+      this.document_name.bapwm = file.name;
     },
     handleUploadDH(file, fileList) {
+      file.doc_type = 'Daftar Hadir';
+      this.postForm.doc_files = this.postForm.doc_files.filter(
+        (d) => d.doc_type !== file.doc_type
+      );
+
       this.postForm.doc_files.push(file);
+
+      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(
+        (x) => x.doc_type !== 'Daftar Hadir'
+      );
+
       this.postForm.doc_metadatas.push(
         this.createDocJson('Daftar Hadir', file)
       );
       this.postForm.doc_daftar_hadir = file.raw;
-      this.daftarHadirDone = true;
+      this.document_name.dh = file.name;
     },
     handleUploadP(file, fileList) {
+      file.doc_type = 'Pengumuman';
+      this.postForm.doc_files = this.postForm.doc_files.filter(
+        (d) => d.doc_type !== file.doc_type
+      );
+
       this.postForm.doc_files.push(file);
+
+      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(
+        (x) => x.doc_type !== 'Pengumuman'
+      );
+
       this.postForm.doc_metadatas.push(this.createDocJson('Pengumuman', file));
       this.postForm.doc_pengumuman = file.raw;
-      this.pengumumanDone = true;
+      this.document_name.pe = file.name;
     },
     handleUploadU(file, fileList) {
+      file.doc_type = 'Undangan';
+      this.postForm.doc_files = this.postForm.doc_files.filter(
+        (d) => d.doc_type !== file.doc_type
+      );
+
       this.postForm.doc_files.push(file);
+
+      this.postForm.doc_metadatas = this.postForm.doc_metadatas.filter(
+        (x) => x.doc_type !== 'Undangan'
+      );
+
       this.postForm.doc_metadatas.push(this.createDocJson('Undangan', file));
       this.postForm.doc_undangan = file.raw;
-      this.undanganDone = true;
+      this.document_name.un = file.name;
     },
     deleteDocPhoto(id) {
       this.doc_photo = [...this.doc_photo].filter((doc) => doc.id !== id);
@@ -510,7 +622,8 @@ export default {
 .photo-link:hover {
   text-decoration: underline;
 }
-.photo-list {
+.photo-list,
+.document_upload {
   display: flex;
   align-items: center;
   justify-content: space-between !important;

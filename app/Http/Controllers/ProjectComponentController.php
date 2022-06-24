@@ -143,19 +143,38 @@ class ProjectComponentController extends Controller
                 // Workflow Amdal: drafting
                 $project = Project::where('id', $pc->id_project)->first();
                 if($project){
-                    if($pc->is_andal){
-                        if($project->marking == 'amdal.form-ka-ba-signed'){
-                            $project->workflow_apply('draft-amdal-andal');
-                            $project->save();
-                        }
-                    }else {
-                        if($project->marking == 'announcement-completed'){
-                            $project->workflow_apply('draft-amdal-form-ka');
-                            $project->save();
-                        }
+                    switch ($project->required_doc) {
+                        case 'AMDAL':
+                            switch($project->marking){
+                                case 'announcement-completed':
+                                    $project->workflow_apply('draft-amdal-form-ka');
+                                    $project->save();
+                                    break;
+                                case 'amdal.form-ka-ba-signed':
+                                    $project->workflow_apply('draft-amdal-andal');
+                                    $project->save();
+                                    break;
+                                case 'formulator-assignment':
+                                    $project->applyWorkFlowTransition('draft-amdal-form-ka', 'announcement-completed', 'amdal.form-ka-drafting');
+                                    break;
+                                default:
+                            }
+                            break;
+                        case 'UKL-UPL':
+                            switch($project->marking){
+                                case 'announcement-completed':
+                                    $project->workflow_apply('fill-ukupl-form');
+                                    $project->save();
+                                    break;
+                                case 'formulator-assignment':
+                                    $project->applyWorkFlowTransition('fill-ukupl-form', 'announcement-completed', 'uklupl-mt.form');
+                                    break;
+                                default:
+                            }
+                            break;
+                        default:
                     }
                 }
-
                 return response()->json([
                     'code' => 200,
                     'data' =>  $pc

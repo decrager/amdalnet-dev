@@ -10,6 +10,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use Illuminate\Support\Facades\Auth;
 
 class Project extends Model implements Auditable
 {
@@ -53,7 +54,7 @@ class Project extends Model implements Auditable
     // ];
 
     protected $guarded = [];
-    
+
     protected $appends = ['filling_date', 'submission_deadline', 'rkl_rpl_document', 'ukl_upl_document'];
 
     public function team()
@@ -114,6 +115,11 @@ class Project extends Model implements Auditable
     public function mapFiles()
     {
         return $this->hasMany(ProjectMapAttachment::class, 'id_project', 'id');
+    }
+
+    public function announcement()
+    {
+        return $this->hasOne(Announcement::class, 'project_id', 'id');
     }
 
     public function feasibilityTest()
@@ -255,6 +261,26 @@ class Project extends Model implements Auditable
             }
         }
 
+        return null;
+    }
+
+
+    public function applyWorkFlowTransition($transition, $fromState, $endState, $changeMarking = true){
+        $userId = Auth::user()->id;
+        $wflog = WorkflowLog::create([
+            'id_project' => $this->attributes['id'],
+            'transition' => $transition,
+            'from_place' => $fromState,
+            'to_place' => $endState,
+            'duration' => 0,
+            'duration_total' => 0,
+            'created_by' => $userId,
+            'updated_by' => $userId,
+        ]);
+        if($changeMarking){
+            $this->attributes['marking'] = $endState;
+            $this->save();
+        }
         return null;
     }
 }

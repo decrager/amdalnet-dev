@@ -3,28 +3,29 @@
 namespace App\Notifications;
 
 use App\Entity\TestingMeeting;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 
 class MeetingInvitation extends Notification
 {
     use Queueable;
 
     public $meeting;
-    public $notification_type;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(TestingMeeting $meeting, $notification_type)
+    public function __construct(TestingMeeting $meeting)
     {
         $this->meeting = $meeting;
-        $this->notification_type = $notification_type;
     }
 
     /**
@@ -35,7 +36,11 @@ class MeetingInvitation extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        if($notifiable->roles->first()->name == 'formulator') {
+            return ['database'];
+        } else {
+            return ['mail', 'database'];
+        }
     }
 
     /**
@@ -46,16 +51,22 @@ class MeetingInvitation extends Notification
      */
     public function toMail($notifiable)
     {
-        if($this->notification_type == 'tuk') {
-            return (new MailMessage)
-                        ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
-                        ->line('Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title)
-                        ->attach(Storage::disk('public')->path($this->docxName()));
-        } else {
-            return (new MailMessage)
-                        ->subject('Pemberitahuan Rapat Pembahasan ' . $this->documentType())
-                        ->line('Kegiatan ' . $this->meeting->project->project_title . ' akan dilakukan pembahasan ' . $this->documentType() . ' oleh Tim Uji Kelayakan');
+        Carbon::setLocale('id');
+        $document = '';
+        if($this->meeting->document_type == 'ka') {
+            $document = 'Formulir Kerangka Acuan';
+        } else if($this->meeting->document_type == 'rkl-rpl') {
+            $document = 'Dokumen Andal dan RKL RPL';
         }
+
+        return (new MailMessage)
+                    ->subject('Undangan Rapat Pembahasan ' . $this->documentType())
+                    ->greeting('Yth. ' . $notifiable->name)
+                    ->line('Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada:')
+                    ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . '<br>' . 'Tempat: ' . $this->meeting->location))
+                    ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
+                    ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name))
+                    ->attach(Storage::disk('public')->path($this->docxName()));
     }
 
     /**
@@ -66,11 +77,26 @@ class MeetingInvitation extends Notification
      */
     public function toArray($notifiable)
     {
-        if($this->notification_type == 'tuk') {
+        Carbon::setLocale('id');
+        $document = '';
+        if($this->meeting->document_type == 'ka') {
+            $document = 'Formulir Kerangka Acuan';
+        } else if($this->meeting->document_type == 'rkl-rpl') {
+            $document = 'Dokumen Andal dan RKL RPL';
+        }
+
+        if($notifiable->roles->first()->name != 'formulator') {
+            $message = 'Sehubungan dengan akan diadakannya acara rapat Pemeriksan ' . $document . ' dengan nama kegiatan/usaha ' . $this->meeting->project->project_title . ', Maka kami mengundang bapak/ibu untuk hadir dalam acara tersebut yang akan dilaksanakan pada: ';
+            $message .= 'Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . ', ';
+            $message .= 'Waktu: ' . $this->meeting->meeting_time . ', ';
+            $message .= 'Tempat: ' . $this->meeting->location . '. ';
+            $message .= 'Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih. ';
+            $message .= 'Hormat kami, ' . Auth::user()->name;
+
             return [
                 'meeting' => $this->meeting ,
                 'member' => $notifiable,
-                'message' => 'Anda diundang rapat pembahasan ' . $this->documentType() . ' untuk kegiatan ' . $this->meeting->project->project_title,
+                'message' => $message,
                 'path' => '#',
             ];
         } else {

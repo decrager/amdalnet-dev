@@ -463,7 +463,7 @@
         :announcement="announcement"
         :show="show"
         @handleSubmitAnnouncement="handleSubmitAnnouncement($event)"
-        @handleCancelAnnouncement="handleCancelAnnouncement"
+        @handleCancelAnnouncement="show = false"
       />
     </el-card>
   </div>
@@ -879,14 +879,15 @@ export default {
         formData.append(key, value);
       });
 
+      const message = (this.announcement.publish ? '' : 'Rancangan Pengumuman untuk ') +
+        'Rencana Kegiatan ' + this.announcement.project_type +
+        (this.announcement.publish ? ' Telah Dipublikasikan Di Daftar Pengumuman & Informasi Pada Halaman Utama Amdalnet' : ' Berhasil Disimpan');
+
       announcementResource
         .store(formData)
         .then((response) => {
           this.$message({
-            message:
-                'Rencana Kegiatan ' +
-                this.announcement.project_type +
-                ' Telah Dipublikasikan Di Daftar Pengumuman & Informasi Pada Halaman Utama Amdalnet',
+            message: message,
             type: 'success',
             duration: 5 * 1000,
           });
@@ -914,7 +915,7 @@ export default {
     async getFiltered(query) {
       this.loading = true;
       this.filtered = [];
-      console.log('getFiltered', query);
+      // console.log('getFiltered', query);
       await projectResource.list(query)
         .then((res) => {
           const { data, total } = res;
@@ -925,7 +926,7 @@ export default {
           this.filtered = mapped;
           this.total = total;
           this.loading = false;
-          console.log(data, this.filtered);
+          // console.log(data, this.filtered);
         }).finally(() => {
           this.loading = false;
         });
@@ -986,6 +987,7 @@ export default {
       // this.$router.push('penyusun/' + currentProject.id);
     },
     handlePublishForm(id) {
+      this.announcement = {};
       const currentProject = this.filtered.find((item) => item.id === id);
       const subProject = currentProject.list_sub_project.map(curr => {
         return {
@@ -993,16 +995,23 @@ export default {
           scale: curr.scale + ' ' + curr.scale_unit,
         };
       });
-      this.announcement.sub_project = subProject;
-      this.announcement.pic_name = this.initiator.pic;
-      this.announcement.pic_address = this.initiator.address;
-      this.announcement.project_id = currentProject.id;
-      this.announcement.project_result = currentProject.required_doc;
-      this.announcement.project_type = currentProject.project_title;
-      this.announcement.project_scale =
-        currentProject.scale + ' ' + currentProject.scale_unit;
+
+      if (currentProject.announcement === null){
+        this.announcement.pic_name = this.initiator.pic;
+        this.announcement.pic_address = this.initiator.address;
+        this.announcement.project_id = currentProject.id;
+        this.announcement.project_result = currentProject.required_doc;
+        this.announcement.project_type = currentProject.project_title;
+        this.announcement.project_scale =
+          currentProject.scale + ' ' + currentProject.scale_unit;
+
+        this.announcement.id_applicant = currentProject.id_applicant;
+      } else {
+        this.announcement = currentProject.announcement;
+      }
       this.announcement.project_location = currentProject.address;
-      this.announcement.id_applicant = currentProject.id_applicant;
+      this.announcement.sub_project = subProject;
+      // console.log(this.announcement);
       this.show = true;
     },
     handleDelete(id, nama) {
