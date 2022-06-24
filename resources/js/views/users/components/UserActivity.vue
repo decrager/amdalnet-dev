@@ -40,38 +40,76 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane v-else-if="user.formulatorData.email" v-loading="updating" label="Penyusun" name="formulatorTab">
-        <el-form ref="formulatorForm" :model="user.formulatorData">
+      <el-tab-pane v-else-if="formulator.email" v-loading="updating" label="Penyusun" name="formulatorTab">
+        <el-form ref="formulatorForm" :model="formulator">
           <el-form-item label="Nama Penyusun">
-            <el-input v-model="user.formulatorData.name" />
+            <el-input v-model="formulator.name" :readonly="true" />
           </el-form-item>
-          <el-form-item label="Keahlian">
-            <el-input v-model="user.formulatorData.expertise" />
+          <el-form-item label="Keahlian Penyusun">
+            <el-select
+              v-model="selectedExpertise"
+              name="expertise"
+              placeholder="Keahlian Penyusun"
+              style="width: 100%"
+              @change="handleChangeExpertise"
+            >
+              <el-option
+                v-for="item in expertise"
+                :key="item.value"
+                :label="item.value"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="selectedExpertise === 'Ahli Lainnya'"
+            label=""
+            prop="otherExpertise"
+          >
+            <el-input
+              v-model="formulator.expertise"
+              name="otherExpertise"
+              placeholder="Isi Keahlian"
+            />
           </el-form-item>
           <el-form-item label="No. Sertifikat">
-            <el-input v-model="user.formulatorData.cert_no" />
-          </el-form-item>
-          <el-form-item label="NIP">
-            <el-input v-model="user.formulatorData.nip" />
+            <el-input v-model="formulator.cert_no" :readonly="true" />
           </el-form-item>
           <el-form-item label="Tanggal Ditetapkan" prop="tglDitetapkan">
             <el-date-picker
-              v-model="user.formulatorData.date_start"
+              v-model="formulator.date_start"
               type="date"
               placeholder="Pilih tanggal"
               value-format="yyyy-MM-dd"
               style="width: 100%"
+              :disabled="true"
             />
           </el-form-item>
           <el-form-item label="Terakhir Berlaku" prop="terakhirBerlaku">
             <el-date-picker
-              v-model="user.formulatorData.date_end"
+              v-model="formulator.date_end"
               type="date"
               placeholder="Pilih tanggal"
               value-format="yyyy-MM-dd"
               style="width: 100%"
+              :disabled="true"
             />
           </el-form-item>
+          <div style="margin-bottom: 20px;">
+            <label class="el-form-item--mediun el-form-item__label" style="float: none;">CV Penyusun</label>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <el-input v-model="cvFormulator.name" :readonly="true" class="input-name-cv" />
+              <el-upload
+                class="upload-demo"
+                :auto-upload="false"
+                :on-change="handleUploadCv"
+                action="#"
+                :show-file-list="false"
+              >
+                <el-button size="small" type="primary"> Upload </el-button>
+              </el-upload>
+            </div>
+          </div>
           <el-form-item>
             <el-button type="primary" @click="onFormulatorSubmit">
               Ubah
@@ -144,6 +182,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 const userResource = new Resource('users');
 const initiatorResource = new Resource('initiators');
@@ -171,11 +210,92 @@ export default {
       updating: false,
       isPemerintah: true,
       loading: false,
+      formulator: {},
+      cvFormulator: {
+        name: null,
+        file: null,
+      },
+      selectedExpertise: null,
+      expertise: [
+        {
+          value: 'Ahli Mutu Udara',
+        },
+        {
+          value: 'Ahli Mutu Air',
+        },
+        {
+          value: 'Ahli Mutu Tanah',
+        },
+        {
+          value: 'Ahli Keanekaragaman Hayati',
+        },
+        {
+          value: 'Ahli Kehutanan',
+        },
+        {
+          value: 'Ahli Sosial',
+        },
+        {
+          value: 'Ahli Kesehatan Masyarakat',
+        },
+        {
+          value: 'Ahli Transportasi',
+        },
+        {
+          value: 'Ahli Geologi',
+        },
+        {
+          value: 'Ahli Hidrogeologi',
+        },
+        {
+          value: 'Ahli Hidrologi',
+        },
+        {
+          value: 'Ahli Kelautan',
+        },
+        {
+          value: 'Ahli Lainnya',
+        },
+      ],
     };
+  },
+  computed: {
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
+  },
+  created() {
+    this.getFormulator();
   },
   methods: {
     handleClick(tab, event) {
       console.log('Switching tab ', tab, event);
+    },
+    async getFormulator() {
+      this.formulator = await formulatorResource.list({ byUserId: 'true', email: this.userInfo.email });
+      const checkExpertise = this.expertise.find(
+        (x) => x.value === this.formulator.expertise
+      );
+
+      // === CHECK EXPERTISE === //
+      if (checkExpertise) {
+        this.selectedExpertise = this.formulator.expertise;
+      } else {
+        this.selectedExpertise = 'Ahli Lainnya';
+      }
+
+      if (this.formulator.cv_file) {
+        const nameArray = this.formulator.cv_file.split('/');
+        this.cvFormulator.name = nameArray[nameArray.length - 1];
+      }
+    },
+    handleChangeExpertise(data) {
+      if (data !== 'Ahli Lainnya') {
+        this.formulator.expertise = data;
+      } else {
+        this.formulator.expertise = null;
+      }
     },
     onExpertSubmit(){
       this.updating = true;
@@ -217,13 +337,19 @@ export default {
           this.updating = false;
         });
     },
-    onFormulatorSubmit(){
+    async onFormulatorSubmit(){
       this.updating = true;
 
-      const updatedFormulator = this.user.formulatorData;
+      const formData = new FormData();
+      formData.append('expertise', this.formulator.expertise);
+      formData.append('profile', true);
+
+      if (this.cvFormulator.file) {
+        formData.append('cv_file', await this.convertBase64(this.cvFormulator.file));
+      }
 
       formulatorResource
-        .update(updatedFormulator.id, updatedFormulator)
+        .updateMultipart(this.formulator.id, formData)
         .then(response => {
           this.updating = false;
           this.$message({
@@ -231,6 +357,7 @@ export default {
             type: 'success',
             duration: 5 * 1000,
           });
+          this.cvFormulator.file = null;
         })
         .catch(error => {
           console.log(error);
@@ -274,6 +401,39 @@ export default {
           console.log(error);
           this.updating = false;
         });
+    },
+    handleUploadCv(file, fileList) {
+      if (file.raw.size > 10485760) {
+        this.$alert('File Yang Diupload Melebihi 10 MB', {
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+
+      const extension = file.name.split('.');
+      if (extension[extension.length - 1].toLowerCase() !== 'pdf') {
+        this.$alert('File harus berformat PDF', '', {
+          center: true,
+        });
+        return;
+      }
+
+      this.cvFormulator.name = file.name;
+      this.cvFormulator.file = file.raw;
+    },
+    convertBase64(file) {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
+      });
     },
   },
 };
@@ -349,5 +509,11 @@ export default {
   .el-carousel__item:nth-child(2n+1) {
     background-color: #d3dce6;
   }
+}
+</style>
+
+<style>
+.input-name-cv input {
+  width: 97%;
 }
 </style>

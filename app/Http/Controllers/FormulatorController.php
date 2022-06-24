@@ -24,6 +24,11 @@ class FormulatorController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->byUserId) {
+            $formulator = Formulator::where('email', $request->email)->first();
+            return $formulator;
+        }
+
         if($request->avatar) {
             $user = User::where('email', $request->email)->first();
             if($user) {
@@ -259,6 +264,25 @@ class FormulatorController extends Controller
             return response()->json(['error' => 'formulator not found'], 404);
         }
 
+        if($request->profile) {
+            if($request->cv_file) {
+                $file = $this->base64ToFile($request->cv_file);
+                $file_name = 'penyusun/' . uniqid() . '.' . $file['extension'];
+                Storage::disk('public')->put($file_name, $file['file']);
+                
+                if($formulator->cv_file) {
+                    $old_file = str_replace(Storage::url(''), '', $formulator->cv_file);
+                    Storage::disk('public')->delete($old_file);
+                }
+
+                $formulator->cv_file = $file_name;
+            }
+
+            $formulator->expertise = $request->expertise;
+            $formulator->save();
+            return response()->json(['message' => 'success']);
+        }
+
         // $validator = Validator::make(
         //     $request->all(),
         //     [
@@ -331,5 +355,23 @@ class FormulatorController extends Controller
             ->get();
 
         return response()->json($getData);
+    }
+
+    private function base64ToFile($file_64)
+    {
+        $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
+      
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
+      
+        // find substring fro replace here eg: data:image/png;base64,
+      
+        $file = str_replace($replace, '', $file_64); 
+      
+        $file = str_replace(' ', '+', $file); 
+      
+        return [
+            'extension' => $extension,
+            'file' => base64_decode($file)
+        ];
     }
 }
