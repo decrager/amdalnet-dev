@@ -86,6 +86,23 @@ class FormulatorController extends Controller
     public function store(Request $request)
     {
         if($request->sertifikasi) {
+            // CHECK EXIST NO REGISTRATION
+            $error = [];
+            $check_reg_no = Formulator::where([['id', '!=', $request->id],['reg_no', $request->reg_no]])->count();
+            if($check_reg_no > 0) {
+                $error['error_reg_no'] = true;
+            }
+
+            // CHECK EXIST NO SERTIFIKAT
+            $check_cert_no = Formulator::where([['id', '!=', $request->id],['cert_no', $request->cert_no]])->count();
+            if($check_cert_no > 0) {
+                $error['error_cert_no'] = true;
+            }
+
+            if(count($error) > 0) {
+                return response()->json($error);
+            }
+
             $formulator = Formulator::findOrFail($request->id);
 
             if ($request->hasFile('file_sertifikat')) {
@@ -96,6 +113,8 @@ class FormulatorController extends Controller
                 $formulator->cert_file = $fileSertifikatName;
             }
 
+            $formulator->reg_no = $request->reg_no;
+            $formulator->cert_no = $request->cert_no;
             $formulator->membership_status = $request->membership_status;
             $formulator->date_start = $request->date_start;
             $formulator->date_end =  Carbon::createFromDate($request->date_start)->addYears(3);
