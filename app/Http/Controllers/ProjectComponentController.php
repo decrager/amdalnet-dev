@@ -147,24 +147,34 @@ class ProjectComponentController extends Controller
                         case 'AMDAL':
                             switch($project->marking){
                                 case 'announcement-completed':
+                                    $project->workflow_apply('draft-amdal-form-ka');
+                                    $project->save();
+                                    break;
+                                case 'amdal.form-ka-ba-signed':
+                                    $project->workflow_apply('draft-amdal-andal');
+                                    $project->save();
+                                    break;
+                                case 'formulator-assignment':
+                                    $project->applyWorkFlowTransition('draft-amdal-form-ka', 'announcement-completed', 'amdal.form-ka-drafting');
+                                    break;
+                                default:
                             }
                             break;
                         case 'UKL-UPL':
+                            switch($project->marking){
+                                case 'announcement-completed':
+                                    $project->workflow_apply('fill-ukupl-form');
+                                    $project->save();
+                                    break;
+                                case 'formulator-assignment':
+                                    $project->applyWorkFlowTransition('fill-ukupl-form', 'announcement-completed', 'uklupl-mt.form');
+                                    break;
+                                default:
+                            }
                             break;
-                    }
-                    if($pc->is_andal){
-                        if($project->marking == 'amdal.form-ka-ba-signed'){
-                            $project->workflow_apply('draft-amdal-andal');
-                            $project->save();
-                        }
-                    }else {
-                        if($project->marking == 'announcement-completed'){
-                            $project->workflow_apply('draft-amdal-form-ka');
-                            $project->save();
-                        }
+                        default:
                     }
                 }
-
                 return response()->json([
                     'code' => 200,
                     'data' =>  $pc
