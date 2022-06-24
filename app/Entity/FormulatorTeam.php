@@ -24,8 +24,20 @@ class FormulatorTeam extends Model
         parent::boot();
         static::created(function ($formulatorTeam) {
             $project = Project::find($formulatorTeam->id_project);
-            $project->workflow_apply('assign-formulator');
-            $project->save();
+            if ($project){
+                switch ($project->marking){
+                    case 'screening-completed':
+                        $project->workflow_apply('assign-formulator');
+                        $project->save();
+                        break;
+                    case 'announcement-drafting':
+                    case 'announcement':
+                    case 'announcement-completed':
+                        $project->applyWorkFlowTransition('assign-formulator', 'screening-completed', 'formulator-assignment', false);
+                        break;
+
+                }
+            }
         });
     }
 

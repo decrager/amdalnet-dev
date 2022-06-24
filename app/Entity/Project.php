@@ -262,4 +262,24 @@ class Project extends Model implements Auditable
 
         return null;
     }
+
+
+    public function applyWorkFlowTransition($transition, $fromState, $endState, $changeMarking = true){
+        $userId = Auth::user()->id;
+        $wflog = WorkflowLog::create([
+            'id_project' => $this->attributes['id'],
+            'transition' => $transition,
+            'from_place' => $fromState,
+            'to_place' => $endState,
+            'duration' => 0,
+            'duration_total' => 0,
+            'created_by' => $userId,
+            'updated_by' => $userId,
+        ]);
+        if($changeMarking){
+            $this->attributes['marking'] = $endState;
+            $this->save();
+        }
+        return null;
+    }
 }

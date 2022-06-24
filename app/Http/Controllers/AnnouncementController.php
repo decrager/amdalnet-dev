@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use App\Entity\WorkflowLog;
 
 
 // use DB;
@@ -261,13 +262,19 @@ class AnnouncementController extends Controller
 
             if($params['publish'] && ($params['publish'] === 'true')){
 
-                $project = Project::where('id', $params['project_id'])->first();
+                $project = Project::find('id', $params['project_id']);
                 $project->published = true;
                 $project->save();
-                if ($project->marking == 'announcement-drafting'){
-                    $project->workflow_apply('announce');
-                    $project->workflow_apply('complete-announcement');
-                    $project->save();
+                switch ($project->marking){
+                    case 'announcement-drafting':
+                        $project->workflow_apply('announce');
+                        $project->workflow_apply('complete-announcement');
+                        $project->save();
+                        break;
+                    default:
+                        $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement', false);
+                        $project->applyWorkFlowTransition('draft-announcement', 'announcement', 'announcement-completed');
+                        break;
                 }
             }
 
