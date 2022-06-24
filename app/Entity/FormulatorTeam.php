@@ -33,9 +33,9 @@ class FormulatorTeam extends Model
                     case 'announcement-drafting':
                     case 'announcement':
                     case 'announcement-completed':
-                        $project->applyWorkFlowTransition('assign-formulator', 'screening-completed', 'formulator-assignment', false);
+                        $project->applyWorkFlowTransition('assign-formulator', 'screening-completed', 'formulator-assignment');
                         break;
-
+                    default:
                 }
             }
         });

@@ -10,6 +10,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use Illuminate\Support\Facades\Auth;
 
 class Project extends Model implements Auditable
 {

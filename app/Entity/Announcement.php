@@ -56,17 +56,8 @@ class Announcement extends Model
                     case 'screening-completed':
                         $project->applyWorkFlowTransition('draft-announcement', 'formulator-assignment', 'announcement-drafting');
                         break;
+                    default:
                 }
-                /*
-                if ($project->marking=='formulator-assignment') {
-                    $project->workflow_apply('draft-announcement');
-                    // $project->workflow_apply('announce');
-                    // $project->workflow_apply('complete-announcement');
-                    $project->save();
-                }
-                else {
-
-                }*/
             }
         });
     }

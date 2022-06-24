@@ -262,19 +262,18 @@ class AnnouncementController extends Controller
 
             if($params['publish'] && ($params['publish'] === 'true')){
 
-                $project = Project::find('id', $params['project_id']);
+                $project = Project::find($params['project_id']);
                 $project->published = true;
                 $project->save();
                 switch ($project->marking){
                     case 'announcement-drafting':
                         $project->workflow_apply('announce');
-                        $project->workflow_apply('complete-announcement');
                         $project->save();
                         break;
-                    default:
-                        $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement', false);
-                        $project->applyWorkFlowTransition('draft-announcement', 'announcement', 'announcement-completed');
+                    case 'formulator-assignment':
+                        $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement');
                         break;
+                    default:
                 }
             }
 

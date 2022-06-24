@@ -143,6 +143,15 @@ class ProjectComponentController extends Controller
                 // Workflow Amdal: drafting
                 $project = Project::where('id', $pc->id_project)->first();
                 if($project){
+                    switch ($project->required_doc) {
+                        case 'AMDAL':
+                            switch($project->marking){
+                                case 'announcement-completed':
+                            }
+                            break;
+                        case 'UKL-UPL':
+                            break;
+                    }
                     if($pc->is_andal){
                         if($project->marking == 'amdal.form-ka-ba-signed'){
                             $project->workflow_apply('draft-amdal-andal');
