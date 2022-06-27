@@ -51,7 +51,12 @@
                 </span>
                 <span v-else>
                   {{ formLabel[scope.row.name] }}
-                  <span v-if="scope.row.name === 'peta'">
+                  <span
+                    v-if="
+                      scope.row.name === 'peta' ||
+                      scope.row.name === 'peta_titik'
+                    "
+                  >
                     <li v-for="(link, index) in scope.row.link" :key="index">
                       <a
                         v-if="link.name === 'Webgis'"
@@ -68,7 +73,8 @@
                         @click.prevent="
                           download(
                             scope.row.link[index].link,
-                            scope.row.link[index].pdf
+                            scope.row.link[index].pdf,
+                            scope.row.name
                           )
                         "
                       >
@@ -240,6 +246,16 @@
         <div v-html="publicConsultation.negative_feedback_summary" />
       </div>
     </el-dialog>
+    <el-dialog title="Persetujuan Teknis" :visible.sync="pertekDialog">
+      <div v-for="(pert, index) in pertek" :key="pert.id">
+        <p>
+          <b>{{ index + 1 }}. {{ pert.name }}:</b>
+          <a :href="pert.file" style="color: #216221" target="_blank">
+            Lihat
+          </a>
+        </p>
+      </div>
+    </el-dialog>
     <el-dialog title="" class="map-dialog" :visible.sync="showWebgisDialog">
       <WebgisVerifikasi />
     </el-dialog>
@@ -280,6 +296,8 @@ export default {
       publicConsultationDialog: false,
       publicConsultation: null,
       publicConsultationDocs: [],
+      pertek: [],
+      pertekDialog: false,
       docxData: {},
       loadingComplete: false,
       loadingDocx: false,
@@ -315,7 +333,7 @@ export default {
         sistematika_penyusunan:
           'Sistematika penyusunan dokumen sesuai dengan PP 22/2021',
         pertek: 'Persetujuan Teknis',
-        peta_titik: 'Penambahan Peta Titik Pengelolaan dan Titik Pemantauan',
+        peta_titik: 'Peta Pengelolaan dan Pemantauan',
       },
     };
   },
@@ -333,6 +351,7 @@ export default {
       this.verifications = data;
       this.lpjp = data.lpjp;
       this.penyusunMandiri = data.penyusun_mandiri;
+      this.pertek = data.pertek;
       if (data.public_consultation) {
         this.publicConsultation = data.public_consultation;
         if (data.public_consultation.docs) {
@@ -406,7 +425,8 @@ export default {
         name === 'sertifikasi_penyusun' ||
         name === 'cv_penyusun' ||
         name === 'surat_penyusun' ||
-        name === 'konsul_publik'
+        name === 'konsul_publik' ||
+        name === 'pertek'
       );
     },
     handleRedirect(name) {
@@ -416,6 +436,8 @@ export default {
         this.lpjpPenyusunDialog = true;
       } else if (name === 'konsul_publik') {
         this.publicConsultationDialog = true;
+      } else if (name === 'pertek') {
+        this.pertekDialog = true;
       }
     },
     async handleDownload() {
@@ -541,7 +563,7 @@ export default {
       }
       return error;
     },
-    download(url, urlPdf) {
+    download(url, urlPdf, documentType) {
       if (url || urlPdf) {
         if (
           (url === '/storage/' || url === null) &&
@@ -567,7 +589,11 @@ export default {
           }
         }
       } else {
-        this.$alert('Dokumen belum Diunggah oleh Pemrakarsa', {
+        const message =
+          documentType === 'peta_titik'
+            ? 'Dokumen Belum Diunggah'
+            : 'Dokumen belum Diunggah oleh Pemrakarsa';
+        this.$alert(message, {
           confirmButtonText: 'OK',
         });
       }
