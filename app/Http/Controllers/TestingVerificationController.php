@@ -503,6 +503,7 @@ class TestingVerificationController extends Controller
             'lpjp' => $lpjp,
             'penyusun_mandiri' => $penyusun_mandiri,
             'pre_agreement' => $project->pre_agreement_file,
+            'ktr' => $project->ktr,
             'is_disabled' => $is_disabled
         ];
 

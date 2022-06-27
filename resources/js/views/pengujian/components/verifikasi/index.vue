@@ -84,7 +84,7 @@
           <el-table-column label="Kesesuaian">
             <template slot-scope="scope">
               <el-select
-                v-if="isPreAgreement(scope.row.name)"
+                v-if="isShow(scope.row.name)"
                 v-model="scope.row.suitability"
                 placeholder="Pilih Kesesuaian"
                 style="width: 100%"
@@ -104,7 +104,7 @@
           <el-table-column label="Keterangan">
             <template slot-scope="scope">
               <el-input
-                v-if="isPreAgreement(scope.row.name)"
+                v-if="isShow(scope.row.name)"
                 v-model="scope.row.description"
                 type="textarea"
                 :placeholder="getPlaceholder(scope.row.suitability)"
@@ -551,11 +551,12 @@ export default {
       }
       return error;
     },
-    isPreAgreement(name) {
-      if (
-        (name === 'tata_ruang' || name === 'persetujuan_awal') &&
-        !this.verifications.pre_agreement
-      ) {
+    isShow(name) {
+      if (name === 'tata_ruang' && !this.verifications.ktr) {
+        return false;
+      }
+
+      if (name === 'persetujuan_awal' && !this.verifications.pre_agreement) {
         return false;
       }
 
