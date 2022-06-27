@@ -452,12 +452,12 @@ class KaReviewController extends Controller
             [
                 'no' => 2,
                 'name' => 'Bukti Kesesuaian Tata Ruang',
-                'file' => $project->pre_agreement_file ?? null,
+                'file' => $project->ktr ?? null,
             ],
             [
                 'no' => 3,
                 'name' => 'Izin Persetujuan Awal',
-                'file' => $project->pre_agreement_file,
+                'file' => $project->pre_agreement_file ?? null,
             ],
             [
                 'no' => 4,
