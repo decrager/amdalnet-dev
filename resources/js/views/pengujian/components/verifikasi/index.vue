@@ -560,6 +560,10 @@ export default {
         return false;
       }
 
+      if (name === 'pippib' && !this.verifications.pippib) {
+        return false;
+      }
+
       return true;
     },
     download(url, urlPdf) {

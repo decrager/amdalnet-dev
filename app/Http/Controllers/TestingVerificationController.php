@@ -504,6 +504,7 @@ class TestingVerificationController extends Controller
             'penyusun_mandiri' => $penyusun_mandiri,
             'pre_agreement' => $project->pre_agreement_file,
             'ktr' => $project->ktr,
+            'pippib' => $project->ppib_file,
             'is_disabled' => $is_disabled
         ];
 
