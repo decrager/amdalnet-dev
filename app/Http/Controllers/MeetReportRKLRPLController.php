@@ -18,6 +18,7 @@ use App\Entity\TestingMeeting;
 use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
 use App\Notifications\AcceptToFeasibilityTest;
+use App\Notifications\MeetingReportNotification;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
@@ -154,7 +155,7 @@ class MeetReportRKLRPLController extends Controller
                 }
 
                 if(count($receiver) > 0) {
-                    Notification::send($receiver, new MeetingReportInvitation($meeting_report, 'disetujui'));
+                    Notification::send($receiver, new MeetingReportNotification($meeting_report, 'disetujui'));
                 }
 
                 // === WORKFLOW === //
