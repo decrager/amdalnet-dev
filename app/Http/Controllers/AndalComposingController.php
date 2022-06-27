@@ -25,6 +25,8 @@ use App\Entity\RonaAwal;
 use App\Entity\SubProject;
 use App\Entity\SubProjectComponent;
 use App\Entity\SubProjectRonaAwal;
+use App\Laravue\Models\User;
+use App\Notifications\RklRPlNotification;
 use App\Utils\Document;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
@@ -32,6 +34,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use PDF;
@@ -723,10 +726,37 @@ class AndalComposingController extends Controller
             return response()->json(['message' => 'success']);
         }
 
+        $project = Project::findOrFail($id_project);
+
+        // === NOTIFICATION === //
+        $receiver = [];
+        // 1. Pemrakarsa
+        $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+        if($pemrakarsa_user) {
+            $receiver[] = $pemrakarsa_user;
+        }
+        // 2. Penyusun
+        $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+            $q->where('id_project', $project->id);
+        })->get();
+        foreach($formulator_team_members as $ftm) {
+            if($ftm->formulator) {
+                $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                if($formulator_user) {
+                    if($ftm->position == 'Ketua' || $ftm->position == 'Anggota') {
+                        $receiver = $formulator_user;
+                    }
+                }
+            }
+        }
+
+        if(count($receiver) > 0) {
+            Notification::send($receiver, new RklRPlNotification($project));
+        }
+
         $save_file_name = $id_project . '-andal' . '.docx';
 
         Carbon::setLocale('id');
-        $project = Project::findOrFail($id_project);
 
         // ======== TIM PENYUSUN AMDAL ========= //
         $formulator = [];

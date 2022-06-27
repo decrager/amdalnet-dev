@@ -78,11 +78,6 @@ class KaReviewController extends Controller
             $review->document_type = $request->documentType;
             $review->save();
 
-            // === NOTIFICATIONS === //
-            $project = Project::findOrFail($request->idProject);
-            // $email = $project->initiator->email;
-            // $user = User::where('email', $email)->count();
-
             $document_type = '';
             if($request->documentType == 'ka') {
                 $document_type = 'KA';
@@ -90,6 +85,33 @@ class KaReviewController extends Controller
                 $document_type = 'ANDAL RKL RPL';
             } else if($request->documentType == 'ukl-upl') {
                 $document_type = 'UKL UPL';
+            }
+
+            $project = Project::findOrFail($request->idProject);
+
+            // === NOTIFICATIONS === //
+            // 1. Pemrakarsa
+            $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+            if($pemrakarsa_user) {
+                $receiver[] = $pemrakarsa_user;
+            }
+            // 2. Penyusun
+            $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                $q->where('id_project', $project->id);
+            })->get();
+            foreach($formulator_team_members as $ftm) {
+                if($ftm->formulator) {
+                    $formulator_user = User::where('email', $ftm->formulator->email)->first();
+                    if($formulator_user) {
+                        if($ftm->position == 'Ketua' || $ftm->position == 'Anggota') {
+                            $receiver = $formulator_user;
+                        }
+                    }
+                }
+            }
+
+            if(count($receiver) > 0) {
+                Notification::send($receiver, new AppKaReview($review));
             }
 
             // if($user > 0) {
