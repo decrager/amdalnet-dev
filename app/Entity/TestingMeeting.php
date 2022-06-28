@@ -47,4 +47,14 @@ class TestingMeeting extends Model
 
         return null;
     }
+
+    public function rawFile()
+    {
+        return $this->attributes['file'];
+    }
+
+    public function rawInvitationFile()
+    {
+        return $this->attributes['invitation_file'];
+    }
 }
