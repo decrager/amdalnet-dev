@@ -178,16 +178,14 @@ class ProjectRonaAwalController extends Controller
             $pc->measurement = $component['measurement'];
 
             if($request->deletePdfId && $pc->file) {
-                $file = str_replace(Storage::url(''), '', $pc->file);
-                Storage::disk('public')->delete($file);
+                Storage::disk('public')->delete($pc->rawFile());
                 $pc->file = null;
             }
 
             if($request->file) {
                 if($component['id_project_rona_awal']) {
                     if($pc->file) {
-                        $file = str_replace(Storage::url(''), '', $pc->file);
-                        Storage::disk('public')->delete($file);
+                        Storage::disk('public')->delete($pc->rawFile());
                     }
                 }
 
@@ -347,8 +345,7 @@ class ProjectRonaAwalController extends Controller
             }
 
             if($projectRonaAwal->file) {
-                $file = str_replace(Storage::url(''), '', $projectRonaAwal->file);
-                Storage::disk('public')->delete($file);
+                Storage::disk('public')->delete($projectRonaAwal->rawFile());
             }
 
             return response($projectRonaAwal->delete(), 200);

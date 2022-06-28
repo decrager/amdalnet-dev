@@ -251,8 +251,7 @@ class FormulatorTeamController extends Controller
             } else {
                 if($request->skFile) {
                     if($team->evidence_letter) {
-                        $file_name = str_replace(Storage::url(''), '', $team->evidence_letter);
-                        Storage::disk('public')->delete($file_name);
+                        Storage::disk('public')->delete($team->rawEvidenceLetter());
                     }
                 }
             }

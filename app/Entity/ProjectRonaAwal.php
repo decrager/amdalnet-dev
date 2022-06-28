@@ -37,4 +37,9 @@ class ProjectRonaAwal extends Model
 
         return null;
     }
+
+    public function rawFile()
+    {
+        return $this->attributes['file'];
+    }
 }

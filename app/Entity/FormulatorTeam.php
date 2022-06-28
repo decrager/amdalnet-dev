@@ -53,4 +53,9 @@ class FormulatorTeam extends Model
 
         return null;
     }
+
+    public function rawEvidenceLetter()
+    {
+        return $this->attributes['evidence_letter'];
+    }
 }
