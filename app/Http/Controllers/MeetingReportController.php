@@ -90,11 +90,17 @@ class MeetingReportController extends Controller
             $meeting_report = null;
 
             if($request->dokumen_file) {
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
+
+                if($meeting_report->file) {
+                    $deleted_file = str_replace(Storage::url(''), '', $meeting_report->file);
+                    Storage::disk('public')->delete($deleted_file);
+                }
+
                 $file = $this->base64ToFile($request->dokumen_file);
                 $name = 'berita-acara-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
 
-                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
                 $meeting_report->file = $name;
                 $meeting_report->save();
 
