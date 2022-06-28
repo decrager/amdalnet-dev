@@ -65,4 +65,14 @@ class Formulator extends Model
 
         return null;
     }
+
+    public function rawCertFile()
+    {
+        return $this->attributes['cert_file'];
+    }
+
+    public function rawCvFile()
+    {
+        return $this->attributes['cv_file'];
+    }
 }

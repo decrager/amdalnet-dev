@@ -290,8 +290,7 @@ class FormulatorController extends Controller
                 Storage::disk('public')->put($file_name, $file['file']);
                 
                 if($formulator->cv_file) {
-                    $old_file = str_replace(Storage::url(''), '', $formulator->cv_file);
-                    Storage::disk('public')->delete($old_file);
+                    Storage::disk('public')->delete($formulator->rawCvFile());
                 }
 
                 $formulator->cv_file = $file_name;
