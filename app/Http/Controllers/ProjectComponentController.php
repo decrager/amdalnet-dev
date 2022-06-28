@@ -163,11 +163,11 @@ class ProjectComponentController extends Controller
                         case 'UKL-UPL':
                             switch($project->marking){
                                 case 'announcement-completed':
-                                    $project->workflow_apply('fill-ukupl-form');
+                                    $project->workflow_apply('fill-uklupl-form');
                                     $project->save();
                                     break;
                                 case 'formulator-assignment':
-                                    $project->applyWorkFlowTransition('fill-ukupl-form', 'announcement-completed', 'uklupl-mt.form');
+                                    $project->applyWorkFlowTransition('fill-uklupl-form', 'announcement-completed', 'uklupl-mt.form');
                                     break;
                                 default:
                             }
