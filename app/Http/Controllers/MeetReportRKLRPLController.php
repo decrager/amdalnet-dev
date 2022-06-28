@@ -18,6 +18,7 @@ use App\Entity\TestingMeeting;
 use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
 use App\Notifications\AcceptToFeasibilityTest;
+use App\Notifications\MeetingReportNotification;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
@@ -125,11 +126,18 @@ class MeetReportRKLRPLController extends Controller
 
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
+    
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
+
+                if($meeting_report->file) {
+                    $deleted_file = str_replace(Storage::url(''), '', $meeting_report->file);
+                    Storage::disk('public')->delete($deleted_file);
+                }
+
                 $file = $this->base64ToFile($request->dokumen_file);
                 $name = 'berita-acara-' . $document_type . '/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
-    
-                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
+
                 $meeting_report->file = $name;
                 $meeting_report->save();
 
@@ -154,7 +162,7 @@ class MeetReportRKLRPLController extends Controller
                 }
 
                 if(count($receiver) > 0) {
-                    Notification::send($receiver, new MeetingReportInvitation($meeting_report, 'disetujui'));
+                    Notification::send($receiver, new MeetingReportNotification($meeting_report, 'disetujui'));
                 }
 
                 // === WORKFLOW === //

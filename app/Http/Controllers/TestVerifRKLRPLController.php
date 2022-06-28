@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\AndalAttachment;
 use App\Entity\Announcement;
 use App\Entity\EnvManageDoc;
 use App\Entity\FeasibilityTestTeam;
@@ -322,6 +323,20 @@ class TestVerifRKLRPLController extends Controller
                 }
             }
         }
+
+        // PETA TITIK
+        $peta_titik = [ 
+            [
+                'name' => 'Peta Titik Pengelolaan',
+                'link' => $peta_titik_pengelolaan,
+                'pdf' => $peta_titik_pengelolaan_pdf
+            ],
+            [
+                'name' => 'Peta Titik Pemantauan',
+                'link' => $peta_titik_pemantauan,
+                'pdf' => $peta_titik_pemantauan_pdf
+            ],
+        ];
         
         $announcement = Announcement::where('project_id', $id_project)->first();
 
@@ -351,6 +366,9 @@ class TestVerifRKLRPLController extends Controller
 
         // Konsultasi Publik
         $public_consultation = PublicConsultation::where('project_id', $project->id)->with('docs')->first();
+
+        // Andal Pertek
+        $pertek = AndalAttachment::where([['id_project', $project->id],['is_pertek', true]])->get();
         
         // Verification Form Disable
         $is_disabled = false;
@@ -403,8 +421,9 @@ class TestVerifRKLRPLController extends Controller
                                 $peta_titik_pemantauan_pdf,
                                 $peta_titik_pengelolaan_pdf,
                                 $project->required_doc);
+                        } else if($f->name == 'peta_titik') {
+                            $link = $peta_titik;
                         }
-
 
                         $form[] = [
                             'id' => $f->id,
@@ -499,8 +518,10 @@ class TestVerifRKLRPLController extends Controller
                     'description' => null,
                     'type' => 'non-download'
                 ];
+                
                 $form[] =  [
                   'name' => 'peta_titik',
+                  'link' => $peta_titik,
                   'suitability' => null,
                   'description' => null,
                   'type' => 'non-download'
@@ -530,6 +551,7 @@ class TestVerifRKLRPLController extends Controller
             'project' => $project,
             'lpjp' => $lpjp,
             'penyusun_mandiri' => $penyusun_mandiri,
+            'pertek' => $pertek,
             'is_disabled' => $is_disabled
         ];
 

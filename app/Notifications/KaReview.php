@@ -91,15 +91,27 @@ class KaReview extends Notification
         //     $message = 'Pemrakara telah mereview ' . $this->formulirOrDokumen() . ' '  . $this->document_type . ' untuk dinilai';
         // }
 
-        if($this->kaReviews->document_type == 'ka') {
-            $message = 'Penyusunan Formulir Kerangka Acuan';
-        } else if($this->kaReviews->document_type == 'andal-rkl-rpl') {
-            $message = 'Andal RKL RPL';
-        } else if($this->kaReviews->document_type == 'ukl-upl') {
-            $message = 'Penyusunan Formulir UKL-UPL';
-        }
+        if($this->kaReviews->status == 'submit') {
+            if($this->kaReviews->document_type == 'ka') {
+                $message = 'Penyusunan Formulir Kerangka Acuan';
+            } else if($this->kaReviews->document_type == 'andal-rkl-rpl') {
+                $message = 'Andal RKL RPL';
+            } else if($this->kaReviews->document_type == 'ukl-upl') {
+                $message = 'Penyusunan Formulir UKL UPL';
+            }
+    
+            return "Halo " . $notifiable->name . ', ' . $message . ' dengan nama usaha/kegiatan ' . $this->kaReviews->project->project_title . ' berhasil terkirim.';
+        } else {
+            if($this->kaReviews->document_type == 'ka') {
+                $message = 'Formulir Kerangka Acuan';
+            } else if($this->kaReviews->document_type == 'andal-rkl-rpl') {
+                $message = 'Andal RKL RPL';
+            } else if($this->kaReviews->document_type == 'ukl-upl') {
+                $message = 'UKL UPL';
+            }
 
-        return "Halo " . $notifiable->name . ', ' . $message . ' dengan nama usaha/kegiatan ' . $this->kaReviews->project->project_title . ' berhasil terkirim.';
+            return 'Selamat ' . $notifiable->name . ', ' . $message . ' dengan nama kegiatan ' . $this->kaReviews->project->project_title . ' sudah selesai.';
+        }
     }
 
     private function formulirOrDokumen()

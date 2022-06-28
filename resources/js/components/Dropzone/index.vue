@@ -50,7 +50,7 @@ export default {
     },
     maxFiles: {
       type: Number,
-      default: 3,
+      default: 10,
     },
     autoProcessQueue: {
       type: Boolean,

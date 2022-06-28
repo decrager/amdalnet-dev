@@ -254,6 +254,9 @@ export default {
         .then((res) => {
           this.data.id_project_rona_awal = res.data.id;
           this.data.project_rona_awal = [res.data];
+          if (this.data.id === null) {
+            this.data.id = res.data.id_rona_awal;
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -261,7 +264,6 @@ export default {
         .finally(() => {
           this.saving = false;
         });
-
       this.$emit('onSave', this.data);
       this.handleClose();
     },
@@ -321,9 +323,9 @@ export default {
         ((this.data.measurement).trim() === '');
 
       if (this.noMaster){
-        return ((this.data.name).trim() === '') || emptyTexts;
+        return ((this.data.name).trim() === '') || (this.data.id_component_type === null) || emptyTexts;
       }
-      return (this.data.id === null) || (this.data.id <= 0) || emptyTexts;
+      return (this.data.id === null) || (this.data.id_component_type === null) || (this.data.id <= 0) || emptyTexts;
     },
     handleUploadPDF(file, filelist) {
       this.pdfError = null;

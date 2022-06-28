@@ -343,30 +343,37 @@ class ProjectController extends Controller
             }
 
             if ($files = $request->file('fileMap')) {
+                // check if fileMap exists in DB
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
                 $files->storePubliclyAs('public/map/', $mapName);
-                ProjectMapAttachment::create([
+                ProjectMapAttachment::updateOrCreate(
+                [
                     'id_project' => $project->id,
                     'attachment_type' => 'tapak',
+                    'step' => 'ka',
+                ],
+                [
                     'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
                     'properties' => $request->geomProperties,
                     'id_styles' => $request->geomStyles,
-                    'step' => 'ka',
                 ]);
                 // clone for Andal
-                ProjectMapAttachment::create([
+                ProjectMapAttachment::updateOrCreate(
+                [
                     'id_project' => $project->id,
                     'attachment_type' => 'tapak',
+                    'step' => 'andal',
+                ],
+                [
                     'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
                     'properties' => $request->geomProperties,
                     'id_styles' => $request->geomStyles,
-                    'step' => 'andal',
                 ]);
             }
 

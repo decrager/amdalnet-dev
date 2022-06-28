@@ -222,7 +222,7 @@ class ProjectMapAttachmentController extends Controller
             ->select('project_map_attachments.id_project', 'projects.project_title', 'project_map_attachments.attachment_type', 'project_map_attachments.stored_filename')
             ->leftJoin('projects', 'projects.id', '=', 'project_map_attachments.id_project')
             ->where('project_map_attachments.file_type', '=', 'SHP')
-            ->where('step', 'ka')
+            ->where('project_map_attachments.step', 'ka')
             ->get();
 
         return response()->json($getProjectMap);
@@ -249,7 +249,8 @@ class ProjectMapAttachmentController extends Controller
                             'type', attachment_type,
                             'field', properties,
                             'styles', map_styles.renderer,
-                            'sector', sub_projects.sector_name
+                            'sector', sub_projects.sector_name,
+                            'step', project_map_attachments.step
                         )
                     )
                 )
@@ -264,7 +265,7 @@ class ProjectMapAttachmentController extends Controller
                 return $query->where('project_map_attachments.id_project', '=', $request->id);
             })
             ->when($request->has('step'), function ($query) use ($request) {
-                return $query->where('step', '=', $request->step);
+                return $query->where('project_map_attachments.step', '=', $request->step);
             })
             ->where('project_map_attachments.file_type', '=', 'SHP')
             ->whereNotNull('project_map_attachments.geom')
@@ -313,7 +314,7 @@ class ProjectMapAttachmentController extends Controller
             ->select('projects.id', 'projects.project_title')
             ->leftJoin('project_map_attachments', 'projects.id', 'project_map_attachments.id_project')
             ->whereNotNull('project_map_attachments.geom')
-            ->where('step', 'ka')
+            ->where('project_map_attachments.step', 'ka')
             ->orderBy('projects.created_at', 'desc')
             ->groupBy('projects.id', 'projects.project_title', 'projects.created_at')
             ->get();
@@ -334,7 +335,7 @@ class ProjectMapAttachmentController extends Controller
             ->when($request->has('id_project'), function ($query) use ($request) {
                 return $query->where('id_project', '=', $request->id_project);
             })
-            ->where('step', 'ka')
+            ->where('project_map_attachments.step', 'ka')
             ->leftJoin('projects', 'projects.id', '=', 'project_map_attachments.id_project')
             ->get();
 

@@ -17,6 +17,7 @@ use App\Entity\TestingMeeting;
 use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
 use App\Notifications\AndalNotification;
+use App\Notifications\MeetingReportNotification;
 use App\Utils\Html;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
@@ -89,11 +90,17 @@ class MeetingReportController extends Controller
             $meeting_report = null;
 
             if($request->dokumen_file) {
+                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
+
+                if($meeting_report->file) {
+                    $deleted_file = str_replace(Storage::url(''), '', $meeting_report->file);
+                    Storage::disk('public')->delete($deleted_file);
+                }
+
                 $file = $this->base64ToFile($request->dokumen_file);
                 $name = 'berita-acara-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
 
-                $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
                 $meeting_report->file = $name;
                 $meeting_report->save();
 
@@ -127,7 +134,7 @@ class MeetingReportController extends Controller
             }
 
             if(count($receiver) > 0) {
-                Notification::send($receiver, new MeetingReportInvitation($meeting_report, 'disetujui'));
+                Notification::send($receiver, new MeetingReportNotification($meeting_report, 'disetujui'));
             }
             
             // Notification Penyusunan Andal

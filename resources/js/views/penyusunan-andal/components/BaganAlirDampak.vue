@@ -259,7 +259,8 @@ export default {
           (node) => node.label === 'Tahap ' + component.tahap
         );
         const to = this.data.nodes.find(
-          (node) => node.label === component.component && node.tahap === component.tahap
+          (node) =>
+            node.label === component.component && node.tahap === component.tahap
         );
         links.push({
           id,
@@ -271,10 +272,17 @@ export default {
       dampakPrimer.forEach((dampak) => {
         dampak.parents.forEach((parent) => {
           const from = this.data.nodes.find(
-            (node) => node.label === parent && node.component === true && node.tahap === dampak.tahap
+            (node) =>
+              node.label === parent &&
+              node.component === true &&
+              node.tahap === dampak.tahap
           );
           const to = this.data.nodes.find(
-            (node) => node.label === dampak.dampak && node.type === 'primer' && node.component === from.label
+            (node) =>
+              node.label === dampak.dampak &&
+              node.type === 'primer' &&
+              node.component === from.label &&
+              node.tahap === dampak.tahap
           );
 
           id++;
@@ -295,7 +303,7 @@ export default {
           const fromArray = this.data.nodes.filter(
             (node) => node.label === parent && node.type === 'primer'
           );
-          fromArray.forEach(fA => {
+          fromArray.forEach((fA) => {
             id++;
             links.push({
               id,
@@ -378,7 +386,16 @@ export default {
         document.getElementById('pdf').appendChild(canvas);
         const img = canvas.toDataURL('image/png', 0.3);
         const pdf = new JsPDF('l', 'mm', 'a3');
-        pdf.addImage(img, 'PNG', 0, 0, 420, Math.floor(h * 0.264583), undefined, 'FAST');
+        pdf.addImage(
+          img,
+          'PNG',
+          0,
+          0,
+          420,
+          Math.floor(h * 0.264583),
+          undefined,
+          'FAST'
+        );
         this.loadingPDF = false;
         pdf.save('Bagan Alir Dampak Penting.pdf');
         document.getElementById('pdf').innerHTML = '';
