@@ -37,10 +37,10 @@
             </p>
           </div>
           <div>
-            <a href="https://www.facebook.com/" target="_blank">
+            <a href="https://www.instagram.com/" target="_blank">
               <i class="ri-instagram-fill footer__social" />
             </a>
-            <a href="https://www.instagram.com/" target="_blank">
+            <a href="https://www.whatsapp.com/" target="_blank">
               <i class="ri-whatsapp-fill footer__social" />
             </a>
             <a href="https://twitter.com/" target="_blank">
@@ -58,17 +58,17 @@
 
           <ul class="footer__mitra__item">
             <li class="footer__item">
-              <a href="#" target="_blank">
+              <a href="https://www.atrbpn.go.id/" target="_blank">
                 <img src="/images/logo-atr-bpn.png" alt="" class="footer__mitra">
               </a>
             </li>
             <li class="footer__item">
-              <a href="#" target="_blank">
+              <a href="https://www.bkpm.go.id/" target="_blank">
                 <img src="/images/kementrian-bkpm.svg" alt="" class="footer__mitra">
               </a>
             </li>
             <li class="footer__item">
-              <a href="#" target="_blank">
+              <a href="https://www.kkp.go.id/" target="_blank">
                 <img src="/images/logo-kkp.png" alt="" class="footer__mitra">
               </a>
             </li>
