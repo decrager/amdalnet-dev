@@ -246,9 +246,10 @@ export default {
             const propType = getType.features[0].properties.type;
             const propFields = getType.features[0].properties.field;
             const propStyles = getType.features[0].properties.styles;
+            const step = getType.features[0].properties.step;
 
             // Tapak
-            if (propType === 'tapak') {
+            if (propType === 'tapak' && step === 'ka') {
               const geojsonLayerArray = new GeoJSONLayer({
                 url: urlBlob(item.feature_layer),
                 outFields: ['*'],
