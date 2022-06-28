@@ -134,6 +134,7 @@
           </el-button>
 
           <el-button
+            :loading="loading"
             type="submit"
             size="mini"
             icon="el-icon-s-claim"
@@ -167,6 +168,7 @@ export default {
   data() {
     return {
       data: {},
+      loading: false,
       form: {
         name: null,
         id_card_number: null,
@@ -253,6 +255,7 @@ export default {
     closeDialog() {
       // this.show = false;
       this.$emit('handleCloseDialog');
+      this.resetForm();
     },
     async getResponderType() {
       await axios.get('api/responder-types').then((response) => {
@@ -277,6 +280,7 @@ export default {
       // validasi dulu
       this.$refs.feedForm.validate((valid) => {
         if (valid && this.errorSelfie === null) {
+          this.loading = true;
           const formData = new FormData();
           formData.append('photo_filepath', this.photo_filepath);
           formData.append('name', this.form.name);
@@ -304,10 +308,12 @@ export default {
             .post('api/feedbacks', formData, { headers })
             .then(() => {
               this.closeDialog();
+              this.loading = false;
               this.getAnnouncement();
             })
             .catch((error) => {
               this.errorMessage = error.message;
+              this.loading = false;
               console.error('There was an error!', error);
             });
         } else {
@@ -318,6 +324,18 @@ export default {
     },
     isFileImage(file) {
       return file && file['type'].split('/')[0] === 'image';
+    },
+    resetForm() {
+      this.$refs['feedForm'].resetFields();
+      this.errorSelfie = null;
+      this.photo_filepath = null;
+      this.form.responder_type_id = null;
+      this.form.comunity_gender = null;
+      this.form.concern = null;
+      this.form.expectation = null;
+      this.form.environment_condition = null;
+      this.form.local_impact = null;
+      this.form.rating = null;
     },
   },
 };
