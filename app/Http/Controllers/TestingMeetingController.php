@@ -192,11 +192,17 @@ class TestingMeetingController extends Controller
 
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
-                $file = $this->base64ToFile($request->dokumen_file);
-                $name = 'verifikasi-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
-                Storage::disk('public')->put($name, $file['file']);
 
                 $testing_meeting = TestingMeeting::where([['id_project', $request->idProject], ['document_type', 'ka']])->first();
+
+                if($testing_meeting->file) {
+                    Storage::disk('public')->delete($testing_meeting->rawFile());
+                }
+
+                $file = $this->base64ToFile($request->dokumen_file);
+                $name = 'verifikasi-ka/' . uniqid() . '.' . $file['extension'];
+                Storage::disk('public')->put($name, $file['file']);
+
                 $testing_meeting->file = $name;
                 $testing_meeting->save();
 
@@ -228,7 +234,14 @@ class TestingMeetingController extends Controller
         if($request->invitation_file) {
             $project = Project::findOrFail($request->idProject);
             $file = $this->base64ToFile($request->invitation_file);
-            $name = 'meeting-ka/' . strtolower($project->project_title) . '.' . $file['extension'];
+            
+            if($data['type'] != 'new') {
+                if($meeting->invitation_file) {
+                    Storage::disk('public')->delete($meeting->rawInvitationFile());
+                }
+            }
+
+            $name = 'meeting-ka/' . uniqid() . '.' . $file['extension'];
             Storage::disk('public')->put($name, $file['file']);
             $meeting->invitation_file = $name;
 
