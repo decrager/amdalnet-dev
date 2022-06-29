@@ -31,7 +31,10 @@
           />
         </el-col>
       </el-row>
-      <template v-if="allData.length > 0">
+      <template v-if="loading">
+        <div v-loading="loading" />
+      </template>
+      <template v-else-if="allData.length > 0">
         <el-row :gutter="20" class="bb bg-custom">
           <el-col :span="2" class="text-center py1">
             <div class="d-flex align-items-center justify-align-center">
@@ -140,6 +143,7 @@ export default {
       optionValue: null,
       sort: 'ASC',
       limit: 10,
+      loading: false,
     };
   },
   created() {
@@ -170,6 +174,7 @@ export default {
       return finalDate;
     },
     getAll(search, sort, limit) {
+      this.loading = true;
       axios
         .get(
           `/api/template-ukl-upl-medium-low?type=SS&keyword=${this.keyword}&page=${this.listQuery.page}&sort=${this.sort}&limit=${this.limit}`
@@ -177,6 +182,9 @@ export default {
         .then((response) => {
           this.allData = response.data.data;
           this.total = response.data.total;
+          this.loading = false;
+        }).catch(() => {
+          this.loading = false;
         });
     },
     handleSearch() {

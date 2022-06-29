@@ -37,14 +37,16 @@ class EnvironmentalPermitController extends Controller
             return response()->json($environmentalPermit, 200);
         } else {
             $environmentalPermit = EnvironmentalPermit::When($request->has('keyword'), function ($query) use ($request) {
-                $columnsToSearch = ['authority', 'kegiatan_name', 'sk_number', 'publisher'];
-                $searchQuery = '%' . $request->keyword . '%';
-                $indents = $query->where('pemarkasa_name', 'ILIKE', '%'.$request->keyword.'%');
-                foreach($columnsToSearch as $column) {
-                    $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+                if($request->keyword) {
+                    $columnsToSearch = ['authority', 'kegiatan_name', 'sk_number', 'publisher'];
+                    $searchQuery = '%' . $request->keyword . '%';
+                    $indents = $query->where('pemarkasa_name', 'ILIKE', '%'.$request->keyword.'%');
+                    foreach($columnsToSearch as $column) {
+                        $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+                    }
+                    return $indents;
                 }
     
-                return $indents;
             })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
     
             return response()->json($environmentalPermit, 200);

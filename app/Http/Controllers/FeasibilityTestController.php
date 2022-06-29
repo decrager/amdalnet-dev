@@ -14,12 +14,14 @@ use App\Entity\ProjectAddress;
 use App\Entity\TestingMeetingInvitation;
 use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
+use App\Notifications\FeasibilityTestNotification;
 use App\Notifications\FeasibilityTestRecapNotification;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Utils\Document;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use PDF;
@@ -305,7 +307,7 @@ class FeasibilityTestController extends Controller
 
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
-        $save_file_name = 'uji-kelayakan-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
+        $save_file_name = uniqid() . '-uji-kelayakan-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
 
         $project_type = $project->project_type;
         $project_title_big = strtoupper($project->project_title);
@@ -380,16 +382,27 @@ class FeasibilityTestController extends Controller
         $templateProcessor->setValue('ketua_tuk_position', $tuk['ketua_tuk_position']);
         $templateProcessor->setValue('ketua_tuk_nip', $tuk['ketua_tuk_nip']);
 
-        $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
-
         $document_attachment = DocumentAttachment::where([['id_project', $id_project], ['type', 'Dokumen Uji Kelayakan']])->first();
+        if($document_attachment) {
+            Storage::disk('public')->delete($document_attachment->rawAttachment());
+        }
+
+        $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
+       
         if(!$document_attachment) {
+            // === NOTIFICATION === //
+            $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+            if($pemrakarsa_user) {
+                Notification::send([$pemrakarsa_user], new FeasibilityTestNotification($project));
+            }
+
             $document_attachment = new DocumentAttachment();
             $document_attachment->id_project = $id_project;
-            $document_attachment->attachment = 'uji-kelayakan/' . $save_file_name;
             $document_attachment->type = 'Dokumen Uji Kelayakan';
-            $document_attachment->save();
         }
+        
+        $document_attachment->attachment = 'uji-kelayakan/' . $save_file_name;
+        $document_attachment->save();
 
         // WORKFLOW
         if($project->marking == 'amdal.feasibility-ba-signed') {
@@ -402,7 +415,7 @@ class FeasibilityTestController extends Controller
             $project->save();
         }
 
-        return $save_file_name;
+        return $document_attachment->attachment;
     }
 
     private function getTukData($data, $tuk) {
@@ -432,39 +445,12 @@ class FeasibilityTestController extends Controller
     }
 
     private function exportPDF($id_project) {
-        $project = Project::findOrFail($id_project);
-        $project_address = ProjectAddress::where('id_project', $project->id)->first();
-        $docs_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->isoFormat('D MMMM Y');
-        $tuk = null;
-
-        // GET TUK
-        $tuk_data = [
-            'kepala_sekretariat_tuk_name' => '',
-            'kepala_sekretariat_tuk_nip' => '',
-            'ketua_tuk_position' => '',
-            'ketua_tuk_name' => '',
-            'ketua_tuk_nip' => ''
-        ];
-
-        if(strtolower($project->authority) == 'pusat' || $project->authority == null) {
-            $tuk = FeasibilityTestTeam::where('authority', 'Pusat')->first();
-        } else if((strtolower($project->authority) === 'provinsi') && ($project->auth_province !== null)) {
-            $tuk = FeasibilityTestTeam::where([['authority', 'Provinsi'],['id_province_name', $project->auth_province]])->first();
-        } else if((strtolower($project->authority) == 'kabupaten') && ($project->auth_district !== null)) {
-            $tuk = FeasibilityTestTeam::where([['authority', 'Kabupaten/Kota'],['id_district_name', $project->auth_district]])->first();
-        }
-
-        $tuk = $this->getTukData($tuk, $tuk_data);
-
-        $pdf = PDF::loadView('document.template_kelayakan', 
-            compact(
-                'project',
-                'project_address',
-                'docs_date',
-                'tuk'
-            ));
-
-        return $pdf->download('hehey.pdf');
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Uji Kelayakan']])->first();
+        $downloadUri = url($document_attachment->attachment);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 
     private function getRecap($id_project)

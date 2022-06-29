@@ -225,6 +225,9 @@ export default {
       this.getAll(this.keyword);
     },
     handleFilter() {
+      if (this.optionValue === 'Semua') {
+        this.optionValue = null;
+      }
       axios
         .get(
           `/api/environmental-permit?keyword=${this.optionValue}&page=${this.listQuery.page}`
