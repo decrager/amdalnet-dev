@@ -14,6 +14,7 @@ use App\Entity\ProjectAddress;
 use App\Entity\TestingMeetingInvitation;
 use App\Entity\TukSecretaryMember;
 use App\Laravue\Models\User;
+use App\Notifications\FeasibilityTestNotification;
 use App\Notifications\FeasibilityTestRecapNotification;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
@@ -389,6 +390,12 @@ class FeasibilityTestController extends Controller
         $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
        
         if(!$document_attachment) {
+            // === NOTIFICATION === //
+            $pemrakarsa_user = User::where('email', $project->initiator->email)->first();
+            if($pemrakarsa_user) {
+                Notification::send([$pemrakarsa_user], new FeasibilityTestNotification($project));
+            }
+
             $document_attachment = new DocumentAttachment();
             $document_attachment->id_project = $id_project;
             $document_attachment->type = 'Dokumen Uji Kelayakan';
