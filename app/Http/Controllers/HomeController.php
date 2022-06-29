@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\EntityHome;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
+use App\Utils\Storage;
 use Carbon\Carbon;
+use App\Utils\TemplateProcessor;
 
 class HomeController extends Controller
 {
@@ -95,5 +97,58 @@ class HomeController extends Controller
     public function destroy(EntityHome $entityHome)
     {
         //
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function s3url()
+    {
+        echo Storage::temporaryUrl('public/test/61dc1555d7782.docx', Carbon::now()->addMinutes(30));
+        var_dump(Storage::url('public/test/61dc1555d7782.docx'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function s3template()
+    {
+        $templateProcessor = new TemplateProcessor('template_andal.docx');
+
+        $templateProcessor->setValue('pemrakarsa', '12');
+        $templateProcessor->setValue('project_title_s', 'title');
+
+        $save_file_name = 'workspace-xxx-andal' . '.docx';
+
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName), 'public');
+        unlink($tmpName);
+
+        echo Storage::disk('public')->url('workspace/' . $save_file_name);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function s3download()
+    {
+        
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function s3override()
+    {
+        $save_file_name = 'workspace-xxx-andal' . '.docx';
+        echo Storage::disk('public')->url('workspace/' . $save_file_name);
     }
 }

@@ -1,3 +1,9 @@
+1. Untuk file template tetap berada di public/
+2. Proses TemplateProcessor tidak bisa langsung menulis ke object storage, harus disimpan dulu ke tmp dir laravel / php
+3. Untuk proses convert ke pdf menggunakan pdfWriter, sama seperti template processor. Keduanya menulis ke file handle, jadi harus pakek tmp dir, dan tmp file
+4. Proses pertukaran data antara oods - service laravel - object storage, jadi agak kompleks
+
+
 /Work/laravel/amdalnet/app/Http/Controllers/AndalComposingController.php
 OK 2325: $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
 OK 2697: $templateProcessor->saveAs(Storage::disk('public')->path('formulir/' . $save_file_name));

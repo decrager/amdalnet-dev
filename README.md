@@ -138,3 +138,9 @@ this.$store.dispatch('user/getInfo')
 
 https://laravel.com/docs/8.x/octane#swoole
 
+# Run laravel
+
+```
+php artisan serve
+```
+
