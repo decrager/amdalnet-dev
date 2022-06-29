@@ -1,16 +1,19 @@
 <template>
   <div class="user-dashboard">
-    <div v-if="isFormulator || isInitiator">
+    <div v-if="isFormulator || isInitiator || isLPJP">
       <el-row :gutter="20">
-        <el-col v-if="isFormulator" :span="12"><formulator-information :user="user" :is-loading="isLoading" :avatar="avatar" /></el-col>
-        <el-col v-else :span="12"><initiator-information :user="user" :is-loading="isLoading" :avatar="avatar" /></el-col>
+        <el-col :span="12">
+          <formulator-information v-if="isFormulator" :user="user" :is-loading="isLoading" :avatar="avatar" />
+          <initiator-information v-if="isInitiator" :user="user" :is-loading="isLoading" :avatar="avatar" />
+          <lpjp-information v-if="isLPJP" :user="user" :is-loading="isLoading" />
+        </el-col>
         <el-col :span="12">
           <user-activities :user="user" />
           <user-summary :user="user" />
         </el-col>
       </el-row>
       <el-row v-if="!isPemerintah">
-        <project-table v-if="!isFormulator" />
+        <project-table v-if="isInitiator" />
       </el-row>
     </div>
     <div v-if="isExaminer">
@@ -24,14 +27,16 @@
       </el-row>
       <examiner-activities />
     </div>
-    <div v-if="isLPJP">
+    <!-- <div v-if="isLPJP">
       <el-row :gutter="20">
         <el-col :span="12">
           <lpjp-information :user="user" :is-loading="isLoading" />
         </el-col>
         <el-col :span="12" />
+          <user-activities :user="user" />
+          <user-summary :user="user" />
       </el-row>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>

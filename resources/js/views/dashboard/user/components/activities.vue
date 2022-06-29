@@ -54,6 +54,9 @@ export default {
     isExaminer(){
       return this.$store.getters.roles[0].split('-')[0] === 'examiner';
     },
+    isLPJP(){
+      return this.$store.getters.roles.includes('lpjp');
+    },
   },
   watch: {
     user: function(val) {
@@ -72,6 +75,9 @@ export default {
       }
       if (this.isFormulator) {
         param = { formulatorId: this.user.id };
+      }
+      if (this.isLPJP){
+        param = { lpjpId: this.user.id };
       }
       await activitiesResource.list(param).then((res) => {
         if (res.data){
