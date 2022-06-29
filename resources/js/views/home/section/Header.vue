@@ -48,13 +48,14 @@
           </li>
           <li class="nav__item" style="margin-top:1.2rem">
             <a href="#" class="nav__link" :class="{'active-link':(activeMenu === 'Daftar')}" @click="handleSetMenu('STATIC')">
-              Data &amp; Informasi<br>Persetujuan Lingkungan
+              Data &amp; Informasi
               <template v-if="isActiveDaftar">
                 <i class="el-icon-arrow-up" />
               </template>
               <template v-else>
                 <i class="el-icon-arrow-down" />
               </template>
+              <br>Persetujuan Lingkungan
             </a>
             <ul v-if="isActiveDaftar" class="left0 top4">
               <li>
