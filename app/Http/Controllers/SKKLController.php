@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\DocumentAttachment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
@@ -253,6 +254,16 @@ class SKKLController extends Controller
         $project = Project::findOrFail($idProject);
 
         // === DOKUMEN KA, ANDAL & RKL RPL === //
+        $document_attachment = DocumentAttachment::where('id_project', $idProject)
+                                    ->whereIn('type', ['Formulir KA', 'Dokumen Andal', 'Dokumen RKL RPL'])
+                                    ->get();
+        $dokumen_ka = $document_attachment->where('type', 'Formulir KA')->first() ? 
+                      $document_attachment->where('type', 'Formulir KA')->first()->attachment : null;
+        $dokumen_andal = $document_attachment->where('type', 'Dokumen Andal')->first() ? 
+                         $document_attachment->where('type', 'Dokumen Andal')->first()->attachment : null;
+        $dokumen_rkl_rpl = $document_attachment->where('type', 'Dokumen RKL RPL')->first() ? 
+                           $document_attachment->where('type', 'Dokumen RKL RPL')->first()->attachment : null;
+
         // Date
         $andalDate = '';
         $andal = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($idProject) {
@@ -338,17 +349,17 @@ class SKKLController extends Controller
                 ],
                 [
                     'name' => 'Dokumen KA',
-                    'file' => Storage::url('formulir/' . $idProject . '-form-ka-andal.docx'),
+                    'file' => $dokumen_ka,
                     'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
                 ],
                 [
                     'name' => 'Dokumen ANDAL',
-                    'file' =>  Storage::url('workspace/' . $idProject . '-andal.docx'),
+                    'file' =>  $dokumen_andal,
                     'updated_at' => $andalDate
                 ],
                 [
                     'name' => 'Dokumen RKL RPL',
-                    'file' => Storage::url('workspace/' .  $idProject . '-rkl-rpl.docx'),
+                    'file' => $dokumen_rkl_rpl,
                     'updated_at' => $rklRplDate
                 ]
             ];
