@@ -15,6 +15,7 @@
     <proposal-counter v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
     <amdal-digital v-if="toggleAD" />
+    <LPJP v-if="toggleLPJP" />
     <footer-home />
     <div class="footer__rights">
       <p class="footer__copy">
@@ -40,6 +41,7 @@ import ActionHome from './section/Action.vue';
 import ProposalCounter from './section/ProposalCounter.vue';
 import AnnouncementHome from './section/Announce.vue';
 import AmdalDigital from './amdal-digital/index.vue';
+import LPJP from './lpjp/index.vue';
 import FooterHome from './section/Footer.vue';
 import Disclaimer from './components/Disclaimer.vue';
 import Cookies from 'js-cookie';
@@ -63,6 +65,7 @@ export default {
     'footer-home': FooterHome,
     AmdalDigital,
     Disclaimer,
+    LPJP,
   },
   data() {
     return {
@@ -75,6 +78,7 @@ export default {
       toggleUklSpesifik: false,
       toggleSop: false,
       toggleAD: false,
+      toggleLPJP: false,
     };
   },
   created() {
@@ -90,6 +94,7 @@ export default {
         this.toggleAD = false;
         this.toggleMenuMateri = false;
         this.toggleMenuKebijakan = false;
+        this.toggleLPJP = false;
       } else {
         this.setAllState(e);
       }
@@ -103,6 +108,7 @@ export default {
       const spec = (e === 'UKL_UPL_S') ? 'true' : 'false';
       const sop = (e === 'SOP') ? 'true' : 'false';
       const ad = (e === 'AMDALDigital') ? 'true' : 'false';
+      const lpjp = (e === 'LPJP') ? 'true' : 'false';
       this.toggleMenuMateri = JSON.parse(materi);
       this.toggleMenuKebijakan = JSON.parse(kebijakan);
       this.toggleIzin = JSON.parse(izin);
@@ -112,6 +118,7 @@ export default {
       this.toggleUklSpesifik = JSON.parse(spec);
       this.toggleSop = JSON.parse(sop);
       this.toggleAD = JSON.parse(ad);
+      this.toggleLPJP = JSON.parse(lpjp);
     },
     isFirstVisit() {
       const recurring = Cookies.get('recurring');

@@ -608,11 +608,11 @@ input {
 }
 
 /*=============== AMDAL Digital ===============*/
-.amdal-digital {
+.amdal-digital, .lpjp-table-section {
     background-color: #062307;
     padding: 5em 2em;
 }
-.amdal-digital__title {
+.amdal-digital__title, .lpjp-table-section__title {
     margin-top: 2em;
     margin-bottom: 2em;
 }

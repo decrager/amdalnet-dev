@@ -60,9 +60,11 @@ class LpjpController extends Controller
         }
 
         return LpjpResource::collection(Lpjp::where(function ($query) use ($request) {
-            if ($request->active == '1') {
-                return $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+            if ($request->active == '1' || $request->status === '1') {
+                $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
                     ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
+            } else if($request->status === '0') {
+                $query->where('date_end', '<', date('Y-m-d H:i:s'));
             }
         })->where(function($query) use($request) {
             if($request->search) {

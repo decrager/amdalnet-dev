@@ -64,7 +64,7 @@
                 <a href="">Statistik Izin</a>
               </li>
               <li>
-                <a href="">Daftar LPJP</a>
+                <a href="#" @click="handleSetMenu('LPJP')">Daftar LPJP</a>
               </li>
             </ul>
           </li>
