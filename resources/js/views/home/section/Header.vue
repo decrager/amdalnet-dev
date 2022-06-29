@@ -34,7 +34,7 @@
                 <a href="">Formulir KA Andal Standar Spesifik</a>
               </li>
               <li>
-                <a href="">UKL-UPL Standar Spesifik</a>
+                <a href="#">UKL-UPL Standar Spesifik</a>
                 <i class="el-icon-arrow-down" />
                 <ul>
                   <li><a href="#" @click="handleSetMenu('UKL_UPL_M')">Template UKL-UPL Menengah Rendah</a></li>
@@ -60,9 +60,9 @@
               <li>
                 <a href="#" @click="handleSetMenu('IZIN')">Daftar Izin</a>
               </li>
-              <li>
+              <!-- <li>
                 <a href="">Statistik Izin</a>
-              </li>
+              </li> -->
               <li>
                 <a href="#" @click="handleSetMenu('LPJP')">Daftar LPJP</a>
               </li>
