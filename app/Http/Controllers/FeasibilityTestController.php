@@ -446,7 +446,7 @@ class FeasibilityTestController extends Controller
 
     private function exportPDF($id_project) {
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Uji Kelayakan']])->first();
-        $downloadUri = $document_attachment->attachment;
+        $downloadUri = url($document_attachment->attachment);
         $key = Document::GenerateRevisionId($downloadUri);
         $convertedUri;
         $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
