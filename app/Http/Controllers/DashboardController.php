@@ -13,6 +13,8 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 
 use function PHPSTORM_META\type;
+use App\Entity\Formulator;
+use App\Http\Resources\FormulatorResource;
 
 class DashboardController extends Controller
 {
@@ -511,5 +513,18 @@ class DashboardController extends Controller
         }
 
         return $districts;
+    }
+    public function getLpjpFormulators(Request $request)
+    {
+        if(!$request->lpjpId){
+            return response('LPJP tidak ditemukan', 416);
+        }
+        return FormulatorResource::collection(Formulator::select('*')
+            ->selectRaw('case when date_start::date <= now()::date and date_end::date >= now()::date then 1 else 0 end as is_active')
+            ->where('id_lpjp', $request->lpjpId)
+            ->orderBy('name', 'asc')
+            ->get()
+        );
+
     }
 }

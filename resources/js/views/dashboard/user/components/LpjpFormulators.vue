@@ -6,7 +6,7 @@
     <el-table
       v-loading="loading"
       :data="data"
-      style="margin: 2em auto;"
+      style="margin: 1.5em auto;"
     >
       <el-table-column align="center" label="No." width="50px">
         <template slot-scope="scope">
@@ -37,7 +37,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.active ? 'Aktif' : 'Non-aktif' }}
+          {{ scope.row.is_active ? 'Aktif' : 'Non-aktif' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -49,14 +49,23 @@
       </el-table-column>
 
     </el-table>
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="query.page"
+      :limit.sync="query.limit"
+      @pagination="getData"
+    />
   </el-card>
 </template>
 <script>
 import Resource from '@/api/resource';
-const formulatorResource = new Resource('formulators');
+import Pagination from '@/components/Pagination';
+const formulatorResource = new Resource('dashboard/lpjp-formulators');
 
 export default {
   name: 'LpjpFormulators',
+  components: { Pagination },
   props: {
     user: {
       type: Object,
@@ -67,6 +76,11 @@ export default {
     return {
       data: [],
       loading: false,
+      query: {
+        page: 1,
+        limit: 15,
+      },
+      total: 0,
     };
   },
   mounted() {
@@ -78,6 +92,7 @@ export default {
       await formulatorResource.list({ lpjpId: this.user.id })
         .then((res) => {
           this.data = res.data;
+          // this.total = res.meta.total;
         })
         .finally(() => {
           this.loading = false;
