@@ -99,7 +99,7 @@
             <el-col :span="12">{{ project.registration_no || "Belum Mempunyai" }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Jenis Dokumen</el-col>
             <el-col :span="12">{{ project.required_doc }}</el-col></el-row>
-          <el-row style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
+          <el-row v-show="!isPemerintah" style="padding-bottom: 16px"><el-col :span="12">Tingkat Resiko</el-col>
             <el-col :span="12">{{ project.result_risk }}</el-col></el-row>
           <el-row style="padding-bottom: 16px"><el-col :span="12">Kewenangan</el-col>
             <el-col :span="12">{{ project.authority }}</el-col></el-row>
@@ -208,12 +208,17 @@ export default {
     getLpjps(){
       return this.$store.getters.lpjps;
     },
+    isPemerintah(){
+      return this.project.isPemerintah === 'true';
+    },
   },
   async mounted() {
+    console.log(this.project);
     this.fullLoading = true;
     // for step
     this.$store.dispatch('getStep', 1);
     // await this.getTeamOptions();
+    // console.log('OKE', this.project.isPemerintah === 'true');
     await this.getInitiatorData();
     await this.updateList();
     this.setDataTables();
@@ -305,6 +310,7 @@ export default {
       ];
     },
     loadMap() {
+      let layerTapak = null;
       if (this.readonly === true) {
         const map = new Map({
           basemap: 'satellite',
@@ -345,6 +351,10 @@ export default {
                   target: geojsonLayerArray.fullExtent,
                 });
               });
+              if (layerTapak !== null) {
+                map.layers.remove(layerTapak);
+              }
+              layerTapak = geojsonLayerArray;
               map.add(geojsonLayerArray);
             });
           });
@@ -595,7 +605,7 @@ export default {
 
         // eslint-disable-next-line no-undef
         _.each(this.project, (value, key) => {
-          if (key === 'listSubProject' || key === 'address'){
+          if (key === 'listSubProject' || key === 'address' || key === 'listKewenangan'){
             formData.append(key, JSON.stringify(value));
           } else {
             formData.append(key, value);

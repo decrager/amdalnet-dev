@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Announcement;
 use App\Entity\FeasibilityTestTeam;
 use App\Entity\FeasibilityTestTeamMember;
+use App\Entity\Feedback;
 use App\Entity\FormulatorTeam;
 use App\Entity\KaForm;
 use App\Entity\Lpjp;
@@ -21,6 +22,7 @@ use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use PDF;
 
 class TestingVerificationController extends Controller
 {
@@ -31,6 +33,10 @@ class TestingVerificationController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->spt) {
+            return $this->rekapSPT($request->idProject);
+        }
+
         if($request->checkComplete) {
             $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
             if($verification) {
@@ -92,7 +98,7 @@ class TestingVerificationController extends Controller
         } else {
             $verification = TestingVerification::where([['id_project', $request->idProject],['document_type', 'ka']])->first();
         }
-        
+
         $verification->notes = $data['notes'];
 
         if($request->complete) {
@@ -127,6 +133,20 @@ class TestingVerificationController extends Controller
             $form->description = isset($data['ka_forms'][$i]) ? $data['ka_forms'][$i]['description'] : null;
             $form->name = isset($data['ka_forms'][$i]) ? $data['ka_forms'][$i]['name'] : null;
             $form->save();
+        }
+        /* WORKFLOW */
+        $project = Project::where('id', $verification->id_project)->first();
+        if($project && $project->marking == 'amdal.form-ka-submitted'){
+
+            if($verification->is_complete){
+                $project->workflow_apply('review-amdal-form-ka');
+                $project->workflow_apply('approve-amdal-form-ka');
+                $project->save();
+            }else {
+                $project->workflow_apply('review-amdal-form-ka');
+                $project->workflow_apply('return-amdal-form-ka');
+                $project->save();
+            }
         }
 
         return response()->json(['message' => 'success']);
@@ -221,7 +241,7 @@ class TestingVerificationController extends Controller
                 }
             }
         }
-        
+
         $announcement = Announcement::where('project_id', $id_project)->first();
 
         // LPJP
@@ -249,12 +269,12 @@ class TestingVerificationController extends Controller
 
         // Konsultasi Publik
         $public_consultation = PublicConsultation::where('project_id', $project->id)->with('docs')->first();
-        
+
         // Verification Form Disable
         $is_disabled = false;
-        
+
         $form = [];
-        
+
         if($verification) {
             // Verification Form Disable
             if($verification->is_complete !== null) {
@@ -281,9 +301,9 @@ class TestingVerificationController extends Controller
                             $link = $project->pre_agreement_file;
                         } else if($f->name == 'peta') {
                             $link = $this->petaLink(
-                                $peta_tapak, 
-                                $peta_sosial, 
-                                $peta_ekologis, 
+                                $peta_tapak,
+                                $peta_sosial,
+                                $peta_ekologis,
                                 $peta_wilayah_studi,
                                 $peta_tapak_pdf,
                                 $peta_sosial_pdf,
@@ -341,9 +361,9 @@ class TestingVerificationController extends Controller
                   [
                     'name' => 'peta',
                     'link' => $this->petaLink(
-                        $peta_tapak, 
-                        $peta_sosial, 
-                        $peta_ekologis, 
+                        $peta_tapak,
+                        $peta_sosial,
+                        $peta_ekologis,
                         $peta_wilayah_studi,
                         $peta_tapak_pdf,
                         $peta_sosial_pdf,
@@ -396,9 +416,9 @@ class TestingVerificationController extends Controller
     }
 
     private function petaLink(
-            $peta_tapak, 
-            $peta_sosial, 
-            $peta_ekologis, 
+            $peta_tapak,
+            $peta_sosial,
+            $peta_ekologis,
             $peta_wilayah_studi,
             $peta_tapak_pdf,
             $peta_sosial_pdf,
@@ -436,6 +456,16 @@ class TestingVerificationController extends Controller
         ];
     }
 
+    private function rekapSPT($id_project)
+    {
+        $feedbacks = Feedback::whereHas('announcement', function($q) use($id_project) {
+            $q->where('project_id', $id_project);
+        })->where('is_relevant', true)->get();
+
+        $pdf = PDF::loadView('document.template_rekap_spt', compact('feedbacks'))->setPaper('a4', 'potrait');
+        return $pdf->download('Rekap SPT Masyarakat.pdf');
+    }
+
     private function exportNoDocx($id_project)
     {
         if (!Storage::disk('public')->exists('adm-no')) {
@@ -444,7 +474,7 @@ class TestingVerificationController extends Controller
 
         $project = Project::findOrFail($id_project);
         $verification = TestingVerification::where([['id_project', $id_project],['document_type', 'ka']])->first();
-        
+
         Carbon::setLocale('id');
 
         $docs_date = Carbon::createFromFormat('Y-m-d H:i:s', $verification->updated_at)->isoFormat('D MMMM Y');
@@ -456,7 +486,7 @@ class TestingVerificationController extends Controller
             }
         }
 
-        // === TUK === // 
+        // === TUK === //
         $tuk = null;
         $ketua_tuk_name = '';
         $ketua_tuk_nip = '';
@@ -482,7 +512,7 @@ class TestingVerificationController extends Controller
                 $authority_big = strtoupper($tuk->districtAuthority->name);
             }
         }
-        
+
         if($tuk) {
             $tuk_address = $tuk->address;
             $tuk_telp = $tuk->phone;

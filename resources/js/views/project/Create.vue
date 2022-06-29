@@ -24,7 +24,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 1MB, Opsional)" prop="fileKtr">
+                <el-form-item label="Upload Dokumen Kesesuaian Tata Ruang (Max 10MB, Opsional)" prop="fileKtr">
                   <classic-upload :name="fileKtrName" :fid="'ktrFile'" @handleFileUpload="handleFileKtrUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -65,7 +65,7 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="filePdf">
                     <div slot="label">
-                      <span>* Upload Peta PDF (Max 1MB) <el-tooltip class="item" effect="dark" content="Peta yang diunggah adalah peta tapak proyek yang telah dibuat oleh pemrakarsa atau lampiran peta atas rekomendasi kesesuaian tata ruang(format pdf ukuran A3)" placement="top">
+                      <span>* Upload Peta PDF (Max 10MB) <el-tooltip class="item" effect="dark" content="Peta yang diunggah adalah peta tapak proyek yang telah dibuat oleh pemrakarsa atau lampiran peta atas rekomendasi kesesuaian tata ruang(format pdf ukuran A3)" placement="top">
                         <i class="el-alert__icon el-icon-warning" />
                       </el-tooltip></span>
                     </div>
@@ -87,12 +87,35 @@
                 <el-row>
                   <el-form-item v-if="!isUmk" label="" prop="fileMap">
                     <div slot="label">
-                      <span>* Upload SHP Peta Tapak Proyek (File .zip max 1 MB)</span>
+                      <span>* Upload SHP Peta Tapak Proyek (File .zip max 10 MB)</span>
                       <a href="/sample_map/Peta_Tapak_Sample_Amdalnet.zip" class="download__sample" title="Download Sample SHP" target="_blank" rel="noopener noreferrer"><i class="ri-road-map-line" /> Download Contoh Shp</a>
                       <a href="/amdalnet-juknis-penyiapan-peta.pdf" class="download__juknis" title="Download Juknis Peta" target="_blank" rel="noopener noreferrer"><i class="ri-file-line" /> Download Juknis Peta</a>
                     </div>
                     <classic-upload :name="fileMapName" :fid="'fileMap'" @handleFileUpload="handleFileTapakProyekMapUpload" />
                   </el-form-item>
+                  <div v-if="isMapUploaded">
+                    <div style="margin-top: 15px">
+                      <h3>PETA RTRW PROPINSI</h3>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                      <div style="margin-top: 10px;">
+                        <el-select
+                          v-model="province"
+                          placeholder="Pilih"
+                          style="width: 100%"
+                          filterable
+                          @change="getLayerRtrw($event)"
+                        >
+                          <el-option
+                            v-for="item in provinces"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
+                          />
+                        </el-select>
+                      </div>
+                    </div>
+                  </div>
                 </el-row>
               </el-col>
             </el-row>
@@ -110,7 +133,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item v-if="currentProject.pippib === 'Y'" label="Upload Surat Pengecualian PIPPIB (Max 1MB, Opsional)" prop="filepippib">
+                <el-form-item v-if="currentProject.pippib === 'Y'" label="Upload Surat Pengecualian PIPPIB (Max 10MB, Opsional)" prop="filepippib">
                   <classic-upload :name="filepippibName" :fid="'ppippibFile'" @handleFileUpload="handleFilePIPPIBUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -125,7 +148,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item v-if="currentProject.kawasan_lindung === 'Y'" label="Unggah Surat Pengecualian Dalam Kawasan Lindung (Max 1MB, Opsional)" prop="fileKawasanLindung">
+                <el-form-item v-if="currentProject.kawasan_lindung === 'Y'" label="Unggah Surat Pengecualian Dalam Kawasan Lindung (Max 10MB, Opsional)" prop="fileKawasanLindung">
                   <classic-upload :name="fileKawasanLindungName" :fid="'kawasanLindungFile'" @handleFileUpload="handleFileKawasanLindungUpload($event)" />
                 </el-form-item>
               </el-col>
@@ -203,7 +226,7 @@
             <el-row>
               <el-form-item prop="listSubProject">
                 <keep-alive>
-                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :from-oss="fromOss" :idizin="idizin" @handlechecked="handlechecked($event)" />
+                  <sub-project-table :list="listSubProject" :list-kbli="getListKbli" :sectors="getSectorOptions" :from-oss="fromOss" :idizin="idizin" :pemerintah="currentProject.isPemerintah === 'true'" @handlechecked="handlechecked($event)" />
                 </keep-alive>
                 <el-button
                   type="primary"
@@ -213,7 +236,7 @@
               </el-form-item>
             </el-row>
             <!-- Alamat -->
-            <el-row type="flex" justify="end" :gutter="4">
+            <el-row v-show="currentProject.isPemerintah === 'true'" type="flex" justify="end" :gutter="4">
               <el-col :span="24" :xs="24">
                 <el-form-item label="Alamat" prop="address">
                   <el-table :key="refresh" :data="currentProject.address" max-height="800" :header-cell-style="{ background: '#099C4B', color: 'white' }">
@@ -271,7 +294,7 @@
                       </template>
                     </el-table-column>
 
-                    <!-- <el-table-column width="100px">
+                    <el-table-column width="100px">
                       <template slot-scope="scope">
                         <el-popconfirm
                           title="Hapus Alamat ?"
@@ -280,7 +303,7 @@
                           <el-button slot="reference" type="danger" icon="el-icon-close" />
                         </el-popconfirm>
                       </template>
-                    </el-table-column> -->
+                    </el-table-column>
                   </el-table>
                   <el-button
                     type="primary"
@@ -463,7 +486,7 @@
 
                 <el-form-item
                   v-if="currentProject.pre_agreement"
-                  :label="preeAgreementLabel + ' Max 1MB'"
+                  :label="preeAgreementLabel + ' Max 10MB'"
                   prop="pre_agreement"
                 >
                   <!-- <input ref="filePreAgreement" type="file" class="el-input__inner" @change="handleFilePreAgreementUpload"> -->
@@ -638,6 +661,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { mapGetters } from 'vuex';
 import Workflow from '@/components/Workflow';
 import ClassicUpload from '@/components/ClassicUpload';
@@ -750,17 +774,24 @@ export default {
       preeAgreementLabel: '',
       preProject: true,
       activeName: '1',
+      currentRtRwLayer: null,
       currentProject: {
         address: [],
         pippib: 'N',
         kawasan_lindung: 'N',
         listKewenangan: [],
       },
+      map: null,
+      province: '',
+      provinces: [],
+      layerRtrw: [],
       listSupportTable: [],
       listSubProject: [],
       checkedSubProject: [],
       loadingSupportTable: false,
       isUpload: 'Upload',
+      isMapUploaded: false,
+      currentTapakProyekLayer: null,
       fileName: 'No File Selected.',
       fileMap: null,
       filePdf: null,
@@ -1061,6 +1092,14 @@ export default {
     }
     this.getAllData();
     this.loading = false;
+    // get provinces
+    await axios.get('/api/provinces').then((result) => {
+      this.provinces = result.data.data;
+    });
+    // init map
+    this.map = new Map({
+      basemap: 'satellite',
+    });
   },
   methods: {
     getKewenanganOss(val){
@@ -1471,7 +1510,7 @@ export default {
       document.querySelector('#ktrFile').click();
     },
     showFileAlert(){
-      this.$alert('File Yang Diupload Melebihi 1 MB', {
+      this.$alert('File Yang Diupload Melebihi 10 MB', {
         confirmButtonText: 'OK',
       });
     },
@@ -1479,7 +1518,7 @@ export default {
       // reset validation
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKtr').resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1497,7 +1536,7 @@ export default {
       // reset validation
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filepippib').resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1515,7 +1554,7 @@ export default {
       // reset validation
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKawasanLindung').resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1530,7 +1569,7 @@ export default {
       this.fileKawasanLindungName = e.target.files[0].name;
     },
     handleFilePreAgreementUpload(e){
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1545,7 +1584,7 @@ export default {
 
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'filePdf')?.resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1567,7 +1606,7 @@ export default {
       // reset validation
       this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileMap')?.resetField();
 
-      if (e.target.files[0].size > 1048576){
+      if (e.target.files[0].size > 10485760){
         this.showFileAlert();
         return;
       }
@@ -1581,20 +1620,19 @@ export default {
         this.fileMap = e.target.files[0];
         this.fileMapName = e.target.files[0].name;
       }
-      const map = new Map({
-        basemap: 'satellite',
-      });
 
       urlUtils.addProxyRule({
         proxyUrl: 'proxy/proxy.php',
         urlPrefix: 'https://sigap.menlhk.go.id/',
       });
+      console.log('this.token = ' + this.token);
 
       const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
+        token: this.token,
       });
 
       const kawasanHutanB = new MapImageLayer({
@@ -1602,6 +1640,7 @@ export default {
         imageTransparency: true,
         visible: true,
         visibilityMode: '',
+        token: this.token,
       });
 
       const pippib2021Periode2 = new MapImageLayer({
@@ -1609,6 +1648,7 @@ export default {
         imageTransparency: true,
         visible: true,
         visibilityMode: '',
+        token: this.token,
       });
 
       const sigapLayer = new GroupLayer({
@@ -1618,7 +1658,7 @@ export default {
         opacity: 0.90,
       });
 
-      map.add(sigapLayer);
+      this.map.add(sigapLayer);
 
       const fr = new FileReader();
       fr.onload = (event) => {
@@ -1697,6 +1737,7 @@ export default {
             },
           };
           const url = URL.createObjectURL(blob);
+
           const geojsonLayer = new GeoJSONLayer({
             url: url,
             visible: true,
@@ -1707,7 +1748,8 @@ export default {
             popupTemplate: popupTemplate(propFields),
           });
 
-          map.add(geojsonLayer);
+          this.map.add(geojsonLayer);
+          this.currentTapakProyekLayer = geojsonLayer;
           mapView.on('layerview-create', async(event) => {
             await mapView.goTo({
               target: geojsonLayer.fullExtent,
@@ -1719,7 +1761,7 @@ export default {
 
       const mapView = new MapView({
         container: 'mapView',
-        map: map,
+        map: this.map,
         center: [115.287, -1.588],
         zoom: 5,
       });
@@ -1766,6 +1808,8 @@ export default {
         if (id === 'full-extent') {
           mapView.goTo({
             target: event.item.layer.fullExtent,
+          }).catch(function(error) {
+            console.error(error);
           });
         }
       });
@@ -1773,6 +1817,47 @@ export default {
       mapView.ui.add(layerListExpand, 'top-right');
       mapView.ui.add(legendListExpand, 'top-right');
       mapView.ui.add(printExpand, 'top-left');
+      this.isMapUploaded = true;
+    },
+    getLayerRtrw(e) {
+      axios.get(`api/arcgis-services?id_province=${e}`)
+        .then((response) => {
+          this.layerRtrw = response.data.data;
+          console.log('this.layerRtrw.length = ' + this.layerRtrw.length);
+          if (this.layerRtrw.length > 0) {
+            this.layerRtrw.forEach((item) => {
+              if (item.is_proxy === true) {
+                urlUtils.addProxyRule({
+                  proxyUrl: 'proxy/proxy.php',
+                  urlPrefix: 'https://gistaru.atrbpn.go.id/',
+                });
+              }
+
+              const rtrwLayer = new MapImageLayer({
+                url: item.url_service,
+                imageTransparency: true,
+                visible: true,
+              });
+              if (this.currentRtRwLayer !== null) {
+                this.map.layers.remove(this.currentRtRwLayer);
+              }
+              this.currentRtRwLayer = rtrwLayer;
+              this.map.add(rtrwLayer);
+              // remove, re-add tapak proyek layer
+              if (this.currentTapakProyekLayer !== null) {
+                this.map.layers.remove(this.currentTapakProyekLayer);
+                this.map.add(this.currentTapakProyekLayer);
+              }
+            });
+          } else {
+            return this.$notify({
+              type: 'warning',
+              title: 'Perhatian!',
+              message: 'Peta RTRW tidak / belum tersedia!',
+              duration: 5000,
+            });
+          }
+        });
     },
     async getListSupporttable(idProject) {
       const { data } = await SupportDocResource.list({ idProject });

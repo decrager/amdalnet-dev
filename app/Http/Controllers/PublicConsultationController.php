@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Project;
 use App\Entity\PublicConsultation;
 use App\Entity\PublicConsultationDoc;
 use App\Http\Resources\PublicConsultationResource;
+use App\Utils\Html;
+use App\Utils\TemplateProcessor;
 use DateInterval;
 use DateTime;
 use Exception;
@@ -12,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use PDF;
 
 class PublicConsultationController extends Controller
 {
@@ -22,8 +26,14 @@ class PublicConsultationController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->dokumen) {
+            return $this->dokumen($request->idProject);
+        }
+
         if($request->idProject) {
-            return PublicConsultation::where('project_id', $request->idProject)->first();
+            return PublicConsultation::where('project_id', $request->idProject)
+                                        ->with('docs')
+                                        ->first();
         }
 
         return PublicConsultationResource::collection(PublicConsultation::all());
@@ -90,6 +100,7 @@ class PublicConsultationController extends Controller
                     'address' => $validated['address'],
                     'positive_feedback_summary' => $validated['positive_feedback_summary'],
                     'negative_feedback_summary' => $validated['negative_feedback_summary'],
+                    'is_publish' => $validated['is_publish'] == 'true' ? true : false,
                 ]);
             } else {
                 $parent = PublicConsultation::findOrFail($request->all()['id']);
@@ -100,6 +111,7 @@ class PublicConsultationController extends Controller
                 $parent->address = $validated['address'];
                 $parent->positive_feedback_summary = $validated['positive_feedback_summary'];
                 $parent->negative_feedback_summary = $validated['negative_feedback_summary'];
+                $parent->is_publish = $validated['is_publish'] == 'true' ? true : false;
                 $parent->save();
             }
 
@@ -124,6 +136,7 @@ class PublicConsultationController extends Controller
             for ($i = 0; $i < count($photo_metadatas); $i++){
                 //upload file
                 $metadata = $photo_metadatas[$i];
+
                 $file_extension = '';
                 $filepath = '';
                 try {
@@ -153,10 +166,71 @@ class PublicConsultationController extends Controller
                 }
             }
 
+            // === FOTO DOKUMENTASI YANG DIHAPUS === //
+            $deleted_photo = json_decode($request->deleted_photo, true);
+            if(count($deleted_photo) > 0) {
+                for($i = 0; $i < count($deleted_photo); $i++) {
+                    $deleted_file = PublicConsultationDoc::find($deleted_photo[$i]);
+                    if($deleted_file) {
+                        $json_file = json_decode($deleted_file->doc_json, true);
+                        $file = str_replace(Storage::url(''), '', $json_file['filepath']);
+                        Storage::disk('public')->delete($file);
+                        $deleted_file->delete();
+                    }
+                }
+            }
+
+             // === EXISTING DOC === //
+             $doc = [];
+             if($request->data_type !== 'new') {
+                 $docs = PublicConsultationDoc::where('public_consultation_id', $request->id)->get();
+                 foreach($docs as $d) {
+                     $doc_json = json_decode($d->doc_json, true);
+                     switch ($doc_json['doc_type']) {
+                         case 'Berita Acara Pelaksanaan':
+                             $doc['berita_acara_pelaksanaan'] = [
+                                 'id' => $d->id,
+                                 'filepath' => $doc_json['filepath']
+                                ];
+                             break;
+                         case 'Berita Acara Penunjukan Wakil Masyarakat':
+                             $doc['berita_acara_penunjukan_wakil_masyarakat'] = [
+                                'id' => $d->id,
+                                'filepath' => $doc_json['filepath']
+                               ];
+                             break;
+                         case 'Daftar Hadir':
+                             $doc['daftar_hadir'] = [
+                                'id' => $d->id,
+                                'filepath' => $doc_json['filepath']
+                               ];
+                             break;
+                         case 'Pengumuman':
+                             $doc['pengumuman'] = [
+                                'id' => $d->id,
+                                'filepath' => $doc_json['filepath']
+                               ];
+                             break;
+                         default:
+                             break;
+                     }
+                 }
+             }
+
             // === LAMPIRAN === //
             for($i = 0; $i < count($metadatas); $i++){
                 //upload file
                 $metadata = $metadatas[$i];
+                
+                if($request->data_type !== 'new') {
+                    $key = str_replace(' ', '_', strtolower($metadata->doc_type));
+                    if(array_key_exists($key, $doc)) {
+                         $file = str_replace(Storage::url(''), '', $doc[$key]['filepath']);
+                         Storage::disk('public')->delete($file);
+                         PublicConsultationDoc::destroy($doc[$key]['id']);
+                    }
+                 }
+
                 $file_extension = '';
                 $filepath = '';
                 try {
@@ -248,5 +322,15 @@ class PublicConsultationController extends Controller
     public function destroy(PublicConsultation $publicConsultation)
     {
         //
+    }
+
+    private function dokumen($id_project)
+    {
+        $project = Project::findOrFail($id_project);
+        $public_consultation = PublicConsultation::where('project_id', $id_project)->first();
+
+        $pdf = PDF::loadView('document.template_hasil_konsultasi_publik', compact('project', 'public_consultation'));
+        return $pdf->download('Konsultasi Publik.pdf');
+
     }
 }

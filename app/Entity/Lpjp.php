@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Lpjp extends Model
 {
@@ -36,5 +37,18 @@ class Lpjp extends Model
     public function district()
     {
         return $this->belongsTo(District::class, 'id_district', 'id');
+    }
+
+    public function getCertFileAttribute()
+    {
+        if($this->attributes['cert_file']) {
+            if(str_contains($this->attributes['cert_file'], 'storage/')) {
+                return $this->attributes['cert_file'];
+            } else {
+                return Storage::url($this->attributes['cert_file']);
+            }
+        }
+
+        return null;
     }
 }

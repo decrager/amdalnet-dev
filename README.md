@@ -144,3 +144,18 @@ https://laravel.com/docs/8.x/octane#swoole
 php artisan serve
 ```
 
+# Deployment Production
+
+Trough CI/CD with tags format v*
+
+```
+git tag v0.1.2
+git push origin v0.1.2
+```
+
+remove tag
+
+```
+git tag --delete v0.1.2
+git push --delete origin v0.1.2
+```

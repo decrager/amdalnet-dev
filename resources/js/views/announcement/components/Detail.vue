@@ -1,7 +1,22 @@
 <template>
   <div>
-    <h2>SPT Dari Masyarakat</h2>
-    <div v-if="showProjectDetail">
+    <div
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <h2 v-if="isInitiator">SPT Dari Masyarakat</h2>
+      <h2 v-else>SPT Masyarakat {{ projectTitle }}</h2>
+      <el-input
+        v-if="!isInitiator"
+        v-model="search"
+        style="flex-grow: 0; flex-shrink: 0; flex-basis: 30%"
+        suffix-icon="el-icon search"
+        placeholder="Pencarian..."
+        @input="inputSearch"
+      >
+        <el-button slot="append" icon="el-icon-search" />
+      </el-input>
+    </div>
+    <!-- <div v-if="showProjectDetail">
       <el-row class="form-container">
         <el-col
           :span="12"
@@ -52,13 +67,13 @@
             <el-col :span="12">Dummy No Registrasi</el-col></el-row>
         </el-col>
       </el-row>
+    </div> -->
+    <div>
+      <FeedbackList ref="feedbacklist" :disable-rating="true" />
     </div>
-    <div v-if="showFeedbackList">
-      <FeedbackList :disable-rating="true" />
-    </div>
-    <div v-if="showPublicConsultation">
+    <div v-if="isInitiator">
       <el-alert
-        v-if="publicConst.id"
+        v-if="publicConst.id && publicConst.is_publish"
         title="Konsultasi Publik Telah Diterima"
         type="success"
         description="Terimakasih Sudah Mengirimkan Konsultasi Publik"
@@ -66,13 +81,17 @@
         center
         :closable="false"
       />
-      <PublicConsultationForm v-else />
+      <PublicConsultationForm
+        v-else
+        @updatepc="updatePublicConsultation($event)"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import Resource from '@/api/resource';
+import { mapGetters } from 'vuex';
 import FeedbackList from '@/views/feedback/components/List.vue';
 import PublicConsultationForm from '@/views/public-consultation/components/Form.vue';
 const announcementResource = new Resource('announcements');
@@ -82,18 +101,29 @@ const publicConsultations = new Resource('public-consultations');
 export default {
   name: 'AnnouncementDetail',
   components: { FeedbackList, PublicConsultationForm },
-  props: {
-    showProjectDetail: Boolean,
-    showFeedbackList: Boolean,
-    showPublicConsultation: Boolean,
-  },
+  // props: {
+  //   showProjectDetail: Boolean,
+  //   showFeedbackList: Boolean,
+  //   showPublicConsultation: Boolean,
+  // },
   data() {
     return {
       id: 0,
       announcement: {},
       announcementDetails: [],
       publicConst: {},
+      projectTitle: null,
+      search: null,
+      timeoutId: null,
     };
+  },
+  computed: {
+    ...mapGetters({
+      userInfo: 'user',
+    }),
+    isInitiator() {
+      return this.userInfo.roles.includes('initiator');
+    },
   },
   mounted() {
     const id = this.$route.params && this.$route.params.id;
@@ -103,11 +133,13 @@ export default {
   methods: {
     async getAnnouncement() {
       const data = await announcementResource.get(this.id);
-      this.publicConst = await publicConsultations.list({ idProject: data.project_id });
-      console.log(this.publicConst);
+      this.publicConst = await publicConsultations.list({
+        idProject: data.project_id,
+      });
       // const district = await districtResource.get(data.project.id_district);
       // data.district = district;
       this.announcement = data;
+      this.projectTitle = data.project.project_title;
       this.announcementDetails = [
         {
           param: 'Nama Kegiatan',
@@ -150,6 +182,18 @@ export default {
           value: data.district,
         },
       ];
+    },
+    inputSearch(val) {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.$refs.feedbacklist.getFeedbacks(this.search);
+      }, 500);
+    },
+    updatePublicConsultation({ id, isPublish }) {
+      this.publicConst.id = id;
+      this.publicConst.is_publish = isPublish;
     },
   },
 };

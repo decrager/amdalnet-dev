@@ -71,6 +71,9 @@
         <el-collapse-item title="Bagan Alir Pelingkupan" name="7">
           <bagan-alir v-if="activeName === '7'" />
         </el-collapse-item>
+        <el-collapse-item title="Lampiran" name="8">
+          <Lampiran v-if="activeName === '8'" />
+        </el-collapse-item>
       </el-collapse>
     </el-card>
   </div>
@@ -87,6 +90,7 @@ import MetodeStudi from './components/MetodeStudi.vue';
 import Workflow from '@/components/Workflow';
 import BaganAlir from './components/BaganAlir.vue';
 import UploadPetaBatas from './components/UploadPetaBatas.vue';
+import Lampiran from './Lampiran.vue';
 
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
@@ -105,6 +109,7 @@ export default {
     Workflow,
     BaganAlir,
     UploadPetaBatas,
+    Lampiran,
   },
   props: {
     data: {
@@ -165,7 +170,13 @@ export default {
         check_formulir_ka: true,
         id_project: this.idProject,
       });
-      if (!checkFormulirKA.data) {
+      if (checkFormulirKA.errBaganAlir) {
+        this.$message({
+          message: 'Mohon lakukan export File PDF Bagan Alir Pelingkupan terlebih dahulu',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+      } else if (!checkFormulirKA.data) {
         this.$message({
           message: 'Mohon lengkapi Formulir KA terlebih dahulu',
           type: 'error',

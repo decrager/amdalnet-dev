@@ -51,6 +51,16 @@
         {{ scope.row.authority }}
       </template>
     </el-table-column>
+    <el-table-column width="100px">
+      <template slot-scope="scope">
+        <el-popconfirm
+          title="Hapus Kewenangan ?"
+          @confirm="list.splice(scope.$index,1)"
+        >
+          <el-button slot="reference" type="danger" icon="el-icon-close" />
+        </el-popconfirm>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
@@ -59,7 +69,7 @@ import Resource from '@/api/resource';
 const authorityResource = new Resource('authorities');
 
 export default {
-  name: 'SubProjectTable',
+  name: 'KewenanganTable',
   props: {
     list: {
       type: Array,

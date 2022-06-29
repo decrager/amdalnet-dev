@@ -89,7 +89,7 @@ class SKKLController extends Controller
 
              //create file
              $file = $request->file('skkl');
-             $name = '/skkl/' . $file_name . '.' . $file->extension();
+             $name = 'skkl/' . $file_name . '.' . $file->extension();
              $file->storePubliclyAs('public', $name);
  
              //create environmental expert  
@@ -100,7 +100,7 @@ class SKKLController extends Controller
                 $skkl->id_project = $data['idProject'];
             }
 
-             $skkl->file = Storage::url($name);
+             $skkl->file = $name;
              $skkl->save();
 
              // send status 45 to OSS
@@ -470,9 +470,21 @@ class SKKLController extends Controller
             if ($subProject) {
                 foreach ($jsonContent['data_checklist'] as $c) {
                     if ($c['id_proyek'] == $subProject->id_proyek) {
-                        array_push($idIzinList, $c['id_izin']);
-                        if ($c['file_izin'] != '-') {
-                            $fileIzin = $c['file_izin'];
+                        if (($type == 'sppl' && str_contains(strtolower($c['nama_izin']), 'sppl'))
+                            || ($type == 'pkplh' && str_contains(strtolower($c['nama_izin']), 'pkplh'))) {
+                            array_push($idIzinList, $c['id_izin']);
+                            if ($c['file_izin'] != '-') {
+                                $fileIzin = $c['file_izin'];
+                            }
+                        }
+                    }
+                }                
+                if (count($idIzinList) == 0) {
+                    $dataIzin = $this->getDataIzinFromInqueryNIB($jsonContent['nib'], $subProject->id_proyek, $type);
+                    if ($dataIzin != null) {
+                        array_push($idIzinList, $dataIzin['id_izin']);
+                        if ($dataIzin['file_izin'] != '-') {
+                            $fileIzin = $dataIzin['file_izin'];
                         }
                     }
                 }
@@ -484,6 +496,23 @@ class SKKLController extends Controller
             'id_izin_list' => $idIzinList,
             'file_izin' => $fileIzin,
         ];
+    }
+
+    private function getDataIzinFromInqueryNIB($nib, $id_proyek, $type)
+    {
+        $resp = OssService::inqueryNIB($nib);
+        $respNib = $resp['responinqueryNIB'];
+        if ((int)$respNib['kode'] == 200) {
+            foreach ($respNib['dataNIB']['data_checklist'] as $c) {
+                if ($c['id_proyek'] == $id_proyek) {
+                    if (($type == 'sppl' && str_contains(strtolower($c['nama_izin']), 'sppl'))
+                        || ($type == 'pkplh' && str_contains(strtolower($c['nama_izin']), 'pkplh'))) {
+                        return $c;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private function getDataChecklistFileUrl($idProject, $type = 'skkl')

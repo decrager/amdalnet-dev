@@ -132,7 +132,7 @@ class WorkspaceController extends Controller
                     'toolbarNoTabs' => true,
                     'hideRightMenu' => true,
                     'hideRulers' => true,
-                    'trackChanges' => false,
+                    'trackChanges' => true,
                     'help' => false,
                     'macros' => false,
                     'plugins' => false,

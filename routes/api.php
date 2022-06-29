@@ -152,9 +152,11 @@ Route::apiResource('business', 'BusinessController');
 Route::apiResource('kbli-env-params', 'BusinessEnvParamController');
 Route::apiResource('business-env-params', 'BusinessEnvParamController');
 Route::apiResource('projects', 'ProjectController');
+Route::post('project-ppjk/{project}', [ProjectController::class, 'edit']);
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
 Route::apiResource('oss-projects', 'OssProjectController');
+Route::apiResource('project-authorities', 'ProjectAuthorityController');
 Route::apiResource('responder-types', 'ResponderTypeController');
 Route::apiResource('feedbacks', 'FeedbackController');
 Route::apiResource('support-docs', 'SupportDocController');
@@ -207,6 +209,7 @@ Route::apiResource('sub-project-rona-awals', 'SubProjectRonaAwalController');
 Route::get('subproject-components', [SubProjectComponentController::class,'subProjectComponents']);
 Route::get('subproject-hues', [SubProjectRonaAwalController::class,'subProjectHues']);
 Route::get('bagan-alir/{id}', [BaganAlirController::class, 'baganAlirUklUpl']);
+Route::post('bagan-alir-pelingkupan/pdf', [BaganAlirController::class, 'storeBaganAlirPelingkupanPDF']);
 Route::get('bagan-alir-dampak-penting/{id}', [BaganAlirController::class, 'baganAlirDampakPenting']);
 Route::get('bagan-alir-dampak-penting/table/{id}', [BaganAlirController::class, 'baganAlirDampakPentingTable']);
 Route::post('bagan-alir-dampak-penting/table/{id}', [BaganAlirController::class, 'storeBaganAlirDampakPenting']);
@@ -246,8 +249,10 @@ Route::apiResource('tuk-management', 'TUKManagementController');
 Route::apiResource('regions', 'RegionController');
 Route::apiResource('authorities', 'AuthorityController');
 Route::get('timeline', [ProjectController::class, 'timeline']);
+Route::get('activities', [ProjectController::class, 'states']);
 Route::apiResource('tuk-project', 'TukProjectController');
 Route::apiResource('reset-password', 'ResetPasswordController');
+Route::apiResource('ka-attachments', 'KaAttachmentController');
 
 // Arcgis Service
 Route::get('arcgis-services', [ArcgisServiceController::class, 'arcgisServiceList']);
@@ -362,6 +367,8 @@ Route::put('activateUser/{user}', function (User $user) {
     return response(['message' => 'done']);
 });
 
+// workflow related
+// Route::get('workflow-states', WorkflowStateController::class, 'index');
 
 // Route::get('/testemail', function () {
 

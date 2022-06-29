@@ -49,13 +49,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Non KBLI" width="100px">
+      <el-table-column v-if="!pemerintah" align="center" label="Non KBLI" width="100px">
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.nonKbli" :disabled="fromOss" @change="onChangeKbli(scope.row)" />
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="KBLI" width="100px">
+      <el-table-column v-if="!pemerintah" align="center" label="KBLI" width="100px">
         <template slot-scope="scope">
           <div v-if="scope.row.nonKbli">{{ 'Non KBLI' }}</div>
           <el-select v-else v-model="scope.row.kbli" filterable placeholder="Pilih" size="mini" :disabled="scope.row.nonKbli || fromOss" @change="onChangeKbli(scope.row)">
@@ -71,10 +71,18 @@
 
       <el-table-column align="center" label="Sektor">
         <template slot-scope="scope">
-          <el-select v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)" @focus="onChangeSectorBlur(scope.row)">
+          <el-select v-if="!pemerintah" v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)" @focus="onChangeSectorBlur(scope.row)">
             <el-option
               v-for="item in scope.row.listSector"
-              :key="item.label"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-select v-else v-model="scope.row.sector" filterable placeholder="Pilih" size="mini" @change="onChangeSector(scope.row)">
+            <el-option
+              v-for="item in sectors"
+              :key="item.value"
               :label="item.label"
               :value="item.value"
             />
@@ -111,7 +119,7 @@
       <el-table-column align="center" label="Skala Besaran">
         <template slot-scope="scope">
           <el-button type="primary" @click="handleClick(scope.row)">Input</el-button>
-          <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.biz_type ? scope.row.biz_type.toString() : scope.row.biz_type" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
+          <param-dialog :show="scope.row.showParamDialog || false" :list="scope.row.listSubProjectParams" :refresh-dialog="refresh" :kbli="scope.row.biz_type ? scope.row.biz_type.toString() : scope.row.biz_type" :sector="scope.row.sector ? scope.row.sector.toString() : scope.row.sector" :pemerintah="pemerintah" @handleCancelParam="handleCancelParam(scope.row)" @handleRefreshDialog="handleRefreshDialog" />
         </template>
       </el-table-column>
 
@@ -156,6 +164,14 @@ export default {
     idizin: {
       type: String,
       default: () => '',
+    },
+    pemerintah: {
+      type: Boolean,
+      default: () => false,
+    },
+    sectors: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -230,30 +246,63 @@ export default {
     },
     async onChangeFieldType(sproject){
       this.loading = true;
-      const { value } = await kbliResource.get(sproject.biz_type);
-      sproject.biz_name = value;
-      console.log(sproject.biz_name);
+      // const { value } = await kbliResource.get(sproject.biz_type);
+      // sproject.biz_name = value;
+      // console.log(sproject.biz_name);
       await this.getBusinessByField(sproject);
       console.log(sproject);
       this.loading = false;
       this.refresh++;
     },
     async getBusinessByField(sproject) {
-      const { data } = await kbliEnvParamResource.list({
-        fieldId: sproject.biz_type,
-        businessType: true,
-      });
-      sproject.listSubProjectParams = data.map((i) => {
-        return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit };
-      });
+      // console.log(sproject.biz_name);
+
+      if (this.pemerintah){
+        // const { value } = await kbliResource.get(sproject.sector);
+
+        sproject.biz_name = sproject.biz_type;
+
+        const { data } = await kbliEnvParamResource.list({
+          businessTypePem: sproject.biz_name,
+          sectorName: sproject.sector,
+        });
+
+        sproject.listSubProjectParams = data.map((i) => {
+          return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit };
+        });
+      } else {
+        const { value } = await kbliResource.get(sproject.biz_type);
+        sproject.biz_name = value;
+        const { data } = await kbliEnvParamResource.list({
+          fieldId: sproject.biz_type,
+          businessType: true,
+        });
+        sproject.listSubProjectParams = data.map((i) => {
+          return { param: i.param, scale_unit: i.unit, id_param: i.id_param, id_unit: i.id_unit };
+        });
+      }
     },
     async getFieldBySector(sproject) {
-      const { data } = await kbliResource.list({
-        fieldBySector: sproject.sector,
-      });
-      sproject.listField = data.map((i) => {
-        return { value: i.id, label: i.value };
-      });
+      if (this.pemerintah){
+        // const { value } = await kbliResource.get(sproject.sector);
+
+        const { data } = await kbliResource.list({
+          fieldBySectorName: sproject.sector,
+        });
+
+        sproject.sector_name = sproject.sector;
+
+        sproject.listField = data.map((i) => {
+          return { value: i.value, label: i.value };
+        });
+      } else {
+        const { data } = await kbliResource.list({
+          fieldBySector: sproject.sector,
+        });
+        sproject.listField = data.map((i) => {
+          return { value: i.id, label: i.value };
+        });
+      }
     },
     async getSectorByKbli(sproject) {
       if (sproject.nonKbli) {
@@ -292,3 +341,13 @@ export default {
   },
 };
 </script>
+<style>
+.el-select-dropdown__item {
+  width: 350px;
+  white-space: normal;
+  overflow: unset;
+  height: auto;
+  padding-top: 10;
+  padding-bottom: 10;
+}
+</style>

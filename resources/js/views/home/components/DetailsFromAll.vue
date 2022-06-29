@@ -298,9 +298,10 @@ export default {
       this.form.rating = i;
     },
     getAnnouncement() {
-      axios.get('/api/announcements').then((response) => {
+      /* axios.get('/api/announcements').then((response) => {
         return response.data.data;
-      });
+      });*/
+      return null;
     },
     handleFileUpload(e) {
       this.photo_filepath = this.$refs.file.files[0];

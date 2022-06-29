@@ -110,8 +110,8 @@ export default {
     ...mapGetters(['amdals', 'uklupls']),
   },
   created() {
-    this.$store.dispatch('getAmdal');
-    this.$store.dispatch('getUklupl');
+    // this.$store.dispatch('getAmdal');
+    // this.$store.dispatch('getUklupl');
   },
   methods: {
     formatDate(value) {

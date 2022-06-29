@@ -192,6 +192,7 @@ import { generateFeatureCollection, layerIn } from './scripts/uploadShapefile';
 import widgetMap from './scripts/widgetMap';
 import popupTemplate from './scripts/popupTemplate';
 import urlBlob from './scripts/urlBlob';
+import generateArcgisToken from './scripts/arcgisGenerateToken';
 
 export default {
   name: 'WebGis',
@@ -241,6 +242,8 @@ export default {
       pageSize: 10,
       page: 1,
       loadStatus: false,
+      currentRtRwLayer: null,
+      token: null,
     };
   },
   computed: {
@@ -259,6 +262,7 @@ export default {
     },
   },
   mounted: async function() {
+    generateArcgisToken(this.token);
     console.log('Map Component Mounted');
     await this.loadMap();
     this.getProjectData();
@@ -282,6 +286,7 @@ export default {
       axios.get(`api/arcgis-services?id_province=${e}`)
         .then((response) => {
           this.layerRtrw = response.data.data;
+          console.log('this.layerRtrw.length = ' + this.layerRtrw.length);
           if (this.layerRtrw.length > 0) {
             this.layerRtrw.forEach((item) => {
               if (item.is_proxy === true) {
@@ -296,11 +301,10 @@ export default {
                 imageTransparency: true,
                 visible: true,
               });
-
-              if (rtrwLayer.loaded === true) {
-                this.mapInit.leyers.remove(rtrwLayer);
+              if (this.currentRtRwLayer !== null) {
+                this.mapInit.layers.remove(this.currentRtRwLayer);
               }
-
+              this.currentRtRwLayer = rtrwLayer;
               this.mapInit.add(rtrwLayer);
             });
           } else {
@@ -348,6 +352,8 @@ export default {
                 this.$parent.mapView.on('layerview-create', async(event) => {
                   await this.$parent.mapView.goTo({
                     target: geojsonLayerArray.fullExtent,
+                  }).catch(function(error) {
+                    console.error(error);
                   });
                 });
 
@@ -449,6 +455,9 @@ export default {
       ];
     },
     async loadMap() {
+      console.log('this.token = ' + this.token);
+      let layerTapak = null;
+      let layerTapakPoint = null;
       const map = new Map({
         basemap: 'satellite',
       });
@@ -525,7 +534,11 @@ export default {
           popupTemplate: popupTemplate(propFields),
         });
 
+        if (layerTapakPoint !== null) {
+          map.layers.remove(layerTapakPoint);
+        }
         map.add(tapakPoint);
+        layerTapakPoint = tapakPoint;
 
         this.mapGeojsonArray.push(geojsonLayerArray);
         const toggle = document.getElementById('layerTapakCheckBox');
@@ -538,8 +551,11 @@ export default {
             geojsonLayerArray.visible = false;
           }
         });
-
+        if (layerTapak !== null) {
+          map.layers.remove(layerTapak);
+        }
         map.add(geojsonLayerArray);
+        layerTapak = geojsonLayerArray;
       }
 
       if (this.checkedPantau === true) {
@@ -730,6 +746,7 @@ export default {
         url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2021/MapServer',
         imageTransparency: true,
         visible: false,
+        token: this.token,
       });
 
       const penutupanLahanToggle = document.getElementById('layerTutupanLahanCheckBox');
@@ -749,6 +766,7 @@ export default {
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
+        token: this.token,
       });
 
       const kawasanHutanToggle = document.getElementById('layerKawasanHutanCheckBox');
@@ -768,6 +786,7 @@ export default {
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
+        token: this.token,
       });
 
       const pipbipToggle = document.getElementById('layerPIPPIBCheckBox');

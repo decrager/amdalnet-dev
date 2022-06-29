@@ -20,6 +20,15 @@ GET http://localhost:8000/api/kblis?sectors=true
 ###
 GET http://localhost:8000/api/business/2
 ###
+GET http://localhost:8000/api/business-env-params?businessTypePem=Industri+Nonwoven&sectorName=Perindustrian
+###
+# fieldId=2953&fieldName=2953&sector=2952&businessType=96&unit=29
+# fieldId=2954&sector=2952&businessType=96&unit=29
+
+GET http://localhost:8000/api/business-env-params?fieldId=Apotek&isPemerintah=true&sector=Kesehatan&businessType=105&unit=0
+###
+GET http://localhost:8000/api/business?fieldBySectorName=Perindustrian
+###
 GET http://localhost:8000/api/kblis?sectorsByKbli=41011
 ###
 GET http://localhost:8000/api/kbli-env-params?kbli=41011
@@ -29,6 +38,8 @@ GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=true
 GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=Luas&unit=true
 ###
 GET http://localhost:8000/api/kbli-env-params?kbli=41011&businessType=Luas&unit=ha
+###
+GET http://localhost:8000/api/project-authorities?idProject=238
 ###
 GET http://localhost:8000/api/formulator-teams
 ###
@@ -61,6 +72,11 @@ POST http://localhost:8000/api/projects
 content-type: application/json
 
 {"email":"admin@amdalnet.dev","password":"amdalnet"}
+###
+POST http://localhost:8000/api/project-ppjk/238
+content-type: application/json
+
+{"email":"admin@amdalnet.dev","password":"amdalnet", "ppjk":"hu"}
 
 
 ###

@@ -60,7 +60,7 @@ class EnvironmentalExpertController extends Controller
 
             //create file
             $file = $request->file('cv');
-            $name = '/environmental-expert/' . uniqid() . '.' . $file->extension();
+            $name = 'environmental-expert/' . uniqid() . '.' . $file->extension();
             $file->storePubliclyAs('public', $name);
 
             //create environmental expert
@@ -68,7 +68,7 @@ class EnvironmentalExpertController extends Controller
             $expert->name = $params['name'];
             $expert->status = $params['status'];
             $expert->expertise = $params['expertise'];
-            $expert->cv = Storage::url($name);
+            $expert->cv = $name;
             $expert->save();
             
             return new EnvironmentalExpertResource($expert);
@@ -125,9 +125,9 @@ class EnvironmentalExpertController extends Controller
             if($request->file('cv') !== null){
                 //create file
                 $file = $request->file('cv');
-                $name = '/environmental-expert/' . uniqid() . '.' . $file->extension();
+                $name = 'environmental-expert/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-                $expert->cv = Storage::url($name);
+                $expert->cv = $name;
             }
             $expert->name = $params['name'];
             $expert->status = $params['status'];

@@ -88,6 +88,14 @@ export default {
       type: String,
       default: () => '',
     },
+    sector: {
+      type: String,
+      default: () => '',
+    },
+    pemerintah: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   data(){
     return {
@@ -121,25 +129,36 @@ export default {
     },
     async handleBlur(value){
       // const a = value.scale;
-      // console.log(a);
+      // console.log(0, value.scale);
       // remove . change , to .
-      value.scale = value.scale.replace('.', '');
+      value.scale = value.scale.replace(/\./g, '');
+      // console.log(1, value.scale);
       value.scale = value.scale.replace(',', '.');
+      // console.log(2, value.scale);
 
       // const b = value.scale;
       // console.log(b);
       value.scaleNumber = parseFloat(value.scale);
+      // console.log(3, value.scaleNumber);
       // console.log(value.scaleNumber);
       if (value.scaleNumber && value.scaleNumber > 0) {
         // console.log(value);
         // console.log(this.kbli);
 
         // calculate result
-        const { data } = await kbliEnvParamResource.list({
-          fieldId: this.kbli,
-          businessType: value.id_param,
-          unit: value.id_unit,
-        });
+        const { data } = this.pemerintah
+          ? await kbliEnvParamResource.list({
+            fieldId: this.kbli,
+            isPemerintah: 'true',
+            sector: this.sector,
+            businessType: value.id_param,
+            unit: value.id_unit,
+          }) : await kbliEnvParamResource.list({
+            fieldId: this.kbli,
+            sector: this.sector,
+            businessType: value.id_param,
+            unit: value.id_unit,
+          });
         // console.log('1', data);
         const kbliEnvParams = data.map((item) => {
           const items = item.condition.replace(/[\[\"\]]/g, '').split(',');

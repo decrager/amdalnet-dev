@@ -125,11 +125,11 @@ class MeetReportRKLRPLController extends Controller
             if($request->dokumen_file) {
                 $project = Project::findOrFail($request->idProject);
                 $file = $this->base64ToFile($request->dokumen_file);
-                $name = '/berita-acara-' . $document_type . '/' . strtolower($project->project_title) . '.' . $file['extension'];
+                $name = 'berita-acara-' . $document_type . '/' . strtolower($project->project_title) . '.' . $file['extension'];
                 Storage::disk('public')->put($name, $file['file']);
     
                 $meeting_report = MeetingReport::where([['id_project', $request->idProject], ['document_type', $document_type]])->first();
-                $meeting_report->file = Storage::url($name);
+                $meeting_report->file = $name;
                 $meeting_report->save();
 
                 // === WORKFLOW === //

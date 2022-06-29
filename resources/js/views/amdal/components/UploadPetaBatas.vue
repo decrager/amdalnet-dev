@@ -153,9 +153,11 @@ export default {
       data: [],
       idProject: 0,
       currentMaps: [],
+      petaTapakPDF: '',
       petaEkologisPDF: '',
       petaSosialPDF: '',
       petaStudiPDF: '',
+      petaTapakSHP: '',
       petaEkologisSHP: '',
       petaSosialSHP: '',
       petaStudiSHP: '',
@@ -166,6 +168,8 @@ export default {
       idPSS: 0,
       idPSuP: 0,
       idPSuS: 0,
+      idPTS: 0,
+      idPTP: 0,
       index: 0,
       param: [],
       required: true,
@@ -313,7 +317,6 @@ export default {
             map.addMany(this.mapGeojsonArrayProject);
           });
         });
-
       const layerList = new LayerList({
         view: mapView,
         container: document.createElement('div'),
@@ -363,6 +366,15 @@ export default {
     process(files){
       files.forEach((e) => {
         switch (e.attachment_type){
+          case 'tapak':
+            if (e.file_type === 'SHP') {
+              this.petaTapakSHP = e.original_filename;
+              this.idPTS = e.id;
+            } else {
+              this.petaTapakPDF = e.original_filename;
+              this.idPTP = e.id;
+            }
+            break;
           case 'ecology':
             if (e.file_type === 'SHP') {
               this.petaEkologisSHP = e.original_filename;
@@ -775,7 +787,7 @@ export default {
 
       // Map Tapak
       const projId = this.$route.params && this.$route.params.id;
-      axios.get(`api/map-geojson?id=${projId}&type=tapak&step=ka`)
+      axios.get(`api/map-geojson?id=${projId}&type=tapak`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);

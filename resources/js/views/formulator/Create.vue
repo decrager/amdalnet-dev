@@ -438,6 +438,17 @@ export default {
             formulatorResource
               .store(formData)
               .then((response) => {
+                if (response.error) {
+                  this.$message({
+                    message: response.error,
+                    type: 'error',
+                    duration: 5 * 1000,
+                  });
+                  this.loadingSubmit = false;
+
+                  return false;
+                }
+
                 this.$message({
                   message:
                     'Penyusun Baru atas nama ' +

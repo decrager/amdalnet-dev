@@ -58,7 +58,7 @@ final class Document
         $json = json_decode($responceFromConvertService, true);
 
         // if an error occurs, then display an error message
-        $errorElement = $json["error"];
+        $errorElement = isset($json["error"]) ? $json["error"] : NULL;
         if ($errorElement != NULL && $errorElement != "") self::ProcessConvServResponceError($errorElement);
 
         $isEndConvert = $json["endConvert"];

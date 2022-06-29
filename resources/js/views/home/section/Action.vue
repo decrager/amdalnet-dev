@@ -366,4 +366,10 @@ export default {
     color: #F6993F;
   }
   .thumbnailVideo img{height: 121px;width: 100%;margin-top: 0.2rem;}
+  .home-tracking-detail .el-timeline .el-timeline-item__node--large {
+    left: -7px;
+    width: 25px;
+    height: 25px;
+
+  }
 </style>

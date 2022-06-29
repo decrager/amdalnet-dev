@@ -12,7 +12,7 @@
     <ukl-spesifik v-if="toggleUklSpesifik" />
     <Sop v-if="toggleSop" />
     <action-home v-if="toggleMenu" @showAmdalDigital="handleSetMenu('AMDALDigital')" />
-    <counter-home v-if="toggleMenu" />
+    <proposal-counter v-if="toggleMenu" />
     <announcement-home v-if="toggleMenu" />
     <amdal-digital v-if="toggleAD" />
     <footer-home />
@@ -37,7 +37,7 @@ import Ukls from './section/Ukls.vue';
 import Sop from './section/Sop.vue';
 import Persetujuan from './section/Persetujuan.vue';
 import ActionHome from './section/Action.vue';
-import CounterHome from './section/Counter.vue';
+import ProposalCounter from './section/ProposalCounter.vue';
 import AnnouncementHome from './section/Announce.vue';
 import AmdalDigital from './amdal-digital/index.vue';
 import FooterHome from './section/Footer.vue';
@@ -58,7 +58,7 @@ export default {
     'izin': Izin,
     'persetujuan': Persetujuan,
     'action-home': ActionHome,
-    'counter-home': CounterHome,
+    ProposalCounter,
     'announcement-home': AnnouncementHome,
     'footer-home': FooterHome,
     AmdalDigital,

@@ -1,35 +1,21 @@
 <template>
   <div style="padding: 2em;" :loading="loading">
     <template v-if="activities.length > 0">
-      <div class="radio">
-        <span style="display:inline-block;font-size:0.9em; margin-right:1em;">Urutkan:</span>
-        <el-radio-group v-model="reverse">
-          <el-radio :label="true">Terdahulu</el-radio>
-          <el-radio :label="false">Terbaru</el-radio>
-        </el-radio-group>
-      </div>
 
+      <el-button type="info" :icon="reverse? 'el-icon-bottom': 'el-icon-top' " style="float:right;" circle @click="reverse = !reverse" />
+      <div style="margin-top:1em;"><el-checkbox v-model="showAll">Tampilkan seluruh tahapan</el-checkbox></div>
       <el-timeline :reverse="reverse" style="margin-top: 3em;">
         <el-timeline-item
-          v-for="(activity, index) in activities"
+          v-for="(activity, index) in showAll ? activities : activities.filter(a => a.rank <= current_rank)"
           :key="index"
           :timestamp="activity.datetime"
           size="large"
-          :type="(activity.value.marking)? 'primary': ((activity.event === 'created')? 'info' : 'default')"
+          :type="activity.rank <= current_rank ? (activity.rank === 1? 'info':'primary') : 'default'"
           placement="top"
         >
-          <div v-if="activity.event === 'created'">
-            <p>Permohonan Persetujuan Lingkungan untuk <b>{{ activity.value.project_title }}</b> dibuat oleh <i>{{ activity.username }}</i>.</p>
+          <div>
+            <p>{{ activity.label || activity.to_place }} <br> <span v-if="activity.username" style="font-size:80%;">oleh {{ activity.username }}</span> </p>
           </div>
-          <div v-else-if="activity.value.marking">
-            <p>{{ activity.value.marking }}, oleh <i>{{ activity.username }}</i></p>
-          </div>
-          <div v-else-if="activity.value.type_formulator_team">
-            <p>Tim Penyusun ditetapkan oleh <i>{{ activity.username }}</i></p>
-          </div>
-          <!-- <div v-else>
-            <p>{{ activity.content }}, oleh <i>{{ activity.username }}</i></p>
-          </div> -->
         </el-timeline-item>
       </el-timeline>
     </template>
@@ -50,6 +36,10 @@ export default {
       type: Number,
       default: 0,
     },
+    marking: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
@@ -57,6 +47,8 @@ export default {
       reverse: false,
       activities: [],
       loading: false,
+      current_rank: 0,
+      showAll: false,
     };
   },
   mounted(){
@@ -67,15 +59,23 @@ export default {
     async getData() {
       this.activities = [];
       this.loading = true;
+      this.current_rank = 0;
       await timelineResource.list({ id: this.id })
         .then((res) => {
           this.activities = this.process(res);
+
+          if ((this.activities.length > 0) && (this.marking !== null)){
+            const state = this.activities.find(s => s.to_place === this.marking);
+            this.current_rank = state.rank;
+          }
         })
         .finally(() => {
           this.loading = false;
         });
     },
     process(data){
+      return data;
+      /*
       const res = [];
 
       data.map((e) => {
@@ -91,7 +91,7 @@ export default {
           res.push(processed);
         }
       });
-      return res;
+      return res;*/
     },
   },
 };

@@ -366,4 +366,7 @@ export default {
 .relation-card {
   background-color: #ffba00;
 }
+.dampak-card .el-card__body {
+  padding: 8px;
+}
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div style="margin-bottom: 20px;">
+  <div style="margin-bottom: 20px">
     <div class="filter-container">
       <el-row type="flex" class="row-bg" justify="space-between">
         <el-button
-          v-if="!isExaminer"
+          v-if="isInitiator"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -37,8 +37,26 @@
             </span>
             <p><b>Kekhawatiran:</b></p>
             <div class="description" v-html="scope.row.concern" />
-            <p style="margin-top: 10px;"><b>Harapan:</b></p>
+            <p style="margin-top: 10px"><b>Harapan:</b></p>
             <div class="description" v-html="scope.row.expectation" />
+            <p v-if="!isInitiator" style="margin-top: 10px">
+              <b>
+                Kondisi Lingkungan di Dalam dan Sekitar Lokasi Tapak Proyek:
+              </b>
+            </p>
+            <div
+              v-if="!isInitiator"
+              class="description"
+              v-html="scope.row.environment_condition"
+            />
+            <p v-if="!isInitiator" style="margin-top: 10px">
+              <b>Nilai Lokal yang Berpotensi akan Terkena Dampak:</b>
+            </p>
+            <div
+              v-if="!isInitiator"
+              class="description"
+              v-html="scope.row.local_impact"
+            />
           </div>
         </template>
       </el-table-column>
@@ -47,36 +65,56 @@
           <span>{{ scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Tanggal" width="200">
+      <el-table-column
+        align="left"
+        label="Tanggal"
+        width="200"
+        prop="created_at"
+        sortable
+      >
         <template slot-scope="scope">
-          <span>{{ scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{
+            scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
+          }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Nama">
-        <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="left" label="Peran" width="260">
-        <template slot-scope="scope">
-          <span>{{ scope.row.responder_type_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="left" label="Rating" width="150">
+      <el-table-column align="left" label="Nama" prop="name" sortable />
+      <el-table-column
+        align="left"
+        label="Peran"
+        width="260"
+        prop="responder_type_name"
+        sortable
+      />
+      <el-table-column
+        align="left"
+        label="Rating"
+        width="150"
+        prop="rating"
+        sortable
+      >
         <template slot-scope="scope">
           <el-rate
             v-model="scope.row.rating"
             :colors="['#99A9BF', '#F7BA2A', '#F7BA2A', '#F7BA2A', '#FF9900']"
             :max="5"
             :disabled="disableRating"
-            style="margin-top:8px;"
+            style="margin-top: 8px"
             @change="onChangeForm(scope.row.id, $event)"
           />
         </template>
       </el-table-column>
-      <el-table-column align="left" label="Relevansi" width="130">
+      <el-table-column
+        v-if="!isInitiator"
+        align="left"
+        label="Relevansi"
+        width="130"
+        prop="is_relevant"
+        sortable
+      >
         <template slot-scope="scope">
           <el-select
+            v-if="scope.row.responder_type_id === 2"
             v-model="scope.row.is_relevant"
             placeholder="Select"
             style="width: 100%"
@@ -89,9 +127,15 @@
               :value="item.value"
             />
           </el-select>
+          <span v-else>Relevan</span>
         </template>
       </el-table-column>
     </el-table>
+    <div v-if="!isInitiator" style="text-align: right; margin-top: 10px">
+      <el-button :loading="loadingSave" type="primary" @click="updateRelevance">
+        Simpan
+      </el-button>
+    </div>
     <IdentityDialog
       :data="identityDialogData"
       :photo="identityDialogImg"
@@ -99,6 +143,7 @@
       @handleCloseDialog="handleCloseIdentityDialog"
     />
     <CreateFeedback
+      v-if="isInitiator"
       :feedback="feedback"
       :show="showFeedback"
       :announcement-id="announcementId"
@@ -109,6 +154,7 @@
 
 <script>
 import Resource from '@/api/resource';
+import { mapGetters } from 'vuex';
 import IdentityDialog from './IdentityDialog.vue';
 import CreateFeedback from '@/views/home/components/CreateFeedback.vue';
 const feedbackResource = new Resource('feedbacks');
@@ -120,7 +166,8 @@ export default {
   props: {
     disableRating: {
       type: Boolean,
-      default: function(){
+      // eslint-disable-next-line space-before-function-paren
+      default: function () {
         return false;
       },
     },
@@ -137,10 +184,17 @@ export default {
       identityDialogImg: '',
       showIdDialog: false,
       showFeedback: false,
-      userInfo: {},
+      loadingSave: false,
+      updatedSPT: [],
     };
   },
   computed: {
+    ...mapGetters({
+      userInfo: 'user',
+    }),
+    isInitiator() {
+      return this.userInfo.roles.includes('initiator');
+    },
     isExaminer() {
       return this.$store.getters.roles.includes('examiner');
     },
@@ -157,7 +211,7 @@ export default {
     this.getFeedbacks();
   },
   methods: {
-    async getFeedbacks(){
+    async getFeedbacks(search = null) {
       const id = parseInt(this.$route.params && this.$route.params.id);
       this.announcementId = id;
       // filter by project ID
@@ -165,6 +219,7 @@ export default {
       const { data } = await feedbackResource.list({
         announcement_id: id,
         deleted: false,
+        search,
       });
       const responderTypes = await responderTypeResource.list({});
       const responder_types = responderTypes.data;
@@ -172,7 +227,7 @@ export default {
         const key = item.responder_type_id;
         var responder_type_name = '';
         responder_types.map((item) => {
-          if (item.id === key){
+          if (item.id === key) {
             responder_type_name = item.name;
           }
         });
@@ -186,17 +241,17 @@ export default {
       this.showFeedback = true;
       this.showIdDialog = false;
     },
-    handleCloseFeedbackDialog(){
+    handleCloseFeedbackDialog() {
       this.showFeedback = false;
       this.showIdDialog = false;
       this.getFeedbacks();
     },
-    handleCloseIdentityDialog(){
+    handleCloseIdentityDialog() {
       this.showFeedback = false;
       this.showIdDialog = false;
     },
     showIdentity(feedbackId) {
-      const toShow = this.feedbacks.find(f => f.id === feedbackId);
+      const toShow = this.feedbacks.find((f) => f.id === feedbackId);
       this.selectedFeedback = toShow;
       this.identityDialogImg = toShow.photo_filepath;
       this.identityDialogData = [
@@ -221,20 +276,49 @@ export default {
       this.showFeedback = false;
     },
     async onChangeForm(feedbackId, event) {
-      const toUpdate = this.feedbacks.find(f => f.id === feedbackId);
-      feedbackResource
-        .update(feedbackId, toUpdate)
-        .then(response => {
-          const message = 'SPT \'' + response.data.name + '\' berhasil diupdate';
-          this.$message({
-            message: message,
-            type: 'success',
-            duration: 5 * 1000,
-          });
-        })
-        .catch(error => {
-          console.log(error);
+      // const toUpdate = this.feedbacks.find(f => f.id === feedbackId);
+      // feedbackResource
+      //   .update(feedbackId, toUpdate)
+      //   .then(response => {
+      //     const message = 'SPT \'' + response.data.name + '\' berhasil diupdate';
+      //     this.$message({
+      //       message: message,
+      //       type: 'success',
+      //       duration: 5 * 1000,
+      //     });
+      //   })
+      //   .catch(error => {
+      //     console.log(error);
+      //   });
+      const idx = this.updatedSPT.findIndex((x) => x.id === feedbackId);
+      if (idx === -1) {
+        this.updatedSPT.push({ id: feedbackId, is_relevant: event });
+      } else {
+        this.updatedSPT[idx].is_relevant = event;
+      }
+    },
+    async updateRelevance() {
+      if (this.updatedSPT.length === 0) {
+        this.$message({
+          message: 'Data berhasil disimpan',
+          type: 'success',
+          duration: 5 * 1000,
         });
+      } else {
+        this.loadingSave = true;
+        await feedbackResource.store({
+          relevance: 'true',
+          updatedspt: this.updatedSPT,
+        });
+        this.getFeedbacks();
+        this.loadingSave = false;
+        this.updatedSPT = [];
+        this.$message({
+          message: 'Data berhasil disimpan',
+          type: 'success',
+          duration: 5 * 1000,
+        });
+      }
     },
   },
 };

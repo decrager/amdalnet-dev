@@ -12,7 +12,7 @@ class WorkflowLog extends Model
      * @var array
      */
     protected $fillable = [
-        'id_project', 'transition', 'from_place', 'to_place', 'duration', 'duration_total'
+        'id_project', 'transition', 'from_place', 'to_place', 'duration', 'duration_total', 'created_by', 'updated_by'
     ];
 
     /// relations

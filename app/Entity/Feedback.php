@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Entity\Announcement;
+use Illuminate\Support\Facades\Storage;
 
 class Feedback extends Model
 {
@@ -33,5 +34,23 @@ class Feedback extends Model
     public function announcement()
     {
         return $this->belongsTo(Announcement::class);
+    }
+
+    public function responderType()
+    {
+        return $this->belongsTo(ResponderType::class, 'responder_type_id', 'id');
+    }
+
+    public function getPhotoFilepathAttribute()
+    {
+        if($this->attributes['photo_filepath']) {
+            if(str_contains($this->attributes['photo_filepath'], 'storage/')) {
+                return $this->attributes['photo_filepath'];
+            } else {
+                return Storage::url($this->attributes['photo_filepath']);
+            }
+        }
+
+        return null;
     }
 }

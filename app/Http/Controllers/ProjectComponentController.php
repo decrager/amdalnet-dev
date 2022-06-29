@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\ProjectComponent;
 use App\Entity\Component;
+use App\Entity\Project;
 use App\Http\Resources\ProjectComponentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -137,6 +138,23 @@ class ProjectComponentController extends Controller
                 // lookup impact!
                 // $imps = ImpactIdentification::where('id_project_component', $pc->id)->all();
 
+                // workflow
+
+                // Workflow Amdal: drafting
+                $project = Project::where('id', $pc->id_project)->first();
+                if($project){
+                    if($pc->is_andal){
+                        if($project->marking == 'amdal.form-ka-ba-signed'){
+                            $project->workflow_apply('draft-amdal-andal');
+                            $project->save();
+                        }
+                    }else {
+                        if($project->marking == 'announcement-completed'){
+                            $project->workflow_apply('draft-amdal-form-ka');
+                            $project->save();
+                        }
+                    }
+                }
 
                 return response()->json([
                     'code' => 200,

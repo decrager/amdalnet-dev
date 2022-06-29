@@ -39,7 +39,7 @@
           </el-row>
 
           <el-row>
-            <span class="label">Tanggal Berlaku</span>
+            <span class="label">Berlaku Hingga</span>
             <span class="value">{{ user.date_end.split(' ')[0] }}</span>
           </el-row>
         </div>

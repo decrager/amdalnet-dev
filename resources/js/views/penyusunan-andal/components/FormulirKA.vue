@@ -14,7 +14,7 @@
         <a
           v-if="showDocument"
           class="btn-docx"
-          :href="'/storage/formulir/' + downloadDocxPath"
+          :href="downloadDocxPath"
           download
         >
           Export to .DOCX
@@ -52,8 +52,8 @@
 <script>
 import Resource from '@/api/resource';
 const andalComposingResource = new Resource('andal-composing');
+const kaReviewResounce = new Resource('ka-reviews');
 import Comment from '@/views/penyusunan-andal/components/Comment';
-import axios from 'axios';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
@@ -101,8 +101,7 @@ export default {
       });
       this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
-      this.projects =
-        window.location.origin + `/storage/formulir/${this.downloadDocxPath}`;
+      this.projects = window.location.origin + `/${this.downloadDocxPath}`;
       this.showDocument = true;
       this.loading = false;
     },
@@ -179,30 +178,22 @@ export default {
     },
     async exportPdf() {
       this.loadingPDF = true;
-      axios({
-        url: `api/andal-composing`,
-        method: 'GET',
-        responseType: 'blob',
-        params: {
-          pdf: 'true',
-          idProject: this.$route.params.id,
-          type: 'andal',
-        },
-      }).then((response) => {
-        // const getHeaders = response.headers['content-disposition'].split('; ');
-        // const getFileName = getHeaders[1].split('=');
-        // const getName = getFileName[1].split('=');
-        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-        var fileLink = document.createElement('a');
-        fileLink.href = fileURL;
-        fileLink.setAttribute(
-          'download',
-          `ka-andal-${this.project_title.toLowerCase()}.pdf`
-        );
-        document.body.appendChild(fileLink);
-        fileLink.click();
-        this.loadingPDF = false;
+      const fileURL = await kaReviewResounce.list({
+        pdf: 'true',
+        idProject: this.$route.params.id,
+        isAndal: 'true',
       });
+
+      const fileLink = document.createElement('a');
+      fileLink.href = fileURL;
+      fileLink.setAttribute(
+        'download',
+        `ka-andal-${this.project_title.toLowerCase()}.pdf`
+      );
+      document.body.appendChild(fileLink);
+      fileLink.click();
+
+      this.loadingPDF = false;
     },
   },
 };

@@ -2,7 +2,7 @@
   <div class="app-container" style="padding: 24px">
     <el-card v-if="formulirKACompleted && templateKALoaded" v-loading="loading">
       <h2>
-        Submit Formulir kerangka Acuan
+        Submit Formulir Kerangka Acuan
         <span v-if="isFormulator">ke Pemrakarsa</span>
       </h2>
       <div>
@@ -17,7 +17,7 @@
         <a
           v-if="showDocument"
           class="btn-docx"
-          :href="'/storage/workspace/' + downloadDocxPath"
+          :href="downloadDocxPath"
           download
         >
           Export to .DOCX
@@ -52,6 +52,7 @@
             v-if="isInitiator"
             :documenttype="'Kerangka Acuan'"
           />
+          <Lampiran />
         </el-col>
       </el-row>
     </el-card>
@@ -63,14 +64,16 @@ import { mapGetters } from 'vuex';
 import Resource from '@/api/resource';
 import ReviewPenyusun from '@/views/review-dokumen/ReviewPenyusun';
 import ReviewPemrakarsa from '@/views/review-dokumen/ReviewPemrakarsa';
+import Lampiran from '@/views/review-dokumen/Lampiran';
 const scopingResource = new Resource('scoping');
 const andalComposingResource = new Resource('andal-composing');
-import axios from 'axios';
+const kaReviewResounce = new Resource('ka-reviews');
 
 export default {
   components: {
     ReviewPenyusun,
     ReviewPemrakarsa,
+    Lampiran,
   },
   data() {
     return {
@@ -112,7 +115,18 @@ export default {
         check_formulir_ka: true,
         id_project: this.$route.params.id,
       });
-      if (!checkFormulirKA.data) {
+      if (checkFormulirKA.errBaganAlir) {
+        this.$message({
+          message:
+            'Mohon lakukan export File PDF Bagan Alir Pelingkupan terlebih dahulu',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.$router.push({
+          name: 'FormulirAmdal',
+          params: this.$route.params.id,
+        });
+      } else if (!checkFormulirKA.data) {
         this.$message({
           message: 'Mohon lengkapi Formulir KA terlebih dahulu',
           type: 'error',
@@ -132,35 +146,28 @@ export default {
       });
       this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
-      this.projects =
-        window.location.origin + `/storage/workspace/${this.downloadDocxPath}`;
+      this.projects = window.location.origin + `/${this.downloadDocxPath}`;
       this.showDocument = true;
       this.loading = false;
       this.templateKALoaded = true;
     },
     async exportPdf() {
       this.loadingPDF = true;
-      axios({
-        url: `api/andal-composing`,
-        method: 'GET',
-        responseType: 'blob',
-        params: {
-          pdf: 'true',
-          idProject: this.$route.params.id,
-          type: 'ka',
-        },
-      }).then((response) => {
-        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-        var fileLink = document.createElement('a');
-        fileLink.href = fileURL;
-        fileLink.setAttribute(
-          'download',
-          `ka-${this.project_title.toLowerCase()}.pdf`
-        );
-        document.body.appendChild(fileLink);
-        fileLink.click();
-        this.loadingPDF = false;
+      const fileURL = await kaReviewResounce.list({
+        pdf: 'true',
+        idProject: this.$route.params.id,
       });
+
+      const fileLink = document.createElement('a');
+      fileLink.href = fileURL;
+      fileLink.setAttribute(
+        'download',
+        `ka-${this.project_title.toLowerCase()}.pdf`
+      );
+      document.body.appendChild(fileLink);
+      fileLink.click();
+
+      this.loadingPDF = false;
     },
   },
 };

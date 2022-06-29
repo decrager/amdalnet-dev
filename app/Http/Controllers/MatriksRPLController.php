@@ -19,6 +19,7 @@ use App\Entity\ProjectStage;
 use ErrorException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MatriksRPLController extends Controller
 {
@@ -110,22 +111,22 @@ class MatriksRPLController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->map) {
-            if($request->hasFile('map_file')) {
-                //create file
-                $file = $request->file('map_file');
-                $name = '/map/' . uniqid() . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
+        // if($request->map) {
+        //     if($request->hasFile('map_file')) {
+        //         //create file
+        //         $file = $request->file('map_file');
+        //         $name = '/map/' . uniqid() . '.' . $file->extension();
+        //         $file->storePubliclyAs('public', $name);
 
-                $project = Project::findOrFail($request->idProject);
-                $project->map_rpl = Storage::url($name);
-                $project->save();
+        //         $project = Project::findOrFail($request->idProject);
+        //         $project->map_rpl = Storage::url($name);
+        //         $project->save();
 
-                return response()->json(['message' => 'success']);
-           }
+        //         return response()->json(['message' => 'success']);
+        //    }
 
-           return response()->json(['message' => 'failed'], 404);
-        }
+        //    return response()->json(['message' => 'failed'], 404);
+        // }
 
         if($request->type == 'impact-comment') {
             $comment = new Comment();
@@ -163,7 +164,8 @@ class MatriksRPLController extends Controller
             return [
                 'id' => $comment->id,
                 'created_at' => $comment->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                'description' => $comment->description
+                'description' => $comment->description,
+                'role' => Auth::user()->roles->first()->name == 'formulator' ? 'Catatan Balasan Penyusun' : 'Catatan Balasan Penguji'
             ];
         }
 
@@ -843,9 +845,13 @@ class MatriksRPLController extends Controller
                     $replies[] = [
                         'id' => $r->id,
                         'created_at' => $r->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                        'description' => $r->description
+                        'description' => $r->description,
+                        'role' => $r->user->roles->first()->name == 'formulator' ? 'Catatan Balasan Penyusun' : 'Catatan Balasan Penguji'
                     ];
                 }
+                usort($replies, function($a, $b) {
+                    return $a['id'] <=> $b['id'];
+                });
             }
 
             $comments[] = [

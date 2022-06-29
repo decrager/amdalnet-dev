@@ -98,7 +98,7 @@ class PolicyController extends Controller
                 'regulation_type' => $request->regulation_type,
                 'about' => $request->about,
                 'set' => $request->set,
-                'link' => Storage::url($name),
+                'link' => $name,
                 'field_of_activity' => $request->field_of_activity,
             ]);
 
@@ -131,27 +131,29 @@ class PolicyController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-
-            //create file
-            if(!empty($request->file('link'))) {
-                $file = $request->file('link');
-                $name = '/kebijakan/' . uniqid() . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
-                $name = Storage::url($name);
-            } else {
-                $name = $request->old_link;
-            }
-
-
-            //create Kebijakan
-            $kebijakan = Policy::where('id', $request->id)->update([
+            $update = [
                 'regulation_no' => $request->regulation_no,
                 'regulation_type' => $request->regulation_type,
                 'about' => $request->about,
                 'set' => $request->set,
-                'link' => $name,
                 'field_of_activity' => $request->field_of_activity,
-            ]);
+            ];
+
+            //create file
+            if(!empty($request->file('link'))) {
+                $file = $request->file('link');
+                $name = 'kebijakan/' . uniqid() . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+                $name = $name;
+                $update['link'] = $name;
+            }
+            // } else {
+            //     $name = $request->old_link;
+            // }
+
+
+            //create Kebijakan
+            $kebijakan = Policy::where('id', $request->id)->update($update);
 
             if ($kebijakan) {
                 return response()->json([

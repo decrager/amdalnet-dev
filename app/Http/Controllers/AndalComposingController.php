@@ -168,7 +168,7 @@ class AndalComposingController extends Controller
                 $fileKtr = $this->base64ToFile($request->ktr);
                 $ktrName = 'project/ktr/' . uniqid() . '.' . $fileKtr['extension'];
                 Storage::disk('public')->put($ktrName, $fileKtr['file']);
-                $project->ktr = Storage::url($ktrName);
+                $project->ktr = $ktrName;
             }
 
             if($request->pA) {
@@ -176,12 +176,51 @@ class AndalComposingController extends Controller
                     $filePa = $this->base64ToFile($request->pA);
                     $pAName = 'project/preAgreement/' . uniqid() . '.' . $filePa['extension'];
                     Storage::disk('public')->put($pAName, $filePa['file']);
-                    $project->pre_agreement_file = Storage::url($pAName);
+                    $project->pre_agreement_file = $pAName;
+            }
+
+            if($request->pippib) {
+                $pippibName = '';
+                    $filePippib = $this->base64ToFile($request->pippib);
+                    $pippibName = 'project/pippib/' . uniqid() . '.' . $filePippib['extension'];
+                    Storage::disk('public')->put($pippibName, $filePippib['file']);
+                    $project->ppib_file = $pippibName;
+            }
+
+            if($request->kL) {
+                $kLName = '';
+                    $fileKl = $this->base64ToFile($request->kL);
+                    $kLName = 'project/kawasanlindung/' . uniqid() . '.' . $fileKl['extension'];
+                    Storage::disk('public')->put($kLName, $fileKl['file']);
+                    $project->kawasan_lindung_file = $kLName;
             }
 
             $project->save();
 
             // === ANDAL ATTACHMENT === //
+            // === PERTEK === //
+            $pertek = json_decode($request->pertek, true);
+            if(count($pertek) > 0) {
+                for($i = 0; $i < count($pertek); $i++) {
+                    $fileRequest = 'file-pertek-' . $i;
+
+                    if($request->input($fileRequest)) {
+                        $attachment = new AndalAttachment();
+                        $attachment->id_project = $request->idProject;
+                        $attachment->name = $pertek[$i];
+    
+                        $file = $this->base64ToFile($request->input($fileRequest));
+                        $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file['extension'];
+                        Storage::disk('public')->put($fileName, $file['file']);
+                        $attachment->file = $fileName;
+                        $attachment->is_pertek = true;
+
+                        $attachment->save();
+                    }
+                }
+            }
+
+            // ==== LAINNYA === //
             $others = json_decode($request->others, true);
 
             if(count($others) > 0) {
@@ -196,7 +235,7 @@ class AndalComposingController extends Controller
                         $file = $this->base64ToFile($request->input($fileRequest));
                         $fileName = 'project/andal-attachment/' . uniqid() . '.' . $file['extension'];
                         Storage::disk('public')->put($fileName, $file['file']);
-                        $attachment->file = Storage::url($fileName);
+                        $attachment->file = $fileName;
     
                         $attachment->save();
                     }
@@ -206,6 +245,12 @@ class AndalComposingController extends Controller
             $deleted = json_decode($request->deleted, true);
 
             if(count($deleted) > 0) {
+                $files = AndalAttachment::whereIn('id', $deleted)->get();
+                foreach($files as $file) {
+                    $file_name = str_replace(Storage::url(''), '', $file->file);
+                    Storage::disk('public')->delete($file_name);
+                }
+
                 AndalAttachment::whereIn('id', $deleted)->delete();
             }
 
@@ -628,7 +673,7 @@ class AndalComposingController extends Controller
                         $important_trait = $traits;
                     }
                 } else {
-                    continue;
+                    $important_trait = $traits;
                 }
 
                 $results[] = [
@@ -639,12 +684,12 @@ class AndalComposingController extends Controller
                     'component' => $component,
                     'ronaAwal' => $ronaAwal,
                     'important_trait' => $important_trait,
-                    'impact_type' => $imp->envImpactAnalysis->impact_type,
-                    'impact_eval_result' => $imp->envImpactAnalysis->impact_eval_result,
-                    'studies_condition' => $imp->envImpactAnalysis->studies_condition,
-                    'condition_dev_no_plan' => $imp->envImpactAnalysis->condition_dev_no_plan,
-                    'condition_dev_with_plan' => $imp->envImpactAnalysis->condition_dev_with_plan,
-                    'impact_size_difference' => $imp->envImpactAnalysis->impact_size_difference,
+                    'impact_type' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->impact_type : null,
+                    'impact_eval_result' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->impact_eval_result : null,
+                    'studies_condition' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->studies_condition : null,
+                    'condition_dev_no_plan' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->condition_dev_no_plan : null,
+                    'condition_dev_with_plan' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->condition_dev_with_plan : null,
+                    'impact_size_difference' => $imp->envImpactAnalysis ? $imp->envImpactAnalysis->impact_size_difference : null,
                     'dph' => $imp->is_hypothetical_significant === true ? 'DPH' : 'Tidak DPH',
                     'comments' => $comments
                 ];
@@ -668,14 +713,14 @@ class AndalComposingController extends Controller
 
     private function dokumen($id_project)
     {
-        if (!Storage::disk('public')->exists('workspacee')) {
-            Storage::disk('public')->makeDirectory('workspacee');
+        if (!Storage::disk('public')->exists('workspace')) {
+            Storage::disk('public')->makeDirectory('workspace');
         }
 
         // CHECK IF DOCUMENT ALREADY EXIST
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Andal']])->first();
         if($document_attachment) {
-            // return response()->json(['message' => 'success']);
+            return response()->json(['message' => 'success']);
         }
 
         $save_file_name = $id_project . '-andal' . '.docx';
@@ -941,7 +986,7 @@ class AndalComposingController extends Controller
                 }
 
                 $component_type = $this->getComponentTypeImp($imp);
-                $initial_study_plan = $this->renderHtmlTable($imp->initial_study_plan , 1300, 'Arial', '11');
+                $initial_study_plan = $this->renderHtmlTable($imp->initial_study_plan , 3500, 'Arial', '11');
 
                 // ======= POTENTIAL IMPACT EVALUATIONS ======= //
                 $ed_besaran_rencana = '';
@@ -955,31 +1000,31 @@ class AndalComposingController extends Controller
                         if ($pI->id_pie_param == 1) {
                             $ed_besaran_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 2) {
                             $ed_kondisi_rona = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 3) {
                             $ed_pengaruh_rencana = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 4) {
                             $ed_intensitas_perhatian = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         } else if ($pI->id_pie_param == 5) {
                             $ed_kesimpulan = '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}';
                             $ed_replace[] = [
-                                'data' => $this->renderHtmlTable($pI->text, 1700, 'Arial', '11'),
+                                'data' => $this->renderHtmlTable($pI->text, 3500, 'Arial', '11'),
                                 'replace' => '${edt_' . $pI->id_pie_param . $pI->id . '_' . $s->id . '}'
                             ];
                         }
@@ -2316,11 +2361,11 @@ class AndalComposingController extends Controller
         }
 
         // EVALUASI DAMPAK
-        // if(count($ed_replace) > 0) {
-        //     for($edi = 0; $edi < count($ed_replace); $edi++) {
-        //         $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
-        //     }
-        // }
+        if(count($ed_replace) > 0) {
+            for($edi = 0; $edi < count($ed_replace); $edi++) {
+                $templateProcessor->setComplexBlock($ed_replace[$edi]['replace'], $ed_replace[$edi]['data']);
+            }
+        }
 
         // $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
         $tmpName = $templateProcessor->save();
@@ -2332,7 +2377,6 @@ class AndalComposingController extends Controller
         $document_attachment->attachment = 'workspace/' . $save_file_name;
         $document_attachment->type = 'Dokumen Andal';
         $document_attachment->save();
-        
 
         return response()->json(['message' => 'success']);
     }
@@ -2401,7 +2445,7 @@ class AndalComposingController extends Controller
             $submit = KaReview::where([['id_project', $id_project], ['status', 'submit']])->first();
             if($submit) {
                 return [
-                    'file_name' => $save_file_name,
+                    'file_name' => Storage::url('workspace/' . $save_file_name),
                     'project_title' => strtolower($project->project_title)
                 ];
             }
@@ -2615,12 +2659,12 @@ class AndalComposingController extends Controller
 
 
                 // === HTML CONTENT === //
-                $html_content[] = $this->renderHtml('rencana', $s->id, $pA->id, 2000, $pA->initial_study_plan);
-                $html_content[] = $this->renderHtml('ed_besaran_rencana', $s->id, $pA->id, 1200, $ed_besaran_rencana);
-                $html_content[] = $this->renderHtml('ed_kondisi_rona', $s->id, $pA->id, 1200, $ed_kondisi_rona);
-                $html_content[] = $this->renderHtml('ed_pengaruh_rencana', $s->id, $pA->id, 1200, $ed_pengaruh_rencana);
-                $html_content[] = $this->renderHtml('ed_intensitas_perhatian', $s->id, $pA->id, 1200, $ed_intensitas_perhatian);
-                $html_content[] = $this->renderHtml('ed_kesimpulan', $s->id, $pA->id, 1200, $ed_kesimpulan);
+                $html_content[] = $this->renderHtml('rencana', $s->id, $pA->id, 6800, $pA->initial_study_plan);
+                $html_content[] = $this->renderHtml('ed_besaran_rencana', $s->id, $pA->id, 6800, $ed_besaran_rencana);
+                $html_content[] = $this->renderHtml('ed_kondisi_rona', $s->id, $pA->id, 6800, $ed_kondisi_rona);
+                $html_content[] = $this->renderHtml('ed_pengaruh_rencana', $s->id, $pA->id, 6800, $ed_pengaruh_rencana);
+                $html_content[] = $this->renderHtml('ed_intensitas_perhatian', $s->id, $pA->id, 6800, $ed_intensitas_perhatian);
+                $html_content[] = $this->renderHtml('ed_kesimpulan', $s->id, $pA->id, 6800, $ed_kesimpulan);
 
                 $total++;
             }
@@ -2725,7 +2769,7 @@ class AndalComposingController extends Controller
         }
 
         return [
-            'file_name' => $save_file_name,
+            'file_name' => $document_attachment->attachment,
             'project_title' => strtolower(str_replace('/', '-', $project->project_title))
         ];
     }
@@ -3034,11 +3078,16 @@ class AndalComposingController extends Controller
     private function getAttachment($id_project)
     {
         $project = Project::findOrFail($id_project);
-        $others = AndalAttachment::where('id_project', $id_project)->get();
+        $pertek = AndalAttachment::where([['id_project', $id_project],['is_pertek', true],['is_andal', true]])->get();
+        $others = AndalAttachment::where([['id_project', $id_project],['is_pertek', false],['is_andal', true]])->get();
+        
         return [
             'kesesuaian_tata_ruang' => $project->ktr,
             'persetujuan_awal' => $project->pre_agreement_file,
-            'lainnya' => $others ? $others->toArray() : []
+            'pippib' => $project->ppib_file,
+            'kawasan_lindung' => $project->kawasan_lindung_file,
+            'pertek' => $pertek ? $pertek->toArray() : [],
+            'lainnya' => $others ? $others->toArray() : [],
         ];
     }
 

@@ -6,6 +6,7 @@ use App\Notifications\UserRegistered;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -126,5 +127,18 @@ class User extends Authenticatable
             Notification::send($user, new UserRegistered($user));
             event(new \App\Events\NotificationEvent());
         });
+    }
+
+    public function getAvatarAttribute()
+    {
+        if($this->attributes['avatar']) {
+            if(str_contains($this->attributes['avatar'], 'storage/')) {
+                return $this->attributes['avatar'];
+            } else {
+                return Storage::url($this->attributes['avatar']);
+            }
+        }
+
+        return null;
     }
 }

@@ -76,6 +76,11 @@ class Project extends Model implements Auditable
         return $this->hasMany(ProjectAddress::class, 'id_project', 'id');
     }
 
+    public function authorities()
+    {
+        return $this->hasMany(ProjectAuthority::class, 'id_project', 'id');
+    }
+
     public function listSubProject()
     {
         return $this->hasMany(SubProject::class, 'id_project', 'id');
@@ -166,7 +171,7 @@ class Project extends Model implements Auditable
 
         $save_file_name = $this->id . '-rkl-rpl' . '.docx';
 
-        if (Storage::disk('public')->exists('workpace/' . $save_file_name)) {
+        if (Storage::disk('public')->exists('workspace/' . $save_file_name)) {
             return true;
         }
 
@@ -186,5 +191,70 @@ class Project extends Model implements Auditable
         }
 
         return false;
+    }
+
+    public function getKtrAttribute()
+    {
+        if($this->attributes['ktr']) {
+            if(str_contains($this->attributes['ktr'], 'storage/')) {
+                return $this->attributes['ktr'];
+            } else {
+                return Storage::url($this->attributes['ktr']);
+            }
+        }
+
+        return null;
+    }
+
+    public function getPreAgreementFileAttribute()
+    {
+        if($this->attributes['pre_agreement_file']) {
+            if(str_contains($this->attributes['pre_agreement_file'], 'storage/')) {
+                return $this->attributes['pre_agreement_file'];
+            } else {
+                return Storage::url($this->attributes['pre_agreement_file']);
+            }
+        }
+
+        return null;
+    }
+
+    public function getKawasanLindungFileAttribute()
+    {
+        if($this->attributes['kawasan_lindung_file']) {
+            if(str_contains($this->attributes['kawasan_lindung_file'], 'storage/')) {
+                return $this->attributes['kawasan_lindung_file'];
+            } else {
+                return Storage::url($this->attributes['kawasan_lindung_file']);
+            }
+        }
+
+        return null;
+    }
+
+    public function getPpibFileAttribute()
+    {
+        if($this->attributes['ppib_file']) {
+            if(str_contains($this->attributes['ppib_file'], 'storage/')) {
+                return $this->attributes['ppib_file'];
+            } else {
+                return Storage::url($this->attributes['ppib_file']);
+            }
+        }
+
+        return null;
+    }
+
+    public function getMapAttribute()
+    {
+        if($this->attributes['map']) {
+            if(str_contains($this->attributes['map'], 'storage/')) {
+                return $this->attributes['map'];
+            } else {
+                return Storage::url($this->attributes['map']);
+            }
+        }
+
+        return null;
     }
 }

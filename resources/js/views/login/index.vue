@@ -817,12 +817,17 @@ export default {
           this.loading = true;
           csrf().then(() => {
             this.$store.dispatch('user/login', this.loginForm)
-              .then(() => {
+              .then((response) => {
                 this.$router.push({ path: this.redirect || '/dashboard', query: this.otherQuery }, onAbort => {});
                 this.loading = false;
                 window.location.reload();
               })
               .catch(() => {
+                this.$message({
+                  message: 'Maaf Email atau Password yang anda masukkan kurang tepat',
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
                 this.loading = false;
               });
           });
@@ -882,6 +887,17 @@ export default {
               initiatorResource
                 .store(formData)
                 .then((response) => {
+                  if (response.error) {
+                    this.$message({
+                      message: response.error,
+                      type: 'error',
+                      duration: 5 * 1000,
+                    });
+                    this.loading = false;
+
+                    return false;
+                  }
+
                   this.$message({
                     message:
                 'User Dengan Email ' +
@@ -924,6 +940,17 @@ export default {
               initiatorResource
                 .store(formData)
                 .then((response) => {
+                  if (response.error) {
+                    this.$message({
+                      message: response.error,
+                      type: 'error',
+                      duration: 5 * 1000,
+                    });
+                    this.loading = false;
+
+                    return false;
+                  }
+
                   this.$message({
                     message:
                 'User Dengan Email ' +
@@ -967,6 +994,17 @@ export default {
               formulatorResource
                 .store(formData)
                 .then((response) => {
+                  if (response.error) {
+                    this.$message({
+                      message: response.error,
+                      type: 'error',
+                      duration: 5 * 1000,
+                    });
+                    this.loading = false;
+
+                    return false;
+                  }
+
                   this.$message({
                     message:
                 'User Dengan Email ' +

@@ -1,18 +1,5 @@
 <template>
   <div>
-    <div class="filter-container" style="text-align: right">
-      <el-upload
-        v-if="isFormulator"
-        :loading="loadingMap"
-        class="filter-item upload-demo"
-        style="font-size: 0.8rem"
-        :auto-upload="false"
-        :on-change="handleUploadChange"
-        action=""
-      >
-        Unggah Peta
-      </el-upload>
-    </div>
     <el-table
       v-loading="loading"
       :data="list"
@@ -114,7 +101,7 @@
                       <p>{{ com.created_at }}</p>
                     </div>
                     <el-checkbox
-                      v-if="isFormulator"
+                      v-if="!isFormulator"
                       v-model="
                         list[scope.$index - 1].comments[index].is_checked
                       "
@@ -133,7 +120,7 @@
                   >
                     <div class="comment-header reply">
                       <div>
-                        <p>Catatan Balasan Penyusun</p>
+                        <p>{{ rep.role }}</p>
                         <p>
                           {{ rep.created_at }}
                         </p>
@@ -141,15 +128,7 @@
                     </div>
                     <div class="comment-body reply" v-html="rep.description" />
                   </div>
-                  <div v-if="isFormulator" class="comment-reply">
-                    <!-- <el-input
-                      v-model="
-                        list[scope.$index - 1].comments[index].reply_desc
-                      "
-                      type="textarea"
-                      :rows="2"
-                      placeholder="Tulis Catatan Balasan..."
-                    /> -->
+                  <div v-if="!comments[index].is_checked" class="comment-reply">
                     <Tinymce
                       v-model="
                         list[scope.$index - 1].comments[index].reply_desc

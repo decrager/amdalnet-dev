@@ -7,8 +7,10 @@ use App\Entity\FeasibilityTestTeamMember;
 use App\Entity\Formulator;
 use App\Entity\FormulatorTeam;
 use App\Entity\FormulatorTeamMember;
+use App\Entity\Initiator;
 use App\Entity\Project;
 use App\Entity\ProjectAddress;
+use App\Entity\ProjectAuthority;
 use App\Entity\ProjectFilter;
 use App\Entity\ProjectMapAttachment;
 use App\Entity\SubProject;
@@ -26,6 +28,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Workflow;
+use App\Entity\WorkflowLog;
+use App\Entity\WorkflowStep;
+use App\Notifications\CreateProjectNotification;
+use App\Entity\ProjectSkklFinal;
 
 class ProjectController extends Controller
 {
@@ -57,7 +64,7 @@ class ProjectController extends Controller
                 });
             }, 'tukProject' => function ($q) {
                 $q->where('id_user', Auth::user()->id);
-            }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id')
+            }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'workflow_states.public_tracking as marking_label')
                 ->where(function ($query) use ($request) {
                     return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
                 })->where(
@@ -94,12 +101,16 @@ class ProjectController extends Controller
                 ->leftJoin('formulator_team_members', 'formulator_teams.id', '=', 'formulator_team_members.id_formulator_team')
                 ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
                 ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+                ->leftJoin('workflow_states', 'workflow_states.state', '=' , 'projects.marking')
                 ->distinct()
-                ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id')
+                ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'workflow_states.public_tracking')
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
-            return ProjectResource::collection(Project::select('*')
-                ->where('registration_no', $request->registration_no)
+            // return $request->registration_no;
+            return ProjectResource::collection(Project::with(['address'])->select('projects.*')
+                ->addSelect('workflow_states.public_tracking as marking_label')
+                ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
+                ->where('registration_no', '=', strtolower($request->registration_no))
                 ->orderBy('created_at', 'desc')
                 ->get());
         } else if ($request->id) {
@@ -126,7 +137,7 @@ class ProjectController extends Controller
             });
         }, 'tukProject', 'feasibilityTestRecap' => function ($q) {
             $q->select('id', 'id_project', 'is_feasib', 'updated_at');
-        }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId')->where(function ($query) use ($request) {
+        }])->select('projects.*', 'initiators.name as applicant', 'users.avatar as avatar', 'formulator_teams.id as team_id', 'announcements.id as announcementId', 'workflow_states.public_tracking as marking_label')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -176,6 +187,7 @@ class ProjectController extends Controller
             ->leftJoin('formulator_teams', 'projects.id', '=', 'formulator_teams.id_project')
             ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
             ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
             ->distinct()
             // ->groupBy('projects.id', 'projects.id_project', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
             ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
@@ -201,6 +213,7 @@ class ProjectController extends Controller
     {
         $request['listSubProject'] = json_decode($request['listSubProject']);
         $request['address'] = json_decode($request['address']);
+        $request['listKewenangan'] = json_decode($request['listKewenangan']);
         if (isset($request['formulatorTeams'])) {
             $request['formulatorTeams'] = json_decode($request['formulatorTeams']);
         }
@@ -254,7 +267,7 @@ class ProjectController extends Controller
         $pippibName = '';
         if ($request->file('filepippib')) {
             $filePippib = $request->file('filepippib');
-            $pippibName = 'project/pippib' . uniqid() . '.' . $filePippib->extension();
+            $pippibName = 'project/pippib/' . uniqid() . '.' . $filePippib->extension();
             $filePippib->storePubliclyAs('public', $pippibName);
         }
 
@@ -262,7 +275,7 @@ class ProjectController extends Controller
         $kawLinName = '';
         if ($request->file('fileKawasanLindung')) {
             $fileKawasanLindung = $request->file('fileKawasanLindung');
-            $kawLinName = 'project/kawasanlindung' . uniqid() . '.' . $fileKawasanLindung->extension();
+            $kawLinName = 'project/kawasanlindung/' . uniqid() . '.' . $fileKawasanLindung->extension();
             $fileKawasanLindung->storePubliclyAs('public', $kawLinName);
         }
 
@@ -296,9 +309,9 @@ class ProjectController extends Controller
                 // 'type_formulator_team' => $data['type_formulator_team'],
                 'id_lpjp' => isset($request['id_lpjp']) ? $request['id_lpjp'] : null,
                 'map' => '',
-                'ktr' => Storage::url($ktrName),
+                'ktr' => $ktrName,
                 'pre_agreement' => isset($request['pre_agreement']) ? $request['pre_agreement'] : null,
-                'pre_agreement_file' => Storage::url($preAgreementName),
+                'pre_agreement_file' => $preAgreementName,
                 'registration_no' => uniqid(),
                 'status' => isset($request['status']) ? $request['status'] : null,
                 'study_approach' => isset($request['study_approach']) ? $request['study_approach'] : null,
@@ -306,9 +319,9 @@ class ProjectController extends Controller
                 'auth_district' => isset($request['auth_district']) ? $request['auth_district'] : null,
                 'authority' => isset($request['authority']) ? $request['authority'] : null,
                 'kawasan_lindung' => isset($request['kawasan_lindung']) ? $request['kawasan_lindung'] : null,
-                'kawasan_lindung_file' => Storage::url($kawLinName),
+                'kawasan_lindung_file' => $kawLinName,
                 'ppib' => isset($request['pippib']) ? $request['pippib'] : null,
-                'ppib_file' => Storage::url($pippibName),
+                'ppib_file' => $pippibName,
             ]);
 
             // add workflow
@@ -316,6 +329,16 @@ class ProjectController extends Controller
             $project->workflow_apply('screening');
             $project->workflow_apply('complete-screening');
             $project->save();
+
+            // send email
+            try {
+                $initpro = Initiator::find($project->id_applicant);
+                $user = User::where('email', $initpro->email)->first();
+
+                Notification::send($user, new CreateProjectNotification($project, $user));
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
 
             if ($files = $request->file('fileMap')) {
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
@@ -381,7 +404,7 @@ class ProjectController extends Controller
                     if (!isset($formulaTeam->id)) {
                         $cvName = '';
                         if (array_key_exists($key, $formulatorFiles)) {
-                            $cvName = '/penyusun/' . uniqid() . '.' . $formulatorFiles[$key]->extension();
+                            $cvName = 'penyusun/' . uniqid() . '.' . $formulatorFiles[$key]->extension();
                             $formulatorFiles[$key]->storePubliclyAs('public', $cvName);
                         }
 
@@ -399,7 +422,7 @@ class ProjectController extends Controller
 
                         $new = Formulator::create([
                             'name' => $formulaTeam->name,
-                            'cv_file' => Storage::url($cvName),
+                            'cv_file' => $cvName,
                             'email' => $formulaTeam->email,
                             'expertise' => $formulaTeam->expertise,
                             'membership_status' => 'TA',
@@ -451,22 +474,36 @@ class ProjectController extends Controller
                 ]);
             }
 
+            foreach ($request['listKewenangan'] as $kew) {
+                ProjectAuthority::create([
+                    'id_project' => $project->id,
+                    'sector' => isset($kew->sector) ? $kew->sector : null,
+                    'project' => isset($kew->project) ? $kew->project : null,
+                    'authority' => isset($kew->authority) ? $kew->authority : null,
+                ]);
+            }
+
             //create sub project
             foreach ($data['listSubProject'] as $subPro) {
-                $business = Business::find($subPro->biz_type);
-                $sector = Business::find($subPro->sector);
+                if(gettype($subPro->biz_type) !== 'string'){
+                    $business = Business::find($subPro->biz_type);
+                }
+                if(gettype($subPro->sector) !== 'string'){
+                    $sector = Business::find($subPro->sector);
+                }
+
                 $createdSubPro = SubProject::create([
                     'kbli' => isset($subPro->kbli) ? $subPro->kbli : 'Non KBLI',
                     'name' => $subPro->name,
                     'result' => $subPro->result,
                     'type' => $subPro->type,
-                    'biz_type' => $subPro->biz_type,
+                    'biz_type' => gettype($subPro->biz_type) !== 'string' ? $subPro->biz_type : 0,
                     'id_project' => $project->id,
-                    'sector' => $subPro->sector,
+                    'sector' => gettype($subPro->sector) !== 'string'? $subPro->sector : 0,
                     'scale' => floatval($subPro->scale),
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
-                    'biz_name' => isset($business) ? $business->value : null,
-                    'sector_name' => isset($sector) ? $sector->value : null,
+                    'biz_name' => isset($business) ? $business->value : $subPro->biz_name,
+                    'sector_name' => isset($sector) ? $sector->value : $subPro->sector_name,
                     'id_proyek' => isset($subPro->id_proyek) ? $subPro->id_proyek : null,
                 ]);
 
@@ -587,11 +624,14 @@ class ProjectController extends Controller
         announcements.potential_impact as potential_impact,
         initiators.name as initiator_name,
         initiators.address as initiator_address,
-        users.avatar as logo')
+        users.avatar as logo,
+        workflow_states.public_tracking as marking_label')
             ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
             ->leftJoin('initiators', 'projects.id_applicant', '=', 'initiators.id')
             ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
             ->leftJoin('users', 'initiators.email', '=', 'users.email');
+
         return $project->where('projects.id', $id)->first();
 
         /*
@@ -643,9 +683,31 @@ class ProjectController extends Controller
      * @param Project $project
      * @return Response
      */
-    public function edit(Project $project)
+    public function edit(Project $project, Request $request)
     {
-        //
+        if ($project === null) {
+            return response()->json(['error' => 'Project not found'], 404);
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'ppjk' => ['required']
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $params = $request->all();
+            $project->ppjk = $params['ppjk'];
+            if(isset($params['isppjk'])){
+                $project->isppjk = $params['isppjk'];
+            }
+            $project->save();
+        }
+
+        return $project;
     }
 
     /**
@@ -700,8 +762,7 @@ class ProjectController extends Controller
                 $file = $request->file('fileMap');
                 $name = 'project/' . uniqid() . '.' . $file->extension();
                 $file->storePubliclyAs('public', $name);
-            } else {
-                $name = null;
+                $project->map = $name;
             }
 
             //create file ktr
@@ -709,8 +770,7 @@ class ProjectController extends Controller
                 $fileKtr = $request->file('fileKtr');
                 $ktrName = 'project/ktr' . uniqid() . '.' . $fileKtr->extension();
                 $fileKtr->storePubliclyAs('public', $ktrName);
-            } else {
-                $ktrName = null;
+                $project->ktr = $ktrName;
             }
 
             //create Pre Agreement
@@ -719,6 +779,7 @@ class ProjectController extends Controller
                 $filePreAgreement = $request->file('fileKtr');
                 $preAgreementName = 'project/preAgreement' . uniqid() . '.' . $filePreAgreement->extension();
                 $filePreAgreement->storePubliclyAs('public', $preAgreementName);
+                $project->pre_agreement = $preAgreementName;
             }
 
             //Update Project
@@ -744,10 +805,6 @@ class ProjectController extends Controller
             $project->id_project = $params['id_project'];
             // $project->type_formulator_team = $params['type_formulator_team'];
             $project->id_lpjp = isset($params['id_lpjp']) ? $params['id_lpjp'] : null;
-            $project->map = $name != null ? Storage::url($name) : $project->map;
-            $project->ktr = $ktrName != null ? Storage::url($ktrName) : $project->ktr;
-            $project->pre_agreement = $preAgreementName != null ? Storage::url($preAgreementName) : $project->pre_agreement;
-
             $project->save();
         }
 
@@ -780,7 +837,40 @@ class ProjectController extends Controller
 
     public function timeline(Request $request)
     {
-        $res = [];
+        $project = Project::where('id', $request->id)->first();
+        if(!$project){
+            return response('Status Kegiatan tidak ditemukan', 404);
+        }
+
+        return response(WorkflowStep::where('doc_type', $project->required_doc)
+            ->select('workflow_steps.code', 'workflow_logs.from_place', 'workflow_logs.to_place',
+                'workflow_logs.created_at as datetime',
+                'workflow_steps.rank', 'workflow_steps.is_conditional',
+                'workflow_states.public_tracking as label', 'users.name as username')
+            // ->addSelect(DB::raw('\''.$project->marking.'\' as current_marking'))
+            ->leftJoin('workflow_states', 'workflow_states.code', '=', 'workflow_steps.code')
+            ->leftJoin('workflow_logs',  function ($join) use ($project) {
+                $join->on('workflow_logs.id_project', '=', DB::raw($project->id));
+                $join->on('workflow_logs.to_place', '=', 'workflow_states.state');
+            })
+            ->leftJoin('users', 'users.id', '=', 'updated_by')
+            ->orderBy('rank', 'DESC')
+            ->get());
+
+        /*
+        return response(WorkflowLog::where('id_project', $project->id)
+            ->selectRaw(
+                'from_place, to_place, workflow_logs.created_at as datetime,
+                workflow_states.public_tracking as label, users.name as username') //string_agg(users.name, \',\') as username')
+            ->leftJoin('workflow_states', 'workflow_states.state', '=', 'to_place')
+            ->leftJoin('users', 'users.id', '=', 'updated_by')
+            // ->whereRaw('audits.new_values like \'%\' || workflow_logs.to_place || \'%\'')
+            //->groupBy('workflow_logs.id', 'workflow_states.public_tracking', 'users.name', 'audits.created_at')
+            ->orderBy('workflow_logs.id', $request->order ? $request->order : 'DESC')
+            ->get());
+        */
+
+        /*$res = [];
         $res = DB::table('audits')
             ->leftJoin('users', 'users.id', '=', 'audits.user_id')
             ->select(
@@ -794,6 +884,22 @@ class ProjectController extends Controller
             ->orderBy('audits.id', $request->order ? $request->order : 'DESC')
             ->get();
 
-        return response($res);
+        return response($res);*/
+    }
+
+    public function states(Request $request){
+
+        return response([
+            'amdal' => ProjectSkklFinal::count(),
+            'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
+            'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
+        ]);
+
+        /*
+        return response([
+            'amdal' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'amdal.skkl-published'])->count(),
+            'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
+            'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
+        ]); */
     }
 }

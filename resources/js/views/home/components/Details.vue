@@ -159,13 +159,28 @@
                 </el-col>
               </el-row>
               <el-row :gutter="20">
-                <el-col :span="24">
+                <el-col :span="12">
                   <el-form-item prop="email" label="">
                     <div class="text-white fw-bold">Email</div>
                     <el-input
                       v-model="form.email"
                       placeholder="Email"
                     />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item prop="comunityGender">
+                    <div class="text-white fw-bold">Gender</div>
+                    <el-form-item label="">
+                      <el-select v-model="form.comunityGender" placeholder="Pilih Gender">
+                        <el-option
+                          v-for="item in genders"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        />
+                      </el-select>
+                    </el-form-item>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -185,6 +200,7 @@
                       class=""
                       @change="handleFileUpload()"
                     >
+                    <p v-if="errorSelfie" style="color: red;">{{ errorSelfie }}</p>
                   </div>
                 </div>
               </el-form-item>
@@ -257,10 +273,6 @@
               <el-checkbox label="Kelompok Ke setaraan Gender" />
             </el-checkbox-group>
             <template>
-              <el-radio v-model="form.comunityGender" label="1">Laki - laki</el-radio>
-              <el-radio v-model="form.comunityGender" label="2">Perempuan</el-radio>
-            </template>
-            <template>
               <el-alert
                 v-show="warningDialog"
                 title="Silahkan Di Isi Salah Satu"
@@ -284,6 +296,7 @@
               >Batal</el-button>
               <el-button
                 id="kirim"
+                :loading="loadingSend"
                 type="primary"
                 @click="handleSubmit()"
               >Kirim</el-button>
@@ -345,6 +358,7 @@ export default {
       rules: {
         name: [{ required: true, message: 'Nama wajib diisi', trigger: 'blur' }],
         peran: [{ required: true, message: 'Peran wajib diisi', trigger: 'blur' }],
+        comunityGender: [{ required: true, message: 'Gender wajib dipilih', trigger: 'blur' }],
         id_card_number: [{ required: true, message: 'NIK wajib diisi' }, { pattern: /([1-9][0-9])(\d{4})(\d{6})(\d{4})/, message: 'NIK tidak valid', trigger: ['blur', 'change'] }],
         email: [
           { required: true, message: 'Alamat email wajib diisi', trigger: 'blur' },
@@ -366,6 +380,18 @@ export default {
       radio: '',
       selectedProject2: {},
       sector_name: '',
+      errorSelfie: null,
+      loadingSend: false,
+      genders: [
+        {
+          id: '1',
+          name: 'Laki-laki',
+        },
+        {
+          id: '2',
+          name: 'Perempuan',
+        },
+      ],
     };
   },
   async created() {
@@ -464,12 +490,24 @@ export default {
       });
     },
     handleFileUpload(e) {
+      this.errorSelfie = null;
+      this.url = '/images/avatar.png';
+      if (this.$refs.file.files[0].size > 1048576) {
+        this.errorSelfie = 'Ukuran File Tidak Boleh Melebihi 1 MB';
+        this.photo_filepath = null;
+        return;
+      }
+      if (!this.isFileImage(this.$refs.file.files[0])) {
+        this.errorSelfie = 'File yang diunggah Wajib Berformat Gambar';
+        this.photo_filepath = null;
+        return;
+      }
       this.photo_filepath = this.$refs.file.files[0];
       this.url = URL.createObjectURL(this.$refs.file.files[0]);
     },
     handleSubmit() {
       this.$refs['form'].validate((valid) => {
-        if (valid) {
+        if (valid && (this.errorSelfie === null)) {
           this.saveFeedback();
         } else {
           this.$message({
@@ -483,10 +521,11 @@ export default {
     },
     async saveFeedback() {
       if (this.$refs.form) {
-        console.log('saveFeedback');
-        if (this.form.peran === 1 && this.form.comunityType.length === 0 && this.form.comunityGender === null) {
+        // console.log('saveFeedback');
+        if (this.form.peran === 1 && this.form.comunityType.length === 0) {
           this.centerDialogVisible = true;
         } else {
+          this.loadingSend = true;
           this.centerDialogVisible = false;
           const formData = new FormData();
           formData.append('photo_filepath', this.photo_filepath);
@@ -517,10 +556,12 @@ export default {
                 message: 'Successfully create a feedback',
                 duration: 5 * 1000,
               });
+              this.loadingSend = false;
               this.$emit('handleSetTabs', 'TABS');
               this.getAnnouncement();
             })
             .catch((error) => {
+              this.loadingSend = false;
               this.errorMessage = error.message;
               this.$message({
                 type: 'error',
@@ -545,8 +586,6 @@ export default {
       }
     },
     handleCloseModal(){
-      console.log(this.form.comunityType);
-      console.log(this.form.comunityGender);
       if (this.form.comunityType.length === 0 && this.form.comunityGender === null) {
         this.warningDialog = true;
         this.centerDialogVisible = true;
@@ -554,6 +593,9 @@ export default {
         this.warningDialog = false;
         this.centerDialogVisible = false;
       }
+    },
+    isFileImage(file) {
+      return file && file['type'].split('/')[0] === 'image';
     },
   },
 };

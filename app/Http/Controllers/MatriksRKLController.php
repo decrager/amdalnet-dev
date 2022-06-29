@@ -28,6 +28,7 @@ use PhpOffice\PhpWord\Settings;
 use App\Utils\Html;
 use PhpOffice\PhpWord\TemplateProcessor;
 use PhpOffice\PhpWord\Element\Table;
+use Illuminate\Support\Facades\Auth;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -334,22 +335,22 @@ class MatriksRKLController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->map) {
-            if($request->hasFile('map_file')) {
-                //create file
-                $file = $request->file('map_file');
-                $name = '/map/' . uniqid() . '.' . $file->extension();
-                $file->storePubliclyAs('public', $name);
+        // if($request->map) {
+        //     if($request->hasFile('map_file')) {
+        //         //create file
+        //         $file = $request->file('map_file');
+        //         $name = '/map/' . uniqid() . '.' . $file->extension();
+        //         $file->storePubliclyAs('public', $name);
       
-                $project = Project::findOrFail($request->idProject);
-                $project->map_rkl = Storage::url($name);
-                $project->save();
+        //         $project = Project::findOrFail($request->idProject);
+        //         $project->map_rkl = Storage::url($name);
+        //         $project->save();
    
-                return response()->json(['message' => 'success']);
-           }
+        //         return response()->json(['message' => 'success']);
+        //    }
    
-           return response()->json(['message' => 'failed'], 404);
-        }
+        //    return response()->json(['message' => 'failed'], 404);
+        // }
 
         if($request->workspace) {
             if(Storage::disk('public')->exists('workspace/' . $request->idProject . '-rkl-rpl.docx')) {
@@ -404,7 +405,8 @@ class MatriksRKLController extends Controller
             return [
                 'id' => $comment->id,
                 'created_at' => $comment->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                'description' => $comment->description
+                'description' => $comment->description,
+                'role' => Auth::user()->roles->first()->name == 'formulator' ? 'Catatan Balasan Penyusun' : 'Catatan Balasan Penguji'
             ];
         }
 
@@ -1413,9 +1415,13 @@ class MatriksRKLController extends Controller
                     $replies[] = [
                         'id' => $r->id,
                         'created_at' => $r->updated_at->locale('id')->isoFormat('D MMMM Y hh:mm:ss'),
-                        'description' => $r->description
+                        'description' => $r->description,
+                        'role' => $r->user->roles->first()->name == 'formulator' ? 'Catatan Balasan Penyusun' : 'Catatan Balasan Penguji'
                     ];
                 }
+                usort($replies, function($a, $b) {
+                    return $a['id'] <=> $b['id'];
+                });
             }
 
             $comments[] = [
@@ -1447,7 +1453,7 @@ class MatriksRKLController extends Controller
 
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell(1300);
+        $cell = $table->addCell(2000);
         Html::addHtml($cell, $imp_source);
 
         return [
@@ -1470,7 +1476,7 @@ class MatriksRKLController extends Controller
 
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell(1300);
+        $cell = $table->addCell(3000);
         Html::addHtml($cell, $indicator_data);
 
         return [
@@ -1493,7 +1499,7 @@ class MatriksRKLController extends Controller
 
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell(3000);
+        $cell = $table->addCell(3800);
         Html::addHtml($cell, $form);
 
         return [
@@ -1516,7 +1522,7 @@ class MatriksRKLController extends Controller
 
         $table = new Table();
         $table->addRow();
-        $cell = $table->addCell(1600);
+        $cell = $table->addCell(3300);
         Html::addHtml($cell, $location);
 
         return [

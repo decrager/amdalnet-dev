@@ -63,7 +63,7 @@ const announcements = {
           commit('LOADING_STATUS', false);
         });
     },
-    countAmdal({ commit }) {
+    /* countAmdal({ commit }) {
       axios.get(`${API_URL}?keyword=AMDAL`)
         .then(response => {
           commit('COUNT_AMDAL', response.data.data.length);
@@ -80,7 +80,7 @@ const announcements = {
         .then(response => {
           commit('COUNT_ALL', response.data.data.length);
         });
-    },
+    },*/
   },
 };
 

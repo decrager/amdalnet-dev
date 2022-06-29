@@ -1,8 +1,9 @@
-import { login, logout, getInfo } from '@/api/auth';
+import { logout, getInfo } from '@/api/auth';
 // import axios from 'axios';
 import { isLogged, setLogged, removeToken } from '@/utils/auth';
 import router, { resetRouter } from '@/router';
 import store from '@/store';
+import axios from 'axios';
 
 const state = {
   id: null,
@@ -51,7 +52,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { email, password } = userInfo;
     return new Promise((resolve, reject) => {
-      login({ email: email.trim(), password: password })
+      axios.post('/api/auth/login', { email: email.trim(), password: password })
         .then(response => {
           setLogged('1');
           resolve();
