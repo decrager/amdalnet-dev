@@ -527,4 +527,35 @@ class DashboardController extends Controller
         );
 
     }
+
+    public function getLpjpCount(Request $request){
+        if(!$request->lpjpId){
+            return response('ID LPJP tidak ditemukan',416);
+        }
+
+        return response()->json([
+            'total' =>  Project::where('id_lpjp', $request->lpjpId)->count(),
+            'amdal' => Project::where([
+                'id_lpjp' => $request->lpjpId,
+                'required_doc' => 'AMDAL'
+                ])
+                ->count(),
+            'uklupl_rmr' => Project::where([
+                'id_lpjp' => $request->lpjpId,
+                'required_doc' => 'UKL-UPL',
+                ])->whereIn('risk_level', ['R', 'MR', 'Rendah', 'Menengah Rendah'])
+                ->count(),
+            'uklupl_mtt' => Project::where([
+                'id_lpjp' => $request->lpjpId,
+                'required_doc' => 'UKL-UPL',
+                ])->whereIn('risk_level', ['MT', 'T', 'Menengah Tinggi', 'Tinggi'])
+                ->count(),
+            'sppl' => Project::where([
+                'id_lpjp' => $request->lpjpId,
+                'required_doc' => 'SPPL'
+                ])
+                ->count(),
+            'addendum' => 0 // not yet defined
+        ]);
+    }
 }

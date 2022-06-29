@@ -9,7 +9,10 @@
         </el-col>
         <el-col :span="12">
           <user-activities :user="user" />
-          <user-summary :user="user" />
+          <lpjp-summary v-if="isLPJP" :user="user" />
+          <div v-else>
+            <user-summary :user="user" />
+          </div>
         </el-col>
       </el-row>
       <el-row v-if="!isPemerintah">
@@ -55,6 +58,7 @@ import Resource from '@/api/resource';
 import ExaminerActivities from './components/ExaminerActivities.vue';
 import LpjpInformation from './components/LpjpInformation.vue';
 import LpjpFormulators from './components/LpjpFormulators.vue';
+import LpjpSummary from './components/LpjpSummary.vue';
 
 export default {
   name: 'UserDashboard',
@@ -68,6 +72,7 @@ export default {
     ProjectTable,
     LpjpInformation,
     LpjpFormulators,
+    LpjpSummary,
   },
   data() {
     return {
