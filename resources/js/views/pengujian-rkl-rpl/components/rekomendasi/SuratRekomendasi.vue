@@ -42,7 +42,6 @@
 <script>
 import Resource from '@/api/resource';
 const feasibilityTestResource = new Resource('feasibility-test');
-import axios from 'axios';
 
 export default {
   data() {
@@ -62,13 +61,11 @@ export default {
   methods: {
     async getData() {
       this.loading = true;
-      const projectName = await feasibilityTestResource.list({
+      const link = await feasibilityTestResource.list({
         dokumen: 'true',
         idProject: this.$route.params.id,
       });
-      this.projects =
-        window.location.origin + '/storage/uji-kelayakan/' + projectName;
-      this.projectName = projectName;
+      this.projects = link;
       this.loading = false;
     },
     async exportDocxPhpWord() {
@@ -79,34 +76,21 @@ export default {
     },
     async exportPdf() {
       this.loadingPDF = true;
-      axios({
-        url: `api/feasibility-test`,
-        method: 'GET',
-        responseType: 'blob',
-        params: {
-          idProject: this.$route.params.id,
-          pdf: 'true',
-        },
-      })
-        .then((response) => {
-          this.loadingPDF = false;
-          // const getHeaders = response.headers['content-disposition'].split('; ');
-          // const getFileName = getHeaders[1].split('=');
-          // const getName = getFileName[1].split('=');
-          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-          var fileLink = document.createElement('a');
-          fileLink.href = fileURL;
-          fileLink.setAttribute(
-            'download',
-            `${this.projectName.replace('.docx', '.pdf')}`
-          );
-          document.body.appendChild(fileLink);
-          fileLink.click();
-        })
-        .catch((err) => {
-          err = '';
-          this.loadingPDF = false;
-        });
+      const fileURL = await feasibilityTestResource.list({
+        pdf: 'true',
+        idProject: this.$route.params.id,
+      });
+
+      const fileLink = document.createElement('a');
+      fileLink.href = fileURL;
+      fileLink.setAttribute(
+        'download',
+        `surat-rekomendasi-uji-kelayakan.pdf`
+      );
+      document.body.appendChild(fileLink);
+      fileLink.click();
+
+      this.loadingPDF = false;
     },
   },
 };
