@@ -46,9 +46,9 @@
               </li>
             </ul>
           </li>
-          <li class="nav__item" style="margin-top:2.2rem">
+          <li class="nav__item" style="margin-top:1.2rem">
             <a href="#" class="nav__link" :class="{'active-link':(activeMenu === 'Daftar')}" @click="handleSetMenu('STATIC')">
-              Data &amp; Informasi<br>Persetujuan<br>Lingkungan
+              Data &amp; Informasi<br>Persetujuan Lingkungan
               <template v-if="isActiveDaftar">
                 <i class="el-icon-arrow-up" />
               </template>
@@ -75,7 +75,7 @@
             <a href="#about" class="nav__link" :class="{'active-link':(activeMenu === 'Tentang')}" @click="handleSetMenu('TENTANG')">Tentang Kami</a>
           </li>
           <li class="nav__item">
-            <router-link to="login" class="btn__link">Masuk</router-link>
+            <router-link to="login" class="btn__link login_link">Masuk</router-link>
           </li>
         </ul>
 
@@ -171,7 +171,7 @@ export default {
 </script>
 
 <style scoped>
-.nav__link {font-size: 0.9rem;}
+.nav__link,.login_link {font-size: 0.8rem;}
   .nav__item{position: relative;}
   /*.nav__item ul{position: absolute;background: black;  padding: 1rem;border: 1px solid #847a7a;border-radius: 5px;width: 254px;font-size: 0.7rem;}*/
   .nav__item > ul{position: absolute;top: 1.8rem;background: #637664;  width: 294px;font-size: 0.8rem;z-index: 999;}
