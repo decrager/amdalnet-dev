@@ -24,6 +24,14 @@
       </el-row>
       <examiner-activities />
     </div>
+    <div v-if="isLPJP">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <lpjp-information :user="user" :is-loading="isLoading" />
+        </el-col>
+        <el-col :span="12" />
+      </el-row>
+    </div>
   </div>
 </template>
 <script>
@@ -37,6 +45,7 @@ import ProjectTable from './components/ProjectTable.vue';
 
 import Resource from '@/api/resource';
 import ExaminerActivities from './components/ExaminerActivities.vue';
+import LpjpInformation from './components/LpjpInformation.vue';
 
 export default {
   name: 'UserDashboard',
@@ -48,6 +57,7 @@ export default {
     UserInformation,
     ExaminerActivities,
     ProjectTable,
+    LpjpInformation,
   },
   data() {
     return {
@@ -70,7 +80,9 @@ export default {
     isExaminer(){
       return this.$store.getters.roles[0].split('-')[0] === 'examiner';
     },
-
+    isLPJP(){
+      return this.$store.getters.roles.includes('lpjp');
+    },
   },
   mounted() {
     if (this.isAllowed){
@@ -81,6 +93,7 @@ export default {
   methods: {
     async getUser(){
       // this.$store.dispatch('user/getInfo').then((response) => {
+
       if (this.userLogged) {
         if (this.isExaminer){
           // this.user = response;
@@ -95,6 +108,12 @@ export default {
           resource = new Resource('formulatorsByEmail');
         } else if (this.isInitiator) {
           resource = new Resource('initiatorsByEmail');
+        } else if (this.isLPJP){
+          resource = new Resource('lpjpsByEmail');
+        }
+        if (!resource){
+          this.isLoading = false;
+          return;
         }
         resource.list({ email: this.userLogged.email }).then((res) => {
           this.user = res;

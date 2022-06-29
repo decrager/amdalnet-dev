@@ -56,7 +56,7 @@ class LpjpController extends Controller
                 'lpjp' => $lpjp,
                 'members' => $formulators
             ]);
-            
+
         }
 
         return LpjpResource::collection(Lpjp::where(function ($query) use ($request) {
@@ -210,7 +210,11 @@ class LpjpController extends Controller
     public function showByEmail(Request $request)
     {
         if ($request->email) {
-            $lpjp = Lpjp::where('email', $request->email)->first();
+            $lpjp = Lpjp::where('lpjp.email', $request->email)
+              ->select('lpjp.*')
+              ->addSelect('users.avatar as avatar')
+              ->leftJoin('users', 'users.email', '=', 'lpjp.email')
+              ->first();
 
             if ($lpjp) {
                 return $lpjp;
