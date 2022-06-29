@@ -15,6 +15,9 @@
       <el-row v-if="!isPemerintah">
         <project-table v-if="isInitiator" />
       </el-row>
+      <el-row v-if="isLPJP && user">
+        <lpjp-formulators :user="user" />
+      </el-row>
     </div>
     <div v-if="isExaminer">
       <el-row :gutter="20">
@@ -51,6 +54,7 @@ import ProjectTable from './components/ProjectTable.vue';
 import Resource from '@/api/resource';
 import ExaminerActivities from './components/ExaminerActivities.vue';
 import LpjpInformation from './components/LpjpInformation.vue';
+import LpjpFormulators from './components/LpjpFormulators.vue';
 
 export default {
   name: 'UserDashboard',
@@ -63,6 +67,7 @@ export default {
     ExaminerActivities,
     ProjectTable,
     LpjpInformation,
+    LpjpFormulators,
   },
   data() {
     return {

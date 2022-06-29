@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 class Lpjp extends Model
 {
     use SoftDeletes;
-    
+
     protected $table = 'lpjp';
 
     protected $fillable = [
@@ -38,6 +38,12 @@ class Lpjp extends Model
     {
         return $this->belongsTo(District::class, 'id_district', 'id');
     }
+
+    public function members()
+    {
+        return $this->hasMany(Formulator::class, 'id_lpjp', 'id');
+    }
+
 
     public function getCertFileAttribute()
     {

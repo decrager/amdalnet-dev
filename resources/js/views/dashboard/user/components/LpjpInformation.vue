@@ -38,8 +38,8 @@
           <span class="value">{{ user.reg_no }}</span>
         </el-row>
         <el-row>
-          <span class="label">Berlaku</span>
-          <span class="value">{{ ((user.date_start).split(" "))[0] }} - {{ ((user.date_end).split(" "))[0] }}</span>
+          <span class="label">Tanggal Berlaku</span>
+          <span class="value">{{ ((user.date_start).split(" "))[0] }} &mdash; {{ ((user.date_end).split(" "))[0] }}</span>
         </el-row>
 
       </div>

@@ -24,6 +24,7 @@ class FormulatorController extends Controller
      */
     public function index(Request $request)
     {
+
         if($request->byUserId) {
             $formulator = Formulator::where('email', $request->email)->first();
             return $formulator;
@@ -39,7 +40,9 @@ class FormulatorController extends Controller
         }
 
         return FormulatorResource::collection(
-            Formulator::where(function ($query) use ($request) {
+            Formulator::select('*')
+            ->selectRaw('case when date_start::date <= now()::date and date_end::date >= now()::date then 1 else 0 end as active')
+            ->where(function ($query) use ($request) {
                 if ($request->active && ($request->active == 'true')) {
                     $query->where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
                         ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]]);
@@ -60,6 +63,9 @@ class FormulatorController extends Controller
                     })->orWhere(function($q) use($request) {
                         $q->whereRaw("LOWER(membership_status) LIKE '%" . strtolower($request->search) . "%'");
                     });
+                }
+                if ($request->lpjpId){
+                    $query->where('id_lpjp', $request->lpjpId);
                 }
             })
             ->orderBy('created_at', 'DESC')->paginate($request->limit)
@@ -180,7 +186,7 @@ class FormulatorController extends Controller
                 $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
                 $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
             }
-            
+
             if (!$found) {
                 $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
                 $user = User::create([
@@ -288,7 +294,7 @@ class FormulatorController extends Controller
                 $file = $this->base64ToFile($request->cv_file);
                 $file_name = 'penyusun/' . uniqid() . '.' . $file['extension'];
                 Storage::disk('public')->put($file_name, $file['file']);
-                
+
                 if($formulator->cv_file) {
                     Storage::disk('public')->delete($formulator->rawCvFile());
                 }
@@ -378,15 +384,15 @@ class FormulatorController extends Controller
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
-      
-        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
-      
+
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1);
+
         // find substring fro replace here eg: data:image/png;base64,
-      
-        $file = str_replace($replace, '', $file_64); 
-      
-        $file = str_replace(' ', '+', $file); 
-      
+
+        $file = str_replace($replace, '', $file_64);
+
+        $file = str_replace(' ', '+', $file);
+
         return [
             'extension' => $extension,
             'file' => base64_decode($file)
