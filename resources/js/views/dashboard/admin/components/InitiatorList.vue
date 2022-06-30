@@ -40,9 +40,9 @@ export default {
         limit: 5,
       },
       total: 0,
-      period: null,
-      date_start: null,
-      date_end: null,
+      period: 2,
+      date_start: new Date().getFullYear().toString() + '-01',
+      date_end: new Date().getFullYear().toString() + '-12',
     };
   },
   computed: {

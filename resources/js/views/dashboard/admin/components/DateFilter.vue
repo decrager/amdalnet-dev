@@ -61,30 +61,33 @@ export default {
   data() {
     return {
       datePicker: {
-        type: 'daterange',
-        startPlaceHolder: 'Tanggal awal',
-        endPlaceholder: 'Tanggal akhir',
-        valueFormat: 'yyyy-MM-dd',
+        type: 'monthrange',
+        startPlaceHolder: 'Bulan awal',
+        endPlaceholder: 'Bulan akhir',
+        valueFormat: 'yyyy-MM',
       },
       options: [
         { label: 'harian', value: 1 },
         { label: 'bulanan', value: 2 },
         { label: 'tahunan', value: 3 },
       ],
-      periode: 1,
+      periode: 2,
+      // date_range: [
+      //   new Date(new Date().getFullYear(), new Date().getMonth(), 2)
+      //     .toISOString()
+      //     .split('T')[0],
+      //   new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+      //     .toISOString()
+      //     .split('T')[0],
+      // ],
       date_range: [
-        new Date(new Date().getFullYear(), new Date().getMonth(), 2)
-          .toISOString()
-          .split('T')[0],
-        new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-          .toISOString()
-          .split('T')[0],
+        new Date().getFullYear().toString() + '-01',
+        new Date().getFullYear().toString() + '-12',
       ],
     };
   },
   methods: {
     goFilter() {
-      console.log('date range', this.date_range);
       this.$emit('filterChange', {
         date_range: this.date_range,
         periode: this.periode,
