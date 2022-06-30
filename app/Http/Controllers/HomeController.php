@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\EntityHome;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Storage;
-use App\Utils\Storage;
+use Illuminate\Support\Facades\Storage;
+// use App\Utils\Storage;
 use Carbon\Carbon;
 use App\Utils\TemplateProcessor;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
 
 class HomeController extends Controller
 {
@@ -106,8 +108,11 @@ class HomeController extends Controller
      */
     public function s3url()
     {
-        echo Storage::temporaryUrl('public/test/61dc1555d7782.docx', Carbon::now()->addMinutes(30));
+        echo Storage::temporaryUrl('public/test/61dc1555d7782.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
         var_dump(Storage::url('public/test/61dc1555d7782.docx'));
+        // var_dump(Storage::url(''));
+        var_dump(Storage::disk('public')->exists('workspace'));
+        var_dump(Storage::disk('public')->makeDirectory('uji-kelayakan'));
     }
 
     /**
@@ -128,7 +133,7 @@ class HomeController extends Controller
         Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName), 'public');
         unlink($tmpName);
 
-        echo Storage::disk('public')->url('workspace/' . $save_file_name);
+        return redirect()->away(Storage::disk('public')->temporaryUrl('workspace/' . $save_file_name, now()->addMinutes(30)));
     }
 
     /**
@@ -136,9 +141,32 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function s3download()
+    public function s3topdf()
     {
+        $save_file_name = 'workspace-xxx-andal' . '.docx';
+        $export_file_name = 'workspace-xxx-andal' . '.pdf';
+
+        $domPdfPath = base_path('vendor/dompdf/dompdf');
+        Settings::setPdfRendererPath($domPdfPath);
+        Settings::setPdfRendererName('DomPDF');
+
+        $tmpName = tempnam(sys_get_temp_dir(),'');
+        $tmpFile = Storage::disk('public')->get('workspace/' . $save_file_name);
+        file_put_contents($tmpName, $tmpFile);
+        $Content = IOFactory::load($tmpName);
+
+        //Save it into PDF
         
+        $PDFWriter = IOFactory::createWriter($Content, 'PDF');
+        
+        unlink($tmpName);
+
+        $tmpName = tempnam(sys_get_temp_dir(),'');
+        $PDFWriter->save($tmpName);
+        Storage::disk('public')->put('workspace/' . $export_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
+
+        return redirect()->away(Storage::disk('public')->temporaryUrl('workspace/' . $export_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
     /**
@@ -147,6 +175,17 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function s3override()
+    {
+        $save_file_name = 'workspace-xxx-andal' . '.docx';
+        echo Storage::disk('public')->url('workspace/' . $save_file_name);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function s3ox()
     {
         $save_file_name = 'workspace-xxx-andal' . '.docx';
         echo Storage::disk('public')->url('workspace/' . $save_file_name);

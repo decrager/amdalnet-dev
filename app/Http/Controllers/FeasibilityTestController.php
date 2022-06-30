@@ -380,7 +380,10 @@ class FeasibilityTestController extends Controller
         $templateProcessor->setValue('ketua_tuk_position', $tuk['ketua_tuk_position']);
         $templateProcessor->setValue('ketua_tuk_nip', $tuk['ketua_tuk_nip']);
 
-        $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('uji-kelayakan/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
 
         $document_attachment = DocumentAttachment::where([['id_project', $id_project], ['type', 'Dokumen Uji Kelayakan']])->first();
         if(!$document_attachment) {

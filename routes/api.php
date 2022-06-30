@@ -390,4 +390,4 @@ Route::put('activateUser/{user}', function (User $user) {
 
 Route::get('test/s3/url', 'HomeController@s3url');
 Route::get('test/s3/template', 'HomeController@s3template');
-Route::get('test/s3/download', 'HomeController@s3download');
+Route::get('test/s3/topdf', 'HomeController@s3topdf');

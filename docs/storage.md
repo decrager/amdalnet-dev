@@ -1,10 +1,18 @@
 1. Untuk file template tetap berada di public/
 2. Proses TemplateProcessor tidak bisa langsung menulis ke object storage, harus disimpan dulu ke tmp dir laravel / php
 3. Untuk proses convert ke pdf menggunakan pdfWriter, sama seperti template processor. Keduanya menulis ke file handle, jadi harus pakek tmp dir, dan tmp file
-4. Proses pertukaran data antara oods - service laravel - object storage, jadi agak kompleks
+4. Tidak perlu melakukan pengecekan ada tidaknya direktori, dan melakukan creationnya
+5. Proses pertukaran data antara oods - service laravel - object storage, jadi agak kompleks
+6. Fungsi Storage::disk('public')->path() tidak bisa di pakai
+7. Fungsi storage_path() tidak bisa di pakai
+8. Fungsi Storage::disk('something')->url diganti dengan Storage::disk('something')->temporaryUrl($path, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
+9. $request->file('avatar')->storeAs( masih bisa di pakai
+10. storePubliclyAs( masih bisa di pakai 
+11. Storage::url('') tidak bisa digunakan
 
 
-/Work/laravel/amdalnet/app/Http/Controllers/AndalComposingController.php
+
+- /Work/laravel/amdalnet/app/Http/Controllers/AndalComposingController.php
 OK 2325: $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
 OK 2697: $templateProcessor->saveAs(Storage::disk('public')->path('formulir/' . $save_file_name));
 OK 2699: $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
@@ -15,10 +23,10 @@ Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($
 unlink($tmpName);
 
 
-/Work/laravel/amdalnet/app/Http/Controllers/ExportDocument.php
+- /Work/laravel/amdalnet/app/Http/Controllers/ExportDocument.php
 OK 228: $Content = IOFactory::load(storage_path('app/public/formulir/' . $getProject->attachment));
 fix:
-$tmpName = tempnam();
+$tmpName = tempnam(sys_get_temp_dir(),'');
 $tmpFile = Storage::disk('public')->get('formulir/' . $getProject->attachment);
 file_put_contents($tmpName, $tmpFile);
 $Content = IOFactory::load($tmpName);
@@ -34,7 +42,8 @@ unlink($tmpName);
 
 OK 236: return response()->download(storage_path('app/public/formulir/' . $getName[0] . '.pdf'))->deleteFileAfterSend(false);
 fix:
-return redirect()->away(Storage::disk('public')->get('formulir/' . $getName[0] . '.pdf'));
+return redirect()->away(Storage::disk('public')->temporaryUrl('formulir/' . $getName[0] . '.pdf', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
+
 
 OK 383: $templateProcessor->saveAs($save_file_name);
 OK 384: return response()->download($save_file_name)->deleteFileAfterSend(false);
@@ -66,11 +75,11 @@ OK 758:    $PDFWriter->save(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . st
         return response()->download(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'))->deleteFileAfterSend(false);
 
 
-/Work/laravel/amdalnet/app/Http/Controllers/FeasibilityTestController.php
-383: $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
+- /Work/laravel/amdalnet/app/Http/Controllers/FeasibilityTestController.php
+OK 383: $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
 
-ref:
-        $pdf = PDF::loadView('document.template_kelayakan', 
+
+??? 462:        $pdf = PDF::loadView('document.template_kelayakan', 
             compact(
                 'project',
                 'project_address',

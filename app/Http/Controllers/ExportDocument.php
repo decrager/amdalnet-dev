@@ -226,7 +226,7 @@ class ExportDocument extends Controller
 
         //Load word file
         // $Content = IOFactory::load(storage_path('app/public/formulir/' . $getProject->attachment));
-        $tmpName = tempnam();
+        $tmpName = tempnam(sys_get_temp_dir(),'');
         $tmpFile = Storage::disk('public')->get('formulir/' . $getProject->attachment);
         file_put_contents($tmpName, $tmpFile);
         $Content = IOFactory::load($tmpName);
@@ -238,13 +238,13 @@ class ExportDocument extends Controller
         unlink($tmpName);
 
         // $PDFWriter->save(storage_path('app/public/formulir/' . $getName[0]) . '.pdf');
-        $tmpName = tempnam();
+        $tmpName = tempnam(sys_get_temp_dir(),'');
         $PDFWriter->save($tmpName);
         Storage::disk('public')->put('formulir/' . $getName[0] . '.pdf', file_get_contents($tmpName));
         unlink($tmpName);
 
         // return response()->download(storage_path('app/public/formulir/' . $getName[0] . '.pdf'))->deleteFileAfterSend(false);
-        return redirect()->away(Storage::disk('public')->get('formulir/' . $getName[0] . '.pdf'));
+        return redirect()->away(Storage::disk('public')->temporaryUrl('formulir/' . $getName[0] . '.pdf', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
     public function ExportUklUpl($id)
@@ -396,7 +396,7 @@ class ExportDocument extends Controller
         $tmpName = $templateProcessor->save();
         Storage::disk('public')->put($save_file_name, file_get_contents($tmpName));
         unlink($tmpName);
-        return redirect()->away(Storage::disk('public')->get(save_file_name));
+        return redirect()->away(Storage::disk('public')->temporaryUrl($save_file_name,now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
     public function ExportBA($id, $type)
@@ -436,7 +436,7 @@ class ExportDocument extends Controller
         Storage::disk('public')->put('berita-acara/' . $save_file_name, file_get_contents($tmpName));
         unlink($tmpName);
 
-        return redirect()->away(Storage::disk('public')->get('berita-acara/' . $save_file_name));
+        return redirect()->away(Storage::disk('public')->temporaryUrl('berita-acara/' . $save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
     public function saveKADoc(Request $request)
@@ -779,7 +779,7 @@ class ExportDocument extends Controller
 
         //Load word file
         // $Content = IOFactory::load(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
-        $tmpName = tempnam();
+        $tmpName = tempnam(sys_get_temp_dir(),'');
         $tmpFile = Storage::disk('public')->get('ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx');
         file_put_contents($tmpName, $tmpFile);
         $Content = IOFactory::load($tmpName);
@@ -790,12 +790,12 @@ class ExportDocument extends Controller
         // $PDFWriter->save(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'));
         // return response()->download(storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'))->deleteFileAfterSend(false);
 
-        $tmpName = tempnam();
+        $tmpName = tempnam(sys_get_temp_dir(),'');
         $PDFWriter->save($tmpName);
         Storage::disk('public')->put('ukl-upl/' . 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf', file_get_contents($tmpName));
         unlink($tmpName);
 
-        return redirect()->away(Storage::disk('public')->get('formulir/' .'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf'));
+        return redirect()->away(Storage::disk('public')->temporaryUrl('formulir/' .'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.pdf', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
     private function getComponentType($imp) {
