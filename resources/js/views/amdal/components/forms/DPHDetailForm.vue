@@ -117,6 +117,13 @@
                 </el-checkbox-group>
               </div>
             </el-form-item>
+            <!--
+            <el-form-item label="File Data">
+
+              <div style="border:1px solid #e0e0e0; border-radius: 0.3em; padding: 1em;">
+                {{ data.data_file || 'tidak ada file tersimpan'}}
+              </div>
+            </el-form-item> -->
           </el-form>
         </el-col>
         <el-col :span="16">

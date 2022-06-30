@@ -1,5 +1,7 @@
 <template>
-  <div>Konsultasi Publik</div>
+  <div>
+    <p style="font-weight:bold;">Hasil Konsultasi Publik</p>
+  </div>
 </template>
 <script>
 // import Resource from '@/api/resource';

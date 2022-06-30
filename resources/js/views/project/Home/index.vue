@@ -37,7 +37,10 @@
             </el-tab-pane>
             <el-tab-pane label="SPT">
               <project-public-feedback v-if="announcement_id > 0" :id="announcement_id" />
-              <!-- <project-public-consultation v-if="announcement_id > 0" :id="announcement_id" /> -->
+              <project-public-consultation v-if="announcement_id > 0" :id="announcement_id" />
+            </el-tab-pane>
+            <el-tab-pane label="Lampiran">
+              <project-attachments />
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -52,6 +55,8 @@ import ProjectTimeline from './components/Timeline.vue';
 import ProjectLocation from './components/Location.vue';
 import ProjectFormulatorTeam from './components/FormulatorTeam.vue';
 import ProjectPublicFeedback from './components/SPT.vue';
+import ProjectPublicConsultation from './components/Consultation.vue';
+import ProjectAttachments from './components/Attachments.vue';
 
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
@@ -65,6 +70,8 @@ export default {
     ProjectLocation,
     ProjectFormulatorTeam,
     ProjectPublicFeedback,
+    ProjectPublicConsultation,
+    ProjectAttachments,
   },
   props: {
     id: {
