@@ -42,7 +42,6 @@ export default {
   methods: {
     onFilterChange(val) {
       this.filter = val;
-      console.log('onFilterChange', this.filter);
       this.$refs.stats.filterStats(this.filter);
       this.$refs.permit.filterPermit(this.filter);
       this.$refs.initiators.filterInitiator(this.filter);
