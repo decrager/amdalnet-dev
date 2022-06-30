@@ -130,7 +130,7 @@ class HomeController extends Controller
         $save_file_name = 'workspace-xxx-andal' . '.docx';
 
         $tmpName = $templateProcessor->save();
-        Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName), 'public');
+        Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
         unlink($tmpName);
 
         return redirect()->away(Storage::disk('public')->temporaryUrl('workspace/' . $save_file_name, now()->addMinutes(30)));
@@ -185,9 +185,9 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function s3ox()
+    public function s3delete()
     {
         $save_file_name = 'workspace-xxx-andal' . '.docx';
-        echo Storage::disk('public')->url('workspace/' . $save_file_name);
+        // echo Storage::disk('public')->copy('workspace/' . $save_file_name);
     }
 }

@@ -250,7 +250,10 @@ class MatriksRKLController extends Controller
                 }
             }
 
-            $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
+            unlink($tmpName);
 
             $document_attachment = new DocumentAttachment();
             $document_attachment->id_project = $request->idProject;

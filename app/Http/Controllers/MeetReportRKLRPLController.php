@@ -690,9 +690,15 @@ class MeetReportRKLRPLController extends Controller
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
         } else {
-            $templateProcessor->saveAs(Storage::disk('public')->path('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
         }
 
         return strtolower(str_replace('/', '-', $project->project_title));

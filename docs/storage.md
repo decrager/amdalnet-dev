@@ -1,4 +1,5 @@
-1. Untuk file template tetap berada di public/
+1. Simpan ke database path dan nama file relatifnya aja
+    - download dari object storage harus pakek link dicreate pakek temporaryUrl
 2. Proses TemplateProcessor tidak bisa langsung menulis ke object storage, harus disimpan dulu ke tmp dir laravel / php
 3. Untuk proses convert ke pdf menggunakan pdfWriter, sama seperti template processor. Keduanya menulis ke file handle, jadi harus pakek tmp dir, dan tmp file
 4. Tidak perlu melakukan pengecekan ada tidaknya direktori, dan melakukan creationnya
@@ -9,6 +10,8 @@
 9. $request->file('avatar')->storeAs( masih bisa di pakai
 10. storePubliclyAs( masih bisa di pakai 
 11. Storage::url('') tidak bisa digunakan
+12. Storage::disk('public')->makeDirectory('uji-kelayakan') tetap bisa digunakan di s3
+13.
 
 
 
@@ -89,28 +92,40 @@ OK 383: $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/
 
         return $pdf->download('hehey.pdf');
 
+- /Work/laravel/amdalnet/app/Http/Controllers/KaAttachmentController
+68:     $file_name = str_replace(Storage::url(''), '', $file->file);
 
-/Work/laravel/amdalnet/app/Http/Controllers/KaCommentController.php
-363:    $templateProcessor->saveAs(Storage::disk('public')->path('recap/' . $save_file_name));
+- /Work/laravel/amdalnet/app/Http/Controllers/KaCommentController.php
+OK 369:    $templateProcessor->saveAs(Storage::disk('public')->path('recap/' . $save_file_name));
         return response()->download($save_file_name)->deleteFileAfterSend(true);
 
-
-/Work/laravel/amdalnet/app/Http/Controllers/MatriksRKLController.php
-252: $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+- /Work/laravel/amdalnet/app/Http/Controllers/MatriksRKLController.php
+OK 253: $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
 
 OK 342: $file->storePubliclyAs('public', $name);
 
-/Work/laravel/amdalnet/app/Http/Controllers/MeetingReportController.php
+
+- /Work/laravel/amdalnet/app/Http/Controllers/MeetingReportController.php
 ref:
-129: Storage::disk('public')->put($name, $file['file']);
+OK 129: Storage::disk('public')->put($name, $file['file']);
 
-/Work/laravel/amdalnet/app/Http/Controllers/MeetReportRKLRPLController.php
+OK 623: $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka/' . $save_file_name));
 
-/Work/laravel/amdalnet/app/Http/Controllers/ProjectMapAttachmentController.php
-66:     if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
+- /Work/laravel/amdalnet/app/Http/Controllers/MeetReportRKLRPLController.php
+OK 693: $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+
+OK 695: $templateProcessor->saveAs(Storage::disk('public')->path('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+
+- /Work/laravel/amdalnet/app/Http/Controllers/ProjectMapAttachmentController.php
+OK 66:     if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
             unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
         }
 
+OK 162:    $file = storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename;
+
+OK 169:    return  Response::download($file, $map->original_filename, $headers, 'attachment');
+
+-------
 /Work/laravel/amdalnet/app/Http/Controllers/SKKLController.php
 326: $templateProcessor->saveAs(Storage::disk('public')->path('skkl/' . $save_file_name));
 

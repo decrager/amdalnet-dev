@@ -63,13 +63,17 @@ class ProjectMapAttachmentController extends Controller
 
                 if ($map->id) {
                     // unlink old files
-                    if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
-                        unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
+                    // if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
+                    //     unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
+                    // }
+                    if (Storage::disk('public')->exists($map->stored_filename)) {
+                        Storage::disk('public')->delete($map->stored_filename);
                     }
                 }
 
                 $map->original_filename = $file->getClientOriginalName();
                 $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
+
                 if ($map->attachment_type === 'ecology' && $map->file_type === 'SHP') {
                     $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomEcologyGeojson'), 4326)");
                     $map->properties = $request->geomEcologyProperties;
@@ -92,7 +96,9 @@ class ProjectMapAttachmentController extends Controller
                     $map->id_styles = $request->geomKelolaStyles;
                 }
 
-                if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
+                $file->storeAs('map/', $map->stored_filename, 'public');
+                // if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
+                if ($file->storeAs($map->stored_filename, 'public')) {
                     $map->save();
                     // clone andal, if step = 'ka'
                     if ($request['step'] == 'ka') {
@@ -153,11 +159,15 @@ class ProjectMapAttachmentController extends Controller
         $map = ProjectMapAttachment::where('id', $id)->first();
         if (!$map) return response('failed', 418);
 
-        $file = storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename;
-        if (!file_exists($file)) return response('File tidak ditemukan', 418);
+        // $file = storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename;
+        // if (!file_exists($file)) return response('File tidak ditemukan', 418);
+        if (!Storage::disk('public')->exists('map/'. $map->stored_filename)) {
+            return response('File tidak ditemukan', 418);
+        }
 
-        $headers = ['Content-Type' =>  'application/octet-stream'];
-        return  Response::download($file, $map->original_filename, $headers, 'attachment');
+        // $headers = ['Content-Type' =>  'application/octet-stream'];
+        // return  Response::download($file, $map->original_filename, $headers, 'attachment');
+        return redirect()->away(Storage::disk('public')->temporaryUrl('map/' . $map->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
 
