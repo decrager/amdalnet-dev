@@ -52,7 +52,9 @@
             class="d-flex align-items-center justify-align-start"
             @click="handleSort(sort)"
           >
-            <span class="fz12 white fw">Nama Usaha/Kegiatan (SKKL/Izin Lingkungan)</span>
+            <span class="fz12 white fw">
+              Nama Usaha/Kegiatan (SKKL/Izin Lingkungan)
+            </span>
             <i class="el-icon-d-caret white fz12 ml-0-3" />
           </div>
         </el-col>
@@ -225,12 +227,11 @@ export default {
       this.getAll(this.keyword);
     },
     handleFilter() {
-      if (this.optionValue === 'Semua') {
-        this.optionValue = null;
-      }
       axios
         .get(
-          `/api/environmental-permit?keyword=${this.optionValue}&page=${this.listQuery.page}`
+          `/api/environmental-permit?keyword=${
+            this.optionValue === 'Semua' ? '' : this.optionValue
+          }&page=${this.listQuery.page}`
         )
         .then((response) => {
           this.allData = response.data.data;
