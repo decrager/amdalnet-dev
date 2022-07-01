@@ -113,6 +113,8 @@ class HomeController extends Controller
         // var_dump(Storage::url(''));
         var_dump(Storage::disk('public')->exists('workspace'));
         var_dump(Storage::disk('public')->makeDirectory('uji-kelayakan'));
+
+        var_dump('tes', Storage::lastmodified('public/test/62be3b1e3cb5b111.pdf'));
     }
 
     /**
@@ -213,5 +215,14 @@ class HomeController extends Controller
 
         // $name = 'test/' . uniqid() . '444.' . $file->extension();
         // $path = $file->storeAs('public', $name);
+    }
+
+    /**
+     * Test lastmodified
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function s3lastmodified()
+    {
     }
 }

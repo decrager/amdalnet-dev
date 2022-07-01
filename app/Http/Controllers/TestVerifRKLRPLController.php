@@ -230,39 +230,51 @@ class TestVerifRKLRPLController extends Controller
         foreach($maps as $m) {
             if($m->attachment_type == 'tapak') {
                 if($m->file_type == 'SHP') {
-                    $peta_tapak = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_tapak = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_tapak = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_tapak_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_tapak_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_tapak_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             } else if($m->attachment_type == 'ecology') {
                 if($m->file_type == 'SHP') {
-                    $peta_ekologis = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_ekologis = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_ekologis = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_ekologis_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_ekologis_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_ekologis_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             } else if($m->attachment_type == 'social') {
                 if($m->file_type == 'SHP') {
-                    $peta_sosial = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_sosial = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_sosial = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_sosial_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_sosial_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_sosial_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             } else if($m->attachment_type == 'study') {
                 if($m->file_type == 'SHP') {
-                    $peta_wilayah_studi = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_wilayah_studi = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_wilayah_studi = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_wilayah_studi_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_wilayah_studi_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_wilayah_studi_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             } else if($m->attachment_type == 'pemantauan') {
                 if($m->file_type == 'SHP') {
-                    $peta_titik_pemantauan = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_titik_pemantauan = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_titik_pemantauan = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_titik_pemantauan_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_titik_pemantauan_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_titik_pemantauan_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             } else if($m->attachment_type == 'pengelolaan') {
                 if($m->file_type == 'SHP') {
-                    $peta_titik_pengelolaan = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_titik_pengelolaan = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_titik_pengelolaan = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_titik_pengelolaan_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_titik_pengelolaan_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_titik_pengelolaan_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             }
         }
@@ -633,7 +645,10 @@ class TestVerifRKLRPLController extends Controller
         Html::addHtml($cell, $this->replaceHtmlList($verification->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+        unlink($tmpName);
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }

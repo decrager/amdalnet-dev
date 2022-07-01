@@ -146,35 +146,36 @@ OK 928: $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ka-' 
 
 - /Work/laravel/amdalnet/app/Http/Controllers/TestingVerificationController.php
 ref:
-
 OK 221: $peta_tapak = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
 
 OK 531: $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
------------------------
-/Work/laravel/amdalnet/app/Http/Controllers/TestMeetRKLRPLController.php
-796:    if($document_type == 'ukl-upl') {
+- /Work/laravel/amdalnet/app/Http/Controllers/TestMeetRKLRPLController.php
+OK 796:    if($document_type == 'ukl-upl') {
             $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         } else {
             $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         }
 
-960:    if($document_type == 'ukl-upl') {
+OK 960:    if($document_type == 'ukl-upl') {
             $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         } else {
             $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
         }
 
-/Work/laravel/amdalnet/app/Http/Controllers/TestVerifRKLRPLController.php
-636:  $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+- /Work/laravel/amdalnet/app/Http/Controllers/TestVerifRKLRPLController.php
+OK 636:  $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
+-----------------------
 /Work/laravel/amdalnet/app/Http/Controllers/TrackingDocumentController.php
-346:    $docUklUplFilepath = storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf');
+OK 346:    $docUklUplFilepath = storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf');
         if ($sppl && $dpt && File::exists($docUklUplFilepath)) {
+            $dokumenComplete = true;
+            $createdTime = date('Y-m-d H:i:s', filectime(storage_path($docUklUplFilepath)));            
 
-368: $skklFilepath = storage_path('app/public/skkl/' . $save_file_name);
+OK 368: $skklFilepath = storage_path('app/public/skkl/' . $save_file_name);
 
-373: if ($dokumenComplete && File::exists($skklFilepath)) {
+OK 373: if ($dokumenComplete && File::exists($skklFilepath)) {
 
 
 
