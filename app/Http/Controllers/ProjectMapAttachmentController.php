@@ -96,9 +96,8 @@ class ProjectMapAttachmentController extends Controller
                     $map->id_styles = $request->geomKelolaStyles;
                 }
 
-                $file->storeAs('map/', $map->stored_filename, 'public');
                 // if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
-                if ($file->storeAs($map->stored_filename, 'public')) {
+                if ($file->storeAs('public/map/',$map->stored_filename)) {
                     $map->save();
                     // clone andal, if step = 'ka'
                     if ($request['step'] == 'ka') {

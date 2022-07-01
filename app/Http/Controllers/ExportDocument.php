@@ -446,7 +446,7 @@ class ExportDocument extends Controller
             $dokumenKa = $request->file('dokumenKa');
             $docName = 'form-ka-' . $request->project_name . '.docx';
             // $dokumenKa->storePubliclyAs('public/formulir/', $docName);
-            $dokumenKa->storeAs('formulir', $docName, 'public');
+            $dokumenKa->storeAs('public/formulir', $docName);
             
             $getDocumentData = DocumentAttachment::where('attachment', '=', $docName)
                 ->where('type', '=', 'Formulir KA')

@@ -323,8 +323,14 @@ class SKKLController extends Controller
                 Storage::disk('public')->makeDirectory('skkl');
             }
 
-            $templateProcessor->saveAs(Storage::disk('public')->path('skkl/' . $save_file_name));
-            $skkl_download_name = Storage::url('skkl/' . $save_file_name);
+            // $templateProcessor->saveAs(Storage::disk('public')->path('skkl/' . $save_file_name));
+            // $skkl_download_name = Storage::url('skkl/' . $save_file_name);
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('skkl/' . $save_file_name, file_get_contents($tmpName));
+            unlink($tmpName);
+
+            $skkl_download_name = Storage::disk('public')->temporaryUrl('skkl/' . $save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+
             $update_date_skkl = $project->updated_at->locale('id')->isoFormat('D MMMM Y');
         }
  
@@ -338,17 +344,20 @@ class SKKLController extends Controller
                 ],
                 [
                     'name' => 'Dokumen KA',
-                    'file' => Storage::url('formulir/' . $idProject . '-form-ka-andal.docx'),
+                    // 'file' => Storage::url('formulir/' . $idProject . '-form-ka-andal.docx'),
+                    'file' => Storage::disk('public')->temporaryUrl('formulir/' . $idProject . '-form-ka-andal.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
                 ],
                 [
                     'name' => 'Dokumen ANDAL',
-                    'file' =>  Storage::url('workspace/' . $idProject . '-andal.docx'),
+                    // 'file' =>  Storage::url('workspace/' . $idProject . '-andal.docx'),
+                    'file' => Storage::disk('public')->temporaryUrl('workspace/' . $idProject . '-andal.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $andalDate
                 ],
                 [
                     'name' => 'Dokumen RKL RPL',
-                    'file' => Storage::url('workspace/' .  $idProject . '-rkl-rpl.docx'),
+                    // 'file' => Storage::url('workspace/' .  $idProject . '-rkl-rpl.docx'),
+                    'file' => Storage::disk('public')->temporaryUrl('workspace/' . $idProject . '-rkl-rpl.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $rklRplDate
                 ]
             ];
@@ -386,7 +395,10 @@ class SKKLController extends Controller
             Storage::disk('public')->makeDirectory('pkplh');
         }
 
-        $templateProcessor->saveAs(Storage::disk('public')->path('pkplh/' . $save_file_name));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('pkplh/' . $save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('pkplh/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
 
         $uklDate = '';
         $ukl = EnvManagePlan::whereHas('impactIdentification', function($q) use($idProject) {
@@ -423,12 +435,14 @@ class SKKLController extends Controller
         return [ 
                 [
                     'name' => 'PKPLH',
-                    'file' => Storage::url('pkplh/' . $save_file_name),
+                    // 'file' => Storage::url('pkplh/' . $save_file_name),
+                    'file' => Storage::disk('public')->temporaryUrl('pkplh/' . $save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
                 ],
                 [
                     'name' => 'Dokumen UKL UPL',
-                    'file' => Storage::url('workspace/ukl-upl-' . strtolower($project->project_title) . '.docx'),
+                    // 'file' => Storage::url('workspace/ukl-upl-' . strtolower($project->project_title) . '.docx'),
+                    'file' => Storage::disk('public')->temporaryUrl('workspace/ukl-upl-' . strtolower($project->project_title) . '.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $uklUplDate
                 ]
             ];

@@ -190,4 +190,28 @@ class HomeController extends Controller
         $save_file_name = 'workspace-xxx-andal' . '.docx';
         // echo Storage::disk('public')->copy('workspace/' . $save_file_name);
     }
+
+    /**
+     * Test upload
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function s3upload(Request $request)
+    {
+        $file = $request->file('file');
+
+        // $name = 'test/' . uniqid() . '111.' . $file->extension();
+        // $path = $file->storePubliclyAs('public', $name);
+        // var_dump($path);
+
+        $name = 'test/' . uniqid() . '222.' . $file->extension();
+        $path = $file->storePubliclyAs($name, 'public');
+        var_dump($path);
+        
+        // $name = 'test/' . uniqid() . '333.' . $file->extension();
+        // $path = $file->storeAs($name, 'public');
+
+        // $name = 'test/' . uniqid() . '444.' . $file->extension();
+        // $path = $file->storeAs('public', $name);
+    }
 }

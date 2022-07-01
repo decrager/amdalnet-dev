@@ -125,29 +125,33 @@ OK 162:    $file = storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename;
 
 OK 169:    return  Response::download($file, $map->original_filename, $headers, 'attachment');
 
--------
 /Work/laravel/amdalnet/app/Http/Controllers/SKKLController.php
-326: $templateProcessor->saveAs(Storage::disk('public')->path('skkl/' . $save_file_name));
+OK 326: $templateProcessor->saveAs(Storage::disk('public')->path('skkl/' . $save_file_name));
 
-389: $templateProcessor->saveAs(Storage::disk('public')->path('pkplh/' . $save_file_name));
+OK 389: $templateProcessor->saveAs(Storage::disk('public')->path('pkplh/' . $save_file_name));
 
 ref:
 322:        if (!Storage::disk('public')->exists('skkl')) {
                 Storage::disk('public')->makeDirectory('skkl');
             }
 
-/Work/laravel/amdalnet/app/Http/Controllers/TestingMeetingController.php
+347:        // 'file' => Storage::url('formulir/' . $idProject . '-form-ka-andal.docx'),
+            'file' => Storage::disk('public')->temporaryUrl('formulir/' . $idProject . '-form-ka-andal.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
 
-763: $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+- /Work/laravel/amdalnet/app/Http/Controllers/TestingMeetingController.php
 
-928: $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+OK 763: $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
+OK 928: $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
-/Work/laravel/amdalnet/app/Http/Controllers/TestingVerificationController.php
+- /Work/laravel/amdalnet/app/Http/Controllers/TestingVerificationController.php
+ref:
 
-531: $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+OK 221: $peta_tapak = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
 
+OK 531: $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
+-----------------------
 /Work/laravel/amdalnet/app/Http/Controllers/TestMeetRKLRPLController.php
 796:    if($document_type == 'ukl-upl') {
             $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
@@ -176,6 +180,7 @@ ref:
 
 
 URL       : http://s3.palapacloud.id:8080
+            https://s3.palapacloud.id:8282
   AccessKey : f35f44f34e984536a128c22e1b17d1fb
   SecretKey : 78600c20f35542729a5726695b63c54a
   API       : S3v4
