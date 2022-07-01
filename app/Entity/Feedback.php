@@ -47,7 +47,8 @@ class Feedback extends Model
             if(str_contains($this->attributes['photo_filepath'], 'storage/')) {
                 return $this->attributes['photo_filepath'];
             } else {
-                return Storage::url($this->attributes['photo_filepath']);
+                // return Storage::url($this->attributes['photo_filepath']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['photo_filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

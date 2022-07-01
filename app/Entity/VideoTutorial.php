@@ -20,7 +20,8 @@ class VideoTutorial extends Model
             if(str_contains($this->attributes['url_video'], 'storage/')) {
                 return $this->attributes['url_video'];
             } else {
-                return Storage::url($this->attributes['url_video']);
+                // return Storage::url($this->attributes['url_video']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['url_video'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

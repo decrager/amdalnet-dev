@@ -22,7 +22,8 @@ class DocumentAttachment extends Model
             if(str_contains($this->attributes['attachment'], 'storage/')) {
                 return $this->attributes['attachment'];
             } else {
-                return Storage::url($this->attributes['attachment']);
+                // return Storage::url($this->attributes['attachment']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['attachment'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

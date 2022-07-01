@@ -48,7 +48,8 @@ class FeasibilityTestTeam extends Model
             if(str_contains($this->attributes['logo'], 'storage/')) {
                 return $this->attributes['logo'];
             } else {
-                return Storage::url($this->attributes['logo']);
+                // return Storage::url($this->attributes['logo']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['logo'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
@@ -61,7 +62,8 @@ class FeasibilityTestTeam extends Model
             if(str_contains($this->attributes['assignment_file'], 'storage/')) {
                 return $this->attributes['assignment_file'];
             } else {
-                return Storage::url($this->attributes['assignment_file']);
+                // return Storage::url($this->attributes['assignment_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['assignment_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

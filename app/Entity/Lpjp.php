@@ -45,7 +45,8 @@ class Lpjp extends Model
             if(str_contains($this->attributes['cert_file'], 'storage/')) {
                 return $this->attributes['cert_file'];
             } else {
-                return Storage::url($this->attributes['cert_file']);
+                // return Storage::url($this->attributes['cert_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['cert_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

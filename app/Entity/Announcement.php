@@ -60,7 +60,8 @@ class Announcement extends Model
             if(str_contains($this->attributes['proof'], 'storage/')) {
                 return $this->attributes['proof'];
             } else {
-                return Storage::url($this->attributes['proof']);
+                // return Storage::url($this->attributes['proof']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['proof'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
