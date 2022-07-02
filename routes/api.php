@@ -108,6 +108,7 @@ Route::post('workspace/document/convert', 'WorkspaceController@convert');
 Route::post('workspace/document/delete', 'WorkspaceController@delete');
 Route::post('workspace/document/assets', 'WorkspaceController@assets');
 Route::post('workspace/document/files', 'WorkspaceController@files');
+Route::get('workspace/document/get', 'WorkspaceController@redirectto');
 
 // Fake APIs
 Route::get('/table/list', function () {

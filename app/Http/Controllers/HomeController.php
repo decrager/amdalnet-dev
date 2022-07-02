@@ -115,6 +115,8 @@ class HomeController extends Controller
         var_dump(Storage::disk('public')->makeDirectory('uji-kelayakan'));
 
         var_dump('tes', Storage::lastmodified('public/test/62be3b1e3cb5b111.pdf'));
+        var_dump(Storage::directories('public/test/..'));
+        var_dump(Storage::disk('public')->directories('workspace/..'));
     }
 
     /**

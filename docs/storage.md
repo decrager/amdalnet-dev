@@ -166,7 +166,7 @@ OK 960:    if($document_type == 'ukl-upl') {
 - /Work/laravel/amdalnet/app/Http/Controllers/TestVerifRKLRPLController.php
 OK 636:  $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
 
------------------------
+
 /Work/laravel/amdalnet/app/Http/Controllers/TrackingDocumentController.php
 OK 346:    $docUklUplFilepath = storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf');
         if ($sppl && $dpt && File::exists($docUklUplFilepath)) {
@@ -177,7 +177,30 @@ OK 368: $skklFilepath = storage_path('app/public/skkl/' . $save_file_name);
 
 OK 373: if ($dokumenComplete && File::exists($skklFilepath)) {
 
+-----------------------
+Vue JS
+-----------------------
+- resources\js\views\penyusunan-andal\components\Dokumen.vue
+OK 12:          :href="'/storage/workspace/' + documentName"
+fix:
+          :href="'/api/workspace/document/get?filename=' + documentName"
 
+OK 94:        window.location.origin + `/storage/workspace/${this.documentName}`;
+fix:
+      this.projects = window.location.origin + `/api/workspace/document/get?filename=${this.documentName}`;
+
+- resources\js\views\rkl-rpl\components\Dokumen.vue
+OK 15:              :href="'/storage/workspace/' + documentNameAndal"
+
+OK 36:              :href="'/storage/workspace/' + documentName"
+
+OK 127:        window.location.origin + `/storage/workspace/${this.documentName}`;
+
+OK 136:        window.location.origin + `/storage/workspace/${this.documentNameAndal}`;
+
+- resources\js\views\ukl-upl\DokumenUklUpl.vue
+
+OK 88:        window.location.origin + '/storage/workspace/' + projectName.data;
 
 
 URL       : http://s3.palapacloud.id:8080

@@ -107,7 +107,8 @@ class WorkspaceController extends Controller
                 'key' => $dockey,
                 'title' => 'UKL UPL SPBU - Edit Nafila_edit FM.docx',
                 // 'url' => $appUrl.'/workspace/document/download?fileName=61943e88ad99a.docx',
-                'url' => $callUrl.'/storage/workspace/'.$filename,
+                // 'url' => $callUrl.'/storage/workspace/'.$filename,
+                'url' => Storage::disk('public')->temporaryUrl('workspace/'.$filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                 'permissions' => [
                     'fillForms' => true,
                     'edit' => true,
@@ -192,6 +193,7 @@ class WorkspaceController extends Controller
                 break;
             case "MustSave":  // status == 2
             case "Corrupted":  // status == 3
+                // <---------------
                 $result = $workspace->processSave($data, $fileName, $userAddress);
                 break;
             case "MustForceSave":  // status == 6
@@ -278,5 +280,18 @@ class WorkspaceController extends Controller
     public function assets(Request $request)
     {
         
+    }
+
+    /**
+     * Redirect to file workspace
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectto(Request $request)
+    {
+        $filename = $request->query('filename');
+        $dir = env('OFFICE_STORAGE_SUBDIR', 'workspace');
+        return redirect()->away(Storage::disk('public')->temporaryUrl($dir. '/' . $filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 }
