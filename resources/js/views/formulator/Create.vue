@@ -182,11 +182,14 @@ export default {
   name: 'CreatePenyusun',
   data() {
     const validateEmail = (rule, value, callback) => {
-      if (!validEmail(value)) {
-        callback(new Error('Email Tidak Valid'));
-      } else {
-        callback();
+      if (value) {
+        if (!validEmail(value)) {
+          callback(new Error('Email Tidak Valid'));
+          return;
+        }
       }
+
+      callback();
     };
     const validateExpertise = (rule, value, callback) => {
       if (this.selectedExpertise !== 'Ahli Lainnya' && !value) {
@@ -242,6 +245,8 @@ export default {
       loadingSubmit: false,
       currentFormulator: {
         expertise: null,
+        date_start: null,
+        membership_status: null,
       },
       sertifikatFileUpload: null,
       sertifikatFileName: null,
@@ -262,7 +267,6 @@ export default {
         ],
         email: [
           {
-            required: true,
             trigger: 'blur',
             validator: validateEmail,
           },

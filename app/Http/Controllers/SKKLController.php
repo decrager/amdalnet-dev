@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\DocumentAttachment;
 use App\Entity\EnvImpactAnalysis;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
@@ -253,6 +254,16 @@ class SKKLController extends Controller
         $project = Project::findOrFail($idProject);
 
         // === DOKUMEN KA, ANDAL & RKL RPL === //
+        $document_attachment = DocumentAttachment::where('id_project', $idProject)
+                                    ->whereIn('type', ['Formulir KA', 'Dokumen Andal', 'Dokumen RKL RPL'])
+                                    ->get();
+        $dokumen_ka = $document_attachment->where('type', 'Formulir KA')->first() ? 
+                      $document_attachment->where('type', 'Formulir KA')->first()->attachment : null;
+        $dokumen_andal = $document_attachment->where('type', 'Dokumen Andal')->first() ? 
+                         $document_attachment->where('type', 'Dokumen Andal')->first()->attachment : null;
+        $dokumen_rkl_rpl = $document_attachment->where('type', 'Dokumen RKL RPL')->first() ? 
+                           $document_attachment->where('type', 'Dokumen RKL RPL')->first()->attachment : null;
+
         // Date
         $andalDate = '';
         $andal = EnvImpactAnalysis::whereHas('impactIdentification', function($q) use($idProject) {
@@ -338,26 +349,27 @@ class SKKLController extends Controller
         return [ 
                 [
                     'name' => 'Persetujuan Lingkungan SKKL',
-                    'file' => $skkl_download_name,
+                    // 'file' => $skkl_download_name,
+                    'file' => Storage::disk('public')->temporaryUrl($skkl_download_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $update_date_skkl,
                     'uploaded' => $skkl
                 ],
                 [
                     'name' => 'Dokumen KA',
-                    // 'file' => Storage::url('formulir/' . $idProject . '-form-ka-andal.docx'),
-                    'file' => Storage::disk('public')->temporaryUrl('formulir/' . $idProject . '-form-ka-andal.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    // 'file' => $dokumen_ka,
+                    'file' => Storage::disk('public')->temporaryUrl($dokumen_ka, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $project->updated_at->locale('id')->isoFormat('D MMMM Y')
                 ],
                 [
                     'name' => 'Dokumen ANDAL',
-                    // 'file' =>  Storage::url('workspace/' . $idProject . '-andal.docx'),
-                    'file' => Storage::disk('public')->temporaryUrl('workspace/' . $idProject . '-andal.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    // 'file' =>  $dokumen_andal,
+                    'file' => Storage::disk('public')->temporaryUrl($dokumen_andal, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $andalDate
                 ],
                 [
                     'name' => 'Dokumen RKL RPL',
-                    // 'file' => Storage::url('workspace/' .  $idProject . '-rkl-rpl.docx'),
-                    'file' => Storage::disk('public')->temporaryUrl('workspace/' . $idProject . '-rkl-rpl.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    // 'file' => $dokumen_rkl_rpl,
+                    'file' => Storage::disk('public')->temporaryUrl($dokumen_rkl_rpl, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'updated_at' => $rklRplDate
                 ]
             ];

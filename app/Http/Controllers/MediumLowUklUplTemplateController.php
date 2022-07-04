@@ -39,19 +39,25 @@ class MediumLowUklUplTemplateController extends Controller
 
             return response()->json($mediumLowUklUplTemplate, 200);
         } else {
-            $mediumLowUklUplTemplate = MediumLowUklUplTemplate::When($request->has('keyword'), function ($query) use ($request) {
-                $columnsToSearch = ['type'];
-                $searchQuery = '%' . $request->keyword . '%';
-                $indents = $query->where('template_type', 'ILIKE', '%'.$request->keyword.'%');
-                // if (!empty($request->type)) {
-                //     $indents = $query->where('type', '=', $request->type);
-                // }
-                
-                foreach($columnsToSearch as $column) {
-                    $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+            $mediumLowUklUplTemplate = MediumLowUklUplTemplate::where(function($query) use($request) {
+                if($request->type) {
+                    $query->where('type', $request->type);
                 }
-                return $indents;
-            })->orderby('id', $sort ?? 'DESC')->where('type', $request->type)->paginate($request->limit ? $request->limit : 10);
+            })->where(function($query) use ($request) {
+                if($request->keyword) {
+                    $columnsToSearch = ['type'];
+                    $searchQuery = '%' . $request->keyword . '%';
+                    $indents = $query->where('template_type', 'ILIKE', '%'.$request->keyword.'%');
+                    // if (!empty($request->type)) {
+                    //     $indents = $query->where('type', '=', $request->type);
+                    // }
+                    
+                    foreach($columnsToSearch as $column) {
+                        $indents = $indents->orWhere($column, 'ILIKE', $searchQuery);
+                    }
+                    $indents;
+                }
+            })->orderby('id', $sort ?? 'DESC')->paginate($request->limit ? $request->limit : 10);
     
             return response()->json($mediumLowUklUplTemplate, 200);
         }

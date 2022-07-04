@@ -84,7 +84,7 @@
           <el-table-column label="Kesesuaian">
             <template slot-scope="scope">
               <el-select
-                v-if="isPreAgreement(scope.row.name)"
+                v-if="isShow(scope.row.name)"
                 v-model="scope.row.suitability"
                 placeholder="Pilih Kesesuaian"
                 style="width: 100%"
@@ -104,7 +104,7 @@
           <el-table-column label="Keterangan">
             <template slot-scope="scope">
               <el-input
-                v-if="isPreAgreement(scope.row.name)"
+                v-if="isShow(scope.row.name)"
                 v-model="scope.row.description"
                 type="textarea"
                 :placeholder="getPlaceholder(scope.row.suitability)"
@@ -185,6 +185,16 @@
       </div>
       <div v-else-if="penyusunMandiri !== null">
         <p><b>Nama:</b> {{ penyusunMandiri.name }}</p>
+        <p>
+          <b>SK Penunjukan Tim Penyusun:</b>
+          <a
+            :href="penyusunMandiri.sk_letter"
+            style="color: #216221"
+            target="_blank"
+          >
+            Lihat
+          </a>
+        </p>
       </div>
     </el-dialog>
     <el-dialog :visible.sync="formulatorTeamDialog">
@@ -487,11 +497,15 @@ export default {
       );
     },
     handleComplete(decision) {
-      this.$confirm('Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.', 'Warning', {
-        confirmButtonText: 'Ya',
-        cancelButtonText: 'Tidak',
-        type: 'warning',
-      })
+      this.$confirm(
+        'Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.',
+        'Warning',
+        {
+          confirmButtonText: 'Ya',
+          cancelButtonText: 'Tidak',
+          type: 'warning',
+        }
+      )
         .then(() => {
           this.errors = {};
           const error = this.validationErrors();
@@ -537,11 +551,16 @@ export default {
       }
       return error;
     },
-    isPreAgreement(name) {
-      if (
-        (name === 'tata_ruang' || name === 'persetujuan_awal') &&
-        !this.verifications.pre_agreement
-      ) {
+    isShow(name) {
+      if (name === 'tata_ruang' && !this.verifications.ktr) {
+        return false;
+      }
+
+      if (name === 'persetujuan_awal' && !this.verifications.pre_agreement) {
+        return false;
+      }
+
+      if (name === 'pippib' && !this.verifications.pippib) {
         return false;
       }
 

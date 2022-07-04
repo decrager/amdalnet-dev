@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Entity\ImpactIdentification;
 
 class EnvManagePlanController extends Controller
 {
@@ -44,7 +45,7 @@ class EnvManagePlanController extends Controller
                 'id_impact_identifications' => 'required',
                 'form' => 'required',
             ]
-        ); 
+        );
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {

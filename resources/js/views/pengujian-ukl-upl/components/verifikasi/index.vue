@@ -181,6 +181,16 @@
       </div>
       <div v-else-if="penyusunMandiri !== null">
         <p><b>Nama:</b> {{ penyusunMandiri.name }}</p>
+        <p>
+          <b>SK Penunjukan Tim Penyusun:</b>
+          <a
+            :href="penyusunMandiri.sk_letter"
+            style="color: #216221"
+            target="_blank"
+          >
+            Lihat
+          </a>
+        </p>
       </div>
     </el-dialog>
     <el-dialog :visible.sync="formulatorTeamDialog">
@@ -488,11 +498,15 @@ export default {
       );
     },
     handleComplete(decision) {
-      this.$confirm('Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.', 'Warning', {
-        confirmButtonText: 'Ya',
-        cancelButtonText: 'Tidak',
-        type: 'warning',
-      })
+      this.$confirm(
+        'Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.',
+        'Warning',
+        {
+          confirmButtonText: 'Ya',
+          cancelButtonText: 'Tidak',
+          type: 'warning',
+        }
+      )
         .then(() => {
           this.errors = {};
           const error = this.validationErrors();

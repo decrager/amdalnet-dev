@@ -9,7 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use App\Entity\WorkflowLog;
+
 
 // use DB;
 
@@ -41,6 +44,10 @@ class AnnouncementController extends Controller
         ->addSelect(DB::raw('case when announcements.end_date::timestamp::date < now()::timestamp::date then true else false end as expired'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
+        ->whereHas('project', function($q){
+            $q->whereRaw('published is true');
+            return $q;
+        })
         ->where(function($query) use($request) {
             if($request->provName && ($request->provName !== null)) {
                 $query->whereHas('project.address', function($q) use ($request) {
@@ -109,6 +116,10 @@ class AnnouncementController extends Controller
         ->addSelect(DB::raw('case when announcements.end_date::timestamp::date < now()::timestamp::date then true else false end as expired'))
         ->leftJoin('initiators', 'initiators.id', '=', 'announcements.id_applicant')
         ->leftJoin('users', 'users.email', '=', 'initiators.email')
+        ->whereHas('project', function($q){
+            $q->whereRaw('published is true');
+            return $q;
+        })
         ->whereRaw('announcements.start_date::timestamp::date <= now()::timestamp::date')
         /*->whereHas("project.address",function($q) use($request){
             $q->where("prov", "=", $request->provName);
@@ -162,22 +173,27 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         //validate request
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'pic_name' => 'required',
-                'pic_address' => 'required',
-                'cs_name' => 'required',
-                'cs_address' => 'required',
-                'project_type' => 'required',
-                'project_location' => 'required',
-                'project_scale' => 'required',
-                'potential_impact' => 'required',
-                'start_date' => 'required',
-                'end_date' => 'required',
-                'fileProof' => 'required',
-            ]
-        );
+        $required = [
+            'pic_name' => 'required',
+            'pic_address' => 'required',
+            'cs_name' => 'required',
+            'cs_address' => 'required',
+            'project_type' => 'required',
+            'project_location' => 'required',
+            'project_scale' => 'required',
+            'potential_impact' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            // 'fileProof' => 'required',
+        ];
+        $announcement = Announcement::where('project_id', $request->project_id)->first();
+        if(!$announcement || ($announcement->proof === '')){
+            $required['fileProof'] = 'required';
+        }
+
+        // return $announcement->rawProof();
+
+        $validator = Validator::make($request->all(), $required);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
@@ -185,34 +201,81 @@ class AnnouncementController extends Controller
             $params = $request->all();
 
             //create file
+            $name = '';
             $file = $request->file('fileProof');
-            $name = 'announcement/' . uniqid() . '.' . $file->extension();
-            $file->storePubliclyAs('public', $name);
+            if($file) {
+                $name = 'announcement/' . uniqid() . '.' . $file->extension();
+                $file->storePubliclyAs('public', $name);
+            }
 
             DB::beginTransaction();
 
+            // $announcement = Announcement::where('project_id', $params['project_id'])->first();
+            if($announcement){
+                $update_fields = [
+                    'pic_name' => $params['pic_name'],
+                    'pic_address' => $params['pic_address'],
+                    'cs_name' => $params['cs_name'],
+                    'cs_address' => $params['cs_address'],
+                    'project_type' => $params['project_type'],
+                    'project_location' => $params['project_location'],
+                    'project_scale' => $params['project_scale'],
+                    // 'proof' => $name,
+                    'potential_impact' => $params['potential_impact'],
+                    'start_date' => $params['start_date'],
+                    'end_date' => $params['end_date'],
+                    // 'project_id' => $params['project_id'],
+                    'project_result' => $params['project_result'],
+                    'id_applicant' => $params['id_applicant'],
+
+                ];
+                if($file){
+                    if (Storage::disk('public')->exists($announcement->rawProof()))
+                    {
+                        Storage::disk('public')->delete($announcement->rawProof());
+                    }
+
+                    $update_fields['proof'] = $name;
+                }
+
+                $announcement->update($update_fields);
+
+            }else {
             //create Announcement
-            $announcement = Announcement::create([
-                'pic_name' => $params['pic_name'],
-                'pic_address' => $params['pic_address'],
-                'cs_name' => $params['cs_name'],
-                'cs_address' => $params['cs_address'],
-                'project_type' => $params['project_type'],
-                'project_location' => $params['project_location'],
-                'project_scale' => $params['project_scale'],
-                'proof' => $name,
-                'potential_impact' => $params['potential_impact'],
-                'start_date' => $params['start_date'],
-                'end_date' => $params['end_date'],
-                'project_id' => $params['project_id'],
-                'project_result' => $params['project_result'],
-                'id_applicant' => $params['id_applicant'],
-            ]);
+                $announcement = Announcement::create([
+                    'pic_name' => $params['pic_name'],
+                    'pic_address' => $params['pic_address'],
+                    'cs_name' => $params['cs_name'],
+                    'cs_address' => $params['cs_address'],
+                    'project_type' => $params['project_type'],
+                    'project_location' => $params['project_location'],
+                    'project_scale' => $params['project_scale'],
+                    'proof' => $name,
+                    'potential_impact' => $params['potential_impact'],
+                    'start_date' => $params['start_date'],
+                    'end_date' => $params['end_date'],
+                    'project_id' => $params['project_id'],
+                    'project_result' => $params['project_result'],
+                    'id_applicant' => $params['id_applicant'],
+                ]);
+            }
 
-            $project = Project::where('id', $params['project_id'])->first();
+            if($params['publish'] && ($params['publish'] === 'true')){
 
-            $project->published = true;
-            $project->save();
+                $project = Project::find($params['project_id']);
+                $project->published = true;
+                $project->save();
+                switch ($project->marking){
+                    case 'announcement-drafting':
+                        $project->workflow_apply('announce');
+                        $project->save();
+                        break;
+                    case 'formulator-assignment':
+                        $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement');
+                        break;
+                    default:
+                }
+            }
 
             if (!$announcement) {
                 DB::rollback();

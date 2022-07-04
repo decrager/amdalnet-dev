@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Laravue\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -66,5 +67,20 @@ class Formulator extends Model
         }
 
         return null;
+    }
+
+    public function rawCertFile()
+    {
+        return $this->attributes['cert_file'];
+    }
+
+    public function rawCvFile()
+    {
+        return $this->attributes['cv_file'];
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'email', 'email');
     }
 }

@@ -80,9 +80,8 @@ class BaganAlirController extends Controller
         $document = DocumentAttachment::where([['id_project', $request->idProject],['type', $type]])->first();
 
         if($document) {
-            $attachment = str_replace(Storage::url(''), '', $document->attachment);
-            if(Storage::disk('public')->exists($attachment)) {
-                Storage::disk('public')->delete($attachment);
+            if(Storage::disk('public')->exists($document->rawAttachment())) {
+                Storage::disk('public')->delete($document->rawAttachment());
             }
 
             $document->attachment = $name;

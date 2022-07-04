@@ -128,6 +128,10 @@ export default {
       this.$emit('handleCancelParam');
     },
     async handleBlur(value){
+      // reset all value first
+      delete value.result;
+      delete value.result_risk;
+      delete value.amdal_type;
       // const a = value.scale;
       // console.log(0, value.scale);
       // remove . change , to .
@@ -142,7 +146,7 @@ export default {
       // console.log(3, value.scaleNumber);
       // console.log(value.scaleNumber);
       if (value.scaleNumber && value.scaleNumber > 0) {
-        // console.log(value);
+        // console.log(0, value);
         // console.log(this.kbli);
 
         // calculate result
@@ -166,7 +170,7 @@ export default {
           return item;
         });
 
-        // console.log(kbliEnvParams);
+        // console.log(2, kbliEnvParams);
 
         // this.calculatedProjectDoc();
         let minimumResult = 'AMDAL';
@@ -188,19 +192,25 @@ export default {
             } else {
               tempStatus = tempStatus && false;
             }
+            // console.log(2.5, tempStatus);
           });
           if (tempStatus) {
             value.result = item.doc_req;
             value.result_risk = item.risk_level;
             value.amdal_type = item.amdal_type;
+            // console.log(value);
           }
         });
+
+        // console.log(3, { minimumResult, minimumResultRisk });
 
         // check for any condition that not in kbli param
         if (!value.result) {
           value.result = minimumResult;
           value.result_risk = minimumResultRisk;
         }
+
+        // console.log(4, value);
 
         this.handleRefreshDialog();
       }
@@ -214,7 +224,7 @@ export default {
       // const data2 = ar2.replace('.', '');
 
       // console.log('awal', [ar1, ar2]);
-      // console.log('test', [data1, data2]);
+      // console.log('test', [parseFloat(data1), operator, parseFloat(data2)]);
 
       switch (operator) {
         case '<=':

@@ -25,9 +25,9 @@ export default {
       xAxis: [],
       loading: false,
       userInfo: {},
-      period: null,
-      date_start: null,
-      date_end: null,
+      period: 2,
+      date_start: new Date().getFullYear().toString() + '-01',
+      date_end: new Date().getFullYear().toString() + '-12',
     };
   },
   computed: {
@@ -65,9 +65,7 @@ export default {
         search += `end=${this.date_end}`;
       }
       axios
-        .get(
-          `/api/dashboard/chart?${search}`
-        )
+        .get(`/api/dashboard/chart?${search}`)
         .then((data) => {
           this.lineChartData.data.amdalData = data.data.amdal;
           this.lineChartData.data.ukluplData = data.data.ukl_upl;

@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <!-- <component :is="currentRole" /> -->
     <admin-dashboard v-if="isAdmin || isExaminerSecretary || isExaminer" />
-    <user-dashboard v-else-if="isFormulator || isInitiator" />
+    <user-dashboard v-else-if="isFormulator || isInitiator || isLPJP" />
     <!--
     <examiner-dashboard v-if="isExaminer" />
       -->
@@ -43,6 +43,9 @@ export default {
     },
     isExaminerSecretary() {
       return this.$store.getters.roles.includes('examiner-secretary');
+    },
+    isLPJP(){
+      return this.$store.getters.roles.includes('lpjp');
     },
   },
   created() {

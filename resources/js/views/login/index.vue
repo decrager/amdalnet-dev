@@ -362,6 +362,9 @@
         </el-row>
         <el-row v-else-if="user_type === 'Penyusun'">
           <el-form ref="regPenyusun" :model="registrationForm" :rules="regPenyusunRules">
+            <div style="background-color: #ddddd5; padding: 5px 0;">
+              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama yang Anda masukkan sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
+            </div>
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item prop="name" :label="$t('login.name')">
@@ -983,6 +986,7 @@ export default {
 
             // make form data because we got file
             const formData = new FormData();
+            formData.append('registration', 'true');
 
             // eslint-disable-next-line no-undef
             _.each(this.registrationForm, (value, key) => {
@@ -995,11 +999,17 @@ export default {
                 .store(formData)
                 .then((response) => {
                   if (response.error) {
-                    this.$message({
-                      message: response.error,
-                      type: 'error',
-                      duration: 5 * 1000,
-                    });
+                    if (response.error === 'reg_no') {
+                      this.$alert('<h3>Data Penyusun dengan Nomor Registrasi tersebut tidak ditemukan</h3><p>Periksa kembali nomor registrasi yang Anda masukkan <b>atau</b> lanjutkan registrasi sebagai Tenaga Ahli</p>',
+                        '',
+                        { dangerouslyUseHTMLString: true, center: true });
+                    } else {
+                      this.$message({
+                        message: response.error,
+                        type: 'error',
+                        duration: 5 * 1000,
+                      });
+                    }
                     this.loading = false;
 
                     return false;
@@ -1205,6 +1215,7 @@ $textColor:#eee;
     grid-template-columns: auto 480px;
     transition: all .3s ease-in-out;
     transform: scale(1);
+    max-width: 782px;
     .registration-form{
       width: 50vw;
       min-width: 360px;

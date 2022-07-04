@@ -118,15 +118,32 @@ class User extends Authenticatable
     protected static function boot()
     {
         parent::boot();
+
         static::created(function ($user) {
             // $admins = User::all()->filter(function($user) {
             //     return $user->hasRole('admin');
             // });
 
             // Notification::send($admins, new UserRegistered($user));
-            Notification::send($user, new UserRegistered($user));
-            event(new \App\Events\NotificationEvent());
+            // Notification::send($user, new UserRegistered($user));
+            // event(new \App\Events\NotificationEvent());
         });
+    }
+
+    public static function create(array $attributes = [])
+    {
+        $original_password = null;
+        if(array_key_exists('original_password', $attributes)) {
+            $original_password = $attributes['original_password'];
+            unset($attributes['original_password']);
+        }
+
+        $user = static::query()->create($attributes);
+
+        Notification::send($user, new UserRegistered($user, $original_password));
+        event(new \App\Events\NotificationEvent());
+
+        return $user;
     }
 
     public function getAvatarAttribute()

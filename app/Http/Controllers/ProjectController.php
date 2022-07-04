@@ -118,8 +118,9 @@ class ProjectController extends Controller
             return response()->json(ProjectController::getProject($request->id));
         }
 
-        return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+        return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
             $q->select('id', 'id_project', 'status', 'document_type');
+            $q->orderBy('id');
         }, 'testingMeeting' => function ($q) {
             $q->select('id', 'id_project', 'document_type', 'is_invitation_sent');
         }, 'meetingReports' => function ($q) {
@@ -211,6 +212,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        // return $request;
         $request['listSubProject'] = json_decode($request['listSubProject']);
         $request['address'] = json_decode($request['address']);
         $request['listKewenangan'] = json_decode($request['listKewenangan']);
@@ -288,7 +290,7 @@ class ProjectController extends Controller
             $project = Project::create([
                 // 'biz_type' => $data['biz_type'],
                 'project_title' => $data['project_title'],
-                'scale' => floatval($data['scale']),
+                'scale' => floatval(str_replace(',', '.', str_replace('.', '', $data['scale']))),
                 'scale_unit' => $data['scale_unit'],
                 'project_type' => $data['project_type'],
                 'sector' => $data['sector'],
@@ -341,30 +343,37 @@ class ProjectController extends Controller
             }
 
             if ($files = $request->file('fileMap')) {
+                // check if fileMap exists in DB
                 $mapName = time() . '_' . $project->id . '_' . uniqid('projectmap') . '.zip';
                 $files->storePubliclyAs('public/map/', $mapName);
-                ProjectMapAttachment::create([
+                ProjectMapAttachment::updateOrCreate(
+                [
                     'id_project' => $project->id,
                     'attachment_type' => 'tapak',
+                    'step' => 'ka',
+                ],
+                [
                     'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
                     'properties' => $request->geomProperties,
                     'id_styles' => $request->geomStyles,
-                    'step' => 'ka',
                 ]);
                 // clone for Andal
-                ProjectMapAttachment::create([
+                ProjectMapAttachment::updateOrCreate(
+                [
                     'id_project' => $project->id,
                     'attachment_type' => 'tapak',
+                    'step' => 'andal',
+                ],
+                [
                     'file_type' => 'SHP',
                     'original_filename' => 'Peta Tapak',
                     'stored_filename' => $mapName,
                     'geom' => DB::raw("ST_TRANSFORM(ST_Force2D(ST_GeomFromGeoJSON('$request->geomFromGeojson')), 4326)"),
                     'properties' => $request->geomProperties,
                     'id_styles' => $request->geomStyles,
-                    'step' => 'andal',
                 ]);
             }
 
@@ -500,7 +509,7 @@ class ProjectController extends Controller
                     'biz_type' => gettype($subPro->biz_type) !== 'string' ? $subPro->biz_type : 0,
                     'id_project' => $project->id,
                     'sector' => gettype($subPro->sector) !== 'string'? $subPro->sector : 0,
-                    'scale' => floatval($subPro->scale),
+                    'scale' => floatval(str_replace(',', '.', str_replace('.', '', $subPro->scale))),
                     'scale_unit' => isset($subPro->scale_unit) ? $subPro->scale_unit : '',
                     'biz_name' => isset($business) ? $business->value : $subPro->biz_name,
                     'sector_name' => isset($sector) ? $sector->value : $subPro->sector_name,
@@ -510,7 +519,7 @@ class ProjectController extends Controller
                 foreach ($subPro->listSubProjectParams as $subProParam) {
                     SubProjectParam::create([
                         'param' => $subProParam->param,
-                        'scale' => floatval($subProParam->scale),
+                        'scale' => floatval(str_replace(',', '.', str_replace('.', '', $subProParam->scale))),
                         'scale_unit' => isset($subProParam->scale_unit) ? $subProParam->scale_unit : '',
                         'result' => $subProParam->result,
                         'id_sub_project' => $createdSubPro->id,

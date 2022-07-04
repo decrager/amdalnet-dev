@@ -23,7 +23,6 @@ import Resource from '@/api/resource';
 import UserDetailCard from './components/UserDetailCard';
 import UserActivity from './components/UserActivity';
 const initiatorResource = new Resource('initiatorsByEmail');
-const formulatorResource = new Resource('formulatorsByEmail');
 const lpjpResource = new Resource('lpjpsByEmail');
 const expertBankResource = new Resource('expertByEmail');
 
@@ -52,7 +51,6 @@ export default {
       // const data = await this.$store.dispatch('user/getInfo');
       const data = this.userInfo;
       data.initiatorData = await initiatorResource.list({ email: data.email });
-      data.formulatorData = await formulatorResource.list({ email: data.email });
       data.lpjpData = await lpjpResource.list({ email: data.email });
       data.expertData = await expertBankResource.list({ email: data.email });
       this.user = data;

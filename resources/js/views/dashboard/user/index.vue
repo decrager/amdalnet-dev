@@ -1,16 +1,25 @@
 <template>
   <div class="user-dashboard">
-    <div v-if="isFormulator || isInitiator">
+    <div v-if="isFormulator || isInitiator || isLPJP">
       <el-row :gutter="20">
-        <el-col v-if="isFormulator" :span="12"><formulator-information :user="user" :is-loading="isLoading" :avatar="avatar" /></el-col>
-        <el-col v-else :span="12"><initiator-information :user="user" :is-loading="isLoading" :avatar="avatar" /></el-col>
+        <el-col :span="12">
+          <formulator-information v-if="isFormulator" :user="user" :is-loading="isLoading" :avatar="avatar" />
+          <initiator-information v-if="isInitiator" :user="user" :is-loading="isLoading" :avatar="avatar" />
+          <lpjp-information v-if="isLPJP" :user="user" :is-loading="isLoading" />
+        </el-col>
         <el-col :span="12">
           <user-activities :user="user" />
-          <user-summary :user="user" />
+          <lpjp-summary v-if="isLPJP" :user="user" />
+          <div v-else>
+            <user-summary :user="user" />
+          </div>
         </el-col>
       </el-row>
       <el-row v-if="!isPemerintah">
-        <project-table v-if="!isFormulator" />
+        <project-table v-if="isInitiator" />
+      </el-row>
+      <el-row v-if="isLPJP && user">
+        <lpjp-formulators :user="user" />
       </el-row>
     </div>
     <div v-if="isExaminer">
@@ -24,6 +33,16 @@
       </el-row>
       <examiner-activities />
     </div>
+    <!-- <div v-if="isLPJP">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <lpjp-information :user="user" :is-loading="isLoading" />
+        </el-col>
+        <el-col :span="12" />
+          <user-activities :user="user" />
+          <user-summary :user="user" />
+      </el-row>
+    </div> -->
   </div>
 </template>
 <script>
@@ -37,6 +56,9 @@ import ProjectTable from './components/ProjectTable.vue';
 
 import Resource from '@/api/resource';
 import ExaminerActivities from './components/ExaminerActivities.vue';
+import LpjpInformation from './components/LpjpInformation.vue';
+import LpjpFormulators from './components/LpjpFormulators.vue';
+import LpjpSummary from './components/LpjpSummary.vue';
 
 export default {
   name: 'UserDashboard',
@@ -48,6 +70,9 @@ export default {
     UserInformation,
     ExaminerActivities,
     ProjectTable,
+    LpjpInformation,
+    LpjpFormulators,
+    LpjpSummary,
   },
   data() {
     return {
@@ -70,7 +95,9 @@ export default {
     isExaminer(){
       return this.$store.getters.roles[0].split('-')[0] === 'examiner';
     },
-
+    isLPJP(){
+      return this.$store.getters.roles.includes('lpjp');
+    },
   },
   mounted() {
     if (this.isAllowed){
@@ -81,6 +108,7 @@ export default {
   methods: {
     async getUser(){
       // this.$store.dispatch('user/getInfo').then((response) => {
+
       if (this.userLogged) {
         if (this.isExaminer){
           // this.user = response;
@@ -95,6 +123,12 @@ export default {
           resource = new Resource('formulatorsByEmail');
         } else if (this.isInitiator) {
           resource = new Resource('initiatorsByEmail');
+        } else if (this.isLPJP){
+          resource = new Resource('lpjpsByEmail');
+        }
+        if (!resource){
+          this.isLoading = false;
+          return;
         }
         resource.list({ email: this.userLogged.email }).then((res) => {
           this.user = res;

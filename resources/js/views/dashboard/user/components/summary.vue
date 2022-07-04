@@ -88,6 +88,9 @@ export default {
     isInitiator(){
       return this.$store.getters.roles.includes('initiator');
     },
+    isLPJP(){
+      return this.$store.getters.roles.includes('lpjp');
+    },
     isExaminer(){
       return this.$store.getters.roles[0].split('-')[0] === 'examiner';
     },
@@ -111,6 +114,9 @@ export default {
       }
       if (this.isFormulator) {
         param = { formulatorId: this.user.id };
+      }
+      if (this.isLPJP) {
+        param = { lpjpId: this.user.id };
       }
 
       await countResource.list(param).then((res) => {

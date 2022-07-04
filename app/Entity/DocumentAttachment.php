@@ -29,4 +29,9 @@ class DocumentAttachment extends Model
 
         return null;
     }
+
+    public function rawAttachment()
+    {
+        return $this->attributes['attachment'];
+    }
 }

@@ -313,6 +313,8 @@ Route::group(['prefix' => 'dashboard'], function($r) {
     $r->get('status', [DashboardController::class, 'status']);
     $r->get('initiator', [DashboardController::class, 'initiator']);
     $r->get('chart', [DashboardController::class, 'chart']);
+    $r->get('lpjp-formulators', [DashboardController::class, 'getLpjpFormulators']);
+    $r->get('lpjp-count', [DashboardController::class, 'getLpjpCount']);
 });
 
 Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);

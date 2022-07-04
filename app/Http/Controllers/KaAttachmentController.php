@@ -64,9 +64,7 @@ class KaAttachmentController extends Controller
         if(count($deleted) > 0) {
             $files = AndalAttachment::whereIn('id', $deleted)->get();
             foreach($files as $file) {
-                // $file_name = str_replace(Storage::url(''), '', $file->file);
-                $file_name = $file->file;
-                Storage::disk('public')->delete($file_name);
+                Storage::disk('public')->delete($file->rawAttachment());
             }
 
             AndalAttachment::whereIn('id', $deleted)->delete();

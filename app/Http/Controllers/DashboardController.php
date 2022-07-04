@@ -13,14 +13,16 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 
 use function PHPSTORM_META\type;
+use App\Entity\Formulator;
+use App\Http\Resources\FormulatorResource;
 
 class DashboardController extends Controller
 {
     //
 
     public function index(Request $request) {
-      
-    }   
+
+    }
 
     public function proposalCount(Request $request){
         // pemrakarsa
@@ -28,6 +30,11 @@ class DashboardController extends Controller
         ->select('projects.required_doc', DB::raw('count(*) as total'));
         if ($request->initiatorId){
             return response($q->where('projects.id_applicant', $request->initiatorId)
+            ->groupBy('projects.required_doc')->get());
+        }
+        if ($request->lpjpId){
+            return response($q->where('projects.id_lpjp', $request->lpjpId)
+            // ->whereRaw(DB::raw('projects.deleted_at is null'))
             ->groupBy('projects.required_doc')->get());
         }
 
@@ -49,6 +56,7 @@ class DashboardController extends Controller
               ->where('id_applicant', $request->initiatorId)
               ->orderBy('created_at', 'desc')->paginate(3));
         }
+
         if($request->formulatorId){
             return response(Project::with(['address'])
             ->select('projects.*', 'project_address.*')
@@ -58,6 +66,12 @@ class DashboardController extends Controller
             ->leftJoin('project_address', 'project_address.id_project', 'projects.id')
             ->where('formulators.id', $request->formulatorId)
             ->orderBy('projects.created_at', 'desc')->paginate(3));
+        }
+
+        if($request->lpjpId){
+            return response(Project::with(['address'])
+              ->where('id_lpjp', $request->lpjpId)
+              ->orderBy('created_at', 'desc')->paginate(3));
         }
 
         return response(Project::with(['address'])
@@ -164,7 +178,7 @@ class DashboardController extends Controller
         ];
 
         $team = null;
-        
+
         if($role !== 'admin') {
             $team = $this->checkTuk();
         }
@@ -195,16 +209,16 @@ class DashboardController extends Controller
                 'total' => $this->getPermitAuthority('admin', 'Pusat', null, $request->period, $request->start, $request->end),
                 'show' => true
             ];
-    
+
             $provinsi = [
                 'total' => $this->getPermitAuthority('admin', 'Provinsi', null, $request->period, $request->start, $request->end),
                 'show' => true
             ];
-    
+
             $kabupaten = [
                 'total' => $this->getPermitAuthority('admin', 'Kabupaten/Kota', null, $request->period, $request->start, $request->end),
                 'show' => true
-            ];    
+            ];
         }
 
         return [
@@ -262,7 +276,7 @@ class DashboardController extends Controller
             foreach($range as $r) {
                 $dates[] = $r->format('d-m-Y');
                 $projects = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), $role, $districts);
-    
+
                 $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
                 $sppl[] = $projects->where('required_doc', 'SPPL')->count();
                 $ukl_upl[] = $projects->where('required_doc', 'UKL-UPL')->count();
@@ -275,7 +289,7 @@ class DashboardController extends Controller
                 $year = $r->format('Y');
                 $month = $r->format('m');
 
-                $projects = $this->getChart($type, $period, $team, $year, $month, null, $role, $districts); 
+                $projects = $this->getChart($type, $period, $team, $year, $month, null, $role, $districts);
 
                 $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
                 $sppl[] = $projects->where('required_doc', 'SPPL')->count();
@@ -297,13 +311,13 @@ class DashboardController extends Controller
             $period = 1;
             $start = date('Y-m') . '-01';
             $end = Carbon::now()->endOfMonth()->format('Y-m-d');
-            
+
             $range = CarbonPeriod::create(date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end)))->toArray();
             foreach($range as $r) {
                 $dates[] = $r->format('d-m-Y');
 
                 $projects = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), $role, $districts);
-    
+
                 $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
                 $sppl[] = $projects->where('required_doc', 'SPPL')->count();
                 $ukl_upl[] = $projects->where('required_doc', 'UKL-UPL')->count();
@@ -319,7 +333,7 @@ class DashboardController extends Controller
             'ukl_upl' => $ukl_upl,
             'adendum' => $adendum
         ];
-        
+
     }
 
     private function getPermitAuthority($type, $authority, $team, $period, $start, $end)
@@ -474,7 +488,7 @@ class DashboardController extends Controller
                             $q->whereMonth('created_at', $month);
                         } else if($period == 3) {
                             $q->whereYear('created_at', (String) $year);
-                        } 
+                        }
                       })->get();
     }
 
@@ -499,5 +513,49 @@ class DashboardController extends Controller
         }
 
         return $districts;
+    }
+    public function getLpjpFormulators(Request $request)
+    {
+        if(!$request->lpjpId){
+            return response('LPJP tidak ditemukan', 416);
+        }
+        return FormulatorResource::collection(Formulator::select('*')
+            ->selectRaw('case when date_start::date <= now()::date and date_end::date >= now()::date then 1 else 0 end as is_active')
+            ->where('id_lpjp', $request->lpjpId)
+            ->orderBy('name', 'asc')
+            ->get()
+        );
+
+    }
+
+    public function getLpjpCount(Request $request){
+        if(!$request->lpjpId){
+            return response('ID LPJP tidak ditemukan',416);
+        }
+
+        return response()->json([
+            'total' =>  Project::where('id_lpjp', $request->lpjpId)->count(),
+            'amdal' => Project::where([
+                'id_lpjp' => $request->lpjpId,
+                'required_doc' => 'AMDAL'
+                ])
+                ->count(),
+            'uklupl_rmr' => Project::where([
+                'id_lpjp' => $request->lpjpId,
+                'required_doc' => 'UKL-UPL',
+                ])->whereIn('risk_level', ['R', 'MR', 'Rendah', 'Menengah Rendah'])
+                ->count(),
+            'uklupl_mtt' => Project::where([
+                'id_lpjp' => $request->lpjpId,
+                'required_doc' => 'UKL-UPL',
+                ])->whereIn('risk_level', ['MT', 'T', 'Menengah Tinggi', 'Tinggi'])
+                ->count(),
+            'sppl' => Project::where([
+                'id_lpjp' => $request->lpjpId,
+                'required_doc' => 'SPPL'
+                ])
+                ->count(),
+            'addendum' => 0 // not yet defined
+        ]);
     }
 }

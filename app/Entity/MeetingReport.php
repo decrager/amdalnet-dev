@@ -35,4 +35,9 @@ class MeetingReport extends Model
 
         return null;
     }
+
+    public function rawFile()
+    {
+        return $this->attributes['file'];
+    }
 }
