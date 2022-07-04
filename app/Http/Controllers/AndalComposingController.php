@@ -2445,7 +2445,8 @@ class AndalComposingController extends Controller
             $submit = KaReview::where([['id_project', $id_project], ['status', 'submit']])->first();
             if($submit) {
                 return [
-                    'file_name' => Storage::url('workspace/' . $save_file_name),
+                    // 'file_name' => Storage::url('workspace/' . $save_file_name),
+                    'file_name' => Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'project_title' => strtolower($project->project_title)
                 ];
             }
