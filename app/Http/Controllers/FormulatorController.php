@@ -86,6 +86,10 @@ class FormulatorController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->registration) {
+            return $this->registration($request);
+        }
+
         if($request->sertifikasi) {
             // CHECK EXIST NO REGISTRATION
             $error = [];
@@ -359,7 +363,7 @@ class FormulatorController extends Controller
             //create file sertifikat
             $fileSertifikat = $request->file('file_sertifikat');
             $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
-            $fileCv->storePubliclyAs('public', $fileSertifikatName);
+            $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
             $formulator->cert_file = $fileSertifikatName;
         }
 
@@ -389,6 +393,59 @@ class FormulatorController extends Controller
     public function destroy(Formulator $formulator)
     {
         //
+    }
+
+    private function registration(Request $request)
+    {
+        $formulator = null;
+            if($request->isCertified === 'true') {
+                // check if no registration is exist
+                $formulator = Formulator::where([['reg_no', $request->reg_no],['email', null]])->first();
+                if($formulator) {
+                    $user = User::where('email', $request->email)->first();
+                    if($user) {
+                        return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+                    }
+                } else {
+                    return response(['error' => 'reg_no']);
+                }
+            } else {
+                $user = User::where('email', $request->email)->first();
+                if($user) {
+                    return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+                }
+
+                $formulator = new Formulator();
+                $formulator->membership_status = 'TA';
+                $formulator->expertise = $request->expertise;
+            }
+
+            if ($request->file('file_sertifikat') !== null) {
+                //create file sertifikat
+                $fileSertifikat = $request->file('file_sertifikat');
+                $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
+                $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
+                $formulator->cert_file = $fileSertifikatName;
+            }
+
+            $formulator->name = $request->name;
+            $formulator->nik = $request->nik;
+            $formulator->address = $request->address;
+            $formulator->province = $request->province;
+            $formulator->district = $request->district;
+            $formulator->email = $request->email;
+            $formulator->phone = $request->phone;
+            $formulator->save();
+
+            $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            $user->syncRoles($formulatorRole);
+
+            return response()->json(['message' => 'success']);
     }
 
     public function getFormulatorName()
