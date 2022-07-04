@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class FormulatorController extends Controller
 {
@@ -86,6 +87,10 @@ class FormulatorController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->registration) {
+            return $this->registration($request);
+        }
+
         if($request->sertifikasi) {
             // CHECK EXIST NO REGISTRATION
             $error = [];
@@ -150,7 +155,6 @@ class FormulatorController extends Controller
                 // 'id_institution'    => 'required',
                 // 'membership_status' => 'required',
                 // 'id_lsp'            => 'required',
-                'email'             => 'required',
             ]
         );
 
@@ -158,10 +162,13 @@ class FormulatorController extends Controller
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $email = $request->get('email');
-            $found = User::where('email', $email)->first();
 
-            if($found) {
-                return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+            if($request->email) {
+                $found = User::where('email', $email)->first();
+    
+                if($found) {
+                    return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+                }
             }
 
             $params = $request->all();
@@ -182,14 +189,31 @@ class FormulatorController extends Controller
                 $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
             }
 
-            if (!$found) {
+            if ($request->email) {
                 $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                $random_password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
                     'email' => $params['email'],
-                    'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
+                    'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($random_password),
+                    'original_password' => isset($params['password']) ? $params['password'] : $random_password
                 ]);
                 $user->syncRoles($formulatorRole);
+            }
+
+            $date_start = null;
+            $membership_status = null;
+
+            if(isset($params['date_start'])) {
+                if($params['date_start']) {
+                    $date_start = $params['date_start'];
+                }
+            }
+
+            if(isset($params['membership_status'])) {
+                if($params['membership_status']) {
+                    $membership_status = $params['membership_status'];
+                }
             }
 
             //create Penyusun
@@ -197,20 +221,20 @@ class FormulatorController extends Controller
                 'name'              => $params['name'],
                 'expertise'         => $params['expertise'],
                 'cert_no'           => isset($params['cert_no'])  ? $params['cert_no'] : null,
-                'date_start'        => isset($params['date_start']) ? $params['date_start'] : null,
+                'date_start'        => $date_start,
                 'date_end'          => $request->date_start ? Carbon::createFromDate($request->date_start)->addYears(3) : null,
                 'cert_file'         => isset($fileSertifikatName) ? $fileSertifikatName : null,
                 'cv_file'           => isset($cvName) ? $cvName : null,
                 'reg_no'            => isset($params['reg_no']) ? $params['reg_no'] : null,
                 'id_institution'    => isset($params['id_institution']) ? $params['id_institution'] : null,
-                'membership_status' => isset($params['membership_status']) ? $params['membership_status'] : 'TA',
+                'membership_status' => $membership_status ? $membership_status : 'TA',
                 'id_lsp'            => isset($params['id_lsp']) ? $params['id_lsp'] : null,
                 'nik'               => isset($params['nik']) ? $params['nik'] : null,
                 'district'          => isset($params['district']) ? $params['district'] : null,
                 'province'          => isset($params['province']) ? $params['province'] : null,
                 'phone'             => isset($params['phone']) ? $params['phone'] : null,
                 'address'           => isset($params['address']) ? $params['address'] : null,
-                'email'             => $params['email'],
+                'email'             => isset($params['email']) ? $params['email'] : null,
             ]);
 
             if (!$formulator) {
@@ -323,6 +347,30 @@ class FormulatorController extends Controller
         // } else {
         $params = $request->all();
 
+        if($request->email) {
+            if($request->email != $formulator->email) {
+                $found = User::where('email', $request->email)->first();
+                if($found) {
+                    $found->email = $request->email;
+                    $found->save();
+                } else {
+                    if($formulator->email) {
+                        return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+                    } else {
+                        $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                        $random_password = Str::random(8);
+                        $user = User::create([
+                            'name' => ucfirst($params['name']),
+                            'email' => $params['email'],
+                            'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
+                            'original_password' => isset($params['password']) ? $params['password'] : $random_password
+                        ]);
+                        $user->syncRoles($formulatorRole);
+                    }
+                }
+            }
+        }
+
         if ($request->file('cv_penyusun') !== null) {
             //create file cv
             $fileCv = $request->file('cv_penyusun');
@@ -335,7 +383,7 @@ class FormulatorController extends Controller
             //create file sertifikat
             $fileSertifikat = $request->file('file_sertifikat');
             $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
-            $fileCv->storePubliclyAs('public', $fileSertifikatName);
+            $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
             $formulator->cert_file = $fileSertifikatName;
         }
 
@@ -348,7 +396,7 @@ class FormulatorController extends Controller
         $formulator->id_institution = $params['id_institution'];
         $formulator->membership_status = $params['membership_status'];
         $formulator->id_lsp = $params['id_lsp'];
-        $formulator->email = $params['email'];
+        $formulator->email = isset($params['email']) ? $params['email'] : null;
         $formulator->nip = $params['nip'] ? $params['nip'] : null;
         $formulator->save();
         // }
@@ -365,6 +413,59 @@ class FormulatorController extends Controller
     public function destroy(Formulator $formulator)
     {
         //
+    }
+
+    private function registration(Request $request)
+    {
+        $formulator = null;
+            if($request->isCertified === 'true') {
+                // check if no registration is exist
+                $formulator = Formulator::where([['reg_no', $request->reg_no],['email', null]])->first();
+                if($formulator) {
+                    $user = User::where('email', $request->email)->first();
+                    if($user) {
+                        return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+                    }
+                } else {
+                    return response(['error' => 'reg_no']);
+                }
+            } else {
+                $user = User::where('email', $request->email)->first();
+                if($user) {
+                    return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+                }
+
+                $formulator = new Formulator();
+                $formulator->membership_status = 'TA';
+                $formulator->expertise = $request->expertise;
+            }
+
+            if ($request->file('file_sertifikat') !== null) {
+                //create file sertifikat
+                $fileSertifikat = $request->file('file_sertifikat');
+                $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
+                $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
+                $formulator->cert_file = $fileSertifikatName;
+            }
+
+            $formulator->name = $request->name;
+            $formulator->nik = $request->nik;
+            $formulator->address = $request->address;
+            $formulator->province = $request->province;
+            $formulator->district = $request->district;
+            $formulator->email = $request->email;
+            $formulator->phone = $request->phone;
+            $formulator->save();
+
+            $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            $user->syncRoles($formulatorRole);
+
+            return response()->json(['message' => 'success']);
     }
 
     public function getFormulatorName()

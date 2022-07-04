@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Laravue\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -74,5 +75,10 @@ class Formulator extends Model
     public function rawCvFile()
     {
         return $this->attributes['cv_file'];
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'email', 'email');
     }
 }

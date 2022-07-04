@@ -7,21 +7,24 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
 
 class UserRegistered extends Notification
 {
     use Queueable;
 
     public $user;
+    public $original_password;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(User $user, $original_password = null)
     {
         $this->user = $user;
+        $this->original_password = $original_password;
     }
 
     /**
@@ -56,6 +59,15 @@ class UserRegistered extends Notification
                             ->line('')
                             ->line('Akun AMDALNET anda telah berhasil dibuat.')
                             ->line('Password: ' . $raw_password);
+        } else if($this->original_password) {
+            return (new MailMessage)
+                    ->subject('Pendaftaran Akun AMDALNET')
+                    ->greeting('Akun AMDALNET Anda Berhasil Dibuat.')
+                    ->line('Hai '.$this->user->name)
+                    ->line('')
+                    ->line(new HtmlString('Akun AMDALNET anda telah berhasil dibuat dengan password: <b>' . $this->original_password . '</b>'))
+                    ->line('Silahkan aktivasi akun dengan menekan tombol dibawah ini.')
+                    ->action('Aktivasi Akun Anda', $url);
         } else {
             return (new MailMessage)
                             ->subject('Pendaftaran Akun AMDALNET')
