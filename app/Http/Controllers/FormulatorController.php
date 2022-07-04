@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class FormulatorController extends Controller
 {
@@ -190,12 +191,29 @@ class FormulatorController extends Controller
 
             if ($request->email) {
                 $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                $random_password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
                     'email' => $params['email'],
-                    'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
+                    'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($random_password),
+                    'original_password' => isset($params['password']) ? $params['password'] : $random_password
                 ]);
                 $user->syncRoles($formulatorRole);
+            }
+
+            $date_start = null;
+            $membership_status = null;
+
+            if(isset($params['date_start'])) {
+                if($params['date_start']) {
+                    $date_start = $params['date_start'];
+                }
+            }
+
+            if(isset($params['membership_status'])) {
+                if($params['membership_status']) {
+                    $membership_status = $params['membership_status'];
+                }
             }
 
             //create Penyusun
@@ -203,13 +221,13 @@ class FormulatorController extends Controller
                 'name'              => $params['name'],
                 'expertise'         => $params['expertise'],
                 'cert_no'           => isset($params['cert_no'])  ? $params['cert_no'] : null,
-                'date_start'        => isset($params['date_start']) ? $params['date_start'] : null,
+                'date_start'        => $date_start,
                 'date_end'          => $request->date_start ? Carbon::createFromDate($request->date_start)->addYears(3) : null,
                 'cert_file'         => isset($fileSertifikatName) ? $fileSertifikatName : null,
                 'cv_file'           => isset($cvName) ? $cvName : null,
                 'reg_no'            => isset($params['reg_no']) ? $params['reg_no'] : null,
                 'id_institution'    => isset($params['id_institution']) ? $params['id_institution'] : null,
-                'membership_status' => isset($params['membership_status']) ? $params['membership_status'] : 'TA',
+                'membership_status' => $membership_status ? $membership_status : 'TA',
                 'id_lsp'            => isset($params['id_lsp']) ? $params['id_lsp'] : null,
                 'nik'               => isset($params['nik']) ? $params['nik'] : null,
                 'district'          => isset($params['district']) ? $params['district'] : null,
@@ -340,10 +358,12 @@ class FormulatorController extends Controller
                         return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
                     } else {
                         $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                        $random_password = Str::random(8);
                         $user = User::create([
                             'name' => ucfirst($params['name']),
                             'email' => $params['email'],
                             'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
+                            'original_password' => isset($params['password']) ? $params['password'] : $random_password
                         ]);
                         $user->syncRoles($formulatorRole);
                     }

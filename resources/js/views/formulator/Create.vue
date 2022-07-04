@@ -245,6 +245,8 @@ export default {
       loadingSubmit: false,
       currentFormulator: {
         expertise: null,
+        date_start: null,
+        membership_status: null,
       },
       sertifikatFileUpload: null,
       sertifikatFileName: null,
