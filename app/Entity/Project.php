@@ -248,7 +248,7 @@ class Project extends Model implements Auditable
                 return $this->attributes['ppib_file'];
             } else {
                 // return Storage::url($this->attributes['ppib_file']);
-                return Storage::disk('public')->temporaryUrl($this->attributes['ppib_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
+                return Storage::disk('public')->temporaryUrl($this->attributes['ppib_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
