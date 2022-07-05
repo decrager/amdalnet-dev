@@ -96,36 +96,27 @@ class TestMeetRKLRPLController extends Controller
     {
         if($request->invitation) {
             $document_type = $request->uklUpl ? 'ukl-upl' : 'rkl-rpl';
-            $receiver = [];
-            $receiver_non_user = [];
+            $email_user = [];
             $meeting = TestingMeeting::where([['id_project', $request->idProject],['document_type', $document_type]])->first();
             if($meeting) {
                 $invitations = TestingMeetingInvitation::where('id_testing_meeting', $meeting->id)->get();
                 // 1. TUK
                 foreach($invitations as $i) {
-                    if($i->id_feasibility_test_team_member) {
-                        $member = FeasibilityTestTeamMember::find($i->id_feasibility_test_team_member);
+                    if($i->feasibilityTestTeamMember) {
                         $email = null;
-                        if($member->expertBank) {
-                            $email = $member->expertBank->email;
-                        } else if($member->lukMember) {
-                            $email = $member->lukMember->email;
+                        if($i->feasibilityTestTeamMember->expertBank) {
+                            $email = $i->feasibilityTestTeamMember->expertBank->email;
+                        } else if($i->feasibilityTestTeamMember->lukMember) {
+                            $email = $i->feasibilityTestTeamMember->lukMember->email;
                         }
 
                         if($email) {
-                            $user = User::where('email', $email)->first();
-                            if($user) {
-                                $receiver[] = $user;
-                            }
+                            $email_user[] = $email;
                         }
                         
-                    } else if($i->id_tuk_secretary_member) {
-                        $secretary = TukSecretaryMember::find($i->id_tuk_secretary_member);
-                        if($secretary) {
-                            $user = User::where('email', $secretary->email)->first();
-                            if($user) {
-                                $receiver[] = $user;
-                            }
+                    } else if($i->tukSecretaryMember) {
+                        if($i->tukSecretaryMember->email) {
+                            $email_user[] = $i->tukSecretaryMember->email;
                         }
                     } else if($i->email) {
                         $user = User::where('email', $i->email)->count();
@@ -147,49 +138,45 @@ class TestMeetRKLRPLController extends Controller
                             $user = User::where('email', $i->email)->first();
                         }
 
-                        $receiver[] = $user;
+                        $email_user[] = $i->email;
                     }
                 }
             }
 
-            if((count($receiver) > 0) || (count($receiver_non_user) > 0)) {
-                // === UPDATE STATUS INVITATION === //
-                $meeting->is_invitation_sent = true;
-                $meeting->save();
+            $project = Project::findOrFail($request->idProject);
+            $email_user[] = $project->initiator->email;
 
-                $project = Project::findOrFail($request->idProject);
-                // NOTIFICATION FOR FORMULATOR & INITIATOR
-                $initiator = User::where('email', $project->initiator->email)->first();
-
-                if($initiator) {
-                   $receiver[] = $initiator;
+            $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
+                $q->where('id_project', $project->id);
+            })->get();
+            foreach($formulator_team_members as $ftm) {
+                if($ftm->formulator) {
+                    $email_user[] = $ftm->formulator->email;
                 }
+            }
 
-                $formulator_team_members = FormulatorTeamMember::whereHas('team', function($q) use($project) {
-                    $q->where('id_project', $project->id);
-                })->get();
-                foreach($formulator_team_members as $ftm) {
-                    if($ftm->formulator) {
-                        $formulator_user = User::where('email', $ftm->formulator->email)->first();
-                        if($formulator_user) {
-                           $receiver[] = $formulator_user;
-                        }
+            if(count($email_user) > 0) {
+                $user = User::whereIn('email', $email_user)->get();
+
+                if($user->count() > 0) {
+                    // === UPDATE STATUS INVITATION === //
+                    $meeting->is_invitation_sent = true;
+                    $meeting->save();
+    
+                    Notification::send($user, new MeetingInvitation($meeting));
+    
+                    // === WORKFLOW === //
+                    if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
+                        $project->workflow_apply('send-uklupl-examination-invitation');
+                        $project->workflow_apply('examine-uklupl');
+                        $project->save();
+                    } else if($project->marking == 'amdal.feasibility-invitation-drafting') {
+                        $project->workflow_apply('send-amdal-feasibility-invitation');
+                        $project->save();
                     }
+    
+                    return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
                 }
-
-                Notification::send($receiver, new MeetingInvitation($meeting));
-
-                // === WORKFLOW === //
-                if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
-                    $project->workflow_apply('send-uklupl-examination-invitation');
-                    $project->workflow_apply('examine-uklupl');
-                    $project->save();
-                } else if($project->marking == 'amdal.feasibility-invitation-drafting') {
-                    $project->workflow_apply('send-amdal-feasibility-invitation');
-                    $project->save();
-                }
-
-                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
             }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);
