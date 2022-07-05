@@ -254,7 +254,7 @@ final class Document
             
             $directory =  $directory  . (substr($directory,-1) !='/' ? '/':'');
 
-            if (!in_array($dir_path, Storage::disk($dir_disk)->directories($directory.'..'))) {
+            if (!in_array($dir_path, Storage::disk($dir_disk)->directories(dirname($directory)))) {
                 // create dir if not exists
                 Storage::disk($dir_disk)->makeDirectory($dir_path);
             }
@@ -308,7 +308,7 @@ final class Document
         // if (!file_exists($directory) && !is_dir($directory)) {
         //     mkdir($directory);
         // }
-        if (!in_array($histDir, Storage::disk($dir_disk)->directories($histDir.'/..'))) {
+        if (!in_array($directory, Storage::disk($dir_disk)->directories(dirname($directory)))) {
             Storage::disk($dir_disk)->makeDirectory($directory);
         }
         return $directory;
@@ -330,7 +330,7 @@ final class Document
         $dir_disk = env('OFFICE_STORAGE_DISK', 'public');
 
         // if (!file_exists($histDir) || !is_dir($histDir)) return 1;  // check if the history directory exists
-        if (!in_array($histDir, Storage::disk($dir_disk)->directories($histDir.'/..'))) return 1;  // check if the history directory exists
+        if (!in_array($histDir, Storage::disk($dir_disk)->directories(dirname($histDir)))) return 1;  // check if the history directory exists
 
         // $cdir = scandir($histDir);
         // $ver = 1;
@@ -364,14 +364,14 @@ final class Document
         $directory = $storagePath . '/';
 
         // if (!is_dir($directory)) return "";
-        if (!in_array($storagePath, Storage::disk($dir_disk)->directories($directory.'..'))) return "";
+        if (!in_array($storagePath, Storage::disk($dir_disk)->directories(dirname($directory)))) return "";
 
         // create the directory to the history of this file version
         // $directory = $directory . $fileName . "-hist" . DIRECTORY_SEPARATOR;
         // if (!$create && !is_dir($directory))  return "";
 
         $directory = $directory . $fileName . "-hist";
-        if (!$create && !in_array($directory, Storage::disk($dir_disk)->directories($directory.'/..'))) return "";
+        if (!$create && !in_array($directory, Storage::disk($dir_disk)->directories(dirname($directory)))) return "";
 
         // mkdir($directory);
         Storage::disk($dir_disk)->makeDirectory($directory);
