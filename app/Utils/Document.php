@@ -343,7 +343,7 @@ final class Document
         // }
 
         $listdir = Storage::disk($dir_disk)->directories($histDir);
-        $ver = cout($listdir)+1;
+        $ver = count($listdir)+1;
         return $ver;
     }
 
