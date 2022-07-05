@@ -171,6 +171,13 @@ class FormulatorController extends Controller
                 }
             }
 
+            if($request->reg_no) {
+                $found_reg_no = Formulator::where('reg_no', $request->reg_no)->first();
+                if($found_reg_no) {
+                    return response()->json(['error' => 'No Registrasi Sudah Terdaftar']);
+                }
+            }
+
             $params = $request->all();
 
             DB::beginTransaction();
@@ -367,6 +374,15 @@ class FormulatorController extends Controller
                         ]);
                         $user->syncRoles($formulatorRole);
                     }
+                }
+            }
+        }
+
+        if($request->reg_no) {
+            if($request->reg_no != $formulator->reg_no) {
+                $found_reg_no = Formulator::where('reg_no', $request->reg_no)->first();
+                if($found_reg_no) {
+                    return response()->json(['error' => 'No Registrasi Sudah Terdaftar']);
                 }
             }
         }
