@@ -108,6 +108,8 @@ export default {
         allowDecimal: true,
         decimalSymbol: ',',
       }),
+      minScale: 0,
+      maxScale: 0,
     };
   },
   methods: {
@@ -128,6 +130,9 @@ export default {
       this.$emit('handleCancelParam');
     },
     async handleBlur(value){
+      // reset min and max scale
+      this.minScale = 0;
+      this.maxScale = 0;
       // reset all value first
       delete value.result;
       delete value.result_risk;
@@ -175,14 +180,25 @@ export default {
         // this.calculatedProjectDoc();
         let minimumResult = 'AMDAL';
         let minimumResultRisk = 'Tinggi';
+        let maximumResult = 'SPPL';
+        let maximumResultRisk = 'Rendah';
         kbliEnvParams.forEach((item) => {
           // for set minimum result
-          if (item.doc_req === 'UKL-UPL' && minimumResult === 'AMDAL'){
+          if (item.doc_req === 'UKL-UPL' && minimumResult !== 'SPPL'){
             minimumResult = 'UKL-UPL';
             minimumResultRisk = item.risk_level;
           } else if (item.doc_req === 'SPPL'){
             minimumResult = 'SPPL';
             minimumResultRisk = item.risk_level;
+          }
+
+          // for set maximum result
+          if (item.doc_req === 'UKL-UPL' && maximumResult !== 'AMDAL'){
+            maximumResult = 'UKL-UPL';
+            maximumResultRisk = item.risk_level;
+          } else if (item.doc_req === 'AMDAL'){
+            maximumResult = 'AMDAL';
+            maximumResultRisk = item.risk_level;
           }
 
           let tempStatus = true;
@@ -206,8 +222,23 @@ export default {
 
         // check for any condition that not in kbli param
         if (!value.result) {
-          value.result = minimumResult;
-          value.result_risk = minimumResultRisk;
+          // console.log('tege', {
+          //   scale: value.scaleNumber,
+          //   minimumResult,
+          //   minimumResultRisk,
+          //   maximumResult,
+          //   maximumResultRisk,
+          //   minScale: this.minScale,
+          //   maxScale: this.maxScale,
+          // });
+          // check if value.scaleNumber more or less than min or max
+          if (value.scaleNumber < this.minScale){
+            value.result = minimumResult;
+            value.result_risk = minimumResultRisk;
+          } else if (value.scaleNumber > this.maxScale){
+            value.result = maximumResult;
+            value.result_risk = maximumResultRisk;
+          }
         }
 
         // console.log(4, value);
@@ -218,6 +249,15 @@ export default {
     checkIfTrue(item) {
       // console.log('masuk pak eko');
       const [data1, operator, data2] = item.split(/\s+/);
+
+      // update minimum and maximum scale
+      if (this.minScale === 0 || this.minScale > parseFloat(data2)){
+        this.minScale = parseFloat(data2);
+      }
+
+      if (this.maxScale < parseFloat(data2)){
+        this.maxScale = parseFloat(data2);
+      }
 
       // replace . to ''
       // const data1 = ar1.replace('.', '');
