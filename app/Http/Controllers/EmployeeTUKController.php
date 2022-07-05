@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class EmployeeTUKController extends Controller
 {
@@ -115,10 +116,12 @@ class EmployeeTUKController extends Controller
         $is_user_exist = User::where('email', $request->email)->count();
         if($is_user_exist == 0) {
             $valsubRole = Role::findByName(Acl::ROLE_EXAMINER_SUBSTANCE);
+            $password = Str::random(8);
             $user = User::create([
                 'name' => ucfirst($request->name),
                 'email' => $request->email,
-                'password' => Hash::make('amdalnet')
+                'password' => Hash::make($password),
+                'original_password' => $password
             ]);
             $user->syncRoles($valsubRole);
         }
