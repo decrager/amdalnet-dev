@@ -247,6 +247,7 @@ export default {
         expertise: null,
         date_start: null,
         membership_status: null,
+        isCertified: false,
       },
       sertifikatFileUpload: null,
       sertifikatFileName: null,
@@ -421,7 +422,14 @@ export default {
 
           // eslint-disable-next-line no-undef
           _.each(this.currentFormulator, (value, key) => {
-            formData.append(key, value);
+            if (
+              !(
+                !this.currentFormulator.isCertified &&
+                (key === 'date_start' || key === 'membership_status')
+              )
+            ) {
+              formData.append(key, value);
+            }
           });
 
           if (this.currentFormulator.id !== undefined) {
