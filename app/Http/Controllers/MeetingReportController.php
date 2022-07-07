@@ -690,7 +690,7 @@ class MeetingReportController extends Controller
     private function replaceHtmlList($data)
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<p style="margin:0; padding: 0;">', str_replace('</li>', '</p>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<span style="display: block; margin:0; padding: 0;">', str_replace('</li>', '</span>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
         } else {
             return '';
         }
