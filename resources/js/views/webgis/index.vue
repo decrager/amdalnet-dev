@@ -244,6 +244,9 @@ export default {
       loadStatus: false,
       currentRtRwLayer: null,
       token: null,
+      penutupanLahan2020JSON: null,
+      kawasanHutanBJSON: null,
+      pippib2021Periode2JSON: null,
     };
   },
   computed: {
@@ -269,6 +272,15 @@ export default {
     await this.getMappedProject();
     await axios.get('/api/provinces').then((result) => {
       this.provinces = result.data.data;
+    });
+    await axios.get('/api/sigap-webgis?service=KLHK/A_Penutupan_Lahan_2020').then((result) => {
+      this.penutupanLahan2020JSON = result.data;
+    });
+    await axios.get('/api/sigap-webgis?service=KLHK/B_Kawasan_Hutan').then((result) => {
+      this.kawasanHutanBJSON = result.data;
+    });
+    await axios.get('/api/sigap-webgis?service=KLHK/D_PIPPIB_2021_Periode_2').then((result) => {
+      this.pippib2021Periode2JSON = result.data;
     });
   },
   methods: {
@@ -741,9 +753,8 @@ export default {
       //   proxyUrl: 'proxy/proxy.php',
       //   urlPrefix: 'https://sigap.menlhk.go.id/',
       // });
-
       const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
+        sourceJSON: this.penutupanLahan2020JSON,
         imageTransparency: true,
         visible: false,
         token: this.token,
@@ -762,7 +773,7 @@ export default {
       map.add(penutupanLahan2020);
 
       const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        sourceJSON: this.kawasanHutanBJSON,
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
@@ -782,7 +793,7 @@ export default {
       map.add(kawasanHutanB);
 
       const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+        sourceJSON: this.pippib2021Periode2JSON,
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
