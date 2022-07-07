@@ -1001,6 +1001,9 @@ export default {
           { required: true, trigger: 'change', message: 'Data Belum Dipilih' },
         ],
       },
+      penutupanLahan2020JSON: null,
+      kawasanHutanBJSON: null,
+      pippib2021Periode2JSON: null,
     };
   },
   computed: {
@@ -1099,6 +1102,15 @@ export default {
     // init map
     this.map = new Map({
       basemap: 'satellite',
+    });
+    await axios.get('/api/sigap-webgis?service=KLHK/A_Penutupan_Lahan_2020').then((result) => {
+      this.penutupanLahan2020JSON = result.data;
+    });
+    await axios.get('/api/sigap-webgis?service=KLHK/B_Kawasan_Hutan').then((result) => {
+      this.kawasanHutanBJSON = result.data;
+    });
+    await axios.get('/api/sigap-webgis?service=KLHK/D_PIPPIB_2021_Periode_2').then((result) => {
+      this.pippib2021Periode2JSON = result.data;
     });
   },
   methods: {
@@ -1621,14 +1633,8 @@ export default {
         this.fileMapName = e.target.files[0].name;
       }
 
-      // urlUtils.addProxyRule({
-      //   proxyUrl: 'proxy/proxy.php',
-      //   urlPrefix: 'https://sigap.menlhk.go.id/',
-      // });
-      // console.log('this.token = ' + this.token);
-
       const penutupanLahan2020 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
+        sourceJSON: this.penutupanLahan2020JSON,
         imageTransparency: true,
         visible: false,
         visibilityMode: '',
@@ -1636,7 +1642,7 @@ export default {
       });
 
       const kawasanHutanB = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        sourceJSON: this.kawasanHutanBJSON,
         imageTransparency: true,
         visible: true,
         visibilityMode: '',
@@ -1644,7 +1650,7 @@ export default {
       });
 
       const pippib2021Periode2 = new MapImageLayer({
-        url: 'https://sigap.menlhk.go.id/proxy/proxy.php?https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+        sourceJSON: this.pippib2021Periode2JSON,
         imageTransparency: true,
         visible: true,
         visibilityMode: '',
