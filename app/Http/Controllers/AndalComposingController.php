@@ -2828,14 +2828,15 @@ class AndalComposingController extends Controller
         ];
     }
 
-    private function renderHtml($name, $stage_id, $impact_id, $width, $data)
+    private function renderHtml($name, $stage_id, $impact_id, $width, $data, $font = null)
     {
         $table = new Table();
         $table->addRow();
         $cell = $table->addCell($width);
+        $selected_font = $font ? $font : 'Bookman Old Style';
         $content = '';
         if($data) {
-            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data));
+            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data, $selected_font));
         }
         Html::addHtml($cell, $content);
         return [
@@ -2881,10 +2882,10 @@ class AndalComposingController extends Controller
         return $new_data;
     }
 
-    private function replaceHtmlList($data)
+    private function replaceHtmlList($data, $font = 'Bookman Old Style')
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<p  style="font-family: Calibri; font-size: 15px; margin:0; padding:0;">', str_replace('</li>', '</p>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<span style="display:inline-block; font-family: ' . $font .'; font-size: 11px; margin:0; padding:0; line-height:0px;">', str_replace('</li>', '</span>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
         } else {
             return '';
         }
