@@ -41,6 +41,8 @@ use App\Http\Controllers\VideoTutorialController;
 use App\Http\Controllers\ProjectOtherComponentController;
 use App\Http\Controllers\SubProjectComponentController;
 use App\Http\Controllers\ProjectKegiatanLainSekitarController;
+use App\Http\Controllers\ProjectAttachmentController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -438,6 +440,8 @@ Route::put('activateUser/{user}', function (User $user) {
 
     return response(['message' => 'done']);
 });
+
+Route::get('project-attachments/{id}', [ProjectAttachmentController::class, 'show']);
 
 // workflow related
 // Route::get('workflow-states', WorkflowStateController::class, 'index');

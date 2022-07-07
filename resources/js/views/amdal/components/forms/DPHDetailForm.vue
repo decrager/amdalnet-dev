@@ -107,6 +107,14 @@
                 <span style="margin-right: 1em;"><strong>{{ data.study_length_year }}</strong> tahun</span> <span><strong>{{ data.study_length_month }}</strong> bulan </span>
               </div>
             </el-form-item>
+            <!--
+            <el-form-item label="File Data">
+
+              <div style="border:1px solid #e0e0e0; border-radius: 0.3em; padding: 1em;">
+                {{ data.data_file || 'tidak ada file tersimpan'}}
+              </div>
+            </el-form-item>
+            -->
             <el-form-item v-if="master.length > 0" label="Kegiatan Lain Sekitar yang Terdampak">
               <div style="padding: 1em; border: 1px solid #e0e0e0; border-radius: 0.3em;">
                 <el-checkbox-group
@@ -117,13 +125,6 @@
                 </el-checkbox-group>
               </div>
             </el-form-item>
-            <!--
-            <el-form-item label="File Data">
-
-              <div style="border:1px solid #e0e0e0; border-radius: 0.3em; padding: 1em;">
-                {{ data.data_file || 'tidak ada file tersimpan'}}
-              </div>
-            </el-form-item> -->
           </el-form>
         </el-col>
         <el-col :span="16">
@@ -163,7 +164,6 @@
         </el-button>
       </div>
     </div>
-
     <Comment :impactidentification="data.id" :commenttype="commentType[mode]" :kolom="kolom" style="margin: auto;" @addComment="onAddComment" />
   </div>
 </template>
