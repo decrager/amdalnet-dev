@@ -69,7 +69,7 @@
           plain
           style="display: block !important; width: 100% !important; padding: 1em !important; font-weight: bold !important"
           @click="$router.push('/project/home/' + data.id)"
-        >Rumah Kegiatan</el-button></p>
+        >Ringkasan Kegiatan</el-button></p>
       </el-col>
     </el-row>
   </div>
