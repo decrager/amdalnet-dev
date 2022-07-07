@@ -8,7 +8,7 @@
     :destroy-on-close="true"
     width="45%"
   >
-    <p><strong>Amdalnet</strong> sudah dapat digunakan untuk pengajuan persetujuan lingkungan rencana kegiatan pemerintah dalam rangka mendukung pelaksanaan
+    <p class="first-par"><strong>Amdalnet</strong> sudah dapat digunakan untuk pengajuan persetujuan lingkungan rencana kegiatan pemerintah dalam rangka mendukung pelaksanaan
       <strong>UU no 11 Tahun 2020 tentang Cipta Kerja</strong> dan <strong>PP Nomor 22 Tahun 2021 tentang Penyelenggaraan Perlindungan dan Pengelolaan Lingkungan Hidup</strong>.</p>
     <p>Khusus untuk rencana kegiatan pelaku usaha, saat ini masih dalam tahap integrasi dengan OSS-RBA.</p>
     <p>Terima kasih.</p>
@@ -56,8 +56,13 @@ export default {
         color: #303030;
         font-size: 130%;
         line-height: 1.8em ;
-        margin: auto 1.5em;
+        margin: auto 0.5em;
+        padding: 0 1.5em;
         word-break: break-word !important;
+      }
+      p.first-par {
+        padding: 1.5em;
+        background: #d5f6d5;
       }
       p:not(:first-child) {
         margin-top: 1em;
