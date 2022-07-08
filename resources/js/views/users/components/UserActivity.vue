@@ -13,8 +13,32 @@
             <el-button type="primary" :disabled="user.role === 'admin'" @click="onSubmit">
               Ubah
             </el-button>
+            <el-button type="warning" :disabled="user.role === 'admin'" @click="showChangePassword">
+              Ubah Password
+            </el-button>
           </el-form-item>
         </el-form>
+        <el-dialog v-if="user.role !== 'admin'" title="Ubah Password" :visible.sync="changePasswordDialog">
+          <el-form ref="changePasswordForm" v-loading="changePasswordLoading" :model="password" :rules="passwordRules">
+            <el-form-item label="Masukkan Password Lama" prop="current">
+              <el-input v-model="password.current" type="password" name="current" />
+            </el-form-item>
+            <el-form-item label="Masukkan Password Baru" prop="new">
+              <el-input v-model="password.new" type="password" name="new" />
+            </el-form-item>
+            <el-form-item label="Konfirmasi Password Baru" prop="confirm">
+              <el-input v-model="password.confirm" type="password" name="confirm" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="danger" @click="changePasswordDialog = !changePasswordDialog">
+                Batal
+              </el-button>
+              <el-button :loading="changePasswordLoading" type="success" @click="onChangePasswordSubmit">
+                Simpan
+              </el-button>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
       </el-tab-pane>
       <el-tab-pane v-if="user.initiatorData.email" v-loading="updating" label="Pemrakarsa" name="initiatorTab">
         <el-form ref="initiatorForm" :model="user.initiatorData">
@@ -205,15 +229,32 @@ export default {
     },
   },
   data() {
+    const validateConfirmPassword = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('Silahkan masukkan konfirmasi yang sesuai'));
+      } else if (value !== this.password.new) {
+        callback(new Error('Silahkan masukkan konfirmasi yang sesuai'));
+      } else {
+        callback();
+      }
+    };
+
     return {
       activeActivity: 'akunTab',
       updating: false,
       isPemerintah: true,
       loading: false,
+      changePasswordDialog: false,
+      changePasswordLoading: false,
       formulator: {},
       cvFormulator: {
         name: null,
         file: null,
+      },
+      password: {
+        current: null,
+        new: null,
+        confirm: null,
       },
       selectedExpertise: null,
       expertise: [
@@ -257,6 +298,17 @@ export default {
           value: 'Ahli Lainnya',
         },
       ],
+      passwordRules: {
+        current: [
+          {
+            required: true,
+            trigger: 'blur',
+            message: 'Password lama wajib diisi',
+          },
+        ],
+        new: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
+        confirm: [{ required: true, trigger: 'blur', validator: validateConfirmPassword }],
+      },
     };
   },
   computed: {
@@ -295,6 +347,17 @@ export default {
         this.formulator.expertise = data;
       } else {
         this.formulator.expertise = null;
+      }
+    },
+    showChangePassword() {
+      this.password = {
+        current: null,
+        new: null,
+        confirm: null,
+      };
+      this.changePasswordDialog = true;
+      if (this.$refs.changePasswordForm) {
+        this.$refs.changePasswordForm.resetFields();
       }
     },
     onExpertSubmit(){
@@ -410,6 +473,36 @@ export default {
           console.log(error);
           this.updating = false;
         });
+    },
+    onChangePasswordSubmit() {
+      this.$refs.changePasswordForm.validate((valid) => {
+        if (valid) {
+          this.changePasswordLoading = true;
+          userResource
+            .update(this.user.id, this.password)
+            .then(response => {
+              if (response.error) {
+                this.$message({
+                  message: response.error,
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
+              } else {
+                this.$message({
+                  message: 'Password User Berhasil Di Ubah',
+                  type: 'success',
+                  duration: 5 * 1000,
+                });
+                this.changePasswordDialog = false;
+              }
+              this.changePasswordLoading = false;
+            })
+            // eslint-disable-next-line handle-callback-err
+            .catch(error => {
+              this.changePasswordLoading = false;
+            });
+        }
+      });
     },
     handleUploadCv(file, fileList) {
       if (file.raw.size > 10485760) {
