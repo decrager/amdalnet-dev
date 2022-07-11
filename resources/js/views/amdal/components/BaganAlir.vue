@@ -716,21 +716,48 @@ ol.process_diagram > li:last-child > ul,
 
 div#public_consultation_positive_summary.public_consultation_summary ul,
 div#public_consultation_negative_summary.public_consultation_summary ul {
-  display: inline-block;
   padding: 0;
+  line-height: 11px;
+  list-style: revert;
+  margin: 0 var(--linewidth)
+}
+
+div#public_consultation_positive_summary.public_consultation_summary ul li,
+div#public_consultation_negative_summary.public_consultation_summary ul li {
+  text-align: left;
+  display: revert;
+  list-style: revert;
 }
 
 div#public_consultation_positive_summary.public_consultation_summary ol,
 div#public_consultation_negative_summary.public_consultation_summary ol {
   display: block;
   width: 100%;
+  list-style: revert;
+  margin: 0 var(--linewidth)
 }
 
 div#public_consultation_positive_summary.public_consultation_summary ol li,
 div#public_consultation_negative_summary.public_consultation_summary ol li {
-  display: block;
+  display: revert;
   text-align: left;
   padding: 0;
   margin: 0;
+  list-style: revert;
+}
+
+div#public_consultation_positive_summary.public_consultation_summary ul::before,
+div#public_consultation_positive_summary.public_consultation_summary ul::after,
+div#public_consultation_negative_summary.public_consultation_summary ul::before,
+div#public_consultation_negative_summary.public_consultation_summary ul::after,
+div#public_consultation_positive_summary.public_consultation_summary ol::before,
+div#public_consultation_positive_summary.public_consultation_summary ol::after,
+div#public_consultation_negative_summary.public_consultation_summary ol::before,
+div#public_consultation_negative_summary.public_consultation_summary ol::after,
+div#public_consultation_positive_summary.public_consultation_summary li::before,
+div#public_consultation_positive_summary.public_consultation_summary li::after,
+div#public_consultation_negative_summary.public_consultation_summary li::before,
+div#public_consultation_negative_summary.public_consultation_summary li::after {
+  display: none;
 }
 </style>
