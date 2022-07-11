@@ -29,6 +29,7 @@ use App\Laravue\Models\User;
 use App\Notifications\RklRPlNotification;
 use App\Utils\Document;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -2885,7 +2886,8 @@ class AndalComposingController extends Controller
     private function replaceHtmlList($data, $font = 'Bookman Old Style')
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<span style="display:inline-block; font-family: ' . $font .'; font-size: 11px; margin:0; padding:0; line-height:0px;">', str_replace('</li>', '</span>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p, $font, '11px');
         } else {
             return '';
         }
