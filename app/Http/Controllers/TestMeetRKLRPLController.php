@@ -23,6 +23,7 @@ use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use App\Notifications\MeetingInvitation;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -1190,7 +1191,8 @@ class TestMeetRKLRPLController extends Controller
     private function replaceHtmlList($data)
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<span style="display: block; font-family: tahoma; font-size: 11px; margin:0; padding: 0;">', str_replace('</li>', '</span>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p, 'tahoma', '11px');
         } else {
             return '';
         }
