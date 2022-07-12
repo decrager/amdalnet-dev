@@ -113,6 +113,7 @@ class FormulatorTeamController extends Controller
                     'expertise' => $f->formulator->expertise,
                     'file' => $f->formulator->cv_file,
                     'certificate' => $f->formulator->cert_file,
+                    'cert_no' => $f->formulator->cert_no,
                     'reg_no' => $f->formulator->reg_no,
                     'membership_status' => $f->formulator->membership_status
                 ];
@@ -395,15 +396,15 @@ class FormulatorTeamController extends Controller
     private function base64ToFile($file_64)
     {
         $extension = explode('/', explode(':', substr($file_64, 0, strpos($file_64, ';')))[1])[1];   // .jpg .png .pdf
-      
-        $replace = substr($file_64, 0, strpos($file_64, ',')+1); 
-      
+
+        $replace = substr($file_64, 0, strpos($file_64, ',')+1);
+
         // find substring fro replace here eg: data:image/png;base64,
-      
-        $file = str_replace($replace, '', $file_64); 
-      
-        $file = str_replace(' ', '+', $file); 
-      
+
+        $file = str_replace($replace, '', $file_64);
+
+        $file = str_replace(' ', '+', $file);
+
         return [
             'extension' => $extension,
             'file' => base64_decode($file)
