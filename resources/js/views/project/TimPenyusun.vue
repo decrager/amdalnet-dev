@@ -306,6 +306,13 @@ export default {
       this.loadingSelectLpjp = false;
     },
     checkSaveLPJP() {
+      if (!this.selectedLPJP) {
+        this.$alert('Silahkan pilih LPJP terlebih dahulu', '', {
+          center: true,
+        });
+        return false;
+      }
+
       this.$confirm(
         'Apakah anda yakin ? Data yang sudah disimpan, tidak dapat diubah lagi.',
         'Warning',

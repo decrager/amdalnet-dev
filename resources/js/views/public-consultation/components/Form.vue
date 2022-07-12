@@ -4,6 +4,7 @@
     <el-form
       ref="postForm"
       :model="postForm"
+      :rules="formRules"
       style="max-width: 100%"
       label-position="top"
       label-width="200px"
@@ -21,7 +22,7 @@
         </el-col>
         <el-col :span="4" :xs="24">
           <el-form-item label="Jumlah Peserta" prop="participant">
-            <el-input v-model="postForm.participant" />
+            <el-input v-model="postForm.participant" type="number" />
           </el-form-item>
         </el-col>
         <el-col :span="6" :xs="24">
@@ -262,7 +263,7 @@ const defaultForm = {
   announcement_id: 0,
   project_id: 0,
   event_date: '',
-  participant: 0,
+  participant: null,
   location: '',
   address: '',
   positive_feedback_summary: '',
@@ -301,6 +302,14 @@ export default {
         dh: null,
         pe: null,
         un: null,
+      },
+      formRules: {
+        event_date: [{ required: true, trigger: 'blur', message: 'Tanggal Wajib Diisi' }],
+        participant: [{ required: true, trigger: 'blur', message: 'Jumlah Peserta Wajib Diisi' }],
+        location: [{ required: true, trigger: 'blur', message: 'Lokasi Wajib Diisi' }],
+        address: [{ required: true, trigger: 'blur', message: 'Alamat Wajib Diisi' }],
+        positive_feedback_summary: [{ required: true, trigger: 'blur', message: 'Rangkuman Deskriptif atas Harapan Masyarakat Wajib Diisi' }],
+        negative_feedback_summary: [{ required: true, trigger: 'blur', message: 'Rangkuman Deskriptif atas Kekhawatiran Masyarakat Wajib Diisi' }],
       },
     };
   },
@@ -396,108 +405,113 @@ export default {
       });
     },
     async handleSubmit() {
-      this.loading_submit = true;
-      const headers = { 'Content-Type': 'multipart/form-data' };
-      const formData = new FormData();
-      formData.append('id', this.postForm.id);
-      formData.append(
-        'data_type',
-        this.postForm.id === undefined ? 'new' : 'update'
-      );
-      formData.append('announcement_id', this.postForm.announcement_id);
-      formData.append('project_id', this.postForm.project_id);
-      formData.append(
-        'event_date',
-        typeof this.postForm.event_date === 'object'
-          ? this.postForm.event_date.toISOString()
-          : new Date(this.postForm.event_date).toISOString()
-      );
-      formData.append('participant', this.postForm.participant);
-      formData.append('location', this.postForm.location);
-      formData.append('address', this.postForm.address);
-      formData.append(
-        'positive_feedback_summary',
-        this.postForm.positive_feedback_summary
-      );
-      formData.append(
-        'negative_feedback_summary',
-        this.postForm.negative_feedback_summary
-      );
-      formData.append('doc_files', JSON.stringify(this.postForm.doc_files));
-      formData.append(
-        'doc_metadatas',
-        JSON.stringify(this.postForm.doc_metadatas)
-      );
-      formData.append(
-        'doc_berita_acara_pelaksanaan',
-        this.postForm.doc_ba_pelaksanaan
-      );
-      formData.append(
-        'doc_berita_acara_penunjukan_wakil_masyarakat',
-        this.postForm.doc_ba_penunjukan_wakil_masyarakat
-      );
-      formData.append('doc_daftar_hadir', this.postForm.doc_daftar_hadir);
-      formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
-      formData.append('doc_undangan', this.postForm.doc_undangan);
-      formData.append(
-        'is_publish',
-        this.postForm.is_publish ? 'true' : 'false'
-      );
-      formData.append('deleted_photo', JSON.stringify(this.deleted_photo));
+      this.$refs.postForm.validate((valid) => {
+        if (valid) {
+          this.loading_submit = true;
+          const headers = { 'Content-Type': 'multipart/form-data' };
+          const formData = new FormData();
+          formData.append('id', this.postForm.id);
+          formData.append(
+            'data_type',
+            this.postForm.id === undefined ? 'new' : 'update'
+          );
+          formData.append('announcement_id', this.postForm.announcement_id);
+          formData.append('project_id', this.postForm.project_id);
+          formData.append(
+            'event_date',
+            typeof this.postForm.event_date === 'object'
+              ? this.postForm.event_date.toISOString()
+              : new Date(this.postForm.event_date).toISOString()
+          );
+          formData.append('participant', this.postForm.participant);
+          formData.append('location', this.postForm.location);
+          formData.append('address', this.postForm.address);
+          formData.append(
+            'positive_feedback_summary',
+            this.postForm.positive_feedback_summary
+          );
+          formData.append(
+            'negative_feedback_summary',
+            this.postForm.negative_feedback_summary
+          );
+          formData.append('doc_files', JSON.stringify(this.postForm.doc_files));
+          formData.append(
+            'doc_metadatas',
+            JSON.stringify(this.postForm.doc_metadatas)
+          );
+          formData.append(
+            'doc_berita_acara_pelaksanaan',
+            this.postForm.doc_ba_pelaksanaan
+          );
+          formData.append(
+            'doc_berita_acara_penunjukan_wakil_masyarakat',
+            this.postForm.doc_ba_penunjukan_wakil_masyarakat
+          );
+          formData.append('doc_daftar_hadir', this.postForm.doc_daftar_hadir);
+          formData.append('doc_pengumuman', this.postForm.doc_pengumuman);
+          formData.append('doc_undangan', this.postForm.doc_undangan);
+          formData.append(
+            'is_publish',
+            this.postForm.is_publish ? 'true' : 'false'
+          );
+          formData.append('deleted_photo', JSON.stringify(this.deleted_photo));
 
-      for (let i = 0; i < this.postForm.doc_photo_files.length; i++) {
-        formData.append(`file-${i}`, this.postForm.doc_photo_files[i]);
-      }
-      formData.append(
-        'doc_photo_metadatas',
-        JSON.stringify(this.postForm.doc_photo_metadatas)
-      );
-
-      _.each(this.formData, (value, key) => {
-        formData.append(key, value);
-      });
-      // this.$message({
-      //   message: 'Mengunggah file...',
-      //   type: 'info',
-      // });
-      await axios
-        .post('api/public-consultations', formData, { headers })
-        .then((response) => {
-          var msg = '';
-          var msg_type = '';
-          if (response.status === 200) {
-            msg = 'Konsultasi Publik berhasil disimpan';
-            msg_type = 'success';
-          } else {
-            msg = 'Error ' + response.status;
-            msg_type = 'error';
+          for (let i = 0; i < this.postForm.doc_photo_files.length; i++) {
+            formData.append(`file-${i}`, this.postForm.doc_photo_files[i]);
           }
-          this.$message({
-            message: msg,
-            type: msg_type,
-            duration: 5 * 1000,
+          formData.append(
+            'doc_photo_metadatas',
+            JSON.stringify(this.postForm.doc_photo_metadatas)
+          );
+
+          _.each(this.formData, (value, key) => {
+            formData.append(key, value);
           });
-          this.getPublicConsultation().then(() => {
-            this.deleted_photo = [];
-            this.$emit('updatepc', {
-              id: this.postForm.id,
-              isPublish: this.postForm.is_publish,
+          // this.$message({
+          //   message: 'Mengunggah file...',
+          //   type: 'info',
+          // });
+          axios
+            .post('api/public-consultations', formData, { headers })
+            .then((response) => {
+              var msg = '';
+              var msg_type = '';
+              if (response.status === 200) {
+                msg = 'Konsultasi Publik berhasil disimpan';
+                msg_type = 'success';
+              } else {
+                msg = 'Error ' + response.status;
+                msg_type = 'error';
+              }
+              this.$message({
+                message: msg,
+                type: msg_type,
+                duration: 5 * 1000,
+              });
+              this.getPublicConsultation().then(() => {
+                this.deleted_photo = [];
+                this.$emit('updatepc', {
+                  id: this.postForm.id,
+                  isPublish: this.postForm.is_publish,
+                });
+                this.loading_submit = false;
+                this.postForm.doc_photo_files = [];
+                this.postForm.doc_photo_metadatas = [];
+                this.postForm.doc_files = [];
+                this.postForm.doc_metadatas = [];
+              });
+            })
+            .catch((error) => {
+              this.loading_submit = false;
+              console.log(error.message);
+              this.$message({
+                message: 'Terjadi kesalahan pada server',
+                type: 'error',
+                duration: 5 * 1000,
+              });
             });
-            this.loading_submit = false;
-            this.postForm.doc_photo_files = [];
-            this.postForm.doc_photo_metadatas = [];
-            this.postForm.doc_files = [];
-            this.postForm.doc_metadatas = [];
-          });
-        })
-        .catch((error) => {
-          console.log(error.message);
-          this.$message({
-            message: 'Terjadi kesalahan pada server',
-            type: 'error',
-            duration: 5 * 1000,
-          });
-        });
+        }
+      });
     },
     dropzoneS(file) {
       this.postForm.doc_photo_files.push(file);

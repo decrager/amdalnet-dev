@@ -141,7 +141,6 @@ export default {
       currentParam: {},
       file: '',
       kewenangan: [
-        { name: 'semua' },
         { name: 'pusat' },
         { name: 'provinsi' },
         { name: 'kab/kota' },

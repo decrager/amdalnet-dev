@@ -66,7 +66,7 @@ class MeetingInvitation extends Notification
                     ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . '<br>' . 'Tempat: ' . $this->meeting->location))
                     ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
                     ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name))
-                    ->attach(Storage::disk('public')->path($this->docxName()));
+                    ->attach(Storage::disk('public')->path($this->meeting->rawInvitationFile()));
     }
 
     /**
@@ -121,18 +121,5 @@ class MeetingInvitation extends Notification
         }
 
         return $document_type;
-    }
-
-    private function docxName() {
-        $name = '';
-        if($this->meeting->document_type == 'ka') {
-           $name = 'meeting-ka/' . strtolower($this->meeting->project->project_title) . '.pdf';
-        } else if($this->meeting->document_type == 'rkl-rpl') {
-            $name = 'meeting-andal-rkl-rpl/' . strtolower($this->meeting->project->project_title) . '.pdf';
-        } else if($this->meeting->document_type == 'ukl-upl') {
-            $name = 'meeting-ukl-upl/' . strtolower($this->meeting->project->project_title) . '.pdf';
-        }
-
-        return $name;
     }
 }
