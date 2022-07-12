@@ -193,7 +193,6 @@ class WorkspaceController extends Controller
                 break;
             case "MustSave":  // status == 2
             case "Corrupted":  // status == 3
-                // <---------------
                 $result = $workspace->processSave($data, $fileName, $userAddress);
                 break;
             case "MustForceSave":  // status == 6
