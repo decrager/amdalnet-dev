@@ -1,10 +1,8 @@
 <template>
   <div>
-    <ul v-if="data.length > 0" class="ph-activities">
-      <template v-for="pr in data">
-        <li :key="'pr_u_'+ pr.id" class="data">{{ pr.kbli + ' - ' + pr.sector_name }}:  {{ pr.name }} ({{ pr.scale + ' ' + pr.scale_unit }})</li>
-      </template>
-    </ul>
+    <ol v-if="data.length > 0" class="ph-activities">
+      <li v-for="pr in data" :key="'pr_u_'+ pr.id" class="data"><strong>{{ pr.kbli + ' - ' + pr.sector_name }}</strong>:  {{ pr.name }} ({{ pr.scale + ' ' + pr.scale_unit }})</li>
+    </ol>
     <p v-else class="data">-</p>
   </div>
 </template>
