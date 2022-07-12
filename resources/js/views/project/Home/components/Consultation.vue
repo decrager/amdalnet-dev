@@ -12,7 +12,6 @@
           <p class="p-value"> {{ data.location }} </p>
           <p class="p-header">Alamat</p>
           <p class="p-value"> {{ data.address }} </p>
-
         </el-col>
         <el-col :span="16">
           <p class="p-header">Rangkuman Deskriptif atas Harapan Masyarakat</p>
@@ -21,10 +20,10 @@
           <p class="p-header">Rangkuman Deskriptif atas Kekhawatiran Masyarakat</p>
           <section v-html="data.negative_feedback_summary" />
 
-          <p class="p-header" style="margin-top: 2em !important;">Dokumen</p>
           <div v-if="docs.length > 0">
+            <p class="p-header" style="margin-top: 2em !important;">Dokumen</p>
             <p v-for="(doc, i) in docs" :key="i+'_key_'+id">
-              <a :href="doc.filepath" :title="doc.doc_type" target="_blank"><i class="el-icon-download" />&nbsp;&nbsp;{{ doc.doc_type }}</a>
+              <el-link :href="doc.filepath" target="_blank" icon="el-icon-download" type="primary">{{ doc.doc_type }}</el-link>
             </p>
           </div>
         </el-col>
@@ -78,7 +77,7 @@ export default {
 };
 </script>
 <style scoped>
-p {  line-height: 1.2em; margin: 0 !important;}
+p {  line-height: 1.2em; margin: 0 0 0.3em 0 !important;}
 p.p-header {
   font-weight: bold;
 }
