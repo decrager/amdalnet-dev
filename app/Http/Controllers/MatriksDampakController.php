@@ -247,7 +247,7 @@ class MatriksDampakController extends Controller
             ->where('spc.is_andal', $isAndal)
             ->where('sp.id_project', $id)
             ->whereNotNull('spc.id')
-            ->distinct()
+            ->distinct('spc.id_component','spc.id_project_stage','c.id_project_stage')
             ->get();
     }
 }
