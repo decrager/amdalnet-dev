@@ -63,13 +63,15 @@
                 <p class="sub_text">Kekhawatiran :</p>
                 <div
                   v-if="data.public_consultation"
-                  class="text item"
+                  id="public_consultation_negative_summary"
+                  class="text item public_consultation_summary"
                   v-html="data.public_consultation.negative_feedback_summary"
                 ></div>
                 <p class="sub_text">Harapan :</p>
                 <div
                   v-if="data.public_consultation"
-                  class="text item"
+                  id="public_consultation_positive_summary"
+                  class="text item public_consultation_summary"
                   v-html="data.public_consultation.positive_feedback_summary"
                 ></div>
               </div>
@@ -713,5 +715,52 @@ ol.process_diagram > li:last-child > ul,
   margin-left: 0 !important;
   margin-bottom: -2px !important;
   line-height: 17px;
+}
+
+div#public_consultation_positive_summary.public_consultation_summary ul,
+div#public_consultation_negative_summary.public_consultation_summary ul {
+  padding: 0;
+  line-height: 11px;
+  list-style: revert;
+  margin: 0 var(--linewidth)
+}
+
+div#public_consultation_positive_summary.public_consultation_summary ul li,
+div#public_consultation_negative_summary.public_consultation_summary ul li {
+  text-align: left;
+  display: revert;
+  list-style: revert;
+}
+
+div#public_consultation_positive_summary.public_consultation_summary ol,
+div#public_consultation_negative_summary.public_consultation_summary ol {
+  display: block;
+  width: 100%;
+  list-style: revert;
+  margin: 0 var(--linewidth)
+}
+
+div#public_consultation_positive_summary.public_consultation_summary ol li,
+div#public_consultation_negative_summary.public_consultation_summary ol li {
+  display: revert;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  list-style: revert;
+}
+
+div#public_consultation_positive_summary.public_consultation_summary ul::before,
+div#public_consultation_positive_summary.public_consultation_summary ul::after,
+div#public_consultation_negative_summary.public_consultation_summary ul::before,
+div#public_consultation_negative_summary.public_consultation_summary ul::after,
+div#public_consultation_positive_summary.public_consultation_summary ol::before,
+div#public_consultation_positive_summary.public_consultation_summary ol::after,
+div#public_consultation_negative_summary.public_consultation_summary ol::before,
+div#public_consultation_negative_summary.public_consultation_summary ol::after,
+div#public_consultation_positive_summary.public_consultation_summary li::before,
+div#public_consultation_positive_summary.public_consultation_summary li::after,
+div#public_consultation_negative_summary.public_consultation_summary li::before,
+div#public_consultation_negative_summary.public_consultation_summary li::after {
+  display: none;
 }
 </style>

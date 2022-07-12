@@ -129,6 +129,10 @@ export default {
           id: 3,
           name: 'SPPL',
         },
+        {
+          id: 4,
+          name: 'Mengikuti Dokling Induk',
+        },
       ],
       amdalTypes: [
         {

@@ -29,6 +29,7 @@ use App\Laravue\Models\User;
 use App\Notifications\RklRPlNotification;
 use App\Utils\Document;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -2828,14 +2829,15 @@ class AndalComposingController extends Controller
         ];
     }
 
-    private function renderHtml($name, $stage_id, $impact_id, $width, $data)
+    private function renderHtml($name, $stage_id, $impact_id, $width, $data, $font = null)
     {
         $table = new Table();
         $table->addRow();
         $cell = $table->addCell($width);
+        $selected_font = $font ? $font : 'Bookman Old Style';
         $content = '';
         if($data) {
-            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data));
+            $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data, $selected_font));
         }
         Html::addHtml($cell, $content);
         return [
@@ -2881,10 +2883,11 @@ class AndalComposingController extends Controller
         return $new_data;
     }
 
-    private function replaceHtmlList($data)
+    private function replaceHtmlList($data, $font = 'Bookman Old Style')
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p, $font, '11px');
         } else {
             return '';
         }

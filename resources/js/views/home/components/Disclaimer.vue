@@ -1,16 +1,22 @@
 <template>
   <el-dialog
     id="disclaimer"
-    title="Disclaimer"
+    title="Pemberitahuan"
     :visible.sync="showDisclaimer"
     :show-close="false"
     :close-on-click-modal="false"
     :destroy-on-close="true"
     width="45%"
   >
-
-    <p>Dalam rangka mendukung pelaksanaan <strong>UU No 11 Tahun 2020 tentang Cipta Kerja</strong> dan <strong>PP Nomor 22 Tahun 2021 tentang Penyelenggaraan Perlindungan dan Pengelolaan Lingkungan Hidup</strong>, maka saat ini aplikasi <strong>Amdalnet</strong> sedang dalam <span style="text-decoration: underline;">tahap pengembangan</span>.</p>
+    <p class="first-par"><strong>Amdalnet</strong> sudah dapat digunakan untuk pengajuan persetujuan lingkungan rencana kegiatan pemerintah dalam rangka mendukung pelaksanaan
+      <strong>UU no 11 Tahun 2020 tentang Cipta Kerja</strong> dan <strong>PP Nomor 22 Tahun 2021 tentang Penyelenggaraan Perlindungan dan Pengelolaan Lingkungan Hidup</strong>.</p>
+    <p>Khusus untuk rencana kegiatan pelaku usaha, saat ini masih dalam tahap integrasi dengan OSS-RBA.</p>
+    <p>Terima kasih.</p>
+    <!--
+    <p>Dalam rangka mendukung pelaksanaan <strong>UU No 11 Tahun 2020 tentang Cipta Kerja</strong> dan <strong>PP Nomor 22 Tahun 2021 tentang Penyelenggaraan Perlindungan dan Pengelolaan Lingkungan Hidup</strong>,
+    maka saat ini aplikasi <strong>Amdalnet</strong> sedang dalam <span style="text-decoration: underline;">tahap pengembangan</span>.</p>
     <p>Mohon maaf atas ketidaknyamanannya. Terima kasih.</p>
+    -->
     <span slot="footer" class="dialog-footer">
       <el-button type="primary" @click="handleClose">Tutup</el-button>
     </span>
@@ -50,8 +56,13 @@ export default {
         color: #303030;
         font-size: 130%;
         line-height: 1.8em ;
-        margin: auto 1.5em;
+        margin: auto 0.5em;
+        padding: 0 1.5em;
         word-break: break-word !important;
+      }
+      p.first-par {
+        padding: 1.5em;
+        background: #d5f6d5;
       }
       p:not(:first-child) {
         margin-top: 1em;

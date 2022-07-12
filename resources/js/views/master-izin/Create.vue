@@ -135,7 +135,6 @@ export default {
       },
       file: '',
       kewenangan: [
-        { name: 'semua' },
         { name: 'pusat' },
         { name: 'provinsi' },
         { name: 'kab/kota' },

@@ -41,8 +41,7 @@ use App\Http\Controllers\VideoTutorialController;
 use App\Http\Controllers\ProjectOtherComponentController;
 use App\Http\Controllers\SubProjectComponentController;
 use App\Http\Controllers\ProjectKegiatanLainSekitarController;
-use App\Http\Controllers\ProjectAttachmentController;
-
+use App\Http\Controllers\SigapWebgisController;
 
 /*
 |--------------------------------------------------------------------------
@@ -420,6 +419,7 @@ Route::get('tutorial-video', [VideoTutorialController::class, 'index']);
 Route::post('tutorial-video', [VideoTutorialController::class, 'store']);
 Route::post('tutorial-video/update', [VideoTutorialController::class, 'update']);
 Route::get('tutorial-video/delete/{id}', [VideoTutorialController::class, 'destroy']);
+Route::get('sigap-webgis', [SigapWebgisController::class, 'index']);
 
 
 // Master Government Insitution

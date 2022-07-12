@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Entity\Business;
 use App\Entity\BusinessEnvParam;
+use App\Entity\Param;
+use App\Entity\Unit;
 use App\Http\Resources\BusinessEnvParamResource;
 use Exception;
 use Illuminate\Http\Request;
@@ -139,12 +141,39 @@ class BusinessEnvParamController extends Controller
     public function store(Request $request)
     {
         $businessEnvParam = $request->businessEnvParam;
-        $businessEnvParam['condition'] = $this->createConditionJsonArray($businessEnvParam['condition_string']);
+        if (isset($businessEnvParam['condition_string']) && !empty($businessEnvParam['condition_string'])) {
+            $businessEnvParam['condition'] = $this->createConditionJsonArray($businessEnvParam['condition_string']);
+        }
+        $id_param = 0;
+        $id_unit = 0;
+        $condition = '[]';
+        if (!isset($businessEnvParam['id_param']) || empty($businessEnvParam['id_param'])) {
+            // create new param
+            $newParam = Param::create([
+                'name' => $businessEnvParam['param_name']
+            ]);
+            $id_param = $newParam->id;
+        } else {
+            $id_param = $businessEnvParam['id_param'];
+        }
+        if ((!isset($businessEnvParam['id_unit']) || empty($businessEnvParam['id_unit']))
+            && !empty($businessEnvParam['unit_name'])) {
+            // create new unit
+            $newUnit = Unit::create([
+                'name' => $businessEnvParam['unit_name']
+            ]);
+            $id_unit = $newUnit->id;
+        } else if (isset($businessEnvParam['id_unit'])) {
+            $id_unit = $businessEnvParam['id_unit'];
+        }
+        if (isset($businessEnvParam['condition']) && !empty($businessEnvParam['condition'])) {
+            $condition = $businessEnvParam['condition'];
+        }
         $created = BusinessEnvParam::create([
             'business_id' => $businessEnvParam['business_id'],
-            'id_param' => $businessEnvParam['id_param'],
-            'condition' => $businessEnvParam['condition'],
-            'id_unit' => $businessEnvParam['id_unit'],
+            'id_param' => $id_param,
+            'condition' => $condition,
+            'id_unit' => $id_unit,
             'doc_req' => $businessEnvParam['doc_req'],
             'amdal_type' => isset($businessEnvParam['amdal_type']) ? $businessEnvParam['amdal_type'] : null,
             'risk_level' => isset($businessEnvParam['risk_level']) ? $businessEnvParam['risk_level'] : null,

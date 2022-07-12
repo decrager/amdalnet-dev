@@ -169,16 +169,16 @@ class ProjectMapAttachmentController extends Controller
      */
     public function show($id)
     {
+        // $map = ProjectMapAttachment::where('id_project', '=', $id)
+        //         ->where('file_type', '=', 'SHP')
+        //         ->where('step', 'andal')
+        //         ->get();
+        // if (count($map) == 0) {
         $map = ProjectMapAttachment::where('id_project', '=', $id)
-                ->where('file_type', '=', 'SHP')
-                ->where('step', 'andal')
-                ->get();
-        if (count($map) == 0) {
-            $map = ProjectMapAttachment::where('id_project', '=', $id)
-                ->where('file_type', '=', 'SHP')
-                ->where('step', 'ka')
-                ->get();
-        }
+            ->where('file_type', '=', 'SHP')
+            ->where('step', 'ka')
+            ->get();
+        // }
         return response()->json($map);
     }
 

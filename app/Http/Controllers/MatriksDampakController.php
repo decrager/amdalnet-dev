@@ -241,7 +241,7 @@ class MatriksDampakController extends Controller
 
     private function getComponents($id, $isAndal = false) {
         return SubProjectComponent::from('sub_project_components AS spc')
-            ->selectRaw('lower(spc.name) as name, lower(c.name) as name_master, c.id as id_component, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
+            ->selectRaw('lower(spc.name) as name, spc.id AS id, lower(c.name) as name_master, c.id as id_component, spc.id_project_stage, c.id_project_stage AS id_project_stage_master')
             ->leftJoin('sub_projects AS sp', 'spc.id_sub_project', '=', 'sp.id')
             ->leftJoin('components AS c', 'spc.id_component', '=', 'c.id')
             ->where('spc.is_andal', $isAndal)
