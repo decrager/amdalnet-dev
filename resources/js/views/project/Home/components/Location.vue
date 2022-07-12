@@ -12,7 +12,7 @@
     </template>
 
     <p class="header">Deskripsi Lokasi</p>
-    <p class="data">{{ data.location_desc }}</p>
+    <section v-html="data.location_desc" />
 
     <p class="header">Surat Kesesuaian Tata Ruang</p>
     <p class="data"><el-link :href="data.ktr" target="_blank" icon="el-icon-download" type="primary">{{ file_ktr }}</el-link></p>

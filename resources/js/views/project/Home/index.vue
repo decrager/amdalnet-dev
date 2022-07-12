@@ -35,7 +35,7 @@
             <el-tab-pane label="Tim Penyusun">
               <project-formulator-team v-if="project_id > 0" :id="project_id" />
             </el-tab-pane>
-            <el-tab-pane label="SPT">
+            <el-tab-pane label="SPT dan Konsultasi Publik">
               <project-public-feedback v-if="announcement_id > 0" :id="announcement_id" />
               <project-public-consultation v-if="project_id > 0" :id="project_id" />
             </el-tab-pane>

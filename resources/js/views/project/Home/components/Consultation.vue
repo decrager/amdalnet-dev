@@ -4,11 +4,11 @@
     <div v-if="data" style="padding:1em; border: 1px solid #e0e0e0; border-radius: 0.3em;">
       <el-row :gutter="20">
         <el-col :span="8">
-          <p class="p-header">Tanggal Konsultasi Publik</p>
+          <p class="p-header">Tanggal</p>
           <p class="p-value"> {{ data.event_date }} </p>
           <p class="p-header">Jumlah Partisipan</p>
           <p class="p-value"> {{ data.participant }} </p>
-          <p class="p-header">Lokasi Konsultasi Publik</p>
+          <p class="p-header">Lokasi</p>
           <p class="p-value"> {{ data.location }} </p>
           <p class="p-header">Alamat</p>
           <p class="p-value"> {{ data.address }} </p>
@@ -21,12 +21,12 @@
           <p class="p-header">Rangkuman Deskriptif atas Kekhawatiran Masyarakat</p>
           <section v-html="data.negative_feedback_summary" />
 
-          <p class="p-header">Dokumen</p>
-          <ol v-if="docs.length > 0">
-            <li v-for="(doc, i) in docs" :key="i+'_key_'+id">
-              <a :href="doc.filepath" :title="doc.original_filename">{{ doc.original_filename }}</a>
-            </li>
-          </ol>
+          <p class="p-header" style="margin-top: 2em !important;">Dokumen</p>
+          <div v-if="docs.length > 0">
+            <p v-for="(doc, i) in docs" :key="i+'_key_'+id">
+              <a :href="doc.filepath" :title="doc.doc_type" target="_blank"><i class="el-icon-download" />&nbsp;&nbsp;{{ doc.doc_type }}</a>
+            </p>
+          </div>
         </el-col>
       </el-row>
     </div>
