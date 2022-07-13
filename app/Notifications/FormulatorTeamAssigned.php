@@ -32,7 +32,7 @@ class FormulatorTeamAssigned extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -44,9 +44,8 @@ class FormulatorTeamAssigned extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject('Tim Penyusun Kegiatan')
+                    ->line('Anda baru saja dimasukkan ke '.$this->formulatorTeam->name);
     }
 
     /**

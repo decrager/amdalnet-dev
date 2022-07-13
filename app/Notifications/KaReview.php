@@ -34,6 +34,10 @@ class KaReview extends Notification
      */
     public function via($notifiable)
     {
+        if($this->kaReviews->status == 'submit') {
+            return ['mail', 'database'];
+        }
+
         return ['database'];
     }
 
@@ -45,10 +49,18 @@ class KaReview extends Notification
      */
     public function toMail($notifiable)
     {
+        $document = '';
+        if($this->kaReviews->document_type == 'ka') {
+            $document = 'Penyusunan Formulir Kerangka Acuan';
+        } else if($this->kaReviews->document_type == 'andal-rkl-rpl') {
+            $document = 'Penyusunan Dokumen Andal RKL RPL';
+        } else if($this->kaReviews->document_type == 'ukl-upl') {
+            $document = 'Penyusunan Formulir UKL UPL';
+        }
+
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject($document)
+                    ->line("Halo " . $notifiable->name . ', ' . $document . ' dengan nama usaha/kegiatan ' . $this->kaReviews->project->project_title . ' berhasil terkirim.');
     }
 
     /**
