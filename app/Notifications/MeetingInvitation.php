@@ -36,11 +36,7 @@ class MeetingInvitation extends Notification
      */
     public function via($notifiable)
     {
-        if($notifiable->roles->first()->name == 'formulator') {
-            return ['database'];
-        } else {
-            return ['mail', 'database'];
-        }
+        return ['mail', 'database'];
     }
 
     /**
