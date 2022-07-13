@@ -16,7 +16,7 @@
     <p>Dalam rangka mendukung pelaksanaan <strong>UU No 11 Tahun 2020 tentang Cipta Kerja</strong> dan <strong>PP Nomor 22 Tahun 2021 tentang Penyelenggaraan Perlindungan dan Pengelolaan Lingkungan Hidup</strong>,
     maka saat ini aplikasi <strong>Amdalnet</strong> sedang dalam <span style="text-decoration: underline;">tahap pengembangan</span>.</p>
     <p>Mohon maaf atas ketidaknyamanannya. Terima kasih.</p>
-  -->
+    -->
     <span slot="footer" class="dialog-footer">
       <el-button type="primary" @click="handleClose">Tutup</el-button>
     </span>

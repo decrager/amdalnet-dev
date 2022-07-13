@@ -69,7 +69,7 @@ const projectRoutes = {
       component: () => import('@/views/project/Home/index'),
       name: 'projectHome',
       hidden: true,
-      meta: { title: 'Rumah Kegiatan', icon: 'edit', noCache: true, breadcrumb: true },
+      meta: { title: 'Ringkasan Kegiatan', icon: 'edit', noCache: true, breadcrumb: true },
       props: true,
     },
     {

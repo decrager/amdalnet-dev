@@ -441,6 +441,8 @@ Route::put('activateUser/{user}', function (User $user) {
     return response(['message' => 'done']);
 });
 
+Route::get('project-attachments/{id}', [ProjectAttachmentController::class, 'show']);
+
 // workflow related
 // Route::get('workflow-states', WorkflowStateController::class, 'index');
 
