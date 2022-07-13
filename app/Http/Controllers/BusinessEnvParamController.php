@@ -148,11 +148,16 @@ class BusinessEnvParamController extends Controller
         $id_unit = 0;
         $condition = '[]';
         if (!isset($businessEnvParam['id_param']) || empty($businessEnvParam['id_param'])) {
-            // create new param
-            $newParam = Param::create([
-                'name' => $businessEnvParam['param_name']
-            ]);
-            $id_param = $newParam->id;
+            // create new param if not exists
+            $existingParam = Param::where('name', 'ilike', $businessEnvParam['param_name'])->first();
+            if (!$existingParam) {
+                $newParam = Param::create([
+                    'name' => $businessEnvParam['param_name']
+                ]);
+                $id_param = $newParam->id;
+            } else {
+                $id_param = $existingParam->id;
+            }
         } else {
             $id_param = $businessEnvParam['id_param'];
         }
