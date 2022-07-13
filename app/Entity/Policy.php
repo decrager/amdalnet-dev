@@ -26,7 +26,8 @@ class Policy extends Model
             if(str_contains($this->attributes['link'], 'storage/')) {
                 return $this->attributes['link'];
             } else {
-                return Storage::url($this->attributes['link']);
+                // return Storage::url($this->attributes['link']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['link'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

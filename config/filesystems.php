@@ -48,11 +48,22 @@ return [
             'root' => storage_path('app'),
         ],
 
+        // 'public' => [
+        //     'driver' => 'local',
+        //     'root' => storage_path('app/public'),
+        //     'url' => env('APP_URL').'/storage',
+        //     'visibility' => 'public',
+        // ],
+
         'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
-            'visibility' => 'public',
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'root' => 'public',
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => true
         ],
 
         's3' => [
@@ -61,10 +72,21 @@ return [
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
-            'url' => env('AWS_URL'),
+            // 'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => true
         ],
 
+        'openstack' => [
+            'driver'    => 'swift',
+            'authUrl'   => env('OS_AUTH_URL', ''),
+            'region'    => env('OS_REGION_NAME', ''),
+            'user'      => env('OS_USERNAME', ''),
+            'domain'    => env('OS_USER_DOMAIN_NAME', 'default'),
+            'password'  => env('OS_PASSWORD', ''),
+            'container' => env('OS_CONTAINER_NAME', ''),
+            'tempUrlKey'=> env('OS_TEMPURL_KEY', 'rahasia123456'),
+         ],
     ],
 
     /*

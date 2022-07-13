@@ -162,7 +162,8 @@ class PublicConsultationController extends Controller
                         $file = $request->file('file-' . $i);
                         $file_extension = $file->extension();
                         $image_name = 'docs/pubcons/img/' . uniqid() . '.' . $file_extension;
-                        $filepath = Storage::url($image_name);
+                        // $filepath = Storage::url($image_name);
+                        $filepath = $image_name; 
                         $file->storePubliclyAs('public', $image_name);
                     }
                 } catch (Exception $e){
@@ -267,7 +268,8 @@ class PublicConsultationController extends Controller
                     $file_name = '/' . $folder . '/' . $filename;
                     // save file
                     $file->storePubliclyAs('public', $file_name);
-                    $filepath = Storage::url($file_name);
+                    // $filepath = Storage::url($file_name);
+                    $filepath = $file_name;
                     $file_extension = $file->extension();
                 } catch (Exception $e){
                     DB::rollBack();

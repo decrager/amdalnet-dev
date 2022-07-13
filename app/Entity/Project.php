@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 use OwenIt\Auditing\Contracts\Auditable;
-use Illuminate\Support\Facades\File;
+// use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use Illuminate\Support\Facades\Auth;
@@ -205,7 +205,8 @@ class Project extends Model implements Auditable
             if(str_contains($this->attributes['ktr'], 'storage/')) {
                 return $this->attributes['ktr'];
             } else {
-                return Storage::url($this->attributes['ktr']);
+                // return Storage::url($this->attributes['ktr']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['ktr'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
@@ -218,7 +219,8 @@ class Project extends Model implements Auditable
             if(str_contains($this->attributes['pre_agreement_file'], 'storage/')) {
                 return $this->attributes['pre_agreement_file'];
             } else {
-                return Storage::url($this->attributes['pre_agreement_file']);
+                // return Storage::url($this->attributes['pre_agreement_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['pre_agreement_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
@@ -231,7 +233,8 @@ class Project extends Model implements Auditable
             if(str_contains($this->attributes['kawasan_lindung_file'], 'storage/')) {
                 return $this->attributes['kawasan_lindung_file'];
             } else {
-                return Storage::url($this->attributes['kawasan_lindung_file']);
+                // return Storage::url($this->attributes['kawasan_lindung_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['kawasan_lindung_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
@@ -244,7 +247,8 @@ class Project extends Model implements Auditable
             if(str_contains($this->attributes['ppib_file'], 'storage/')) {
                 return $this->attributes['ppib_file'];
             } else {
-                return Storage::url($this->attributes['ppib_file']);
+                // return Storage::url($this->attributes['ppib_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['ppib_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
@@ -257,7 +261,8 @@ class Project extends Model implements Auditable
             if(str_contains($this->attributes['map'], 'storage/')) {
                 return $this->attributes['map'];
             } else {
-                return Storage::url($this->attributes['map']);
+                // return Storage::url($this->attributes['map']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['map'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

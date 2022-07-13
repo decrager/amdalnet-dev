@@ -15,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // $this->app->bind('Storage',function($app){
+        //     return new Storage($app);
+        // });
     }
 
     /**

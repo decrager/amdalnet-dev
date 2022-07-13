@@ -20,7 +20,8 @@ class MediumLowUklUplTemplate extends Model
             if(str_contains($this->attributes['file'], 'storage/')) {
                 return $this->attributes['file'];
             } else {
-                return Storage::url($this->attributes['file']);
+                // return Storage::url($this->attributes['file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

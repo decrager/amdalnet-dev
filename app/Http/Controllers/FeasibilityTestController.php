@@ -387,7 +387,10 @@ class FeasibilityTestController extends Controller
             Storage::disk('public')->delete($document_attachment->rawAttachment());
         }
 
-        $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('uji-kelayakan/' . $save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('uji-kelayakan/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
        
         if(!$document_attachment) {
             // === NOTIFICATION === //

@@ -666,7 +666,10 @@ class MeetingReportController extends Controller
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         $save_file_name = 'ba-ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
-        $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka/' . $save_file_name));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka/' . $save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('ba-ka/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
 
         return strtolower(str_replace('/', '-', $project->project_title));
     }

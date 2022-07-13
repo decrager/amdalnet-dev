@@ -30,6 +30,8 @@
         "laravel/octane": "^1.0",
         "laravel/sanctum": "^2.1",
         "laravel/tinker": "^2.0",
+        "league/flysystem-aws-s3-v3": "^1.0",
+        "mzur/laravel-openstack-swift": "^1.14",
         "owen-it/laravel-auditing": "^12.0",
         "phpoffice/phpword": "^0.18.2",
         "predis/predis": "^1.1",
