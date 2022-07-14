@@ -43,6 +43,7 @@ use PDF;
 
 class AndalComposingController extends Controller
 {
+    public $id_project;
     /**
      * Display a listing of the resource.
      *
@@ -2459,6 +2460,8 @@ class AndalComposingController extends Controller
             Storage::disk('public')->makeDirectory('workspace');
         }
 
+        $this->id_project = $id_project;
+
         $ids = [4, 1, 2, 3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
             return array_search($model->getKey(), $ids);
@@ -2881,6 +2884,9 @@ class AndalComposingController extends Controller
             $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
         }
         if($content) {
+            if($this->id_project == 1096) {
+                dd($content);
+            }
             $doc = new DOMDocument();
             $doc->loadHTML($content);
             $doc->saveHTML();
