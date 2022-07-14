@@ -223,6 +223,8 @@ Route::apiResource('business', 'BusinessController');
 Route::apiResource('kbli-env-params', 'BusinessEnvParamController');
 Route::apiResource('business-env-params', 'BusinessEnvParamController');
 Route::apiResource('projects', 'ProjectController');
+Route::get('project-sectors', [ProjectController::class, 'getDistinctSectors']);
+Route::get('project-authority-list', [ProjectController::class, 'getDistinctAuthorities']);
 Route::post('project-ppjk/{project}', [ProjectController::class, 'edit']);
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');

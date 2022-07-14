@@ -911,4 +911,21 @@ class ProjectController extends Controller
             'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
         ]); */
     }
+
+    public function getDistinctAuthorities(Request $request)
+    {
+        return DB::table('projects')
+            ->select(DB::raw('distinct authority'))
+            ->orderBy('authority', 'asc')
+            ->get();
+    }
+
+    public function getDistinctSectors(Request $request)
+    {
+        return DB::table('projects')
+            ->select(DB::raw('distinct sector'))
+            ->whereRaw('sector ~ \'^[a-zA-Z ]*$\'')
+            ->orderBy('sector', 'asc')
+            ->get();
+    }
 }

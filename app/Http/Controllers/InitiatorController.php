@@ -23,7 +23,7 @@ class InitiatorController extends Controller
     public function index(Request $request)
     {
         $params = $request->all();
-        $list = Initiator::all();
+        $list = Initiator::orderBy('name', 'asc')->get();
         if (isset($params['email'])){
             $list = $list->where('email', $params['email']);
         }

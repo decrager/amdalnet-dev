@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\Project;
 use App\Entity\ProjectMapAttachment;
+use App\Entity\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
@@ -308,13 +309,33 @@ class ProjectMapAttachmentController extends Controller
         return response()->json($getGeojson);
     }
 
-    public function getProjectByGeom()
+    public function getProjectByGeom(Request $request)
     {
         $getProjectByGeom = DB::table('projects')
             ->select('projects.id', 'projects.project_title')
             ->leftJoin('project_map_attachments', 'projects.id', 'project_map_attachments.id_project')
+            ->leftJoin('project_address', 'projects.id', 'project_address.id_project')
             ->whereNotNull('project_map_attachments.geom')
             ->where('project_map_attachments.step', 'ka')
+            ->when($request->has('authority'), function ($query) use ($request){
+                return $query->where('projects.authority', 'ilike', '%' . $request->authority . '%');
+            })
+            ->when($request->has('sector'), function ($query) use ($request){
+                return $query->where('projects.sector', 'ilike', '%' . $request->sector . '%');
+            })
+            ->when($request->has('project_year'), function ($query) use ($request){
+                return $query->where('projects.project_year', '=', $request->project_year);
+            })
+            ->when($request->has('id_applicant'), function ($query) use ($request){
+                return $query->where('projects.id_applicant', '=', $request->id_applicant);
+            })
+            ->when($request->has('prov'), function ($query) use ($request){
+                $prov = Province::find($request->prov);
+                return $query->where('project_address.prov', 'ilike', '%' . $prov->name . '%');
+            })
+            ->when($request->has('district'), function ($query) use ($request){
+                return $query->where('project_address.district', 'ilike', '%' . $request->district . '%');
+            })
             ->orderBy('projects.created_at', 'desc')
             ->groupBy('projects.id', 'projects.project_title', 'projects.created_at')
             ->get();
