@@ -41,6 +41,6 @@ class ListRender
                 $new_string .= $arr_number[$i];
             }
         }
-        return $new_string;
+        return str_replace('</li>', '</span>', $new_string);
     }
 }
