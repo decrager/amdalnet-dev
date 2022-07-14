@@ -23,7 +23,6 @@ use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
-use DOMDocument;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
@@ -661,14 +660,7 @@ class TestingVerificationController extends Controller
         $notesTable = new Table();
         $notesTable->addRow();
         $cell = $notesTable->addCell();
-        if($verification->notes) {
-            $doc = new DOMDocument();
-            $doc->loadHTML($this->replaceHtmlList($verification->notes));
-            $doc->saveHTML();
-            Html::addHtml($cell, $doc->saveHTML(), true);
-        } else {
-            Html::addHtml($cell, $this->replaceHtmlList($verification->notes));
-        }
+        Html::addHtml($cell, $this->replaceHtmlList($verification->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         // $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
