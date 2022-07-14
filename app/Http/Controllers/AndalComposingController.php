@@ -32,6 +32,7 @@ use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
+use DOMDocument;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
@@ -2849,7 +2850,14 @@ class AndalComposingController extends Controller
         if($data) {
             $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data, $selected_font));
         }
-        Html::addHtml($cell, $content);
+        if($content) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($content);
+            $doc->saveHTML();
+            Html::addHtml($cell, $doc->saveHTML(), true);
+        } else {
+            Html::addHtml($cell, $content);
+        }
         return [
             'name' => '${' . $name . '_' . $stage_id . '_' . $impact_id . '}',
             'content' => $table
@@ -2872,7 +2880,14 @@ class AndalComposingController extends Controller
         if($data) {
             $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
         }
-        Html::addHtml($cell, $content);
+        if($content) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($content);
+            $doc->saveHTML();
+            Html::addHtml($cell, $doc->saveHTML(), true);
+        } else {
+            Html::addHtml($cell, $content);
+        }
         return $table;
     }
 

@@ -27,6 +27,7 @@ use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
 use App\Utils\Html;
 use App\Utils\ListRender;
+use DOMDocument;
 use PhpOffice\PhpWord\TemplateProcessor;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\Auth;
@@ -1458,7 +1459,14 @@ class MatriksRKLController extends Controller
         $table = new Table();
         $table->addRow();
         $cell = $table->addCell(2000);
-        Html::addHtml($cell, $imp_source);
+        if($imp_source) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($imp_source);
+            $doc->saveHTML();
+            Html::addHtml($cell, $doc->saveHTML(), true);
+        } else {
+            Html::addHtml($cell, $imp_source);
+        }
 
         return [
             'data' => $table,
@@ -1481,7 +1489,14 @@ class MatriksRKLController extends Controller
         $table = new Table();
         $table->addRow();
         $cell = $table->addCell(3000);
-        Html::addHtml($cell, $indicator_data);
+        if($indicator_data) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($indicator_data);
+            $doc->saveHTML();
+            Html::addHtml($cell, $doc->saveHTML(), true);
+        } else {
+            Html::addHtml($cell, $indicator_data);
+        }
 
         return [
             'data' => $table,
@@ -1504,7 +1519,14 @@ class MatriksRKLController extends Controller
         $table = new Table();
         $table->addRow();
         $cell = $table->addCell(3800);
-        Html::addHtml($cell, $form);
+        if($form) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($form);
+            $doc->saveHTML();
+            Html::addHtml($cell, $doc->saveHTML(), true);
+        } else {
+            Html::addHtml($cell, $form);
+        }
 
         return [
             'data' => $table,
@@ -1527,7 +1549,14 @@ class MatriksRKLController extends Controller
         $table = new Table();
         $table->addRow();
         $cell = $table->addCell(3300);
-        Html::addHtml($cell, $location);
+        if($location) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($location);
+            $doc->saveHTML();
+            Html::addHtml($cell, $doc->saveHTML(), true);
+        } else {
+            Html::addHtml($cell, $location);
+        }
 
         return [
             'data' => $table,
