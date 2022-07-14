@@ -730,7 +730,10 @@ class TestVerifRKLRPLController extends Controller
         Storage::disk('public')->put('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
         unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+        ];
     }
 
     private function removeNestedParagraph($data)

@@ -427,11 +427,10 @@ export default {
         idProject: this.idProject,
         uklUpl: 'true',
       });
-      this.docxData = data;
+      this.docxData = data.title;
       const a = document.createElement('a');
-      a.href =
-        window.location.origin + `/storage/adm-no/hasil-adm-${data}.docx`;
-      a.setAttribute('download', `hasil-adm-${data}.docx`);
+      a.href = data.url;
+      a.setAttribute('download', `hasil-adm-${data.title}.docx`);
       a.click();
       this.loadingDocx = false;
     },

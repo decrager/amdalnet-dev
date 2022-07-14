@@ -757,7 +757,10 @@ class TestingMeetingController extends Controller
         Storage::disk('public')->put('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
         unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+        ];
     }
 
     private function meetingInvitation($id_project)
@@ -925,7 +928,10 @@ class TestingMeetingController extends Controller
         Storage::disk('public')->put('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
         unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+        ];
     }
 
     private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)

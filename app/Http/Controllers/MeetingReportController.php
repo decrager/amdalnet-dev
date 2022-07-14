@@ -671,7 +671,10 @@ class MeetingReportController extends Controller
         Storage::disk('public')->put('ba-ka/' . $save_file_name, file_get_contents($tmpName));
         unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url($save_file_name) 
+        ];
     }
 
     private function removeNestedParagraph($data)

@@ -583,11 +583,10 @@ export default {
         dokumen: 'true',
         idProject: this.idProject,
       });
-      this.docxData = data;
+      this.docxData = data.title;
       const a = document.createElement('a');
-      a.href =
-        window.location.origin + `/storage/adm/berkas-adm-ar-${data}.docx`;
-      a.setAttribute('download', `berkas-adm-ar-${data}.docx`);
+      a.href = data.url;
+      a.setAttribute('download', `berkas-adm-ar-${data.title}.docx`);
       a.click();
       this.loadingDocx = false;
     },
@@ -598,12 +597,10 @@ export default {
           meetingInvitation: 'true',
           idProject: this.idProject,
         });
-        this.invitationDocxData = data;
+        this.invitationDocxData = data.title;
         const a = document.createElement('a');
-        a.href =
-          window.location.origin +
-          `/storage/meet-inv/andal-rkl-rpl-${data}.docx`;
-        a.setAttribute('download', `andal-rkl-rpl-${data}.docx`);
+        a.href = data.url;
+        a.setAttribute('download', `andal-rkl-rpl-${data.title}.docx`);
         a.click();
         this.loadingInvitationDocx = false;
       } else {

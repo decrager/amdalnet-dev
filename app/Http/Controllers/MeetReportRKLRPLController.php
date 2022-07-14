@@ -722,19 +722,25 @@ class MeetReportRKLRPLController extends Controller
         Html::addHtml($cell, $this->replaceHtmlList($meeting->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
+        $save_file_name = '';
         if($document_type == 'ukl-upl') {
             // $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
             $tmpName = $templateProcessor->save();
             Storage::disk('public')->put('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
             unlink($tmpName);
+            $save_file_name = 'ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         } else {
             // $templateProcessor->saveAs(Storage::disk('public')->path('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
             $tmpName = $templateProcessor->save();
             Storage::disk('public')->put('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
             unlink($tmpName);
+            $save_file_name = 'ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         }
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url($save_file_name) 
+        ];
     }
 
     private function removeNestedParagraph($data)
