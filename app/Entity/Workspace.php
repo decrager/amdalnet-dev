@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\IOFactory;
 use App\Utils\Jwt;
 use App\Utils\Document;
@@ -20,6 +21,15 @@ class Workspace
         6 => 'MustForceSave',
         7 => 'CorruptedForceSave'
     ];
+
+    private $disk = '';
+
+    /**
+     * Contructor
+     */
+    function __construct() {
+        $this->disk = env('OFFICE_STORAGE_DISK', 'public');
+    }
 
     /**
      * Get Track statyus
@@ -257,21 +267,27 @@ class Workspace
         $saved = 1;
         Log::debug('processSave: ' . $downloadUri . ' from ' . $downloadExt . ' to ' . $curExt);
 
+        // download file data oods
         if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
             $storagePath = Document::getStoragePath($newFileName, $userAddress);  // get the file path
             $histDir = Document::getHistoryDir($storagePath);  // get the path to the history directory
             $verDir = Document::getVersionDir($histDir, Document::getFileVersion($histDir));  // get the path to the file version
     
-            mkdir($verDir);  // if the path doesn't exist, create it
+            // mkdir($verDir);  // if the path doesn't exist, create it
+            Storage::disk($this->disk)->makeDirectory($verDir);
     
             // get the path to the previous file version and rename the storage path with it
-            rename(Document::getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);
+            // rename(Document::getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);
+            Storage::disk($this->disk)->move(Document::getStoragePath($fileName, $userAddress), $verDir . '/prev' . $curExt);
+
             Log::debug('put latest: '. $storagePath);
-            file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
+            // file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
+            Storage::disk($this->disk)->put($storagePath, $new_data); // save file to the storage directory
     
             // save file changes to the diff.zip archive
             if ($changesData = file_get_contents($data["changesurl"])) {
-                file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);
+                // file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);
+                Storage::disk($this->disk)->put($verDir . '/diff.zip', $changesData);
             }
     
             $histData = isset($data["changeshistory"]) ? $data["changeshistory"]:'';
@@ -280,13 +296,16 @@ class Workspace
             }
             if (!empty($histData)) {
                 // write the history changes to the changes.json file
-                file_put_contents($verDir . DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);  
+                // file_put_contents($verDir . DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);
+                Storage::disk($this->disk)->put($verDir . '/changes.json', $histData);
             }
-            file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data["key"], LOCK_EX);  // write the key value to the key.txt file
-    
+            // file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data["key"], LOCK_EX);  // write the key value to the key.txt file
+            Storage::disk($this->disk)->put($verDir . '/key.txt', $data["key"]);
+            
             $forcesavePath = Document::getForcesavePath($newFileName, $userAddress, false);  // get the path to the forcesaved file version
             if ($forcesavePath != "") {  // if the forcesaved file version exists
-                unlink($forcesavePath);  // remove it
+                // unlink($forcesavePath);  // remove it
+                Storage::disk($this->disk)->deleteDirectory($forcesavePath);
             }
     
             $saved = 0;
@@ -337,7 +356,8 @@ class Workspace
         }
     
         $saved = 1;
-    
+        
+        // donwload data from oods
         if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
             $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
             $isSubmitForm = $data["forcesavetype"] == 3;  // SubmitForm
@@ -360,11 +380,13 @@ class Workspace
                 }
             }
     
-            file_put_contents($forcesavePath, $new_data, LOCK_EX);
+            // save file
+            // file_put_contents($forcesavePath, $new_data, LOCK_EX);
+            Storage::disk($this->disk)->put($forcesavePath, $new_data);
     
             if ($isSubmitForm) {
                 $uid = $data["actions"][0]["userid"];  // get the user id
-                self::createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
+                Document::createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
             }
     
             $saved = 0;

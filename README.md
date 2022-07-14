@@ -134,6 +134,16 @@ PGPASSWORD=4md4lNET psql -h 103.172.205.4 -d amdalnet -U postgres -f ~/amdalnet.
 
 this.$store.dispatch('user/getInfo')
 
+# Install larel octane - swoole
+
+https://laravel.com/docs/8.x/octane#swoole
+
+# Run laravel
+
+```
+php artisan serve
+```
+
 # Deployment Production
 
 Trough CI/CD with tags format v*

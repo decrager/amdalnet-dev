@@ -23,7 +23,8 @@ class KaReview extends Model
             if(str_contains($this->attributes['application_letter'], 'storage/')) {
                 return $this->attributes['application_letter'];
             } else {
-                return Storage::url($this->attributes['application_letter']);
+                // return Storage::url($this->attributes['application_letter']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['application_letter'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

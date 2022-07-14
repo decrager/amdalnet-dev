@@ -85,7 +85,7 @@ export default {
         `/api/dokumen-ukl-upl/${this.$route.params.id}`
       );
       this.projects =
-        window.location.origin + '/storage/workspace/' + projectName.data;
+        window.location.origin + '/api/workspace/document/get?filename=' + projectName.data;
       this.projectName = projectName.data;
       this.loading = false;
     },
