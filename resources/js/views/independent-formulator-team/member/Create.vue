@@ -225,6 +225,7 @@ export default {
           value: member.name,
           name: member.name,
           id: member.id,
+          db_id: member.id,
           type: 'new',
           position: 'Anggota',
           expertise: member.expertise,
@@ -246,10 +247,11 @@ export default {
             : this.membersAhli[this.membersAhli.length - 1].num + 1,
         id: null,
         name: '',
+        id_formulator: null,
         type: 'new',
-        status: 'Tenaga Ahli',
+        position: 'Tenaga Ahli',
         expertise: '',
-        cv: null,
+        cv_file: null,
       };
       this.membersAhli.push(newAhli);
     },
@@ -284,18 +286,27 @@ export default {
       }
     },
     async handleSubmit() {
+      const members = this.members.map(x => {
+        const member = x;
+        delete member.file;
+        return member;
+      });
+      const ahliMembers = this.membersAhli.map(x => {
+        const member = x;
+        delete member.cv_file;
+        return member;
+      });
+
       const formData = new FormData();
-      formData.append('members', JSON.stringify(this.members));
-      formData.append('membersAhli', JSON.stringify(this.membersAhli));
+      formData.append('members', JSON.stringify(members));
+      formData.append(
+        'membersAhli',
+        JSON.stringify(ahliMembers.filter((x) => x.id_formulator !== null))
+      );
       formData.append('idProject', this.$route.params.id);
       formData.append('team_type', 'lpjp');
       formData.append('deletedPenyusun', JSON.stringify(this.deletedPenyusun));
       formData.append('deletedAhli', JSON.stringify(this.deletedAhli));
-      let num = 0;
-      this.membersAhli.map((mem) => {
-        formData.append(`file-${num}`, mem.cv);
-        num++;
-      });
       this.loadingSubmit = true;
       await formulatorTeamsResource.store(formData);
       this.loadingSubmit = false;
