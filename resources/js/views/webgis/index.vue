@@ -68,7 +68,7 @@
             </el-select>
           </el-col>
         </el-row>
-        <el-row>
+        <el-row style="padding-top: 5px;">
           <el-col :span="6">
             <el-select
               v-model="filterProvince"
@@ -100,7 +100,7 @@
           </el-col>
           <el-col :span="12" />
         </el-row>
-        <el-row style="padding-top: 5px">
+        <el-row style="padding-top: 10px">
           <el-col :span="24">
             <el-button type="success" @click="applyFilter">Filter</el-button>
             <el-button type="danger" @click="resetFilter">Reset Filter</el-button>
