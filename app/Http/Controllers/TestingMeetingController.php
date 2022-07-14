@@ -25,7 +25,6 @@ use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
-use DOMDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\Element\Table;
@@ -713,14 +712,7 @@ class TestingMeetingController extends Controller
          if($final_pro_desc) {
              $final_pro_desc = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $this->replaceHtmlList($final_pro_desc));
          }
-         if($final_pro_desc) {
-            $doc = new DOMDocument();
-            $doc->loadHTML($final_pro_desc);
-            $doc->saveHTML();
-            Html::addHtml($proDescCell, $doc->saveHTML(), true);
-        } else {
-            Html::addHtml($proDescCell, $final_pro_desc);
-        }
+         Html::addHtml($proDescCell, $final_pro_desc);
 
          $templateProcessor->setComplexBlock('project_description', $proDescTable);
 
@@ -757,14 +749,7 @@ class TestingMeetingController extends Controller
         if($final_notes) {
             $final_notes = str_replace('<p>', '<p style="font-family: tahoma; font-size: 11px;">', $this->replaceHtmlList($final_notes));
         }
-        if($final_notes) {
-            $doc = new DOMDocument();
-            $doc->loadHTML($final_notes);
-            $doc->saveHTML();
-            Html::addHtml($cell, $doc->saveHTML(), true);
-        } else {
-            Html::addHtml($cell, $final_notes);
-        }
+        Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         // $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
@@ -772,7 +757,10 @@ class TestingMeetingController extends Controller
         Storage::disk('public')->put('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
         unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+        ];
     }
 
     private function meetingInvitation($id_project)
@@ -940,7 +928,10 @@ class TestingMeetingController extends Controller
         Storage::disk('public')->put('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
         unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+        ];
     }
 
     private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)

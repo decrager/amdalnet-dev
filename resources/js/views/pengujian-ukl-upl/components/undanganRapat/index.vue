@@ -587,11 +587,10 @@ export default {
         idProject: this.idProject,
         uklUpl: 'true',
       });
-      this.docxData = data;
+      this.docxData = data.title;
       const a = document.createElement('a');
-      a.href =
-        window.location.origin + `/storage/adm/berkas-adm-uu-${data}.docx`;
-      a.setAttribute('download', `berkas-adm-uu-${data}.docx`);
+      a.href = data.url;
+      a.setAttribute('download', `berkas-adm-uu-${data.title}.docx`);
       a.click();
       this.loadingDocx = false;
     },
@@ -603,11 +602,10 @@ export default {
           idProject: this.idProject,
           uklUpl: 'true',
         });
-        this.invitationDocxData = data;
+        this.invitationDocxData = data.title;
         const a = document.createElement('a');
-        a.href =
-          window.location.origin + `/storage/meet-inv/ukl-upl-${data}.docx`;
-        a.setAttribute('download', `ukl-upl-${data}.docx`);
+        a.href = data.url;
+        a.setAttribute('download', `ukl-upl-${data.title}.docx`);
         a.click();
         this.loadingInvitationDocx = false;
       } else {

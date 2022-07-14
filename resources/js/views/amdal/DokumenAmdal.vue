@@ -146,7 +146,8 @@ export default {
       });
       this.downloadDocxPath = data.file_name;
       this.project_title = data.project_title;
-      this.projects = window.location.origin + `/${this.downloadDocxPath}`;
+      this.projects = this.downloadDocxPath;
+      // this.projects = window.location.origin + `/${this.downloadDocxPath}`;
       this.showDocument = true;
       this.loading = false;
       this.templateKALoaded = true;

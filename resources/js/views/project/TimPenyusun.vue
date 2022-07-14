@@ -437,11 +437,22 @@ export default {
       }
     },
     async handleSubmit() {
+      const members = this.members.map(x => {
+        const member = x;
+        delete member.file;
+        return member;
+      });
+      const ahliMembers = this.membersAhli.map(x => {
+        const member = x;
+        delete member.cv_file;
+        return member;
+      });
+
       const formData = new FormData();
-      formData.append('members', JSON.stringify(this.members));
+      formData.append('members', JSON.stringify(members));
       formData.append(
         'membersAhli',
-        JSON.stringify(this.membersAhli.filter((x) => x.id_formulator !== null))
+        JSON.stringify(ahliMembers.filter((x) => x.id_formulator !== null))
       );
       formData.append('idProject', this.$route.params.id);
       formData.append('team_type', this.teamType);
@@ -451,12 +462,6 @@ export default {
       if (this.teamType === 'mandiri' && this.sk.file) {
         formData.append('skFile', await this.convertBase64(this.sk.file));
       }
-
-      let num = 0;
-      this.membersAhli.map((mem) => {
-        formData.append(`file-${num}`, mem.cv);
-        num++;
-      });
       this.loadingSubmit = true;
       await formulatorTeamsResource.store(formData);
       this.isTeamExist = true;

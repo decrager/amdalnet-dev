@@ -32,7 +32,6 @@ use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
-use DOMDocument;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
@@ -43,7 +42,6 @@ use PDF;
 
 class AndalComposingController extends Controller
 {
-    public $id_project;
     /**
      * Display a listing of the resource.
      *
@@ -2460,8 +2458,6 @@ class AndalComposingController extends Controller
             Storage::disk('public')->makeDirectory('workspace');
         }
 
-        $this->id_project = $id_project;
-
         $ids = [4, 1, 2, 3];
         $stages = ProjectStage::select('id', 'name')->get()->sortBy(function ($model) use ($ids) {
             return array_search($model->getKey(), $ids);
@@ -2679,7 +2675,7 @@ class AndalComposingController extends Controller
                     ];
                     $metode_replace[] = [
                         'replace' => '${amms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
-                        'data' => $this->renderHtmlTable($pA->impactStudy->analysis_method, 3500, 'analysis_method'),
+                        'data' => $this->renderHtmlTable($pA->impactStudy->analysis_method, 3500),
                     ];
                     $metode_replace[] = [
                         'replace' => '${fmms_' . $pA->id . '_' . $pA->impactStudy->id . '}',
@@ -2853,14 +2849,7 @@ class AndalComposingController extends Controller
         if($data) {
             $content = str_replace('<p>', '<p style="font-family: Bookman Old Style; font-size: 9.5px;">', $this->replaceHtmlList($data, $selected_font));
         }
-        if($content) {
-            $doc = new DOMDocument();
-            $doc->loadHTML($content);
-            $doc->saveHTML();
-            Html::addHtml($cell, $doc->saveHTML(), true);
-        } else {
-            Html::addHtml($cell, $content);
-        }
+        Html::addHtml($cell, $content);
         return [
             'name' => '${' . $name . '_' . $stage_id . '_' . $impact_id . '}',
             'content' => $table
@@ -2881,23 +2870,9 @@ class AndalComposingController extends Controller
         $selected_font_size = $font_size ? $font_size : '9.5';
         $content = '';
         if($data) {
-            if($font == 'analysis_method') {
-                $content = str_replace('<p>', '<p style="font-family: ' . 'Bookman Old Style' . '; font-size: ' . '9.5' . 'px;">', $this->replaceHtmlList($data));
-            } else {
-                $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
-            }
+            $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
         }
-        if($content) {
-            if($this->id_project == 1096 && $font == 'analysis_method') {
-                dd($content);
-            }
-            $doc = new DOMDocument();
-            $doc->loadHTML($content);
-            $doc->saveHTML();
-            Html::addHtml($cell, $doc->saveHTML(), true);
-        } else {
-            Html::addHtml($cell, $content);
-        }
+        Html::addHtml($cell, $content);
         return $table;
     }
 

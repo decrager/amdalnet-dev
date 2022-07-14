@@ -136,12 +136,10 @@ export default {
         idProject: this.$route.params.id,
         docs: 'true',
       });
-      this.docs = data;
+      this.docs = data.title;
       const a = document.createElement('a');
-      a.href =
-        window.location.origin +
-        `/storage/ba-andal-rkl-rpl/ba-andal-rkl-rpl-${data}.docx`;
-      a.setAttribute('download', `ba-andal-rkl-rpl-${data}.docx`);
+      a.href = data.url;
+      a.setAttribute('download', `ba-andal-rkl-rpl-${data.title}.docx`);
       a.click();
       this.loadingDocs = false;
     },
