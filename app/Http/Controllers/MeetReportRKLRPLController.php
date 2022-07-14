@@ -23,6 +23,7 @@ use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
+use DOMDocument;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
@@ -719,7 +720,14 @@ class MeetReportRKLRPLController extends Controller
         $notesTable = new Table();
         $notesTable->addRow();
         $cell = $notesTable->addCell();
-        Html::addHtml($cell, $this->replaceHtmlList($meeting->notes));
+        if($meeting->notes) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($this->replaceHtmlList($meeting->notes));
+            $doc->saveHTML();
+            Html::addHtml($cell, $doc->saveHTML(), true);
+        } else {
+            Html::addHtml($cell, $this->replaceHtmlList($meeting->notes));
+        }
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         if($document_type == 'ukl-upl') {

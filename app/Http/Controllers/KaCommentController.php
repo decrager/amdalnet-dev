@@ -7,6 +7,7 @@ use App\Entity\ProjectStage;
 use App\Utils\Html;
 use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
+use DOMDocument;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\File;
@@ -265,7 +266,14 @@ class KaCommentController extends Controller
         if($data) {
             $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
         }
-        Html::addHtml($cell, $content);
+        if($content) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($content);
+            $doc->saveHTML();
+            Html::addHtml($cell, $doc->saveHTML(), true);
+        } else {
+            Html::addHtml($cell, $content);
+        }
         return $table;
     }
 
