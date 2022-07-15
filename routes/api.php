@@ -157,6 +157,7 @@ Route::apiResource('projects', 'ProjectController');
 Route::get('project-sectors', [ProjectController::class, 'getDistinctSectors']);
 Route::get('project-authority-list', [ProjectController::class, 'getDistinctAuthorities']);
 Route::post('project-ppjk/{project}', [ProjectController::class, 'edit']);
+Route::post('generatepdf', [ProjectController::class, 'generatePdfFromBlob']);
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
 Route::apiResource('oss-projects', 'OssProjectController');

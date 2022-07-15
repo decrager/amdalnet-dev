@@ -506,7 +506,7 @@ const andalComposingResource = new Resource('andal-composing');
 const rklResource = new Resource('matriks-rkl');
 const skklResource = new Resource('skkl');
 const authoritiesResource = new Resource('project-authorities');
-// const kbliResource = new Resource('business');
+const pdfResource = new Resource('generatepdf');
 
 export default {
   name: 'Project',
@@ -1290,10 +1290,18 @@ export default {
             mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
 
-          saveAs(out, 'SPPL-' + project.project_title + '.docx');
+          // saveAs(out, 'SPPL-' + project.project_title + '.docx');
+          console.log(this.blobToFile(out, 'SPPL-' + project.project_title + '.docx'));
           // this.docOutput = out;
+          const formData = new FormData();
+          formData.append('docFile', this.blobToFile(out, 'SPPL-' + project.project_title + '.docx'));
+
+          pdfResource.store(formData);
         }
       );
+    },
+    blobToFile(theBlob, fileName){
+      return new File([theBlob], fileName, { lastModified: new Date().getTime(), type: theBlob.type });
     },
     async handleGenerateSPPL(project) {
       project.listSubProject = project.listSubProject.map((e, i) => {
