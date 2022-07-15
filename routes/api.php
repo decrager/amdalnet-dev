@@ -109,6 +109,7 @@ Route::post('workspace/document/convert', 'WorkspaceController@convert');
 Route::post('workspace/document/delete', 'WorkspaceController@delete');
 Route::post('workspace/document/assets', 'WorkspaceController@assets');
 Route::post('workspace/document/files', 'WorkspaceController@files');
+Route::get('workspace/document/get', 'WorkspaceController@redirectto');
 
 // Fake APIs
 Route::get('/table/list', function () {
@@ -146,76 +147,6 @@ Route::get('/orders', function () {
     return response()->json(new JsonResponse(['items' => $data]));
 });
 
-Route::get('/articles', function () {
-    $rowsNumber = 10;
-    $data = [];
-    for ($rowIndex = 0; $rowIndex < $rowsNumber; $rowIndex++) {
-        $row = [
-            'id' => mt_rand(100, 10000),
-            'display_time' => Faker::randomDateTime()->format('Y-m-d H:i:s'),
-            'title' => Faker::randomString(mt_rand(20, 50)),
-            'author' => Faker::randomString(mt_rand(5, 10)),
-            'comment_disabled' => Faker::randomBoolean(),
-            'content' => Faker::randomString(mt_rand(100, 300)),
-            'content_short' => Faker::randomString(mt_rand(30, 50)),
-            'status' => Faker::randomInArray(['deleted', 'published', 'draft']),
-            'forecast' => mt_rand(100, 9999) / 100,
-            'image_uri' => 'https://via.placeholder.com/400x300',
-            'importance' => mt_rand(1, 3),
-            'pageviews' => mt_rand(10000, 999999),
-            'reviewer' => Faker::randomString(mt_rand(5, 10)),
-            'timestamp' => Faker::randomDateTime()->getTimestamp(),
-            'type' => Faker::randomInArray(['US', 'VI', 'JA']),
-
-        ];
-
-        $data[] = $row;
-    }
-
-    return response()->json(new JsonResponse(['items' => $data, 'total' => mt_rand(1000, 10000)]));
-});
-
-Route::get('articles/{id}', function ($id) {
-    $article = [
-        'id' => $id,
-        'display_time' => Faker::randomDateTime()->format('Y-m-d H:i:s'),
-        'title' => Faker::randomString(mt_rand(20, 50)),
-        'author' => Faker::randomString(mt_rand(5, 10)),
-        'comment_disabled' => Faker::randomBoolean(),
-        'content' => Faker::randomString(mt_rand(100, 300)),
-        'content_short' => Faker::randomString(mt_rand(30, 50)),
-        'status' => Faker::randomInArray(['deleted', 'published', 'draft']),
-        'forecast' => mt_rand(100, 9999) / 100,
-        'image_uri' => 'https://via.placeholder.com/400x300',
-        'importance' => mt_rand(1, 3),
-        'pageviews' => mt_rand(10000, 999999),
-        'reviewer' => Faker::randomString(mt_rand(5, 10)),
-        'timestamp' => Faker::randomDateTime()->getTimestamp(),
-        'type' => Faker::randomInArray(['US', 'VI', 'JA']),
-
-    ];
-
-    return response()->json(new JsonResponse($article));
-});
-
-Route::get('articles/{id}/pageviews', function ($id) {
-    $pageviews = [
-        'PC' => mt_rand(10000, 999999),
-        'Mobile' => mt_rand(10000, 999999),
-        'iOS' => mt_rand(10000, 999999),
-        'android' => mt_rand(10000, 999999),
-    ];
-    $data = [];
-    foreach ($pageviews as $device => $pageview) {
-        $data[] = [
-            'key' => $device,
-            'pv' => $pageview,
-        ];
-    }
-
-    return response()->json(new JsonResponse(['pvData' => $data]));
-});
-
 Route::apiResource('project-fields', 'ProjectFieldController');
 Route::apiResource('provinces', 'ProvinceController');
 Route::apiResource('districts', 'DistrictController');
@@ -223,6 +154,8 @@ Route::apiResource('business', 'BusinessController');
 Route::apiResource('kbli-env-params', 'BusinessEnvParamController');
 Route::apiResource('business-env-params', 'BusinessEnvParamController');
 Route::apiResource('projects', 'ProjectController');
+Route::get('project-sectors', [ProjectController::class, 'getDistinctSectors']);
+Route::get('project-authority-list', [ProjectController::class, 'getDistinctAuthorities']);
 Route::post('project-ppjk/{project}', [ProjectController::class, 'edit']);
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
@@ -463,3 +396,9 @@ Route::get('project-attachments/{id}', [ProjectAttachmentController::class, 'sho
 
 //         dd('Bill notification has been sent!');
 // });
+
+Route::get('test/s3/url', 'HomeController@s3url');
+Route::get('test/s3/template', 'HomeController@s3template');
+Route::get('test/s3/topdf', 'HomeController@s3topdf');
+Route::delete('test/s3/delete', 'HomeController@s3delete');
+Route::post('test/s3/upload', 'HomeController@s3upload');

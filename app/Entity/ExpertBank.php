@@ -37,7 +37,8 @@ class ExpertBank extends Model
             if(str_contains($this->attributes['cv_file'], 'storage/')) {
                 return $this->attributes['cv_file'];
             } else {
-                return Storage::url($this->attributes['cv_file']);
+                // return Storage::url($this->attributes['cv_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['cv_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
@@ -50,7 +51,8 @@ class ExpertBank extends Model
             if(str_contains($this->attributes['cert_luk_file'], 'storage/')) {
                 return $this->attributes['cert_luk_file'];
             } else {
-                return Storage::url($this->attributes['cert_luk_file']);
+                // return Storage::url($this->attributes['cert_luk_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['cert_luk_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
@@ -63,7 +65,8 @@ class ExpertBank extends Model
             if(str_contains($this->attributes['cert_non_luk_file'], 'storage/')) {
                 return $this->attributes['cert_non_luk_file'];
             } else {
-                return Storage::url($this->attributes['cert_non_luk_file']);
+                // return Storage::url($this->attributes['cert_non_luk_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['cert_non_luk_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
@@ -76,7 +79,8 @@ class ExpertBank extends Model
             if(str_contains($this->attributes['ijazah_file'], 'storage/')) {
                 return $this->attributes['ijazah_file'];
             } else {
-                return Storage::url($this->attributes['ijazah_file']);
+                // return Storage::url($this->attributes['ijazah_file']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['ijazah_file'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

@@ -354,10 +354,14 @@ class TrackingDocumentController extends Controller
         }
         // Dokumen UKL UPL (start: matriksComplete=true, end: check if document file exists with this id_project)
         $dokumenComplete = false;
-        $docUklUplFilepath = storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf');
-        if ($sppl && $dpt && File::exists($docUklUplFilepath)) {
+        // $docUklUplFilepath = storage_path('app/public/ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf');
+        $docUklUplFilepath = 'ukl-upl/' . 'ukl-upl-' . strtolower($project->project_title) . '.pdf';
+
+        // if ($sppl && $dpt && File::exists($docUklUplFilepath)) {
+        if ($sppl && $dpt && Storage::disk('public')->exists($docUklUplFilepath)) {
             $dokumenComplete = true;
-            $createdTime = date('Y-m-d H:i:s', filectime(storage_path($docUklUplFilepath)));
+            // $createdTime = date('Y-m-d H:i:s', filectime(storage_path($docUklUplFilepath)));
+            $createdTime = date('Y-m-d H:i:s',  Storage::disk('public')->lastmodified($docUklUplFilepath));
             array_push($uklUplTimeline, [
                 'content' => 'Dokumen UKL UPL',
                 'timestamp' => $this->formatDateWIB($createdTime),
@@ -376,12 +380,15 @@ class TrackingDocumentController extends Controller
         }
         // Surat Keputusan (start: dokumenComplete=true, end: SKKL doc)
         $save_file_name = str_replace('/', '-', $project->project_title) .' - ' . $project->initiator->name . '.docx';
-        $skklFilepath = storage_path('app/public/skkl/' . $save_file_name);
+        // $skklFilepath = storage_path('app/public/skkl/' . $save_file_name);
+        $skklFilepath = 'skkl/' . $save_file_name;
+
         // $skkl = ProjectSkkl::select('*')
         //     ->where('id_project', $project->id)
         //     ->orderBy('created_at', 'asc')
         //     ->get();
-        if ($dokumenComplete && File::exists($skklFilepath)) {
+        // if ($dokumenComplete && File::exists($skklFilepath)) {
+        if ($dokumenComplete && Storage::disk('public')->exists($skklFilepath)) {
             array_push($uklUplTimeline, [
                 'content' => 'Surat Keputusan',
                 'timestamp' => $this->formatDateWIB($project->updated_at),

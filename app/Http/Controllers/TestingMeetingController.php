@@ -752,9 +752,15 @@ class TestingMeetingController extends Controller
         Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+        unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+        ];
     }
 
     private function meetingInvitation($id_project)
@@ -917,9 +923,15 @@ class TestingMeetingController extends Controller
         $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
         $templateProcessor->cloneBlock('instansi', count($instansi), true, false, $instansi);
 
-        $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+        unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+        ];
     }
 
     private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)

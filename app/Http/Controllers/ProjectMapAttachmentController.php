@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\Project;
 use App\Entity\ProjectMapAttachment;
+use App\Entity\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
@@ -63,13 +64,17 @@ class ProjectMapAttachmentController extends Controller
 
                 if ($map->id) {
                     // unlink old files
-                    if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
-                        unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
+                    // if (file_exists(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename)) {
+                    //     unlink(storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename);
+                    // }
+                    if (Storage::disk('public')->exists($map->stored_filename)) {
+                        Storage::disk('public')->delete($map->stored_filename);
                     }
                 }
 
                 $map->original_filename = $file->getClientOriginalName();
                 $map->stored_filename = time() . '_' . $map->id_project . '_' . uniqid('projectmap') . '.' . strtolower($file->getClientOriginalExtension());
+
                 if ($map->attachment_type === 'ecology' && $map->file_type === 'SHP') {
                     $map->geom = DB::raw("ST_TRANSFORM(ST_GeomFromGeoJSON('$request->geomEcologyGeojson'), 4326)");
                     $map->properties = $request->geomEcologyProperties;
@@ -92,7 +97,8 @@ class ProjectMapAttachmentController extends Controller
                     $map->id_styles = $request->geomKelolaStyles;
                 }
 
-                if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
+                // if ($file->move(storage_path('app/public/map/'), $map->stored_filename)) {
+                if ($file->storeAs('public/map/',$map->stored_filename)) {
                     $map->save();
                     // clone andal, if step = 'ka'
                     if ($request['step'] == 'ka') {
@@ -153,11 +159,15 @@ class ProjectMapAttachmentController extends Controller
         $map = ProjectMapAttachment::where('id', $id)->first();
         if (!$map) return response('failed', 418);
 
-        $file = storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename;
-        if (!file_exists($file)) return response('File tidak ditemukan', 418);
+        // $file = storage_path() . DIRECTORY_SEPARATOR . $map->stored_filename;
+        // if (!file_exists($file)) return response('File tidak ditemukan', 418);
+        if (!Storage::disk('public')->exists('map/'. $map->stored_filename)) {
+            return response('File tidak ditemukan', 418);
+        }
 
-        $headers = ['Content-Type' =>  'application/octet-stream'];
-        return  Response::download($file, $map->original_filename, $headers, 'attachment');
+        // $headers = ['Content-Type' =>  'application/octet-stream'];
+        // return  Response::download($file, $map->original_filename, $headers, 'attachment');
+        return redirect()->away(Storage::disk('public')->temporaryUrl('map/' . $map->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
 
@@ -308,13 +318,33 @@ class ProjectMapAttachmentController extends Controller
         return response()->json($getGeojson);
     }
 
-    public function getProjectByGeom()
+    public function getProjectByGeom(Request $request)
     {
         $getProjectByGeom = DB::table('projects')
             ->select('projects.id', 'projects.project_title')
             ->leftJoin('project_map_attachments', 'projects.id', 'project_map_attachments.id_project')
+            ->leftJoin('project_address', 'projects.id', 'project_address.id_project')
             ->whereNotNull('project_map_attachments.geom')
             ->where('project_map_attachments.step', 'ka')
+            ->when($request->has('authority'), function ($query) use ($request){
+                return $query->where('projects.authority', 'ilike', '%' . $request->authority . '%');
+            })
+            ->when($request->has('sector'), function ($query) use ($request){
+                return $query->where('projects.sector', 'ilike', '%' . $request->sector . '%');
+            })
+            ->when($request->has('project_year'), function ($query) use ($request){
+                return $query->where('projects.project_year', '=', $request->project_year);
+            })
+            ->when($request->has('id_applicant'), function ($query) use ($request){
+                return $query->where('projects.id_applicant', '=', $request->id_applicant);
+            })
+            ->when($request->has('prov'), function ($query) use ($request){
+                $prov = Province::find($request->prov);
+                return $query->where('project_address.prov', 'ilike', '%' . $prov->name . '%');
+            })
+            ->when($request->has('district'), function ($query) use ($request){
+                return $query->where('project_address.district', 'ilike', '%' . $request->district . '%');
+            })
             ->orderBy('projects.created_at', 'desc')
             ->groupBy('projects.id', 'projects.project_title', 'projects.created_at')
             ->get();

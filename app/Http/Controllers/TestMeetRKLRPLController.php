@@ -783,14 +783,26 @@ class TestMeetRKLRPLController extends Controller
         Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
+        $save_file_name = '';
         
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         } else {
-            $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         }
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url($save_file_name) 
+        ];
     }
 
     private function meetingInvitation($id_project, $document_type)
@@ -948,13 +960,24 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
         $templateProcessor->cloneBlock('instansi', count($instansi), true, false, $instansi);
 
+        $save_file_name = '';
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         } else {
-            $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         }
-
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url($save_file_name) 
+        ];
     }
 
     private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)

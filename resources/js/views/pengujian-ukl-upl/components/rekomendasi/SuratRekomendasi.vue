@@ -68,8 +68,7 @@ export default {
         idProject: this.$route.params.id,
         uklUpl: 'true',
       });
-      this.projects =
-        window.location.origin + '/storage/uji-kelayakan/' + projectName;
+      this.projects = projectName;
       this.projectName = projectName;
       this.loading = false;
     },

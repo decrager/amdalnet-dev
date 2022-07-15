@@ -10,6 +10,102 @@
       :visible.sync="drawer"
     >
       <div style="padding: 10px">
+        <el-row>
+          <el-col :span="6">
+            <el-select
+              v-model="filterAuthority"
+              placeholder="Kewenangan"
+              filterable
+            >
+              <el-option
+                v-for="item in authorities"
+                :key="item.authority"
+                :label="item.authority"
+                :value="item.authority"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="6">
+            <el-select
+              v-model="filterSector"
+              placeholder="Sektor"
+              filterable
+            >
+              <el-option
+                v-for="item in sectors"
+                :key="item.sector"
+                :label="item.sector"
+                :value="item.sector"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="6">
+            <el-select
+              v-model="filterYear"
+              placeholder="Tahun Kegiatan"
+              filterable
+            >
+              <el-option
+                v-for="item in projectYears"
+                :key="item.value"
+                :label="item.value"
+                :value="item.value"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="6">
+            <el-select
+              v-model="filterInitiator"
+              placeholder="Pemrakarsa"
+              filterable
+            >
+              <el-option
+                v-for="item in initiators"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-col>
+        </el-row>
+        <el-row style="padding-top: 5px;">
+          <el-col :span="6">
+            <el-select
+              v-model="filterProvince"
+              placeholder="Provinsi"
+              filterable
+              @change="getDistrictsByIdProv($event)"
+            >
+              <el-option
+                v-for="item in provinces"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="6">
+            <el-select
+              v-model="filterDistrict"
+              placeholder="Kabupaten/Kota"
+              filterable
+            >
+              <el-option
+                v-for="item in districts"
+                :key="item.id"
+                :label="item.name"
+                :value="item.name"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="12" />
+        </el-row>
+        <el-row style="padding-top: 10px">
+          <el-col :span="24">
+            <el-button type="success" @click="applyFilter">Filter</el-button>
+            <el-button type="danger" @click="resetFilter">Reset Filter</el-button>
+          </el-col>
+        </el-row>
         <div style="padding: 10px;">
           <el-input
             v-model="selectedProject"
@@ -247,6 +343,30 @@ export default {
       penutupanLahan2020JSON: null,
       kawasanHutanBJSON: null,
       pippib2021Periode2JSON: null,
+      authorities: [],
+      sectors: [],
+      projectYears: [
+        {
+          id: 1,
+          value: 2020,
+        },
+        {
+          id: 2,
+          value: 2021,
+        },
+        {
+          id: 3,
+          value: 2022,
+        },
+      ],
+      initiators: [],
+      districts: [],
+      filterAuthority: null,
+      filterSector: null,
+      filterYear: null,
+      filterInitiator: null,
+      filterProvince: null,
+      filterDistrict: null,
     };
   },
   computed: {
@@ -273,6 +393,15 @@ export default {
     await axios.get('/api/provinces').then((result) => {
       this.provinces = result.data.data;
     });
+    await axios.get('/api/project-authority-list').then((result) => {
+      this.authorities = result.data;
+    });
+    await axios.get('/api/project-sectors').then((result) => {
+      this.sectors = result.data;
+    });
+    await axios.get('/api/initiators').then((result) => {
+      this.initiators = result.data.data;
+    });
     await axios.get('/api/sigap-webgis?service=KLHK/A_Penutupan_Lahan_2020').then((result) => {
       this.penutupanLahan2020JSON = result.data;
     });
@@ -289,10 +418,42 @@ export default {
       this.page = val;
     },
     getMappedProject() {
-      axios.get('api/projects-geom')
+      const params = {};
+      if (this.filterAuthority !== null) {
+        params['authority'] = this.filterAuthority;
+      }
+      if (this.filterSector !== null) {
+        params['sector'] = this.filterSector;
+      }
+      if (this.filterYear !== null) {
+        params['project_year'] = this.filterYear;
+      }
+      if (this.filterInitiator !== null) {
+        params['id_applicant'] = this.filterInitiator;
+      }
+      if (this.filterProvince !== null) {
+        params['prov'] = this.filterProvince;
+      }
+      if (this.filterDistrict !== null) {
+        params['district'] = this.filterDistrict;
+      }
+      axios.get('api/projects-geom', {
+        params: params,
+      })
         .then((response) => {
           this.mappedProject = response.data;
         });
+    },
+    applyFilter() {
+      this.getMappedProject();
+    },
+    resetFilter() {
+      this.filterAuthority = null;
+      this.filterSector = null;
+      this.filterYear = null;
+      this.filterInitiator = null;
+      this.filterProvince = null;
+      this.filterDistrict = null;
     },
     getLayerRtrw(e) {
       axios.get(`api/arcgis-services?id_province=${e}`)
@@ -327,6 +488,12 @@ export default {
               duration: 5000,
             });
           }
+        });
+    },
+    async getDistrictsByIdProv(e) {
+      await axios.get('/api/districts?idProv=' + e)
+        .then((result) => {
+          this.districts = result.data.data;
         });
     },
     removeShapefile() {
@@ -547,9 +714,9 @@ export default {
         });
 
         if (layerTapakPoint !== null) {
-          map.layers.remove(layerTapakPoint);
+          this.mapInit.layers.remove(layerTapakPoint);
         }
-        map.add(tapakPoint);
+        this.mapInit.add(tapakPoint);
         layerTapakPoint = tapakPoint;
 
         this.mapGeojsonArray.push(geojsonLayerArray);
@@ -559,14 +726,14 @@ export default {
           if (this.checkedTapak === true) {
             geojsonLayerArray.visible = true;
           } else {
-            map.removeMany(this.mapGeojsonArrayProject);
+            this.mapInit.removeMany(this.mapGeojsonArrayProject);
             geojsonLayerArray.visible = false;
           }
         });
         if (layerTapak !== null) {
-          map.layers.remove(layerTapak);
+          this.mapInit.layers.remove(layerTapak);
         }
-        map.add(geojsonLayerArray);
+        this.mapInit.add(geojsonLayerArray);
         layerTapak = geojsonLayerArray;
       }
 
@@ -596,11 +763,11 @@ export default {
             if (this.checkedPantau === true) {
               geojsonLayerArray.visible = true;
             } else {
-              map.removeMany(this.mapGeojsonArrayProject);
+              this.mapInit.removeMany(this.mapGeojsonArrayProject);
               geojsonLayerArray.visible = false;
             }
           });
-          map.add(geojsonLayerArray);
+          this.mapInit.add(geojsonLayerArray);
         }
       }
 
@@ -629,11 +796,11 @@ export default {
             if (this.checkedKelola === true) {
               geojsonLayerArray.visible = true;
             } else {
-              map.remove(geojsonLayerArray);
+              this.mapInit.remove(geojsonLayerArray);
               geojsonLayerArray.visible = false;
             }
           });
-          map.add(geojsonLayerArray);
+          this.mapInit.add(geojsonLayerArray);
         }
       }
 
@@ -662,11 +829,11 @@ export default {
             if (this.checkedEcology === true) {
               geojsonLayerArray.visible = true;
             } else {
-              map.removeMany(this.mapGeojsonArrayProject);
+              this.mapInit.removeMany(this.mapGeojsonArrayProject);
               geojsonLayerArray.visible = false;
             }
           });
-          map.add(geojsonLayerArray);
+          this.mapInit.add(geojsonLayerArray);
         }
       }
 
@@ -695,11 +862,11 @@ export default {
             if (this.checkedSosial === true) {
               geojsonLayerArray.visible = true;
             } else {
-              map.removeMany(this.mapGeojsonArrayProject);
+              this.mapInit.removeMany(this.mapGeojsonArrayProject);
               geojsonLayerArray.visible = false;
             }
           });
-          map.add(geojsonLayerArray);
+          this.mapInit.add(geojsonLayerArray);
         }
       }
 
@@ -728,12 +895,12 @@ export default {
             if (this.checkedStudi === true) {
               geojsonLayerArray.visible = true;
             } else {
-              map.removeMany(this.mapGeojsonArrayProject);
+              this.mapInit.removeMany(this.mapGeojsonArrayProject);
               geojsonLayerArray.visible = false;
             }
           });
 
-          map.add(geojsonLayerArray);
+          this.mapInit.add(geojsonLayerArray);
         }
       }
 
@@ -747,7 +914,7 @@ export default {
         }
       });
 
-      map.add(rupabumis);
+      this.mapInit.add(rupabumis);
 
       // urlUtils.addProxyRule({
       //   proxyUrl: 'proxy/proxy.php',
@@ -770,7 +937,7 @@ export default {
         }
       });
 
-      map.add(penutupanLahan2020);
+      this.mapInit.add(penutupanLahan2020);
 
       const kawasanHutanB = new MapImageLayer({
         sourceJSON: this.kawasanHutanBJSON,
@@ -790,7 +957,7 @@ export default {
         }
       });
 
-      map.add(kawasanHutanB);
+      this.mapInit.add(kawasanHutanB);
 
       const pippib2021Periode2 = new MapImageLayer({
         sourceJSON: this.pippib2021Periode2JSON,
@@ -810,11 +977,11 @@ export default {
         }
       });
 
-      map.add(pippib2021Periode2);
+      this.mapInit.add(pippib2021Periode2);
 
       const mapView = new MapView({
         container: 'mapViewDiv',
-        map: map,
+        map: this.mapInit,
         center: [115.287, -1.588],
         zoom: 6,
       });

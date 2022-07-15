@@ -173,13 +173,28 @@ class ProjectController extends Controller
             ->where(
                 function ($query) use ($request) {
                     if ($request->tuk) {
-                        $query->whereHas('tukProject', function ($q) {
-                            $q->where('id_user', Auth::user()->id);
-                        })->orWhereHas('testingMeeting', function ($q) {
-                            $q->whereHas('invitations', function ($que) {
-                               $que->where('id_user', Auth::user()->id);
+                        if(!$request->filterTUK) {
+                            $query->whereHas('tukProject', function ($q) {
+                                $q->where('id_user', Auth::user()->id);
+                            })->orWhereHas('testingMeeting', function ($q) {
+                                $q->whereHas('invitations', function ($que) {
+                                   $que->where('id_user', Auth::user()->id);
+                                });
                             });
-                        });
+                        } else if($request->filterTUK == 'pengujian') {
+                            $query->whereHas('testingMeeting', function ($q) {
+                                $q->whereHas('invitations', function ($que) {
+                                    $que->where('id_user', Auth::user()->id);
+                                });
+                            })->whereDoesntHave('tukProject', function($q) {
+                                $q->where('id_user', Auth::user()->id);
+                            });
+                        } else {
+                            $query->whereHas('tukProject', function ($q) use($request) {
+                                $q->where('id_user', Auth::user()->id);
+                                $q->where('role', $request->filterTUK);
+                            });
+                        }
                     }
                 }
             )
@@ -910,5 +925,22 @@ class ProjectController extends Controller
             'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
             'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
         ]); */
+    }
+
+    public function getDistinctAuthorities(Request $request)
+    {
+        return DB::table('projects')
+            ->select(DB::raw('distinct authority'))
+            ->orderBy('authority', 'asc')
+            ->get();
+    }
+
+    public function getDistinctSectors(Request $request)
+    {
+        return DB::table('projects')
+            ->select(DB::raw('distinct sector'))
+            ->whereRaw('sector ~ \'^[a-zA-Z ]*$\'')
+            ->orderBy('sector', 'asc')
+            ->get();
     }
 }
