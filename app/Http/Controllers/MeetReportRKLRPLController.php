@@ -20,6 +20,7 @@ use App\Laravue\Models\User;
 use App\Notifications\AcceptToFeasibilityTest;
 use App\Notifications\MeetingReportNotification;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -721,13 +722,25 @@ class MeetReportRKLRPLController extends Controller
         Html::addHtml($cell, $this->replaceHtmlList($meeting->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
+        $save_file_name = '';
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'ba-ka-ukl-upl/ba-ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         } else {
-            $templateProcessor->saveAs(Storage::disk('public')->path('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'ba-andal-rkl-rpl/ba-andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         }
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url($save_file_name) 
+        ];
     }
 
     private function removeNestedParagraph($data)
@@ -750,7 +763,8 @@ class MeetReportRKLRPLController extends Controller
     private function replaceHtmlList($data)
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<span style="display: block; margin:0; padding: 0;">', str_replace('</li>', '</span>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p);
         } else {
             return '';
         }

@@ -29,6 +29,7 @@ use App\Laravue\Models\User;
 use App\Notifications\RklRPlNotification;
 use App\Utils\Document;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -2396,7 +2397,10 @@ class AndalComposingController extends Controller
             }
         }
 
-        $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
 
         $document_attachment = new DocumentAttachment();
         $document_attachment->id_project = $id_project;
@@ -2471,7 +2475,8 @@ class AndalComposingController extends Controller
             $submit = KaReview::where([['id_project', $id_project], ['status', 'submit']])->first();
             if($submit) {
                 return [
-                    'file_name' => Storage::url('workspace/' . $save_file_name),
+                    // 'file_name' => Storage::url('workspace/' . $save_file_name),
+                    'file_name' => Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'project_title' => strtolower($project->project_title)
                 ];
             }
@@ -2767,9 +2772,15 @@ class AndalComposingController extends Controller
         }
 
         if($type == 'andal') {
-            $templateProcessor->saveAs(Storage::disk('public')->path('formulir/' . $save_file_name));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('formulir/' . $save_file_name));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('formulir/' . $save_file_name, file_get_contents($tmpName));
+            unlink($tmpName);
         } else {
-            $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
+            unlink($tmpName);
         }
 
         $attachment_type = $type === 'andal' ? 'Formulir KA Andal' : 'Formulir KA';
@@ -2885,7 +2896,8 @@ class AndalComposingController extends Controller
     private function replaceHtmlList($data, $font = 'Bookman Old Style')
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<span style="display:inline-block; font-family: ' . $font .'; font-size: 11px; margin:0; padding:0; line-height:0px;">', str_replace('</li>', '</span>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p, $font, '11px');
         } else {
             return '';
         }

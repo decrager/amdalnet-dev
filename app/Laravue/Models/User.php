@@ -152,7 +152,8 @@ class User extends Authenticatable
             if(str_contains($this->attributes['avatar'], 'storage/')) {
                 return $this->attributes['avatar'];
             } else {
-                return Storage::url($this->attributes['avatar']);
+                // return Storage::url($this->attributes['avatar']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['avatar'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

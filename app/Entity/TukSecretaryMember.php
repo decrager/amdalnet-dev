@@ -43,7 +43,8 @@ class TukSecretaryMember extends Model
             if(str_contains($this->attributes['cv'], 'storage/')) {
                 return $this->attributes['cv'];
             } else {
-                return Storage::url($this->attributes['cv']);
+                // return Storage::url($this->attributes['cv']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['cv'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

@@ -28,7 +28,8 @@ class EnvManageDoc extends Model
             if(str_contains($this->attributes['filepath'], 'storage/')) {
                 return $this->attributes['filepath'];
             } else {
-                return Storage::url($this->attributes['filepath']);
+                // return Storage::url($this->attributes['filepath']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

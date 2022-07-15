@@ -440,6 +440,22 @@
           </template>
         </el-table-column>
         <el-table-column v-if="isExaminer || isAdmin || isSubtance" label="Penugasan" width="200px" align="center">
+          <template slot="header">
+            <el-select
+              v-model="listQuery.filterTUK"
+              class="filter-header"
+              clearable
+              placeholder="Penugasan"
+              @change="onTukFilter"
+            >
+              <el-option
+                v-for="item in [{text: 'PJM', value: 'pjm'}, {text: 'Substansi', value: 'valsub'}, {text: 'Administrasi', value: 'administrasi'}, {text: 'Pengujian', value: 'pengujian'}]"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value"
+              />
+            </el-select>
+          </template>
           <template slot-scope="scope">
             <div class="badge-penugasan">
               {{ tukRole(scope.row) }}
@@ -528,6 +544,7 @@ export default {
         orderBy: 'id',
         order: 'DESC',
         filters: '',
+        filterTUK: '',
       },
       provinceOptions: [],
       cityOptions: [],
@@ -1440,6 +1457,12 @@ export default {
       console.log('filtering doctype!', val);
 
       this.listQuery.filters = val;
+      this.listQuery.page = 1;
+
+      this.handleFilter();
+    },
+    onTukFilter(val, col, row){
+      this.listQuery.filterTUK = val;
       this.listQuery.page = 1;
 
       this.handleFilter();

@@ -34,6 +34,10 @@ class TestingVerificationNotification extends Notification
      */
     public function via($notifiable)
     {
+        if($this->type == 'selesai') {
+            return ['mail', 'database'];
+        } 
+
         return ['database'];
     }
 
@@ -45,10 +49,16 @@ class TestingVerificationNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $document = '';
+        if($this->testingVerification->document_type == 'ka') {
+            $document = 'Formulir Kerangka Acuan';
+        } else if($this->testingVerification->document_type == 'rkl-rpl') {
+            $document = 'Dokumen Andal RKL RPL';
+        }
+
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject('Hasil Pemeriksaan Berkas Administrasi ' . $document)
+                    ->line($this->getMessage($notifiable));
     }
 
     /**

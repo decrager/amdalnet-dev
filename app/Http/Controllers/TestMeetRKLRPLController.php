@@ -23,6 +23,7 @@ use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use App\Notifications\MeetingInvitation;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -782,14 +783,26 @@ class TestMeetRKLRPLController extends Controller
         Html::addHtml($cell, $final_notes);
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
+        $save_file_name = '';
         
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'adm/berkas-adm-uu-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         } else {
-            $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'adm/berkas-adm-ar-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         }
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url($save_file_name) 
+        ];
     }
 
     private function meetingInvitation($id_project, $document_type)
@@ -947,13 +960,24 @@ class TestMeetRKLRPLController extends Controller
         $templateProcessor->cloneBlock('pakar', count($ahli), true, false, $ahli);
         $templateProcessor->cloneBlock('instansi', count($instansi), true, false, $instansi);
 
+        $save_file_name = '';
         if($document_type == 'ukl-upl') {
-            $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'meet-inv/ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         } else {
-            $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+            unlink($tmpName);
+            $save_file_name = 'meet-inv/andal-rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
         }
-
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url($save_file_name) 
+        ];
     }
 
     private function checkFileAdmExist($is_exist, $type, $project, $checkPeta, $checkKonsulPublik, $checkCvPenyusun)
@@ -1190,7 +1214,8 @@ class TestMeetRKLRPLController extends Controller
     private function replaceHtmlList($data)
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<span style="display: block; font-family: tahoma; font-size: 11px; margin:0; padding: 0;">', str_replace('</li>', '</span>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p, 'tahoma', '11px');
         } else {
             return '';
         }

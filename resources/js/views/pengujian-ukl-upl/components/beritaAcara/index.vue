@@ -143,11 +143,10 @@ export default {
         docs: 'true',
         uklUpl: 'true',
       });
-      this.docs = data;
+      this.docs = data.title;
       const a = document.createElement('a');
-      a.href =
-        window.location.origin + `/storage/ba-ukl-upl/ba-ukl-upl-${data}.docx`;
-      a.setAttribute('download', `ba-ukl-upl-${data}.docx`);
+      a.href = data.url;
+      a.setAttribute('download', `ba-ukl-upl-${data.title}.docx`);
       a.click();
       this.loadingDocs = false;
     },

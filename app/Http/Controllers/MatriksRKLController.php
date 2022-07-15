@@ -26,6 +26,7 @@ use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use PhpOffice\PhpWord\TemplateProcessor;
 use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\Auth;
@@ -250,7 +251,10 @@ class MatriksRKLController extends Controller
                 }
             }
 
-            $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+            // $templateProcessor->saveAs(Storage::disk('public')->path('workspace/' . $save_file_name));
+            $tmpName = $templateProcessor->save();
+            Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
+            unlink($tmpName);
 
             $document_attachment = new DocumentAttachment();
             $document_attachment->id_project = $request->idProject;
@@ -1551,7 +1555,8 @@ class MatriksRKLController extends Controller
     private function replaceHtmlList($data)
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p);
         } else {
             return '';
         }

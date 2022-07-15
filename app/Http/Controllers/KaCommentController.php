@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity\Comment;
 use App\Entity\ProjectStage;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
@@ -271,7 +272,8 @@ class KaCommentController extends Controller
     private function replaceHtmlList($data)
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p);
         } else {
             return '';
         }
@@ -366,8 +368,13 @@ class KaCommentController extends Controller
         }
 
         $save_file_name = 'recap/' .  $id_project . '-' . $type . '.docx';
-        $templateProcessor->saveAs(Storage::disk('public')->path($save_file_name));
-        return response()->download(Storage::disk('public')->path($save_file_name))->deleteFileAfterSend(true);
+        // $templateProcessor->saveAs(Storage::disk('public')->path($save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put($save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
+        
+        // return response()->download(Storage::disk('public')->path($save_file_name))->deleteFileAfterSend(true);
+        return redirect()->away(Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
     private function documentType($type)

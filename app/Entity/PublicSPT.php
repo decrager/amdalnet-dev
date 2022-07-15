@@ -18,7 +18,8 @@ class PublicSPT extends Model
             if(str_contains($this->attributes['photo'], 'storage/')) {
                 return $this->attributes['photo'];
             } else {
-                return Storage::url($this->attributes['photo']);
+                // return Storage::url($this->attributes['photo']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['photo'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 

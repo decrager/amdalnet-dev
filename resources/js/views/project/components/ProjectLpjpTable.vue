@@ -220,7 +220,7 @@ export default {
       this.$emit('handleDelete', { num });
     },
     downloadCvTa(url) {
-      window.open(window.location.origin + url);
+      window.open(url);
     },
   },
 };

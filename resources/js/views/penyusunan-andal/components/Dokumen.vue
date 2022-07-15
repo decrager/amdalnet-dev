@@ -9,7 +9,7 @@
         <a
           v-if="showDocument"
           class="btn-docx"
-          :href="'/storage/workspace/' + documentName"
+          :href="'/api/workspace/document/get?filename=' + documentName"
           :download="title"
         >
           Export to .DOCX
@@ -90,8 +90,7 @@ export default {
         idProject: this.$route.params.id,
         projectName: 'true',
       });
-      this.projects =
-        window.location.origin + `/storage/workspace/${this.documentName}`;
+      this.projects = window.location.origin + `/api/workspace/document/get?filename=${this.documentName}`;
       this.showDocument = true;
       this.loading = false;
     },

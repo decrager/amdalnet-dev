@@ -390,27 +390,32 @@ class KaReviewController extends Controller
             $explode_extension = explode('.', $file_array['original_filename']);
             if($file_array['doc_type'] == 'Berita Acara Pelaksanaan') {
                 $file_berita_acara_pelaksanaan = [
-                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'file_name' => 'Berita Acara Pelaksanaan.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             } else if($file_array['doc_type'] == 'Berita Acara Penunjukan Wakil Masyarakat') {
                 $file_berita_acara_penunjukan_wakil_masyarakat = [
-                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'file_name' => 'Berita Acara Penunjukan Wakil Masyarakat.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             } else if($file_array['doc_type'] == 'Daftar Hadir') {
                 $file_daftar_hadir = [
-                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'file_name' => 'Daftar Hadir.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             } else if($file_array['doc_type'] == 'Pengumuman') {
                 $file_pengumuman = [
-                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'file_name' => 'Pengumuman.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             } else if($file_array['doc_type'] == 'Undangan') {
                 $file_undangan = [
-                    'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
+                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'file_name' => 'Undangan.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             }
@@ -469,7 +474,8 @@ class KaReviewController extends Controller
             [
                 'no' => 1,
                 'name' => 'Peta Lokasi Kegiatan',
-                'file' => $peta_lokasi_kegiatan ? Storage::url('map/' . $peta_lokasi_kegiatan->stored_filename) : null,
+                // 'file' => $peta_lokasi_kegiatan ? Storage::url('map/' . $peta_lokasi_kegiatan->stored_filename) : null,
+                'file' => $peta_lokasi_kegiatan ? Storage::disk('public')->temporaryUrl($peta_lokasi_kegiatan->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))) : null,
             ],
             [
                 'no' => 2,
@@ -583,7 +589,8 @@ class KaReviewController extends Controller
         array_push($attachment, [
             'no' => 8,
             'name' => 'Peta Batas Wilayah Studi',
-            'file' => $peta_batas_wilayah_studi ? Storage::url('map/' . $peta_batas_wilayah_studi->stored_filename) : null,
+            // 'file' => $peta_batas_wilayah_studi ? Storage::url('map/' . $peta_batas_wilayah_studi->stored_filename) : null,
+            'file' => $peta_lokasi_kegiatan ? Storage::disk('public')->temporaryUrl($peta_batas_wilayah_studi->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))) : null,
         ]);
 
         return response()->json($attachment);

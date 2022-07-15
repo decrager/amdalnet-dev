@@ -12,7 +12,7 @@
             <a
               v-if="showDocumentAndal"
               class="btn-docx"
-              :href="'/storage/workspace/' + documentNameAndal"
+              :href="'/api/workspace/document/get?filename=' + documentNameAndal"
               :download="title"
             >
               Export Dokumen ANDAL to .DOCX
@@ -33,7 +33,7 @@
             <a
               v-if="showDocument"
               class="btn-docx"
-              :href="'/storage/workspace/' + documentName"
+              :href="'/api/workspace/document/get?filename=' + documentName"
               :download="title"
             >
               Export Dokumen RKL RPL to .DOCX
@@ -124,7 +124,7 @@ export default {
         projectName: 'true',
       });
       this.projects =
-        window.location.origin + `/storage/workspace/${this.documentName}`;
+        window.location.origin + `/api/workspace/document/get?filename=${this.documentName}`;
       this.showDocument = true;
     },
     async getDataAndal() {
@@ -133,7 +133,7 @@ export default {
         projectName: 'true',
       });
       this.projectsAndal =
-        window.location.origin + `/storage/workspace/${this.documentNameAndal}`;
+        window.location.origin + `/api/workspace/document/get?filename=${this.documentNameAndal}`;
       this.showDocumentAndal = true;
     },
   },

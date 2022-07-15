@@ -140,6 +140,17 @@ class UserController extends BaseController
             return response()->json(['error' => 'Permission denied'], 403);
         }
 
+        if($request->current && $request->new) {
+            if(!Hash::check($request->current, $user->password)) {
+                return response()->json(['error' => 'Password lama salah']); 
+            }
+
+            $user->password = Hash::make($request->new);
+            $user->save();
+
+            return response()->json(['message' => 'success']);
+        }
+
         $validator = Validator::make($request->all(), $this->getValidationRules(false));
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);

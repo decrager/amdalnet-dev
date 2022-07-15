@@ -19,6 +19,7 @@ use App\Laravue\Models\User;
 use App\Notifications\AndalNotification;
 use App\Notifications\MeetingReportNotification;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -665,9 +666,15 @@ class MeetingReportController extends Controller
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
         $save_file_name = 'ba-ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
-        $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka/' . $save_file_name));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('ba-ka/' . $save_file_name));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('ba-ka/' . $save_file_name, file_get_contents($tmpName));
+        unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url($save_file_name) 
+        ];
     }
 
     private function removeNestedParagraph($data)
@@ -690,7 +697,8 @@ class MeetingReportController extends Controller
     private function replaceHtmlList($data)
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '<span style="display: block; margin:0; padding: 0;">', str_replace('</li>', '</span>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p);
         } else {
             return '';
         }

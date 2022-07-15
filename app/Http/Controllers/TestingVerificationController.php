@@ -20,6 +20,7 @@ use App\Entity\TukProject;
 use App\Laravue\Models\User;
 use App\Notifications\TestingVerificationNotification;
 use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -310,27 +311,35 @@ class TestingVerificationController extends Controller
         foreach($maps as $m) {
             if($m->attachment_type == 'tapak') {
                 if($m->file_type == 'SHP') {
-                    $peta_tapak = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_tapak = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_tapak = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_tapak_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_tapak_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_tapak_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             } else if($m->attachment_type == 'ecology') {
                 if($m->file_type == 'SHP') {
-                    $peta_ekologis = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_ekologis = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_ekologis = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_ekologis_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_ekologis_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_ekologis_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             } else if($m->attachment_type == 'social') {
                 if($m->file_type == 'SHP') {
-                    $peta_sosial = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_sosial = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_sosial = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_sosial_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_sosial_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_sosial_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             } else if($m->attachment_type == 'study') {
                 if($m->file_type == 'SHP') {
-                    $peta_wilayah_studi = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_wilayah_studi = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_wilayah_studi = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 } else if($m->file_type == 'PDF') {
-                    $peta_wilayah_studi_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    // $peta_wilayah_studi_pdf = Storage::url('/map' . '/' . $m->stored_filename);
+                    $peta_wilayah_studi_pdf = Storage::disk('public')->temporaryUrl('map/' . $m->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
                 }
             }
         }
@@ -654,9 +663,15 @@ class TestingVerificationController extends Controller
         Html::addHtml($cell, $this->replaceHtmlList($verification->notes));
 
         $templateProcessor->setComplexBlock('notes', $notesTable);
-        $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        // $templateProcessor->saveAs(Storage::disk('public')->path('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx'));
+        $tmpName = $templateProcessor->save();
+        Storage::disk('public')->put('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', file_get_contents($tmpName));
+        unlink($tmpName);
 
-        return strtolower(str_replace('/', '-', $project->project_title));
+        return [
+            'title' => strtolower(str_replace('/', '-', $project->project_title)),
+            'url' => Storage::url('adm-no/hasil-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+        ];
     }
 
     private function removeNestedParagraph($data)
@@ -679,7 +694,8 @@ class TestingVerificationController extends Controller
     private function replaceHtmlList($data)
     {
         if($data) {
-            return str_replace('</ul>', '', str_replace('<ul>', '', str_replace('<li>', '', str_replace('</li>', '<br/>', str_replace('</ol>', '', str_replace('<ol>', '' ,$this->removeNestedParagraph($data)))))));
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p);
         } else {
             return '';
         }
