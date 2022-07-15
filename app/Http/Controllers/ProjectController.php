@@ -33,6 +33,7 @@ use App\Entity\WorkflowLog;
 use App\Entity\WorkflowStep;
 use App\Notifications\CreateProjectNotification;
 use App\Entity\ProjectSkklFinal;
+use App\Utils\Document;
 
 class ProjectController extends Controller
 {
@@ -910,5 +911,23 @@ class ProjectController extends Controller
             'uklupl' => Project::where(['required_doc' => 'AMDAL', 'marking' => 'uklupl-mr.pkplh-published'])->count(),
             'onprogress' => Project::whereNotIn('marking', ['amdal.skkl-published', 'uklupl-mr.pkplh-published'])->count()
         ]); */
+    }
+
+    public function generatePdfFromBlob(Request $request)
+    {
+        // return $request;
+
+        $docFileName = '';
+        if ($request->file('docFile')) {
+            $docFile = $request->file('docFile');
+            $docFileName = 'project/docFile/' . uniqid() . '.' . $docFile->extension();
+            $docFile->storePubliclyAs('public', $docFileName);
+        }
+        
+        $downloadUri = url($docFileName);
+        $key = Document::GenerateRevisionId($downloadUri);
+        $convertedUri = null;
+        $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
+        return $convertedUri;
     }
 }

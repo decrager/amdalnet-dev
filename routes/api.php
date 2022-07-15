@@ -224,6 +224,7 @@ Route::apiResource('kbli-env-params', 'BusinessEnvParamController');
 Route::apiResource('business-env-params', 'BusinessEnvParamController');
 Route::apiResource('projects', 'ProjectController');
 Route::post('project-ppjk/{project}', [ProjectController::class, 'edit']);
+Route::post('generatepdf', [ProjectController::class, 'generatePdfFromBlob']);
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
 Route::apiResource('oss-projects', 'OssProjectController');
