@@ -1296,9 +1296,7 @@ export default {
           const formData = new FormData();
           formData.append('docFile', this.blobToFile(out, 'SPPL-' + project.project_title + '.docx'));
 
-          const spplfile = pdfResource.store(formData);
-
-          this.download(spplfile);
+          pdfResource.store(formData).then(value => this.download(value));
         }
       );
     },
