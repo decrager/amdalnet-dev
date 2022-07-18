@@ -1,11 +1,13 @@
 <template>
   <div class="app-container">
+    <div style="text-align: right;"><el-button size="small" :disabled="loading" @click="getData"><i :class="loading? 'el-icon-loading' : 'el-icon-refresh'" />&nbsp;&nbsp;Refresh data</el-button></div>
     <div class="text-white fw-bold">Surat Pernyataan Pengelolaan Lingkungan Hidup</div>
     <el-upload
       type="primary"
       class="upload-demo"
       :auto-upload="false"
       :on-change="handleUpdateSppl"
+      :before-remove="handleRemoveSppl"
       action="#"
       :show-file-list="true"
       :file-list="fileListSppl"
@@ -20,6 +22,7 @@
       class="upload-demo"
       :auto-upload="false"
       :on-change="handleUpdateDpt"
+      :on-remove="handleRemoveDpt"
       action="#"
       :show-file-list="true"
       :file-list="fileListDpt"
@@ -49,6 +52,7 @@ export default {
         'dpt': null,
       },
       idProject: 0,
+      loading: false,
     };
   },
   mounted() {
@@ -56,6 +60,9 @@ export default {
   },
   methods: {
     async getData() {
+      this.loading = true;
+      this.fileListSppl = [];
+      this.fileListDpt = [];
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       const { data } = await envManageDocsResource.list({
         id_project: this.idProject,
@@ -105,6 +112,7 @@ export default {
           },
         ];
       }
+      this.loading = false;
     },
     resetFormData() {
       this.formData = {
@@ -121,6 +129,32 @@ export default {
       this.resetFormData();
       this.formData.dpt = file.raw;
       this.handleUpload('dpt', fileList);
+    },
+    handleRemoveSppl(file, fileList){
+      console.log(file, fileList);
+      this.$confirm('Hapus dokumen SPPL?', 'Menghapus Dokumen SPPL', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: 'Iya!',
+        cancelButtonText: 'Batalkan!',
+      })
+        .then(() => {
+          this.$message({
+            type: 'info',
+            message: 'Changes saved. Proceeding to a new route.',
+          });
+        })
+        .catch(action => {
+          this.$message({
+            type: 'info',
+            message: action === 'cancel'
+              ? 'Changes discarded. Proceeding to a new route.'
+              : 'Stay in the current route',
+          });
+        });
+    },
+    handleRemoveDpt(file, fileList){
+      console.log(file, fileList);
+      return false;
     },
     async handleUpload(type, fileList) {
       const formData = new FormData();

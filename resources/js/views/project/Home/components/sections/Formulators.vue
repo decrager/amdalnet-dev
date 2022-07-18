@@ -7,11 +7,11 @@
         </el-col>
         <el-col :span="16">
           {{ person.name }}<br>
-          <span v-if="person.expertise" style="font-size:86%;">{{ person.expertise }}</span>
+          <span v-if="person.expertise" style="font-size:86%;">{{ person.expertise }}</span><br v-if="person.expertise">
           <span style="font-size:86%;"><span v-if="person.membership_status">[{{ person.membership_status }}]</span> <span v-if="person.reg_no">No. Cert {{ person.cert_no }}</span></span>
         </el-col>
         <el-col :span="6">
-          <el-link v-if="person.certificate" :href="person.certificate" target="_blank" icon="el-icon-download" type="primary">Sertifikat</el-link><span v-if="person.certificate">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <el-link v-if="person.certificate" :href="person.certificate" target="_blank" icon="el-icon-download" type="primary">Sertifikat</el-link><span v-if="person.certificate && (person.file || person.cv) ">&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <el-link v-if="(mode === 1) && (person.file !== null)" :href="person.file" target="_blank" icon="el-icon-download" type="primary">CV</el-link>
           <el-link v-else-if="(mode === 2) && (person.cv !== null)" :href="person.cv" target="_blank" icon="el-icon-download" type="primary">CV</el-link>
         </el-col>

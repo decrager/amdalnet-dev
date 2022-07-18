@@ -53,9 +53,10 @@ class EnvManageDocController extends Controller
 
     private function getFileName($filepath) {
         if (!empty($filepath)) {
-            $exp = explode('/', $filepath);
-            $len = count($exp);
-            return $exp[$len-1];
+            $temp = explode('/', $filepath);
+            // $len = count($exp);
+            $exp = explode('?', $temp[count($temp) - 1]);
+            return $exp[0];
         }
         return '';
     }
