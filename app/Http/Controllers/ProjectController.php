@@ -939,7 +939,7 @@ class ProjectController extends Controller
             $docFile->storePubliclyAs('public', $docFileName);
         }
         
-        $downloadUri = url($docFileName);
+        $downloadUri = Storage::disk('public')->temporaryUrl($docFileName, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
         $key = Document::GenerateRevisionId($downloadUri);
         $convertedUri = null;
         $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
