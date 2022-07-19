@@ -28,7 +28,7 @@
             </a>
             <ul v-if="isActiveFormulir" class="left-4 top-1-8">
               <li>
-                <a href="#" @click="handleSetMenu('TEMPLATE')">Template Persetujuan Perlingkupan</a>
+                <a href="#" @click="handleSetMenu('TEMPLATE')">Template Persetujuan Lingkungan</a>
               </li>
               <li>
                 <a href="">Formulir KA Andal Standar Spesifik</a>
