@@ -39,6 +39,7 @@
           <el-table-column prop="name" label="Nama LPJP" />
           <el-table-column prop="reg_no" label="Nomor Registrasi" />
           <el-table-column prop="address" label="Alamat" />
+
           <!-- <el-table-column label="Sertifikat" align="center">
             <template slot-scope="scope">
               <el-button
@@ -50,6 +51,7 @@
               </el-button>
             </template>
           </el-table-column> -->
+
         </el-table>
 
         <div class="block" style="text-align: right">
