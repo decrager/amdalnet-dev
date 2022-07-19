@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 use function PHPSTORM_META\type;
 use App\Entity\Formulator;
+use App\Entity\Lpjp;
 use App\Http\Resources\FormulatorResource;
 
 class DashboardController extends Controller
@@ -557,5 +558,49 @@ class DashboardController extends Controller
                 ->count(),
             'addendum' => 0 // not yet defined
         ]);
+    }
+
+    public function getLpjpAmount()
+    {
+        $total = Lpjp::count();
+        $active = Lpjp::where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+        ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]])->count();
+        $non_active = Lpjp::where('date_end', '<', date('Y-m-d H:i:s'))->count();
+
+        return response()->json([
+            'total' => $total,
+            'active' => $active,
+            'non_active' => $non_active
+        ]);
+    }
+
+    public function getFormulatorAmount()
+    {
+        $total = Formulator::count();
+        $active = Formulator::where([['date_start', '<=', date('Y-m-d H:i:s')], ['date_end', '>=', date('Y-m-d H:i:s')]])
+        ->orWhere([['date_start', null], ['date_end', '>=', date('Y-m-d H:i:s')]])->count();
+        $non_active = Formulator::where('date_end', '<', date('Y-m-d H:i:s'))->count();
+        $certificated = Formulator::whereIn('membership_status', ['KTPA', 'ATPA'])->count();
+
+        return response()->json([
+            'total' => $total,
+            'active' => $active,
+            'non_active' => $non_active,
+            'certificated' => $certificated
+        ]);
+    }
+
+    public function getFormulator(Request $request)
+    {
+        return Formulator::select('id', 'name', 'date_start', 'date_end', 'membership_status', 'id_lpjp')
+        ->where(function($q) use($request) {
+            if($request->search) {
+                $q->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
+            }
+        })->with(['lpjp' => function($q) {
+            $q->select('id', 'name');
+        },'user' => function($q) {
+            $q->select('id', 'email', 'avatar');
+        }])->orderBy('name')->offset($request->offset)->limit(10)->get();
     }
 }

@@ -8,11 +8,12 @@
         <el-col :span="8">
           <el-card
             id="total"
+            v-loading="loading"
             class="box-card"
             style="background: #033022; color: white"
           >
             <span class="title">Total LPJP</span>
-            <span class="value">18</span>
+            <span class="value">{{ total }}</span>
             <div class="link-list">
               <span>
                 More List <el-button icon="el-icon-right" circle size="small" />
@@ -23,11 +24,12 @@
         <el-col :span="8">
           <el-card
             id="total"
+            v-loading="loading"
             class="box-card"
             style="background: #347437; color: white"
           >
             <span class="title">Aktif</span>
-            <span class="value">10</span>
+            <span class="value">{{ active }}</span>
             <div class="link-list">
               <span>
                 More List <el-button icon="el-icon-right" circle size="small" />
@@ -38,11 +40,12 @@
         <el-col :span="8">
           <el-card
             id="total"
+            v-loading="loading"
             class="box-card"
             style="background: #449748; color: white"
           >
             <span class="title">NonAktif</span>
-            <span class="value">8</span>
+            <span class="value">{{ nonActive }}</span>
             <div class="link-list">
               <span>
                 More List <el-button icon="el-icon-right" circle size="small" />
@@ -56,8 +59,38 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'LpjpSummary',
+  data() {
+    return {
+      total: 0,
+      active: 0,
+      nonActive: 0,
+      loading: false,
+    };
+  },
+  created() {
+    this.getData();
+  },
+  methods: {
+    getData() {
+      this.loading = true;
+      axios
+        .get('/api/dashboard/lpjp-amount')
+        .then((data) => {
+          this.total = data.data.total;
+          this.active = data.data.active;
+          this.nonActive = data.data.non_active;
+          this.loading = false;
+        })
+        // eslint-disable-next-line handle-callback-err
+        .catch((err) => {
+          this.loading = false;
+        });
+    },
+  },
 };
 </script>
 

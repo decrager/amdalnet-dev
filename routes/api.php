@@ -319,6 +319,9 @@ Route::group(['prefix' => 'dashboard'], function($r) {
     $r->get('chart', [DashboardController::class, 'chart']);
     $r->get('lpjp-formulators', [DashboardController::class, 'getLpjpFormulators']);
     $r->get('lpjp-count', [DashboardController::class, 'getLpjpCount']);
+    $r->get('lpjp-amount', [DashboardController::class, 'getLpjpAmount']);
+    $r->get('formulator-amount', [DashboardController::class, 'getFormulatorAmount']);
+    $r->get('formulator', [DashboardController::class, 'getFormulator']);
 });
 
 Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);

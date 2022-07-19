@@ -41,6 +41,11 @@ class Formulator extends Model
         return $this->belongsTo(District::class, 'district', 'id');
     }
 
+    public function lpjp()
+    {
+        return $this->belongsTo(Lpjp::class, 'id_lpjp', 'id');
+    }
+
     public function getCertFileAttribute()
     {
         if($this->attributes['cert_file']) {
