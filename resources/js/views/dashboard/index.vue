@@ -3,6 +3,7 @@
     <!-- <component :is="currentRole" /> -->
     <admin-dashboard v-if="isAdmin || isExaminerSecretary || isExaminer" />
     <user-dashboard v-else-if="isFormulator || isInitiator || isLPJP" />
+    <pustanling-dashboard v-else-if="isPustanling" />
     <!--
     <examiner-dashboard v-if="isExaminer" />
       -->
@@ -15,37 +16,39 @@ import { mapGetters } from 'vuex';
 // import editorDashboard from './editor';
 import UserDashboard from './user';
 import AdminDashboard from './admin';
+import PustanlingDashboard from './pustanling';
 
 export default {
   name: 'Dashboard',
   // components: { adminDashboard, editorDashboard },
-  components: { UserDashboard, AdminDashboard },
+  components: { UserDashboard, AdminDashboard, PustanlingDashboard },
   data() {
     return {
       currentRole: 'adminDashboard',
     };
   },
   computed: {
-    ...mapGetters([
-      'roles',
-    ]),
-    isAdmin(){
-      return (this.$store.getters.roles[0].split('-')[0] === 'admin');
+    ...mapGetters(['roles']),
+    isAdmin() {
+      return this.$store.getters.roles[0].split('-')[0] === 'admin';
     },
-    isFormulator(){
+    isFormulator() {
       return this.$store.getters.roles.includes('formulator');
     },
-    isInitiator(){
+    isInitiator() {
       return this.$store.getters.roles.includes('initiator');
     },
-    isExaminer(){
-      return (this.$store.getters.roles[0].split('-')[0] === 'examiner');
+    isExaminer() {
+      return this.$store.getters.roles[0].split('-')[0] === 'examiner';
     },
     isExaminerSecretary() {
       return this.$store.getters.roles.includes('examiner-secretary');
     },
-    isLPJP(){
+    isLPJP() {
       return this.$store.getters.roles.includes('lpjp');
+    },
+    isPustanling() {
+      return this.$store.getters.roles.includes('pustanling');
     },
   },
   created() {
@@ -53,7 +56,7 @@ export default {
     //   this.currentRole = 'editorDashboard';
     // }
   },
-  mounted(){
+  mounted() {
     console.log('dashboard: ', this.isExaminer);
   },
 };
