@@ -610,7 +610,7 @@ class DashboardController extends Controller
 
     public function getFormulator(Request $request)
     {
-        return Formulator::select('id', 'name', 'date_start', 'date_end', 'membership_status', 'id_lpjp')
+        return Formulator::select('id', 'name', 'date_start', 'date_end', 'membership_status', 'id_lpjp', 'email')
         ->where(function($q) use($request) {
             if($request->search) {
                 $q->whereRaw("LOWER(name) LIKE '%" . strtolower($request->search) . "%'");
