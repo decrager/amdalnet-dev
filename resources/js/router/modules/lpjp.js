@@ -5,7 +5,7 @@ const announcementRoutes = {
   component: Layout,
   redirect: '/lpjp-team',
   alwaysShow: false,
-  meta: { title: 'lpjp-team', icon: 'zip', roles: ['lpjp'] },
+  meta: { title: 'lpjp-team', icon: 'zip', roles: ['lpjp', 'pustanling'] },
   children: [
     // {
     //   path: '',
@@ -23,6 +23,7 @@ const announcementRoutes = {
         title: 'Daftar Anggota LPJP',
         icon: 'documentation',
         noCache: true,
+        roles: ['lpjp'],
       },
     },
     {
@@ -34,6 +35,7 @@ const announcementRoutes = {
         title: 'Daftar Penyusun LPJP',
         icon: 'documentation',
         noCache: true,
+        roles: ['lpjp', 'pustanling'],
       },
     },
   ],
