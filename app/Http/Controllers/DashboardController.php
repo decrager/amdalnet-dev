@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entity\District;
 use App\Entity\FeasibilityTestTeam;
+use App\Entity\FeasibilityTestTeamMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Entity\Project;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use function PHPSTORM_META\type;
 use App\Entity\Formulator;
 use App\Entity\Lpjp;
+use App\Entity\LukMember;
 use App\Http\Resources\FormulatorResource;
 
 class DashboardController extends Controller
@@ -85,6 +87,10 @@ class DashboardController extends Controller
     {
         $type = Auth::user()->roles->first()->name == 'admin' ? '' : 'tuk';
         $role = Auth::user()->roles->first()->name;
+        $is_tuk_chief = LukMember::where('email', Auth::user()->email)
+                                    ->whereHas('feasibilityTestTeamMember', function($q) {
+                                        $q->where('position', 'Ketua');
+                                    })->first();
 
         $projects = Project::select('id', 'authority', 'auth_province', 'auth_district', 'created_at', 'updated_at')->where(function($q) use($request) {
             if($request->period && $request->start && $request->end) {
@@ -106,9 +112,9 @@ class DashboardController extends Controller
                 $q->whereMonth('created_at', date('m'));
             }
         })
-        ->where(function($q) use($type, $role) {
+        ->where(function($q) use($type, $role, $is_tuk_chief) {
             if($type == 'tuk') {
-                if($role == 'examiner-secretary') {
+                if(($role == 'examiner-secretary') || $is_tuk_chief) {
                     $team = $this->checkTuk();
                     if($team) {
                         if($team->authority == 'Provinsi') {
@@ -162,6 +168,10 @@ class DashboardController extends Controller
     {
         $type = Auth::user()->roles->first()->name == 'admin' ? '' : 'tuk';
         $role = Auth::user()->roles->first()->name;
+        $is_tuk_chief = LukMember::where('email', Auth::user()->email)
+        ->whereHas('feasibilityTestTeamMember', function($q) {
+            $q->where('position', 'Ketua');
+        })->first();
 
         $pusat = [
             'total' => 0,
@@ -184,40 +194,40 @@ class DashboardController extends Controller
             $team = $this->checkTuk();
         }
 
-        if($role === 'examiner-secretary') {
+        if(($role === 'examiner-secretary') || $is_tuk_chief) {
             if($team) {
                 if($team->authority == 'Pusat') {
                     $pusat = [
-                        'total' => $this->getPermitAuthority($type, 'Pusat', $team, $request->period, $request->start, $request->end),
+                        'total' => $this->getPermitAuthority($type, 'Pusat', $team, $request->period, $request->start, $request->end, $is_tuk_chief),
                         'show' => true
                     ];
                 }
 
                 if($team->authority == 'Pusat' || $team->authority == 'Provinsi') {
                     $provinsi = [
-                        'total' => $this->getPermitAuthority($type, 'Provinsi', $team, $request->period, $request->start, $request->end),
+                        'total' => $this->getPermitAuthority($type, 'Provinsi', $team, $request->period, $request->start, $request->end, $is_tuk_chief),
                         'show' => true
                     ];
                 }
 
                 $kabupaten = [
-                    'total' => $this->getPermitAuthority($type, 'Kabupaten/Kota', $team, $request->period, $request->start, $request->end),
+                    'total' => $this->getPermitAuthority($type, 'Kabupaten/Kota', $team, $request->period, $request->start, $request->end, $is_tuk_chief),
                     'show' => true
                 ];
             }
         } else {
             $pusat = [
-                'total' => $this->getPermitAuthority('admin', 'Pusat', null, $request->period, $request->start, $request->end),
+                'total' => $this->getPermitAuthority('admin', 'Pusat', null, $request->period, $request->start, $request->end, $is_tuk_chief),
                 'show' => true
             ];
 
             $provinsi = [
-                'total' => $this->getPermitAuthority('admin', 'Provinsi', null, $request->period, $request->start, $request->end),
+                'total' => $this->getPermitAuthority('admin', 'Provinsi', null, $request->period, $request->start, $request->end, $is_tuk_chief),
                 'show' => true
             ];
 
             $kabupaten = [
-                'total' => $this->getPermitAuthority('admin', 'Kabupaten/Kota', null, $request->period, $request->start, $request->end),
+                'total' => $this->getPermitAuthority('admin', 'Kabupaten/Kota', null, $request->period, $request->start, $request->end, $is_tuk_chief),
                 'show' => true
             ];
         }
@@ -234,14 +244,18 @@ class DashboardController extends Controller
         $type = Auth::user()->roles->first()->name == 'admin' ? '' : 'tuk';
         $role = Auth::user()->roles->first()->name;
         $team = null;
+        $is_tuk_chief = LukMember::where('email', Auth::user()->email)
+        ->whereHas('feasibilityTestTeamMember', function($q) {
+            $q->where('position', 'Ketua');
+        })->first();
 
-        if($role == 'examiner-secretary') {
+        if(($role == 'examiner-secretary') || $is_tuk_chief) {
             $team = $this->checkTuk();
             if($team) {
-                return $this->getInitiators($type, $team, $request->limit, $request->period, $request->start, $request->end);
+                return $this->getInitiators($type, $team, $request->limit, $request->period, $request->start, $request->end, $is_tuk_chief);
             }
         } else {
-            return $this->getInitiators('admin', null, $request->limit, $request->period, $request->start, $request->end);
+            return $this->getInitiators('admin', null, $request->limit, $request->period, $request->start, $request->end, $is_tuk_chief);
         }
 
     }
@@ -254,6 +268,10 @@ class DashboardController extends Controller
         $end = $request->end;
         $type = Auth::user()->roles->first()->name == 'admin' ? '' : 'tuk';
         $role = Auth::user()->roles->first()->name;
+        $is_tuk_chief = LukMember::where('email', Auth::user()->email)
+        ->whereHas('feasibilityTestTeamMember', function($q) {
+            $q->where('position', 'Ketua');
+        })->first();
         $dates = [];
         $amdal = [];
         $ukl_upl = [];
@@ -276,7 +294,7 @@ class DashboardController extends Controller
             $range = CarbonPeriod::create(date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end)))->toArray();
             foreach($range as $r) {
                 $dates[] = $r->format('d-m-Y');
-                $projects = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), $role, $districts);
+                $projects = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), $role, $districts, $is_tuk_chief);
 
                 $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
                 $sppl[] = $projects->where('required_doc', 'SPPL')->count();
@@ -290,7 +308,7 @@ class DashboardController extends Controller
                 $year = $r->format('Y');
                 $month = $r->format('m');
 
-                $projects = $this->getChart($type, $period, $team, $year, $month, null, $role, $districts);
+                $projects = $this->getChart($type, $period, $team, $year, $month, null, $role, $districts, $is_tuk_chief);
 
                 $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
                 $sppl[] = $projects->where('required_doc', 'SPPL')->count();
@@ -301,7 +319,7 @@ class DashboardController extends Controller
             for($year = $start; $year <= $end; $year++) {
                 $dates[] = $year;
 
-                $projects = $this->getChart($type, $period, $team, $year, null, null, $role, $districts);
+                $projects = $this->getChart($type, $period, $team, $year, null, null, $role, $districts, $is_tuk_chief);
 
                 $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
                 $sppl[] = $projects->where('required_doc', 'SPPL')->count();
@@ -317,7 +335,7 @@ class DashboardController extends Controller
             foreach($range as $r) {
                 $dates[] = $r->format('d-m-Y');
 
-                $projects = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), $role, $districts);
+                $projects = $this->getChart($type, $period, $team, null, null, $r->format('Y-m-d'), $role, $districts, $is_tuk_chief);
 
                 $amdal[] = $projects->where('required_doc', 'AMDAL')->count();
                 $sppl[] = $projects->where('required_doc', 'SPPL')->count();
@@ -337,7 +355,7 @@ class DashboardController extends Controller
 
     }
 
-    private function getPermitAuthority($type, $authority, $team, $period, $start, $end)
+    private function getPermitAuthority($type, $authority, $team, $period, $start, $end, $is_tuk_chief)
     {
         $role = Auth::user()->roles->first()->name;
         return Project::where(function($q) use($period, $start, $end) {
@@ -389,8 +407,8 @@ class DashboardController extends Controller
                                     }
                                 }
                             })
-                            ->where(function($q) use($role) {
-                                if(!($role == 'admin' || $role == 'examiner-secretary')) {
+                            ->where(function($q) use($role, $is_tuk_chief) {
+                                if(!($role == 'admin' || $role == 'examiner-secretary' || ($is_tuk_chief))) {
                                     $q->whereHas('tukProject', function ($query) {
                                         $query->where('id_user', Auth::user()->id);
                                     })->orWhereHas('testingMeeting', function ($query) {
@@ -403,7 +421,7 @@ class DashboardController extends Controller
                             ->count();
     }
 
-    private function getInitiators($type, $team, $limit, $period, $start, $end)
+    private function getInitiators($type, $team, $limit, $period, $start, $end, $is_tuk_chief)
     {
         return Project::select('id', 'id_applicant', 'created_at', 'authority', 'auth_province', 'auth_district')
         ->where(function($q) use($period, $start, $end) {
@@ -439,9 +457,9 @@ class DashboardController extends Controller
                 }
             }
         })
-        ->where(function($q) {
+        ->where(function($q) use($is_tuk_chief) {
             $role = Auth::user()->roles->first()->name;
-            if(!($role == 'admin' || $role == 'examiner-secretary')) {
+            if(!($role == 'admin' || $role == 'examiner-secretary' || ($is_tuk_chief))) {
                 $q->whereHas('tukProject', function ($query) {
                    $query->where('id_user', Auth::user()->id);
                 })->orWhereHas('testingMeeting', function ($query) {
@@ -455,12 +473,12 @@ class DashboardController extends Controller
         ->paginate($limit);
     }
 
-    private function getChart($type, $period, $team, $year, $month, $date, $role, $districts)
+    private function getChart($type, $period, $team, $year, $month, $date, $role, $districts, $is_tuk_chief)
     {
         return Project::select('id', 'authority', 'auth_district', 'auth_province', 'required_doc', 'created_at', 'updated_at')
-                        ->where(function($q) use($type, $team, $role, $districts) {
+                        ->where(function($q) use($type, $team, $role, $districts, $is_tuk_chief) {
                           if($type == 'tuk') {
-                              if($role == 'examiner-secretary') {
+                              if(($role == 'examiner-secretary') || $is_tuk_chief) {
                                   if($team->authority == 'Provinsi') {
                                     $q->where([['authority', 'Provinsi'],['auth_province', $team->id_province_name]])
                                     ->orWhere(function($que) use($districts) {
