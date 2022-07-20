@@ -16,7 +16,8 @@
       <div v-loading="loading" class="user-summary-cards formulir-list">
         <el-card v-for="formulator in data" :key="formulator.id">
           <el-row :gutter="32">
-            <el-col :md="16" :sm="16">
+            <!-- <el-col :md="16" :sm="16"> -->
+            <el-col :md="24" :sm="24">
               <div style="display: flex">
                 <div style="margin-right: 15px">
                   <el-upload
@@ -62,9 +63,9 @@
                 </div>
               </div>
             </el-col>
-            <el-col :md="8" :sm="8" align="right">
+            <!-- <el-col :md="8" :sm="8" align="right">
               <el-button type="primary">Profil</el-button>
-            </el-col>
+            </el-col> -->
           </el-row>
         </el-card>
       </div>
