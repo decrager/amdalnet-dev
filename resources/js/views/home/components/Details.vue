@@ -235,7 +235,7 @@
                   <div style="display:flex">
                     <div class="rating">
                       <span>Khawatir </span>
-                      <el-rate v-model="ratings" style="height:300px;" @change="handleChange(ratings)" />
+                      <el-rate v-model="ratings" @change="handleChange(ratings)" />
                       <span> Harapan</span>
                     </div>
                   </div>
