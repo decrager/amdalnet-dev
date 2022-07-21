@@ -590,7 +590,7 @@ class KaReviewController extends Controller
             'no' => 8,
             'name' => 'Peta Batas Wilayah Studi',
             // 'file' => $peta_batas_wilayah_studi ? Storage::url('map/' . $peta_batas_wilayah_studi->stored_filename) : null,
-            'file' => $peta_lokasi_kegiatan ? Storage::disk('public')->temporaryUrl($peta_batas_wilayah_studi->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))) : null,
+            'file' => $peta_batas_wilayah_studi ? Storage::disk('public')->temporaryUrl($peta_batas_wilayah_studi->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))) : null,
         ]);
 
         return response()->json($attachment);
