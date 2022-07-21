@@ -1179,7 +1179,11 @@ export default {
         // console.log(17, kewenanganTemp);
       }
 
-      const anomaliPBG = await authorityResource.list({ listSubProject: this.currentProject.listSubProject });
+      const listProvDist = this.currentProject.listSubProject.map(item => {
+        return { sector: item.sector, biz_type: item.biz_type };
+      });
+
+      const anomaliPBG = await authorityResource.list({ listSubProject: listProvDist });
 
       // console.log(typeof anomaliPBG);
 
