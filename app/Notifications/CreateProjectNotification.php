@@ -13,7 +13,6 @@ class CreateProjectNotification extends Notification
 {
     use Queueable;
     public $project;
-    public $user;
 
 
     /**
@@ -21,10 +20,9 @@ class CreateProjectNotification extends Notification
      *
      * @return void
      */
-    public function __construct(Project $project, User $user)
+    public function __construct(Project $project)
     {
         $this->project = $project;
-        $this->user = $user;
     }
 
     /**
@@ -48,7 +46,7 @@ class CreateProjectNotification extends Notification
     {
         return (new MailMessage)
                     ->subject('Pengajuan Persetujuan Lingkungan')
-                    ->line('Selamat ' . $this->user->name . ' rencana usaha kegiatan Anda sudah berhasil dibuat dengan nama ' . $this->project->project_title);
+                    ->line('Selamat ' . $notifiable->name . ' rencana usaha kegiatan Anda sudah berhasil dibuat dengan nama ' . $this->project->project_title);
     }
 
     /**
@@ -62,7 +60,7 @@ class CreateProjectNotification extends Notification
         return [
             'createdProject' => $this->project,
             'user' => $notifiable,
-            'message' => 'Selamat ' . $this->user->name . ' rencana usaha kegiatan Anda sudah berhasil dibuat dengan nama ' . $this->project->project_title,
+            'message' => 'Selamat ' . $notifiable->name . ' rencana usaha kegiatan Anda sudah berhasil dibuat dengan nama ' . $this->project->project_title,
         ];
     }
 }

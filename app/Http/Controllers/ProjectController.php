@@ -353,7 +353,7 @@ class ProjectController extends Controller
                 $initpro = Initiator::find($project->id_applicant);
                 $user = User::where('email', $initpro->email)->first();
 
-                Notification::send($user, new CreateProjectNotification($project, $user));
+                Notification::send([$user], new CreateProjectNotification($project));
             } catch (\Throwable $th) {
                 //throw $th;
             }
