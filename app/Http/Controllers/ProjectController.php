@@ -34,6 +34,7 @@ use App\Entity\WorkflowStep;
 use App\Notifications\CreateProjectNotification;
 use App\Entity\ProjectSkklFinal;
 use App\Utils\Document;
+use Illuminate\Support\Facades\Notification;
 
 class ProjectController extends Controller
 {
@@ -353,7 +354,7 @@ class ProjectController extends Controller
                 $initpro = Initiator::find($project->id_applicant);
                 $user = User::where('email', $initpro->email)->first();
 
-                Notification::send($user, new CreateProjectNotification($project, $user));
+                Notification::send([$user], new CreateProjectNotification($project));
             } catch (\Throwable $th) {
                 //throw $th;
             }

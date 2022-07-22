@@ -6,12 +6,14 @@ use App\Entity\Announcement;
 use App\Entity\Feedback;
 use App\Entity\Project;
 use App\Http\Resources\FeedbackResource;
+use App\Notifications\SendSPTNotification;
 use DateInterval;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -138,6 +140,9 @@ class FeedbackController extends Controller
         $feedback = Feedback::create($validator);
         if ($feedback){
             DB::commit();
+
+            // === NOTIFIKASI === //
+            Notification::route('mail', $validator['email'])->notify(new SendSPTNotification($feedback));
         } else {
             DB::rollBack();
         }

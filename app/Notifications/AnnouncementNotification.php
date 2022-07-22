@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Entity\Project;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,14 +12,16 @@ class AnnouncementNotification extends Notification
 {
     use Queueable;
 
+    public $project;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Project $project)
     {
-        //
+        $this->project = $project;
     }
 
     /**
@@ -41,9 +44,8 @@ class AnnouncementNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject('Publikasi Pengumuman Rencana Usaha dan/atau Kegiatan')
+                    ->line('Halo ' . $notifiable->name . ', Rencana Usaha dan/atau Kegiatan ' . $this->project->project_title . ' berhasil dipublikasi di Landing Page Amdalnet. Sekarang Anda dapat menerima Saran, Pendapat, dan Tanggapan dari masyarakat terhadap rencana usaha dan/atau kegiatan tersebut.');
     }
 
     /**
@@ -55,7 +57,9 @@ class AnnouncementNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'project' => $this->project,
+            'user' => $notifiable,
+            'message' => 'Halo ' . $notifiable->name . ', Rencana Usaha dan/atau Kegiatan ' . $this->project->project_title . ' berhasil dipublikasi di Landing Page Amdalnet. Sekarang Anda dapat menerima Saran, Pendapat, dan Tanggapan dari masyarakat terhadap rencana usaha dan/atau kegiatan tersebut.',
         ];
     }
 }

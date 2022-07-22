@@ -2,27 +2,25 @@
 
 namespace App\Notifications;
 
-use App\Entity\Project;
-use App\Laravue\Models\User;
+use App\Entity\Feedback;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CreateProjectNotification extends Notification
+class SendSPTNotification extends Notification
 {
     use Queueable;
-    public $project;
-
+    public $feedback;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Project $project)
+    public function __construct(Feedback $feedback)
     {
-        $this->project = $project;
+        $this->feedback = $feedback;
     }
 
     /**
@@ -33,7 +31,7 @@ class CreateProjectNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail'];
     }
 
     /**
@@ -45,8 +43,8 @@ class CreateProjectNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Pengajuan Persetujuan Lingkungan')
-                    ->line('Selamat ' . $notifiable->name . ' rencana usaha kegiatan Anda sudah berhasil dibuat dengan nama ' . $this->project->project_title);
+                    ->subject('Saran, Pendapat, dan Tanggapan')
+                    ->line('Halo ' . $this->feedback->name . ', terimakasih atas Saran, Pendapat, dan Tanggapan anda terhadap rencana usaha dan/atau kegiatan ' . $this->feedback->announcement->project->project_title);
     }
 
     /**
@@ -58,9 +56,9 @@ class CreateProjectNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'createdProject' => $this->project,
+            'feedback' => $this->feedback,
             'user' => $notifiable,
-            'message' => 'Selamat ' . $notifiable->name . ' rencana usaha kegiatan Anda sudah berhasil dibuat dengan nama ' . $this->project->project_title,
+            'message' => 'Halo ' . $this->feedback->name . ', terimakasih atas Saran, Pendapat, dan Tanggapan anda terhadap rencana usaha dan/atau kegiatan ' . $this->feedback->announcement->project->project_title
         ];
     }
 }
