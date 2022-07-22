@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use App\Entity\WorkflowLog;
-
+use App\Notifications\AnnouncementNotification;
+use App\User;
+use Illuminate\Support\Facades\Notification;
 
 // use DB;
 
@@ -274,6 +276,12 @@ class AnnouncementController extends Controller
                         $project->applyWorkFlowTransition('announce', 'draft-announcement', 'announcement');
                         break;
                     default:
+                }
+
+                // === NOTIFIKASI === //
+                $user = User::find($project->id_applicant);
+                if($user) {
+                    Notification::send([$user], new AnnouncementNotification($project));
                 }
             }
 
