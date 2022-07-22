@@ -331,8 +331,8 @@ export default {
       this.pdfError = null;
       this.pdfFile = null;
       this.pdfName = null;
-      if (file.raw.size > 2097152) {
-        this.pdfError = 'Ukuran File Tidak Boleh Melebihi 2 MB';
+      if (file.raw.size > 5242880) {
+        this.pdfError = 'Ukuran File Tidak Boleh Melebihi 5 MB';
         return;
       }
 

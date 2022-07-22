@@ -179,7 +179,7 @@ export default {
       window.open(url, '_blank').focus();
     },
     handleUpload(file, fileList) {
-      if (file.raw.size > 1048576) {
+      if (file.raw.size > 20971520) {
         this.showFileAlert();
         return;
       }
@@ -188,7 +188,7 @@ export default {
       this.attachment[this.selectedUpload].fileName = file.name;
     },
     showFileAlert() {
-      this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {
+      this.$alert('Ukuran file tidak boleh lebih dari 20 MB', '', {
         center: true,
       });
     },
