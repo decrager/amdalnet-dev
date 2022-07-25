@@ -788,7 +788,7 @@ export default {
 
       // Map Tapak
       const projId = this.$route.params && this.$route.params.id;
-      axios.get(`api/map-geojson?id=${projId}&type=tapak`)
+      axios.get(`api/map-geojson?id=${projId}&type=tapak&step=ka&limit=1`)
         .then((response) => {
           response.data.forEach((item) => {
             const getType = JSON.parse(item.feature_layer);

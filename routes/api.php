@@ -157,6 +157,7 @@ Route::apiResource('projects', 'ProjectController');
 Route::get('project-sectors', [ProjectController::class, 'getDistinctSectors']);
 Route::get('project-authority-list', [ProjectController::class, 'getDistinctAuthorities']);
 Route::post('project-ppjk/{project}', [ProjectController::class, 'edit']);
+Route::post('generatepdf', [ProjectController::class, 'generatePdfFromBlob']);
 Route::apiResource('formulator-teams', 'FormulatorTeamController');
 Route::apiResource('environmental-experts', 'EnvironmentalExpertController');
 Route::apiResource('oss-projects', 'OssProjectController');
@@ -318,6 +319,9 @@ Route::group(['prefix' => 'dashboard'], function($r) {
     $r->get('chart', [DashboardController::class, 'chart']);
     $r->get('lpjp-formulators', [DashboardController::class, 'getLpjpFormulators']);
     $r->get('lpjp-count', [DashboardController::class, 'getLpjpCount']);
+    $r->get('lpjp-amount', [DashboardController::class, 'getLpjpAmount']);
+    $r->get('formulator-amount', [DashboardController::class, 'getFormulatorAmount']);
+    $r->get('formulator', [DashboardController::class, 'getFormulator']);
 });
 
 Route::get('environmental-permit', [EnvironmentalPermitController::class, 'index']);

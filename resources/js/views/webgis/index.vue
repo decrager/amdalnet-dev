@@ -278,6 +278,7 @@ import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import * as urlUtils from '@arcgis/core/core/urlUtils';
+import esriConfig from '@arcgis/core/config.js';
 import centroid from '@turf/centroid';
 import Legend from '@arcgis/core/widgets/Legend';
 
@@ -401,15 +402,6 @@ export default {
     });
     await axios.get('/api/initiators').then((result) => {
       this.initiators = result.data.data;
-    });
-    await axios.get('/api/sigap-webgis?service=KLHK/A_Penutupan_Lahan_2020').then((result) => {
-      this.penutupanLahan2020JSON = result.data;
-    });
-    await axios.get('/api/sigap-webgis?service=KLHK/B_Kawasan_Hutan').then((result) => {
-      this.kawasanHutanBJSON = result.data;
-    });
-    await axios.get('/api/sigap-webgis?service=KLHK/D_PIPPIB_2021_Periode_2').then((result) => {
-      this.pippib2021Periode2JSON = result.data;
     });
   },
   methods: {
@@ -647,7 +639,7 @@ export default {
         urlPrefix: 'https://gistaru.atrbpn.go.id/',
       });
 
-      const tapakData = await axios.get(`api/map-geojson?type=tapak&step=ka`);
+      const tapakData = await axios.get(`api/map-geojson?type=tapak&step=ka&limit=1`);
       for (let i = 0; i < tapakData.data.length; i++) {
         const item = tapakData.data[i];
         const getType = JSON.parse(item.feature_layer);
@@ -916,15 +908,15 @@ export default {
 
       this.mapInit.add(rupabumis);
 
-      // urlUtils.addProxyRule({
-      //   proxyUrl: 'proxy/proxy.php',
-      //   urlPrefix: 'https://sigap.menlhk.go.id/',
-      // });
+      esriConfig.request.proxyUrl = 'https://sigap.menlhk.go.id/proxy/proxy.php';
       const penutupanLahan2020 = new MapImageLayer({
-        sourceJSON: this.penutupanLahan2020JSON,
-        imageTransparency: true,
-        visible: false,
-        token: this.token,
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
       });
 
       const penutupanLahanToggle = document.getElementById('layerTutupanLahanCheckBox');
@@ -940,11 +932,13 @@ export default {
       this.mapInit.add(penutupanLahan2020);
 
       const kawasanHutanB = new MapImageLayer({
-        sourceJSON: this.kawasanHutanBJSON,
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-        token: this.token,
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
       });
 
       const kawasanHutanToggle = document.getElementById('layerKawasanHutanCheckBox');
@@ -960,11 +954,13 @@ export default {
       this.mapInit.add(kawasanHutanB);
 
       const pippib2021Periode2 = new MapImageLayer({
-        sourceJSON: this.pippib2021Periode2JSON,
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-        token: this.token,
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
       });
 
       const pipbipToggle = document.getElementById('layerPIPPIBCheckBox');

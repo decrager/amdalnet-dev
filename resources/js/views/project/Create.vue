@@ -676,6 +676,7 @@ const districtResource = new Resource('districts');
 const authorityResource = new Resource('authorities');
 
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import esriConfig from '@arcgis/core/config.js';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import Legend from '@arcgis/core/widgets/Legend';
@@ -1103,15 +1104,6 @@ export default {
     this.map = new Map({
       basemap: 'satellite',
     });
-    await axios.get('/api/sigap-webgis?service=KLHK/A_Penutupan_Lahan_2020').then((result) => {
-      this.penutupanLahan2020JSON = result.data;
-    });
-    await axios.get('/api/sigap-webgis?service=KLHK/B_Kawasan_Hutan').then((result) => {
-      this.kawasanHutanBJSON = result.data;
-    });
-    await axios.get('/api/sigap-webgis?service=KLHK/D_PIPPIB_2021_Periode_2').then((result) => {
-      this.pippib2021Periode2JSON = result.data;
-    });
   },
   methods: {
     getKewenanganOss(val){
@@ -1187,7 +1179,11 @@ export default {
         // console.log(17, kewenanganTemp);
       }
 
-      const anomaliPBG = await authorityResource.list({ listSubProject: this.currentProject.listSubProject });
+      const listProvDist = this.currentProject.listSubProject.map(item => {
+        return { sector: item.sector, biz_type: item.biz_type };
+      });
+
+      const anomaliPBG = await authorityResource.list({ listSubProject: listProvDist });
 
       // console.log(typeof anomaliPBG);
 
@@ -1633,28 +1629,35 @@ export default {
         this.fileMapName = e.target.files[0].name;
       }
 
+      esriConfig.request.proxyUrl = 'https://sigap.menlhk.go.id/proxy/proxy.php';
       const penutupanLahan2020 = new MapImageLayer({
-        sourceJSON: this.penutupanLahan2020JSON,
-        imageTransparency: true,
-        visible: false,
-        visibilityMode: '',
-        token: this.token,
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/A_Penutupan_Lahan_2020/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
       });
 
       const kawasanHutanB = new MapImageLayer({
-        sourceJSON: this.kawasanHutanBJSON,
-        imageTransparency: true,
-        visible: true,
-        visibilityMode: '',
-        token: this.token,
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/B_Kawasan_Hutan/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
       });
 
       const pippib2021Periode2 = new MapImageLayer({
-        sourceJSON: this.pippib2021Periode2JSON,
-        imageTransparency: true,
-        visible: true,
-        visibilityMode: '',
-        token: this.token,
+        url: 'https://sigap.menlhk.go.id/server/rest/services/KLHK/D_PIPPIB_2021_Periode_2/MapServer',
+        sublayers: [
+          {
+            id: 0,
+            visible: true,
+          },
+        ],
       });
 
       const sigapLayer = new GroupLayer({

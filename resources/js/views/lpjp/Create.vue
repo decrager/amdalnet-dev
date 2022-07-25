@@ -219,7 +219,7 @@ export default {
       });
     },
     handleCancel() {
-      this.$router.push('/master/lpjp');
+      this.$router.push({ name: 'lpjp' });
     },
     handleUploadChange(file, fileList) {
       this.fileName = file.name;

@@ -154,6 +154,7 @@ export default {
         type: 'formulator',
         lpjp: 'true',
         idLpjp: this.selectedLPJP,
+        idProject: this.$route.params.id,
       });
     },
     async getTimPenyusun() {

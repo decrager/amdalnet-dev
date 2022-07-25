@@ -277,6 +277,9 @@ class ProjectMapAttachmentController extends Controller
             ->when($request->has('step'), function ($query) use ($request) {
                 return $query->where('project_map_attachments.step', '=', $request->step);
             })
+            ->when($request->has('limit'), function ($query) use ($request) {
+                return $query->take($request->limit);
+            })
             ->where('project_map_attachments.file_type', '=', 'SHP')
             ->whereNotNull('project_map_attachments.geom')
             ->groupBy('project_map_attachments.id')

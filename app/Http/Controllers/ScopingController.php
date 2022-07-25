@@ -58,6 +58,7 @@ class ScopingController extends Controller
                 ->where('ii.id_project', $request->id_project)
                 ->where('ii.is_hypothetical_significant', true)
                 ->orderBy('id', 'asc')
+                ->distinct('is2.id_impact_identification')
                 ->get();
             $id = [];
             $id2 = [];
