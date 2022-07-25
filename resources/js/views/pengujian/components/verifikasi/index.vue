@@ -170,6 +170,16 @@
             Unduh Hasil Pemeriksaan Berkas Administrasi
           </el-button>
         </div>
+        <div v-if="verifications.is_complete === null" style="margin-top: 30px">
+          <div style="display: flex">
+            <el-checkbox v-model="setAuthority" />
+            <p style="margin-top: 0; padding-top: 0; margin-left: 10px">
+              Apakah rencana usaha dan kegiatan yang diajukan tidak sesuai
+              kewenangannya?
+            </p>
+          </div>
+          <change-authority v-if="setAuthority" />
+        </div>
       </el-col>
     </el-row>
     <el-dialog :visible.sync="lpjpPenyusunDialog">
@@ -258,6 +268,7 @@ import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import FormulatorTeamTable from '@/views/pengujian/components/FormulatorTeamDialog';
 import WebgisVerifikasi from '@/views/pengujian/components/verifikasi/Webgis';
+import ChangeAuthority from './ChangeAuthority';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
 const verifikasiRapatResource = new Resource('testing-verification');
@@ -268,6 +279,7 @@ export default {
     Tinymce,
     WebgisVerifikasi,
     FormulatorTeamTable,
+    ChangeAuthority,
   },
   data() {
     return {
@@ -289,6 +301,7 @@ export default {
       loadingDocx: false,
       loadingPDFSPT: false,
       showWebgisDialog: false,
+      setAuthority: false,
       out: '',
       errors: {},
       kesesuaian: [
