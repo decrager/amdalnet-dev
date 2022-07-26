@@ -49,7 +49,12 @@ class ProjectController extends Controller
             return Project::with('feasibilityTest')->whereDoesntHave('team')->orderBy('id', 'DESC')->first();
         } else if ($request->formulatorId) {
             //this code to get project base on formulator
-            return Project::with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+            return Project::with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function($q) {
+                $q->select('id', 'email');
+                $q->with(['user' => function($query) {
+                    $query->select('id', 'email', 'avatar');
+                }]);
+            }, 'kaReviews' => function ($q) {
                 $q->select('id', 'id_project', 'status', 'document_type');
             }, 'meetingReports' => function ($q) {
                 $q->select('id', 'id_project', 'is_accepted', 'document_type');
@@ -120,7 +125,12 @@ class ProjectController extends Controller
             return response()->json(ProjectController::getProject($request->id));
         }
 
-        return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'kaReviews' => function ($q) {
+        return Project::with(['announcement'])->with(['address', 'listSubProject', 'feasibilityTest', 'initiator' => function($q) {
+            $q->select('id', 'email');
+            $q->with(['user' => function($query) {
+                $query->select('id', 'email', 'avatar');
+            }]);
+        }, 'kaReviews' => function ($q) {
             $q->select('id', 'id_project', 'status', 'document_type');
             $q->orderBy('id');
         }, 'testingMeeting' => function ($q) {

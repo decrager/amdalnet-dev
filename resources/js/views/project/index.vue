@@ -48,7 +48,7 @@
               <div class="entity-block">
                 <img
                   class="img-circle"
-                  :src="scope.row.avatar || 'no-image.png'"
+                  :src="checkAvatar(scope.row.initiator) || 'no-image.png'"
                   @error="$event.target.src='no-image.png'"
                 >
                 <span class="name text-muted">
@@ -1478,6 +1478,15 @@ export default {
       this.listQuery.search = '';
       this.listQuery.page = 1;
       this.handleFilter();
+    },
+    checkAvatar(initiator) {
+      if (initiator.user) {
+        if (initiator.user.avatar) {
+          return initiator.user.avatar;
+        }
+      }
+
+      return null;
     },
   },
 };
