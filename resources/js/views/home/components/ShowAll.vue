@@ -304,7 +304,9 @@ export default {
         });
     },
     checkApplicantLogo(initiator) {
-      if (initiator.user) {
+      if (initiator.logo) {
+        return initiator.logo;
+      } else if (initiator.user) {
         if (initiator.user.avatar) {
           return initiator.user.avatar;
         }
