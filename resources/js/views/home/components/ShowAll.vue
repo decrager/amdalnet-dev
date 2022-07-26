@@ -73,7 +73,7 @@
             <el-col :xs="24" :sm="2" style="padding-top:0.5rem;padding-bottom:0.5rem">
               <el-image
                 style="width: 50px; height: 50px;"
-                :src="amdal.applicant_logo"
+                :src="checkApplicantLogo(amdal.project.initiator)"
                 fit="contain"
               >
                 <div slot="error" class="image-slot">
@@ -302,6 +302,15 @@ export default {
         }).finally(() => {
           this.loading = false;
         });
+    },
+    checkApplicantLogo(initiator) {
+      if (initiator.user) {
+        if (initiator.user.avatar) {
+          return initiator.user.avatar;
+        }
+      }
+
+      return null;
     },
   },
 };

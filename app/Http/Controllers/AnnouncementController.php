@@ -39,6 +39,12 @@ class AnnouncementController extends Controller
         $getAllAnnouncement = Announcement::with([
             'project',
             'project.address',
+            'project.initiator' => function($q) {
+                $q->select('id', 'email');
+                $q->with('user', function($query) {
+                    $query->select('id', 'email', 'avatar');
+                });
+            }
             // 'project.initiator'
         ])->withCount('feedbacks')
         ->select('announcements.*')
