@@ -55,7 +55,7 @@
     <div v-if="!disableEdit" slot="footer" class="dialog-footer">
       <el-button :loading="loadingSubmit" type="primary" @click="handleSubmit()"> Submit </el-button>
     </div>
-    <el-row style="margin-top: 20px;">
+    <el-row v-if="!isPemerintah" style="margin-top: 20px;">
       <el-col :span="24">
         <span style="margin-right: 10px;"><h4>Unduh SKKL Final Dari OSS</h4></span>
         <el-button
@@ -74,6 +74,7 @@
 <script>
 import Resource from '@/api/resource';
 // import axios from 'axios';
+import { mapGetters } from 'vuex';
 const skklFinalResource = new Resource('skkl-final');
 const skklResource = new Resource('skkl');
 
@@ -95,6 +96,7 @@ export default {
         title: null,
         date_published: null,
       },
+      isPemerintah: false,
     };
   },
   computed: {
@@ -104,8 +106,16 @@ export default {
     isAdmin() {
       return (this.$store.getters.roles[0].split('-')[0] === 'admin');
     },
+    ...mapGetters({
+      'userInfo': 'user',
+      'userId': 'userId',
+    }),
   },
-  created() {
+  async created() {
+    await this.$store.dispatch('getInitiator', this.userInfo.email);
+    if (this.$store.getters.isPemerintah){
+      this.isPemerintah = true;
+    }
     this.getData();
   },
   methods: {
