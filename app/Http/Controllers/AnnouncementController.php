@@ -286,7 +286,7 @@ class AnnouncementController extends Controller
                 }
 
                 // === NOTIFIKASI === //
-                $user = User::find($project->id_applicant);
+                $user = User::where('email', $project->initiator->email)->first();
                 if($user) {
                     Notification::send([$user], new AnnouncementNotification($project));
                 }
