@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Laravue\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,11 @@ class Initiator extends Model
     // ];
 
     protected $guarded = [];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'email', 'email');
+    }
 
     public function getLogoAttribute()
     {
