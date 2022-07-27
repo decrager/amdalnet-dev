@@ -238,7 +238,7 @@ class TestingVerificationController extends Controller
                 $project->save();
             } else {
                 $project->workflow_apply('review-amdal-form-ka');
-                $project->workflow_apply('return-amdal-form-ka');
+                $project->workflow_apply('return-amdal-form-ka-review');
                 $project->save();
             }
         }

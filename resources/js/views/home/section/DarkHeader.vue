@@ -18,7 +18,7 @@
             <router-link class="nav__link" to="dashboard">Dashboard</router-link>
           </li>
           <li class="nav__item">
-            <button class="btn__link" @click="loginModalShow()">Masuk</button>
+            <router-link to="login" class="btn__link login_link">Masuk</router-link>
           </li>
         </ul>
 
@@ -29,24 +29,16 @@
         <i class="ri-function-line" />
       </div>
     </nav>
-    <LoginModal
-      :show="showIdDialog"
-    />
   </header>
 </template>
 
 <script>
-import LoginModal from '../../webgis/components/LoginModal';
 
 export default {
   name: 'DarkHeaderHome',
-  components: {
-    LoginModal,
-  },
   data() {
     return {
       loading: false,
-      showIdDialog: false,
     };
   },
   created() {
@@ -73,8 +65,9 @@ export default {
     navLink.forEach(n => n.addEventListener('click', linkAction));
   },
   methods: {
-    loginModalShow() {
-      this.showIdDialog = true;
+    toLogin() {
+      this.loading = true;
+      return this.$router.push('/login');
     },
   },
 };
