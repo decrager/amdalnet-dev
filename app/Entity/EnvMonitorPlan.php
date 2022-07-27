@@ -36,4 +36,14 @@ class EnvMonitorPlan extends Model
     {
         return $this->hasMany(EnvPlanIndicator::class, 'id_env_monitor_plan', 'id');
     }
+
+    public function locations()
+    {
+        return $this->hasMany(EnvPlanLocation::class, 'id_env_monitor_plan', 'id');
+    }
+
+    public function forms()
+    {
+        return $this->hasMany(EnvPlanForm::class, 'id_env_monitor_plan', 'id');
+    }
 }

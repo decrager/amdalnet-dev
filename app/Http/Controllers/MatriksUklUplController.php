@@ -117,7 +117,9 @@ class MatriksUklUplController extends Controller
                 $q->with(['forms', 'locations']);
             }];
         } else if ($type == 'upl'){
-            $with = 'envMonitorPlan';
+            $with = ['envMonitorPlan' => function($q) {
+                $q->with(['forms', 'locations']);
+            }];
         }
         /*
             // commented by HH to comply with pelingkupan ver 20220322
@@ -201,9 +203,7 @@ class MatriksUklUplController extends Controller
                     if ($type == 'ukl'){
                         $impact->env_manage_plan = $impact->envManagePlan ? $this->setEnvPlanData($impact->envManagePlan) : null;
                     } else if ($type == 'upl'){
-                        if ($impact->envMonitorPlan != null) {
-                            $impact->env_monitor_plan = $this->setEnvPlanData($impact->envMonitorPlan);
-                        }
+                        $impact->env_monitor_plan = $impact->envMonitorPlan ? $this->setEnvPlanData($impact->envMonitorPlan) : null;
                     }
                     array_push($data, $impact);
                     $index++;

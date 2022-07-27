@@ -64,7 +64,7 @@ class ImpactIdentification extends Model
 
     public function envMonitorPlan()
     {
-        return $this->hasMany(EnvMonitorPlan::class, 'id_impact_identifications', 'id');
+        return $this->hasOne(EnvMonitorPlan::class, 'id_impact_identifications', 'id');
     }
 
     public function impactStudy() {
