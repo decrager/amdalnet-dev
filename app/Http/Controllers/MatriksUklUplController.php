@@ -88,21 +88,16 @@ class MatriksUklUplController extends Controller
     }
 
     private function setEnvPlanData($envPlan) {
-        foreach ($envPlan as $idx=>$plan) {
-            $split_period = explode('-', $plan->period);
-            $plan['period_number'] = null;
-            $plan['period_description'] = null;
-            if (is_numeric($split_period[0])) {
-                $plan['period_number'] = $split_period[0];
-            }
-            if (count($split_period) > 1) {
-                $plan['period_description'] = $split_period[1];
-            }
-            if ($idx == 0) {
-                $plan['is_selected'] = true;
-            } else {
-                $plan['is_selected'] = false;
-            }
+        $split_period = explode('-', $envPlan->period);
+        $envPlan->period_number = null;
+        $envPlan->period_description = null;
+        $envPlan->is_selected = true;
+        $envPlan->errors = [];
+        if (is_numeric($split_period[0])) {
+            $envPlan->period_number = $split_period[0];
+        }
+        if (count($split_period) > 1) {
+            $envPlan->period_description = $split_period[1];
         }
         return $envPlan;
     }
@@ -118,7 +113,9 @@ class MatriksUklUplController extends Controller
         }
         $with = '';
         if ($type == 'ukl'){
-            $with = 'envManagePlan';
+            $with = ['envManagePlan' => function($q) {
+                $q->with(['forms', 'locations']);
+            }];
         } else if ($type == 'upl'){
             $with = 'envMonitorPlan';
         }
@@ -202,9 +199,7 @@ class MatriksUklUplController extends Controller
                     $impact['is_stage'] = false;
                     $impact['index'] = $index;
                     if ($type == 'ukl'){
-                        if ($impact->envManagePlan != null) {
-                            $impact->env_manage_plan = $this->setEnvPlanData($impact->envManagePlan);
-                        }
+                        $impact->env_manage_plan = $impact->envManagePlan ? $this->setEnvPlanData($impact->envManagePlan) : null;
                     } else if ($type == 'upl'){
                         if ($impact->envMonitorPlan != null) {
                             $impact->env_monitor_plan = $this->setEnvPlanData($impact->envMonitorPlan);

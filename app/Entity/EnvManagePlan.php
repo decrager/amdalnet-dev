@@ -39,11 +39,11 @@ class EnvManagePlan extends Model
 
     public function locations()
     {
-        return $this->hasMany(EnvPlanLocations::class, 'id_env_manage_plan', 'id');
+        return $this->hasMany(EnvPlanLocation::class, 'id_env_manage_plan', 'id');
     }
 
     public function forms()
     {
-        return $this->hasMany(EnvPlanForms::class, 'id_env_manage_plan', 'id');
+        return $this->hasMany(EnvPlanForm::class, 'id_env_manage_plan', 'id');
     }
 }
