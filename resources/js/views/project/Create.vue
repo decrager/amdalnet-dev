@@ -1100,12 +1100,19 @@ export default {
     await axios.get('/api/provinces').then((result) => {
       this.provinces = result.data.data;
     });
-    // init map
-    this.map = new Map({
-      basemap: 'satellite',
-    });
+    this.initMap();
   },
   methods: {
+    initMap() {
+      // init map
+      this.map = new Map({
+        basemap: 'satellite',
+      });
+      urlUtils.addProxyRule({
+        proxyUrl: 'proxy/proxy.php',
+        urlPrefix: 'https://gistaru.atrbpn.go.id/',
+      });
+    },
     getKewenanganOss(val){
       if (val === '00'){
         return 'Pusat';
