@@ -65,7 +65,7 @@
               </div>
               <span class="action pull-right">
                 <el-button
-                  v-if="isInitiator && !isScoping && !isDigiWork && scope.row.required_doc !== 'SPPL'"
+                  v-if="isInitiator && !isScoping && !isDigiWork && (scope.row.required_doc !== 'SPPL') && checkInitiatorAndRisk(scope.row)"
                   type="text"
                   href="#"
                   icon="el-icon-user"
@@ -74,7 +74,7 @@
                   Tim Penyusun
                 </el-button>
                 <el-button
-                  v-if="!scope.row.published && isInitiator && scope.row.required_doc !== 'SPPL'"
+                  v-if="!scope.row.published && isInitiator && scope.row.required_doc !== 'SPPL' && checkInitiatorAndRisk(scope.row)"
                   type="text"
                   href="#"
                   icon="el-icon-tickets"
@@ -1487,6 +1487,21 @@ export default {
       }
 
       return null;
+    },
+    checkInitiatorAndRisk(project) {
+      if (this.isAmdal(project)) {
+        return true;
+      } else if (this.isUklUpl(project)) {
+        if (this.initiator.user_type === 'Pemerintah') {
+          return true;
+        } else {
+          if (project.risk_level !== 'Menengah Rendah') {
+            return true;
+          }
+        }
+      }
+
+      return false;
     },
   },
 };
