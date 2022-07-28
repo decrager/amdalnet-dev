@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use App\Entity\ChangeType;
 use App\Entity\EnvManagePlan;
 use App\Entity\EnvMonitorPlan;
+use App\Entity\EnvPlanForm;
+use App\Entity\EnvPlanLocation;
 use App\Entity\Project;
 use PHPUnit\Framework\Constraint\IsEmpty;
 use PhpParser\Node\Expr\Empty_;
@@ -396,56 +398,122 @@ class ImpactIdentificationController extends Controller
         $response = [];
         $idProject = 0;
         DB::beginTransaction();
-        foreach ($params['env_manage_plan_data'] as $impact) {
-            if (!$impact['is_stage']) {
-                $impactObj = ImpactIdentification::findOrFail($impact['id']);
-                if ($idProject == 0) {
-                    $idProject = $impactObj->id_project;
-                }
-                if ($impact['env_manage_plan'] != null) {
-                    foreach ($impact['env_manage_plan'] as $plan) {
-                        $count++;
-                        $toUpdate = EnvManagePlan::find($plan['id']);
-                        if ($toUpdate != null) {
-                            $toUpdate->form = $plan['form'];
-                            $toUpdate->location = $plan['location'];
-                            if (is_numeric($plan['period_number'])) {
-                                $toUpdate->period = $plan['period_number'] . '-' . $plan['period_description'];
+
+        try {
+            foreach ($params['env_manage_plan_data'] as $impact) {
+                if (!$impact['is_stage']) {
+                    $impactObj = ImpactIdentification::findOrFail($impact['id']);
+                    if ($idProject == 0) {
+                        $idProject = $impactObj->id_project;
+                    }
+    
+                    $env_manage_plan = null;
+                    if($impact['env_manage_plan']['id']) {
+                        $env_manage_plan = EnvManagePlan::findOrFail($impact['env_manage_plan']['id']);
+                    } else {
+                        $env_manage_plan = new EnvManagePlan();
+                        $env_manage_plan->id_impact_identifications = $impact['id'];
+                    }
+    
+                    if (is_numeric($impact['env_manage_plan']['period_number'])) {
+                        $env_manage_plan->period = $impact['env_manage_plan']['period_number'] . '-' . $impact['env_manage_plan']['period_description'];
+                    }
+    
+                    $env_manage_plan->executor = $impact['env_manage_plan']['executor'];
+                    $env_manage_plan->supervisor = $impact['env_manage_plan']['supervisor'];
+                    $env_manage_plan->report_recipient = $impact['env_manage_plan']['report_recipient'];
+                    $env_manage_plan->description = $impact['env_manage_plan']['description'];
+                    $env_manage_plan->save();
+    
+                    $forms = $impact['env_manage_plan']['forms'];
+                    if(count($forms)) {
+                        for($i = 0; $i < count($forms); $i++) {
+                            $form_manage = null;
+                            if($forms[$i]['id']) {
+                                $form_manage = EnvPlanForm::findOrFail($forms[$i]['id']);
+                            } else {
+                                $form_manage = new EnvPlanForm();
+                                $form_manage->id_env_manage_plan = $env_manage_plan->id;
                             }
-                            $toUpdate->executor = $plan['executor'];
-                            $toUpdate->supervisor = $plan['supervisor'];
-                            $toUpdate->report_recipient = $plan['report_recipient'];
-                            $toUpdate->description = $plan['description'];
-                            try {
-                                $toUpdate->save();
-                                $updated++;
-                                array_push($response, $toUpdate);
-                            } catch (Exception $e) {
-                                array_push($errors, 'Gagal menyimpan bentuk kelola \'' . $plan['form'] . '\'');
-                            }
+    
+                            $form_manage->description = $forms[$i]['description'];
+                            $form_manage->save();
                         }
                     }
+
+                    $locations = $impact['env_manage_plan']['locations'];
+                    if(count($locations)) {
+                        for($i = 0; $i < count($locations); $i++) {
+                            $location_manage = null;
+                            if($locations[$i]['id']) {
+                                $location_manage = EnvPlanLocation::findOrFail($locations[$i]['id']);
+                            } else {
+                                $location_manage = new EnvPlanLocation();
+                                $location_manage->id_env_manage_plan = $env_manage_plan->id;
+                            }
+    
+                            $location_manage->description = $locations[$i]['description'];
+                            $location_manage->save();
+                        }
+                    }
+    
+                    // if ($impact['env_manage_plan'] != null) {
+                    //     foreach ($impact['env_manage_plan'] as $plan) {
+                    //         $count++;
+                    //         $toUpdate = EnvManagePlan::find($plan['id']);
+                    //         if ($toUpdate != null) {
+                    //             $toUpdate->form = $plan['form'];
+                    //             $toUpdate->location = $plan['location'];
+                    //             if (is_numeric($plan['period_number'])) {
+                    //                 $toUpdate->period = $plan['period_number'] . '-' . $plan['period_description'];
+                    //             }
+                    //             $toUpdate->executor = $plan['executor'];
+                    //             $toUpdate->supervisor = $plan['supervisor'];
+                    //             $toUpdate->report_recipient = $plan['report_recipient'];
+                    //             $toUpdate->description = $plan['description'];
+                    //             try {
+                    //                 $toUpdate->save();
+                    //                 $updated++;
+                    //                 array_push($response, $toUpdate);
+                    //             } catch (Exception $e) {
+                    //                 array_push($errors, 'Gagal menyimpan bentuk kelola \'' . $plan['form'] . '\'');
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
             }
-        }
-        if ($updated == $count) {
+    
+            // DELETED FORMS
+            $deleted_forms = json_decode($params['deleted_form'], true);
+            if(count($deleted_forms) > 0) {
+                EnvPlanForm::whereIn('id', $deleted_forms)->delete();
+            }
+    
+            // DELETED LOCATIONS
+            $deleted_locations = json_decode($params['deleted_location'], true);
+            if(count($deleted_locations) > 0) {
+                EnvPlanLocation::whereIn('id', $deleted_locations)->delete();
+            }
+
             DB::commit();
             $project = Project::findOrFail($idProject);
             if ($project->marking == 'uklupl-mt.form') {
                 $project->workflow_apply('fill-uklupl-matrix-ukl');
                 $project->save();
             }
+
             return response()->json([
                 'status' => 200,
                 'code' => 200,
                 'data' => $response,
             ], 200);
-        } else {
+        } catch(Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status' => 500,
                 'code' => 500,
-                'message' => implode(', ', $errors),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -458,56 +526,121 @@ class ImpactIdentificationController extends Controller
         $response = [];
         $idProject = 0;
         DB::beginTransaction();
-        foreach ($params['env_monitor_plan_data'] as $impact) {
-            if (!$impact['is_stage']) {
-                $impactObj = ImpactIdentification::findOrFail($impact['id']);
-                if ($idProject == 0) {
-                    $idProject = $impactObj->id_project;
-                }
-                if ($impact['env_monitor_plan'] != null) {
-                    foreach ($impact['env_monitor_plan'] as $plan) {
-                        $count++;
-                        $toUpdate = EnvMonitorPlan::find($plan['id']);
-                        if ($toUpdate != null) {
-                            $toUpdate->form = $plan['form'];
-                            $toUpdate->location = $plan['location'];
-                            if (is_numeric($plan['period_number'])) {
-                                $toUpdate->period = $plan['period_number'] . '-' . $plan['period_description'];
+
+        try {
+            foreach ($params['env_monitor_plan_data'] as $impact) {
+                if (!$impact['is_stage']) {
+                    $impactObj = ImpactIdentification::findOrFail($impact['id']);
+                    if ($idProject == 0) {
+                        $idProject = $impactObj->id_project;
+                    }
+    
+                    $env_monitor_plan = null;
+                    if($impact['env_monitor_plan']['id']) {
+                        $env_monitor_plan = EnvMonitorPlan::findOrFail($impact['env_monitor_plan']['id']);
+                    } else {
+                        $env_monitor_plan = new EnvMonitorPlan();
+                        $env_monitor_plan->id_impact_identifications = $impact['id'];
+                    }
+    
+                    if (is_numeric($impact['env_monitor_plan']['period_number'])) {
+                        $env_monitor_plan->period = $impact['env_monitor_plan']['period_number'] . '-' . $impact['env_monitor_plan']['period_description'];
+                    }
+    
+                    $env_monitor_plan->executor = $impact['env_monitor_plan']['executor'];
+                    $env_monitor_plan->supervisor = $impact['env_monitor_plan']['supervisor'];
+                    $env_monitor_plan->report_recipient = $impact['env_monitor_plan']['report_recipient'];
+                    $env_monitor_plan->description = $impact['env_monitor_plan']['description'];
+                    $env_monitor_plan->save();
+    
+                    $forms = $impact['env_monitor_plan']['forms'];
+                    if(count($forms)) {
+                        for($i = 0; $i < count($forms); $i++) {
+                            $form_manage = null;
+                            if($forms[$i]['id']) {
+                                $form_manage = EnvPlanForm::findOrFail($forms[$i]['id']);
+                            } else {
+                                $form_manage = new EnvPlanForm();
+                                $form_manage->id_env_monitor_plan = $env_monitor_plan->id;
                             }
-                            $toUpdate->executor = $plan['executor'];
-                            $toUpdate->supervisor = $plan['supervisor'];
-                            $toUpdate->report_recipient = $plan['report_recipient'];
-                            $toUpdate->description = $plan['description'];
-                            try {
-                                $toUpdate->save();
-                                $updated++;
-                                array_push($response, $toUpdate);
-                            } catch (Exception $e) {
-                                array_push($errors, 'Gagal menyimpan bentuk pemantauan \'' . $plan['form'] . '\'');
-                            }
+    
+                            $form_manage->description = $forms[$i]['description'];
+                            $form_manage->save();
                         }
                     }
+    
+                    $locations = $impact['env_monitor_plan']['locations'];
+                    if(count($locations)) {
+                        for($i = 0; $i < count($locations); $i++) {
+                            $location_manage = null;
+                            if($locations[$i]['id']) {
+                                $location_manage = EnvPlanLocation::findOrFail($locations[$i]['id']);
+                            } else {
+                                $location_manage = new EnvPlanLocation();
+                                $location_manage->id_env_monitor_plan = $env_monitor_plan->id;
+                            }
+    
+                            $location_manage->description = $locations[$i]['description'];
+                            $location_manage->save();
+                        }
+                    }
+    
+                    // if ($impact['env_monitor_plan'] != null) {
+                    //     foreach ($impact['env_monitor_plan'] as $plan) {
+                    //         $count++;
+                    //         $toUpdate = EnvMonitorPlan::find($plan['id']);
+                    //         if ($toUpdate != null) {
+                    //             $toUpdate->form = $plan['form'];
+                    //             $toUpdate->location = $plan['location'];
+                    //             if (is_numeric($plan['period_number'])) {
+                    //                 $toUpdate->period = $plan['period_number'] . '-' . $plan['period_description'];
+                    //             }
+                    //             $toUpdate->executor = $plan['executor'];
+                    //             $toUpdate->supervisor = $plan['supervisor'];
+                    //             $toUpdate->report_recipient = $plan['report_recipient'];
+                    //             $toUpdate->description = $plan['description'];
+                    //             try {
+                    //                 $toUpdate->save();
+                    //                 $updated++;
+                    //                 array_push($response, $toUpdate);
+                    //             } catch (Exception $e) {
+                    //                 array_push($errors, 'Gagal menyimpan bentuk pemantauan \'' . $plan['form'] . '\'');
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
             }
-        }
-        if ($updated == $count) {
-            DB::commit();
-            $project = Project::findOrFail($idProject);
-            if ($project->marking == 'uklupl-mt.matrix-ukl') {
-                $project->workflow_apply('fill-uklupl-matrix-upl');
-                $project->save();
-            }
-            return response()->json([
-                'status' => 200,
-                'code' => 200,
-                'data' => $response,
-            ], 200);
-        } else {
+    
+             // DELETED FORMS
+             $deleted_forms = json_decode($params['deleted_form'], true);
+             if(count($deleted_forms) > 0) {
+                 EnvPlanForm::whereIn('id', $deleted_forms)->delete();
+             }
+     
+             // DELETED LOCATIONS
+             $deleted_locations = json_decode($params['deleted_location'], true);
+             if(count($deleted_locations) > 0) {
+                 EnvPlanLocation::whereIn('id', $deleted_locations)->delete();
+             }
+
+             DB::commit();
+             $project = Project::findOrFail($idProject);
+             if ($project->marking == 'uklupl-mt.matrix-ukl') {
+                 $project->workflow_apply('fill-uklupl-matrix-upl');
+                 $project->save();
+             }
+             return response()->json([
+                 'status' => 200,
+                 'code' => 200,
+                 'data' => $response,
+             ], 200);
+        } catch(Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status' => 500,
                 'code' => 500,
-                'message' => implode(', ', $errors),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
