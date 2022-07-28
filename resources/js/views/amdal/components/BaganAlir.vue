@@ -383,6 +383,7 @@ export default {
       // var w = document.getElementById('bagan').scrollWidth;
 
       var h = document.getElementById('bagan').scrollHeight;
+      var totalPdfPages = Math.ceil(Math.floor(h * 0.264583) / 297) - 1;
       html2canvas(document.querySelector('.process_diagram'), {
         imageTimeout: 4000,
         useCORS: true,
@@ -400,6 +401,22 @@ export default {
           undefined,
           'FAST'
         ); // add image & convert height from px to mm
+
+        //  add additional page if image height more than a3 height
+        for (var i = 1; i <= totalPdfPages; i++) {
+          pdf.addPage('a3', 'l');
+          pdf.addImage(
+            img,
+            'png',
+            0,
+            -297 * i,
+            420,
+            Math.floor(h * 0.264583),
+            undefined,
+            'FAST'
+          );
+        }
+
         document.getElementById('pdf').innerHTML = '';
         return this.uploadPdf(pdf);
       });
@@ -719,7 +736,7 @@ div#public_consultation_negative_summary.public_consultation_summary ul {
   padding: 0;
   line-height: 11px;
   list-style: revert;
-  margin: 0 var(--linewidth)
+  margin: 0 var(--linewidth);
 }
 
 div#public_consultation_positive_summary.public_consultation_summary ul li,
@@ -734,7 +751,7 @@ div#public_consultation_negative_summary.public_consultation_summary ol {
   display: block;
   width: 100%;
   list-style: revert;
-  margin: 0 var(--linewidth)
+  margin: 0 var(--linewidth);
 }
 
 div#public_consultation_positive_summary.public_consultation_summary ol li,
