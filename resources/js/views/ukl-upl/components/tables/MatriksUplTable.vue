@@ -287,7 +287,34 @@ export default {
       this.idProject = parseInt(this.$route.params && this.$route.params.id);
       await axios.get('api/matriks-ukl-upl/table-upl/' + this.idProject)
         .then(response => {
-          this.data = response.data;
+          this.data = response.data.map(x => {
+            if (!x.is_stage) {
+              if (x.env_monitor_plan) {
+                x.env_monitor_plan.forms = x.env_monitor_plan.forms.map((y, idx) => {
+                  y.num = idx + 1;
+                  return y;
+                });
+                x.env_monitor_plan.locations = x.env_monitor_plan.locations.map((y, idx) => {
+                  y.num = idx + 1;
+                  return y;
+                });
+              } else {
+                x.env_monitor_plan = {
+                  id: null,
+                  forms: [],
+                  locations: [],
+                  period_number: null,
+                  period_description: null,
+                  supervisor: null,
+                  report_recipient: null,
+                  executor: null,
+                  description: null,
+                  is_selected: true,
+                };
+              }
+            }
+            return x;
+          });
           this.loading = false;
         });
     },
@@ -319,23 +346,34 @@ export default {
       const data = [...this.data];
       this.data = data.map(x => {
         if (x.env_monitor_plan) {
-          const newEnvMonitorPlan = x.env_monitor_plan.map(y => {
-            y.errors = {};
-            if (!y.description || !y.executor || !y.form || !y.location || !y.period_number || !y.period_description || !y.report_recipient || !y.supervisor) {
-              errors++;
-            }
-            y.errors.description = Boolean(!y.description);
-            y.errors.executor = Boolean(!y.executor);
-            y.errors.form = Boolean(!y.form);
-            y.errors.location = Boolean(!y.location);
-            y.errors.period_number = Boolean(!y.period_number);
-            y.errors.period_description = Boolean(!y.period_description);
-            y.errors.report_recipient = Boolean(!y.report_recipient);
-            y.errors.supervisor = Boolean(!y.supervisor);
-            return y;
-          });
-          x.env_monitor_plan = newEnvMonitorPlan;
-          return x;
+          x.env_monitor_plan.errors = {};
+          if (!x.env_monitor_plan.description || !x.env_monitor_plan.executor || x.env_monitor_plan.forms.length === 0 || x.env_monitor_plan.locations.length === 0 || !x.env_monitor_plan.period_number || !x.env_monitor_plan.period_description || !x.env_monitor_plan.report_recipient || !x.env_monitor_plan.supervisor) {
+            errors++;
+          }
+
+          const formsError = x.env_monitor_plan.forms.filter((z) => Boolean(z.description)).length === 0;
+          console.log('error form: ', formsError);
+
+          if (formsError) {
+            errors++;
+          }
+
+          const locationsError =
+            x.env_monitor_plan.locations.filter((z) => Boolean(z.description)).length === 0;
+          console.log('error location: ', locationsError);
+
+          if (locationsError) {
+            errors++;
+          }
+
+          x.env_monitor_plan.errors.description = Boolean(!x.env_monitor_plan.description);
+          x.env_monitor_plan.errors.executor = Boolean(!x.env_monitor_plan.executor);
+          x.env_monitor_plan.errors.period_number = Boolean(!x.env_monitor_plan.period_number);
+          x.env_monitor_plan.errors.period_description = Boolean(!x.env_monitor_plan.period_description);
+          x.env_monitor_plan.errors.report_recipient = Boolean(!x.env_monitor_plan.report_recipient);
+          x.env_monitor_plan.errors.supervisor = Boolean(!x.env_monitor_plan.supervisor);
+          x.env_monitor_plan.errors.forms = formsError;
+          x.env_monitor_plan.errors.locations = locationsError;
         }
         return x;
       });
@@ -350,18 +388,23 @@ export default {
         impactIdtResource
           .store({
             env_monitor_plan_data: this.data,
+            deleted_form: JSON.stringify(this.deletedForm),
+            deleted_location: JSON.stringify(this.deletedLocation),
           })
           .then((response) => {
             if (response.code === 200) {
+              this.loadingSubmit = false;
               this.$message({
                 message: 'Matriks UPL berhasil disimpan',
                 type: 'success',
                 duration: 5 * 1000,
               });
+              this.getData();
             // this.$emit('handleCheckProjectMarking');
             }
           })
           .catch((err) => {
+            this.loadingSubmit = false;
             this.$message({
               message: err.response.data.message,
               type: 'error',
@@ -385,7 +428,18 @@ export default {
         }
       }
     },
-    handleAddPlan(idImp) {
+    handleAddForm(idx) {
+      if (!this.newForm) {
+        return;
+      }
+
+      const data = this.data[idx].env_monitor_plan.forms;
+      this.data[idx].env_monitor_plan.forms.push({
+        num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
+        id: null,
+        description: this.newForm,
+      });
+      this.newForm = null;
       // if (this.newEnvMonitorPlan[idImp] === undefined ||
       //   this.newEnvMonitorPlan[idImp] === null ||
       //   this.newEnvMonitorPlan[idImp].replace(/\s+/g, '').trim() === '') {
@@ -421,27 +475,34 @@ export default {
       //     });
       // }
     },
-    handleDeletePlan(idImp, id) {
-      // envMonitorPlanResource
-      //   .destroy(id)
-      //   .then((response) => {
-      //     if (response.code === 200) {
-      //       this.$message({
-      //         message: 'Bentuk UPL berhasil dihapus',
-      //         type: 'success',
-      //         duration: 5 * 1000,
-      //       });
-      //       // remove env_monitor_plan from this.data
-      //       this.removePlanFromImpact(parseInt(idImp), parseInt(id));
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     this.$message({
-      //       message: err.response.data.message,
-      //       type: 'error',
-      //       duration: 5 * 1000,
-      //     });
-      //   });
+    handleAddLocation(idx) {
+      if (!this.newLocation) {
+        return;
+      }
+
+      const data = this.data[idx].env_monitor_plan.locations;
+      this.data[idx].env_monitor_plan.locations.push({
+        num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
+        id: null,
+        description: this.newLocation,
+      });
+      this.newLocation = null;
+    },
+    handleDeleteForm(idx, id, num) {
+      if (id) {
+        this.deletedForm.push(id);
+      }
+      this.data[idx].env_monitor_plan.forms = [...this.data[idx].env_monitor_plan.forms.filter(x => {
+        return x.num !== num;
+      })];
+    },
+    handleDeleteLocation(idx, id, num) {
+      if (id) {
+        this.deletedLocation.push(id);
+      }
+      this.data[idx].env_monitor_plan.locations = [...this.data[idx].env_monitor_plan.locations.filter(x => {
+        return x.num !== num;
+      })];
     },
     checkError(errors, key) {
       if (errors) {
