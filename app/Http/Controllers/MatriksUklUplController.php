@@ -29,20 +29,16 @@ class MatriksUklUplController extends Controller
             ->get();
         $uklCount = 0;
         foreach ($impacts as $impact) {
-            if (!empty($impact->envManagePlan)) {
-                if (!empty($impact->envManagePlan[0]->form)) {
-                    $uklCount++;
-                }
+            if ($impact->envManagePlan) {
+                $uklCount++;
             }
         }
         // $uklFilled = $uklCount == count($impacts);
         $uklFilled = $uklCount > 0;
         $uplCount = 0;
         foreach ($impacts as $impact) {
-            if (!empty($impact->envMonitorPlan)) {
-                if (!empty($impact->envMonitorPlan[0]->form)) {
-                    $uplCount++;
-                }
+            if ($impact->envMonitorPlan) {
+                $uplCount++;
             }
         }
         // $uplFilled = $uplCount == count($impacts);
