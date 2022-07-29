@@ -784,9 +784,7 @@ class ExportDocument extends Controller
         Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
         unlink($tmpName);
 
-        if(!$document_attachment) {
-            $document_attachment = new DocumentAttachment();
-        }
+        $document_attachment = new DocumentAttachment();
         $document_attachment->id_project = $project->id;
         $document_attachment->attachment = 'workspace/' . $save_file_name;
         $document_attachment->type = 'Dokumen UKL UPL';
