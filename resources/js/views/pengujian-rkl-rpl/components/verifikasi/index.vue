@@ -215,7 +215,7 @@
           <div v-for="(docs, index) in publicConsultationDocs" :key="index">
             <p>
               <b>{{ docs.doc_type }}:</b>
-              <a :href="docs.filepath" style="color: #216221" target="_blank">
+              <a :href="docs.url" style="color: #216221" target="_blank">
                 Lihat
               </a>
             </p>
@@ -357,7 +357,7 @@ export default {
         if (data.public_consultation.docs) {
           this.publicConsultationDocs = data.public_consultation.docs.map(
             (x) => {
-              return JSON.parse(x.doc_json);
+              return { ...JSON.parse(x.doc_json), url: x.file };
             }
           );
         }
