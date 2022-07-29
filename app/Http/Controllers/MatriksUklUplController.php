@@ -29,20 +29,16 @@ class MatriksUklUplController extends Controller
             ->get();
         $uklCount = 0;
         foreach ($impacts as $impact) {
-            if (!empty($impact->envManagePlan)) {
-                if (!empty($impact->envManagePlan[0]->form)) {
-                    $uklCount++;
-                }
+            if ($impact->envManagePlan) {
+                $uklCount++;
             }
         }
         // $uklFilled = $uklCount == count($impacts);
         $uklFilled = $uklCount > 0;
         $uplCount = 0;
         foreach ($impacts as $impact) {
-            if (!empty($impact->envMonitorPlan)) {
-                if (!empty($impact->envMonitorPlan[0]->form)) {
-                    $uplCount++;
-                }
+            if ($impact->envMonitorPlan) {
+                $uplCount++;
             }
         }
         // $uplFilled = $uplCount == count($impacts);
@@ -88,21 +84,16 @@ class MatriksUklUplController extends Controller
     }
 
     private function setEnvPlanData($envPlan) {
-        foreach ($envPlan as $idx=>$plan) {
-            $split_period = explode('-', $plan->period);
-            $plan['period_number'] = null;
-            $plan['period_description'] = null;
-            if (is_numeric($split_period[0])) {
-                $plan['period_number'] = $split_period[0];
-            }
-            if (count($split_period) > 1) {
-                $plan['period_description'] = $split_period[1];
-            }
-            if ($idx == 0) {
-                $plan['is_selected'] = true;
-            } else {
-                $plan['is_selected'] = false;
-            }
+        $split_period = explode('-', $envPlan->period);
+        $envPlan->period_number = null;
+        $envPlan->period_description = null;
+        $envPlan->is_selected = true;
+        $envPlan->errors = [];
+        if (is_numeric($split_period[0])) {
+            $envPlan->period_number = $split_period[0];
+        }
+        if (count($split_period) > 1) {
+            $envPlan->period_description = $split_period[1];
         }
         return $envPlan;
     }
@@ -118,9 +109,13 @@ class MatriksUklUplController extends Controller
         }
         $with = '';
         if ($type == 'ukl'){
-            $with = 'envManagePlan';
+            $with = ['envManagePlan' => function($q) {
+                $q->with(['forms', 'locations']);
+            }];
         } else if ($type == 'upl'){
-            $with = 'envMonitorPlan';
+            $with = ['envMonitorPlan' => function($q) {
+                $q->with(['forms', 'locations']);
+            }];
         }
         /*
             // commented by HH to comply with pelingkupan ver 20220322
@@ -202,13 +197,9 @@ class MatriksUklUplController extends Controller
                     $impact['is_stage'] = false;
                     $impact['index'] = $index;
                     if ($type == 'ukl'){
-                        if ($impact->envManagePlan != null) {
-                            $impact->env_manage_plan = $this->setEnvPlanData($impact->envManagePlan);
-                        }
+                        $impact->env_manage_plan = $impact->envManagePlan ? $this->setEnvPlanData($impact->envManagePlan) : null;
                     } else if ($type == 'upl'){
-                        if ($impact->envMonitorPlan != null) {
-                            $impact->env_monitor_plan = $this->setEnvPlanData($impact->envMonitorPlan);
-                        }
+                        $impact->env_monitor_plan = $impact->envMonitorPlan ? $this->setEnvPlanData($impact->envMonitorPlan) : null;
                     }
                     array_push($data, $impact);
                     $index++;

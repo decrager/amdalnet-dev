@@ -174,8 +174,7 @@
           <div style="display: flex">
             <el-checkbox v-model="setAuthority" />
             <p style="margin-top: 0; padding-top: 0; margin-left: 10px">
-              Apakah rencana usaha dan kegiatan yang diajukan tidak sesuai
-              kewenangannya?
+              Rencana usaha dan/atau kegiatan yang diajukan tidak sesuai kewenangannya
             </p>
           </div>
           <change-authority v-if="setAuthority" />

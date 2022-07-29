@@ -41,6 +41,13 @@ class ListRender
                 $new_string .= $arr_number[$i];
             }
         }
-        return str_replace('</li>', '</span>', $new_string);
+        $result = str_replace('</li>', '</span>', $new_string);
+
+        if($type == 'ul') {
+            $result = str_replace('<ul style="list-style-type: square;">', '', $result);
+            $result = str_replace('<li>', '<span style="display:inline-block; font-family: ' . $font_style .'; font-size: ' . $font_size . '; padding: 0; margin: 0;">&#9632; ', $result);
+        }
+
+        return $result;
     }
 }
