@@ -84,9 +84,8 @@ export default {
       const projectName = await axios.get(
         `/api/dokumen-ukl-upl/${this.$route.params.id}`
       );
-      this.projects =
-        window.location.origin + '/api/workspace/document/get?filename=' + projectName.data;
-      this.projectName = projectName.data;
+      this.projects = projectName.data.file_name;
+      this.projectName = projectName.data.project_title;
       this.loading = false;
     },
     async exportDocxPhpWord() {

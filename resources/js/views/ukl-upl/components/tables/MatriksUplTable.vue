@@ -80,7 +80,7 @@
                   </el-button>
                 </el-tooltip>
               </div>
-              <el-input v-model="newForm" placeholder="Bentuk Pemantauan..." type="textarea" :rows="2" />
+              <el-input v-model="scope.row.new_form" placeholder="Bentuk Pemantauan..." type="textarea" :rows="2" />
               <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round @click="handleAddForm(scope.$index)" />
               <small
                 v-if="checkError(scope.row.env_monitor_plan.errors, 'forms')"
@@ -127,7 +127,7 @@
                   </el-button>
                 </el-tooltip>
               </div>
-              <el-input v-model="newLocation" placeholder="Lokasi..." type="textarea" :rows="2" />
+              <el-input v-model="scope.row.new_location" placeholder="Lokasi..." type="textarea" :rows="2" />
               <el-button v-if="isFormulator" icon="el-icon-plus" circle style="margin-top:1em;display:block;" round @click="handleAddLocation(scope.$index)" />
               <small
                 v-if="checkError(scope.row.env_monitor_plan.errors, 'locations')"
@@ -241,8 +241,6 @@ export default {
       data: [],
       deletedForm: [],
       deletedLocation: [],
-      newForm: null,
-      newLocation: null,
       periode: [
         {
           label: 'per Hari',
@@ -429,7 +427,7 @@ export default {
       }
     },
     handleAddForm(idx) {
-      if (!this.newForm) {
+      if (!this.data[idx].new_form) {
         return;
       }
 
@@ -437,9 +435,9 @@ export default {
       this.data[idx].env_monitor_plan.forms.push({
         num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
         id: null,
-        description: this.newForm,
+        description: this.data[idx].new_form,
       });
-      this.newForm = null;
+      this.data[idx].new_form = null;
       // if (this.newEnvMonitorPlan[idImp] === undefined ||
       //   this.newEnvMonitorPlan[idImp] === null ||
       //   this.newEnvMonitorPlan[idImp].replace(/\s+/g, '').trim() === '') {
@@ -476,7 +474,7 @@ export default {
       // }
     },
     handleAddLocation(idx) {
-      if (!this.newLocation) {
+      if (!this.data[idx].new_location) {
         return;
       }
 
@@ -484,9 +482,9 @@ export default {
       this.data[idx].env_monitor_plan.locations.push({
         num: data.length === 0 ? 1 : data[data.length - 1].num + 1,
         id: null,
-        description: this.newLocation,
+        description: this.data[idx].new_location,
       });
-      this.newLocation = null;
+      this.data[idx].new_location = null;
     },
     handleDeleteForm(idx, id, num) {
       if (id) {

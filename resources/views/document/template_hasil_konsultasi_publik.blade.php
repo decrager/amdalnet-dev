@@ -194,7 +194,7 @@
         @endphp
         @if($doc_data['doc_type'] === 'Foto Dokumentasi')
         <div style="width: 100%; text-align:center; margin-bottom: 40px;">
-            <img src="{{ Storage::disk('public')->path(str_replace('/storage/', '', $doc_data['filepath'])) }}" alt=""
+            <img src="{{ $doc->file }}" alt=""
                 style="width: 70%;">
         </div>
         @endif

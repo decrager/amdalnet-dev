@@ -83,7 +83,7 @@
                   :key="photo.id"
                   class="photo-list"
                 >
-                  <a :href="photo.filepath" target="_blank" class="photo-link">
+                  <a :href="photo.file" target="_blank" class="photo-link">
                     {{ photo.name }}
                   </a>
                   <a
@@ -370,6 +370,7 @@ export default {
               id: doc.id,
               filepath: docJson.filepath,
               name: `Foto Dokumentasi ${idx + 1}`,
+              file: doc.file,
             };
           });
       }
