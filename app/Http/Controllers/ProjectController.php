@@ -109,7 +109,7 @@ class ProjectController extends Controller
                 ->leftJoin('formulators', 'formulators.id', '=', 'formulator_team_members.id_formulator')
                 ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
                 ->leftJoin('workflow_states', 'workflow_states.state', '=' , 'projects.marking')
-                ->distinct()
+                ->distinct(['projects.id'])
                 ->groupBy('projects.id', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'workflow_states.public_tracking')
                 ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
         } else if ($request->registration_no) {
@@ -216,7 +216,7 @@ class ProjectController extends Controller
             ->leftJoin('announcements', 'announcements.project_id', '=', 'projects.id')
             ->leftJoin('project_address', 'project_address.id_project', '=', 'projects.id')
             ->leftJoin('workflow_states', 'workflow_states.state', '=', 'projects.marking')
-            ->distinct()
+            ->distinct(['projects.id'])
             // ->groupBy('projects.id', 'projects.id_project', 'initiators.name', 'users.avatar', 'formulator_teams.id', 'announcements.id')
             ->orderBy('projects.' . $request->orderBy, $request->order)->paginate($request->limit);
     }
