@@ -14,6 +14,8 @@ use App\Entity\MeetingReport;
 use App\Entity\Project;
 use App\Entity\ProjectFilter;
 use App\Entity\ProjectStage;
+use App\Utils\Html;
+use App\Utils\ListRender;
 use App\Utils\TemplateProcessor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +24,9 @@ use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\Element\Table;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class ExportDocument extends Controller
 {
@@ -481,18 +485,19 @@ class ExportDocument extends Controller
         //     File::makeDirectory(storage_path('app/public/workspace/'));
         // }
 
+        
         Carbon::setLocale('id');
         $project = Project::findOrFail($id_project);
+        
+        $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen UKL UPL']])->first();
+        if($document_attachment) {
+            return [
+                'file_name' => $document_attachment->attachment,
+                'project_title' => strtolower(str_replace('/', '-', $project->project_title))
+            ];
+        }
 
         $save_file_name = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx';
-
-        // if (File::exists(storage_path('app/public/workspace/' . $save_file_name))) {
-        //     return $save_file_name;
-        // }
-
-        if (Storage::disk('public')->exists('workspace/' . $save_file_name)) {
-            return $save_file_name;
-        }
 
         $project_title_big = strtoupper($project->project_title);
         $pemrakarsa = $project->initiator->name;
@@ -560,6 +565,7 @@ class ExportDocument extends Controller
         $oll = [];
         $po = [];
         $pertek_block = [];
+        $html_data = [];
 
         foreach($stages as $s) {
             foreach($impact_identification as $imp) {
@@ -567,18 +573,14 @@ class ExportDocument extends Controller
                 $component = '';
 
                 $id_stages = null;
-
-                if ($imp->subProjectComponent) {
-                    if ($imp->subProjectComponent->id_project_stage) {
-                        $id_stages = $imp->subProjectComponent->id_project_stage;
-                    } else {
-                        $id_stages = $imp->subProjectComponent->component->id_project_stage;
-                    }
+                
+                if ($imp->component) {
+                    $id_stages = $imp->component->component->id_project_stage;
 
                     if ($id_stages == $s->id) {
-                        if ($imp->subProjectRonaAwal) {
-                            $ronaAwal = $imp->subProjectRonaAwal->id_rona_awal ? $imp->subProjectRonaAwal->ronaAwal->name : $imp->subProjectRonaAwal->name;
-                            $component = $imp->subProjectComponent->id_component ? $imp->subProjectComponent->component->name : $imp->subProjectComponent->name;
+                        if ($imp->ronaAwal) {
+                            $ronaAwal = $imp->ronaAwal->rona_awal->name;
+                            $component = $imp->component->component->name;
                         } else {
                             continue;
                         }
@@ -594,20 +596,19 @@ class ExportDocument extends Controller
                 // component type
                 $component_type = $this->getComponentType($imp);
 
-                $komponen_desc = '';
-
-                if($imp->subProjectRonaAwal->description_common) {
-                    $komponen_desc = $imp->subProjectRonaAwal->description_common . '</w:t><w:p/><w:t>' . $imp->subProjectRonaAwal->description_specific;
-                } else {
-                    $komponen_desc = $imp->subProjectRonaAwal->description_specific;
-                }
+                $komponen_desc = $this->renderHtmlTable($imp->component->description);
 
                 if($s->name  == 'Pra Konstruksi') {
                     if(array_search($component, array_column($com_pra_konstruksi, 'com_pra_konstruksi_name')) === false) {
                         $com_pra_konstruksi[] = [
                             'com_pra_konstruksi_name' => $component,
-                            'com_pra_konstruksi_desc' => $komponen_desc,
-                            'com_pra_konstruksi_unit' => $imp->subProjectRonaAwal->unit
+                            'com_pra_konstruksi_desc' => '${pk_desc_' . $imp->id . '}',
+                            'com_pra_konstruksi_unit' => $imp->ronaAwal->measurement
+                        ];
+
+                        $html_data[] = [
+                            'label' => '${pk_desc_' . $imp->id . '}',
+                            'data' => $komponen_desc
                         ];
                     }
 
@@ -618,8 +619,13 @@ class ExportDocument extends Controller
                     if(array_search($component, array_column($com_konstruksi, 'com_konstruksi_name')) === false) {
                         $com_konstruksi[] = [
                             'com_konstruksi_name' => $component,
-                            'com_konstruksi_desc' => $komponen_desc,
-                            'com_konstruksi_unit' => $imp->subProjectRonaAwal->unit
+                            'com_konstruksi_desc' => '${k_desc_' . $imp->id . '}',
+                            'com_konstruksi_unit' => $imp->ronaAwal->measurement
+                        ];
+
+                        $html_data[] = [
+                            'label' => '${k_desc_' . $imp->id . '}',
+                            'data' => $komponen_desc
                         ];
                     }
 
@@ -643,8 +649,13 @@ class ExportDocument extends Controller
                     if(array_search($component, array_column($com_operasi, 'com_operasi_name')) === false) {
                         $com_operasi[] = [
                             'com_operasi_name' => $component,
-                            'com_operasi_desc' => $komponen_desc,
-                            'com_operasi_unit' => $imp->subProjectRonaAwal->unit
+                            'com_operasi_desc' => '${o_desc_' . $imp->id . '}',
+                            'com_operasi_unit' => $imp->ronaAwal->measurement
+                        ];
+
+                        $html_data[] = [
+                            'label' => '${o_desc_' . $imp->id . '}',
+                            'data' => $komponen_desc
                         ];
                     }
 
@@ -665,7 +676,7 @@ class ExportDocument extends Controller
 
                 if($s->name == 'Pasca Operasi') {
                     $dl_pasca_operasi[] = [
-                        'dl_pasca_operasi_name' => "$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->subProjectRonaAwal->unit
+                        'dl_pasca_operasi_name' => "$change_type $ronaAwal akibat $component" . ' dengan besaran ' . $imp->ronaAwal->measurement
                     ];
 
                     $po[] = $this->getUklUplData($imp, 'po', $component, $change_type, $ronaAwal);
@@ -762,12 +773,27 @@ class ExportDocument extends Controller
         $templateProcessor->cloneRowAndSetValues('oll', $oll);
         $templateProcessor->cloneRowAndSetValues('po', $po);
 
+        if(count($html_data) > 0) {
+            for($i = 0; $i < count($html_data); $i++) {
+                $templateProcessor->setComplexBlock($html_data[$i]['label'], $html_data[$i]['data']);
+            }
+        }
+
         // $templateProcessor->saveAs(storage_path('app/public/workspace/' . $save_file_name));
         $tmpName = $templateProcessor->save();
         Storage::disk('public')->put('workspace/' . $save_file_name, file_get_contents($tmpName));
         unlink($tmpName);
 
-        return $save_file_name;
+        $document_attachment = new DocumentAttachment();
+        $document_attachment->id_project = $project->id;
+        $document_attachment->attachment = 'workspace/' . $save_file_name;
+        $document_attachment->type = 'Dokumen UKL UPL';
+        $document_attachment->save();
+
+        return [
+            'file_name' => $document_attachment->attachment,
+            'project_title' => strtolower(str_replace('/', '-', $project->project_title))
+        ];
     }
 
     public function exportUklUplPdf($idProject)
@@ -800,17 +826,9 @@ class ExportDocument extends Controller
 
     private function getComponentType($imp) {
         $component_type = '';
-        if($imp->subProjectRonaAwal->id_rona_awal) {
-            $com_type = ComponentType::find($imp->subProjectRonaAwal->ronaAwal->id_component_type);
-            if($com_type) {
-                $component_type = $com_type->name;
-            }
-        } else {
-            if($imp->subProjectRonaAwal->id_component_type) {
-                $com_type = ComponentType::find($imp->subProjectRonaAwal->id_component_type);
-                if($com_type) {
-                    $component_type = $com_type->name;
-                }
+        if($imp->ronaAwal->rona_awal) {
+            if($imp->ronaAwal->rona_awal->componentType) {
+                return $imp->ronaAwal->rona_awal->componentType->name;
             }
         }
 
@@ -820,35 +838,46 @@ class ExportDocument extends Controller
     private function getUklUplData($imp, $st, $component, $change_type, $ronaAwal) {
         $ukl_bentuk = '';
         $ukl_lokasi = '';
-        $ukl_periode = '';
+        $ukl_periode = $imp->envManagePlan ? $imp->envManagePlan->period : '';
         $upl_bentuk = '';
         $upl_lokasi = '';
-        $upl_periode = '';
-        $upl_pelaksana = '';
-        $upl_pengawas = '';
-        $upl_pelaporan = '';
+        $upl_periode = $imp->envMonitorPlan ? $imp->envMonitorPlan->period : '';
+        $upl_pelaksana = $imp->envManagePlan ? $imp->envManagePlan->executor : '';
+        $upl_pengawas = $imp->envManagePlan ? $imp->envManagePlan->supervisor : '';
+        $upl_pelaporan = $imp->envManagePlan ? $imp->envManagePlan->report_recipient : '';
 
         if($imp->envManagePlan) {
-            if($imp->envManagePlan->first()) {
-                $ukl = EnvManagePlan::where('id_impact_identifications', $imp->id)->get();
-                foreach($ukl as $uk) {
-                    $ukl_bentuk .= "- {$uk->form} </w:t><w:p/><w:t>";
-                    $ukl_lokasi .= "- {$uk->location} </w:t><w:p/><w:t>";
-                    $ukl_periode .= "- {$uk->period} </w:t><w:p/><w:t>";
+            if($imp->envManagePlan->forms) {
+                if($imp->envManagePlan->forms->first()) {
+                    foreach($imp->envManagePlan->forms as $uk) {
+                        $ukl_bentuk .= "- {$uk->description} </w:t><w:p/><w:t>";
+                    }
+                }
+            }
+
+            if($imp->envManagePlan->locations) {
+                if($imp->envManagePlan->locations->first()) {
+                    foreach($imp->envManagePlan->locations as $uk)  {
+                        $ukl_lokasi .= "- {$uk->description} </w:t><w:p/><w:t>";
+                    }
                 }
             }
         }
 
         if($imp->envMonitorPlan) {
-            if($imp->envMonitorPlan->first()) {
-                $upl = EnvMonitorPlan::where('id_impact_identifications', $imp->id)->get();
-                foreach($upl as $up) {
-                    $upl_bentuk .= "- {$up->form} </w:t><w:p/><w:t>";
-                    $upl_lokasi .= "- {$up->location} </w:t><w:p/><w:t>";
-                    $upl_periode .= "- {$up->period} </w:t><w:p/><w:t>";
-                    $upl_pelaksana .= "{$up->executor} </w:t><w:p/><w:t>";
-                    $upl_pengawas .= "{$up->supervisor} </w:t><w:p/><w:t>";
-                    $upl_pelaporan .= "{$up->report_recipient} </w:t><w:p/><w:t>";
+            if($imp->envMonitorPlan->forms) {
+               if($imp->envMonitorPlan->forms->first()) {
+                   foreach($imp->envMonitorPlan->forms as $up) {
+                       $upl_bentuk .= "- {$up->description} </w:t><w:p/><w:t>";
+                   }
+               }
+            }
+
+            if($imp->envMonitorPlan->locations) {
+                if($imp->envMonitorPlan->locations->first()) {
+                    foreach($imp->envMonitorPlan->locations as $up) {
+                        $upl_lokasi .= "- {$up->description} </w:t><w:p/><w:t>";
+                    }
                 }
             }
         }
@@ -922,5 +951,52 @@ class ExportDocument extends Controller
         }
 
         return $name;
+    }
+
+    private function renderHtmlTable($data, $width = null, $font = null, $font_size = null)
+    {
+        $table = new Table();
+        $table->addRow();
+        $cell = null;
+        if($width) {
+            $cell = $table->addCell($width);
+        } else {
+            $cell = $table->addCell();
+        }
+        $selected_font = $font ? $font : 'Cambria';
+        $selected_font_size = $font_size ? $font_size : '16.5';
+        $content = '';
+        if($data) {
+            $content = str_replace('<p>', '<p style="font-family: ' . $selected_font . '; font-size: ' . $selected_font_size . 'px;">', $this->replaceHtmlList($data));
+        }
+        Html::addHtml($cell, $content);
+        return $table;
+    }
+
+    private function replaceHtmlList($data, $font = 'Cambria')
+    {
+        if($data) {
+            $removed_nested_p = $this->removeNestedParagraph($data);
+            return ListRender::parsingList($removed_nested_p, $font, '11px');
+        } else {
+            return '';
+        }
+    }
+
+    private function removeNestedParagraph($data)
+    {
+        $old_data = $data;
+        $new_data = null;
+
+        while(true) {
+            $new_data = preg_replace('/(.*<p>)(((?!<\/p>).)*?)(<p>)(.*?)(<\/p>)(.*)/', '\1\2\5\7', $old_data);
+            if($new_data == $old_data) {
+                break;
+            } else {
+                $old_data = $new_data;
+            }
+        }
+
+        return $new_data;
     }
 }

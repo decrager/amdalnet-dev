@@ -178,6 +178,8 @@ class MatriksUklUplController extends Controller
             $item['project_stage_name'] = $stage->name;
             array_push($data, $item);
             foreach ($impacts as $impact) {
+                $impact->new_form = null;
+                $impact->new_location = null;
                 if (empty($impact->id_project_stage)) {
                     $impact->id_project_stage = $impact->id_project_stage_master;
                 }
