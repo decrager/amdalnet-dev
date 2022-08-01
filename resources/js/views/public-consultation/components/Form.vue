@@ -228,7 +228,7 @@
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer" align="right">
-      <el-button type="danger" @click="handleBack()"> Kembali </el-button>
+      <el-button type="danger" @click="handleBack"> Kembali </el-button>
       <el-button
         :loading="loading_submit"
         type="warning"
@@ -384,8 +384,7 @@ export default {
     },
     handleBack() {
       this.$router.push({
-        name: 'publishProject',
-        params: { project: this.currentProject },
+        name: 'listProject',
       });
     },
     checkSubmit(isPublish) {
