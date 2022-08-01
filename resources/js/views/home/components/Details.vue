@@ -188,7 +188,7 @@
             <el-col :span="12">
               <el-form-item prop="file">
                 <div style="margin-top:2rem; display:block;">
-                  <div class="text-white fw-bold" style="text-align:center">Unggah Foto Selfie</div>
+                  <div class="text-white fw-bold" style="text-align:center">Unggah Foto Selfie<small style="color: red; display: block; margin-top: -1.5em;">(Ukuran Maks 1 MB)</small></div>
                   <div style="width:200px; height:200px; background:#d0d0d0 none repeat scroll 0% 0%; display:block; margin:auto; line-height: 307px;text-align: center;">
                     <img v-if="url" :src="url" style="width:96%;height: 96%;object-fit: cover;">
                   </div>
