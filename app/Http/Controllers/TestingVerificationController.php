@@ -394,7 +394,7 @@ class TestingVerificationController extends Controller
             if($verification->forms) {
                 if($verification->forms->first()) {
                     foreach($verification->forms as $f) {
-                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' ? 'download' : 'non-download';
+                        $type = $f->name == 'tata_ruang' || $f->name == 'persetujuan_awal' || $f->name == 'pippib' || $f->name == 'hasil_penapisan' || $f->name == 'dokumen_nib' ? 'download' : 'non-download';
                         $link = null;
                         if($f->name == 'tata_ruang') {
                             $link = $project->ktr;
@@ -412,6 +412,10 @@ class TestingVerificationController extends Controller
                                 $peta_sosial_pdf,
                                 $peta_ekologis_pdf,
                                 $peta_wilayah_studi_pdf);
+                        } else if($f->name == 'hasil_penapisan') {
+                            $link = $project->oss_required_doc;
+                        } else if($f->name == 'dokumen_nib') {
+                            $link = $project->initiator->nib_doc_oss;
                         }
 
 
@@ -495,6 +499,23 @@ class TestingVerificationController extends Controller
                     'type' => 'non-download'
                   ],
             ];
+
+            // IF INITIATOR NOT REGISTER VIA OSS
+            if($project->initiator->nib_doc_oss) {
+                array_push($form, [
+                    'name' => 'hasil_penapisan',
+                    'link' => $project->oss_required_doc,
+                    'suitability' => null,
+                    'description' => null,
+                    'type' => 'download'
+                ],[
+                    'name' => 'dokumen_nib',
+                    'link' => $project->initiator->nib_doc_oss,
+                    'suitability' => null,
+                    'description' => null,
+                    'type' => 'download'
+                ]);
+            }
         }
 
 

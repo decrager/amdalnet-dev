@@ -331,6 +331,9 @@ export default {
         cv_penyusun: 'CV Penyusun Amdal',
         sistematika_penyusunan:
           'Sistematika penyusunan dokumen sesuai dengan PP 22/2021',
+        hasil_penapisan:
+          'Hasil Penapisan OSS Rencana Usaha dan/atau Kegiatan di OSS',
+        dokumen_nib: 'Dokumen NIB Pemrakarsa',
       },
     };
   },

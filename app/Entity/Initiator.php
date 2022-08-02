@@ -41,4 +41,13 @@ class Initiator extends Model
 
         return null;
     }
+
+    public function getNibDocOssAttribute()
+    {
+        if(isset($this->attributes['nib_doc_oss']) && $this->attributes['nib_doc_oss'] != null) {
+            return Storage::disk('public')->temporaryUrl($this->attributes['nib_doc_oss'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
+        }
+
+        return null;
+    }
 }
