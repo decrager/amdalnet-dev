@@ -62,7 +62,7 @@ class MeetingInvitation extends Notification
                     ->line(new HtmlString('Hari/Tanggal: ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('dddd') . ', ' . Carbon::createFromFormat('Y-m-d', $this->meeting->meeting_date)->isoFormat('D MMMM Y') . '<br>Waktu: ' . date('H:i', strtotime($this->meeting->meeting_time)) . '<br>' . 'Tempat: ' . $this->meeting->location))
                     ->line('Demikian undangan ini kami sampaikan, mengingat pentingnya acara tersebut maka dimohon kehadiran tepat pada waktunya, Atas perhatiannya, kami ucapkan terimakasih.')
                     ->salutation(new HtmlString('Hormat kami,<br>' . Auth::user()->name))
-                    ->attach(Storage::disk('public')->path($this->meeting->rawInvitationFile()));
+                    ->attach(Storage::disk('public')->get($this->meeting->rawInvitationFile()));
     }
 
     /**
