@@ -137,7 +137,8 @@ export default {
     );
     listElm.addEventListener('scroll', (e) => {
       if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-        if (this.limit < this.notifications.total) {
+        const difference = this.notifications.total - this.limit;
+        if (difference > 0 || (difference >= -5 && difference < 0)) {
           this.loadNotifications();
         }
       }
