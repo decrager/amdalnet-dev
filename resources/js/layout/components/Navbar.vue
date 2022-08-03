@@ -13,11 +13,13 @@
             <!-- <i class="el-icon-bell" style="cursor: pointer; font-size: 18px; vertical-align: middle;" /> -->
           </el-badge>
           <el-dropdown-menu slot="dropdown" class="notif-dropdown">
-            <el-dropdown-item v-for="notif in notifications" :key="notif.id" :command="notif">
-              <div>
-                {{ notif.data.message }}
-              </div>
-            </el-dropdown-item>
+            <div v-loading="loadingNotif">
+              <el-dropdown-item v-for="notif in notifications.notifications" :key="notif.id" :command="notif">
+                <div>
+                  {{ notif.data.message }}
+                </div>
+              </el-dropdown-item>
+            </div>
           </el-dropdown-menu>
         </el-dropdown>
         <!-- <search id="header-search" class="right-menu-item" /> -->
@@ -73,6 +75,12 @@ export default {
     // Screenfull,
     // SizeSelect,
   },
+  data() {
+    return {
+      limit: 5,
+      loadingNotif: false,
+    };
+  },
   computed: {
     ...mapGetters([
       'sidebar',
@@ -97,7 +105,7 @@ export default {
       return roles.join(' | ');
     },
     sumNotifUnread(){
-      return this.notifications.filter(e => e.read_at === null).length === 0;
+      return !this.notifications.unread;
     },
   },
   mounted(){
@@ -118,10 +126,22 @@ export default {
     if (window.Echo) {
       window.Echo.channel('notif')
         .listen('NotificationEvent', e => {
-          // this.$store.dispatch('user/getInfo');
-          console.log(e);
+          this.limit = 5;
+          this.$store.dispatch('user/getNotifications', this.limit);
         });
     }
+
+    // Detect when scrolled to bottom.
+    const listElm = document.querySelector(
+      'ul.el-dropdown-menu.notif-dropdown'
+    );
+    listElm.addEventListener('scroll', (e) => {
+      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+        if (this.limit < this.notifications.total) {
+          this.loadNotifications();
+        }
+      }
+    });
   },
   methods: {
     handleNotif(notif){
@@ -141,6 +161,12 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout');
       this.$router.push('/');
+    },
+    async loadNotifications() {
+      this.loadingNotif = true;
+      this.limit += 5;
+      await this.$store.dispatch('user/getNotifications', this.limit);
+      this.loadingNotif = false;
     },
   },
 };

@@ -353,4 +353,18 @@ class UserController extends BaseController
             'file' => 'required',
         ];
     }
+
+    public function getNotifications(Request $request)
+    {
+        $user = User::findOrFail(Auth::user()->id);
+        $notifications = $user->notifications()->take($request->limit)->get();
+        $total = $user->notifications()->count();
+        $unread = $user->unreadNotifications()->count();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'total' => $total,
+            'unread' => $unread
+        ]);
+    }
 }

@@ -80,6 +80,8 @@ Route::namespace('Api')->group(function () {
                 ->header('Cache-Control', 'no-cache, max-age=0, no-store, private, must-revalidate');
         });
 
+        Route::get('/user/notifications', 'UserController@getNotifications');
+
         // Api resource routes
         Route::apiResource('roles', 'RoleController')->middleware('permission:' . Acl::PERMISSION_MANAGE_PERMISSION);
         Route::apiResource('users', 'UserController')->middleware('permission:' . Acl::PERMISSION_MANAGE_USER);
