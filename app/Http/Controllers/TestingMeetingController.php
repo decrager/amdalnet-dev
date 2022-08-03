@@ -159,7 +159,13 @@ class TestingMeetingController extends Controller
                     $meeting->is_invitation_sent = true;
                     $meeting->save();
 
-                    Notification::send($user, new MeetingInvitation($meeting));
+                    $tmpName = tempnam(sys_get_temp_dir(),'');
+                    $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
+                    file_put_contents($tmpName, $tmpFile);
+                    
+                    Notification::send($user, new MeetingInvitation($meeting, $tmpName));
+                    
+                    unlink($tmpName);
     
                     // === WORKFLOW === //
                     if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
@@ -672,10 +678,13 @@ class TestingMeetingController extends Controller
             $tuk_logo = $tuk->logo;
         }
 
+        // set character if pemrakarsa is not registered via oss
+        $oss_char = $project->initiator->nib_doc_oss ? '_oss' : '';
+
         if($authority_big == 'PUSAT') {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes.docx');
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes' . $oss_char .'.docx');
         } else {
-            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes_tuk.docx');
+            $templateProcessor = new TemplateProcessor('template_berkas_adm_yes_tuk' . $oss_char . '.docx');
             $templateProcessor->setValue('tuk_address', $tuk_address);
             $templateProcessor->setValue('tuk_telp', $tuk_telp);
             $templateProcessor->setValue('authority_big', $authority_big);
@@ -1037,6 +1046,18 @@ class TestingMeetingController extends Controller
                 return 'V';
             } else {
                 return '';
+            }
+        } else if($type == 'hasil_penapisan') {
+            if($is_exist == 'exist') {
+                return $project->oss_required_doc ? 'V' : '';
+            } else {
+                return $project->oss_required_doc ? '' : 'V';
+            }
+        } else if($type == 'dokumen_nib') {
+            if($is_exist == 'exist') {
+                return $project->initiator->nib_doc_oss ? 'V' : '';
+            } else {
+                return $project->initiator->nib_doc_oss ? '' : 'V';
             }
         }
 

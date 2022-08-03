@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ProjectMapAttachmentResource;
+use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
 class ProjectMapAttachmentController extends Controller
@@ -167,7 +168,8 @@ class ProjectMapAttachmentController extends Controller
 
         // $headers = ['Content-Type' =>  'application/octet-stream'];
         // return  Response::download($file, $map->original_filename, $headers, 'attachment');
-        return redirect()->away(Storage::disk('public')->temporaryUrl('map/' . $map->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
+        // return redirect()->away(Storage::disk('public')->temporaryUrl('map/' . $map->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
+        return redirect()->away(Storage::temporaryUrl('map/' . $map->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
     }
 
 

@@ -12,7 +12,7 @@
         <el-col :span="11" style="margin-right:1em;">
 
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP
+            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaEkologisSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPES)"><strong>{{ petaEkologisSHP }}<i class="el-icon-circle-check" /></strong></span>
                 <!-- &nbsp;<i class="el-icon-delete"></i>-->
               </div>
@@ -26,7 +26,7 @@
         </el-col>
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi PDF
+            <legend style="margin:0 2em;">Versi PDF <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaEkologisPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPEP)"><strong>{{ petaEkologisPDF }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
             <form v-if="isFormulator" @submit.prevent="handleSubmit">
@@ -40,7 +40,7 @@
       <el-form-item label="Peta Batas Sosial" :required="required">
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP
+            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaSosialSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSS)"><strong>{{ petaSosialSHP }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
 
@@ -54,7 +54,7 @@
 
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi PDF
+            <legend style="margin:0 2em;">Versi PDF <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaSosialPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSP)"><strong>{{ petaSosialPDF }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
 
@@ -69,7 +69,7 @@
       <el-form-item label="Peta Batas Wilayah Studi" :required="required">
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi SHP
+            <legend style="margin:0 2em;">Versi SHP <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaStudiSHP != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuS)"><strong>{{ petaStudiSHP }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
 
@@ -82,7 +82,7 @@
 
         <el-col :span="11" style="margin-right:1em;">
           <fieldset style="border:1px solid #e0e0e0; border-radius: 0.3em; width:100%; padding: .5em;">
-            <legend style="margin:0 2em;">Versi PDF
+            <legend style="margin:0 2em;">Versi PDF <small style="color: red;">(Maks. 10 MB)</small>
               <div v-if="petaStudiPDF != ''" class="current">tersimpan: <span style="color: green" @click="download(idPSuP)"><strong>{{ petaStudiPDF }}<i class="el-icon-circle-check" /></strong></span></div>
             </legend>
 

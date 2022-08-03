@@ -47,7 +47,8 @@ class FormulatorTeam extends Model
             if(str_contains($this->attributes['evidence_letter'], 'storage/')) {
                 return $this->attributes['evidence_letter'];
             } else {
-                return Storage::url($this->attributes['evidence_letter']);
+                // return Storage::url($this->attributes['evidence_letter']);
+                return Storage::disk('public')->temporaryUrl($this->attributes['evidence_letter'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')));
             }
         }
 
