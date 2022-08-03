@@ -163,8 +163,14 @@ class TestMeetRKLRPLController extends Controller
                     // === UPDATE STATUS INVITATION === //
                     $meeting->is_invitation_sent = true;
                     $meeting->save();
+
+                    $tmpName = tempnam(sys_get_temp_dir(),'');
+                    $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
+                    file_put_contents($tmpName, $tmpFile);
     
-                    Notification::send($user, new MeetingInvitation($meeting));
+                    Notification::send($user, new MeetingInvitation($meeting, $tmpName));
+
+                    unlink($tmpName);
     
                     // === WORKFLOW === //
                     if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
