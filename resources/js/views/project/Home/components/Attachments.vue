@@ -1,24 +1,27 @@
 <template>
   <div style="padding:2em;">
-    <el-table
-      v-loading="loading"
-      :data="data"
-    >
-      <el-table-column label="No." width="70" />
-      <el-table-column label="Lampiran" />
-      <el-table-column label="" />
-    </el-table>
+    <screening-attachments />
+    <amdal-attachments />
+    <ukl-upl-attachments />
   </div>
 </template>
 <script>
 import Resource from '@/api/resource';
+import ScreeningAttachments from './sections/ScreeningAttachments.vue';
+import AmdalAttachments from './sections/AmdalAttachments.vue';
+import UklUplAttachments from './sections/UklUplAttachments.vue';
 
 export default {
   name: 'ProjectAttachments',
+  components: { ScreeningAttachments, AmdalAttachments, UklUplAttachments },
   props: {
-    id: { // id project
+    /*    id: { // id project
       type: Number,
       default: 0,
+    },*/
+    project: {
+      type: Object,
+      default: () => {},
     },
   },
   data(){
@@ -30,6 +33,7 @@ export default {
   },
   mounted(){
     // this.getProjectAttachments();
+    console.log(this.project);
   },
   methods: {
     async getProjectAttachments(){
