@@ -484,8 +484,8 @@ export default {
       });
     },
     handleUploadSertifikat(file, fileList) {
-      if (file.raw.size > 1048576) {
-        this.showFileAlert();
+      if (file.raw.size > 5242880) {
+        this.showFileAlert('5');
         return;
       }
 
@@ -494,7 +494,7 @@ export default {
     },
     handleUploadCv(file, fileList) {
       if (file.raw.size > 1048576) {
-        this.showFileAlert();
+        this.showFileAlert('1');
         return;
       }
 
@@ -516,8 +516,8 @@ export default {
         this.currentFormulator.membership_status = null;
       }
     },
-    showFileAlert() {
-      this.$alert('File Yang Diupload Melebihi 1 MB', {
+    showFileAlert(val) {
+      this.$alert(`File Yang Diupload Melebihi ${val} MB`, {
         confirmButtonText: 'OK',
       });
     },
