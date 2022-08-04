@@ -22,7 +22,7 @@
             v-if="showDocumentAndal"
             :src="
               'https://docs.google.com/gview?url=' +
-              projectsAndal +
+              encodeURIComponent(projectsAndal) +
               '&embedded=true'
             "
             width="100%"
@@ -42,7 +42,7 @@
           <iframe
             v-if="showDocument"
             :src="
-              'https://docs.google.com/gview?url=' + projects + '&embedded=true'
+              'https://docs.google.com/gview?url=' + encodeURIComponent(projects) + '&embedded=true'
             "
             width="100%"
             height="723px"

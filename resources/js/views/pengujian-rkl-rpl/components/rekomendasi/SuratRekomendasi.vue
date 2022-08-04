@@ -25,7 +25,7 @@
         <iframe
           v-if="projects !== null"
           :src="
-            'https://docs.google.com/gview?url=' + projects + '&embedded=true'
+            'https://docs.google.com/gview?url=' + encodeURIComponent(projects) + '&embedded=true'
           "
           width="100%"
           height="723px"
