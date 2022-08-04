@@ -10,7 +10,7 @@
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :span="16"><div class="grid-content bg-purple" />
           <!-- <iframe v-show="showDocument" :src="'https://view.officeapps.live.com/op/embed.aspx?src='+projects" width="100%" height="723px" frameborder="0" /> -->
-          <iframe v-show="showDocument" :src="'https://docs.google.com/gview?url='+projects+'&embedded=true'" width="100%" height="723px" frameborder="0" />
+          <iframe v-show="showDocument" :src="'https://docs.google.com/gview?url='+encodeURIComponent(projects)+'&embedded=true'" width="100%" height="723px" frameborder="0" />
         </el-col>
         <el-col :span="8"><div class="grid-content bg-purple" />
 

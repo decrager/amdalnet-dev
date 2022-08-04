@@ -467,59 +467,97 @@ export default {
     },
     onChangeFiles(idx){
       const index = idx - 1;
+      let errorSize = 0;
       switch (idx) {
         case 1: // ekologis SHP
-          this.files[index] = this.$refs.peSHP.files;
-          this.param[index] = {
-            attachment_type: 'ecology',
-            file_type: 'SHP',
-          };
+          if (this.$refs.peSHP.files[0].size <= 1048576) {
+            this.files[index] = this.$refs.peSHP.files;
+            this.param[index] = {
+              attachment_type: 'ecology',
+              file_type: 'SHP',
+            };
+          } else {
+            errorSize = 1;
+            this.$refs.peSHP.value = null;
+          }
           // this.param[index]['file_type'] = 'SHP';
           break;
         case 2:
           // ekologis PDF
-          this.files[index] = this.$refs.pePDF.files;
-          this.param[index] = {
-            attachment_type: 'ecology',
-            file_type: 'PDF',
-          };
+          if (this.$refs.pePDF.files[0].size <= 10485760) {
+            this.files[index] = this.$refs.pePDF.files;
+            this.param[index] = {
+              attachment_type: 'ecology',
+              file_type: 'PDF',
+            };
+          } else {
+            errorSize = 1;
+            this.$refs.pePDF.value = null;
+          }
           // this.param[index]['file_type'] = 'PDF';
           // this.embedSrc = window.URL.createObjectURL(this.$refs.pePDF.files);
           break;
         case 3:
-          this.files[index] = this.$refs.psSHP.files;
-          this.param[index] = {
-            attachment_type: 'social',
-            file_type: 'SHP',
-          };
+          if (this.$refs.psSHP.files[0].size <= 10485760) {
+            this.files[index] = this.$refs.psSHP.files;
+            this.param[index] = {
+              attachment_type: 'social',
+              file_type: 'SHP',
+            };
+          } else {
+            errorSize = 1;
+            this.$refs.psSHP.value = null;
+          }
           // sosial SHP
           break;
         case 4:
-          this.files[index] = this.$refs.psPDF.files;
-          this.param[index] = {
-            attachment_type: 'social',
-            file_type: 'PDF',
-          };
+          if (this.$refs.psPDF.files[0].size <= 10485760) {
+            this.files[index] = this.$refs.psPDF.files;
+            this.param[index] = {
+              attachment_type: 'social',
+              file_type: 'PDF',
+            };
+          } else {
+            errorSize = 1;
+            this.$refs.psPDF.value = null;
+          }
 
           // sosial PDF
           break;
         case 5:
-          this.files[index] = this.$refs.pwSHP.files;
-          this.param[index] = {
-            attachment_type: 'study',
-            file_type: 'SHP',
-          };
+          if (this.$refs.pwSHP.files[0].size <= 10485760) {
+            this.files[index] = this.$refs.pwSHP.files;
+            this.param[index] = {
+              attachment_type: 'study',
+              file_type: 'SHP',
+            };
+          } else {
+            errorSize = 1;
+            this.$refs.pwSHP.value = null;
+          }
           // studi SHP
           break;
         case 6:
-          this.files[index] = this.$refs.pwPDF.files;
-          this.param[index] = {
-            attachment_type: 'study',
-            file_type: 'PDF',
-          };
+          if (this.$refs.pwPDF.files[0].size <= 10485760) {
+            this.files[index] = this.$refs.pwPDF.files;
+            this.param[index] = {
+              attachment_type: 'study',
+              file_type: 'PDF',
+            };
+          } else {
+            errorSize = 1;
+            this.$refs.pwPDF.value = null;
+          }
           // studi PDF
           break;
         default:
+      }
+
+      if (errorSize > 0) {
+        this.$alert('Ukuran file tidak boleh lebih dari 10 MB', '', {
+          center: true,
+        });
+        return;
       }
       // this.showMap(idx);
       this.uploadMap();

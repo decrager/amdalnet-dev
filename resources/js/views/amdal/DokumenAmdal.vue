@@ -37,7 +37,7 @@
           /> -->
           <iframe
             v-if="showDocument"
-            :src="`https://view.officeapps.live.com/op/embed.aspx?src=${projects}`"
+            :src="`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(projects)}`"
             width="100%"
             height="723px"
             frameborder="0"
