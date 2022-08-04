@@ -45,7 +45,11 @@
         <span>{{ scope.row.name }}</span>
       </template>
     </el-table-column>
-    <el-table-column prop="project_title" label="Asal" name="project_title" />
+    <el-table-column label="Asal">
+      <template slot-scope="scope">
+        {{ scope.row.project_title }}
+      </template>
+    </el-table-column>
 
     <el-table-column label="Aksi">
       <template slot-scope="scope">

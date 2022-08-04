@@ -42,6 +42,8 @@ use App\Http\Controllers\ProjectOtherComponentController;
 use App\Http\Controllers\SubProjectComponentController;
 use App\Http\Controllers\ProjectKegiatanLainSekitarController;
 use App\Http\Controllers\SigapWebgisController;
+use App\Http\Controllers\ProjectAttachmentController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -175,7 +177,10 @@ Route::apiResource('expert-banks', 'ExpertBankController');
 Route::apiResource('public-consultations', 'PublicConsultationController');
 Route::apiResource('rona-awals', 'RonaAwalController');
 Route::apiResource('components', 'ComponentController');
+Route::get('master-ronaawal', 'RonaAwalController@getMasterRonaAwal');
+Route::post('master-ronaawal', 'RonaAwalController@setMasterRonaAwal');
 Route::get('master-component', 'ComponentController@getMasterComponent');
+Route::post('master-component', 'ComponentController@setMasterComponent');
 Route::apiResource('kegiatan-lain-sekitar', 'KegiatanLainSekitarController');
 Route::apiResource('project-stages', 'ProjectStageController');
 Route::apiResource('sops', 'SopController');

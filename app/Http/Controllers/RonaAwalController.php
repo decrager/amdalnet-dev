@@ -52,7 +52,7 @@ class RonaAwalController extends Controller
                 ->get());
         }
 
-        return RonaAwal::select('rona_awal.*', 'components.name as component')->where(function ($query) use ($request) {
+        return RonaAwal::select('rona_awal.*', 'component_types.name as component', 'projects.project_title')->where(function ($query) use ($request) {
             return $request->document_type ? $query->where('result_risk', $request->document_type) : '';
         })->where(
             function ($query) use ($request) {
@@ -63,7 +63,7 @@ class RonaAwalController extends Controller
                 $query->where(function($q) use($request) {
                    $q->whereRaw("LOWER(rona_awal.name) LIKE '%" . strtolower($request->search) . "%'");
                 })->orWhere(function($q) use($request) {
-                    $q->whereRaw("LOWER(components.name) LIKE '%" . strtolower($request->search) . "%'");
+                    $q->whereRaw("LOWER(component_types.name) LIKE '%" . strtolower($request->search) . "%'");
                  });
             }
         })
@@ -71,10 +71,11 @@ class RonaAwalController extends Controller
             if (isset($request->is_master) && ($request->is_master !== null)){
                 return $query->where('rona_awal.is_master', $request->is_master);
             }
+
             return $query->where('rona_awal.is_master', true);
         })
-        ->leftJoin('components', 'rona_awal.id_component_type', '=', 'components.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
-
+        ->leftJoin('component_types', 'rona_awal.id_component_type', '=', 'component_types.id')
+        ->leftJoin('projects', 'rona_awal.originator_id', '=', 'projects.id')->orderBy('rona_awal.id', 'DESC')->paginate($request->limit ? $request->limit : 10);
     }
 
     /**
@@ -191,4 +192,42 @@ class RonaAwalController extends Controller
 
         return response()->json(null, 204);
     }
+
+
+    public function getMasterRonaAwal(Request $request){
+        if(!isset($request->component) || (!isset($request->name))){
+            return response()->json(['error' => 'Parameter pencarian tidak lengkap'], 416);
+        }
+
+        $res = RonaAwal::master()->where('id_component_type', $request->component)
+          ->whereRaw('lower(name) = ?', array(strtolower($request->name)))->first();
+        return response()->json(['data' => $res], 200);
+    }
+    public function setMasterRonaAwal(Request $request){
+        if(!isset($request->id))
+        {
+            return response()->json(['error' => 'Parameter pencarian tidak lengkap'], 416);
+        }
+
+        $res = RonaAwal::where('id', $request->id)->first();
+        if (!$res){
+            return response()->json(['error' => 'Rona Awal tidak ditemukan'], 404);
+        }
+        $master = RonaAwal::master()->where('id_component_type', $res->id_component_type)
+        ->whereRaw('lower(name) = ?', array(strtolower($res->name)))->first();
+
+        if ($master){
+            return response()->json(['error' => 'Sudah ada data master rona awal '.$res->name ], 413);
+        }
+
+        try {
+            $res->is_master = true;
+            $res->save();
+            return response()->json(['data' => $res, 'message' => 'Rona Awal '.$res->name.' berhasil disimpan sebagai master data'], 200);
+
+        } catch (QueryException $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

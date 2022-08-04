@@ -40,7 +40,9 @@
               <project-public-consultation v-if="project_id > 0" :id="project_id" />
             </el-tab-pane>
             <el-tab-pane label="Lampiran">
-              <project-attachments :id="project_id" />
+              <!-- <screening-attachments :data="data"/>
+              <amdal-attachments v-if="data.required_doc === 'AMDAL'" />
+              <ukl-upl-attachments v-else-if="data.required_doc === 'UKL-UPL'" /> -->
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -56,7 +58,7 @@ import ProjectLocation from './components/Location.vue';
 import ProjectFormulatorTeam from './components/FormulatorTeam.vue';
 import ProjectPublicFeedback from './components/SPT.vue';
 import ProjectPublicConsultation from './components/Consultation.vue';
-import ProjectAttachments from './components/Attachments.vue';
+// import ProjectAttachments from './components/Attachments.vue';
 
 import Resource from '@/api/resource';
 const projectResource = new Resource('projects');
@@ -71,7 +73,7 @@ export default {
     ProjectFormulatorTeam,
     ProjectPublicFeedback,
     ProjectPublicConsultation,
-    ProjectAttachments,
+    // ProjectAttachments,
   },
   props: {
     id: {

@@ -1,34 +1,36 @@
 <template>
-  <div>
-    <div class="filter-container">
-      <el-row :gutter="32">
-        <el-col :sm="24" :md="10">
-          <el-input
-            v-model="listQuery.search"
-            suffix-icon="el-icon search"
-            placeholder="Pencarian..."
-            @input="inputSearch"
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="handleSearch"
-            />
-          </el-input>
-        </el-col>
-      </el-row>
-    </div>
-    <component-table-tidak-baku
+  <div class="filter-container">
+    <el-button
+      class="filter-item"
+      type="primary"
+      icon="el-icon-plus"
+      @click="handleCreate"
+    >
+      {{ 'Tambah Master Rona Lingkungan' }}
+    </el-button>
+    <el-row :gutter="32" style="margin-bottom: 1.5em;">
+      <el-col :sm="24" :md="10">
+        <el-input
+          v-model="listQuery.search"
+          suffix-icon="el-icon search"
+          placeholder="Pencarian..."
+          @input="inputSearch"
+        >
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="handleSearch"
+          />
+        </el-input>
+      </el-col>
+    </el-row>
+    <rona-awal-table
       :loading="loading"
       :list="list"
       :page="listQuery.page"
       :limit="listQuery.limit"
-      :options="componentOptions"
-      @sort="onTableSort"
-      @projectStageFilter="onProjectStageFilter"
       @handleEditForm="handleEditForm($event)"
       @handleDelete="handleDelete($event)"
-      @setMaster="setMaster($event)"
     />
     <pagination
       v-show="total > 0"
@@ -37,30 +39,30 @@
       :limit.sync="listQuery.limit"
       @pagination="handleFilter"
     />
-    <component-tidak-baku-dialog
-      :show="showDialog"
-      :component="component"
-      @close="closeDialog"
+    <rona-awal-dialog
+      :rona="ronaAwal"
+      :show="show"
+      :options="componentOptions"
+      @handleSubmitRonaAwal="handleSubmitRonaAwal"
+      @handleCancelRonaAwal="handleCancelRonaAwal"
     />
-
   </div>
 </template>
+
 <script>
 import Resource from '@/api/resource';
+import RonaAwalTable from '@/views/rona-awal/components/RonaAwalTable.vue';
 import Pagination from '@/components/Pagination';
-import ComponentTableTidakBaku from './components/ComponentTableTidakBaku.vue';
-import ComponentTidakBakuDialog from './components/ComponentTidakBakuDialog.vue';
-
-const componentResource = new Resource('components');
-// const masterComponentResource = new Resource('master-component');
-const projectStageResource = new Resource('project-stages');
+import RonaAwalDialog from './components/RonaAwalDialog.vue';
+const ronaAwalesource = new Resource('rona-awals');
+// const componentResource = new Resource('components');
 
 export default {
-  name: 'NonStandardisedComponent',
+  name: 'FormalisedHue',
   components: {
+    RonaAwalTable,
     Pagination,
-    ComponentTableTidakBaku,
-    ComponentTidakBakuDialog,
+    RonaAwalDialog,
   },
   props: {
     componentOptions: {
@@ -70,61 +72,55 @@ export default {
   },
   data() {
     return {
-
       list: [],
-      nonFormal: [],
       loading: true,
       listQuery: {
         page: 1,
         limit: 10,
         search: null,
-        is_master: 0,
+        is_master: 1,
       },
       timeoutId: null,
       total: 0,
+      ronaAwal: {},
       show: false,
-      showDialog: false,
-
-      component: {},
+      // componentOptions: [],
     };
   },
   created() {
     this.getList();
-    // this.getProjectStage();
+    // this.getComponentList();
   },
   methods: {
-    handleCancelComponent() {
-      this.component = {};
-      this.show = false;
-    },
-    handleSubmitComponent() {
-      if (this.component.id !== undefined) {
-        componentResource
-          .updateMultipart(this.component.id, this.component)
+    handleSubmitRonaAwal() {
+      if (this.ronaAwal.id !== undefined) {
+        ronaAwalesource
+          .updateMultipart(this.ronaAwal.id, this.ronaAwal)
           .then((response) => {
             this.$message({
               type: 'success',
-              message: 'Komponen Berhasil Diupdate',
+              message: 'Rona Lingkungan Berhasil Diupdate',
               duration: 5 * 1000,
             });
             this.show = false;
-            this.component = {};
+            this.ronaAwal = {};
             this.getList();
           })
           .catch((error) => {
             console.log(error);
           });
       } else {
-        componentResource
-          .store(this.component)
+        ronaAwalesource
+          .store(this.ronaAwal)
           .then((response) => {
             this.$message({
-              message: 'Komponen ' + this.component.name + ' Berhasil Dibuat',
+              message:
+                'Rona Lingkungan ' + this.ronaAwal.name + ' Berhasil Dibuat',
               type: 'success',
               duration: 5 * 1000,
             });
             this.show = false;
-            this.component = {};
+            this.ronaAwal = {};
             this.getList();
           })
           .catch((error) => {
@@ -132,28 +128,31 @@ export default {
           });
       }
     },
-    async getProjectStage() {
-      const { data } = await projectStageResource.list({ limit: 1000 });
+    /* async getComponentList() {
+      const { data } = await componentResource.list({ limit: 1000 });
       this.componentOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
-    },
+    },*/
     handleFilter() {
       this.getList();
     },
     async getList() {
       this.loading = true;
-      const { data, total } = await componentResource.list(this.listQuery);
+      const { data, total } = await ronaAwalesource.list(this.listQuery);
       this.list = data;
       this.total = total;
       this.loading = false;
     },
     handleCreate() {
-      this.component = {};
       this.show = true;
     },
+    handleCancelRonaAwal() {
+      this.ronaAwal = {};
+      this.show = false;
+    },
     handleEditForm(id) {
-      this.component = this.list.find((element) => element.id === id);
+      this.ronaAwal = this.list.find((element) => element.id === id);
       this.show = true;
     },
     handleDelete({ id, nama }) {
@@ -167,7 +166,7 @@ export default {
         }
       )
         .then(() => {
-          componentResource
+          ronaAwalesource
             .destroy(id)
             .then((response) => {
               this.$message({
@@ -187,17 +186,6 @@ export default {
           });
         });
     },
-    onProjectStageFilter(val) {
-      // console.log('projectStageFilter: ', val);
-      // this.listQuery.filter = val; idProjectStage
-      this.listQuery.idProjectStage = val;
-      this.handleFilter();
-    },
-    onTableSort(sort) {
-      this.listQuery.order = sort.order;
-      this.listQuery.orderBy = sort.prop;
-      this.handleFilter();
-    },
     inputSearch(val) {
       if (this.timeoutId) {
         clearTimeout(this.timeoutId);
@@ -213,29 +201,6 @@ export default {
       this.listQuery.limit = 10;
       await this.getList();
       this.listQuery.search = null;
-    },
-    setMaster(id){
-      /*
-      masterComponentResource
-        .list(id)
-        .then((response) => {
-          this.$message({
-            type: 'success',
-            message: 'Hapus Selesai',
-          });
-          this.getList();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    */
-      this.component = this.list.find(c => c.id === id);
-      console.log(this.component);
-      this.showDialog = true;
-    },
-    closeDialog(){
-      this.showDialog = false;
-      this.handleFilter();
     },
   },
 };
