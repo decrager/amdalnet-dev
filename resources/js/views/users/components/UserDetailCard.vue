@@ -24,7 +24,7 @@
         <div class="user-name text-center">
           {{ user.name }}
         </div>
-        <div v-if="user.initiatorData.phone" class="user-role text-center text-muted">
+        <div v-if="user.initiator && user.initiatorData.phone" class="user-role text-center text-muted">
           {{ user.initiatorData.phone }}
         </div>
         <div class="user-role text-center text-muted">

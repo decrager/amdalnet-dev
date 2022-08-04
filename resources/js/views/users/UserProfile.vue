@@ -3,11 +3,12 @@
     <el-form v-if="user" :model="user">
       <el-row :gutter="20">
         <el-col :span="6">
-          <user-card :user="user" />
-          <user-bio />
+          <!-- <user-card :user="user" /> -->
+          <!-- <user-bio /> -->
+          <user-detail-card v-if="user" :user="user" />
         </el-col>
         <el-col :span="18">
-          <user-activity :user="user" />
+          <user-activity-admin :user="user" />
         </el-col>
       </el-row>
     </el-form>
@@ -16,14 +17,21 @@
 
 <script>
 import Resource from '@/api/resource';
-import UserBio from './components/UserBio';
-import UserCard from './components/UserCard';
-import UserActivity from './components/UserActivity';
+// import UserBio from './components/UserBio';
+// import UserCard from './components/UserCard';
+// import UserActivity from './components/UserActivity';
+import UserDetailCard from './components/UserDetailCard';
+import UserActivityAdmin from './components/UserActivityAdmin';
 
 const userResource = new Resource('users');
 export default {
   name: 'EditUser',
-  components: { UserBio, UserCard, UserActivity },
+  components: {
+    // UserBio,
+    // UserCard,
+    UserActivityAdmin,
+    UserDetailCard,
+  },
   data() {
     return {
       user: {},
