@@ -6,8 +6,10 @@ use App\Entity\GovernmentInstitution;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\ChangeUserEmailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
 class GovernmentInstitutionController extends Controller
 {
@@ -81,11 +83,14 @@ class GovernmentInstitutionController extends Controller
             }
         } else {
             if($request->email != $request->old_email) {
-                $is_user_exist = User::where('email', $request->old_email)->count();
-                if($is_user_exist > 0) {
-                    $user = User::where('email', $request->old_email)->first();
+                $user = User::where('email', $request->old_email)->first();
+                if($user) {
                     $user->email = $request->email;
                     $user->save();
+
+                    // send notification if existing user email changed
+                    Notification::send([$user], new ChangeUserEmailNotification());
+                    Notification::route('mail', $request->old_email)->notify(new ChangeUserEmailNotification($user->name, $user->email, $user->roles->first()->name));
                 }
             }
         }

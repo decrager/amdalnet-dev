@@ -19,6 +19,7 @@ use App\Laravue\JsonResponse;
 use App\Laravue\Models\Permission;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\ChangeUserEmailNotification;
 use App\Notifications\UserRegistered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -193,9 +194,18 @@ class UserController extends BaseController
                 $expert_bank->save();
             }
 
+            $old_email = $user->email;
+
             $user->name = $request->get('name');
             $user->email = $email;
             $user->save();
+
+            // send notification if existing user email changed
+            if($old_email != $email) {
+                Notification::send([$user], new ChangeUserEmailNotification());
+                Notification::route('mail', $request->old_email)->notify(new ChangeUserEmailNotification($user->name, $user->email, $user->roles->first()->name));
+            }
+
             return new UserResource($user);
         }
     }
