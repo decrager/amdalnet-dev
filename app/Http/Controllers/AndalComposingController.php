@@ -2476,7 +2476,7 @@ class AndalComposingController extends Controller
             if($submit) {
                 return [
                     // 'file_name' => Storage::url('workspace/' . $save_file_name),
-                    'file_name' => Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file_name' => Storage::disk('public')->temporaryUrl('workspace/' . $save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
                     'project_title' => strtolower($project->project_title)
                 ];
             }
