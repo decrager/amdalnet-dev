@@ -226,7 +226,7 @@ class FormulatorController extends Controller
             //create Penyusun
             $formulator = Formulator::create([
                 'name'              => $params['name'],
-                'expertise'         => $params['expertise'],
+                'expertise'         => isset($params['expertise']) ? $params['expertise'] : null,
                 'cert_no'           => isset($params['cert_no'])  ? $params['cert_no'] : null,
                 'date_start'        => $date_start,
                 'date_end'          => $request->date_start ? Carbon::createFromDate($request->date_start)->addYears(3) : null,
@@ -404,7 +404,7 @@ class FormulatorController extends Controller
         }
 
         $formulator->name = $params['name'];
-        $formulator->expertise = $params['expertise'];
+        $formulator->expertise = isset($params['expertise']) ? $params['expertise'] : null;
         $formulator->cert_no = $params['cert_no'];
         $formulator->date_start = $params['date_start'];
         $formulator->date_end = $params['date_start'] ? Carbon::createFromDate($params['date_start'])->addYears(3) : null;

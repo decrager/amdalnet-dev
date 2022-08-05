@@ -166,13 +166,13 @@ const formulatorResource = new Resource('formulators');
 export default {
   name: 'FormulatorCertificate',
   data() {
-    const validateExpertise = (rule, value, callback) => {
-      if (this.selectedExpertise !== 'Ahli Lainnya' && !value) {
-        callback(new Error('Keahlian Wajib Dipilih'));
-      } else {
-        callback();
-      }
-    };
+    // const validateExpertise = (rule, value, callback) => {
+    //   if (this.selectedExpertise !== 'Ahli Lainnya' && !value) {
+    //     callback(new Error('Keahlian Wajib Dipilih'));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     const validateOtherExpertise = (rule, value, callback) => {
       if (
         this.selectedExpertise === 'Ahli Lainnya' &&
@@ -257,13 +257,13 @@ export default {
         },
       ],
       formulatorRules: {
-        expertise: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator: validateExpertise,
-          },
-        ],
+        // expertise: [
+        //   {
+        //     required: true,
+        //     trigger: 'blur',
+        //     validator: validateExpertise,
+        //   },
+        // ],
         otherExpertise: [
           {
             required: 'true',
@@ -319,8 +319,10 @@ export default {
       // === CHECK EXPERTISE === //
       if (checkExpertise) {
         this.selectedExpertise = this.formulator.expertise;
-      } else {
+      } else if (!(this.formulator.expertise === null || this.formulator.expertise === 'null')) {
         this.selectedExpertise = 'Ahli Lainnya';
+      } else {
+        this.formulator.expertise = null;
       }
 
       // === SET FILE TO NULL === //
