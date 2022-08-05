@@ -191,13 +191,13 @@ export default {
 
       callback();
     };
-    const validateExpertise = (rule, value, callback) => {
-      if (this.selectedExpertise !== 'Ahli Lainnya' && !value) {
-        callback(new Error('Keahlian Wajib Dipilih'));
-      } else {
-        callback();
-      }
-    };
+    // const validateExpertise = (rule, value, callback) => {
+    //   if (this.selectedExpertise !== 'Ahli Lainnya' && !value) {
+    //     callback(new Error('Keahlian Wajib Dipilih'));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     const validateOtherExpertise = (rule, value, callback) => {
       if (
         this.selectedExpertise === 'Ahli Lainnya' &&
@@ -208,13 +208,13 @@ export default {
         callback();
       }
     };
-    const validateCvPenyusun = (rule, value, callback) => {
-      if (!this.currentFormulator.cv_penyusun) {
-        callback(new Error('CV Penyusun Wajib Diunggah'));
-      } else {
-        callback();
-      }
-    };
+    // const validateCvPenyusun = (rule, value, callback) => {
+    //   if (!this.currentFormulator.cv_penyusun) {
+    //     callback(new Error('CV Penyusun Wajib Diunggah'));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     const validateDateStart = (rule, value, callback) => {
       if (this.currentFormulator.isCertified && !value) {
         callback(new Error('Tanggal Berlaku Wajib Dipilih'));
@@ -255,7 +255,7 @@ export default {
       cvFileName: null,
       selectedExpertise: null,
       formulatorRules: {
-        nik: [{ required: true, trigger: 'blur', message: 'NIK Wajib Diisi' }],
+        // nik: [{ required: true, trigger: 'blur', message: 'NIK Wajib Diisi' }],
         reg_no: [
           {
             required: true,
@@ -272,13 +272,13 @@ export default {
             validator: validateEmail,
           },
         ],
-        expertise: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator: validateExpertise,
-          },
-        ],
+        // expertise: [
+        //   {
+        //     required: true,
+        //     trigger: 'blur',
+        //     validator: validateExpertise,
+        //   },
+        // ],
         otherExpertise: [
           {
             required: 'true',
@@ -286,16 +286,16 @@ export default {
             validator: validateOtherExpertise,
           },
         ],
-        cvPenyusun: [
-          {
-            required: this.$route.name === 'createFormulator',
-            trigger: 'blur',
-            validator:
-              this.$route.name === 'createFormulator'
-                ? validateCvPenyusun
-                : null,
-          },
-        ],
+        // cvPenyusun: [
+        //   {
+        //     required: this.$route.name === 'createFormulator',
+        //     trigger: 'blur',
+        //     validator:
+        //       this.$route.name === 'createFormulator'
+        //         ? validateCvPenyusun
+        //         : null,
+        //   },
+        // ],
         date_start: [
           {
             required: true,
