@@ -10,15 +10,15 @@
             <el-input v-model="user.email" :disabled="user.role === 'admin'" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" :disabled="user.role === 'admin'" @click="onSubmit">
+            <el-button type="primary" @click="onSubmit">
               Ubah
             </el-button>
-            <el-button type="warning" :disabled="user.role === 'admin'" @click="showChangePassword">
+            <!-- <el-button type="warning" :disabled="user.role === 'admin'" @click="showChangePassword">
               Ubah Password
-            </el-button>
+            </el-button> -->
           </el-form-item>
         </el-form>
-        <el-dialog title="Ubah Password" :visible.sync="changePasswordDialog">
+        <!-- <el-dialog title="Ubah Password" :visible.sync="changePasswordDialog">
           <el-form ref="changePasswordForm" v-loading="changePasswordLoading" :model="password" :rules="passwordRules">
             <el-form-item label="Masukkan Password Lama" prop="current">
               <el-input v-model="password.current" type="password" name="current" />
@@ -38,7 +38,7 @@
               </el-button>
             </el-form-item>
           </el-form>
-        </el-dialog>
+        </el-dialog> -->
       </el-tab-pane>
     </el-tabs>
   </el-card>

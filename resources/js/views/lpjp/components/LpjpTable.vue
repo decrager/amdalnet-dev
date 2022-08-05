@@ -10,8 +10,14 @@
       <template slot-scope="scope">
         <div class="expand-container">
           <div>
-            <p><b>Provinsi: </b>{{ scope.row.province.name }}</p>
-            <p><b>Kota: </b>{{ scope.row.district.name }}</p>
+            <p>
+              <b>Provinsi: </b>
+              {{ scope.row.province ? scope.row.province.name : '' }}
+            </p>
+            <p>
+              <b>Kota: </b>
+              {{ scope.row.district ? scope.row.district.name : '' }}
+            </p>
             <p><b>Email: </b>{{ scope.row.email }}</p>
             <p><b>Tgl Awal: </b>{{ scope.row.date_start }}</p>
             <p><b>Tgl Akhir: </b>{{ scope.row.date_end }}</p>
