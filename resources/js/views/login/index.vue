@@ -363,7 +363,7 @@
         <el-row v-else-if="user_type === 'Penyusun'">
           <el-form ref="regPenyusun" :model="registrationForm" :rules="regPenyusunRules">
             <div style="background-color: #ddddd5; padding: 5px 0;">
-              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama yang Anda masukkan sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
+              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama lengkap beserta gelar yang Anda masukkan sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
             </div>
             <el-row :gutter="24">
               <el-col :span="12">
@@ -761,7 +761,7 @@ export default {
       this.imageUrl = URL.createObjectURL(file.raw);
 
       if (file.raw.size > 1048576){
-        this.showFileAlert();
+        this.showFileAlert('1');
         return;
       }
 
@@ -769,16 +769,16 @@ export default {
       this.registrationForm.fileAgencyUpload = file.raw;
     },
     handleCertificateUpload(file, filelist) {
-      if (file.raw.size > 1048576) {
-        this.showFileAlert();
+      if (file.raw.size > 5242880) {
+        this.showFileAlert('5');
         return;
       }
 
       this.registrationForm.file_sertifikat = file.raw;
       this.certificateName = file.name;
     },
-    showFileAlert(){
-      this.$alert('File Yang Diupload Melebihi 1 MB', {
+    showFileAlert(val){
+      this.$alert(`File Yang Diupload Melebihi ${val} MB`, {
         confirmButtonText: 'OK',
       });
     },
@@ -799,7 +799,7 @@ export default {
       // this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKtr').resetField();
 
       if (e.target.files[0].size > 1048576){
-        this.showFileAlert();
+        this.showFileAlert('1');
         return;
       }
 
@@ -980,7 +980,6 @@ export default {
       } else if (this.user_type === 'Penyusun'){
         this.$refs.regPenyusun.validate(valid => {
           if (valid) {
-            console.log(this.registrationForm);
             this.registrationForm.user_type = this.user_type;
             this.registrationForm.expertise = 'penyusun';
 

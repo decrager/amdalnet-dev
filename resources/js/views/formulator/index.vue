@@ -215,11 +215,19 @@ export default {
           formulatorResource
             .destroy(id)
             .then((response) => {
-              this.$message({
-                type: 'success',
-                message: 'Hapus Selesai',
-              });
-              this.getList();
+              if (response.message === 'success') {
+                this.$message({
+                  type: 'success',
+                  message: 'Hapus Selesai',
+                });
+                this.getList();
+              } else {
+                this.$message({
+                  message: 'Data Penyusun Gagal Dihapus',
+                  type: 'error',
+                  duration: 5 * 1000,
+                });
+              }
             })
             .catch((error) => {
               console.log(error);

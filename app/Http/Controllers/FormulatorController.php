@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Comment;
 use App\Entity\Formulator;
+use App\Entity\FormulatorTeamMember;
 use App\Http\Resources\FormulatorResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -428,60 +431,96 @@ class FormulatorController extends Controller
      */
     public function destroy(Formulator $formulator)
     {
-        //
+        DB::beginTransaction();
+        $error = false;
+
+        try {
+            // Delete user data
+            $user = User::where('email', $formulator->email)->first();
+            if($user) {
+                // 1. delete comments
+                Comment::whereHas('replied', function($q) use($user) {
+                    $q->where('id_user', $user->id);
+                })->delete();
+                Comment::where('id_user', $user->id)->delete();
+                // 2. delete user
+                User::destroy($user->id);
+            }
+    
+            // Delete formulator data
+            // 1. delete formulator as team member
+            FormulatorTeamMember::where('id_formulator', $formulator->id)->delete();
+            // 2. delete formulator
+            Formulator::destroy($formulator->id);
+        } catch(Exception $e) {
+            $error = true;
+        }
+
+        if($error) {
+            DB::rollBack();
+            return response()->json(['message' => 'failed']);
+        }
+
+        DB::commit();
+        return response()->json(['message' => 'success']);
     }
 
     private function registration(Request $request)
     {
         $formulator = null;
-            if($request->isCertified === 'true') {
-                // check if no registration is exist
-                $formulator = Formulator::where([['reg_no', $request->reg_no],['email', null]])->first();
-                if($formulator) {
-                    $user = User::where('email', $request->email)->first();
-                    if($user) {
-                        return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
-                    }
-                } else {
-                    return response(['error' => 'reg_no']);
+        $certificate_file = null;
+
+        if($request->isCertified === 'true') {
+            // check if no registration is exist
+            $formulator = Formulator::where('reg_no', $request->reg_no)->first();
+            if($formulator) {
+                $certificate_file = $formulator->cert_file;
+                $user = $this->checkUser($request->email);
+                if($user !== null) {
+                    return $user;
                 }
             } else {
-                $user = User::where('email', $request->email)->first();
-                if($user) {
-                    return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
-                }
-
-                $formulator = new Formulator();
-                $formulator->membership_status = 'TA';
-                $formulator->expertise = $request->expertise;
+                return response(['error' => 'reg_no']);
+            }
+        } else {
+            $user = $this->checkUser($request->email);
+            if($user !== null) {
+                return $user;
             }
 
-            if ($request->file('file_sertifikat') !== null) {
-                //create file sertifikat
+            $formulator = new Formulator();
+            $formulator->membership_status = 'TA';
+            $formulator->expertise = $request->expertise;
+        }
+
+        if ($request->file('file_sertifikat') !== null) {
+            //create file sertifikat
+            if(!$certificate_file) {
                 $fileSertifikat = $request->file('file_sertifikat');
                 $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
                 $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
                 $formulator->cert_file = $fileSertifikatName;
             }
+        }
 
-            $formulator->name = $request->name;
-            $formulator->nik = $request->nik;
-            $formulator->address = $request->address;
-            $formulator->province = $request->province;
-            $formulator->district = $request->district;
-            $formulator->email = $request->email;
-            $formulator->phone = $request->phone;
-            $formulator->save();
+        $formulator->name = $request->name;
+        $formulator->nik = $request->nik;
+        $formulator->address = $request->address;
+        $formulator->province = $request->province;
+        $formulator->district = $request->district;
+        $formulator->email = $request->email;
+        $formulator->phone = $request->phone;
+        $formulator->save();
 
-            $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
-            $user->syncRoles($formulatorRole);
+        $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+        $user->syncRoles($formulatorRole);
 
-            return response()->json(['message' => 'success']);
+        return response()->json(['message' => 'success']);
     }
 
     public function getFormulatorName()
@@ -509,5 +548,19 @@ class FormulatorController extends Controller
             'extension' => $extension,
             'file' => base64_decode($file)
         ];
+    }
+
+    private function checkUser($email)
+    {
+        $user = User::where('email', $email)->first();
+        if($user) {
+            if($user->active === 1) {
+                return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+            } else if($user->active === 0) {
+                return response()->json(['error' => 'Email sudah terdaftar dan menunggu aktifasi akun']);
+            }
+        }
+
+        return null;
     }
 }
