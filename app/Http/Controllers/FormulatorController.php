@@ -434,54 +434,59 @@ class FormulatorController extends Controller
     private function registration(Request $request)
     {
         $formulator = null;
-            if($request->isCertified === 'true') {
-                // check if no registration is exist
-                $formulator = Formulator::where([['reg_no', $request->reg_no],['email', null]])->first();
-                if($formulator) {
-                    $user = User::where('email', $request->email)->first();
-                    if($user) {
-                        return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
-                    }
-                } else {
-                    return response(['error' => 'reg_no']);
+        $certificate_file = null;
+
+        if($request->isCertified === 'true') {
+            // check if no registration is exist
+            $formulator = Formulator::where('reg_no', $request->reg_no)->first();
+            if($formulator) {
+                $certificate_file = $formulator->cert_file;
+                $user = $this->checkUser($request->email);
+                if($user !== null) {
+                    return $user;
                 }
             } else {
-                $user = User::where('email', $request->email)->first();
-                if($user) {
-                    return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
-                }
-
-                $formulator = new Formulator();
-                $formulator->membership_status = 'TA';
-                $formulator->expertise = $request->expertise;
+                return response(['error' => 'reg_no']);
+            }
+        } else {
+            $user = $this->checkUser($request->email);
+            if($user !== null) {
+                return $user;
             }
 
-            if ($request->file('file_sertifikat') !== null) {
-                //create file sertifikat
+            $formulator = new Formulator();
+            $formulator->membership_status = 'TA';
+            $formulator->expertise = $request->expertise;
+        }
+
+        if ($request->file('file_sertifikat') !== null) {
+            //create file sertifikat
+            if(!$certificate_file) {
                 $fileSertifikat = $request->file('file_sertifikat');
                 $fileSertifikatName = 'penyusun/' . uniqid() . '.' . $fileSertifikat->extension();
                 $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
                 $formulator->cert_file = $fileSertifikatName;
             }
+        }
 
-            $formulator->name = $request->name;
-            $formulator->nik = $request->nik;
-            $formulator->address = $request->address;
-            $formulator->province = $request->province;
-            $formulator->district = $request->district;
-            $formulator->email = $request->email;
-            $formulator->phone = $request->phone;
-            $formulator->save();
+        $formulator->name = $request->name;
+        $formulator->nik = $request->nik;
+        $formulator->address = $request->address;
+        $formulator->province = $request->province;
+        $formulator->district = $request->district;
+        $formulator->email = $request->email;
+        $formulator->phone = $request->phone;
+        $formulator->save();
 
-            $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
-            $user->syncRoles($formulatorRole);
+        $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+        $user->syncRoles($formulatorRole);
 
-            return response()->json(['message' => 'success']);
+        return response()->json(['message' => 'success']);
     }
 
     public function getFormulatorName()
@@ -509,5 +514,19 @@ class FormulatorController extends Controller
             'extension' => $extension,
             'file' => base64_decode($file)
         ];
+    }
+
+    private function checkUser($email)
+    {
+        $user = User::where('email', $email)->first();
+        if($user) {
+            if($user->active === 1) {
+                return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
+            } else if($user->active === 0) {
+                return response()->json(['error' => 'Email sudah terdaftar dan menunggu aktifasi akun']);
+            }
+        }
+
+        return null;
     }
 }

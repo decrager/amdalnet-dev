@@ -363,7 +363,7 @@
         <el-row v-else-if="user_type === 'Penyusun'">
           <el-form ref="regPenyusun" :model="registrationForm" :rules="regPenyusunRules">
             <div style="background-color: #ddddd5; padding: 5px 0;">
-              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama yang Anda masukkan sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
+              <p style="padding: 0 30px; font-size: 17px;"><b>Pastikan nama lengkap beserta gelar yang Anda masukkan sama dengan nama yang tercantum pada sertifikat penyusun ( Khusus penyusun ATPA atau KTPA )</b></p>
             </div>
             <el-row :gutter="24">
               <el-col :span="12">
@@ -980,7 +980,6 @@ export default {
       } else if (this.user_type === 'Penyusun'){
         this.$refs.regPenyusun.validate(valid => {
           if (valid) {
-            console.log(this.registrationForm);
             this.registrationForm.user_type = this.user_type;
             this.registrationForm.expertise = 'penyusun';
 
