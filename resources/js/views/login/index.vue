@@ -761,7 +761,7 @@ export default {
       this.imageUrl = URL.createObjectURL(file.raw);
 
       if (file.raw.size > 1048576){
-        this.showFileAlert();
+        this.showFileAlert('1');
         return;
       }
 
@@ -769,16 +769,16 @@ export default {
       this.registrationForm.fileAgencyUpload = file.raw;
     },
     handleCertificateUpload(file, filelist) {
-      if (file.raw.size > 1048576) {
-        this.showFileAlert();
+      if (file.raw.size > 5242880) {
+        this.showFileAlert('5');
         return;
       }
 
       this.registrationForm.file_sertifikat = file.raw;
       this.certificateName = file.name;
     },
-    showFileAlert(){
-      this.$alert('File Yang Diupload Melebihi 1 MB', {
+    showFileAlert(val){
+      this.$alert(`File Yang Diupload Melebihi ${val} MB`, {
         confirmButtonText: 'OK',
       });
     },
@@ -799,7 +799,7 @@ export default {
       // this.$refs['tapakProyek'].fields.find((f) => f.prop === 'fileKtr').resetField();
 
       if (e.target.files[0].size > 1048576){
-        this.showFileAlert();
+        this.showFileAlert('1');
         return;
       }
 
