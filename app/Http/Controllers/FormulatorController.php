@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Entity\Comment;
 use App\Entity\Formulator;
+use App\Entity\FormulatorTeamMember;
 use App\Http\Resources\FormulatorResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -428,7 +431,38 @@ class FormulatorController extends Controller
      */
     public function destroy(Formulator $formulator)
     {
-        //
+        DB::beginTransaction();
+        $error = false;
+
+        try {
+            // Delete user data
+            $user = User::where('email', $formulator->email)->first();
+            if($user) {
+                // 1. delete comments
+                Comment::whereHas('replied', function($q) use($user) {
+                    $q->where('id_user', $user->id);
+                })->delete();
+                Comment::where('id_user', $user->id)->delete();
+                // 2. delete user
+                User::destroy($user->id);
+            }
+    
+            // Delete formulator data
+            // 1. delete formulator as team member
+            FormulatorTeamMember::where('id_formulator', $formulator->id)->delete();
+            // 2. delete formulator
+            Formulator::destroy($formulator->id);
+        } catch(Exception $e) {
+            $error = true;
+        }
+
+        if($error) {
+            DB::rollBack();
+            return response()->json(['message' => 'failed']);
+        }
+
+        DB::commit();
+        return response()->json(['message' => 'success']);
     }
 
     private function registration(Request $request)

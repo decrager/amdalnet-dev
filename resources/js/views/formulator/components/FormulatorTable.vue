@@ -64,6 +64,19 @@
         </el-button>
       </template>
     </el-table-column>
+
+    <el-table-column v-if="!certificate" align="center" label="Aksi">
+      <template slot-scope="scope">
+        <el-button
+          type="text"
+          href="#"
+          icon="el-icon-delete"
+          @click="handleDelete(scope.row.id, scope.row.name)"
+        >
+          Hapus
+        </el-button>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
