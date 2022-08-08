@@ -37,12 +37,33 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="Unggah Dokumen Persetujuan Lingkungan" prop="file">
+            <el-table
+              :data="fileList"
+              fit
+              highlight-current-row
+            >
+              <el-table-column align="center" label="Aksi">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    icon="el-icon-download"
+                    @click="download(scope.row.url)"
+                  >
+                    Download
+                  </el-button>
+                </template>
+              </el-table-column>
+              <el-table-column align="left" label="Judul Dokumen">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.name }}</span>
+                </template>
+              </el-table-column>
+            </el-table>
             <el-upload
               action="#"
               :auto-upload="false"
               :on-change="handleUploadChange"
-              :show-file-list="true"
-              :file-list="fileList"
+              :show-file-list="false"
               style="display: inline;"
               :disabled="disableEdit"
             >
@@ -164,6 +185,9 @@ export default {
           duration: 5 * 1000,
         });
       }
+    },
+    download(url) {
+      window.open(url, '_blank').focus();
     },
     async handleUploadChange(file, fileList) {
       if (file.raw.size > 1048576) {
