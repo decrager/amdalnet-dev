@@ -475,7 +475,7 @@ class FormulatorController extends Controller
             $formulator = Formulator::where('reg_no', $request->reg_no)->first();
             if($formulator) {
                 $certificate_file = $formulator->cert_file;
-                $user = $this->checkUser($request->email);
+                $user = $this->checkUser($request->email, $formulator->email);
                 if($user !== null) {
                     return $user;
                 }
@@ -550,9 +550,15 @@ class FormulatorController extends Controller
         ];
     }
 
-    private function checkUser($email)
+    private function checkUser($email_user, $email_formulator = null)
     {
-        $user = User::where('email', $email)->first();
+        $user = null;
+        if($email_formulator) {
+            $user = User::where('email', $email_formulator)->first();
+        } else {
+            $user = User::where('email', $email_user)->first();
+        }
+
         if($user) {
             if($user->active === 1) {
                 return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
