@@ -3,7 +3,11 @@ import Layout from '@/layout';
 const tukRoutes = {
   path: '/tuk',
   component: Layout,
-  meta: { title: 'tuk', icon: 'zip', roles: [] },
+  meta: {
+    title: 'tuk',
+    icon: 'zip',
+    permissions: ['view menu tuk management'],
+  },
   children: [
     {
       path: '',
@@ -13,7 +17,7 @@ const tukRoutes = {
         title: 'Manajemen TUK',
         icon: 'id-badge',
         noCache: true,
-        roles: ['examiner'],
+        permissions: ['view menu tuk management'],
       },
     },
     {
@@ -25,7 +29,7 @@ const tukRoutes = {
         title: 'Tambah TUK',
         icon: 'documentation',
         noCache: true,
-        roles: ['examiner'],
+        permissions: ['manage tuk management'],
       },
     },
     {
@@ -37,7 +41,7 @@ const tukRoutes = {
         title: 'Edit TUK',
         icon: 'documentation',
         noCache: true,
-        roles: ['examiner'],
+        permissions: ['manage tuk management'],
       },
     },
     {
@@ -49,7 +53,7 @@ const tukRoutes = {
         title: 'Kelola TUK',
         icon: 'documentation',
         noCache: true,
-        roles: ['examiner'],
+        permissions: ['manage tuk management'],
       },
     },
   ],
