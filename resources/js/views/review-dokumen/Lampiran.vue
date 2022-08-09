@@ -70,6 +70,7 @@
                 ? scope.row.file_name
                 : scope.row.name + '.pdf'
             "
+            target="_blank"
           >
             Unduh File
             {{
