@@ -35,7 +35,11 @@ class ChangeUserEmailNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        if($this->name) {
+            return ['mail'];
+        }
+        
+        return ['mail', 'database'];
     }
 
     /**
@@ -64,8 +68,13 @@ class ChangeUserEmailNotification extends Notification
      */
     public function toArray($notifiable)
     {
+        $role = $this->role ? $this->role : $notifiable->roles->first()->name;
+        $with_email = $this->email ? ' menjadi ' . $this->email : '';
+
         return [
-            //
+            'updatedUser' => $notifiable,
+            'user' => $notifiable,
+            'message' => 'Akun Email ' . $this->getRoleName($role) . ' anda telah berhasil diubah' . $with_email
         ];
     }
 
