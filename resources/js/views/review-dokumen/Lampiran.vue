@@ -57,6 +57,7 @@
             :href="scope.row.file"
             class="link-lampiran"
             :download="scope.row.file_name"
+            target="_blank"
           >
             Unduh File
           </a>
