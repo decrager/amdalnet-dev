@@ -37,6 +37,7 @@
     <el-table-column label="File">
       <template slot-scope="scope">
         <el-button
+          v-if="scope.row.cert_file"
           type="text"
           size="medium"
           icon="el-icon-download"
@@ -46,6 +47,7 @@
           Sertifikat
         </el-button>
         <el-button
+          v-if="scope.row.cv_file"
           type="text"
           size="medium"
           icon="el-icon-download"

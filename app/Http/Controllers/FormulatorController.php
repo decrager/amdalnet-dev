@@ -9,6 +9,7 @@ use App\Http\Resources\FormulatorResource;
 use App\Laravue\Acl;
 use App\Laravue\Models\Role;
 use App\Laravue\Models\User;
+use App\Notifications\ChangeUserEmailNotification;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class FormulatorController extends Controller
@@ -113,6 +115,18 @@ class FormulatorController extends Controller
             }
 
             $formulator = Formulator::findOrFail($request->id);
+            if($this->checkStringNull($request->email)) {
+                if($request->email != $formulator->email) {
+                    $check_user = User::where('email', $request->email)->first();
+                    $check_formulator = Formulator::where('email', $request->email)->first();
+                    if($check_user || $check_formulator) {
+                        $error['error_exist_email'] = true;
+                        return response()->json($error);
+                    }
+                }
+            }
+
+            $old_email = $formulator->email;
 
             if ($request->hasFile('file_sertifikat')) {
                 //create file sertifikat
@@ -122,23 +136,50 @@ class FormulatorController extends Controller
                 $formulator->cert_file = $fileSertifikatName;
             }
 
+            $formulator->name = $request->name;
+            $formulator->nik = $this->checkStringNull($request->nik);
+            $formulator->address = $this->checkStringNull($request->address);
+            $formulator->province = $this->checkStringNull($request->province);
+            $formulator->district = $this->checkStringNull($request->district);
+            $formulator->phone = $this->checkStringNull($request->phone);
+            
+            if($this->checkStringNull($request->email)) {
+                $formulator->email = $request->email;
+            }
+
             $formulator->reg_no = $request->reg_no;
             $formulator->cert_no = $request->cert_no;
             $formulator->membership_status = $request->membership_status;
             $formulator->date_start = $request->date_start;
             $formulator->date_end =  Carbon::createFromDate($request->date_start)->addYears(3);
-            $formulator->expertise = $request->expertise;
+            $formulator->expertise = $this->checkStringNull($request->expertise);
             $formulator->save();
 
-            if($request->hasFile('avatarFile')) {
-                $user = User::where('email', $formulator->email)->first();
+            $email_notification = false;
+            $user = null;
+            if($old_email) {
+                $user = User::where('email', $old_email)->first();
                 if($user) {
-                    $fileAvatar = $request->file('avatarFile');
-                    $fileAvatarName = 'avatar/' . uniqid() . '.' . $fileAvatar->extension();
-                    $fileAvatar->storePubliclyAs('public', $fileAvatarName);
-                    $user->avatar = $fileAvatarName;
+                    $user->name = $this->checkStringNull($request->name);
+                    if($request->hasFile('avatarFile')) {
+                        $fileAvatar = $request->file('avatarFile');
+                        $fileAvatarName = 'avatar/' . uniqid() . '.' . $fileAvatar->extension();
+                        $fileAvatar->storePubliclyAs('public', $fileAvatarName);
+                        $user->avatar = $fileAvatarName;
+                    }
+                    if($this->checkStringNull($request->email)) {
+                        if($request->email != $old_email) {
+                            $user->email = $request->email;
+                            $email_notification = true;
+                        }
+                    }
                     $user->save();
                 }
+            }
+
+            if($email_notification) {
+                Notification::send([$user], new ChangeUserEmailNotification());
+                Notification::route('mail', $old_email)->notify(new ChangeUserEmailNotification($user->name, $user->email, $user->roles->first()->name));
             }
 
             return response()->json(['message' => 'success']);
@@ -164,9 +205,9 @@ class FormulatorController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            $email = $request->get('email');
+            $email = $this->checkStringNull($request->get('email'));
 
-            if($request->email) {
+            if($this->checkStringNull($request->email)) {
                 $found = User::where('email', $email)->first();
     
                 if($found) {
@@ -174,7 +215,7 @@ class FormulatorController extends Controller
                 }
             }
 
-            if($request->reg_no) {
+            if($this->checkStringNull($request->reg_no)) {
                 $found_reg_no = Formulator::where('reg_no', $request->reg_no)->first();
                 if($found_reg_no) {
                     return response()->json(['error' => 'No Registrasi Sudah Terdaftar']);
@@ -199,7 +240,7 @@ class FormulatorController extends Controller
                 $fileSertifikat->storePubliclyAs('public', $fileSertifikatName);
             }
 
-            if ($request->email) {
+            if ($this->checkStringNull($request->email)) {
                 $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
                 $random_password = Str::random(8);
                 $user = User::create([
@@ -564,6 +605,17 @@ class FormulatorController extends Controller
                 return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
             } else if($user->active === 0) {
                 return response()->json(['error' => 'Email sudah terdaftar dan menunggu aktifasi akun']);
+            }
+        }
+
+        return null;
+    }
+
+    private function checkStringNull($val)
+    {
+        if($val) {
+            if($val !== 'null') {
+                return $val;
             }
         }
 
