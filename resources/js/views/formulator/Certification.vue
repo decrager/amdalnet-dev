@@ -12,7 +12,7 @@
       >
         <el-row
           :gutter="32"
-          style="display: flex; align-items: center; padding-right: 16px"
+          style="display: flex; align-items: top; padding-right: 16px"
         >
           <el-col :sm="24" :md="6" align="center">
             <el-upload class="avatar-uploader" action="#" :disabled="true">
@@ -31,29 +31,92 @@
             </el-upload>
           </el-col>
           <el-col :sm="24" :md="18">
-            <el-row :gutter="32" style="margin-bottom: 14px">
-              <el-col :sm="3" :md="3"> <b>Nama:</b> </el-col>
-              <el-col :sm="21" :md="21">{{ formulator.name }}</el-col>
-            </el-row>
-            <el-row :gutter="32" style="margin-bottom: 14px">
-              <el-col :sm="3" :md="3"> <b>NIK:</b> </el-col>
-              <el-col :sm="21" :md="21">{{ formulator.nik }}</el-col>
-            </el-row>
-            <el-row :gutter="32" style="margin-bottom: 14px">
-              <el-col :sm="3" :md="3"> <b>Alamat:</b> </el-col>
-              <el-col :sm="21" :md="21">
-                {{ formulator.address
-                }}{{ capitalizeArea(formulator.formulator_district)
-                }}{{ capitalizeArea(formulator.formulator_province) }}
+            <el-row :gutter="32">
+              <el-col :sm="24" :md="24">
+                <el-form-item prop="name" class="formulator-top-form">
+                  <b><span style="color: red">*</span> Nama:</b>
+                  <el-input v-model="formulator.name" name="name" />
+                </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="32" style="margin-bottom: 14px">
-              <el-col :sm="3" :md="3"> <b>Telepon:</b> </el-col>
-              <el-col :sm="21" :md="21"> {{ formulator.phone }} </el-col>
+            <el-row :gutter="32">
+              <el-col :sm="24" :md="24">
+                <el-form-item prop="nik" class="formulator-top-form">
+                  <b>NIK:</b>
+                  <el-input v-model="formulator.nik" type="number" name="nik" />
+                </el-form-item>
+              </el-col>
             </el-row>
-            <el-row :gutter="32" style="margin-bottom: 14px">
-              <el-col :sm="3" :md="3"> <b>Email:</b> </el-col>
-              <el-col :sm="21" :md="21"> {{ formulator.email }} </el-col>
+            <el-row :gutter="32">
+              <el-col :sm="24" :md="24">
+                <el-form-item prop="address" class="formulator-top-form">
+                  <b>Alamat:</b>
+                  <el-input
+                    v-model="formulator.address"
+                    type="textarea"
+                    name="address"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="32">
+              <el-col :sm="24" :md="24">
+                <el-form-item prop="address" class="formulator-top-form">
+                  <b>Provinsi:</b>
+                  <el-select
+                    v-model="formulator.province"
+                    name="province"
+                    style="width: 100%"
+                    @change="changeProvince"
+                  >
+                    <el-option
+                      v-for="item in provinces"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="32">
+              <el-col :sm="24" :md="24">
+                <el-form-item prop="address" class="formulator-top-form">
+                  <b>Kota:</b>
+                  <el-select
+                    v-model="formulator.district"
+                    name="province"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in districts"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="32">
+              <el-col :sm="24" :md="24">
+                <el-form-item prop="phone" class="formulator-top-form">
+                  <b>Telepon:</b>
+                  <el-input
+                    v-model="formulator.phone"
+                    type="number"
+                    name="phone"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="32">
+              <el-col :sm="24" :md="24">
+                <el-form-item prop="email" class="formulator-top-form">
+                  <b>Email:</b>
+                  <el-input v-model="formulator.email" name="email" />
+                </el-form-item>
+              </el-col>
             </el-row>
           </el-col>
         </el-row>
@@ -100,6 +163,16 @@
                 <span>
                   {{ sertifikatFileName }}
                 </span>
+                <el-button
+                  v-if="formulator.cert_file"
+                  type="text"
+                  size="medium"
+                  icon="el-icon-download"
+                  style="color: blue"
+                  @click.prevent="download(formulator.cert_file)"
+                >
+                  Sertifikat
+                </el-button>
               </el-upload>
             </el-form-item>
           </el-col>
@@ -160,8 +233,11 @@
 </template>
 
 <script>
+import { validEmail } from '@/utils/validate';
 import Resource from '@/api/resource';
 const formulatorResource = new Resource('formulators');
+const provinceResource = new Resource('provinces');
+const districtResource = new Resource('districts');
 
 export default {
   name: 'FormulatorCertificate',
@@ -173,6 +249,17 @@ export default {
     //     callback();
     //   }
     // };
+    const validateEmail = (rule, value, callback) => {
+      if (value) {
+        if (!validEmail(value)) {
+          callback(new Error('Email Tidak Valid'));
+        } else {
+          callback();
+        }
+      } else {
+        callback();
+      }
+    };
     const validateOtherExpertise = (rule, value, callback) => {
       if (
         this.selectedExpertise === 'Ahli Lainnya' &&
@@ -205,6 +292,8 @@ export default {
       avatarUrl: null,
       sertifikatFileName: null,
       selectedExpertise: null,
+      provinces: [],
+      districts: [],
       membershipStatusOptions: [
         {
           value: 'KTPA',
@@ -257,6 +346,19 @@ export default {
         },
       ],
       formulatorRules: {
+        name: [
+          {
+            required: 'true',
+            trigger: 'blur',
+            message: 'Nama Wajib Diisi',
+          },
+        ],
+        email: [
+          {
+            trigger: 'blur',
+            validator: validateEmail,
+          },
+        ],
         // expertise: [
         //   {
         //     required: true,
@@ -304,11 +406,30 @@ export default {
   },
   created() {
     this.getData();
+    this.getProvinces();
   },
   methods: {
     async getData() {
       this.loading = true;
       this.formulator = await formulatorResource.get(this.$route.params.id);
+
+      if (this.formulator.province) {
+        const provinceInt = parseInt(this.formulator.province);
+        if (!isNaN(provinceInt)) {
+          this.formulator.province = provinceInt;
+        }
+      }
+
+      if (this.formulator.district) {
+        const districtInt = parseInt(this.formulator.district);
+        if (!isNaN(districtInt)) {
+          this.formulator.district = districtInt;
+        }
+      }
+
+      if (this.formulator.province) {
+        await this.getDistricts(this.formulator.province);
+      }
       this.formulator.avatar = await formulatorResource.list({
         avatar: 'true',
         email: this.formulator.email,
@@ -319,7 +440,12 @@ export default {
       // === CHECK EXPERTISE === //
       if (checkExpertise) {
         this.selectedExpertise = this.formulator.expertise;
-      } else if (!(this.formulator.expertise === null || this.formulator.expertise === 'null')) {
+      } else if (
+        !(
+          this.formulator.expertise === null ||
+          this.formulator.expertise === 'null'
+        )
+      ) {
         this.selectedExpertise = 'Ahli Lainnya';
       } else {
         this.formulator.expertise = null;
@@ -329,6 +455,21 @@ export default {
       this.formulator.file_sertifikat = null;
       this.formulator.cv_penyusun = null;
       this.loading = false;
+    },
+    async getDistricts(idProv) {
+      const { data } = await districtResource.list({ idProv });
+      this.districts = data.map((i) => {
+        return { value: i.id, label: i.name };
+      });
+    },
+    async getProvinces() {
+      const { data } = await provinceResource.list({});
+      this.provinces = data.map((i) => {
+        return { value: i.id, label: i.name };
+      });
+    },
+    changeProvince(value) {
+      this.getDistricts(value);
     },
     checkSubmit() {
       this.$refs.formulatorForm.validate((valid) => {
@@ -343,6 +484,13 @@ export default {
       formData.append('sertifikasi', 'true');
       formData.append('id', this.$route.params.id);
       formData.append('avatarFile', this.formulator.avatarFile);
+      formData.append('name', this.formulator.name);
+      formData.append('nik', this.formulator.nik);
+      formData.append('address', this.formulator.address);
+      formData.append('province', this.formulator.province);
+      formData.append('district', this.formulator.district);
+      formData.append('phone', this.formulator.phone);
+      formData.append('email', this.formulator.email);
       formData.append('reg_no', this.formulator.reg_no);
       formData.append('cert_no', this.formulator.cert_no);
       formData.append('membership_status', this.formulator.membership_status);
@@ -368,6 +516,13 @@ export default {
       } else if (response.error_cert_no) {
         this.$message({
           message: 'No Sertifikat Sudah Terdaftar',
+          type: 'error',
+          duration: 5 * 1000,
+        });
+        this.loadingSubmit = false;
+      } else if (response.error_exist_email) {
+        this.$message({
+          message: 'Email Sudah Terdaftar',
           type: 'error',
           duration: 5 * 1000,
         });
@@ -424,6 +579,9 @@ export default {
         this.formulator.expertise = null;
       }
     },
+    download(url) {
+      window.open(url, '_blank').focus();
+    },
   },
 };
 </script>
@@ -451,5 +609,16 @@ export default {
   width: 178px;
   height: 178px;
   display: block;
+}
+.formulator-top-form .el-form-item__content {
+  display: flex;
+  align-items: top;
+  justify-content: space-between;
+}
+.formulator-top-form .el-form-item__content b {
+  width: 6em;
+}
+.formulator-top-form .el-form-item__error {
+  margin-left: 6.5em;
 }
 </style>

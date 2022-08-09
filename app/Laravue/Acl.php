@@ -87,6 +87,17 @@ final class Acl
     
     const PERMISSION_VIEW_MENU_EXAMINER = 'view menu examiner';
     const PERMISSION_VIEW_MENU_EXAMINER_TEAM = 'view menu examiner team';
+    const PERMISSION_VIEW_MENU_RONA_AWAL = 'view menu examiner rona awal';
+    const PERMISSION_VIEW_MENU_TUK_MEMBER_LIST = 'view menu tuk member list';
+    const PERMISSION_VIEW_MENU_MATERIALS_AND_POLICIES = 'view menu materials and policies';
+    const PERMISSION_VIEW_MENU_PERMISSION_LIST = 'view menu permission list';
+    const PERMISSION_VIEW_MENU_ENV_APPROVE = 'view menu env approve';
+    const PERMISSION_VIEW_MENU_UKL_UPL = 'view menu ukl upl';
+    const PERMISSION_VIEW_MENU_SOP_MANAGEMENT = 'view menu sop management';
+    const PERMISSION_VIEW_MENU_VIDEO_TUTORIAL = 'view menu video tutorial';
+    const PERMISSION_VIEW_MENU_TUK_MANAGEMENT = 'view menu tuk management';
+    const PERMISSION_VIEW_MENU_TUK_PROFILE = 'view menu tuk profile';
+    const PERMISSION_VIEW_MENU_TUK_PROJECT = 'view menu tuk project';
     
     // const PERMISSION_VIEW_MENU_ANNOUNCEMENT = 'view menu announcement';
     // const PERMISSION_VIEW_MENU_CONSULTATION = 'view menu public consultation';
@@ -108,6 +119,17 @@ final class Acl
     const PERMISSION_MANAGE_SOP = 'manage sop';
     const PERMISSION_MANAGE_CLUSTER = 'manage cluster';
     const PERMISSION_MANAGE_EXAMINER = 'manage examiner';
+    const PERMISSION_MANAGE_RONA_AWAL = 'manage rona awal';
+    const PERMISSION_MANAGE_TUK_MEMBER_LIST = 'manage tuk member list';
+    const PERMISSION_MANAGE_MATERIALS_AND_POLICIES = 'manage materials and policies';
+    const PERMISSION_MANAGE_PERMISSION_LIST = 'manage permission list';
+    const PERMISSION_MANAGE_ENV_APPROVE = 'manage env approve';
+    const PERMISSION_MANAGE_UKL_UPL = 'manage ukl upl';
+    const PERMISSION_MANAGE_SOP_MANAGEMENT = 'manage sop management';
+    const PERMISSION_MANAGE_VIDEO_TUTORIAL = 'manage video tutorial';
+    const PERMISSION_MANAGE_TUK_MANAGEMENT = 'manage tuk management';
+    const PERMISSION_MANAGE_TUK_PROFILE = 'manage tuk profile';
+    const PERMISSION_MANAGE_TUK_PROJECT = 'manage tuk project';
     
     // const PERMISSION_MANAGE_CONSULTATION = 'manage consultation';
     // const PERMISSION_MANAGE_TECHNICAL_REGULATIONS = 'manage technical regulations';

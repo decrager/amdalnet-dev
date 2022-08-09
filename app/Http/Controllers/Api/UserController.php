@@ -12,7 +12,9 @@ namespace App\Http\Controllers\Api;
 use App\Entity\ExpertBank;
 use App\Entity\Formulator;
 use App\Entity\Initiator;
+use App\Entity\Lpjp;
 use App\Entity\LukMember;
+use App\Entity\TukSecretaryMember;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
 use App\Laravue\JsonResponse;
@@ -192,6 +194,22 @@ class UserController extends BaseController
                 // update expert bank with user email
                 $expert_bank->email = $email;
                 $expert_bank->save();
+            }
+
+            // checking if this user is inside lpjp
+            $lpjp = Lpjp::where('email', $user->email)->first();
+            if($lpjp && $lpjp->email !== $email) {
+                // update lpjp with user email
+                $lpjp->email = $email;
+                $lpjp->save();
+            }
+
+            // checking if this user is inside tuk secretary member
+            $tuk_secretary_member = TukSecretaryMember::where('email', $user->email)->first();
+            if($tuk_secretary_member && $tuk_secretary_member !== $email) {
+                // update tuk secretary member with user email
+                $tuk_secretary_member->email = $email;
+                $tuk_secretary_member->save();
             }
 
             $old_email = $user->email;
