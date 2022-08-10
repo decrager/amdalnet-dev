@@ -28,6 +28,10 @@ class KaReviewController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->downloadExternalFile) {
+            return $this->downloadExternalFile($request->filepath);
+        }
+
         if($request->pdf) {
             return $this->exportPDF($request->idProject, $request->isAndal);
         }
@@ -391,31 +395,30 @@ class KaReviewController extends Controller
             if($file_array['doc_type'] == 'Berita Acara Pelaksanaan') {
                 $file_berita_acara_pelaksanaan = [
                     // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
-                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $file_array['filepath'],
                     'file_name' => 'Berita Acara Pelaksanaan.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             } else if($file_array['doc_type'] == 'Berita Acara Penunjukan Wakil Masyarakat') {
                 $file_berita_acara_penunjukan_wakil_masyarakat = [
                     // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
-                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $file_array['filepath'],
                     'file_name' => 'Berita Acara Penunjukan Wakil Masyarakat.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             } else if($file_array['doc_type'] == 'Daftar Hadir') {
                 $file_daftar_hadir = [
                     // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
-                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $file_array['filepath'],
                     'file_name' => 'Daftar Hadir.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             } else if($file_array['doc_type'] == 'Pengumuman') {
                 $file_pengumuman = [
                     // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
-                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $file_array['filepath'],
                     'file_name' => 'Pengumuman.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             } else if($file_array['doc_type'] == 'Undangan') {
                 $file_undangan = [
-                    // 'file' => Storage::url(str_replace('storage/', '', $file_array['filepath']) ),
-                    'file' => Storage::disk('public')->temporaryUrl($file_array['filepath'], now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))),
+                    'file' => $file_array['filepath'],
                     'file_name' => 'Undangan.' . $explode_extension[count($explode_extension) - 1] 
                 ];
             }
@@ -434,31 +437,31 @@ class KaReviewController extends Controller
             switch ($rona->rona_awal->componentType->name) {
                 case 'Geofisik Kimia':
                     $geofisik_kimia[] = [
-                        'file' => $rona->file,
+                        'file' => $rona->rawFile(),
                         'name' => $rona->rona_awal->name
                     ];
                     break;
                 case 'Biologi':
                     $biologi[] = [
-                        'file' => $rona->file,
+                        'file' => $rona->rawFile(),
                         'name' => $rona->rona_awal->name
                     ];
                     break;
                 case 'Sosial, Ekonomi, dan Budaya':
                     $sosial_budaya[] = [
-                        'file' => $rona->file,
+                        'file' => $rona->rawFile(),
                         'name' => $rona->rona_awal->name
                     ];
                     break;
                 case 'Kesehatan Masyarakat':
                     $kesehatan_masyakarat[] = [
-                        'file' => $rona->file,
+                        'file' => $rona->rawFile(),
                         'name' => $rona->rona_awal->name
                     ];
                     break;
                 case 'Lain Lain':
                     $lain_lain[] = [
-                        'file' => $rona->file,
+                        'file' => $rona->rawFile(),
                         'name' => $rona->rona_awal->name
                     ];
                     break;
@@ -475,22 +478,22 @@ class KaReviewController extends Controller
                 'no' => 1,
                 'name' => 'Peta Lokasi Kegiatan',
                 // 'file' => $peta_lokasi_kegiatan ? Storage::url('map/' . $peta_lokasi_kegiatan->stored_filename) : null,
-                'file' => $peta_lokasi_kegiatan ? Storage::disk('public')->temporaryUrl('map/' . $peta_lokasi_kegiatan->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))) : null,
+                'file' => $peta_lokasi_kegiatan ? $peta_lokasi_kegiatan->stored_filename : null,
             ],
             [
                 'no' => 2,
                 'name' => 'Bukti Kesesuaian Tata Ruang',
-                'file' => $project->ktr ?? null,
+                'file' => $project->rawKtr(),
             ],
             [
                 'no' => 3,
                 'name' => 'Izin Persetujuan Awal',
-                'file' => $project->pre_agreement_file ?? null,
+                'file' => $project->rawPreAgreementFile(),
             ],
             [
                 'no' => 4,
                 'name' => 'Bagan Alir Pelingkupan',
-                'file' => $bagan_alir_pelingkupan ? $bagan_alir_pelingkupan->attachment : null,
+                'file' => $bagan_alir_pelingkupan ? $bagan_alir_pelingkupan->rawAttachment() : null,
             ],
             [
                 'no' => 5,
@@ -579,7 +582,7 @@ class KaReviewController extends Controller
             array_push($attachment, [
                 'no' => null,
                 'name' => $dk_no . '. ' . $dk->name,
-                'file' => $dk->file,
+                'file' => $dk->rawFile(),
                 'file_name' => $dk->name,
                 'data_pendukung' => true,
             ]);
@@ -590,7 +593,7 @@ class KaReviewController extends Controller
             'no' => 8,
             'name' => 'Peta Batas Wilayah Studi',
             // 'file' => $peta_batas_wilayah_studi ? Storage::url('map/' . $peta_batas_wilayah_studi->stored_filename) : null,
-            'file' => $peta_batas_wilayah_studi ? Storage::disk('public')->temporaryUrl('map/' . $peta_batas_wilayah_studi->stored_filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))) : null,
+            'file' => $peta_batas_wilayah_studi ? $peta_batas_wilayah_studi->stored_filename : null,
         ]);
 
         return response()->json($attachment);
@@ -640,5 +643,14 @@ class KaReviewController extends Controller
         $convertedUri;
         $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
         return $convertedUri;
+    }
+
+    private function downloadExternalFile($filepath)
+    {
+        $tmpName = tempnam(sys_get_temp_dir(),'');
+        $tmpFile = Storage::disk('public')->get($filepath);
+        file_put_contents($tmpName, $tmpFile);
+
+        return response()->download($tmpName)->deleteFileAfterSend(true);
     }
 }
