@@ -269,6 +269,16 @@ class Project extends Model implements Auditable
         return null;
     }
 
+    public function rawKtr()
+    {
+        return $this->attributes['ktr'];
+    }
+
+    public function rawPreAgreementFile()
+    {
+        return $this->attributes['pre_agreement_file'];
+    }
+
     public function getOssRequiredDocAttribute()
     {
         if(isset($this->attributes['oss_required_doc']) && $this->attributes['oss_required_doc'] != null) {

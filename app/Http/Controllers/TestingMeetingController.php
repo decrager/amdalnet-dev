@@ -768,7 +768,7 @@ class TestingMeetingController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+            'url' => Storage::disk('public')->temporaryUrl('adm/berkas-adm-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 
@@ -939,7 +939,7 @@ class TestingMeetingController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx') 
+            'url' => Storage::disk('public')->temporaryUrl('meet-inv/ka-' . strtolower(str_replace('/', '-', $project->project_title)) . '.docx', now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 
