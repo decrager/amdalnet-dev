@@ -807,7 +807,7 @@ class TestMeetRKLRPLController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url($save_file_name) 
+            'url' => Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 
@@ -982,7 +982,7 @@ class TestMeetRKLRPLController extends Controller
         }
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::url($save_file_name) 
+            'url' => Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 
