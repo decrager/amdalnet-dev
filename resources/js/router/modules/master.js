@@ -214,7 +214,7 @@ const masterRoutes = {
         title: 'Instansi Pemerintah',
         icon: 'documentation',
         noCache: true,
-        permissions: ['view menu institution'],
+        permissions: ['view menu institution', 'manage institution'],
       },
     },
     {

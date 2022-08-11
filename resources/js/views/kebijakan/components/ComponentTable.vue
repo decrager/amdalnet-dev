@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <el-table
     v-loading="loading"
@@ -16,7 +17,13 @@
           <p class="mb-1 fw-bold">Link Download :</p>
           <p class="mb-1 ml-1">{{ scope.row.link }}</p>
         </div>
-        <div class="d-flex pl-1">
+        <div
+          v-if="
+            checkPermission(['manage materials and policies']) ||
+            checkRole(['admin'])
+          "
+          class="d-flex pl-1"
+        >
           <p class="mb-1 fw-bold">Aksi :</p>
           <p class="mb-1 ml-1">
             <el-button
@@ -57,6 +64,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'ComponentTable',
   props: {
@@ -67,6 +77,8 @@ export default {
     loading: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleView(row) {
       this.$emit('handleView', row);
     },

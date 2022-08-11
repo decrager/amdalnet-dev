@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <el-table
     v-loading="loading"
@@ -14,7 +15,14 @@
 
     <el-table-column label="Nama Peraturan" prop="name" sortable />
 
-    <el-table-column label="Aksi" width="250px">
+    <el-table-column
+      v-if="
+        checkPermission(['manage materials and policies']) ||
+        checkRole(['admin'])
+      "
+      label="Aksi"
+      width="250px"
+    >
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -38,6 +46,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'ComponentTable',
   props: {
@@ -48,6 +59,8 @@ export default {
     loading: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleEditForm(row) {
       const currentParam = row;
       console.log(currentParam.name);

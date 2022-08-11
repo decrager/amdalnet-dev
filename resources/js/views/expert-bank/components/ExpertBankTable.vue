@@ -36,7 +36,11 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="center" label="Aksi">
+    <el-table-column
+      v-if="checkPermission(['manage expert']) || checkRole(['admin'])"
+      align="center"
+      label="Aksi"
+    >
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -60,6 +64,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'ExpertBankTable',
   filters: {
@@ -79,6 +86,8 @@ export default {
     loading: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },

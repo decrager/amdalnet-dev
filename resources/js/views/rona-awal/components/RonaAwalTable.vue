@@ -15,7 +15,11 @@
     <el-table-column label="Jenis Komponen" prop="component" sortable />
     <el-table-column label="Komponen Lingkungan" prop="name" sortable />
 
-    <el-table-column label="Aksi" align="right">
+    <el-table-column
+      v-if="checkPermission(['manage rona awal']) || checkRole(['admin'])"
+      label="Aksi"
+      align="right"
+    >
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -39,6 +43,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'RonaAwalTable',
   props: {
@@ -57,6 +64,8 @@ export default {
     },
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },

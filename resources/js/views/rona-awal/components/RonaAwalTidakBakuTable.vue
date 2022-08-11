@@ -16,7 +16,11 @@
     <el-table-column label="Komponen Lingkungan" prop="name" sortable />
     <el-table-column label="Asal Kegiatan" prop="project_title" />
 
-    <el-table-column label="Aksi" align="right">
+    <el-table-column
+      v-if="checkPermission(['manage rona awal']) || checkRole(['admin'])"
+      label="Aksi"
+      align="right"
+    >
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -26,13 +30,15 @@
         >
           Bakukan
         </el-button>
-
       </template>
     </el-table-column>
   </el-table>
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'RonaAwalTidakBakuTable',
   props: {
@@ -51,13 +57,15 @@ export default {
     },
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });
     },
-    formalise(id){
+    formalise(id) {
       this.$emit('setMaster', id);
     },
   },

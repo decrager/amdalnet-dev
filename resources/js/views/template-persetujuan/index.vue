@@ -3,6 +3,7 @@
     <el-card>
       <div class="filter-container">
         <el-button
+          v-if="checkPermission(['manage env approve']) || checkRole(['admin'])"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -45,6 +46,8 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import Pagination from '@/components/Pagination';
 import axios from 'axios';
 import ComponentTable from './components/ComponentTable.vue';
@@ -74,6 +77,8 @@ export default {
     this.getAll();
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleFilter() {
       this.getAll();
     },
