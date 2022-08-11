@@ -69,7 +69,7 @@ class ChangeUserEmailNotification extends Notification
     public function toArray($notifiable)
     {
         $role = $this->role ? $this->role : $notifiable->roles->first()->name;
-        $with_email = $this->email ? ' menjadi ' . $this->email : '';
+        $with_email = $this->email ? ' menjadi ' . $this->email :  ' menjadi ' . $notifiable->email;
 
         return [
             'updatedUser' => $notifiable,
