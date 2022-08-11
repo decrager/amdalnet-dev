@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <el-table
     v-loading="loading"
@@ -6,7 +7,13 @@
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white', border: '0' }"
   >
-    <el-table-column type="expand">
+    <el-table-column
+      v-if="
+        checkPermission(['manage materials and policies']) ||
+        checkRole(['admin'])
+      "
+      type="expand"
+    >
       <template slot-scope="scope">
         <!-- <el-button
           type="text"
@@ -47,6 +54,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'ComponentTable',
   props: {
@@ -57,6 +67,8 @@ export default {
     loading: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleView(row) {
       this.$emit('handleView', row);
     },

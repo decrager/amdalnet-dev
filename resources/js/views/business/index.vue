@@ -5,7 +5,7 @@
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col>
             <el-button
-              v-if="isAdmin"
+              v-if="checkPermission(['manage params']) || checkRole(['admin'])"
               class="filter-item"
               type="primary"
               icon="el-icon-plus"
@@ -18,8 +18,16 @@
             <!-- <el-input v-model="listQuery.searchKbliCode" placeholder="No. KBLI" @change="handleFilter">
               <el-button slot="append" icon="el-icon-search" @click="handleFilter" />
             </el-input> -->
-            <el-input v-model="listQuery.searchField" placeholder="Nama KBLI" @change="handleFilter">
-              <el-button slot="append" icon="el-icon-search" @click="handleFilter" />
+            <el-input
+              v-model="listQuery.searchField"
+              placeholder="Nama KBLI"
+              @change="handleFilter"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="handleFilter"
+              />
             </el-input>
           </el-col>
         </el-row>
@@ -61,7 +69,14 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column v-if="isAdmin" align="right" label="Aksi" width="150">
+        <el-table-column
+          v-if="
+            checkPermission(['manage tuk management']) || checkRole(['admin'])
+          "
+          align="right"
+          label="Aksi"
+          width="150"
+        >
           <template slot-scope="scope">
             <span style="margin-left: 10px">
               <el-button
@@ -77,7 +92,14 @@
                 size="mini"
                 href="#"
                 icon="el-icon-delete"
-                @click="handleDelete(scope.row.id, scope.row.kbli_code_value, scope.row.sector_value, scope.row.field_value)"
+                @click="
+                  handleDelete(
+                    scope.row.id,
+                    scope.row.kbli_code_value,
+                    scope.row.sector_value,
+                    scope.row.field_value
+                  )
+                "
               />
             </span>
           </template>
@@ -115,6 +137,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
@@ -156,11 +180,11 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
     isAdmin() {
-      return this.userInfo.roles.some(r => this.adminRoles.includes(r));
+      return this.userInfo.roles.some((r) => this.adminRoles.includes(r));
     },
   },
   async created() {
@@ -171,6 +195,8 @@ export default {
     // async getUserInfo() {
     //   this.userInfo = await this.$store.dispatch('user/getInfo');
     // },
+    checkPermission,
+    checkRole,
     async getFilteredData(query) {
       this.loading = true;
       const { data, total } = await businessResource.list(query);
@@ -196,16 +222,25 @@ export default {
       // delete from LIST
       this.showConfirmation = true;
       this.selectedId = id;
-      this.confirmMessage = 'ingin menghapus KBLI: ' + code + ' ' + sector + ' ' + field;
-      this.warningMessage = 'Menghapus KBLI akan berdampak luas pada sistem, khususnya terkait Kegiatan.';
+      this.confirmMessage =
+        'ingin menghapus KBLI: ' + code + ' ' + sector + ' ' + field;
+      this.warningMessage =
+        'Menghapus KBLI akan berdampak luas pada sistem, khususnya terkait Kegiatan.';
     },
     handleDeleteBusiness(business) {
       // delete from EDIT form
       this.showEditBusiness = false;
       this.showConfirmation = true;
       this.selectedId = business.id;
-      this.confirmMessage = 'ingin menghapus KBLI: ' + business.kbli_code + ' ' + business.sector + ' ' + business.value;
-      this.warningMessage = 'Menghapus KBLI akan berdampak luas pada sistem, khususnya terkait Kegiatan.';
+      this.confirmMessage =
+        'ingin menghapus KBLI: ' +
+        business.kbli_code +
+        ' ' +
+        business.sector +
+        ' ' +
+        business.value;
+      this.warningMessage =
+        'Menghapus KBLI akan berdampak luas pada sistem, khususnya terkait Kegiatan.';
     },
     handleSubmitConfirmation(id) {
       // delete
@@ -243,13 +278,14 @@ export default {
 .entity-block {
   display: inline-block;
 
-  .name, .description {
+  .name,
+  .description {
     display: block;
     margin-left: 50px;
     padding: 2px 0;
   }
   .action {
-    display:  inline-block;
+    display: inline-block;
     padding-right: 5%;
   }
   img {
@@ -269,7 +305,6 @@ export default {
     font-weight: 500;
     font-size: 12px;
   }
-
 }
 .post {
   font-size: 14px;
@@ -299,7 +334,8 @@ export default {
     font-size: 13px;
   }
   .link-black {
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       color: #999;
     }
   }

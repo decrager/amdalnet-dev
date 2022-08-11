@@ -1,6 +1,7 @@
 <template>
   <div class="filter-container">
     <el-button
+      v-if="checkPermission(['manage rona awal']) || checkRole(['admin'])"
       class="filter-item"
       type="primary"
       icon="el-icon-plus"
@@ -8,7 +9,7 @@
     >
       {{ 'Tambah Master Rona Lingkungan' }}
     </el-button>
-    <el-row :gutter="32" style="margin-bottom: 1.5em;">
+    <el-row :gutter="32" style="margin-bottom: 1.5em">
       <el-col :sm="24" :md="10">
         <el-input
           v-model="listQuery.search"
@@ -50,6 +51,8 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import Resource from '@/api/resource';
 import RonaAwalTable from '@/views/rona-awal/components/RonaAwalTable.vue';
 import Pagination from '@/components/Pagination';
@@ -92,6 +95,8 @@ export default {
     // this.getComponentList();
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleSubmitRonaAwal() {
       if (this.ronaAwal.id !== undefined) {
         ronaAwalesource

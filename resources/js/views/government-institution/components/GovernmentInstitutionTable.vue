@@ -31,7 +31,11 @@
       prop="email"
     />
 
-    <el-table-column align="center" label="Aksi">
+    <el-table-column
+      v-if="checkPermission(['manage institution']) || checkRole(['admin'])"
+      align="center"
+      label="Aksi"
+    >
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -55,6 +59,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'GovernmentInstitutionTable',
   props: {
@@ -65,6 +72,8 @@ export default {
     loading: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleEdit(id) {
       this.$emit('handleEdit', { id });
     },

@@ -4,20 +4,16 @@
     :data="list"
     fit
     highlight-current-row
-    :header-cell-style="{ background: '#3AB06F', color: 'white', border:'0' }"
+    :header-cell-style="{ background: '#3AB06F', color: 'white', border: '0' }"
     @sort-change="onTableSort"
   >
     <el-table-column label="No." width="54px">
       <template slot-scope="scope">
-        <span>{{ ((page - 1) * limit) + scope.$index + 1 }}</span>
+        <span>{{ (page - 1) * limit + scope.$index + 1 }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column
-      column-key="project_stage"
-      label="Tahap Kegiatan"
-    >
-
+    <el-table-column column-key="project_stage" label="Tahap Kegiatan">
       <template slot="header">
         <el-select
           v-model="projectStageFilter"
@@ -46,7 +42,10 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="Aksi">
+    <el-table-column
+      v-if="checkPermission(['manage component']) || checkRole(['admin'])"
+      label="Aksi"
+    >
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -70,6 +69,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'ComponentTable',
   props: {
@@ -97,18 +99,20 @@ export default {
     };
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },
     handleDelete(id, nama) {
       this.$emit('handleDelete', { id, nama });
     },
-    onProjectStageFilter(val){
+    onProjectStageFilter(val) {
       this.$emit('projectStageFilter', this.projectStageFilter);
     },
-    onTableSort(sort){
+    onTableSort(sort) {
       // console.log(sort);
-      const order = (sort.order === 'ascending') ? 'ASC' : 'DESC';
+      const order = sort.order === 'ascending' ? 'ASC' : 'DESC';
       const prop = sort.prop;
       this.$emit('sort', { order: order, prop: prop });
     },
@@ -116,5 +120,7 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .el-table-column{border: none;}
+.el-table-column {
+  border: none;
+}
 </style>

@@ -517,7 +517,7 @@ class FormulatorController extends Controller
             $formulator = Formulator::where('reg_no', $request->reg_no)->first();
             if($formulator) {
                 $certificate_file = $formulator->cert_file;
-                $user = $this->checkUser($request->email, $formulator->email);
+                $user = $this->checkUser($request->email, $formulator->email, $request->reg_no);
                 if($user !== null) {
                     return $user;
                 }
@@ -592,21 +592,18 @@ class FormulatorController extends Controller
         ];
     }
 
-    private function checkUser($email_user, $email_formulator = null)
+    private function checkUser($email_user, $email_formulator = null, $no_reg = null)
     {
-        $user = null;
-        if($email_formulator) {
-            $user = User::where('email', $email_formulator)->first();
-        } else {
-            $user = User::where('email', $email_user)->first();
+        if($email_formulator && $no_reg) {
+            $user = User::where([['email', $email_formulator],['active', 1]])->first();
+            if($user) {
+                return response()->json(['error' => 'Penyusun dengan nomor registrasi ' . $no_reg . ' sudah terdaftar']);
+            } 
         }
 
+        $user = User::where('email', $email_user)->first();
         if($user) {
-            if($user->active === 1) {
-                return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
-            } else if($user->active === 0) {
-                return response()->json(['error' => 'Email sudah terdaftar dan menunggu aktifasi akun']);
-            }
+            return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
         }
 
         return null;

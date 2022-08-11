@@ -7,7 +7,7 @@ const businessRoutes = {
   meta: {
     title: 'masterKbli',
     icon: 'zip',
-    permissions: ['view menu params & kbli'],
+    permissions: ['view menu params & kbli', 'manage params'],
   },
   children: [
     {
@@ -17,7 +17,7 @@ const businessRoutes = {
       meta: {
         title: 'masterKbli',
         icon: 'documentation',
-        permissions: ['view menu params & kbli'],
+        permissions: ['view menu params & kbli', 'manage params'],
       },
     },
     {
@@ -28,7 +28,7 @@ const businessRoutes = {
       meta: {
         title: 'masterParameterKbli',
         icon: 'documentation',
-        permissions: ['view menu params & kbli'],
+        permissions: ['view menu params & kbli', 'manage params'],
       },
     },
   ],

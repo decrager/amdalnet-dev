@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <el-table
     v-loading="loading"
@@ -57,7 +58,10 @@
           CV
         </el-button>
         <el-button
-          v-if="certificate"
+          v-if="
+            certificate &&
+            (checkPermission(['manage formulator']) || checkRole(['admin']))
+          "
           type="warning"
           size="mini"
           @click="handleCertificate(scope.row.id)"
@@ -67,7 +71,14 @@
       </template>
     </el-table-column>
 
-    <el-table-column v-if="!certificate" align="center" label="Aksi">
+    <el-table-column
+      v-if="
+        !certificate &&
+        (checkPermission(['manage formulator']) || checkRole(['admin']))
+      "
+      align="center"
+      label="Aksi"
+    >
       <template slot-scope="scope">
         <el-button
           type="text"
@@ -83,6 +94,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'FormulatorTable',
   filters: {
@@ -103,6 +117,8 @@ export default {
     certificate: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     download(url) {
       window.open(url, '_blank').focus();
     },

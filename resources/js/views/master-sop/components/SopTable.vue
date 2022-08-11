@@ -44,7 +44,10 @@
               {{ scope.row.other_impact }}
             </div>
           </div>
-          <span class="action">
+          <span
+            v-if="checkPermission(['manage sop']) || checkRole(['admin'])"
+            class="action"
+          >
             <el-button
               type="text"
               href="#"
@@ -150,6 +153,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'SopTable',
   filters: {
@@ -169,6 +175,8 @@ export default {
     loading: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleEditForm(id) {
       this.$emit('handleEditForm', id);
     },

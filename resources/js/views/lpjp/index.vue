@@ -3,6 +3,7 @@
     <el-card>
       <div class="filter-container">
         <el-button
+          v-if="checkPermission(['manage lpjp']) || checkRole(['admin'])"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -66,6 +67,8 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import Resource from '@/api/resource';
 import Pagination from '@/components/Pagination';
 import LpjpTable from '@/views/lpjp/components/LpjpTable.vue';
@@ -97,6 +100,8 @@ export default {
     this.getList();
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleFilter() {
       this.getList();
     },

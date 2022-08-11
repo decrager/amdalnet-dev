@@ -22,7 +22,10 @@
             <p><b>Tgl Awal: </b>{{ scope.row.date_start }}</p>
             <p><b>Tgl Akhir: </b>{{ scope.row.date_end }}</p>
           </div>
-          <div class="expand-container__right">
+          <div
+            v-if="checkPermission(['manage lpjp']) || checkRole(['admin'])"
+            class="expand-container__right"
+          >
             <el-button
               type="primary"
               size="medium"
@@ -99,6 +102,9 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
+
 export default {
   name: 'LpjpTable',
   filters: {
@@ -118,6 +124,8 @@ export default {
     loading: Boolean,
   },
   methods: {
+    checkPermission,
+    checkRole,
     calculateStatus(awal, akhir) {
       const tglAwal = new Date(awal);
       const tglAkhir = new Date(akhir);

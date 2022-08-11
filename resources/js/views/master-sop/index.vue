@@ -3,6 +3,7 @@
     <el-card>
       <div class="filter-container">
         <el-button
+          v-if="checkPermission(['manage sop']) || checkRole(['admin'])"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -38,6 +39,8 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import Resource from '@/api/resource';
 import SopTable from '@/views/master-sop/components/SopTable.vue';
 const sopResource = new Resource('sops');
@@ -61,6 +64,8 @@ export default {
     this.getList();
   },
   methods: {
+    checkPermission,
+    checkRole,
     async getList() {
       this.loading = true;
       const { data } = await sopResource.list({ search: this.search });

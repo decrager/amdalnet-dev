@@ -3,6 +3,7 @@
     <el-card>
       <div class="filter-container">
         <el-button
+          v-if="checkPermission(['manage expert']) || checkRole(['admin'])"
           class="filter-item"
           type="primary"
           icon="el-icon-plus"
@@ -45,6 +46,8 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission';
+import checkRole from '@/utils/role';
 import Resource from '@/api/resource';
 import ExpertBankTable from '@/views/expert-bank/components/ExpertBankTable.vue';
 import Pagination from '@/components/Pagination';
@@ -73,6 +76,8 @@ export default {
     this.getList();
   },
   methods: {
+    checkPermission,
+    checkRole,
     handleFilter() {
       this.getList();
     },
