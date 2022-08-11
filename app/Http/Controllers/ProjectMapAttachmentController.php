@@ -376,4 +376,13 @@ class ProjectMapAttachmentController extends Controller
 
         return response()->json($getMapPdf);
     }
+
+    public function getByFilename(Request $request)
+    {
+        $filename = $request->query('filename');
+        if (!Storage::disk('public')->exists('map/'. $filename)) {
+            return response('File tidak ditemukan', 418);
+        }
+        return redirect()->away(Storage::temporaryUrl('map/' . $filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
+    }
 }
