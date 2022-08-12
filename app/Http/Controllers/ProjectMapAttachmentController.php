@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ProjectMapAttachmentResource;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
@@ -383,6 +384,6 @@ class ProjectMapAttachmentController extends Controller
         if (!Storage::disk('public')->exists('map/'. $filename)) {
             return response('File tidak ditemukan', 418);
         }
-        return redirect()->away(Storage::temporaryUrl('map/' . $filename, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT'))));
+        return redirect()->away(Storage::temporaryUrl('public/map/' . $filename, Carbon::now()->addMinutes(30)));
     }
 }
