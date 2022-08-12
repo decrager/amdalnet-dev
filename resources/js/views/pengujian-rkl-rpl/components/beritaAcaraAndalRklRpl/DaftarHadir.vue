@@ -160,7 +160,8 @@
         style="color: blue"
         @click.prevent="download(reports.file)"
       >
-        {{ baFileName }}
+        <!-- {{ baFileName }} -->
+        Unduh Berita Acara Final
       </el-button>
     </div>
     <small

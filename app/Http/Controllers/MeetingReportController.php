@@ -673,7 +673,7 @@ class MeetingReportController extends Controller
 
         return [
             'title' => strtolower(str_replace('/', '-', $project->project_title)),
-            'url' => Storage::disk('public')->temporaryUrl($save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
+            'url' => Storage::disk('public')->temporaryUrl('ba-ka/' . $save_file_name, now()->addMinutes(env('TEMPORARY_URL_TIMEOUT')))
         ];
     }
 
