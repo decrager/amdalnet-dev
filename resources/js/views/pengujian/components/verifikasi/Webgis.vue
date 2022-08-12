@@ -41,7 +41,7 @@ export default {
             if (projects[i].attachment_type === 'ecology') {
               shp(
                 window.location.origin +
-                  '/api/map/download?filename=' +
+                  '/api/download-map-by-name?filename=' +
                   projects[i].stored_filename
               ).then((data) => {
                 const blob = new Blob([JSON.stringify(data)], {
@@ -77,7 +77,7 @@ export default {
             if (projects[i].attachment_type === 'social') {
               shp(
                 window.location.origin +
-                  '/api/map/download?filename=' +
+                  '/api/download-map-by-name?filename=' +
                   projects[i].stored_filename
               ).then((data) => {
                 const blob = new Blob([JSON.stringify(data)], {
@@ -113,7 +113,7 @@ export default {
             if (projects[i].attachment_type === 'study') {
               shp(
                 window.location.origin +
-                  '/api/map/download?filename=' +
+                  '/api/download-map-by-name?filename=' +
                   projects[i].stored_filename
               ).then((data) => {
                 const blob = new Blob([JSON.stringify(data)], {
@@ -154,7 +154,7 @@ export default {
             if (projects[i].attachment_type === 'tapak') {
               shp(
                 window.location.origin +
-                  '/api/map/download?filename=' +
+                  '/api/download-map-by-name?filename=' +
                   projects[i].stored_filename
               ).then((data) => {
                 const blob = new Blob([JSON.stringify(data)], {
