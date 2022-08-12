@@ -235,7 +235,7 @@ Route::get('pie-params', [PieParamController::class, 'index']);
 Route::post('upload-map', [ProjectMapAttachmentController::class, 'post']);
 Route::post('upload-maps', [ProjectMapAttachmentController::class, 'store']);
 Route::get('download-map/{id}', [ProjectMapAttachmentController::class, 'download']);
-Route::get('download-map-by-name', [ProjectMapAttachmentController::class, 'getByFilename']);
+Route::get('download-map-by-name.shp', [ProjectMapAttachmentController::class, 'getByFilename']);
 Route::apiResource('manage-approach', 'ManageApproachController');
 Route::post('upload-ka-doc', [ExportDocument::class, 'saveKADoc']);
 Route::get('pie-entries', [ImpactIdentificationController::class, 'pieEntries']);
