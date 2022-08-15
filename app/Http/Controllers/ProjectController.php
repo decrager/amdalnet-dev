@@ -35,6 +35,7 @@ use App\Notifications\CreateProjectNotification;
 use App\Entity\ProjectSkklFinal;
 use App\Utils\Document;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -448,10 +449,12 @@ class ProjectController extends Controller
                         $found = User::where('email', $email)->first();
                         if (!$found) {
                             $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
+                            $password = Str::random(8);
                             $user = User::create([
                                 'name' => ucfirst($formulaTeam->name),
                                 'email' => $formulaTeam->email,
-                                'password' => Hash::make('amdalnet')
+                                'password' => Hash::make($password),
+                                'original_password' => $password
                             ]);
                             $user->syncRoles($formulatorRole);
                         }

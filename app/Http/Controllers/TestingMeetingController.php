@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TestingMeetingController extends Controller
 {
@@ -118,10 +119,12 @@ class TestingMeetingController extends Controller
                         $user = User::where('email', $i->email)->count();
                         if($user === 0) {
                             $role = Role::findByName(Acl::ROLE_EXAMINER);
+                            $password = Str::random(8);
                             $user = User::create([
                                 'name' => ucfirst($i->name),
                                 'email' => $i->email,
-                                'password' => Hash::make('amdalnet')
+                                'password' => Hash::make($password),
+                                'original_password' => $password
                             ]);
                             $user->syncRoles($role);
 

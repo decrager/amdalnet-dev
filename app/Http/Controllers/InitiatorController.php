@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class InitiatorController extends Controller
 {
@@ -76,13 +77,19 @@ class InitiatorController extends Controller
             }
 
             $initiatorRole = Role::findByName(Acl::ROLE_INITIATOR);
-
-            $user = User::create([
+            $password = Str::random(8);
+            $user_data = [
                 'name' => ucfirst($params['name']),
                 'email' => $params['email'],
-                'password' => Hash::make($params['password']),
-                'oss_username' => isset($params['username']) ? $params['username'] : null,
-            ]);
+                'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($password),
+                'oss_username' => isset($params['username']) ? $params['username'] : null
+            ];
+
+            if(!isset($params['password'])) {
+                $user_data['original_password'] = $password;
+            }
+
+            $user = User::create($user_data);
             $user->syncRoles($initiatorRole);
 
             //create Initiator

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class ExpertBankController extends Controller
 {
@@ -115,10 +116,12 @@ class ExpertBankController extends Controller
             $found = User::where('email', $email)->first();
             if (!$found) {
                 $expertRole = Role::findByName(Acl::ROLE_EXAMINER);
+                $password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
                     'email' => $params['email'],
-                    'password' => Hash::make('amdalnet')
+                    'password' => Hash::make($password),
+                    'original_password' => $password
                 ]);
                 $user->syncRoles($expertRole);
             }
