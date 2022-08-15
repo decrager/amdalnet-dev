@@ -204,25 +204,25 @@
       <el-tab-pane
         v-else-if="user.lpjpData.email"
         v-loading="updating"
-        label="Lpjp"
+        label="LPJP"
         name="lpjpTab"
       >
-        <el-form ref="lpjpForm" :model="user.lpjpData">
+        <el-form ref="lpjpForm" :model="lpjp">
           <el-form-item label="Nama LPJP">
-            <el-input v-model="user.lpjpData.name" />
+            <el-input v-model="lpjp.name" />
           </el-form-item>
           <el-form-item label="PIC">
-            <el-input v-model="user.lpjpData.pic" />
+            <el-input v-model="lpjp.pic" />
           </el-form-item>
           <el-form-item label="No. Registrasi">
-            <el-input v-model="user.lpjpData.reg_no" />
+            <el-input v-model="lpjp.reg_no" />
           </el-form-item>
           <el-form-item label="No. Telepon">
-            <el-input v-model="user.lpjpData.phone_no" />
+            <el-input v-model="lpjp.phone_no" />
           </el-form-item>
           <el-form-item label="Tanggal Ditetapkan" prop="tglDitetapkan">
             <el-date-picker
-              v-model="user.lpjpData.date_start"
+              v-model="lpjp.date_start"
               type="date"
               placeholder="Pilih tanggal"
               value-format="yyyy-MM-dd"
@@ -231,7 +231,7 @@
           </el-form-item>
           <el-form-item label="Terakhir Berlaku" prop="terakhirBerlaku">
             <el-date-picker
-              v-model="user.lpjpData.date_end"
+              v-model="lpjp.date_end"
               type="date"
               placeholder="Pilih tanggal"
               value-format="yyyy-MM-dd"
@@ -277,7 +277,7 @@ import Resource from '@/api/resource';
 const userResource = new Resource('users');
 const initiatorResource = new Resource('initiators');
 const formulatorResource = new Resource('formulators');
-const lpjpResource = new Resource('lpjps');
+const lpjpResource = new Resource('lpjp');
 const expertResource = new Resource('expert-banks');
 
 export default {
@@ -313,6 +313,7 @@ export default {
       changePasswordDialog: false,
       changePasswordLoading: false,
       formulator: {},
+      lpjp: {},
       cvFormulator: {
         name: null,
         file: null,
@@ -399,10 +400,17 @@ export default {
   },
   created() {
     this.getFormulator();
+    this.getLpjp();
   },
   methods: {
     handleClick(tab, event) {
       console.log('Switching tab ', tab, event);
+    },
+    async getLpjp() {
+      this.lpjp = await lpjpResource.list({
+        byUserId: 'true',
+        email: this.userInfo.email,
+      });
     },
     async getFormulator() {
       this.formulator = await formulatorResource.list({
@@ -466,7 +474,7 @@ export default {
     onLpjpSubmit() {
       this.updating = true;
 
-      const updatedLpjp = this.user.lpjpData;
+      const updatedLpjp = this.lpjp;
 
       lpjpResource
         .update(updatedLpjp.id, updatedLpjp)
