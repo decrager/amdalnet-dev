@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class LpjpController extends Controller
 {
@@ -312,6 +313,19 @@ class LpjpController extends Controller
                             ]);
                             $user->syncRoles($lpjpRole);
                         }
+                    }
+                } else {
+                    $user = User::where('email',  $request->email)->first();
+                    if(!$user) {
+                        $lpjpRole = Role::findByName(Acl::ROLE_LPJP);
+                        $random_password = Str::random(8);
+                        $user = User::create([
+                            'name' => ucfirst($params['name']),
+                            'email' => $params['email'],
+                            'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
+                            'original_password' => isset($params['password']) ? $params['password'] : $random_password
+                        ]);
+                        $user->syncRoles($lpjpRole);
                     }
                 }
             }
