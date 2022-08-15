@@ -23,7 +23,7 @@ const announcementRoutes = {
         title: 'Daftar Anggota LPJP',
         icon: 'documentation',
         noCache: true,
-        roles: ['lpjp'],
+        permissions: ['view menu formulator team', 'manage formulator team'],
       },
     },
     {

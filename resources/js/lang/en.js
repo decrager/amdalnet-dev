@@ -284,6 +284,27 @@ export default {
       'view menu tuk project': 'view menu proyek tuk',
       'manage tuk profile': 'kelola profil tuk',
       'manage tuk project': 'kelola proyek tuk',
+      'view menu ka': 'view menu formulir ka',
+      'view menu ka document': 'view menu dokumen ka',
+      'view menu ka adm': 'view menu uji administrasi ka',
+      'view menu ka meeting invitation': 'view menu undangan rapat ka',
+      'view menu ka comment recapitulation':
+        'view menu rekapitulasi komentar ka',
+      'view menu ka meeting report': 'view menu berita acara ka',
+      'view menu andal': 'view menu andal',
+      'view menu rkl rpl': 'view menu rkl rpl',
+      'view menu andal rkl rpl document': 'view menu dokumen andal rkl rpl',
+      'view menu andal rkl rpl adm': 'view menu uji administrasi andal rkl rpl',
+      'view menu andal rkl rpl meeting invitation':
+        'view menu undangan rapat andal rkl rpl',
+      'view menu andal rkl rpl comment recapitulation':
+        'view menu rekapitulasi komentar andal rkl rpl',
+      'view menu andal rkl rpl meeting report':
+        'view menu berita acara andal rkl rpl',
+      'view menu feasibility test': 'view menu uji kelayakan',
+      'view menu feasibility test recommendation':
+        'view menu rekomendasi uji kelayakan',
+      'view menu skkl': 'view menu skkl',
     },
   },
   guide: {

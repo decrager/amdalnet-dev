@@ -19,7 +19,15 @@ const announcementRoutes = {
       component: () => import('@/views/announcement/View'),
       name: 'ViewAnnouncement',
       hidden: true,
-      meta: { title: 'Daftar Kegiatan', icon: 'documentation' },
+      meta: {
+        title: 'Daftar Kegiatan',
+        icon: 'documentation',
+        permissions: [
+          'view menu public consultations',
+          'manage consultation',
+          'do public consultation',
+        ],
+      },
     },
   ],
 };
