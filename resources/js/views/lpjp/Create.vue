@@ -92,23 +92,33 @@
         <el-col :span="12">
           <el-form-item label="Dokumen Sertifikat" prop="fileSertifikat">
             <!-- <input type="file" @change="handleFileObject"> -->
-            <el-upload
-              class="upload-demo"
-              :auto-upload="false"
-              :on-change="handleUploadChange"
-              action="#"
-              :show-file-list="false"
-            >
-              <el-button size="small" type="primary">
-                Click to upload
-              </el-button>
-              <span style="padding-left: 10px">{{
-                fileName || currentLpjp.cert_file
+            <div class="upload-form-item" style="display: flex">
+              <el-upload
+                class="upload-demo"
+                :auto-upload="false"
+                :on-change="handleUploadChange"
+                action="#"
+                :show-file-list="false"
+              >
+                <el-button size="small" type="primary">
+                  Click to upload
+                </el-button>
+                <div slot="tip" class="el-upload__tip">
+                  upload sertifikat disini
+                </div>
+              </el-upload>
+              <span v-if="fileName" style="padding-left: 10px">{{
+                certificateName
               }}</span>
-              <div slot="tip" class="el-upload__tip">
-                upload sertifikat disini
-              </div>
-            </el-upload>
+              <a
+                v-else-if="currentLpjp.cert_file"
+                :href="currentLpjp.cert_file"
+                style="padding-left: 10px"
+                target="_blank"
+              >
+                {{ certificateName }}
+              </a>
+            </div>
           </el-form-item>
         </el-col>
       </el-row>
@@ -194,7 +204,20 @@ export default {
       cityOptions: [],
     };
   },
-  mounted() {
+  computed: {
+    certificateName() {
+      if (this.fileName) {
+        return this.fileName;
+      }
+
+      if (this.currentLpjp.cert_file) {
+        return 'Sertifikat';
+      }
+
+      return '';
+    },
+  },
+  created() {
     if (this.$route.params.lpjp) {
       this.currentLpjp = this.$route.params.lpjp;
     }
@@ -211,6 +234,9 @@ export default {
       this.provinceOptions = data.map((i) => {
         return { value: i.id, label: i.name };
       });
+      if (this.currentLpjp.id_prov) {
+        this.getDistricts(this.currentLpjp.id_prov);
+      }
     },
     async getDistricts(idProv) {
       const { data } = await districtResource.list({ idProv });
