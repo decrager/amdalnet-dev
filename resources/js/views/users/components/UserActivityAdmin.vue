@@ -10,9 +10,7 @@
             <el-input v-model="user.email" :disabled="user.role === 'admin'" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">
-              Ubah
-            </el-button>
+            <el-button type="primary" @click="onSubmit"> Ubah </el-button>
             <!-- <el-button type="warning" :disabled="user.role === 'admin'" @click="showChangePassword">
               Ubah Password
             </el-button> -->
@@ -91,8 +89,22 @@ export default {
             message: 'Password lama wajib diisi',
           },
         ],
-        new: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
-        confirm: [{ required: true, trigger: 'blur', validator: validateConfirmPassword }],
+        new: [
+          {
+            required: true,
+            pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+            message:
+              'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus',
+            trigger: 'blur',
+          },
+        ],
+        confirm: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: validateConfirmPassword,
+          },
+        ],
       },
     };
   },
@@ -116,15 +128,23 @@ export default {
 
       userResource
         .update(this.user.id, this.user)
-        .then(response => {
+        .then((response) => {
+          if (response.error) {
+            this.$message({
+              message: response.error,
+              type: 'error',
+              duration: 5 * 1000,
+            });
+          } else {
+            this.$message({
+              message: 'Informasi User Berhasil Di Ubah',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+          }
           this.updating = false;
-          this.$message({
-            message: 'Informasi User Berhasil Di Ubah',
-            type: 'success',
-            duration: 5 * 1000,
-          });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.updating = false;
         });
@@ -135,7 +155,7 @@ export default {
           this.changePasswordLoading = true;
           userResource
             .update(this.user.id, this.password)
-            .then(response => {
+            .then((response) => {
               if (response.error) {
                 this.$message({
                   message: response.error,
@@ -153,7 +173,7 @@ export default {
               this.changePasswordLoading = false;
             })
             // eslint-disable-next-line handle-callback-err
-            .catch(error => {
+            .catch((error) => {
               this.changePasswordLoading = false;
             });
         }
@@ -180,7 +200,8 @@ export default {
 <style lang="scss" scoped>
 .user-activity {
   .user-block {
-    .username, .description {
+    .username,
+    .description {
       display: block;
       margin-left: 50px;
       padding: 2px 0;
@@ -227,7 +248,8 @@ export default {
       font-size: 13px;
     }
     .link-black {
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         color: #999;
       }
     }
@@ -244,7 +266,7 @@ export default {
     background-color: #99a9bf;
   }
 
-  .el-carousel__item:nth-child(2n+1) {
+  .el-carousel__item:nth-child(2n + 1) {
     background-color: #d3dce6;
   }
 }

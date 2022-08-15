@@ -173,6 +173,13 @@ class LpjpController extends Controller
                     'original_password' => $password
                 ]);
                 $user->syncRoles($lpjpRole);
+            } else {
+                return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
+            }
+
+            $check_lpjp = Lpjp::where('email', $email)->first();
+            if($check_lpjp) {
+                return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
             }
 
             //create lpjp

@@ -240,12 +240,20 @@ export default {
         lpjpResource
           .updateMultipart(this.currentLpjp.id, formData)
           .then((response) => {
-            this.$message({
-              type: 'success',
-              message: 'LPJP Details has been updated successfully',
-              duration: 5 * 1000,
-            });
-            this.$router.push('/master-data/lpjp');
+            if (response.errors) {
+              this.$message({
+                message: response.errors,
+                type: 'error',
+                duration: 5 * 1000,
+              });
+            } else {
+              this.$message({
+                type: 'success',
+                message: 'LPJP berhasil diupdate',
+                duration: 5 * 1000,
+              });
+              this.$router.push('/master-data/lpjp');
+            }
           })
           .catch((error) => {
             console.log(error);
@@ -254,16 +262,22 @@ export default {
         lpjpResource
           .store(formData)
           .then((response) => {
-            this.$message({
-              message:
-                'New LPJP ' +
-                this.currentLpjp.nama +
-                ' has been created successfully.',
-              type: 'success',
-              duration: 5 * 1000,
-            });
-            this.currentLpjp = {};
-            this.$router.push('/master-data/lpjp');
+            if (response.errors) {
+              this.$message({
+                message: response.errors,
+                type: 'error',
+                duration: 5 * 1000,
+              });
+            } else {
+              this.$message({
+                message:
+                  'LPJP ' + this.currentLpjp.nama + ' berhasil ditambahkan.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.currentLpjp = {};
+              this.$router.push('/master-data/lpjp');
+            }
           })
           .catch((error) => {
             console.log(error);

@@ -162,9 +162,13 @@ class UserController extends BaseController
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $email = $request->get('email');
-            $found = User::where('email', $email)->first();
-            if ($found && $found->id !== $user->id) {
-                return response()->json(['error' => 'Email has been taken'], 403);
+
+            // chec if email already userd
+            if($email != $user->email) {
+                $found = User::where('email', $email)->first();
+                if ($found) {
+                    return response()->json(['error' => 'Email Sudah Digunakan']);
+                }
             }
 
             //checking if this user is initiator
