@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Validator;
 
 /**
@@ -90,10 +91,12 @@ class UserController extends BaseController
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
+            $password = Str::random(8);
             $user = User::create([
                 'name' => $params['name'],
                 'email' => $params['email'],
-                'password' => Hash::make($params['password']),
+                'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($password),
+                'original_password' => isset($params['password']) ? $params['password'] : $password
             ]);
             $role = Role::findByName($params['role']);
             $user->syncRoles($role);
@@ -159,9 +162,13 @@ class UserController extends BaseController
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $email = $request->get('email');
-            $found = User::where('email', $email)->first();
-            if ($found && $found->id !== $user->id) {
-                return response()->json(['error' => 'Email has been taken'], 403);
+
+            // chec if email already userd
+            if($email != $user->email) {
+                $found = User::where('email', $email)->first();
+                if ($found) {
+                    return response()->json(['error' => 'Email Sudah Digunakan']);
+                }
             }
 
             //checking if this user is initiator

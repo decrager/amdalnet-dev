@@ -10,37 +10,74 @@
             <el-input v-model="user.email" :disabled="user.role === 'admin'" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" :disabled="user.role === 'admin'" @click="onSubmit">
+            <el-button
+              type="primary"
+              :disabled="user.role === 'admin'"
+              @click="onSubmit"
+            >
               Ubah
             </el-button>
-            <el-button type="warning" :disabled="user.role === 'admin'" @click="showChangePassword">
+            <el-button
+              type="warning"
+              :disabled="user.role === 'admin'"
+              @click="showChangePassword"
+            >
               Ubah Password
             </el-button>
           </el-form-item>
         </el-form>
-        <el-dialog v-if="user.role !== 'admin'" title="Ubah Password" :visible.sync="changePasswordDialog">
-          <el-form ref="changePasswordForm" v-loading="changePasswordLoading" :model="password" :rules="passwordRules">
+        <el-dialog
+          v-if="user.role !== 'admin'"
+          title="Ubah Password"
+          :visible.sync="changePasswordDialog"
+        >
+          <el-form
+            ref="changePasswordForm"
+            v-loading="changePasswordLoading"
+            :model="password"
+            :rules="passwordRules"
+          >
             <el-form-item label="Masukkan Password Lama" prop="current">
-              <el-input v-model="password.current" type="password" name="current" />
+              <el-input
+                v-model="password.current"
+                type="password"
+                name="current"
+              />
             </el-form-item>
             <el-form-item label="Masukkan Password Baru" prop="new">
               <el-input v-model="password.new" type="password" name="new" />
             </el-form-item>
             <el-form-item label="Konfirmasi Password Baru" prop="confirm">
-              <el-input v-model="password.confirm" type="password" name="confirm" />
+              <el-input
+                v-model="password.confirm"
+                type="password"
+                name="confirm"
+              />
             </el-form-item>
             <el-form-item>
-              <el-button type="danger" @click="changePasswordDialog = !changePasswordDialog">
+              <el-button
+                type="danger"
+                @click="changePasswordDialog = !changePasswordDialog"
+              >
                 Batal
               </el-button>
-              <el-button :loading="changePasswordLoading" type="success" @click="onChangePasswordSubmit">
+              <el-button
+                :loading="changePasswordLoading"
+                type="success"
+                @click="onChangePasswordSubmit"
+              >
                 Simpan
               </el-button>
             </el-form-item>
           </el-form>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane v-if="user.initiatorData.email" v-loading="updating" label="Pemrakarsa" name="initiatorTab">
+      <el-tab-pane
+        v-if="user.initiatorData.email"
+        v-loading="updating"
+        label="Pemrakarsa"
+        name="initiatorTab"
+      >
         <el-form ref="initiatorForm" :model="user.initiatorData">
           <el-form-item label="Nama Pemrakarsa">
             <el-input v-model="user.initiatorData.name" />
@@ -54,7 +91,10 @@
           <el-form-item label="Alamat">
             <el-input v-model="user.initiatorData.address" />
           </el-form-item>
-          <el-form-item v-if="user.initiatorData.user_type !== 'Pemerintah'" label="NIB">
+          <el-form-item
+            v-if="user.initiatorData.user_type !== 'Pemerintah'"
+            label="NIB"
+          >
             <el-input v-model="user.initiatorData.nib" />
           </el-form-item>
           <el-form-item>
@@ -64,7 +104,12 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane v-else-if="formulator.email" v-loading="updating" label="Penyusun" name="formulatorTab">
+      <el-tab-pane
+        v-else-if="formulator.email"
+        v-loading="updating"
+        label="Penyusun"
+        name="formulatorTab"
+      >
         <el-form ref="formulatorForm" :model="formulator">
           <el-form-item label="Nama Penyusun">
             <el-input v-model="formulator.name" :readonly="true" />
@@ -119,10 +164,25 @@
               :disabled="true"
             />
           </el-form-item>
-          <div style="margin-bottom: 20px;">
-            <label class="el-form-item--mediun el-form-item__label" style="float: none;">CV Penyusun</label>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <el-input v-model="cvFormulator.name" :readonly="true" class="input-name-cv" />
+          <div style="margin-bottom: 20px">
+            <label
+              class="el-form-item--mediun el-form-item__label"
+              style="float: none"
+            >
+              CV Penyusun
+            </label>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <el-input
+                v-model="cvFormulator.name"
+                :readonly="true"
+                class="input-name-cv"
+              />
               <el-upload
                 class="upload-demo"
                 :auto-upload="false"
@@ -141,7 +201,12 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane v-else-if="user.lpjpData.email" v-loading="updating" label="Lpjp" name="lpjpTab">
+      <el-tab-pane
+        v-else-if="user.lpjpData.email"
+        v-loading="updating"
+        label="Lpjp"
+        name="lpjpTab"
+      >
         <el-form ref="lpjpForm" :model="user.lpjpData">
           <el-form-item label="Nama LPJP">
             <el-input v-model="user.lpjpData.name" />
@@ -174,13 +239,16 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onLpjpSubmit">
-              Ubah
-            </el-button>
+            <el-button type="primary" @click="onLpjpSubmit"> Ubah </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane v-else-if="user.expertData.email" v-loading="updating" label="Ahli" name="expertTab">
+      <el-tab-pane
+        v-else-if="user.expertData.email"
+        v-loading="updating"
+        label="Ahli"
+        name="expertTab"
+      >
         <el-form ref="expertForm" :model="user.expertData">
           <el-form-item label="Nama">
             <el-input v-model="user.expertData.name" />
@@ -195,9 +263,7 @@
             <el-input v-model="user.expertData.expertise" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onExpertSubmit">
-              Ubah
-            </el-button>
+            <el-button type="primary" @click="onExpertSubmit"> Ubah </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -306,15 +372,29 @@ export default {
             message: 'Password lama wajib diisi',
           },
         ],
-        new: [{ required: true, pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, message: 'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus', trigger: 'blur' }],
-        confirm: [{ required: true, trigger: 'blur', validator: validateConfirmPassword }],
+        new: [
+          {
+            required: true,
+            pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+            message:
+              'minimal 8 karakter, harus mengandung minimal 1 huruf besar, 1 huruf kecil, dan 1 angka, Dapat berisi karakter khusus',
+            trigger: 'blur',
+          },
+        ],
+        confirm: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: validateConfirmPassword,
+          },
+        ],
       },
     };
   },
   computed: {
     ...mapGetters({
-      'userInfo': 'user',
-      'userId': 'userId',
+      userInfo: 'user',
+      userId: 'userId',
     }),
   },
   created() {
@@ -325,7 +405,10 @@ export default {
       console.log('Switching tab ', tab, event);
     },
     async getFormulator() {
-      this.formulator = await formulatorResource.list({ byUserId: 'true', email: this.userInfo.email });
+      this.formulator = await formulatorResource.list({
+        byUserId: 'true',
+        email: this.userInfo.email,
+      });
       const checkExpertise = this.expertise.find(
         (x) => x.value === this.formulator.expertise
       );
@@ -360,14 +443,14 @@ export default {
         this.$refs.changePasswordForm.resetFields();
       }
     },
-    onExpertSubmit(){
+    onExpertSubmit() {
       this.updating = true;
 
       const updatedExpert = this.user.expertData;
 
       expertResource
         .update(updatedExpert.id, updatedExpert)
-        .then(response => {
+        .then((response) => {
           this.updating = false;
           this.$message({
             message: 'Detil Expert Berhasil Diubah',
@@ -375,19 +458,19 @@ export default {
             duration: 5 * 1000,
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.updating = false;
         });
     },
-    onLpjpSubmit(){
+    onLpjpSubmit() {
       this.updating = true;
 
       const updatedLpjp = this.user.lpjpData;
 
       lpjpResource
         .update(updatedLpjp.id, updatedLpjp)
-        .then(response => {
+        .then((response) => {
           this.updating = false;
           this.$message({
             message: 'Detil Lpjp Berhasil Diubah',
@@ -395,7 +478,7 @@ export default {
             duration: 5 * 1000,
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.updating = false;
         });
@@ -405,11 +488,13 @@ export default {
         confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
         type: 'warning',
-      }).then(() => {
-        this.onFormulatorSubmit();
-      }).catch(() => {});
+      })
+        .then(() => {
+          this.onFormulatorSubmit();
+        })
+        .catch(() => {});
     },
-    async onFormulatorSubmit(){
+    async onFormulatorSubmit() {
       this.updating = true;
 
       const formData = new FormData();
@@ -417,12 +502,15 @@ export default {
       formData.append('profile', true);
 
       if (this.cvFormulator.file) {
-        formData.append('cv_file', await this.convertBase64(this.cvFormulator.file));
+        formData.append(
+          'cv_file',
+          await this.convertBase64(this.cvFormulator.file)
+        );
       }
 
       formulatorResource
         .updateMultipart(this.formulator.id, formData)
-        .then(response => {
+        .then((response) => {
           this.updating = false;
           this.$message({
             message: 'Detil Penyusun Berhasil Diubah',
@@ -431,19 +519,19 @@ export default {
           });
           this.cvFormulator.file = null;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.updating = false;
         });
     },
-    onInitiatorSubmit(){
+    onInitiatorSubmit() {
       this.updating = true;
 
       const updatedInitiator = this.user.initiatorData;
 
       initiatorResource
         .update(updatedInitiator.id, updatedInitiator)
-        .then(response => {
+        .then((response) => {
           this.updating = false;
           this.$message({
             message: 'Detil Pemrakarsa Berhasil Diubah',
@@ -451,7 +539,7 @@ export default {
             duration: 5 * 1000,
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.updating = false;
         });
@@ -461,15 +549,23 @@ export default {
 
       userResource
         .update(this.user.id, this.user)
-        .then(response => {
+        .then((response) => {
+          if (response.error) {
+            this.$message({
+              message: response.error,
+              type: 'error',
+              duration: 5 * 1000,
+            });
+          } else {
+            this.$message({
+              message: 'Informasi User Berhasil Di Ubah',
+              type: 'success',
+              duration: 5 * 1000,
+            });
+          }
           this.updating = false;
-          this.$message({
-            message: 'Informasi User Berhasil Di Ubah',
-            type: 'success',
-            duration: 5 * 1000,
-          });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.updating = false;
         });
@@ -480,7 +576,7 @@ export default {
           this.changePasswordLoading = true;
           userResource
             .update(this.user.id, this.password)
-            .then(response => {
+            .then((response) => {
               if (response.error) {
                 this.$message({
                   message: response.error,
@@ -498,7 +594,7 @@ export default {
               this.changePasswordLoading = false;
             })
             // eslint-disable-next-line handle-callback-err
-            .catch(error => {
+            .catch((error) => {
               this.changePasswordLoading = false;
             });
         }
@@ -544,7 +640,8 @@ export default {
 <style lang="scss" scoped>
 .user-activity {
   .user-block {
-    .username, .description {
+    .username,
+    .description {
       display: block;
       margin-left: 50px;
       padding: 2px 0;
@@ -591,7 +688,8 @@ export default {
       font-size: 13px;
     }
     .link-black {
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         color: #999;
       }
     }
@@ -608,7 +706,7 @@ export default {
     background-color: #99a9bf;
   }
 
-  .el-carousel__item:nth-child(2n+1) {
+  .el-carousel__item:nth-child(2n + 1) {
     background-color: #d3dce6;
   }
 }

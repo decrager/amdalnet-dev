@@ -555,11 +555,18 @@ class FormulatorController extends Controller
         $formulator->save();
 
         $formulatorRole = Role::findByName(Acl::ROLE_FORMULATOR);
-        $user = User::create([
+        $password = Str::random(8);
+        $user_data = [
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+            'password' => $request->password ? Hash::make($request->password) : $password
+        ];
+
+        if(!$request->password) {
+            $user_data['original_password'] = $password;
+        }
+
+        $user = User::create($user_data);
         $user->syncRoles($formulatorRole);
 
         return response()->json(['message' => 'success']);

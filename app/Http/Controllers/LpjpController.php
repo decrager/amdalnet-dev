@@ -165,12 +165,21 @@ class LpjpController extends Controller
             $found = User::where('email', $email)->first();
             if (!$found) {
                 $lpjpRole = Role::findByName(Acl::ROLE_LPJP);
+                $password = Str::random(8);
                 $user = User::create([
                     'name' => ucfirst($params['name']),
                     'email' => $params['email'],
-                    'password' => Hash::make('amdalnet')
+                    'password' => Hash::make($password),
+                    'original_password' => $password
                 ]);
                 $user->syncRoles($lpjpRole);
+            } else {
+                return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
+            }
+
+            $check_lpjp = Lpjp::where('email', $email)->first();
+            if($check_lpjp) {
+                return response()->json(['errors' => 'Email yang anda masukkan sudah terpakai']);
             }
 
             //create lpjp
@@ -308,7 +317,7 @@ class LpjpController extends Controller
                             $user = User::create([
                                 'name' => ucfirst($params['name']),
                                 'email' => $params['email'],
-                                'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
+                                'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($random_password),
                                 'original_password' => isset($params['password']) ? $params['password'] : $random_password
                             ]);
                             $user->syncRoles($lpjpRole);
@@ -322,7 +331,7 @@ class LpjpController extends Controller
                         $user = User::create([
                             'name' => ucfirst($params['name']),
                             'email' => $params['email'],
-                            'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make('amdalnet'),
+                            'password' => isset($params['password']) ? Hash::make($params['password']) : Hash::make($random_password),
                             'original_password' => isset($params['password']) ? $params['password'] : $random_password
                         ]);
                         $user->syncRoles($lpjpRole);
