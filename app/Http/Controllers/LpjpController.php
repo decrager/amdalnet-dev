@@ -27,6 +27,11 @@ class LpjpController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->byUserId) {
+            $lpjp = Lpjp::where('email', $request->email)->first();
+            return $lpjp;
+        }
+
         if($request->formulators) {
             $formulators = Formulator::where('id_lpjp', $request->idLpjp)->orWhere('id_lpjp', null)->orderBy('name')->get();
             return $formulators;
