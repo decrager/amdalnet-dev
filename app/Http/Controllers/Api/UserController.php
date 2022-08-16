@@ -223,13 +223,16 @@ class UserController extends BaseController
 
             $user->name = $request->get('name');
             $user->email = $email;
-            $user->save();
 
             // send notification if existing user email changed
             if($old_email != $email) {
-                Notification::send([$user], new ChangeUserEmailNotification());
+                $password = Str::random(8);
+                $user->password = Hash::make($password);
+                Notification::send([$user], new ChangeUserEmailNotification(null, null, null, $password));
                 Notification::route('mail', $old_email)->notify(new ChangeUserEmailNotification($user->name, $user->email, $user->roles->first()->name));
             }
+
+            $user->save();
 
             return new UserResource($user);
         }

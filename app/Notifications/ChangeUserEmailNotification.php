@@ -14,17 +14,19 @@ class ChangeUserEmailNotification extends Notification
     public $name;
     public $email;
     public $role;
+    public $password;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($name = null, $email = null, $role = null)
+    public function __construct($name = null, $email = null, $role = null, $password = null)
     {   
         $this->name = $name;
         $this->email = $email;
         $this->role = $role;
+        $this->password = $password;
     }
 
     /**
@@ -54,10 +56,29 @@ class ChangeUserEmailNotification extends Notification
         $role = $this->role ? $this->role : $notifiable->roles->first()->name;
         $with_email = $this->email ? ' menjadi ' . $this->email : '';
 
-        return (new MailMessage)
-                    ->subject('Pemberitahuan Perubahan Email')
-                    ->greeting('Halo ' . $name)
-                    ->line('Akun Email ' . $this->getRoleName($role) . ' anda telah berhasil diubah' . $with_email);
+        if($this->email) {
+            return (new MailMessage)
+                        ->subject('Pemberitahuan Perubahan Email')
+                        ->greeting('Halo ' . $name)
+                        ->line('Akun Email ' . $this->getRoleName($role) . ' anda telah berhasil diubah' . $with_email);
+        } else {
+            if($notifiable->active == 1) {
+                return (new MailMessage)
+                        ->subject('Pemberitahuan Perubahan Email')
+                        ->greeting('Halo ' . $name)
+                        ->line('Akun Email ' . $this->getRoleName($role) . ' anda telah berhasil diubah' . $with_email)
+                        ->line('Password: ' . $this->password);
+            } else {
+                $url = url("/#/activate/".$notifiable->id);
+                return (new MailMessage)
+                        ->subject('Pemberitahuan Perubahan Email')
+                        ->greeting('Halo ' . $name)
+                        ->line('Akun Email ' . $this->getRoleName($role) . ' anda telah berhasil diubah' . $with_email)
+                        ->line('Password: ' . $this->password)
+                        ->line('Silahkan aktivasi akun dengan menekan tombol dibawah ini.')
+                        ->action('Aktivasi Akun Anda', $url);
+            }
+        }
     }
 
     /**

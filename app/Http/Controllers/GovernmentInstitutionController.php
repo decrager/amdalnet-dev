@@ -88,11 +88,13 @@ class GovernmentInstitutionController extends Controller
             if($request->email != $request->old_email) {
                 $user = User::where('email', $request->old_email)->first();
                 if($user) {
+                    $password = Str::random(8);
+                    $user->password = Hash::make($password);
                     $user->email = $request->email;
                     $user->save();
 
                     // send notification if existing user email changed
-                    Notification::send([$user], new ChangeUserEmailNotification());
+                    Notification::send([$user], new ChangeUserEmailNotification(null,null,null,$password));
                     Notification::route('mail', $request->old_email)->notify(new ChangeUserEmailNotification($user->name, $user->email, $user->roles->first()->name));
                 }
             }

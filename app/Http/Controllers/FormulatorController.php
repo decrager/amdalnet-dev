@@ -398,13 +398,20 @@ class FormulatorController extends Controller
         //     return response()->json(['errors' => $validator->errors()], 403);
         // } else {
         $params = $request->all();
+        $email_changed_notif = null;
+        $old_email = null;
+        $password = Str::random(8);
+
 
         if($request->email) {
             if($request->email != $formulator->email) {
                 $found = User::where('email', $request->email)->first();
                 if($found) {
+                    $old_email = $found->email;
+                    $found->password = Hash::make($password);
                     $found->email = $request->email;
                     $found->save();
+                    $email_changed_notif = $found;
                 } else {
                     if($formulator->email) {
                         return response()->json(['error' => 'Email yang anda masukkan sudah terpakai']);
@@ -461,6 +468,12 @@ class FormulatorController extends Controller
         $formulator->nip = $params['nip'] ? $params['nip'] : null;
         $formulator->save();
         // }
+
+         // send notification if existing user email changed
+         if($email_changed_notif) {
+            Notification::send([$email_changed_notif], new ChangeUserEmailNotification(null,null,null,$password));
+            Notification::route('mail', $old_email)->notify(new ChangeUserEmailNotification($email_changed_notif->name, $email_changed_notif->email, $email_changed_notif->roles->first()->name));
+        }
 
         return new FormulatorResource($formulator);
     }
