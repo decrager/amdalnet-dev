@@ -587,6 +587,8 @@ export default {
           this.cvFormulator.file = null;
           this.certFormulator.file = null;
           this.certFormulator.name = null;
+          this.formulator.cv_file = response.cv_file;
+          this.formulator.cert_file = response.cert_file;
         })
         .catch((error) => {
           console.log(error);
