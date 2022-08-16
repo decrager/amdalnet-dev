@@ -131,6 +131,7 @@ class EmployeeTUKController extends Controller
         $employee_tuk = null;
         $email_changed_notif = null;
         $old_email = null;
+        $password = Str::random(8);
 
         if($request->type == 'create') {
             $employee_tuk = new LukMember();
@@ -149,6 +150,7 @@ class EmployeeTUKController extends Controller
                             if($employee_tuk_user) {
                                 $employee_tuk_user->name = $request->name;
                                 $employee_tuk_user->email = $request->email;
+                                $employee_tuk_user->password = Hash::make($password);
                                 $employee_tuk_user->save();
                                 $email_changed_notif = $employee_tuk_user;
                             } 
@@ -207,7 +209,7 @@ class EmployeeTUKController extends Controller
 
             // send notification if existing user email changed
             if($email_changed_notif) {
-                Notification::send([$email_changed_notif], new ChangeUserEmailNotification());
+                Notification::send([$email_changed_notif], new ChangeUserEmailNotification(null, null, null, $password));
                 Notification::route('mail', $old_email)->notify(new ChangeUserEmailNotification($email_changed_notif->name, $email_changed_notif->email, $email_changed_notif->roles->first()->name));
             }
         }

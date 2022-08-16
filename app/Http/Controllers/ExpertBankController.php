@@ -220,6 +220,7 @@ class ExpertBankController extends Controller
             $params = $request->all();
             $email_changed_notif = null;
             $old_email = null;
+            $password = Str::random(8);
 
             // update user email
             if($request->email) {
@@ -235,6 +236,7 @@ class ExpertBankController extends Controller
                                 $old_email = $expertBank->email;
                                 $expert_bank_user->name = $request->name;
                                 $expert_bank_user->email = $request->email;
+                                $expert_bank_user->password = Hash::make($password);
                                 $expert_bank_user->save();
                                 $email_changed_notif = $expert_bank_user;
                             } else {
@@ -307,7 +309,7 @@ class ExpertBankController extends Controller
 
             // send notification if existing user email changed
             if($email_changed_notif) {
-                Notification::send([$email_changed_notif], new ChangeUserEmailNotification());
+                Notification::send([$email_changed_notif], new ChangeUserEmailNotification(null,null,null,$password));
                 Notification::route('mail', $old_email)->notify(new ChangeUserEmailNotification($email_changed_notif->name, $email_changed_notif->email, $email_changed_notif->roles->first()->name));
             }
         }
