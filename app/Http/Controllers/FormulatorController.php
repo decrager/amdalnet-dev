@@ -387,7 +387,7 @@ class FormulatorController extends Controller
 
             $formulator->expertise = $request->expertise;
             $formulator->save();
-            return response()->json(['message' => 'success']);
+            return response()->json(['cv_file' => $formulator->cv_file, 'cert_file' => $formulator->cert_file]);
         }
 
         // $validator = Validator::make(
