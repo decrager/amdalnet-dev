@@ -582,6 +582,10 @@ class FormulatorController extends Controller
         $user = User::create($user_data);
         $user->syncRoles($formulatorRole);
 
+        if($certificate_file) {
+            return response()->json(['message' => 'success_certificate']);
+        }
+
         return response()->json(['message' => 'success']);
     }
 
