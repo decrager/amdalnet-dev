@@ -373,6 +373,18 @@ class FormulatorController extends Controller
                 $formulator->cv_file = $file_name;
             }
 
+            if($request->cert_file) {
+                $file = $this->base64ToFile($request->cert_file);
+                $file_name = 'penyusun/' . uniqid() . '.' . $file['extension'];
+                Storage::disk('public')->put($file_name, $file['file']);
+
+                if($formulator->cert_file) {
+                    Storage::disk('public')->delete($formulator->rawCertFile());
+                }
+
+                $formulator->cert_file = $file_name;
+            }
+
             $formulator->expertise = $request->expertise;
             $formulator->save();
             return response()->json(['message' => 'success']);

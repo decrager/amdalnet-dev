@@ -110,6 +110,14 @@
         label="Penyusun"
         name="formulatorTab"
       >
+        <div class="formulator-message">
+          <p>
+            <b>
+              Apabila terdapat data yang tidak sesuai, silahkan menghubungi
+              Admin Amdalnet
+            </b>
+          </p>
+        </div>
         <el-form ref="formulatorForm" :model="formulator">
           <el-form-item label="Nama Penyusun">
             <el-input v-model="formulator.name" :readonly="true" />
@@ -141,8 +149,40 @@
               placeholder="Isi Keahlian"
             />
           </el-form-item>
-          <el-form-item label="No. Sertifikat">
-            <el-input v-model="formulator.cert_no" :readonly="true" />
+          <el-form-item label="No. Sertifikat" class="certificate-label">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <el-input v-model="formulator.cert_no" :readonly="true" />
+              <el-upload
+                action="#"
+                :auto-upload="false"
+                :on-change="handleUploadFormulatorCertificate"
+                :show-file-list="false"
+                class="upload-formulator-cert"
+              >
+                <el-button size="small" type="primary"> Upload </el-button>
+                <div
+                  v-if="certFormulator.name"
+                  slot="tip"
+                  class="el-upload__tip"
+                >
+                  {{ certFormulator.name }}
+                </div>
+              </el-upload>
+              <el-button
+                v-if="formulator.cert_file"
+                size="small"
+                type="warning"
+                @click="download(formulator.cert_file)"
+              >
+                File Sertifikat
+              </el-button>
+            </div>
           </el-form-item>
           <el-form-item label="Tanggal Ditetapkan" prop="tglDitetapkan">
             <el-date-picker
@@ -191,6 +231,14 @@
                 :show-file-list="false"
               >
                 <el-button size="small" type="primary"> Upload </el-button>
+                <el-button
+                  v-if="formulator.cv_file"
+                  size="small"
+                  type="warning"
+                  @click="download(formulator.cv_file)"
+                >
+                  File CV
+                </el-button>
               </el-upload>
             </div>
           </div>
@@ -315,6 +363,10 @@ export default {
       formulator: {},
       lpjp: {},
       cvFormulator: {
+        name: null,
+        file: null,
+      },
+      certFormulator: {
         name: null,
         file: null,
       },
@@ -516,6 +568,13 @@ export default {
         );
       }
 
+      if (this.certFormulator.file) {
+        formData.append(
+          'cert_file',
+          await this.convertBase64(this.certFormulator.file)
+        );
+      }
+
       formulatorResource
         .updateMultipart(this.formulator.id, formData)
         .then((response) => {
@@ -526,6 +585,8 @@ export default {
             duration: 5 * 1000,
           });
           this.cvFormulator.file = null;
+          this.certFormulator.file = null;
+          this.certFormulator.name = null;
         })
         .catch((error) => {
           console.log(error);
@@ -608,6 +669,17 @@ export default {
         }
       });
     },
+    handleUploadFormulatorCertificate(file, fileList) {
+      if (file.raw.size > 5242880) {
+        this.$alert('File Yang Diupload Melebihi 5 MB', {
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+
+      this.certFormulator.name = file.name;
+      this.certFormulator.file = file.raw;
+    },
     handleUploadCv(file, fileList) {
       if (file.raw.size > 10485760) {
         this.$alert('File Yang Diupload Melebihi 10 MB', {
@@ -640,6 +712,9 @@ export default {
           reject(error);
         };
       });
+    },
+    download(url) {
+      window.open(url, '_blank').focus();
     },
   },
 };
@@ -718,10 +793,31 @@ export default {
     background-color: #d3dce6;
   }
 }
+.formulator-message {
+  background-color: #c4c4c4;
+  width: fit-content;
+  padding: 0.7em;
+}
+.formulator-message p {
+  margin: 0;
+  padding: 0;
+}
 </style>
 
 <style>
+.input-name-cv {
+  width: 80%;
+}
 .input-name-cv input {
   width: 97%;
+}
+.certificate-label label {
+  display: contents;
+}
+.certificate-label input {
+  width: 97%;
+}
+.upload-formulator-cert {
+  margin-right: 1em;
 }
 </style>
