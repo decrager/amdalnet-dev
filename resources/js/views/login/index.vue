@@ -1014,14 +1014,21 @@ export default {
                     return false;
                   }
 
-                  this.$message({
-                    message:
-                'User Dengan Email ' +
-                this.registrationForm.email +
-                ' Berhasil Dibuat',
-                    type: 'success',
-                    duration: 5 * 1000,
-                  });
+                  if (response.message === 'success_certificate') {
+                    this.$alert('<h3>File Sertifikat untuk No Registrasi tersebut sudah terdapat dalam Sistem Amdalnet, Periksa kembali file sertifikat anda pada menu profile.</h3>',
+                      '',
+                      { dangerouslyUseHTMLString: true, center: true, customClass: 'alert-certificate' });
+                  } else {
+                    this.$message({
+                      message:
+                  'User Dengan Email ' +
+                  this.registrationForm.email +
+                  ' Berhasil Dibuat',
+                      type: 'success',
+                      duration: 5 * 1000,
+                    });
+                  }
+
                   this.loading = false;
                   this.form = 'login';
                   this.registrationForm = {};
@@ -1080,6 +1087,13 @@ $light_gray:#5F6368;
 }
 .form-btn-cert {
   display: inline-block;
+}
+.alert-certificate {
+  width: 37%;
+}
+.alert-certificate button.el-button--primary {
+  background-color: #ff4949;
+  border-color: #ff4949;
 }
 </style>
 
