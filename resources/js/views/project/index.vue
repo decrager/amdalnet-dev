@@ -128,7 +128,7 @@
                   Tim LPJP
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ka')) || testInvited(scope.row, 'ka')) && !isScreening && !isDigiWork && !isInitiator"
+                  v-if="isAmdal(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ka')) || testInvited(scope.row, 'ka')) && !isScreening && !isDigiWork && !isInitiator && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -137,7 +137,7 @@
                   Formulir Kerangka Acuan
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -164,7 +164,7 @@
                   Dokumen UKL UPL
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -173,7 +173,7 @@
                   Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isMeetReportKaCreated(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isDigiWork && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -191,7 +191,7 @@
                   Dokumen ANDAL RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork"
+                  v-if="isUklUpl(scope.row) && (isFormulator || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isDigiWork && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -272,7 +272,7 @@
                   Bagan Alir
                 </el-button> -->
                 <el-button
-                  v-if="isAmdal(scope.row) && isDocumentReviewed(scope.row, 'ka') && (tukAccess(scope.row, 'valsub') || testInvited(scope.row, 'ka')) && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && isDocumentReviewed(scope.row, 'ka') && (tukAccess(scope.row, 'valsub') || testInvited(scope.row, 'ka')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -281,7 +281,7 @@
                   Workspace KA
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isAndalFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isAndalFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -290,7 +290,7 @@
                   Workspace Andal
                 </el-button>
                 <el-button
-                  v-if="isAmdal(scope.row) && ((isFormulator && isRklRplFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping"
+                  v-if="isAmdal(scope.row) && ((isFormulator && isRklRplFormComplete(scope.row)) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'rkl-rpl')) || testInvited(scope.row, 'rkl-rpl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
@@ -299,7 +299,7 @@
                   Workspace RKL RPL
                 </el-button>
                 <el-button
-                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping"
+                  v-if="isUklUpl(scope.row) && ((isFormulator && scope.row.ukl_upl_document) || (tukAccess(scope.row, 'valsub') && isInvitationSent(scope.row, 'ukl-upl')) || testInvited(scope.row, 'ukl-upl')) && !isScreening && !isScoping && !isLpjp"
                   href="#"
                   type="text"
                   icon="el-icon-document"
