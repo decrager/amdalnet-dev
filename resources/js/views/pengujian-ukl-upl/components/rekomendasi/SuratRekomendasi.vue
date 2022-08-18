@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-indent -->
 <template>
   <div class="app-container" style="padding: 24px">
     <h2>Rekomendasi Hasil Uji Kelayakan</h2>
@@ -25,7 +26,9 @@
         <iframe
           v-if="projects !== null"
           :src="
-            'https://docs.google.com/gview?url=' + encodeURIComponent(projects) + '&embedded=true'
+            'https://docs.google.com/gview?url=' +
+            encodeURIComponent(projects) +
+            '&embedded=true'
           "
           width="100%"
           height="723px"
@@ -42,7 +45,6 @@
 <script>
 import Resource from '@/api/resource';
 const feasibilityTestResource = new Resource('feasibility-test');
-import axios from 'axios';
 
 export default {
   data() {
@@ -80,34 +82,16 @@ export default {
     },
     async exportPdf() {
       this.loadingPDF = true;
-      axios({
-        url: `api/feasibility-test`,
-        method: 'GET',
-        responseType: 'blob',
-        params: {
-          idProject: this.$route.params.id,
-          pdf: 'true',
-        },
-      })
-        .then((response) => {
-          this.loadingPDF = false;
-          // const getHeaders = response.headers['content-disposition'].split('; ');
-          // const getFileName = getHeaders[1].split('=');
-          // const getName = getFileName[1].split('=');
-          var fileURL = window.URL.createObjectURL(new Blob([response.data]));
-          var fileLink = document.createElement('a');
-          fileLink.href = fileURL;
-          fileLink.setAttribute(
-            'download',
-            `${this.projectName.replace('.docx', '.pdf')}`
-          );
-          document.body.appendChild(fileLink);
-          fileLink.click();
-        })
-        .catch((err) => {
-          err = '';
-          this.loadingPDF = false;
-        });
+      const fileURL = await feasibilityTestResource.list({
+        pdf: 'true',
+        idProject: this.$route.params.id,
+      });
+
+      const fileLink = document.createElement('a');
+      fileLink.href = fileURL;
+      fileLink.setAttribute('download', `surat-rekomendasi-uji-kelayakan.pdf`);
+      document.body.appendChild(fileLink);
+      fileLink.click();
     },
   },
 };
