@@ -322,6 +322,16 @@ export default {
       'view menu feasibility test recommendation':
         'view menu rekomendasi uji kelayakan',
       'view menu skkl': 'view menu skkl',
+      'view menu ukl upl form': 'view menu formulir ukl upl',
+      'view menu ukl upl document': 'view menu dokumen ukl upl',
+      'view menu ukl upl adm': 'view menu uji administrasi ukl upl',
+      'view menu ukl upl meeting invitation':
+        'view menu undangan rapat ukl upl',
+      'view menu ukl upl meeting report': 'view menu berita acara ukl upl',
+      'view menu ukl upl feasibility test': 'view menu uji kelayakan ukl upl',
+      'view menu ukl upl feasibility test recommendation':
+        'view menu rekomendasi uji kelayakan ukl upl',
+      'view menu pkplh': 'view menu pkplh',
     },
   },
   guide: {

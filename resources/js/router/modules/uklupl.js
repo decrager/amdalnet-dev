@@ -13,7 +13,11 @@ const ukluplRoutes = {
       component: () => import('@/views/ukl-upl/FormulirUklUpl'),
       name: 'FormulirUklUpl',
       hidden: false,
-      meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
+      meta: {
+        title: 'Asistensi Pelingkupan',
+        icon: 'documentation',
+        permissions: ['view menu ukl upl form'],
+      },
     },
     {
       path: ':id(\\d+)/matriks',
@@ -27,27 +31,49 @@ const ukluplRoutes = {
       component: () => import('@/views/ukl-upl/DokumenUklUpl'),
       name: 'DokumenUklUpl',
       hidden: false,
-      meta: { title: 'Asistensi Pelingkupan', icon: 'documentation' },
+      meta: {
+        title: 'Asistensi Pelingkupan',
+        icon: 'documentation',
+        permissions: ['view menu ukl upl document'],
+      },
     },
     {
       path: ':id(\\d+)/uji-berkas-administrasi',
       component: () => import('@/views/pengujian-ukl-upl/index'),
       name: 'ujiBerkasAdministrasiUKLUPL',
-      meta: { title: 'Uji Berkas Administrasi', icon: 'zip', noCache: true },
+      meta: {
+        title: 'Uji Berkas Administrasi',
+        icon: 'zip',
+        noCache: true,
+        permissions: [
+          'view menu ukl upl adm',
+          'view menu ukl upl meeting invitation',
+        ],
+      },
     },
     {
       path: ':id(\\d+)/berita-acara',
       component: () =>
         import('@/views/pengujian-ukl-upl/components/beritaAcara/index'),
       name: 'beritaAcaraUKLUPL',
-      meta: { title: 'Berita Acara', icon: 'zip', noCache: true },
+      meta: {
+        title: 'Berita Acara',
+        icon: 'zip',
+        noCache: true,
+        permissions: ['view menu ukl upl meeting report'],
+      },
     },
     {
       path: ':id(\\d+)/uji-kelayakan',
       component: () =>
         import('@/views/pengujian-rkl-rpl/components/ujiKelayakan/index'),
       name: 'ujiKelayakanUKLUPL',
-      meta: { title: 'Uji Kelayakan', icon: 'zip', noCache: true },
+      meta: {
+        title: 'Uji Kelayakan',
+        icon: 'zip',
+        noCache: true,
+        permissions: ['view menu ukl upl feasibility test'],
+      },
     },
     {
       path: ':id(\\d+)/rekomendasi-uji-kelayakan',
@@ -58,6 +84,7 @@ const ukluplRoutes = {
         title: 'Surat Rekomendasi Uji Kelayakan',
         icon: 'zip',
         noCache: true,
+        permissions: ['view menu ukl upl feasibility test recommendation'],
       },
     },
     {
@@ -69,6 +96,7 @@ const ukluplRoutes = {
           'Persetujuan Pernyataan Kesanggupan Pengelolaan Lingkungan Hidup',
         icon: 'zip',
         noCache: true,
+        permissions: ['view menu pkplh'],
       },
     },
   ],

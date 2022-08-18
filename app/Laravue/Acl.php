@@ -98,6 +98,31 @@ final class Acl
     const PERMISSION_VIEW_MENU_TUK_MANAGEMENT = 'view menu tuk management';
     const PERMISSION_VIEW_MENU_TUK_PROFILE = 'view menu tuk profile';
     const PERMISSION_VIEW_MENU_TUK_PROJECT = 'view menu tuk project';
+    const PERMISSION_VIEW_MENU_PUBLIC_CONSULTATIONS = 'view menu public consultations';
+    const PERMISSION_VIEW_MENU_KA = 'view menu ka';
+    const PERMISSION_VIEW_MENU_KA_DOCUMENT = 'view menu ka document';
+    const PERMISSION_VIEW_MENU_KA_VERIFICATION = 'view menu ka verification';
+    const PERMISSION_VIEW_MENU_KA_MEETING_INVITATION = 'view menu ka meeting invitation';
+    const PERMISSION_VIEW_MENU_KA_COMMENT_RECAPITULATION = 'view menu ka comment recapitulation';
+    const PERMISSION_VIEW_MENU_KA_MEETING_REPORT = 'view menu ka meeting report';
+    const PERMISSION_VIEW_MENU_ANDAL = 'view menu andal';
+    const PERMISSION_VIEW_MENU_RKL_RPL = 'view menu rkl rpl';
+    const PERMISSION_VIEW_MENU_ANDAL_RKL_RPL_DOCUMENT = 'view menu andal rkl rpl document';
+    const PERMISSION_VIEW_MENU_ANDAL_RKL_RPL_VERIFICATION = 'view menu andal rkl rpl verification';
+    const PERMISSION_VIEW_MENU_ANDAL_RKL_RPL_MEETING_INVITATION = 'view menu andal rkl rpl meeting invitation';
+    const PERMISSION_VIEW_MENU_ANDAL_RKL_RPL_COMMENT_RECAPITULATION = 'view menu andal rkl rpl comment recapitulation';
+    const PERMISSION_VIEW_MENU_ANDAL_RKL_RPL_MEETING_REPORT = 'view menu andal rkl rpl meeting report';
+    const PERMISSION_VIEW_MENU_FEASIBILITY_TEST = 'view menu feasibility test';
+    const PERMISSION_VIEW_MENU_FEASIBILITY_TEST_RECOMMENDATION = 'view menu feasibility test recommendation';
+    const PERMISSION_VIEW_MENU_SKKL = 'view menu skkl';
+    const PERMISSION_VIEW_MENU_UKL_UPL_FORM = 'view menu ukl upl form';
+    const PERMISSION_VIEW_MENU_UKL_UPL_DOCUMENT = 'view menu ukl upl document';
+    const PERMISSION_VIEW_MENU_UKL_UPL_ADM = 'view menu ukl upl adm';
+    const PERMISSION_VIEW_MENU_UKL_UPL_MEETING_INVITATION = 'view menu ukl upl meeting invitation';
+    const PERMISSION_VIEW_MENU_UKL_UPL_MEETING_REPORT = 'view menu ukl upl meeting report';
+    const PERMISSION_VIEW_MENU_UKL_UPL_FEASIBILITY_TEST = 'view menu ukl upl feasibility test';
+    const PERMISSION_VIEW_MENU_UKL_UPL_FEASIBILITY_TEST_RECOMMENDATION = 'view menu ukl upl feasibility test recommendation';
+    const PERMISSION_VIEW_MENU_PKPLH = 'view menu pkplh';
     
     // const PERMISSION_VIEW_MENU_ANNOUNCEMENT = 'view menu announcement';
     // const PERMISSION_VIEW_MENU_CONSULTATION = 'view menu public consultation';
@@ -130,6 +155,7 @@ final class Acl
     const PERMISSION_MANAGE_TUK_MANAGEMENT = 'manage tuk management';
     const PERMISSION_MANAGE_TUK_PROFILE = 'manage tuk profile';
     const PERMISSION_MANAGE_TUK_PROJECT = 'manage tuk project';
+    const PERMISSION_MANAGE_CONSULTATION = 'manage consultation';
     
     // const PERMISSION_MANAGE_CONSULTATION = 'manage consultation';
     // const PERMISSION_MANAGE_TECHNICAL_REGULATIONS = 'manage technical regulations';
